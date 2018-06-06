@@ -1,0 +1,7 @@
+ADDR=`../daemon/lightning-cli newaddr | jq -r .address`
+echo new address: \($ADDR\)
+TXID=`chips-cli sendtoaddress $ADDR 1.025`
+echo TXID $TXID
+RAWTX=`chips-cli getrawtransaction $TXID`
+echo RAWTX $RAWTX
+../daemon/lightning-cli addfunds $RAWTX

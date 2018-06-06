@@ -1,0 +1,1 @@
+./bet "{\"hostip\":\"127.0.0.1\",\"mode\":\"host\",\"passphrase\":\"host passphrase\"}"
