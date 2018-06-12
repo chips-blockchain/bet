@@ -152,10 +152,11 @@ int64_t LP_outpoint_amount(char *symbol,bits256 txid,int32_t vout)
     return(amount);
 }
 
+#if 0
 #include "../../SuperNET/iguana/exchanges/LP_network.c"
 #include "../../SuperNET/iguana/exchanges/LP_secp.c"
 #include "../../SuperNET/iguana/exchanges/LP_bitcoin.c"
-
+#endif
 void randombytes_buf(void * const buf, const size_t size)
 {
     OS_randombytes((void *)buf,(int32_t)size);
