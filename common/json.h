@@ -1,7 +1,7 @@
 #ifndef LIGHTNING_COMMON_JSON_H
 #define LIGHTNING_COMMON_JSON_H
-//#include "config.h"
 //#include <bitcoin/pubkey.h>
+#include "config.h"
 #include <ccan/take/take.h>
 #include <ccan/tal/tal.h>
 #include <stdbool.h>
@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 #define JSMN_STRICT 1
-# include </root/bet/external/jsmn/jsmn.h>
+# include <external/jsmn/jsmn.h>
 
 struct json_escaped;
 struct json_result;
