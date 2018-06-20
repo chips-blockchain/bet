@@ -3,12 +3,11 @@ CFLAGS= -w -g -c -fpic
 SRC=bet.c
 OBJ=$(patsubst %.c,%.o,$(SRC))
 HOME=/root/bet
-.PHONY: all clean compile_common
+.PHONY: all clean
 
-all:	
-	gcc -w -g -o bet bet.c -L/root/bet/common -lcommon -lnng -lcurl -lbacktrace -lpthread -lm	
+all:clean	
 	
-
+	gcc -w -g -o bet bet.c ../ccan/obj/*.o ../external/jsmn/jsmn.o ../crypto777/libcrypto777.a -lcurl -ldl -lnng -lbacktrace -lpthread -lm
+ 
 clean:
-	rm -f *.o
-	rm -f *.so
+	#do nothing
