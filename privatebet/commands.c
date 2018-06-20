@@ -31,7 +31,7 @@ char *chipsln_command(void *ctx,cJSON *argjson,char *remoteaddr,uint16_t port)
     //for (i=0; i<numargs; i++)
     //    printf("(%s) ",args[i]);
     //printf(" <- %s\n",jprint(argjson,0));
-    cli_main(buffer,maxsize,numargs,args);
+    //cli_main(buffer,maxsize,numargs,args);
     if ( numargs > 2 )
     {
         for (i=2; i<numargs; i++)

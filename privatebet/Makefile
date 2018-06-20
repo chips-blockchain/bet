@@ -6,7 +6,7 @@ HOME=/root/bet
 .PHONY: all clean compile_common
 
 all:	
-	gcc -w -g -o bet bet.c -L/root/bet/commom -lcommon -lnng -lcurl -lbacktrace -lpthread -lm	
+	gcc -w -g -o bet bet.c -L/root/bet/common -lcommon -lnng -lcurl -lbacktrace -lpthread -lm	
 	
 
 clean:

@@ -5,7 +5,7 @@
 #define _GNU_SOURCE /* Always use GNU extensions. */
 #endif
 #define CCAN_COMPILER "cc"
-#define CCAN_CFLAGS "-DBINTOPKGLIBEXECDIR="../libexec/c-lightning" -Werror -Wall -Wundef -Wmissing-prototypes -Wmissing-declarations -Wstrict-prototypes -Wold-style-definition -std=gnu11 -g -fstack-protector -I ccan -I external/libsodium/src/libsodium/include -I external/libwally-core/include/ -I external/libwally-core/src/secp256k1/include/ -I external/jsmn/ -I external/libbase58/ -I external/libbacktrace/ -I external/libbacktrace-build -I . -I/usr/local/include -DDEVELOPER=1 -DCCAN_TAL_DEBUG=1 -DCCAN_TAKE_DEBUG=1 -DSHACHAIN_BITS=48 -DJSMN_PARENT_LINKS -DCOMPAT_V052=1"
+#define CCAN_CFLAGS "-Werror -Wall -Wundef -Wmissing-prototypes -Wmissing-declarations -Wstrict-prototypes -Wold-style-definition -std=gnu11 -g -fstack-protector -I ccan -I . -I/usr/local/include -DDEVELOPER=1 -DCCAN_TAL_DEBUG=1 -DCCAN_TAKE_DEBUG=1 -DSHACHAIN_BITS=48 -DJSMN_PARENT_LINKS -DCOMPAT_V052=1"
 #define CCAN_OUTPUT_EXE_CFLAG "-o"
 
 #define HAVE_CCAN 1

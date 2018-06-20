@@ -47,6 +47,7 @@ char *BET_oracle_request(char *method,cJSON *reqjson)
     static int32_t maxlen;
     char *retstr,*params; int32_t n;
     params = jprint(reqjson,0);
+#if 0
     if ( (retstr= bitcoind_passthrut("bet",BET_ORACLEURL,"",method,params,30)) != 0 )
     {
         if ( (n= (int32_t)strlen(retstr)) > 0 && retstr[n-1] == '\n' )
@@ -55,6 +56,7 @@ char *BET_oracle_request(char *method,cJSON *reqjson)
             maxlen = n;
         printf("%s %s -> (%d) max.%d\n",method,params,n,maxlen);
     } else printf("null return from %s %s\n",method,jprint(reqjson,0));
+#endif    
     free(params);
     return(retstr);
 }

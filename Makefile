@@ -7,6 +7,9 @@ PKGNAME = c-lightning
 # We use our own internal ccan copy.
 CCANDIR := ccan
 
+# CCAN Object files path
+OBJ_PATH := $(CCANDIR)/obj
+
 # Where we keep the BOLT RFCs
 BOLTDIR := ../lightning-rfc/
 BOLTVERSION := 4f91f0bb2a9c176dda019f9c0618c10f9fa0acfd
@@ -53,46 +56,46 @@ FEATURES :=
 
 
 CCAN_OBJS :=					\
-	ccan-asort.o				\
-	ccan-autodata.o				\
-	ccan-breakpoint.o			\
-	ccan-crypto-hmac.o			\
-	ccan-crypto-hkdf.o			\
-	ccan-crypto-ripemd160.o			\
-	ccan-crypto-sha256.o			\
-	ccan-crypto-shachain.o			\
-	ccan-crypto-siphash24.o			\
-	ccan-daemonize.o			\
-	ccan-err.o				\
-	ccan-fdpass.o				\
-	ccan-htable.o				\
-	ccan-ilog.o				\
-	ccan-io-io.o				\
-	ccan-intmap.o				\
-	ccan-io-poll.o				\
-	ccan-io-fdpass.o			\
-	ccan-isaac.o				\
-	ccan-isaac64.o				\
-	ccan-list.o				\
-	ccan-mem.o				\
-	ccan-noerr.o				\
-	ccan-opt-helpers.o			\
-	ccan-opt-parse.o			\
-	ccan-opt-usage.o			\
-	ccan-opt.o				\
-	ccan-pipecmd.o				\
-	ccan-ptr_valid.o			\
-	ccan-read_write_all.o			\
-	ccan-str-hex.o				\
-	ccan-str.o				\
-	ccan-take.o				\
-	ccan-tal-grab_file.o			\
-	ccan-tal-link.o				\
-	ccan-tal-path.o				\
-	ccan-tal-str.o				\
-	ccan-tal.o				\
-	ccan-time.o				\
-	ccan-timer.o
+	$(OBJ_PATH)/ccan-asort.o				\
+	$(OBJ_PATH)/ccan-autodata.o				\
+	$(OBJ_PATH)/ccan-breakpoint.o			\
+	$(OBJ_PATH)/ccan-crypto-hmac.o			\
+	$(OBJ_PATH)/ccan-crypto-hkdf.o			\
+	$(OBJ_PATH)/ccan-crypto-ripemd160.o			\
+	$(OBJ_PATH)/ccan-crypto-sha256.o			\
+	$(OBJ_PATH)/ccan-crypto-shachain.o			\
+	$(OBJ_PATH)/ccan-crypto-siphash24.o			\
+	$(OBJ_PATH)/ccan-daemonize.o			\
+	$(OBJ_PATH)/ccan-err.o				\
+	$(OBJ_PATH)/ccan-fdpass.o				\
+	$(OBJ_PATH)/ccan-htable.o				\
+	$(OBJ_PATH)/ccan-ilog.o				\
+	$(OBJ_PATH)/ccan-io-io.o				\
+	$(OBJ_PATH)/ccan-intmap.o				\
+	$(OBJ_PATH)/ccan-io-poll.o				\
+	$(OBJ_PATH)/ccan-io-fdpass.o			\
+	$(OBJ_PATH)/ccan-isaac.o				\
+	$(OBJ_PATH)/ccan-isaac64.o				\
+	$(OBJ_PATH)/ccan-list.o				\
+	$(OBJ_PATH)/ccan-mem.o				\
+	$(OBJ_PATH)/ccan-noerr.o				\
+	$(OBJ_PATH)/ccan-opt-helpers.o			\
+	$(OBJ_PATH)/ccan-opt-parse.o			\
+	$(OBJ_PATH)/ccan-opt-usage.o			\
+	$(OBJ_PATH)/ccan-opt.o				\
+	$(OBJ_PATH)/ccan-pipecmd.o				\
+	$(OBJ_PATH)/ccan-ptr_valid.o			\
+	$(OBJ_PATH)/ccan-read_write_all.o			\
+	$(OBJ_PATH)/ccan-str-hex.o				\
+	$(OBJ_PATH)/ccan-str.o				\
+	$(OBJ_PATH)/ccan-take.o				\
+	$(OBJ_PATH)/ccan-tal-grab_file.o			\
+	$(OBJ_PATH)/ccan-tal-link.o				\
+	$(OBJ_PATH)/ccan-tal-path.o				\
+	$(OBJ_PATH)/ccan-tal-str.o				\
+	$(OBJ_PATH)/ccan-tal.o				\
+	$(OBJ_PATH)/ccan-time.o				\
+	$(OBJ_PATH)/ccan-timer.o
 
 CCAN_HEADERS :=						\
 	$(CCANDIR)/config.h				\
@@ -158,13 +161,14 @@ CCAN_HEADERS :=						\
 
 ALL_GEN_HEADERS += gen_version.h
 
-CDUMP_OBJS := ccan-cdump.o ccan-strmap.o
+CDUMP_OBJS := $(OBJ_PATH)/ccan-cdump.o $(OBJ_PATH)/ccan-strmap.o
 
 WIRE_GEN := tools/generate-wire.py
 
 ALL_PROGRAMS =
 
-CPPFLAGS = -DBINTOPKGLIBEXECDIR='"'$(shell sh tools/rel.sh $(bindir) $(pkglibexecdir))'"'
+CPPFLAGS = 
+#-DBINTOPKGLIBEXECDIR='"'$(shell sh tools/rel.sh $(bindir) $(pkglibexecdir))'"'
 CWARNFLAGS := -Werror -Wall -Wundef -Wmissing-prototypes -Wmissing-declarations -Wstrict-prototypes -Wold-style-definition
 CDEBUGFLAGS := -std=gnu11 -g -fstack-protector
 CFLAGS = $(CPPFLAGS) $(CWARNFLAGS) $(CDEBUGFLAGS) -I $(CCANDIR) $(EXTERNAL_INCLUDE_FLAGS) -I . -I/usr/local/include $(FEATURES) $(COVFLAGS) $(DEV_CFLAGS) -DSHACHAIN_BITS=48 -DJSMN_PARENT_LINKS $(PIE_CFLAGS) $(COMPAT_CFLAGS)
@@ -175,25 +179,30 @@ CONFIGURATOR_CC := $(CC)
 LDFLAGS = $(PIE_LDFLAGS)
 LDLIBS = -L/usr/local/lib -lm -lgmp -lsqlite3 $(COVFLAGS)
 
-default: all-programs all-test-programs lightning-cli-all
+	
+default: all-programs all-test-programs
+	cd common && make
+#lightning-cli-all
 
-include external/Makefile
-include bitcoin/Makefile
-include common/Makefile
-include wire/Makefile
-include wallet/Makefile
-include hsmd/Makefile
-include gossipd/Makefile
-include openingd/Makefile
-include channeld/Makefile
-include closingd/Makefile
-include onchaind/Makefile
-include lightningd/Makefile
-include cli/Makefile
-include doc/Makefile
+
+
+# include external/Makefile \
+include bitcoin/Makefile\
+include common/Makefile\
+include wire/Makefile\
+include wallet/Makefile\
+include hsmd/Makefile\
+include gossipd/Makefile\
+include openingd/Makefile\
+include channeld/Makefile\
+include closingd/Makefile\
+include onchaind/Makefile\
+include lightningd/Makefile\
+include cli/Makefile\
+include doc/Makefile\
 include devtools/Makefile
 
-# Git doesn't maintain timestamps, so we only regen if git says we should.
+# Git doesn't maintain timestamps, so we only regen if git says we should. 
 CHANGED_FROM_GIT = [ x"`git log $@ | head -n1`" != x"`git log $< | head -n1`" -o x"`git diff $<`" != x"" ]
 
 ifeq ($(TEST_GROUP_COUNT),)
@@ -330,15 +339,17 @@ maintainer-clean: distclean
 	@echo 'This command is intended for maintainers to use; it'
 	@echo 'deletes files that may need special tools to rebuild.'
 
-clean: wire-clean
+clean: 
 	$(RM) $(CCAN_OBJS) $(CDUMP_OBJS) $(ALL_OBJS)
 	$(RM) $(ALL_PROGRAMS) $(ALL_PROGRAMS:=.o)
 	$(RM) $(ALL_TEST_PROGRAMS) $(ALL_TEST_PROGRAMS:=.o)
-	$(RM) ccan/config.h gen_*.h ccan/tools/configurator/configurator
+	#$(RM) ccan/config.h 
+	$(RM) gen_*.h ccan/tools/configurator/configurator
 	$(RM) ccan/ccan/cdump/tools/cdump-enumstr.o
 	$(RM) check-bolt tools/check-bolt tools/*.o
 	find . -name '*gcda' -delete
 	find . -name '*gcno' -delete
+	cd common && make $@
 
 update-mocks/%: %
 	@tools/update-mocks.sh "$*"
@@ -447,89 +458,89 @@ installcheck:
 	@rm -rf testinstall || true
 
 .PHONY: installdirs install-program install-data install uninstall \
-	installcheck
+	installcheck test
 
-ccan-breakpoint.o: $(CCANDIR)/ccan/breakpoint/breakpoint.c
+$(OBJ_PATH)/ccan-breakpoint.o: $(CCANDIR)/ccan/breakpoint/breakpoint.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-tal.o: $(CCANDIR)/ccan/tal/tal.c
+$(OBJ_PATH)/ccan-tal.o: $(CCANDIR)/ccan/tal/tal.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-tal-str.o: $(CCANDIR)/ccan/tal/str/str.c
+$(OBJ_PATH)/ccan-tal-str.o: $(CCANDIR)/ccan/tal/str/str.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-tal-link.o: $(CCANDIR)/ccan/tal/link/link.c
+$(OBJ_PATH)/ccan-tal-link.o: $(CCANDIR)/ccan/tal/link/link.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-tal-path.o: $(CCANDIR)/ccan/tal/path/path.c
+$(OBJ_PATH)/ccan-tal-path.o: $(CCANDIR)/ccan/tal/path/path.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-tal-grab_file.o: $(CCANDIR)/ccan/tal/grab_file/grab_file.c
+$(OBJ_PATH)/ccan-tal-grab_file.o: $(CCANDIR)/ccan/tal/grab_file/grab_file.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-take.o: $(CCANDIR)/ccan/take/take.c
+$(OBJ_PATH)/ccan-take.o: $(CCANDIR)/ccan/take/take.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-list.o: $(CCANDIR)/ccan/list/list.c
+$(OBJ_PATH)/ccan-list.o: $(CCANDIR)/ccan/list/list.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-asort.o: $(CCANDIR)/ccan/asort/asort.c
+$(OBJ_PATH)/ccan-asort.o: $(CCANDIR)/ccan/asort/asort.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-autodata.o: $(CCANDIR)/ccan/autodata/autodata.c
+$(OBJ_PATH)/ccan-autodata.o: $(CCANDIR)/ccan/autodata/autodata.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-ptr_valid.o: $(CCANDIR)/ccan/ptr_valid/ptr_valid.c
+$(OBJ_PATH)/ccan-ptr_valid.o: $(CCANDIR)/ccan/ptr_valid/ptr_valid.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-read_write_all.o: $(CCANDIR)/ccan/read_write_all/read_write_all.c
+$(OBJ_PATH)/ccan-read_write_all.o: $(CCANDIR)/ccan/read_write_all/read_write_all.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-str.o: $(CCANDIR)/ccan/str/str.c
+$(OBJ_PATH)/ccan-str.o: $(CCANDIR)/ccan/str/str.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-opt.o: $(CCANDIR)/ccan/opt/opt.c
+$(OBJ_PATH)/ccan-opt.o: $(CCANDIR)/ccan/opt/opt.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-opt-helpers.o: $(CCANDIR)/ccan/opt/helpers.c
+$(OBJ_PATH)/ccan-opt-helpers.o: $(CCANDIR)/ccan/opt/helpers.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-opt-parse.o: $(CCANDIR)/ccan/opt/parse.c
+$(OBJ_PATH)/ccan-opt-parse.o: $(CCANDIR)/ccan/opt/parse.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-opt-usage.o: $(CCANDIR)/ccan/opt/usage.c
+$(OBJ_PATH)/ccan-opt-usage.o: $(CCANDIR)/ccan/opt/usage.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-daemonize.o: $(CCANDIR)/ccan/daemonize/daemonize.c
+$(OBJ_PATH)/ccan-daemonize.o: $(CCANDIR)/ccan/daemonize/daemonize.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-err.o: $(CCANDIR)/ccan/err/err.c
+$(OBJ_PATH)/ccan-err.o: $(CCANDIR)/ccan/err/err.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-noerr.o: $(CCANDIR)/ccan/noerr/noerr.c
+$(OBJ_PATH)/ccan-noerr.o: $(CCANDIR)/ccan/noerr/noerr.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-str-hex.o: $(CCANDIR)/ccan/str/hex/hex.c
+$(OBJ_PATH)/ccan-str-hex.o: $(CCANDIR)/ccan/str/hex/hex.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-crypto-hmac.o: $(CCANDIR)/ccan/crypto/hmac_sha256/hmac_sha256.c
+$(OBJ_PATH)/ccan-crypto-hmac.o: $(CCANDIR)/ccan/crypto/hmac_sha256/hmac_sha256.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-crypto-hkdf.o: $(CCANDIR)/ccan/crypto/hkdf_sha256/hkdf_sha256.c
+$(OBJ_PATH)/ccan-crypto-hkdf.o: $(CCANDIR)/ccan/crypto/hkdf_sha256/hkdf_sha256.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-crypto-shachain.o: $(CCANDIR)/ccan/crypto/shachain/shachain.c
+$(OBJ_PATH)/ccan-crypto-shachain.o: $(CCANDIR)/ccan/crypto/shachain/shachain.c
 	$(CC) $(CFLAGS) -DSHACHAIN_BITS=48 -c -o $@ $<
-ccan-crypto-sha256.o: $(CCANDIR)/ccan/crypto/sha256/sha256.c
+$(OBJ_PATH)/ccan-crypto-sha256.o: $(CCANDIR)/ccan/crypto/sha256/sha256.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-crypto-ripemd160.o: $(CCANDIR)/ccan/crypto/ripemd160/ripemd160.c
+$(OBJ_PATH)/ccan-crypto-ripemd160.o: $(CCANDIR)/ccan/crypto/ripemd160/ripemd160.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-cdump.o: $(CCANDIR)/ccan/cdump/cdump.c
+$(OBJ_PATH)/ccan-cdump.o: $(CCANDIR)/ccan/cdump/cdump.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-strmap.o: $(CCANDIR)/ccan/strmap/strmap.c
+$(OBJ_PATH)/ccan-strmap.o: $(CCANDIR)/ccan/strmap/strmap.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-crypto-siphash24.o: $(CCANDIR)/ccan/crypto/siphash24/siphash24.c
+$(OBJ_PATH)/ccan-crypto-siphash24.o: $(CCANDIR)/ccan/crypto/siphash24/siphash24.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-htable.o: $(CCANDIR)/ccan/htable/htable.c
+$(OBJ_PATH)/ccan-htable.o: $(CCANDIR)/ccan/htable/htable.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-ilog.o: $(CCANDIR)/ccan/ilog/ilog.c
+$(OBJ_PATH)/ccan-ilog.o: $(CCANDIR)/ccan/ilog/ilog.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-intmap.o: $(CCANDIR)/ccan/intmap/intmap.c
+$(OBJ_PATH)/ccan-intmap.o: $(CCANDIR)/ccan/intmap/intmap.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-isaac.o: $(CCANDIR)/ccan/isaac/isaac.c
+$(OBJ_PATH)/ccan-isaac.o: $(CCANDIR)/ccan/isaac/isaac.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-isaac64.o: $(CCANDIR)/ccan/isaac/isaac64.c
+$(OBJ_PATH)/ccan-isaac64.o: $(CCANDIR)/ccan/isaac/isaac64.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-time.o: $(CCANDIR)/ccan/time/time.c
+$(OBJ_PATH)/ccan-time.o: $(CCANDIR)/ccan/time/time.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-timer.o: $(CCANDIR)/ccan/timer/timer.c
+$(OBJ_PATH)/ccan-timer.o: $(CCANDIR)/ccan/timer/timer.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-io-io.o: $(CCANDIR)/ccan/io/io.c
+$(OBJ_PATH)/ccan-io-io.o: $(CCANDIR)/ccan/io/io.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-io-poll.o: $(CCANDIR)/ccan/io/poll.c
+$(OBJ_PATH)/ccan-io-poll.o: $(CCANDIR)/ccan/io/poll.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-io-fdpass.o: $(CCANDIR)/ccan/io/fdpass/fdpass.c
+$(OBJ_PATH)/ccan-io-fdpass.o: $(CCANDIR)/ccan/io/fdpass/fdpass.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-pipecmd.o: $(CCANDIR)/ccan/pipecmd/pipecmd.c
+$(OBJ_PATH)/ccan-pipecmd.o: $(CCANDIR)/ccan/pipecmd/pipecmd.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-mem.o: $(CCANDIR)/ccan/mem/mem.c
+$(OBJ_PATH)/ccan-mem.o: $(CCANDIR)/ccan/mem/mem.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-ccan-fdpass.o: $(CCANDIR)/ccan/fdpass/fdpass.c
+$(OBJ_PATH)/ccan-fdpass.o: $(CCANDIR)/ccan/fdpass/fdpass.c
 	$(CC) $(CFLAGS) -c -o $@ $<
