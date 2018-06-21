@@ -37,7 +37,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
-
+#include "../includes/ppapi/c/pp_stdint.h"
 void libgfshare_init()
 {
     uint32_t i,x = 1;

@@ -12,7 +12,10 @@
  * Removal or modification of this copyright notice is prohibited.            *
  *                                                                            *
  ******************************************************************************/
-
+#include "../includes/cJSON.h"
+#include "../includes/ppapi/c/pp_stdint.h"
+//#include "bet.h"
+char Host_ipaddr[64],Host_peerid[67];
 struct deck_player_info player_info;
 struct deck_bvv_info bvv_info;
 int32_t no_of_shares=0;
