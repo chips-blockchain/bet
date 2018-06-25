@@ -201,6 +201,8 @@ include cli/Makefile\
 include doc/Makefile\
 include devtools/Makefile
 
+
+
 # Git doesn't maintain timestamps, so we only regen if git says we should. 
 CHANGED_FROM_GIT = [ x"`git log $@ | head -n1`" != x"`git log $< | head -n1`" -o x"`git diff $<`" != x"" ]
 
@@ -328,8 +330,11 @@ update-ccan:
 	echo CCAN version: `git -C ../ccan describe` >> ccan/README
 	$(RM) -r ccan.old
 
+build_dep:
+	make --directory external/jsmn
+	make --directory privatebet
 # Now ALL_PROGRAMS is fully populated, we can expand it.
-all-programs: $(ALL_PROGRAMS)
+all-programs: $(ALL_PROGRAMS) build_dep
 all-test-programs: $(ALL_TEST_PROGRAMS)
 
 distclean: clean
@@ -345,10 +350,8 @@ clean:
 	#$(RM) ccan/config.h 
 	$(RM) gen_*.h ccan/tools/configurator/configurator
 	$(RM) ccan/ccan/cdump/tools/cdump-enumstr.o
-	$(RM) check-bolt tools/check-bolt tools/*.o
-	find . -name '*gcda' -delete
-	find . -name '*gcno' -delete
-	cd common && make $@
+	make --directory privatebet clean
+	make --directory external/jsmn clean
 
 update-mocks/%: %
 	@tools/update-mocks.sh "$*"

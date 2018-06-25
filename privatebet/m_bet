@@ -1,8 +1,0 @@
-rm bet
-export ROOT="$HOME/SuperNET"
-export C777="$ROOT/crypto777"
-export IGUANA="$ROOT/iguana"
-#-DFROM_MARKETMAKER=1
-#gcc -w -g -DFROM_PRIVATEBET -o bet bet.c $IGUANA/secp256k1/src/secp256k1.c $IGUANA/mini-gmp.c $IGUANA/exchanges/stats.c $IGUANA/groestl.c $IGUANA/segwit_addr.c $C777/OS_nonportable.c $C777/curve25519-donna.c $C777/OS_portable.c $C777/OS_time.c $C777/SaM.c $C777/bitcoind_RPC.c $C777/cJSON.c $C777/curve25519.c $C777/iguana_OS.c $C777/iguana_utils.c $C777/inet.c $C777/tweetnacl.c ../cli/cli_main.o ../common/json.o ../common/configdir.o ../lightningd/log.o ../common/pseudorand.o ../bitcoin/pubkey.o ../ccan-*.o ../external/jsmn.o ../common/version.o ../common/type_to_string.o ../common/utils.o -lnanomsg -lcurl /$ROOT/agents/libcrypto777.a -lbacktrace -lpthread -lm
-gcc -w -g -o bet bet.c ../ccan/obj/*.o ../external/jsmn/jsmn.o ../../SuperNET/crypto777/iguana_utils.o ../../SuperNET/agents/libcrypto777.a -lcurl -ldl -lnng -lbacktrace -lpthread -lm
- 
