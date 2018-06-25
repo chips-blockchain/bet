@@ -181,7 +181,6 @@ LDLIBS = -L/usr/local/lib -lm -lgmp -lsqlite3 $(COVFLAGS)
 
 	
 default: all-programs all-test-programs
-	cd common && make
 #lightning-cli-all
 
 
