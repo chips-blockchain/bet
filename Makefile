@@ -180,7 +180,7 @@ LDFLAGS = $(PIE_LDFLAGS)
 LDLIBS = -L/usr/local/lib -lm -lgmp -lsqlite3 $(COVFLAGS)
 
 	
-default: all-programs all-test-programs
+default: build_dep all-programs all-test-programs build_dep1
 #lightning-cli-all
 
 
@@ -331,10 +331,12 @@ update-ccan:
 	$(RM) -r ccan.old
 
 build_dep:
+	make --directory crypto777
 	make --directory external/jsmn
+build_dep1:
 	make --directory privatebet
 # Now ALL_PROGRAMS is fully populated, we can expand it.
-all-programs: $(ALL_PROGRAMS) build_dep
+all-programs: $(ALL_PROGRAMS)
 all-test-programs: $(ALL_TEST_PROGRAMS)
 
 distclean: clean
@@ -352,7 +354,7 @@ clean:
 	$(RM) ccan/ccan/cdump/tools/cdump-enumstr.o
 	make --directory privatebet clean
 	make --directory external/jsmn clean
-
+	make --directory crypto777
 update-mocks/%: %
 	@tools/update-mocks.sh "$*"
 
