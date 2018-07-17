@@ -1,4 +1,12 @@
-struct pair256 deckgen_player(bits256 *playerprivs,bits256 *playercards,int32_t *permis,int32_t numcards)
+#include "bet-cli.h"
+
+int main()
+{
+	return 0;
+}
+
+
+struct pair256 deckgen_player_temp(bits256 *playerprivs,bits256 *playercards,int32_t *permis,int32_t numcards)
 {
     int32_t i; struct pair256 key,randcards[256];
     key = deckgen_common(randcards,numcards);
