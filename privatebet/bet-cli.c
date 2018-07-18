@@ -1,7 +1,14 @@
 #include "bet-cli.h"
 
-int main()
+int main(int argc, char *argv)
 {
+	if(argc>2)
+	{
+		if(strcmp(argv[1],"create-player")==0)
+		{
+			bet_player_create();
+		}
+	}
 	return 0;
 }
 bits256 bet_curve25519_rand256(int32_t privkeyflag,int8_t index)
@@ -17,7 +24,10 @@ bits256 bet_curve25519_rand256(int32_t privkeyflag,int8_t index)
 struct pair256 bet_player_create()
 {
 	struct pair256 key;
+	char str[65];
     key.priv=curve25519_keypair(&key.prod);
+	printf("\nPlayer priv key:%s",bits256_str(str,key.priv));
+	printf("\nPlayer pub key:%s",bits256_str(str,key.prod));
     return(key);
 }
 
