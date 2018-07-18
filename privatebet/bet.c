@@ -1150,3 +1150,12 @@ void sg777_players_init(int32_t numplayers,int32_t numcards,bits256 deckid)
     printf("numplayers.%d numcards.%d deck %s -> playererrs.%d good.%d bad.%d decode.[good %d, bad %d]\n",numplayers,numcards,bits256_str(str,deckid),playererrs,good,bad,decodegood,decodebad);
     free(g_shares);
 }
+
+
+// Bet-API's
+
+//deck_create
+
+//bet_player_create
+
+
