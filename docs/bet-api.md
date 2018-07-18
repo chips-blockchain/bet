@@ -1,18 +1,21 @@
 # Usage guide of the bet-api's
 ## Create a player
 In the context of the game the identity of the player is a point on the Curve25519 which is known to every participating entity in the game.
+```
 ./bet-cli create-player
-'{
+{
 	"command":	"create-player",
 	"PrivKey":	"60fdabae9655c77cd3cfe464009ac6f832c9b89ccaccdbec931f88977f04ec59",
 	"PubKey":	"d71680c191006e136532526971afd0b07514f0e79284f1585c56542834d43258"
-}'
+}
+```
 ## Create a deck
 Every asset in the game is a point the Curve25519, whether it could a card in the deck, a number in the dice or a side of the coin. In the context of the game the identity
 of an asset is only revealed during the game when and where it is needed.
+```
 ./bet-cli create-deck numOfCards
 For example: ./bet-cli create-deck 6(sides on a dice or a deck of six cards numbered 0-5)
-'{
+{
 	"command":	"create-deck",
 	"Number Of Cards":	6,
 	"Card Number":	0,
@@ -33,5 +36,5 @@ For example: ./bet-cli create-deck 6(sides on a dice or a deck of six cards numb
 	"Card Number":	5,
 	"PrivKey":	"d879a2befbe27e1f9749be3691b665b9e846f04aaabeaff48714d60e94e70541",
 	"PubKey":	"8ce71224f82a4bc11e3dbe9654c1f2224f9ca4760f2eb8ee87fb86029600b872"
-}'
+}```
 
