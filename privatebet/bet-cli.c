@@ -31,12 +31,19 @@ bits256 bet_curve25519_rand256(int32_t privkeyflag,int8_t index)
 
 struct pair256 bet_player_create()
 {
+	cJSON *playerInfo=NULL;
 	struct pair256 key;
-	char str[65];
+
     key.priv=curve25519_keypair(&key.prod);
-	printf("\nPlayer priv key:%s",bits256_str(str,key.priv));
-	printf("\nPlayer pub key:%s",bits256_str(str,key.prod));
-    return(key);
+	playerInfo=cJSON_CreateObject();
+
+	cJSON_AddStringToObject(playerInfo,"command","create-player");
+    jaddbits256(playerInfo,"PrivKey",key.priv);    
+    jaddbits256(playerInfo,"PubKey",key.prod);
+
+	printf("%s",cJSON_Print(playerInfo));
+
+	return(key);
 }
 
 void bet_player_deck_create(int n,struct pair256 *cards)
