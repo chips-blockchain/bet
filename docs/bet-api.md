@@ -36,5 +36,6 @@ For example: ./bet-cli create-deck 6(sides on a dice or a deck of six cards numb
 	"Card Number":	5,
 	"PrivKey":	"d879a2befbe27e1f9749be3691b665b9e846f04aaabeaff48714d60e94e70541",
 	"PubKey":	"8ce71224f82a4bc11e3dbe9654c1f2224f9ca4760f2eb8ee87fb86029600b872"
-}```
+}
+```
 
