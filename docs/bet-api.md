@@ -18,24 +18,31 @@ For example: ./bet-cli create-deck 6(sides on a dice or a deck of six cards numb
 {
 	"command":	"create-deck",
 	"Number Of Cards":	6,
-	"Card Number":	0,
-	"PrivKey":	"582de1147a5fcbc99ce6c327338a9d85d372040aa4ed667b55d956c06e380046",
-	"PubKey":	"736dde64d2975e3fdf5b5f419921087dcc8b4a6adf1754f900ca2e7d3e1b2742",
-	"Card Number":	1,
-	"PrivKey":	"58116b47713f8ad810a86bb571bc66fd67ce1df663df256a1a3d47cf5e27014d",
-	"PubKey":	"69564c54f1821f8d1f9b1be1db1381976b3c77ebb25a84aa0f8b79f9ae823156",
-	"Card Number":	2,
-	"PrivKey":	"4075d76aff6f595798d9fd0c33734625f8563d3b36e36979c7d3e320d7320270",
-	"PubKey":	"23acd2336d7279eec3eeb2ecd97a2e3f8570ac38ed2dcbef8c881b0a5f3f8f34",
-	"Card Number":	3,
-	"PrivKey":	"78cbdfdc42de5deeffa729edf8bfffe64d884faba011bca142c84c2ba5610379",
-	"PubKey":	"b03a2b4247a1ee6ce0886c33534f2264e3aa70cf08d22d7031202b90ab68c374",
-	"Card Number":	4,
-	"PrivKey":	"f80efb5b180d242a74d932422d8bc63b8e97f07e015f0721573346fd40390463",
-	"PubKey":	"3e5a98e2c677be59aab9efefe223b8975d33c011d669b06b0c8c72bce2ecb465",
-	"Card Number":	5,
-	"PrivKey":	"d879a2befbe27e1f9749be3691b665b9e846f04aaabeaff48714d60e94e70541",
-	"PubKey":	"8ce71224f82a4bc11e3dbe9654c1f2224f9ca4760f2eb8ee87fb86029600b872"
+	"CardsInfo":	[{
+			"Card Number":	0,
+			"PrivKey":	"604bb6942334f6902f5f6b599cf47bb2db04707e5399b5dadb94c9fec7090043",
+			"PubKey":	"c740539581980369d5aed65c30a23f2b3fd02f439a5f09d958731718f78b836a"
+		}, {
+			"Card Number":	1,
+			"PrivKey":	"e810d9255bd1286fa58865922bf443b6bd9904808f0e87527a2c608ae8fb0173",
+			"PubKey":	"4cb4dc4ef49b6340f81dc32d21a50e2311cc65691d13ce8d0b987b96262df557"
+		}, {
+			"Card Number":	2,
+			"PrivKey":	"b8ffcae92e652efeb9b60a1c1123bf4e040814916ee488bf301b2b55c3230261",
+			"PubKey":	"f5c388cabb37a95b8dc99cc8415d83c2e0983f117791e9df68e174375595fe3b"
+		}, {
+			"Card Number":	3,
+			"PrivKey":	"7896ef0a31aefc693fb09dcc20bd32855e41b326761961388f59ae011afe0342",
+			"PubKey":	"2ecb90b543f83d34071cf4ac36b93e2170cb9fccb53991ff1ffdf7cf4af49006"
+		}, {
+			"Card Number":	4,
+			"PrivKey":	"60ae2822ca90b27b3c96e2715ea557bc125326ffd1b6ac16f4682e3a06600459",
+			"PubKey":	"73fff75b7bae128a2da6669af2092c0e6063b9991d6b1438fe5be6456acfe04c"
+		}, {
+			"Card Number":	5,
+			"PrivKey":	"f01da8326892c08605ba95eec75b81e711233a106c3e44ee1927b2184a860553",
+			"PubKey":	"6eca0d2f01cb07728431f633caa7d0afa7e26d42f3d169e359883171e9770c5d"
+		}]
 }
 ```
 
