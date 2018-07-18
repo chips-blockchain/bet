@@ -1,5 +1,7 @@
-//#include "../includes/ppapi/c/pp_stdint.h"
-//#include "../includes/curve25519.h"
 #include "bet.h"
-struct pair256 deckgen_player_temp(bits256 *playerprivs,bits256 *playercards,int32_t *permis,int32_t numcards);
+
+void bet_player_deck_blind(struct pair256 *cards,struct pair256 key,int32_t n);
+bits256 bet_curve25519_rand256(int32_t privkeyflag,int8_t index);
+struct pair256 bet_player_create();
+void bet_player_deck_blind(struct pair256 *cards,struct pair256 key,int32_t n);
 
