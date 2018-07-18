@@ -1,6 +1,6 @@
 #include "bet-cli.h"
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
 	struct pair256 *cards=NULL;
 	int32_t n;
@@ -48,7 +48,7 @@ void bet_player_deck_create(int n,struct pair256 *cards)
         tmp.priv = bet_curve25519_rand256(1,i);
         tmp.prod = curve25519(tmp.priv,curve25519_basepoint9());
         cards[i] = tmp;
-		printf("\n%d card:");
+		printf("\n%d card:",i);
 		printf("\n privkey:%s",bits256_str(str,cards[i].priv));
 		printf("\n privkey:%s",bits256_str(str,cards[i].prod));
     }
