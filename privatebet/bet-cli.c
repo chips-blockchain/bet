@@ -42,23 +42,32 @@ struct pair256 bet_player_create()
     jaddbits256(playerInfo,"PubKey",key.prod);
 
 	printf("%s",cJSON_Print(playerInfo));
+	cJSON_Delete(playerInfo);
 
 	return(key);
 }
 
 void bet_player_deck_create(int n,struct pair256 *cards)
 {
+	cJSON *deckInfo=NULL;
 	int32_t i; 
 	struct pair256 tmp;
-    char str[65];
+
+	deckInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(deckInfo,"command","create-deck")
+	cJSON_AddNumberToObject(deckInfo,"Number Of Cards",n);
+	
     for (i=0; i<n; i++) {
         tmp.priv = bet_curve25519_rand256(1,i);
         tmp.prod = curve25519(tmp.priv,curve25519_basepoint9());
         cards[i] = tmp;
-		printf("\n%d card:",i);
-		printf("\n privkey:%s",bits256_str(str,cards[i].priv));
-		printf("\n privkey:%s",bits256_str(str,cards[i].prod));
+		cJSON_AddNumberToObject(deckInfo,"Card Number",i);	
+		jaddbits256(deckInfo,"PrivKey",cards[i].priv);
+		jaddbits256(deckInfo,"PubKey",cards[i].prod);
     }
+
+	printf("%s",cJSON_Print(deckInfo));
+	cJSON_Delete(deckInfo);
     
 }
 void bet_player_deck_blind(struct pair256 *cards,struct pair256 key,int32_t n)
