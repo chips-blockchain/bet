@@ -2,7 +2,8 @@
 
 int main(int argc, char **argv)
 {
-	struct pair256 *cards=NULL;
+	struct pair256 *cards=NULL,key;
+	cJSON *cardsInfo=NULL;
 	int32_t n;
 	if(argc>=2)
 	{
@@ -12,13 +13,30 @@ int main(int argc, char **argv)
 		}
 		else if(strcmp(argv[1],"create-deck")==0)
 		{
+			if(argc!=3)
+				goto end;
 			n=atoi(argv[2]);
 			cards=calloc(n,sizeof(struct pair256));
 			bet_player_deck_create(n,cards);
 		}
+		else if(strcmp(argv[1],"player-deck-blind")==0)
+		{
+			// bet_player_deck_blind(cards,key,n);
+			cardsInfo=cJSON_Parse(argv[2]);
+			n=jint(cardsInfo,"Number Of Cards");
+			printf("\nNumber of Cards %d",n);
+		}
+		else
+		{
+			printf("\nCommand Not Found");
+		}
 	}
+	end:
+		printf("\nInvalid Arguments");
 	return 0;
 }
+
+
 bits256 bet_curve25519_rand256(int32_t privkeyflag,int8_t index)
 {
     bits256 randval;
@@ -49,22 +67,31 @@ struct pair256 bet_player_create()
 
 void bet_player_deck_create(int n,struct pair256 *cards)
 {
-	cJSON *deckInfo=NULL;
+	cJSON *deckInfo=NULL,*cardsInfo=NULL,*temp=NULL;
 	int32_t i; 
 	struct pair256 tmp;
+	
 
 	deckInfo=cJSON_CreateObject();
-	cJSON_AddStringToObject(deckInfo,"command","create-deck")
+	cJSON_AddStringToObject(deckInfo,"command","create-deck");
 	cJSON_AddNumberToObject(deckInfo,"Number Of Cards",n);
 	
+	cJSON_AddItemToObject(deckInfo,"CardsInfo",cardsInfo=cJSON_CreateArray());
+	
+	
+	temp=cJSON_CreateObject();
     for (i=0; i<n; i++) {
         tmp.priv = bet_curve25519_rand256(1,i);
         tmp.prod = curve25519(tmp.priv,curve25519_basepoint9());
         cards[i] = tmp;
-		cJSON_AddNumberToObject(deckInfo,"Card Number",i);	
-		jaddbits256(deckInfo,"PrivKey",cards[i].priv);
-		jaddbits256(deckInfo,"PubKey",cards[i].prod);
+
+		cJSON_AddNumberToObject(temp,"Card Number",i);	
+		jaddbits256(temp,"PrivKey",cards[i].priv);
+		jaddbits256(temp,"PubKey",cards[i].prod);
+
+		cJSON_AddItemToArray(cardsInfo,temp);
     }
+	
 
 	printf("%s",cJSON_Print(deckInfo));
 	cJSON_Delete(deckInfo);
