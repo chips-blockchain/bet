@@ -2,11 +2,19 @@
 
 int main(int argc, char *argv)
 {
-	if(argc>2)
+	struct pair256 *cards=NULL;
+	int32_t n;
+	if(argc>=2)
 	{
 		if(strcmp(argv[1],"create-player")==0)
 		{
 			bet_player_create();
+		}
+		else if(strcmp(argv[1],"create-deck")==0)
+		{
+			n=atoi(argv[2]);
+			cards=calloc(n,sizeof(struct pair256));
+			bet_player_deck_create(n,cards);
 		}
 	}
 	return 0;
@@ -31,7 +39,7 @@ struct pair256 bet_player_create()
     return(key);
 }
 
-void bet_player_deck_create(bits256 *privkeys,bits256 *pubprod,int n,struct pair256 *cards)
+void bet_player_deck_create(int n,struct pair256 *cards)
 {
 	int32_t i; 
 	struct pair256 tmp;
