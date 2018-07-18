@@ -70,7 +70,7 @@ void bet_player_deck_create(int n,struct pair256 *cards)
 	cJSON *deckInfo=NULL,*cardsInfo=NULL,*temp=NULL;
 	int32_t i; 
 	struct pair256 tmp;
-	
+	char *rendered=NULL;	
 
 	deckInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(deckInfo,"command","create-deck");
@@ -79,8 +79,8 @@ void bet_player_deck_create(int n,struct pair256 *cards)
 	cJSON_AddItemToObject(deckInfo,"CardsInfo",cardsInfo=cJSON_CreateArray());
 	
 	
-	temp=cJSON_CreateObject();
     for (i=0; i<n; i++) {
+	temp=cJSON_CreateObject();
         tmp.priv = bet_curve25519_rand256(1,i);
         tmp.prod = curve25519(tmp.priv,curve25519_basepoint9());
         cards[i] = tmp;
@@ -88,13 +88,11 @@ void bet_player_deck_create(int n,struct pair256 *cards)
 		cJSON_AddNumberToObject(temp,"Card Number",i);	
 		jaddbits256(temp,"PrivKey",cards[i].priv);
 		jaddbits256(temp,"PubKey",cards[i].prod);
-
 		cJSON_AddItemToArray(cardsInfo,temp);
     }
-	
-
 	printf("%s",cJSON_Print(deckInfo));
 	cJSON_Delete(deckInfo);
+	
     
 }
 void bet_player_deck_blind(struct pair256 *cards,struct pair256 key,int32_t n)
