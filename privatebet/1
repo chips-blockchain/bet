@@ -17,8 +17,7 @@ int main(int argc, char **argv)
 {
 	struct pair256 *cards=NULL,key;
 	cJSON *cardsInfo=NULL;
-	char t[1024];
-	int32_t n,l=0;
+	int32_t n;
 	if(argc>=2)
 	{
 		if(strcmp(argv[1],"create-player")==0)
@@ -39,28 +38,15 @@ int main(int argc, char **argv)
 		
 			for(int i=0;i<strlen(argv[2]);i++)
 			{
-				if(((i+1)<strlen(argv[2]))&&(strncmp(argv[2]+i,"\n",2)==0))
-				{
-					t[l++]='\n';
-					i+=1;
-				}
-				else if((strncmp(argv[2],2,"\t")==0)&&((i+1)<strlen(argv[2])))
-				{
-					t[l++]='\t';
-					i+=1;
-				}
-				else 	
-					t[l++]=argv[2][i];
+				printf("\n%c",argv[2][i]);	
 			}
-			t[l]='\0';
-			printf("%s",t);
-			/*cardsInfo=cJSON_Parse(argv[2]);
-			if(cardsInfo==NULL)
+			cardsInfo=cJSON_Parse(argv[2]);
+			if(cardsInfp==NULL)
 				printf("\nThere is something wrong with the decoding");
 			n=jint(cardsInfo,"Number Of Cards");
 			printf("\nNumber of Cards %d",n);
 		
-			printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argv[2]));*/
+			printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argv[2]));
 		}
 		else
 		{
