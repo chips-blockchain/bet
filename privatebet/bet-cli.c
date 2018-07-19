@@ -32,7 +32,7 @@ int main(int argc, char **argv)
 		}
 	}
 	end:
-		printf("\nInvalid Arguments");
+		//printf("\nInvalid Arguments");
 	return 0;
 }
 
@@ -90,7 +90,7 @@ void bet_player_deck_create(int n,struct pair256 *cards)
 		jaddbits256(temp,"PubKey",cards[i].prod);
 		cJSON_AddItemToArray(cardsInfo,temp);
     }
-	printf("%s",cJSON_Print(deckInfo));
+	printf("\n%s",cJSON_Print(cJSON_CreateString(cJSON_Print(deckInfo))));
 	cJSON_Delete(deckInfo);
 	
     
@@ -103,5 +103,22 @@ void bet_player_deck_blind(struct pair256 *cards,struct pair256 key,int32_t n)
 		cards[i].prod=curve25519(cards[i].priv,key.prod);
 	}
     
+}
+
+int32_t bet_player_join_req(char *pubKey)
+{
+	cJSON *joinInfo=NULL;
+	char *rendered=NULL;
+	joinInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(joinInfo,"command","player-join-req");
+	jaddbits256(joinInfo,"PubKey",);
+	jaddstr(joinInfo,"PubKey",pubKey);
+	printf("\n%s",cJSON_Print(joinInfo));
+
+	
+	
+	return 1;
+	
+	
 }
 
