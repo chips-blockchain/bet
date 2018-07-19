@@ -1,5 +1,18 @@
 #include "bet-cli.h"
 
+void strip(char *s) {
+	    char *p2 = s;
+	        while(*s != '\0') {
+			        if(*s != '\t' && *s != '\n') {
+					            *p2++ = *s++;
+						            } else {
+								                ++s;
+										        }
+				    }
+		    *p2 = '\0';
+		    printf("\n%s:%d:%s",__FUNCTION__,__LINE__,p2);
+}
+
 int main(int argc, char **argv)
 {
 	struct pair256 *cards=NULL,key;
@@ -22,9 +35,13 @@ int main(int argc, char **argv)
 		else if(strcmp(argv[1],"player-deck-blind")==0)
 		{
 			// bet_player_deck_blind(cards,key,n);
+		
+			
 			cardsInfo=cJSON_Parse(argv[2]);
-			n=jint(cardsInfo,"Number Of Cards");
-			printf("\nNumber of Cards %d",n);
+		//	n=jint(cardsInfo,"Number Of Cards");
+		//	printf("\nNumber of Cards %d",n);
+		
+			printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argv[2]));
 		}
 		else
 		{
@@ -111,7 +128,6 @@ int32_t bet_player_join_req(char *pubKey)
 	char *rendered=NULL;
 	joinInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(joinInfo,"command","player-join-req");
-	jaddbits256(joinInfo,"PubKey",);
 	jaddstr(joinInfo,"PubKey",pubKey);
 	printf("\n%s",cJSON_Print(joinInfo));
 
