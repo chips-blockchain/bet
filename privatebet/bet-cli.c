@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 		}
 		else if(strcmp(argv[1],"player-deck-blind")==0)
 		{
-			bet_player_deck_blind(argv[2],argv[3],int32_t n);
+			bet_player_deck_blind(argv[2],argv[3]);
 		}
 		else
 		{
@@ -122,17 +122,18 @@ void bet_player_deck_create(int n,struct pair256 *cards)
 	
     
 }
-void bet_player_deck_blind(char *deckInfo,char *keyInfo)
+void bet_player_deck_blind(char *deckStr,char *pubKeyStr)
 {
 	bits256 key,pubKey,privKey;
-	cJSON *deck=NULL,*cardsInfo=NULL,*card;
+	cJSON *deckInfo=NULL,*cardsInfo=NULL,*card;
     int32_t i,n; 
 	char str[65];
 	struct pair256 *cards=NULL
-	deck=cJSON_CreateObject();
-	if(deck)
+	deckInfo=cJSON_CreateObject();
+	deckInfo=cJSON_Parse(bet_strip(deckInfo));
+	if(deckInfo)
 	{
-		n=jint(deck,"Number Of Cards");
+		n=jint(deckInfo,"Number Of Cards");
 		printf("\nNumber Of Cards:%d",n);
 		cardsInfo=cJSON_GetObjectItem(deckInfo,"CardsInfo");
 		for(i=0;i<n;i++)
