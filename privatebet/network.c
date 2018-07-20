@@ -12,6 +12,14 @@
  * Removal or modification of this copyright notice is prohibited.            *
  *                                                                            *
  ******************************************************************************/
+#include "bet.h"
+#if 0
+bits256 Mypubkey,Myprivkey;
+char *LN_idstr,Host_ipaddr[64],Host_peerid[67];
+uint16_t LN_port;
+int32_t IAMHOST;
+portable_mutex_t BET_shardmutex;
+struct BET_shardsinfo *BET_shardsinfos;
 
 cJSON *BET_pubkeys(struct privatebet_info *bet)
 {
@@ -116,7 +124,7 @@ void BET_MofN_item(bits256 deckid,int32_t cardi,bits256 *cardpubs,int32_t numcar
             gfshare_dec_newshares(G,recovernrs);
             gfshare_decextract(0,0,G,shards->recover.bytes);
             gfshare_free(G);
-            shards->recover = cards777_cardpriv(Myprivkey,cardpubs,numcards,shards->recover);
+            //shards->recover = cards777_cardpriv(Myprivkey,cardpubs,numcards,shards->recover);
             char str2[65]; printf("recovered (c%d p%d).%d %s [%d] range.%d\n",cardi,playerj,shardi,bits256_str(str2,shards->recover),shards->recover.bytes[1],numcards);
             if ( shards->recover.bytes[1] >= numcards )
                 exit(-1);
@@ -163,7 +171,7 @@ bits256 *BET_process_packet(bits256 *cardpubs,bits256 *deckidp,bits256 senderpub
     {
         for (i=0; i<numcards; i++)
             cardpubs[i] = jbits256i(array,i);
-        checkpub = cards777_deckid(cardpubs,numcards,deckid);
+       // checkpub = cards777_deckid(cardpubs,numcards,deckid);
         if ( bits256_cmp(checkpub,deckid) != 0 )
         {
             printf("error comparing deckid %s vs %s\n",bits256_str(str,checkpub),bits256_str(str2,deckid));
@@ -270,7 +278,7 @@ char *BET_transportname(int32_t bindflag,char *str,char *ipaddr,uint16_t port)
     sprintf(str,"tcp://%s:%u",bindflag == 0 ? ipaddr : "*",port); // ws is worse
     return(str);
 }
-
+#endif
 int32_t BET_nanosock(int32_t bindflag,char *endpoint,int32_t nntype)
 {
     int32_t sock,timeout;
@@ -305,7 +313,7 @@ int32_t BET_nanosock(int32_t bindflag,char *endpoint,int32_t nntype)
     }
     return(sock);
 }
-
+#if 0
 void BET_mofn_send(struct privatebet_info *bet,struct privatebet_vars *vars,int32_t cardi,int32_t playerj,int32_t encryptflag)
 {
     bits256 shard; cJSON *reqjson; int32_t msglen; uint8_t encoded[sizeof(bits256) + 1024]; char cipherstr[sizeof(encoded)+2+1];
@@ -350,4 +358,4 @@ int32_t BET_client_deali(cJSON *argjson,struct privatebet_info *bet,struct priva
     //printf("client deali.%d cardi.%d j.%d\n",deali,cardi,j);
     return(0);
 }
-
+#endif
