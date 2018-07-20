@@ -45,4 +45,20 @@ For example: ./bet-cli create-deck 6(sides on a dice or a deck of six cards numb
 		}]
 }
 ```
+## Player Join Request
+This API allows the player to make join request to the Deck Creating Vendor(Dealer) and in response it gets peerid assigned by DCV. The prerequisite for this is to make sure a Dealer is already up and running to get the response.
+```
+./bet-cli join-req playerPubKey srcBindAddr destBindAddr
 
+In the below example player node and dealer node are communicating using IPC.
+
+./bet-cli join-req "{\n\t\"command\":\t\"create-player\",\n\t\"PubKey\":\t\"5094b1e04e91b16d1a099fcaa25f5618c912a0b53cd196c16050875843eb095f\"\n}" "ipc:///tmp/bet.ipc" "ipc:///tmp/bet1.ipc"
+nntype.80 connect to ipc:///tmp/bet1.ipc connectsock.1
+nntype.33 connect to ipc:///tmp/bet.ipc connectsock.2
+
+Response Received:{
+	"method":	"join_res",
+	"peerid":	0,
+	"pubkey":	"5094b1e04e91b16d1a099fcaa25f5618c912a0b53cd196c16050875843eb095f"
+}
+```
