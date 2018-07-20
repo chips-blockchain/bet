@@ -1,6 +1,7 @@
 #include "bet-cli.h"
 
-char* bet_strip(char *s) {
+char* bet_strip(char *s) 
+{
 	    char *t = NULL;
 	    int32_t l=0;
 		t=calloc(strlen(s),sizeof(char));
@@ -50,6 +51,10 @@ int main(int argc, char **argv)
 		else if(strcmp(argv[1],"blind-deck")==0)
 		{
 			bet_blind_deck(argv[2],argv[3]);
+		}
+		else if(strcmp(argv[1],"join-req")==0)
+		{
+			bet_player_join_req(argv[2],argv[3],argv[4]);
 		}
 		else
 		{
@@ -101,12 +106,11 @@ void bet_player_deck_create(int n,struct pair256 *cards)
 	deckInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(deckInfo,"command","create-deck");
 	cJSON_AddNumberToObject(deckInfo,"Number Of Cards",n);
-	
 	cJSON_AddItemToObject(deckInfo,"CardsInfo",cardsInfo=cJSON_CreateArray());
 	
-	
-    for (i=0; i<n; i++) {
-	temp=cJSON_CreateObject();
+    for (i=0; i<n; i++) 
+	{
+		temp=cJSON_CreateObject();
         tmp.priv = bet_curve25519_rand256(1,i);
         tmp.prod = curve25519(tmp.priv,curve25519_basepoint9());
         cards[i] = tmp;
@@ -116,7 +120,7 @@ void bet_player_deck_create(int n,struct pair256 *cards)
 		jaddbits256(temp,"PubKey",cards[i].prod);
 		cJSON_AddItemToArray(cardsInfo,temp);
     }
-    	printf("\n%s",cJSON_Print(deckInfo));
+    printf("\n%s",cJSON_Print(deckInfo));
 	printf("\n%s",cJSON_Print(cJSON_CreateString(cJSON_Print(deckInfo))));
 	cJSON_Delete(deckInfo);
 	
@@ -169,23 +173,42 @@ void bet_blind_deck(char *deckStr,char *pubKeyStr)
 	}
 
 	printf("\nBlinded Deck:\n%s",cJSON_Print(blindDeckInfo));
-        printf("\n%s",cJSON_Print(cJSON_CreateString(cJSON_Print(blindDeckInfo))));
+    printf("\n%s",cJSON_Print(cJSON_CreateString(cJSON_Print(blindDeckInfo))));
 
 }
 
-int32_t bet_player_join_req(char *pubKey)
+void bet_player_join_req(char *pubKeyStr,char *srcAddr,char *destAddr)
 {
-	cJSON *joinInfo=NULL;
-	char *rendered=NULL;
-	joinInfo=cJSON_CreateObject();
-	cJSON_AddStringToObject(joinInfo,"command","player-join-req");
-	jaddstr(joinInfo,"PubKey",pubKey);
-	printf("\n%s",cJSON_Print(joinInfo));
+	int32_t pushSock,subSock,recvlen;
+	char *recvBuf=NULL,*rendered=NULL;
+	bits256 pubKey;
+	cJSON *keyInfo=NULL,*joinInfo=NULL;
+	
+	keyInfo=cJSON_CreateObject();
+	keyInfo=cJSON_Parse(bet_strip(pubKeyStr));
+	if(keyInfo)
+	{
+		pubKey=jbits256(keyInfo,"PubKey");
+	}
 
+	 joinInfo=cJSON_CreateObject();
+    cJSON_AddStringToObject(joinInfo,"method","join_req");
+    jaddbits256(joinInfo,"pubkey",pubKey);    
+    rendered=cJSON_Print(joinInfo);
+   
 	
-	
-	return 1;
-	
-	
+	pushSock=BET_nanosock(0,destAddr,NN_PUSH);
+	subSock=BET_nanosock(0,srcAddr,NN_SUB);
+	nn_send(pushSock,rendered,strlen(rendered),0);
+	while(1)
+	{
+		if ( (recvlen= nn_recv(subSock,&recvBuf,NN_MSG,0)) > 0 )
+		{
+			printf("\nResponse Received:%s",recvBuf);
+			break;
+		}
+	}
 }
+
+
 
