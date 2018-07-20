@@ -2,11 +2,11 @@
 
 char* bet_strip(char *s) {
 	    char *t = NULL;
-		int32_t l;
+	    int32_t l=0;
 		t=calloc(strlen(s),sizeof(char));
 		for(int i=0;i<strlen(s);i++)
 		{
-			if(((i+2)<strlen(s))&&(strncmp(s+i,"\\n",2)==0))
+			if(((i+1)<strlen(s))&&(strncmp(s+i,"\\n",2)==0))
 			{
 				t[l++]=0x0A;
 				i+=1;
@@ -128,9 +128,12 @@ void bet_player_deck_blind(char *deckStr,char *pubKeyStr)
 	cJSON *deckInfo=NULL,*cardsInfo=NULL,*card;
     int32_t i,n; 
 	char str[65];
-	struct pair256 *cards=NULL
+	struct pair256 *cards=NULL;
+
+	printf("\n%s",bet_strip(deckStr));
+	
 	deckInfo=cJSON_CreateObject();
-	deckInfo=cJSON_Parse(bet_strip(deckInfo));
+	deckInfo=cJSON_Parse(bet_strip(deckStr));
 	if(deckInfo)
 	{
 		n=jint(deckInfo,"Number Of Cards");
