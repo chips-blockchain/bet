@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 		}
 		else if(strcmp(argv[1],"blind-deck")==0)
 		{
-			bet_player_deck_blind(argv[2],argv[3]);
+			bet_blind_deck(argv[2],argv[3]);
 		}
 		else
 		{
@@ -82,10 +82,10 @@ struct pair256 bet_player_create()
 
 	cJSON_AddStringToObject(playerInfo,"command","create-player");
     jaddbits256(playerInfo,"PubKey",key.prod);
-	printf("Player PubKey: %s",cJSON_Print(cJSON_CreateString(cJSON_Print(playerInfo))));
+	printf("\nPlayer PubKey: %s",cJSON_Print(cJSON_CreateString(cJSON_Print(playerInfo))));
 
 	jaddbits256(playerInfo,"PrivKey",key.priv); 
-	printf("%s",cJSON_Print(playerInfo));
+	printf("\n%s",cJSON_Print(playerInfo));
 	cJSON_Delete(playerInfo);
 
 	return(key);
@@ -116,7 +116,6 @@ void bet_player_deck_create(int n,struct pair256 *cards)
 		jaddbits256(temp,"PubKey",cards[i].prod);
 		cJSON_AddItemToArray(cardsInfo,temp);
     }
-    	printf("\ncards:%d",jint(deckInfo,"Number Of Cards"));
     	printf("\n%s",cJSON_Print(deckInfo));
 	printf("\n%s",cJSON_Print(cJSON_CreateString(cJSON_Print(deckInfo))));
 	cJSON_Delete(deckInfo);
@@ -131,27 +130,19 @@ void bet_blind_deck(char *deckStr,char *pubKeyStr)
 	char str[65];
 	struct pair256 *blindCards=NULL;
 
-	printf("\n%s",bet_strip(deckStr));
-	
 	deckInfo=cJSON_CreateObject();
 	deckInfo=cJSON_Parse(bet_strip(deckStr));
 	if(deckInfo)
 	{
 		n=jint(deckInfo,"Number Of Cards");
-		printf("\nNumber Of Cards:%d",n);
 		blindCards=calloc(n,sizeof(struct pair256));
 		cardsInfo=cJSON_GetObjectItem(deckInfo,"CardsInfo");
 		for(i=0;i<n;i++)
 		{
 			card=cJSON_GetArrayItem(cardsInfo,i);
-			printf("\nCard Number:%d",jint(card,"Card Number"));
-			printf("\nPrivKey:%s",bits256_str(str,jbits256(card,"PrivKey")));
-			printf("\nPubKey:%s",bits256_str(str,jbits256(card,"PubKey")));
 			blindCards[i].priv=jbits256(card,"PrivKey");
-			
 		}
 	}
-
 	keyInfo=cJSON_CreateObject();
 	keyInfo=cJSON_Parse(bet_strip(pubKeyStr));
 	if(keyInfo)
@@ -167,19 +158,19 @@ void bet_blind_deck(char *deckStr,char *pubKeyStr)
 		cJSON_Delete(cardsInfo);
 	blindDeckInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(blindDeckInfo,"command","blind-deck");
-	cJSON_AddItemToObject(blindDeckInfo,"BlindDeck",cardsInfo=cJSON_CreateObject())
+	cJSON_AddItemToObject(blindDeckInfo,"BlindDeck",cardsInfo=cJSON_CreateObject());
 	for(i=0;i<n;i++)
 	{
 		card=cJSON_CreateObject();
 		cJSON_AddNumberToObject(card,"Card Number",i);
 		jaddbits256(card,"PrivKey",blindCards[i].priv);
 		jaddbits256(card,"BlindPrivKey",blindCards[i].prod);
-		cJSON_AddItemToArray(blindDeckInfo,card);
+		cJSON_AddItemToArray(cardsInfo,card);
 	}
 
 	printf("\nBlinded Deck:\n%s",cJSON_Print(blindDeckInfo));
-	
-   
+        printf("\n%s",cJSON_Print(cJSON_CreateString(cJSON_Print(blindDeckInfo))));
+
 }
 
 int32_t bet_player_join_req(char *pubKey)
