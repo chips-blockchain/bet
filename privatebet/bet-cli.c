@@ -35,32 +35,31 @@ int main(int argc, char **argv)
 		}
 		else if(strcmp(argv[1],"player-deck-blind")==0)
 		{
-			// bet_player_deck_blind(cards,key,n);
-		
 			for(int i=0;i<strlen(argv[2]);i++)
 			{
-				if(((i+1)<strlen(argv[2]))&&(strncmp(argv[2]+i,"\n",2)==0))
+				if(((i+2)<strlen(argv[2]))&&(strncmp(argv[2]+i,"\\n",2)==0))
 				{
-					t[l++]='\n';
+					t[l++]=0x0A;
 					i+=1;
 				}
-				else if((strncmp(argv[2],2,"\t")==0)&&((i+1)<strlen(argv[2])))
+				else if(((i+1)<strlen(argv[2]))&&(strncmp(argv[2]+i,"\\t",2)==0))
 				{
-					t[l++]='\t';
+					t[l++]=0x20;
 					i+=1;
+				}
+				else if(((i+1)<strlen(argv[2]))&&(strncmp(argv[2]+i,"\"",2)==0))
+				{
+					t[l++]=0x22;
 				}
 				else 	
 					t[l++]=argv[2][i];
 			}
 			t[l]='\0';
 			printf("%s",t);
-			/*cardsInfo=cJSON_Parse(argv[2]);
-			if(cardsInfo==NULL)
-				printf("\nThere is something wrong with the decoding");
+			cardsInfo=cJSON_Parse(t);
 			n=jint(cardsInfo,"Number Of Cards");
 			printf("\nNumber of Cards %d",n);
 		
-			printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argv[2]));*/
 		}
 		else
 		{
