@@ -1,16 +1,30 @@
 #include "bet-cli.h"
 
-void strip(char *s) {
-	    char *p2 = s;
-	        while(*s != '\0') {
-			        if(*s != '\t' && *s != '\n') {
-					            *p2++ = *s++;
-						            } else {
-								                ++s;
-										        }
-				    }
-		    *p2 = '\0';
-		    printf("\n%s:%d:%s",__FUNCTION__,__LINE__,p2);
+char* bet_strip(char *s) {
+	    char *t = NULL;
+		int32_t l;
+		t=calloc(strlen(s),sizeof(char));
+		for(int i=0;i<strlen(s);i++)
+		{
+			if(((i+2)<strlen(s))&&(strncmp(s+i,"\\n",2)==0))
+			{
+				t[l++]=0x0A;
+				i+=1;
+			}
+			else if(((i+1)<strlen(s))&&(strncmp(s+i,"\\t",2)==0))
+			{
+				t[l++]=0x20;
+				i+=1;
+			}
+			else if(((i+1)<strlen(s))&&(strncmp(s+i,"\"",2)==0))
+			{
+				t[l++]=0x22;
+			}
+			else	
+				t[l++]=s[i];
+		}
+		t[l]='\0';
+		return t;
 }
 
 int main(int argc, char **argv)
@@ -35,31 +49,7 @@ int main(int argc, char **argv)
 		}
 		else if(strcmp(argv[1],"player-deck-blind")==0)
 		{
-			for(int i=0;i<strlen(argv[2]);i++)
-			{
-				if(((i+2)<strlen(argv[2]))&&(strncmp(argv[2]+i,"\\n",2)==0))
-				{
-					t[l++]=0x0A;
-					i+=1;
-				}
-				else if(((i+1)<strlen(argv[2]))&&(strncmp(argv[2]+i,"\\t",2)==0))
-				{
-					t[l++]=0x20;
-					i+=1;
-				}
-				else if(((i+1)<strlen(argv[2]))&&(strncmp(argv[2]+i,"\"",2)==0))
-				{
-					t[l++]=0x22;
-				}
-				else 	
-					t[l++]=argv[2][i];
-			}
-			t[l]='\0';
-			printf("%s",t);
-			cardsInfo=cJSON_Parse(t);
-			n=jint(cardsInfo,"Number Of Cards");
-			printf("\nNumber of Cards %d",n);
-		
+			bet_player_deck_blind(argv[2],argv[3],int32_t n);
 		}
 		else
 		{
@@ -132,14 +122,33 @@ void bet_player_deck_create(int n,struct pair256 *cards)
 	
     
 }
-void bet_player_deck_blind(struct pair256 *cards,struct pair256 key,int32_t n)
+void bet_player_deck_blind(char *deckInfo,char *keyInfo)
 {
-    int32_t i; 
-    for (i=0; i<n; i++)
+	bits256 key,pubKey,privKey;
+	cJSON *deck=NULL,*cardsInfo=NULL,*card;
+    int32_t i,n; 
+	char str[65];
+	struct pair256 *cards=NULL
+	deck=cJSON_CreateObject();
+	if(deck)
+	{
+		n=jint(deck,"Number Of Cards");
+		printf("\nNumber Of Cards:%d",n);
+		cardsInfo=cJSON_GetObjectItem(deckInfo,"CardsInfo");
+		for(i=0;i<n;i++)
+		{
+			card=cJSON_GetArrayItem(cardsInfo,i);
+			printf("\nCard Number:%d",jint(card,"Card Number"));
+			printf("\nPrivKey:%s",bits256_str(str,jbits256(card,"PrivKey")));
+			printf("\nPubKey:%s",bits256_str(str,jbits256(card,"PubKey")));
+		}
+	}
+	
+   /* for (i=0; i<n; i++)
     {
 		cards[i].prod=curve25519(cards[i].priv,key.prod);
 	}
-    
+    */
 }
 
 int32_t bet_player_join_req(char *pubKey)
