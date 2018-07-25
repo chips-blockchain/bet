@@ -629,6 +629,20 @@ int32_t BET_relay(cJSON *argjson,struct privatebet_info *bet,struct privatebet_v
 	return retval;
 }
 
+void BET_broadcast_table_info(struct privatebet_info *bet)
+{
+	cJSON *tableInfo=NULL,*playersInfo=NULL;
+	char str[65];
+	tableInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(tableInfo,"method","TableInfo");
+	cJSON_AddItemToObject(tableInfo,"playersInfo",playersInfo=cJSON_CreateArray());
+	for(int32_t i=0;i<bet->maxplayers;i++)
+	{
+		cJSON_AddItemToArray(playersInfo,cJSON_CreateString(bits256_str(str,dcv_info.peerpubkeys[i])));
+	}
+	printf("\nTable Info:%s",cJSON_Print(tableInfo));
+}
+
 int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
     char *method; int32_t bytes,retval=1;
@@ -644,6 +658,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
                 if(bet->numplayers==bet->maxplayers)
 				{
 					printf("\nTable is filled");
+					BET_broadcast_table_info(bet);
 					BET_p2p_host_start_init(bet);
 				}
 			}
