@@ -56,6 +56,10 @@ int main(int argc, char **argv)
 		{
 			bet_player_join_req(argv[2],argv[3],argv[4]);
 		}
+		else if(strcmp(argv[1],"init-player")==0)
+		{
+			bet_player_init(atoi(argv[2]),argv[3],argv[4],argv[5]);
+		}
 		else
 		{
 			printf("\nCommand Not Found");
@@ -209,6 +213,58 @@ void bet_player_join_req(char *pubKeyStr,char *srcAddr,char *destAddr)
 		}
 	}
 }
+
+int32_t bet_player_init(int32_t peerID,char *deckStr,char *pubKeyStr,char *destAddr)
+{
+	bits256 key,pubKey,privKey;
+	cJSON *deckInfo=NULL,*cardsInfo=NULL,*keyInfo=NULL,*initInfo=NULL,*card;
+    int32_t pushSock,i,n,bytes,retval=1;; 
+	char str[65],*rendered=NULL;
+	struct pair256 *cards=NULL;
+
+	deckInfo=cJSON_CreateObject();
+	deckInfo=cJSON_Parse(bet_strip(deckStr));
+	if(deckInfo)
+	{
+		n=jint(deckInfo,"Number Of Cards");
+		cards=calloc(n,sizeof(struct pair256));
+		cardsInfo=cJSON_GetObjectItem(deckInfo,"CardsInfo");
+		for(i=0;i<n;i++)
+		{
+			card=cJSON_GetArrayItem(cardsInfo,i);
+			cards[i].priv=jbits256(card,"PrivKey");
+			cards[i].prod=jbits256(card,"PubKey");
+		}
+	}
+	keyInfo=cJSON_CreateObject();
+	keyInfo=cJSON_Parse(bet_strip(pubKeyStr));
+	if(keyInfo)
+	{
+		key=jbits256(keyInfo,"PubKey");
+	}
+	
+   if(cardsInfo)
+		cJSON_Delete(cardsInfo);
+	initInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(initInfo,"command","init_p");
+	cJSON_AddNumberToObject(initInfo,"peerid",bet->myplayerid);
+	jaddbits256(initInfo,"pubkey",key);
+	cJSON_AddItemToObject(initInfo,"cardinfo",cardsInfo=cJSON_CreateObject());
+	for(i=0;i<n;i++)
+	{
+		cJSON_AddItemToArray(cardsInfo,cJSON_CreateString(bits256_str(str,cards[i].prod)));
+	}
+	rendered=cJSON_Print(initInfo);
+	pushSock=BET_nanosock(0,destAddr,NN_PUSH);
+	bytes=nn_send(pushSock,rendered,strlen(rendered),0);
+	printf("\nInit Deck Info:\n%s",cJSON_Print(cardsInfo));
+    printf("\n%s",cJSON_Print(cJSON_CreateString(cJSON_Print(cardsInfo))));	
+	if(bytes<0)
+        retval=-1;
+    
+	return retval;
+}
+
 
 
 
