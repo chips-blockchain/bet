@@ -14,13 +14,13 @@
  ******************************************************************************/
 #include "bet.h"
 #if 0
-bits256 Mypubkey,Myprivkey;
+/*bits256 Mypubkey,Myprivkey;
 char *LN_idstr,Host_ipaddr[64],Host_peerid[67];
 uint16_t LN_port;
 int32_t IAMHOST;
 portable_mutex_t BET_shardmutex;
 struct BET_shardsinfo *BET_shardsinfos;
-
+*/
 cJSON *BET_pubkeys(struct privatebet_info *bet)
 {
     int32_t i; cJSON *array = cJSON_CreateArray();
