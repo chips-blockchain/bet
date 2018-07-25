@@ -257,8 +257,8 @@ int32_t bet_player_init(int32_t peerID,char *deckStr,char *pubKeyStr,char *destA
 	rendered=cJSON_Print(initInfo);
 	pushSock=BET_nanosock(0,destAddr,NN_PUSH);
 	bytes=nn_send(pushSock,rendered,strlen(rendered),0);
-	printf("\nInit Deck Info:\n%s",cJSON_Print(cardsInfo));
-    printf("\n%s",cJSON_Print(cJSON_CreateString(cJSON_Print(cardsInfo))));	
+	printf("\nInit Deck Info:\n%s",cJSON_Print(initInfo));
+    printf("\n%s",cJSON_Print(cJSON_CreateString(cJSON_Print(initInfo))));	
 	if(bytes<0)
         retval=-1;
     
