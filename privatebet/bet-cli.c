@@ -247,7 +247,7 @@ int32_t bet_player_init(int32_t peerID,char *deckStr,char *pubKeyStr,char *destA
 		cJSON_Delete(cardsInfo);
 	initInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(initInfo,"command","init_p");
-	cJSON_AddNumberToObject(initInfo,"peerid",bet->myplayerid);
+	cJSON_AddNumberToObject(initInfo,"peerid",peerID);
 	jaddbits256(initInfo,"pubkey",key);
 	cJSON_AddItemToObject(initInfo,"cardinfo",cardsInfo=cJSON_CreateObject());
 	for(i=0;i<n;i++)
