@@ -275,7 +275,10 @@ void bet_dcv_init(int32_t n, int32_t r, char *dcvStr)
 {
 	
 	cJSON *cjsoncardprods,*cjsong_hash,*dcvInfo=NULL;
-
+	struct deck_dcv_info dcv_info;
+	struct deck_player_info player_info;
+	bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
+	
 	dcvInfo=cJSON_CreateObject();
 	dcvInfo=cJSON_Parse(bet_strip(dcvStr));
 	if(dcvInfo)
@@ -292,7 +295,7 @@ void bet_dcv_init(int32_t n, int32_t r, char *dcvStr)
 		}
 
 		
-		cjsong_hash=cJSON_GetObjectItem(dcv_info,"g_hash");
+		cjsong_hash=cJSON_GetObjectItem(dcvInfo,"g_hash");
 		
 		for(int i=0;i<n;i++)
 		{

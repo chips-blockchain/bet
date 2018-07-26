@@ -489,6 +489,8 @@ int32_t BET_p2p_host_deck_init_info(cJSON *argjson,struct privatebet_info *bet,s
 
 	  printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,rendered);	
 
+	  printf("\n%s",cJSON_Print(cJSON_CreateString(cJSON_Print(deck_init_info))));
+
 	  if(bytes<0)
 	  	retval=-1;
 
