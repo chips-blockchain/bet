@@ -34,7 +34,7 @@ For example: ./bet-cli create-deck 2(sides on a coin or a deck of two cards numb
 ## Blind Deck
 This player takes the deck as input and blinds the privkey of deck by multiplying it with the pubkey of the player. This way a player can conceal the identity of the deck.
 ```
-<<<<<<< HEAD
+
 ./bet-cli blind-deck deckOfCards playerPubKey
 
 ./bet-cli blind-deck "{\n\t\"command\":\t\"create-deck\",\n\t\"Number Of Cards\":\t2,\n\t\"CardsInfo\":\t[{\n\t\t\t\"Card Number\":\t0,\n\t\t\t\"PrivKey\":\t\"50cc3735750111c40222fdea12817e223766e784dff259fb03ecddf8eb41005d\",\n\t\t\t\"PubKey\":\t\"139ca3f6c01d7eeb33f67ebf80605b795b7f8180b7f69d3b22f603c2b0c78f70\"\n\t\t}, {\n\t\t\t\"Card Number\":\t1,\n\t\t\t\"PrivKey\":\t\"98bca13dc70582c32bc85c4f096a31567c01b53c684ee10bd2abc38fb9aa0167\",\n\t\t\t\"PubKey\":\t\"6b2b54d56ba49cdf47aee403f98ed18bfc13cae2ca7cc38a2a5640aebea8095c\"\n\t\t}]\n}" "{\n\t\"command\":\t\"create-player\",\n\t\"PubKey\":\t\"67f48ceef325897d9282091e27b03fa289899cab5758e61767ee619f21b2e465\"\n}"
