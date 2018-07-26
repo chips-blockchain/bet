@@ -60,6 +60,11 @@ int main(int argc, char **argv)
 		{
 			bet_player_init(atoi(argv[2]),argv[3],argv[4],argv[5]);
 		}
+		else if(strcmp(argv[1],"dcv-init")==0)
+		{
+			bet_dcv_init(atoi(argv[2]),atoi(argv[3]),argv[4]);
+	
+		}
 		else
 		{
 			printf("\nCommand Not Found");
@@ -265,3 +270,42 @@ int32_t bet_player_init(int32_t peerID,char *deckStr,char *pubKeyStr,char *destA
     
 	return retval;
 }
+
+void bet_dcv_init(int32_t n, int32_t r, char *dcvStr)
+{
+	
+	cJSON *cjsoncardprods,*cjsong_hash,*dcvInfo=NULL;
+
+	dcvInfo=cJSON_CreateObject();
+	dcvInfo=cJSON_Parse(bet_strip(dcvStr));
+	if(dcvInfo)
+	{
+		player_info.deckid=jbits256(dcvInfo,"deckid");
+		cjsoncardprods=cJSON_GetObjectItem(dcvInfo,"cardprods");	
+		
+		for(int i=0;i<n;i++)
+		{
+			for(int j=0;j<r;j++)
+			{
+				player_info.cardprods[i][j]=jbits256i(cjsoncardprods,i*r+j);
+			}
+		}
+
+		
+		cjsong_hash=cJSON_GetObjectItem(dcv_info,"g_hash");
+		
+		for(int i=0;i<n;i++)
+		{
+			for(int j=0;j<r;j++)
+			{
+				g_hash[i][j]=jbits256i(cjsong_hash,i*r+j);
+			}
+		}
+
+
+	}
+
+	printf("\n%s",cJSON_Print(dcvInfo));
+	
+}
+
