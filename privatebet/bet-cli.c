@@ -249,7 +249,7 @@ int32_t bet_player_init(int32_t peerID,char *deckStr,char *pubKeyStr,char *destA
 	cJSON_AddStringToObject(initInfo,"method","init_p");
 	cJSON_AddNumberToObject(initInfo,"peerid",peerID);
 	jaddbits256(initInfo,"pubkey",key);
-	cJSON_AddItemToObject(initInfo,"cardinfo",cardsInfo=cJSON_CreateObject());
+	cJSON_AddItemToObject(initInfo,"cardinfo",cardsInfo=cJSON_CreateArray());
 	for(i=0;i<n;i++)
 	{
 		cJSON_AddItemToArray(cardsInfo,cJSON_CreateString(bits256_str(str,cards[i].prod)));
@@ -265,7 +265,3 @@ int32_t bet_player_init(int32_t peerID,char *deckStr,char *pubKeyStr,char *destA
     
 	return retval;
 }
-
-
-
-
