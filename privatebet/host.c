@@ -722,7 +722,7 @@ void BET_p2p_hostloop(void *_ptr)
     {
         if ( (recvlen= nn_recv(bet->pullsock,&ptr,NN_MSG,0)) > 0 )
         {
-        
+            printf("\nBytes Received:%d:%s",recvlen,ptr);	
             if ( (argjson= cJSON_Parse(ptr)) != 0 )
             {
                 if ( BET_p2p_hostcommand(argjson,bet,VARS) != 0 ) // usually just relay to players

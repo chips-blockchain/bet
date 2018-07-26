@@ -12,8 +12,8 @@
  * Removal or modification of this copyright notice is prohibited.            *
  *                                                                            *
  ******************************************************************************/
-#include "bet.h"
-#if 0
+//#include "bet.h"
+#if 1
 /*bits256 Mypubkey,Myprivkey;
 char *LN_idstr,Host_ipaddr[64],Host_peerid[67];
 uint16_t LN_port;
@@ -313,7 +313,7 @@ int32_t BET_nanosock(int32_t bindflag,char *endpoint,int32_t nntype)
     }
     return(sock);
 }
-#if 0
+#if 1
 void BET_mofn_send(struct privatebet_info *bet,struct privatebet_vars *vars,int32_t cardi,int32_t playerj,int32_t encryptflag)
 {
     bits256 shard; cJSON *reqjson; int32_t msglen; uint8_t encoded[sizeof(bits256) + 1024]; char cipherstr[sizeof(encoded)+2+1];
