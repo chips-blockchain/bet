@@ -75,4 +75,10 @@ Response Received:{
 	"pubkey":	"5094b1e04e91b16d1a099fcaa25f5618c912a0b53cd196c16050875843eb095f"
 }
 ```
+## Player init
+This API sends the blinded cards information to the DCV for the shuffling.
+```
+./bet-cli player-init peerID deckInfo{blindedDeck} playerPubKey destBindAddr
 
+./bet-cli init-player 1 "{\n\t\"command\":\t\"create-deck\",\n\t\"Number Of Cards\":\t2,\n\t\"CardsInfo\":\t[{\n\t\t\t\"Card Number\":\t0,\n\t\t\t\"PrivKey\":\t\"ebec31900bfddbe58db9ac38c1e6c6698c9164d983ef500063\",\n\t\t\t\"PubKey\":\t\"96ea444ccfb671e5838ce2caac5f31a8e2711020c8fce8422d3e46b640ed3366\"\n\t\t}, {\n\t\t\t\"Card Number\":\t1,\n\t\t\t\"PrivKey\":\t\"f8b4f184eedf94be2e3b158bfd631afda9b1ab74cd64725f553840a1257c0168\",\n\t\t\t\"PubKey\":\t\"48c5627f2add597c3e0ffe92bd4867d5a8ed246ecf20652533074d1855ebff3a\"\n\t\t}]\n}" "{\n\t\"command\":\t\"create-player\",\n\t\"PubKey\":\t\"12fc5de594d56592bce30dd5707da56d0b36b2189a2e71b1a6d7b54942741b47\"\n}" "ipc:///tmp/bet1.ipc"
+```
