@@ -56,7 +56,7 @@ int main(int argc, char **argv)
 		{
 			bet_player_join_req(argv[2],argv[3],argv[4]);
 		}
-		else if(strcmp(argv[1],"init-player")==0)
+		else if(strcmp(argv[1],"player-init")==0)
 		{
 			bet_player_init(atoi(argv[2]),argv[3],argv[4],argv[5]);
 		}
