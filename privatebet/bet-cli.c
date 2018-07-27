@@ -317,6 +317,23 @@ void bet_dcv_init(int32_t n, int32_t r, char *dcvStr)
 	
 }
 
+struct enc_share bet_get_enc_share(cJSON *obj)
+{
+    struct enc_share hash; char *str;
+	char hexstr[177];
+    memset(hash.bytes,0,sizeof(hash));
+   if ( obj != 0 )
+    {
+        if ( is_cJSON_String(obj) != 0 && (str= obj->valuestring) != 0 && strlen(str) == 176 ){
+			
+			decode_hex(hash.bytes,sizeof(hash),str);
+
+        }
+    }   
+
+    return(hash);
+}
+
 void bet_bvv_init(int32_t peerID,int32_t n, int32_t r,char *bvvStr)
 
 {
@@ -349,7 +366,7 @@ void bet_bvv_init(int32_t peerID,int32_t n, int32_t r,char *bvvStr)
 	        {
 	            for (int j=0; j<n; j++) 
 				{
-					g_shares[k]=get_API_enc_share(cJSON_GetArrayItem(cjsonshamirshards,k));
+					g_shares[k]=bet_get_enc_share(cJSON_GetArrayItem(cjsonshamirshards,k));
 					k++;
 	            }
 	        }
