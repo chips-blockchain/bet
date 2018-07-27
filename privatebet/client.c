@@ -960,6 +960,7 @@ int32_t BET_p2p_bvv_init(cJSON *argjson,struct privatebet_info *bet,struct priva
 	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 
 	printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,rendered);
+	printf("\n%s:%d:%s",__FUNCTION__,__LINE__,cJSON_Print(cJSON_CreateString(rendered)));
 	
 	if(bytes<0)
 		retval=-1;

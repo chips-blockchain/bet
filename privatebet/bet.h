@@ -312,6 +312,8 @@ struct privatebet_share
 
 //added by sg777
 
+struct enc_share { uint8_t bytes[sizeof(bits256)+crypto_box_NONCEBYTES+crypto_box_ZEROBYTES]; };
+
 struct deck_player_info
 {
 	struct pair256 player_key;
