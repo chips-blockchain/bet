@@ -51,7 +51,7 @@ int32_t permis_d[CARDS777_MAXCARDS],permis_b[CARDS777_MAXCARDS];
 bits256 *allshares=NULL;
 uint8_t sharenrs[256];
 struct rpcrequest_info *LP_garbage_collector;
-struct enc_share { uint8_t bytes[sizeof(bits256)+crypto_box_NONCEBYTES+crypto_box_ZEROBYTES]; };
+//struct enc_share { uint8_t bytes[sizeof(bits256)+crypto_box_NONCEBYTES+crypto_box_ZEROBYTES]; };
 struct enc_share *g_shares=NULL;
 
 bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
