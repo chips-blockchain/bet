@@ -70,6 +70,11 @@ int main(int argc, char **argv)
 			bet_bvv_init(atoi(argv[2]),atoi(argv[3]),atoi(argv[4]),argv[5]);
 	
 		}
+		else if(strcmp(argv[1],"dcv-bvv-init")==0)
+		{
+			bet_dcv_bvv_init(atoi(argv[2]),atoi(argv[3]),atoi(argv[4]),argv[5],argv[6]);
+	
+		}
 		else
 		{
 			printf("\nCommand Not Found");
@@ -279,23 +284,23 @@ int32_t bet_player_init(int32_t peerID,char *deckStr,char *pubKeyStr,char *destA
 void bet_dcv_init(int32_t n, int32_t r, char *dcvStr)
 {
 	
-	cJSON *cjsoncardprods,*cjsong_hash,*dcvInfo=NULL;
-	struct deck_dcv_info dcv_info;
-	struct deck_player_info player_info;
+	cJSON *cardsProdInfo,*cjsong_hash,*dcvInfo=NULL;
+
+	struct deck_player_info playerDeckInfo;
 	bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 	
 	dcvInfo=cJSON_CreateObject();
 	dcvInfo=cJSON_Parse(bet_strip(dcvStr));
 	if(dcvInfo)
 	{
-		player_info.deckid=jbits256(dcvInfo,"deckid");
-		cjsoncardprods=cJSON_GetObjectItem(dcvInfo,"cardprods");	
+		playerDeckInfo.deckid=jbits256(dcvInfo,"deckid");
+		cardsProdInfo=cJSON_GetObjectItem(dcvInfo,"cardprods");	
 		
 		for(int i=0;i<n;i++)
 		{
 			for(int j=0;j<r;j++)
 			{
-				player_info.cardprods[i][j]=jbits256i(cjsoncardprods,i*r+j);
+				playerDeckInfo.cardprods[i][j]=jbits256i(cardsProdInfo,i*r+j);
 			}
 		}
 
@@ -338,42 +343,121 @@ void bet_bvv_init(int32_t peerID,int32_t n, int32_t r,char *bvvStr)
 
 {
 		struct enc_share *g_shares=NULL;
-		cJSON *cjsonbvvblindcards,*cjsonshamirshards,*bvvInfo;
+		cJSON *bvvBlindCardsInfo,*shamirShardsInfo,*bvvInfo=NULL;
 		bits256 temp,playerprivs[CARDS777_MAXCARDS],bvvPubKey;
 		struct deck_player_info player_info;
 		bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 		
 		
-		bvvInfo=bet_strip(bvvStr);
-		bvvPubKey=jbits256(bvvInfo,"bvvpubkey");
-		g_shares=(struct enc_share*)malloc(CARDS777_MAXPLAYERS*CARDS777_MAXPLAYERS*CARDS777_MAXCARDS*sizeof(struct enc_share));
-		cjsonbvvblindcards=cJSON_GetObjectItem(bvvInfo,"bvvblindcards");
+		bvvInfo=cJSON_Parse(bet_strip(bvvStr));
+		if(bvvInfo)
+		{
+			bvvPubKey=jbits256(bvvInfo,"bvvpubkey");
+			g_shares=(struct enc_share*)malloc(CARDS777_MAXPLAYERS*CARDS777_MAXPLAYERS*CARDS777_MAXCARDS*sizeof(struct enc_share));
+			bvvBlindCardsInfo=cJSON_GetObjectItem(bvvInfo,"bvvblindcards");
+			
+			for(int i=0;i<n;i++)
+			{
+				for(int j=0;j<r;j++)
+				{
+					player_info.bvvblindcards[i][j]=jbits256i(bvvBlindCardsInfo,i*r+j);
+				}
+			}
+
+			shamirShardsInfo=cJSON_GetObjectItem(bvvInfo,"shamirshards");
+			int k=0;
+			for(int playerid=0;playerid<n;playerid++)
+			{
+				for (int i=0; i<r; i++)
+		        {
+		            for (int j=0; j<n; j++) 
+					{
+						g_shares[k]=bet_get_enc_share(cJSON_GetArrayItem(shamirShardsInfo,k));
+						k++;
+		            }
+		        }
+			}
+
+			for(int i=0;i<r;i++)
+			{
+				for(int j=0;j<r;j++)
+				{
+					temp=xoverz_donna(curve25519(player_info.player_key.priv,curve25519(playerprivs[i],player_info.cardprods[peerID][j])));
+					vcalc_sha256(0,v_hash[i][j].bytes,temp.bytes,sizeof(temp));
+				}
+			}
+		}
+		printf("\n%s",cJSON_Print(bvvInfo));
+
+}
+
+
+void bet_dcv_bvv_init(int32_t peerID,int32_t n, int32_t r,char *dcvStr, char *bvvStr)
+{
+
+	cJSON *cardsProdInfo,*cjsong_hash,*dcvInfo=NULL;
+	struct deck_player_info dcvBlindDeckInfo;
+	bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
+
+	struct enc_share *g_shares=NULL;
+	cJSON *bvvBlindDeckInfo,*shamirShardsInfo,*bvvInfo=NULL;
+	bits256 temp,playerprivs[CARDS777_MAXCARDS],bvvPubKey;
+	struct deck_player_info player_info;
+	bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
+
+		
+	dcvInfo=cJSON_CreateObject();
+	dcvInfo=cJSON_Parse(bet_strip(dcvStr));
+	if(dcvInfo)
+	{
+		dcvBlindDeckInfo.deckid=jbits256(dcvInfo,"deckid");
+		cjsong_hash=cJSON_GetObjectItem(dcvInfo,"g_hash");
 		
 		for(int i=0;i<n;i++)
 		{
 			for(int j=0;j<r;j++)
 			{
-				player_info.bvvblindcards[i][j]=jbits256i(cjsonbvvblindcards,i*r+j);
+				g_hash[i][j]=jbits256i(cjsong_hash,i*r+j);
 			}
 		}
 
 
-		cjsonshamirshards=cJSON_GetObjectItem(bvvInfo,"shamirshards");
+	}
+
+
+	printf("\n%s\n",cJSON_Print(dcvInfo));
+		
+	
+	
+	bvvInfo=cJSON_Parse(bet_strip(bvvStr));
+	if(bvvInfo)
+	{
+		bvvPubKey=jbits256(bvvInfo,"bvvpubkey");
+		g_shares=(struct enc_share*)malloc(CARDS777_MAXPLAYERS*CARDS777_MAXPLAYERS*CARDS777_MAXCARDS*sizeof(struct enc_share));
+		bvvBlindDeckInfo=cJSON_GetObjectItem(bvvInfo,"bvvblindcards");
+		
+		for(int i=0;i<n;i++)
+		{
+			for(int j=0;j<r;j++)
+			{
+				player_info.bvvblindcards[i][j]=jbits256i(bvvBlindDeckInfo,i*r+j);
+			}
+		}
+	
+		shamirShardsInfo=cJSON_GetObjectItem(bvvInfo,"shamirshards");
 		int k=0;
 		for(int playerid=0;playerid<n;playerid++)
 		{
 			for (int i=0; i<r; i++)
-	        {
-	            for (int j=0; j<n; j++) 
+			{
+				for (int j=0; j<n; j++) 
 				{
-					g_shares[k]=bet_get_enc_share(cJSON_GetArrayItem(cjsonshamirshards,k));
+					g_shares[k]=bet_get_enc_share(cJSON_GetArrayItem(shamirShardsInfo,k));
 					k++;
-	            }
-	        }
+				}
+			}
 		}
-
-
-		
+	
 		for(int i=0;i<r;i++)
 		{
 			for(int j=0;j<r;j++)
@@ -382,8 +466,9 @@ void bet_bvv_init(int32_t peerID,int32_t n, int32_t r,char *bvvStr)
 				vcalc_sha256(0,v_hash[i][j].bytes,temp.bytes,sizeof(temp));
 			}
 		}
-
-		printf("\n%s",cJSON_Print(bvvInfo));
+	}
+	printf("\n%s\n",cJSON_Print(bvvInfo));
+	
 
 }
 

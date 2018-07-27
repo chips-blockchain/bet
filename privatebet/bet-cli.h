@@ -9,6 +9,8 @@ int32_t bet_player_init(int32_t peerID,char *deckStr,char *pubKeyStr,char *destA
 void bet_dcv_init(int32_t n, int32_t r, char *dcvStr);
 void bet_bvv_init(int32_t peerID,int32_t n, int32_t r,char *bvvStr);
 struct enc_share bet_get_enc_share(cJSON *obj);
+void bet_dcv_bvv_init(int32_t peerID,int32_t n, int32_t r,char *dcvStr, char *bvvStr);
+
 
 
 
