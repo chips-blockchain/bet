@@ -582,6 +582,7 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 
 	printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,rendered);
+	printf("\n%s:%d:%s\n",__FUNCTION__,__LINE__,cJSON_Print(cJSON_CreateString(rendered)));
 
 	if(bytes<0)
 		retval=-1;	
