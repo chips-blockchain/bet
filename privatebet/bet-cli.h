@@ -10,6 +10,10 @@ void bet_dcv_init(int32_t n, int32_t r, char *dcvStr);
 void bet_bvv_init(int32_t peerID,int32_t n, int32_t r,char *bvvStr);
 struct enc_share bet_get_enc_share(cJSON *obj);
 void bet_dcv_bvv_init(int32_t peerID,int32_t n, int32_t r,char *dcvStr, char *bvvStr);
+void bet_player_turn(int32_t n,int32_t r,int32_t peerID,char *turnStr);
+int32_t bet_get_share(int32_t n,int32_t r,int32_t peerID,cJSON *turnInfo);
+
+
 
 
 

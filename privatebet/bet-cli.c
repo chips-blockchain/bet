@@ -1,5 +1,16 @@
 #include "bet-cli.h"
 
+struct enc_share *g_shares=NULL;
+
+bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
+bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
+
+int32_t sharesflag[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
+bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
+bits256 deckid;
+struct deck_player_info player_info;
+int32_t no_of_shares=0;
+
 char* bet_strip(char *s) 
 {
 	    char *t = NULL;
@@ -286,21 +297,21 @@ void bet_dcv_init(int32_t n, int32_t r, char *dcvStr)
 	
 	cJSON *cardsProdInfo,*cjsong_hash,*dcvInfo=NULL;
 
-	struct deck_player_info playerDeckInfo;
-	bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
+	//struct deck_player_info playerDeckInfo;
+	//bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 	
 	dcvInfo=cJSON_CreateObject();
 	dcvInfo=cJSON_Parse(bet_strip(dcvStr));
 	if(dcvInfo)
 	{
-		playerDeckInfo.deckid=jbits256(dcvInfo,"deckid");
+		player_info.deckid=jbits256(dcvInfo,"deckid");
 		cardsProdInfo=cJSON_GetObjectItem(dcvInfo,"cardprods");	
 		
 		for(int i=0;i<n;i++)
 		{
 			for(int j=0;j<r;j++)
 			{
-				playerDeckInfo.cardprods[i][j]=jbits256i(cardsProdInfo,i*r+j);
+				player_info.cardprods[i][j]=jbits256i(cardsProdInfo,i*r+j);
 			}
 		}
 
@@ -342,11 +353,11 @@ struct enc_share bet_get_enc_share(cJSON *obj)
 void bet_bvv_init(int32_t peerID,int32_t n, int32_t r,char *bvvStr)
 
 {
-		struct enc_share *g_shares=NULL;
+		//struct enc_share *g_shares=NULL;
 		cJSON *bvvBlindCardsInfo,*shamirShardsInfo,*bvvInfo=NULL;
 		bits256 temp,playerprivs[CARDS777_MAXCARDS],bvvPubKey;
-		struct deck_player_info player_info;
-		bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
+		//struct deck_player_info player_info;
+		//bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 		
 		
 		bvvInfo=cJSON_Parse(bet_strip(bvvStr));
@@ -397,20 +408,20 @@ void bet_dcv_bvv_init(int32_t peerID,int32_t n, int32_t r,char *dcvStr, char *bv
 
 	cJSON *cardsProdInfo,*cjsong_hash,*dcvInfo=NULL;
 	struct deck_player_info dcvBlindDeckInfo;
-	bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
+	//bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 
-	struct enc_share *g_shares=NULL;
+	//struct enc_share *g_shares=NULL;
 	cJSON *bvvBlindDeckInfo,*shamirShardsInfo,*bvvInfo=NULL;
 	bits256 temp,playerprivs[CARDS777_MAXCARDS],bvvPubKey;
-	struct deck_player_info player_info;
-	bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
+	//struct deck_player_info player_info;
+	//bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 
 		
 	dcvInfo=cJSON_CreateObject();
 	dcvInfo=cJSON_Parse(bet_strip(dcvStr));
 	if(dcvInfo)
 	{
-		dcvBlindDeckInfo.deckid=jbits256(dcvInfo,"deckid");
+		player_info.deckid=jbits256(dcvInfo,"deckid");
 		cjsong_hash=cJSON_GetObjectItem(dcvInfo,"g_hash");
 		
 		for(int i=0;i<n;i++)
@@ -468,7 +479,58 @@ void bet_dcv_bvv_init(int32_t peerID,int32_t n, int32_t r,char *dcvStr, char *bv
 		}
 	}
 	printf("\n%s\n",cJSON_Print(bvvInfo));
-	
-
 }
+
+
+int32_t bet_get_share(int32_t n,int32_t r,int32_t peerID,cJSON *turnInfo)
+{
+	struct enc_share temp;
+	int32_t cardID,retval,playerID,recvlen;
+	uint8_t decipher[sizeof(bits256) + 1024],*ptr;
+	bits256 share;
+	char str[65];
+	
+	playerID=jint(turnInfo,"playerid");
+	cardID=jint(turnInfo,"cardid");
+	
+	
+	temp=g_shares[peerID*n*r + (cardID*n + playerID)];
+	recvlen = sizeof(temp);
+
+	if ( (ptr= BET_decrypt(decipher,sizeof(decipher),player_info.bvvpubkey,player_info.player_key.priv,temp.bytes,&recvlen)) == 0 )
+	{
+		retval=-1;
+		printf("decrypt error ");
+	}
+	else
+	{
+		memcpy(share.bytes,ptr,recvlen);
+		playershares[cardID][peerID]=share;
+		sharesflag[cardID][peerID]=1;
+		
+		printf("\n%s:%d:share:%s",__FUNCTION__,__LINE__,bits256_str(str,share));
+		
+	}
+	return retval;
+}
+void bet_player_turn(int32_t n,int32_t r,int32_t peerID,char *turnStr)
+{
+		cJSON *turnInfo=NULL;
+		int32_t cardID,playerID;
+		
+		turnInfo=cJSON_Parse(bet_strip(turnStr));
+		playerID=jint(turnInfo,"playerid");
+		cardID=jint(turnInfo,"cardid");
+		
+		if(playerID==peerID)
+		{
+			no_of_shares=1;
+			bet_get_share(n,r,peerID,turnInfo);	
+		}
+		else
+		{
+			//BET_p2p_client_give_share(argjson,bet,vars);
+		}
+}
+
 
