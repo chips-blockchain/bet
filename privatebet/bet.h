@@ -220,8 +220,8 @@ https://crypto.stanford.edu/~pgolle/papers/poker.pdf
 #include <stdio.h>
 #include <stdint.h>
 
-#include "../../SuperNET/crypto777/OS_portable.h"
-#include "../../SuperNET/iguana/exchanges/LP_include.h"
+#include "../crypto777/OS_portable.h"
+//#include "../../SuperNET/iguana/exchanges/LP_include.h"
 //#include "../../SuperNET/iguana/exchanges/LP_nativeDEX.c"
 
 
