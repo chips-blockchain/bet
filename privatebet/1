@@ -1186,10 +1186,10 @@ int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,
 			cJSON_AddStringToObject(playerCardInfo,"method","playerCardInfo");
 			cJSON_AddNumberToObject(playerCardInfo,"playerid",bet->myplayerid);
 			cJSON_AddNumberToObject(playerCardInfo,"cardid",decoded256.bytes[30]);
-			
+			*/
 			rendered=cJSON_Print(playerCardInfo);
 			bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
-			*/
+
 			printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,rendered);		
 			if(bytes<0)
 				retval=-1;
