@@ -615,6 +615,15 @@ int32_t BET_p2p_dcv_start(cJSON *argjson,struct privatebet_info *bet,struct priv
 }
 
 
+int32_t BET_p2p_highest_card(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		BET_p2p_dcv_turn(argjson,bet,vars);
+	}
+}
+
+
 int32_t BET_relay(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int32_t retval,bytes;
@@ -682,8 +691,8 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 				BET_relay(argjson,bet,vars);
 			}
 
-			
-			BET_p2p_dcv_start(argjson,bet,vars);
+			BET_p2p_highest_card(argjson,bet,vars);
+			//BET_p2p_dcv_start(argjson,bet,vars);
 			
 		}
 		else if(strcmp(method,"turn_status") == 0)
