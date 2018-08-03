@@ -663,11 +663,11 @@ void BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,struct 
 	cardid=jint(playerCardInfo,"cardid");
 	eval_game_p[no_of_cards]=playerid;
 	eval_game_c[no_of_cards]=cardid;
-
 	no_of_cards++;
+        printf("\n%s:%d:playerid:%d,cardid:%d,no_of_Cards:%d,max_players:%d",__FUNCTION__,__LINE__,playerid,cardid,no_of_cards,bet->maxplayers);	
 	if(no_of_cards<bet->maxplayers) //bet->range
 		BET_p2p_dcv_turn(playerCardInfo,bet,vars);
-	else
+	if(no_of_cards==bet->maxplayers)
 	{
 		for(int i=0;i<no_of_cards;i++)
 		{
@@ -679,7 +679,7 @@ void BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,struct 
 		}
 
 		printf("\nThe winner of the game is player :%d, it got the card:%d",playerid,max);
-		
+		printf("\n%s:%d",__FUNCTION__,__LINE__);
 	}		
 		
 }
