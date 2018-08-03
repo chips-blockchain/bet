@@ -1132,7 +1132,7 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
 int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int32_t retval,bytes,cardid,playerid,errs,unpermi;
-	cJSON *turn_status=NULL;
+	cJSON *turn_status=NULL,*playerCardInfo=NULL;
 	char *rendered=NULL,str[65];
 	bits256 share,decoded256;
 	
@@ -1174,18 +1174,28 @@ int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,
 
 		if(unpermi != -1)
 		{
-			turn_status=cJSON_CreateObject();
+			/*turn_status=cJSON_CreateObject();
 			cJSON_AddStringToObject(turn_status,"method","turn_status");
 			cJSON_AddStringToObject(turn_status,"status","complete");
 			rendered=cJSON_Print(turn_status);
 			bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
-
-			printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,rendered);	
+			*/
 			
+			
+			playerCardInfo=cJSON_CreateObject();
+			cJSON_AddStringToObject(playerCardInfo,"method","playerCardInfo");
+			cJSON_AddNumberToObject(playerCardInfo,"playerid",bet->myplayerid);
+			cJSON_AddNumberToObject(playerCardInfo,"cardid",decoded256.bytes[30]);
+			
+			rendered=cJSON_Print(playerCardInfo);
+			bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+			
+			printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,rendered);		
 			if(bytes<0)
 				retval=-1;
 			else
 				retval=1;
+			
 		}
 
 	}

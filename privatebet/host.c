@@ -18,6 +18,7 @@ struct privatebet_peerln Peersln[CARDS777_MAXPLAYERS+1];
 int32_t Num_rawpeersln,oldNum_rawpeersln,Num_peersln,Numgames;
 int32_t players_joined=0;
 int32_t turn=0,no_of_cards=0;
+int32_t eval_game_p[CARDS777_MAXPLAYERS],eval_game_c[CARDS777_MAXPLAYERS];
 struct deck_dcv_info dcv_info;
 
 struct privatebet_peerln *BET_peerln_find(char *peerid)
@@ -597,7 +598,7 @@ int32_t BET_p2p_dcv_turn_status(cJSON *argjson,struct privatebet_info *bet,struc
 	if(strcmp(jstr(argjson,"status"),"complete") == 0)
 	{
 		no_of_cards++;
-		if(no_of_cards<bet->range)
+		if(no_of_cards<bet->maxplayers) //bet->maxplayers
 			retval=BET_p2p_dcv_turn(argjson,bet,vars);
 
 	}
@@ -612,6 +613,15 @@ int32_t BET_p2p_dcv_turn_status(cJSON *argjson,struct privatebet_info *bet,struc
 int32_t BET_p2p_dcv_start(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	return BET_p2p_dcv_turn(argjson,bet,vars);
+}
+
+
+int32_t BET_p2p_highest_card(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	for(int i=0;i<1;i++)
+	{
+		BET_p2p_dcv_turn(argjson,bet,vars);
+	}
 }
 
 
@@ -644,6 +654,36 @@ void BET_broadcast_table_info(struct privatebet_info *bet)
 	}
 	printf("\nTable Info:%s",cJSON_Print(tableInfo));
 }
+
+void BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	int32_t playerid,cardid,max=-1;
+	
+	playerid=jint(playerCardInfo,"playerid");
+	cardid=jint(playerCardInfo,"cardid");
+	eval_game_p[no_of_cards]=playerid;
+	eval_game_c[no_of_cards]=cardid;
+	no_of_cards++;
+        printf("\n%s:%d:playerid:%d,cardid:%d,no_of_Cards:%d,max_players:%d",__FUNCTION__,__LINE__,playerid,cardid,no_of_cards,bet->maxplayers);	
+	if(no_of_cards<bet->maxplayers) //bet->range
+		BET_p2p_dcv_turn(playerCardInfo,bet,vars);
+	if(no_of_cards==bet->maxplayers)
+	{
+		for(int i=0;i<no_of_cards;i++)
+		{
+			if(eval_game_c[i]>max)
+			{
+				max=eval_game_c[i];
+				playerid=i;
+			}
+		}
+
+		printf("\nThe winner of the game is player :%d, it got the card:%d",playerid,max);
+		printf("\n%s:%d",__FUNCTION__,__LINE__);
+	}		
+		
+}
+
 
 int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
@@ -682,7 +722,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 				BET_relay(argjson,bet,vars);
 			}
 
-			
+			//BET_p2p_highest_card(argjson,bet,vars);
 			BET_p2p_dcv_start(argjson,bet,vars);
 			
 		}
@@ -690,6 +730,10 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		{
 			printf("\n%s:%d:Game Start",__FUNCTION__,__LINE__);
 			BET_p2p_dcv_turn_status(argjson,bet,vars);
+		}
+		else if(strcmp(method,"playerCardInfo") == 0)
+		{
+			BET_evaluate_game(argjson,bet,vars);
 		}
         else
     	{
