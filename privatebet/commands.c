@@ -12,7 +12,7 @@
  * Removal or modification of this copyright notice is prohibited.            *
  *                                                                            *
  ******************************************************************************/
-
+#include "bet.h"
 char *chipsln_command(void *ctx,cJSON *argjson,char *remoteaddr,uint16_t port)
 {
     cJSON *array,*item; int32_t i,n,numargs,maxsize = 1000000; char *args[16],*buffer = malloc(maxsize);

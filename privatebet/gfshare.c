@@ -38,6 +38,7 @@
  *
  */
 #include "../includes/ppapi/c/pp_stdint.h"
+#include "bet.h"
 void libgfshare_init()
 {
     uint32_t i,x = 1;

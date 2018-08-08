@@ -12,6 +12,7 @@
  * Removal or modification of this copyright notice is prohibited.            *
  *                                                                            *
  ******************************************************************************/
+#include "bet.h"
 
 struct privatebet_rawpeerln Rawpeersln[CARDS777_MAXPLAYERS+1],oldRawpeersln[CARDS777_MAXPLAYERS+1];
 struct privatebet_peerln Peersln[CARDS777_MAXPLAYERS+1];
@@ -36,6 +37,7 @@ struct privatebet_peerln *BET_peerln_find(char *peerid)
 struct privatebet_peerln *BET_peerln_create(struct privatebet_rawpeerln *raw,int32_t maxplayers,int32_t maxchips,int32_t chipsize)
 {
     struct privatebet_peerln *p; cJSON *inv; char label[64];
+    bits256 temp;
     if ( (p= BET_peerln_find(raw->peerid)) == 0 )
     {
         p = &Peersln[Num_peersln++];
@@ -44,7 +46,8 @@ struct privatebet_peerln *BET_peerln_create(struct privatebet_rawpeerln *raw,int
     if ( IAMHOST != 0 && p != 0 )//&& strcmp(Host_peerid,LN_idstr) != 0 )
     {
         sprintf(label,"%s_%d",raw->peerid,0);
-        p->hostrhash = chipsln_rhash_create(chipsize,label);
+       // p->hostrhash = chipsln_rhash_create(chipsize,label);
+
     }
     return(p);
 }
@@ -71,7 +74,7 @@ int32_t BET_host_join(cJSON *argjson,struct privatebet_info *bet,struct privateb
             if ( p != 0 )
             {
                 sprintf(label,"%s_%d",peerid,0);
-                p->hostrhash = chipsln_rhash_create(bet->chipsize,label);
+                //p->hostrhash = chipsln_rhash_create(bet->chipsize,label);
                 p->clientrhash = clientrhash;
                 p->clientpubkey = pubkey;
             }

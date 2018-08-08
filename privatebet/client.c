@@ -14,8 +14,9 @@
  ******************************************************************************/
 #include "../includes/cJSON.h"
 #include "../includes/ppapi/c/pp_stdint.h"
-//#include "bet.h"
-char Host_ipaddr[64],Host_peerid[67];
+#include "bet.h"
+
+
 struct deck_player_info player_info;
 struct deck_bvv_info bvv_info;
 int32_t no_of_shares=0;
@@ -387,7 +388,7 @@ void BET_clientloop(void *_ptr)
             jaddbits256(reqjson,"pubkey",Mypubkey);
             jaddstr(reqjson,"method","join");
             jaddstr(reqjson,"peerid",LN_idstr);
-            Clientrhash = chipsln_rhash_create(bet->chipsize,"0");
+            //Clientrhash = chipsln_rhash_create(bet->chipsize,"0");
             BET_message_send("BET_havetable",bet->pushsock,reqjson,1,bet);
         }
         else
