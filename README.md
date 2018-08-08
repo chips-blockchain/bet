@@ -1,6 +1,6 @@
 # bet
 The aim of this project is to provide the necessary bet API's which are sufficient to play poker from the command line. The initial draft of the game written by jl777 is [here](./docs/BET_Initial_Draft.md).
-
+ 
 Basically, there exists three entities in the game DCV, BVV and Player. The role of DCV and BVV is to assist in deck shuffling, dealing and fair play of the game. To test the API's written from the player perspective we run the DCV and BVV nodes, just to start with below or the steps to run DCV and BVV.
 ## Steps to compile
 ```

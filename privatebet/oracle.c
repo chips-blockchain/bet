@@ -12,7 +12,7 @@
  * Removal or modification of this copyright notice is prohibited.            *
  *                                                                            *
  ******************************************************************************/
-
+#include "bet.h"
 char *BET_gameresult(cJSON *argjson)
 {
     return(clonestr("{\"error\":\"sportsbetting is not yet\"}"));

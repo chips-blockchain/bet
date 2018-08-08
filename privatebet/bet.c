@@ -36,6 +36,7 @@
 //  from external: git submodule add https://github.com/ianlancetaylor/libbacktrace.git
 
 #include "bet.h"
+/*
 char *LN_idstr,Host_ipaddr[64],Host_peerid[67],BET_ORACLEURL[64] = "127.0.0.1:7797";
 uint16_t LN_port;
 int32_t Gamestart,Gamestarted,Lastturni,Maxrounds = 3,Maxplayers = 10;
@@ -60,6 +61,7 @@ bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 int32_t sharesflag[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 bits256 deckid;
+*/
 uint32_t LP_rand()
 {
     uint32_t retval;
@@ -161,7 +163,7 @@ void randombytes_buf(void * const buf, const size_t size)
 {
     OS_randombytes((void *)buf,(int32_t)size);
 }
-
+/*
 #include "gfshare.c"
 #include "cards777.c"
 #include "network.c"
@@ -172,7 +174,7 @@ void randombytes_buf(void * const buf, const size_t size)
 #include "client.c"
 #include "host.c"
 #include "states.c"
-
+*/
 // original shuffle with player 2 encrypting to destplayer
 // autodisconnect
 // payments/bets -> separate dealer from pub0
