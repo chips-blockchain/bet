@@ -598,7 +598,7 @@ int32_t BET_p2p_dcv_turn_status(cJSON *argjson,struct privatebet_info *bet,struc
 	if(strcmp(jstr(argjson,"status"),"complete") == 0)
 	{
 		no_of_cards++;
-		if(no_of_cards<bet->maxplayers) //bet->maxplayers
+		if(no_of_cards<bet->range) 
 			retval=BET_p2p_dcv_turn(argjson,bet,vars);
 
 	}
@@ -658,6 +658,7 @@ void BET_broadcast_table_info(struct privatebet_info *bet)
 void BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int32_t playerid,cardid,max=-1;
+	cJSON *gameInfo=NULL;
 	
 	playerid=jint(playerCardInfo,"playerid");
 	cardid=jint(playerCardInfo,"cardid");
@@ -677,7 +678,12 @@ void BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,struct 
 				playerid=i;
 			}
 		}
-
+		gameInfo=cJSON_CreateObject();
+		cJSON_AddStringToObject(gameInfo,"method","result");
+		cJSON_AddNumberToObject(gameInfo,"playerid",playerid);
+		cJSON_AddNumberToObject(gameInfo,"cardid",max);
+		
+		
 		printf("\nThe winner of the game is player :%d, it got the card:%d",playerid,max);
 		printf("\n%s:%d",__FUNCTION__,__LINE__);
 	}		
