@@ -17,8 +17,8 @@
 #include "bet.h"
 
 //struct enc_share *g_shares=NULL;
-bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
-bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
+//bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
+//bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 int32_t sharesflag[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 char *LN_idstr,Host_ipaddr[64],Host_peerid[67];
@@ -27,14 +27,12 @@ int32_t IAMHOST;
 uint16_t LN_port;
 int32_t Num_hostrhashes,Chips_paid;
 bits256 deckid;
-int32_t permis_b[CARDS777_MAXCARDS];
+//int32_t permis_b[CARDS777_MAXCARDS];
 uint8_t sharenrs[256];
 char Host_channel[64];
 struct deck_player_info player_info;
 struct deck_bvv_info bvv_info;
 int32_t no_of_shares=0;
-bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
-bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 uint8_t sharenrs[256];
 
 
