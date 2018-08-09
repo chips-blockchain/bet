@@ -36,6 +36,17 @@
 //  from external: git submodule add https://github.com/ianlancetaylor/libbacktrace.git
 
 #include "bet.h"
+int32_t IAMLP;
+int32_t Maxplayers = 10;
+int32_t permis_d[CARDS777_MAXCARDS],permis_b[CARDS777_MAXCARDS];
+bits256 *allshares=NULL;
+bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
+bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
+uint8_t sharenrs[256];
+bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
+struct enc_share *g_shares=NULL;
+bits256 deckid;
+
 /*
 char *LN_idstr,Host_ipaddr[64],Host_peerid[67],BET_ORACLEURL[64] = "127.0.0.1:7797";
 uint16_t LN_port;

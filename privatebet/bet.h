@@ -252,7 +252,7 @@ https://crypto.stanford.edu/~pgolle/papers/poker.pdf
 #define BET_GAMESTART_DELAY 10
 #define BET_RESERVERATE 1.025
 #define LN_FUNDINGERROR "\"Cannot afford funding transaction\""
-
+/*
 char *LN_idstr,Host_ipaddr[64],Host_peerid[67];BET_ORACLEURL[64] = "127.0.0.1:7797";
 uint16_t LN_port;
 int32_t Gamestart,Gamestarted,Lastturni,Maxrounds = 3,Maxplayers = 10;
@@ -280,7 +280,7 @@ bits256 deckid;
 
 bits256 Host_rhashes[256]; int32_t Num_hostrhashes,Chips_paid;
 
-
+*/
 struct BET_shardsinfo
 {
     UT_hash_handle hh;

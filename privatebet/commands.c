@@ -13,6 +13,10 @@
  *                                                                            *
  ******************************************************************************/
 #include "bet.h"
+
+char *LN_idstr,BET_ORACLEURL[64] = "127.0.0.1:7797";
+int32_t IAMHOST,IAMORACLE;
+
 char *chipsln_command(void *ctx,cJSON *argjson,char *remoteaddr,uint16_t port)
 {
     cJSON *array,*item; int32_t i,n,numargs,maxsize = 1000000; char *args[16],*buffer = malloc(maxsize);

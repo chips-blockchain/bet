@@ -14,6 +14,9 @@
  ******************************************************************************/
 #include "bet.h"
 
+int32_t Gamestart,Gamestarted,Maxrounds = 3;
+bits256 Mypubkey;
+
 int32_t BET_pubkeyfind(struct privatebet_info *bet,bits256 pubkey,char *peerid)
 {
     int32_t i;
