@@ -16,7 +16,7 @@
 #include "../includes/ppapi/c/pp_stdint.h"
 #include "bet.h"
 
-struct enc_share *g_shares=NULL;
+//struct enc_share *g_shares=NULL;
 bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 int32_t sharesflag[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];

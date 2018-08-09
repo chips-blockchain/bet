@@ -215,7 +215,7 @@ https://crypto.stanford.edu/~pgolle/papers/poker.pdf
 
 
 */
-#pragma once
+
 
 #include <stdio.h>
 #include <stdint.h>
