@@ -44,9 +44,8 @@ bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 uint8_t sharenrs[256];
 bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
-struct enc_share *g_shares=NULL;
 bits256 deckid;
-
+struct enc_share *g_shares=NULL;
 /*
 char *LN_idstr,Host_ipaddr[64],Host_peerid[67],BET_ORACLEURL[64] = "127.0.0.1:7797";
 uint16_t LN_port;
@@ -586,6 +585,7 @@ int main(int argc,const char *argv[])
 }
 
 #endif
+
 bits256 curve25519_fieldelement(bits256 hash)
 {
     hash.bytes[0] &= 0xf8, hash.bytes[31] &= 0x7f, hash.bytes[31] |= 0x40;
@@ -971,6 +971,7 @@ bits256 sg777_player_decode(int32_t playerid,int32_t cardID,int numplayers,struc
     bits256 recover,decoded,tmp,xoverz,hash,fe,refval,basepoint,cardshares[CARDS777_MAXPLAYERS]; int32_t i,j,k,unpermi,M; char str[65];
     struct enc_share temp;
     uint8_t **shares,flag=0;
+    struct enc_share *g_shares=NULL;
     shares=calloc(numplayers,sizeof(uint8_t*));
     for(i=0;i<numplayers;i++)
         shares[i]=calloc(sizeof(bits256),sizeof(uint8_t));
@@ -1029,6 +1030,7 @@ struct pair256 p2p_bvv_init(bits256 *keys,struct pair256 b_key,bits256 *blinding
     int32_t i,j,k,M,permi,permis[256]; uint8_t space[8192]; bits256 cardshares[CARDS777_MAXPLAYERS],basepoint,temp_hash[CARDS777_MAXCARDS];
     char str[65],share_str[177];
     struct enc_share temp;
+    struct enc_share *g_shares=NULL;
 	/*
 	for (i=0; i<numcards; i++){
 		temp_hash[i]=g_hash[playerid][i];
@@ -1069,6 +1071,7 @@ struct pair256 sg777_blinding_vendor(struct pair256 *keys,struct pair256 b_key,b
     int32_t i,j,k,M,permi,permis[256]; uint8_t space[8192]; bits256 cardshares[CARDS777_MAXPLAYERS],basepoint,temp_hash[CARDS777_MAXCARDS];
     char str[65],share_str[177];
     struct enc_share temp;
+    struct enc_share *g_shares=NULL;
 	//libgfshare_init();
 	
 	for (i=0; i<numcards; i++){
@@ -1103,8 +1106,11 @@ void sg777_players_init(int32_t numplayers,int32_t numcards,bits256 deckid)
     static int32_t decodebad,decodegood,good,bad;
     int32_t i,j,k,playerid,errs,unpermi,playererrs=0,decoded[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS],permis[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS]; bits256 playerprivs[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS],playercards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS]; char str[65];
     struct pair256 keys[CARDS777_MAXPLAYERS],b_key;
+    struct enc_share *g_shares=NULL;
+
     bits256 temp,decoded256,basepoint,cardprods[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS],finalcards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS],blindingvals[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS],blindedcards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
     dekgen_vendor_perm(numcards);
+
     blinding_vendor_perm(numcards);
     for (playerid=0; playerid<numplayers; playerid++) {
         keys[playerid]=deckgen_player(playerprivs[playerid],playercards[playerid],permis[playerid],numcards);
@@ -1163,7 +1169,6 @@ void sg777_players_init(int32_t numplayers,int32_t numcards,bits256 deckid)
     printf("numplayers.%d numcards.%d deck %s -> playererrs.%d good.%d bad.%d decode.[good %d, bad %d]\n",numplayers,numcards,bits256_str(str,deckid),playererrs,good,bad,decodegood,decodebad);
     free(g_shares);
 }
-
 
 // Bet-API's
 
