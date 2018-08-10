@@ -14,11 +14,30 @@
  ******************************************************************************/
 #include "../includes/cJSON.h"
 #include "../includes/ppapi/c/pp_stdint.h"
-//#include "bet.h"
-char Host_ipaddr[64],Host_peerid[67];
+#include "bet.h"
+
+//struct enc_share *g_shares=NULL;
+//bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
+//bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
+int32_t sharesflag[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
+bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
+char *LN_idstr,Host_ipaddr[64],Host_peerid[67];
+bits256 Mypubkey,Myprivkey;
+int32_t IAMHOST;
+uint16_t LN_port;
+int32_t Num_hostrhashes,Chips_paid;
+bits256 deckid;
+//int32_t permis_b[CARDS777_MAXCARDS];
+uint8_t sharenrs[256];
+char Host_channel[64];
 struct deck_player_info player_info;
 struct deck_bvv_info bvv_info;
 int32_t no_of_shares=0;
+uint8_t sharenrs[256];
+
+
+
+
 
 int32_t BET_client_onechip(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars,int32_t senderid)
 {
@@ -387,7 +406,7 @@ void BET_clientloop(void *_ptr)
             jaddbits256(reqjson,"pubkey",Mypubkey);
             jaddstr(reqjson,"method","join");
             jaddstr(reqjson,"peerid",LN_idstr);
-            Clientrhash = chipsln_rhash_create(bet->chipsize,"0");
+            //Clientrhash = chipsln_rhash_create(bet->chipsize,"0");
             BET_message_send("BET_havetable",bet->pushsock,reqjson,1,bet);
         }
         else
@@ -1283,7 +1302,8 @@ int32_t BET_p2p_get_own_share(cJSON *argjson,struct privatebet_info *bet,struct 
 int32_t BET_p2p_client_turn(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int32_t retval,playerid;
-
+	
+	printf("\n%s:%d",__FUNCTION__,__LINE__);
 	
 	playerid=jint(argjson,"playerid");
 	
@@ -1294,7 +1314,7 @@ int32_t BET_p2p_client_turn(cJSON *argjson,struct privatebet_info *bet,struct pr
 	}
 	else 
 	{
-		retval=BET_p2p_client_give_share(argjson,bet,vars);
+		//retval=BET_p2p_client_give_share(argjson,bet,vars);
 	}
 	
 	

@@ -215,7 +215,7 @@ https://crypto.stanford.edu/~pgolle/papers/poker.pdf
 
 
 */
-
+#pragma once
 
 #include <stdio.h>
 #include <stdint.h>
@@ -253,6 +253,39 @@ https://crypto.stanford.edu/~pgolle/papers/poker.pdf
 #define BET_RESERVERATE 1.025
 #define LN_FUNDINGERROR "\"Cannot afford funding transaction\""
 
+
+extern bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
+extern bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
+int32_t permis_d[CARDS777_MAXCARDS],permis_b[CARDS777_MAXCARDS];
+/*
+char *LN_idstr,Host_ipaddr[64],Host_peerid[67];BET_ORACLEURL[64] = "127.0.0.1:7797";
+uint16_t LN_port;
+int32_t Gamestart,Gamestarted,Lastturni,Maxrounds = 3,Maxplayers = 10;
+uint8_t BET_logs[256],BET_exps[510];
+bits256 *Debug_privkeys;
+struct BET_shardsinfo *BET_shardsinfos;
+portable_mutex_t LP_gcmutex,LP_peermutex,LP_commandmutex,LP_networkmutex,LP_psockmutex,LP_messagemutex,BET_shardmutex;
+int32_t LP_canbind,IAMLP,IAMHOST,IAMORACLE,LP_STOP_RECEIVED,DOCKERFLAG;
+struct LP_peerinfo  *LP_peerinfos,*LP_mypeer;
+bits256 Mypubkey,Myprivkey,Clientrhash,Hostrhashes[CARDS777_MAXPLAYERS+1];
+char Host_channel[64];
+int32_t permis_d[CARDS777_MAXCARDS],permis_b[CARDS777_MAXCARDS];
+bits256 *allshares=NULL;
+uint8_t sharenrs[256];
+struct rpcrequest_info *LP_garbage_collector;
+//struct enc_share { uint8_t bytes[sizeof(bits256)+crypto_box_NONCEBYTES+crypto_box_ZEROBYTES]; };
+struct enc_share *g_shares=NULL;
+
+bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
+bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
+
+int32_t sharesflag[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
+bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
+bits256 deckid;
+
+bits256 Host_rhashes[256]; int32_t Num_hostrhashes,Chips_paid;
+
+*/
 struct BET_shardsinfo
 {
     UT_hash_handle hh;
@@ -313,6 +346,8 @@ struct privatebet_share
 //added by sg777
 
 struct enc_share { uint8_t bytes[sizeof(bits256)+crypto_box_NONCEBYTES+crypto_box_ZEROBYTES]; };
+
+extern struct enc_share *g_shares;
 
 struct deck_player_info
 {
@@ -388,5 +423,11 @@ bits256 t_sg777_player_decode(struct privatebet_info *bet,int32_t cardID,int num
 struct pair256 p2p_bvv_init(bits256 *keys,struct pair256 b_key,bits256 *blindings,bits256 *blindedcards,bits256 *finalcards,int32_t numcards,int32_t numplayers,int32_t playerid,bits256 deckid);
 
 bits256 curve25519_fieldelement(bits256 hash);
+void BET_p2p_hostloop(void *_ptr);
+void BET_p2p_bvvloop(void *_ptr);
+void BET_p2p_clientloop(void * _ptr);
+void* BET_response(void* _ptr);
+void* BET_request(void* _ptr);
+int test(int argc,const char *argv[]);
 
 

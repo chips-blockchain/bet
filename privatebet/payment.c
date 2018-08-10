@@ -12,8 +12,14 @@
  * Removal or modification of this copyright notice is prohibited.            *
  *                                                                            *
  ******************************************************************************/
+#include "bet.h"
 
-bits256 Host_rhashes[256]; int32_t Num_hostrhashes,Chips_paid;
+bits256 Host_rhashes[256]; 
+bits256 Mypubkey;
+bits256 Clientrhash;
+char Host_channel[64];
+char *LN_idstr,Host_peerid[67];
+int32_t Num_hostrhashes,Chips_paid;
 
 bits256 BET_clientrhash()
 {
@@ -99,7 +105,7 @@ struct privatebet_peerln *BET_invoice_complete(char *nextlabel,cJSON *item,struc
                         else
                         {
                             sprintf(nextlabel,"%s_%d",peerstr,ind+1);
-                            p->hostrhash = chipsln_rhash_create(bet->chipsize,nextlabel);
+                            //p->hostrhash = chipsln_rhash_create(bet->chipsize,nextlabel);
                             printf("updated rhash for %s to %s\n",peerstr,bits256_str(str,p->hostrhash));
                         }
                     }

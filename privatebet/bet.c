@@ -36,6 +36,17 @@
 //  from external: git submodule add https://github.com/ianlancetaylor/libbacktrace.git
 
 #include "bet.h"
+int32_t IAMLP;
+int32_t Maxplayers = 10;
+int32_t permis_d[CARDS777_MAXCARDS],permis_b[CARDS777_MAXCARDS];
+bits256 *allshares=NULL;
+bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
+bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
+uint8_t sharenrs[256];
+bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
+bits256 deckid;
+struct enc_share *g_shares=NULL;
+/*
 char *LN_idstr,Host_ipaddr[64],Host_peerid[67],BET_ORACLEURL[64] = "127.0.0.1:7797";
 uint16_t LN_port;
 int32_t Gamestart,Gamestarted,Lastturni,Maxrounds = 3,Maxplayers = 10;
@@ -60,6 +71,7 @@ bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 int32_t sharesflag[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 bits256 deckid;
+*/
 uint32_t LP_rand()
 {
     uint32_t retval;
@@ -161,7 +173,7 @@ void randombytes_buf(void * const buf, const size_t size)
 {
     OS_randombytes((void *)buf,(int32_t)size);
 }
-
+/*
 #include "gfshare.c"
 #include "cards777.c"
 #include "network.c"
@@ -172,7 +184,7 @@ void randombytes_buf(void * const buf, const size_t size)
 #include "client.c"
 #include "host.c"
 #include "states.c"
-
+*/
 // original shuffle with player 2 encrypting to destplayer
 // autodisconnect
 // payments/bets -> separate dealer from pub0
@@ -442,7 +454,7 @@ int main(int argc,const char *argv[])
 }
 #endif
 #if 1
-int main(int argc,const char *argv[])
+int test(int argc,const char *argv[])
 {
     uint16_t tmp,rpcport = 7797,port = 7797+1;
     char connectaddr[128],bindaddr[128]="ipc:///tmp/bet.ipc",bindaddr1[128]="ipc:///tmp/bet1.ipc",smartaddr[64],randphrase[32],*modestr,*hostip,*passphrase=0,*retstr; 
@@ -573,6 +585,7 @@ int main(int argc,const char *argv[])
 }
 
 #endif
+
 bits256 curve25519_fieldelement(bits256 hash)
 {
     hash.bytes[0] &= 0xf8, hash.bytes[31] &= 0x7f, hash.bytes[31] |= 0x40;
@@ -1090,8 +1103,10 @@ void sg777_players_init(int32_t numplayers,int32_t numcards,bits256 deckid)
     static int32_t decodebad,decodegood,good,bad;
     int32_t i,j,k,playerid,errs,unpermi,playererrs=0,decoded[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS],permis[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS]; bits256 playerprivs[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS],playercards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS]; char str[65];
     struct pair256 keys[CARDS777_MAXPLAYERS],b_key;
+
     bits256 temp,decoded256,basepoint,cardprods[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS],finalcards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS],blindingvals[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS],blindedcards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
     dekgen_vendor_perm(numcards);
+
     blinding_vendor_perm(numcards);
     for (playerid=0; playerid<numplayers; playerid++) {
         keys[playerid]=deckgen_player(playerprivs[playerid],playercards[playerid],permis[playerid],numcards);
@@ -1150,7 +1165,6 @@ void sg777_players_init(int32_t numplayers,int32_t numcards,bits256 deckid)
     printf("numplayers.%d numcards.%d deck %s -> playererrs.%d good.%d bad.%d decode.[good %d, bad %d]\n",numplayers,numcards,bits256_str(str,deckid),playererrs,good,bad,decodegood,decodebad);
     free(g_shares);
 }
-
 
 // Bet-API's
 

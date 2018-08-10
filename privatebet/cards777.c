@@ -13,6 +13,10 @@
  *                                                                            *
  ******************************************************************************/
 
+#include "bet.h"
+
+bits256 *Debug_privkeys;
+bits256 Myprivkey;
 
 bits256 cards777_initcrypt(bits256 data,bits256 privkey,bits256 pubkey,int32_t invert)
 {
