@@ -1,12 +1,23 @@
-CC=gcc
-CFLAGS= -w -g -c -fpic
-SRC=bet.c
-OBJ=$(patsubst %.c,%.o,$(SRC))
-HOME=/root/bet
+PROJNAME := bet
+SRCFILES := cards777.c  client.c  commands.c  gfshare.c  host.c  network.c  oracle.c  payment.c  states.c  table.c bet.c
+OBJFILES := $(patsubst %.c,%.o,$(SRCFILES))
 
+WARNINGS := -w
 
-default:	
-	gcc -w -g -o bet-cli bet-cli.c *.o ../ccan/obj/*.o ../external/jsmn/jsmn.o ../crypto777/libcrypto777.a -lcurl -ldl -lnng -lbacktrace -lpthread -lm
- 
+CFLAGS := -g -fPIC -std=c99 $(WARNINGS)
+
+.PHONY: all clean
+
+all: $(PROJNAME)
+
 clean:
-	rm bet
+	-@$(RM) $(OBJFILES) 
+	-@$(RM) $(PROJNAME)	    
+
+
+$(PROJNAME): $(OBJFILES)
+	   # @$(CC) $(WARNINGS) -o $@ bet.c $^ ../ccan/obj/*.o ../external/jsmn/jsmn.o ../crypto777/libcrypto777.a -lcurl -ldl -lnng -lbacktrace -lpthread -lm
+	   ar rc libbet.a *.o 
+
+%.o: %.c
+	@$(CC) $(CFLAGS) -c $< -o $@

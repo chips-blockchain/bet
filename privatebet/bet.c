@@ -454,7 +454,7 @@ int main(int argc,const char *argv[])
 }
 #endif
 #if 1
-int main(int argc,const char *argv[])
+int test(int argc,const char *argv[])
 {
     uint16_t tmp,rpcport = 7797,port = 7797+1;
     char connectaddr[128],bindaddr[128]="ipc:///tmp/bet.ipc",bindaddr1[128]="ipc:///tmp/bet1.ipc",smartaddr[64],randphrase[32],*modestr,*hostip,*passphrase=0,*retstr; 

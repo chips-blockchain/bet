@@ -428,6 +428,6 @@ void BET_p2p_bvvloop(void *_ptr);
 void BET_p2p_clientloop(void * _ptr);
 void* BET_response(void* _ptr);
 void* BET_request(void* _ptr);
-
+int test(int argc,const char *argv[]);
 
 

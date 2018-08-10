@@ -1302,7 +1302,8 @@ int32_t BET_p2p_get_own_share(cJSON *argjson,struct privatebet_info *bet,struct 
 int32_t BET_p2p_client_turn(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int32_t retval,playerid;
-
+	
+	printf("\n%s:%d",__FUNCTION__,__LINE__);
 	
 	playerid=jint(argjson,"playerid");
 	
@@ -1313,7 +1314,7 @@ int32_t BET_p2p_client_turn(cJSON *argjson,struct privatebet_info *bet,struct pr
 	}
 	else 
 	{
-		retval=BET_p2p_client_give_share(argjson,bet,vars);
+		//retval=BET_p2p_client_give_share(argjson,bet,vars);
 	}
 	
 	
