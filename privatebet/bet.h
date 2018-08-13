@@ -294,7 +294,7 @@ struct BET_shardsinfo
     bits256 recover,data[];
 };
 
-struct gfshare_ctx
+struct gfshare_ctx_bet
 {
     uint32_t sharecount,threshold,size,buffersize,allocsize;
     uint8_t sharenrs[255],buffer[];
@@ -428,6 +428,6 @@ void BET_p2p_bvvloop(void *_ptr);
 void BET_p2p_clientloop(void * _ptr);
 void* BET_response(void* _ptr);
 void* BET_request(void* _ptr);
-int test(int argc,const char *argv[]);
+int bet(int argc, char **argv);
 
 
