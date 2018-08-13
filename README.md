@@ -11,6 +11,7 @@ $ apt install make ninja-build libsqlite3-dev libgmp3-dev
 #Install nanomsg-next-generation 
 
 $ git clone https://github.com/nanomsg/nng.git
+$ cd nng
 $ mkdir build
 $ cd build
 $ cmake -G Ninja ..
