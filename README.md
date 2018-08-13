@@ -6,6 +6,8 @@ Basically, there exists three entities in the game DCV, BVV and Player. The role
 ```
 # Dependencies Check 
 
+$ sudo apt-get install software-properties-common autoconf git build-essential libtool libprotobuf-c-dev libgmp-dev libsqlite3-dev python python3 zip jq libevent-dev pkg-config libssl-dev libcurl4-gnutls-dev cmake
+
 $ apt install make ninja-build libsqlite3-dev libgmp3-dev
 
 #Install nanomsg-next-generation 
@@ -25,6 +27,7 @@ $ git clone https://github.com/sg777/bet.git
 $ cd bet
 $ make
 ```
+
 ## Command to run DCV
 ```
 $ cd
