@@ -58,10 +58,10 @@ void libgfshare_init()
     BET_logs[0] = 0; // can't log(0) so just set it neatly to 0
 }
 
-struct gfshare_ctx *_gfshare_init_core(uint8_t *sharenrs,uint32_t sharecount,uint8_t threshold,uint32_t size,void *space,int32_t spacesize)
+struct gfshare_ctx_bet *_gfshare_init_core(uint8_t *sharenrs,uint32_t sharecount,uint8_t threshold,uint32_t size,void *space,int32_t spacesize)
 {
-    struct gfshare_ctx *ctx; int32_t allocsize;
-    allocsize = (int32_t)(sizeof(struct gfshare_ctx) + threshold * size);
+    struct gfshare_ctx_bet *ctx; int32_t allocsize;
+    allocsize = (int32_t)(sizeof(struct gfshare_ctx_bet) + threshold * size);
     if ( allocsize > spacesize )
     {
         printf("malloc allocsize %d vs spacesize.%d\n",allocsize,spacesize);
@@ -80,7 +80,7 @@ struct gfshare_ctx *_gfshare_init_core(uint8_t *sharenrs,uint32_t sharecount,uin
 }
 
 // Initialise a gfshare context for producing shares
-struct gfshare_ctx *gfshare_initenc(uint8_t *sharenrs,uint32_t sharecount,uint8_t threshold,uint32_t size,void *space,int32_t spacesize)
+struct gfshare_ctx_bet *gfshare_initenc(uint8_t *sharenrs,uint32_t sharecount,uint8_t threshold,uint32_t size,void *space,int32_t spacesize)
 {
     uint32_t i;
     for (i=0; i<sharecount; i++)
@@ -98,18 +98,18 @@ struct gfshare_ctx *gfshare_initenc(uint8_t *sharenrs,uint32_t sharecount,uint8_
 }
 
 // Initialise a gfshare context for recombining shares
-struct gfshare_ctx *gfshare_initdec(uint8_t *sharenrs,uint32_t sharecount,uint32_t size,void *space,int32_t spacesize)
+struct gfshare_ctx_bet *gfshare_initdec(uint8_t *sharenrs,uint32_t sharecount,uint32_t size,void *space,int32_t spacesize)
 {
-    struct gfshare_ctx *ctx = _gfshare_init_core(sharenrs,sharecount,sharecount,size,space,spacesize);
+    struct gfshare_ctx_bet *ctx = _gfshare_init_core(sharenrs,sharecount,sharecount,size,space,spacesize);
     if ( ctx != NULL )
         ctx->threshold = 0;
     return(ctx);
 }
 
 // Initialise a gfshare context for recombining shares
-struct gfshare_ctx *gfshare_sg777_initdec(uint8_t *sharenrs,uint32_t sharecount,uint8_t threshold,uint32_t size,void *space,int32_t spacesize)
+struct gfshare_ctx_bet *gfshare_sg777_initdec(uint8_t *sharenrs,uint32_t sharecount,uint8_t threshold,uint32_t size,void *space,int32_t spacesize)
 {
-    struct gfshare_ctx *ctx = _gfshare_init_core(sharenrs,sharecount,threshold,size,space,spacesize);
+    struct gfshare_ctx_bet *ctx = _gfshare_init_core(sharenrs,sharecount,threshold,size,space,spacesize);
     if ( ctx != NULL )
         ctx->threshold = 0;
     return(ctx);
@@ -117,28 +117,28 @@ struct gfshare_ctx *gfshare_sg777_initdec(uint8_t *sharenrs,uint32_t sharecount,
 
 
 // Free a share context's memory
-void gfshare_free(struct gfshare_ctx *ctx)
+void gfshare_free(struct gfshare_ctx_bet *ctx)
 {
     OS_randombytes(ctx->buffer,ctx->buffersize);
     OS_randombytes(ctx->sharenrs,ctx->sharecount);
     if ( ctx->allocsize != 0 )
     {
-        OS_randombytes((uint8_t *)ctx,sizeof(struct gfshare_ctx));
+        OS_randombytes((uint8_t *)ctx,sizeof(struct gfshare_ctx_bet));
         free(ctx);
-    } else OS_randombytes((uint8_t *)ctx,sizeof(struct gfshare_ctx));
+    } else OS_randombytes((uint8_t *)ctx,sizeof(struct gfshare_ctx_bet));
 }
 
 // --------------------------------------------------------[ Splitting ]----
 
 // Provide a secret to the encoder. (this re-scrambles the coefficients)
-void gfshare_enc_setsecret(struct gfshare_ctx *ctx,uint8_t *secret)
+void gfshare_enc_setsecret(struct gfshare_ctx_bet  *ctx,uint8_t *secret)
 {
     memcpy(ctx->buffer + ((ctx->threshold-1) * ctx->size),secret,ctx->size);
     OS_randombytes(ctx->buffer,(ctx->threshold-1) * ctx->size);
 }
 
 // Extract a share from the context. 'share' must be preallocated and at least 'size' bytes long. 'sharenr' is the index into the 'sharenrs' array of the share you want.
-void gfshare_encgetshare(uint8_t *_logs,uint8_t *_exps,struct gfshare_ctx *ctx,uint8_t sharenr,uint8_t *share)
+void gfshare_encgetshare(uint8_t *_logs,uint8_t *_exps,struct gfshare_ctx_bet *ctx,uint8_t sharenr,uint8_t *share)
 {
 	if ( _logs == 0 )
         _logs = BET_logs;
@@ -167,19 +167,19 @@ void gfshare_encgetshare(uint8_t *_logs,uint8_t *_exps,struct gfshare_ctx *ctx,u
 // ----------------------------------------------------[ Recombination ]----
 
 // Inform a recombination context of a change in share indexes
-void gfshare_dec_newshares(struct gfshare_ctx *ctx,uint8_t *sharenrs)
+void gfshare_dec_newshares(struct gfshare_ctx_bet *ctx,uint8_t *sharenrs)
 {
     memcpy(ctx->sharenrs,sharenrs,ctx->sharecount);
 }
 
 // Provide a share context with one of the shares. The 'sharenr' is the index into the 'sharenrs' array
-void gfshare_dec_giveshare(struct gfshare_ctx *ctx,uint8_t sharenr,uint8_t *share)
+void gfshare_dec_giveshare(struct gfshare_ctx_bet *ctx,uint8_t sharenr,uint8_t *share)
 {
     memcpy(ctx->buffer + (sharenr * ctx->size),share,ctx->size);
 }
 
 // Extract the secret by interpolating the shares. secretbuf must be allocated and at least 'size' bytes
-void gfshare_decextract(uint8_t *_logs,uint8_t *_exps,struct gfshare_ctx *ctx,uint8_t *secretbuf)
+void gfshare_decextract(uint8_t *_logs,uint8_t *_exps,struct gfshare_ctx_bet *ctx,uint8_t *secretbuf)
 {
     uint32_t i,j; uint8_t *secret_ptr,*share_ptr,sharei,sharej;
     if ( _logs == 0 )
