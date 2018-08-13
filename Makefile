@@ -336,7 +336,7 @@ clean:
 	$(RM) ccan/ccan/cdump/tools/cdump-enumstr.o
 	make --directory privatebet clean
 	make --directory external/jsmn clean
-	make --directory crypto777
+	make --directory crypto777 clean
 	$(RM) -d ccan/obj
 update-mocks/%: %
 	@tools/update-mocks.sh "$*"
