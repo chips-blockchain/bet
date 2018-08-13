@@ -7,7 +7,7 @@ Basically, there exists three entities in the game DCV, BVV and Player. The role
 cd
 git clone https://github.com/sg777/bet.git
 cd bet
-make
+apt install make
 ```
 ## Command to run DCV
 ```
