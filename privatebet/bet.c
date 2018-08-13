@@ -454,7 +454,7 @@ int main(int argc,const char *argv[])
 }
 #endif
 #if 1
-int main(int argc,const char *argv[])
+int bet(int argc, char **argv)
 {
     uint16_t tmp,rpcport = 7797,port = 7797+1;
     char connectaddr[128],bindaddr[128]="ipc:///tmp/bet.ipc",bindaddr1[128]="ipc:///tmp/bet1.ipc",smartaddr[64],randphrase[32],*modestr,*hostip,*passphrase=0,*retstr; 
@@ -710,7 +710,7 @@ void blinding_vendor(bits256 *blindings,bits256 *blindedcards,bits256 *finalcard
 bits256 player_decode(int32_t playerid,int32_t cardID,int numplayers,struct pair256 key,bits256 blindingval,bits256 blindedcard,bits256 *cardprods,bits256 *playerprivs,int32_t *permis,int32_t numcards)
 {
     bits256 tmp,xoverz,hash,fe,decoded,refval,basepoint,*cardshares; int32_t i,j,k,unpermi,M; char str[65];uint8_t space[8192];
-    struct gfshare_ctx *G;
+    struct gfshare_ctx_bet *G;
     bits256 *recover=NULL;
     
     uint8_t **shares;
@@ -971,7 +971,6 @@ bits256 sg777_player_decode(int32_t playerid,int32_t cardID,int numplayers,struc
     bits256 recover,decoded,tmp,xoverz,hash,fe,refval,basepoint,cardshares[CARDS777_MAXPLAYERS]; int32_t i,j,k,unpermi,M; char str[65];
     struct enc_share temp;
     uint8_t **shares,flag=0;
-    struct enc_share *g_shares=NULL;
     shares=calloc(numplayers,sizeof(uint8_t*));
     for(i=0;i<numplayers;i++)
         shares[i]=calloc(sizeof(bits256),sizeof(uint8_t));
@@ -1030,7 +1029,6 @@ struct pair256 p2p_bvv_init(bits256 *keys,struct pair256 b_key,bits256 *blinding
     int32_t i,j,k,M,permi,permis[256]; uint8_t space[8192]; bits256 cardshares[CARDS777_MAXPLAYERS],basepoint,temp_hash[CARDS777_MAXCARDS];
     char str[65],share_str[177];
     struct enc_share temp;
-    struct enc_share *g_shares=NULL;
 	/*
 	for (i=0; i<numcards; i++){
 		temp_hash[i]=g_hash[playerid][i];
@@ -1071,7 +1069,6 @@ struct pair256 sg777_blinding_vendor(struct pair256 *keys,struct pair256 b_key,b
     int32_t i,j,k,M,permi,permis[256]; uint8_t space[8192]; bits256 cardshares[CARDS777_MAXPLAYERS],basepoint,temp_hash[CARDS777_MAXCARDS];
     char str[65],share_str[177];
     struct enc_share temp;
-    struct enc_share *g_shares=NULL;
 	//libgfshare_init();
 	
 	for (i=0; i<numcards; i++){
@@ -1106,7 +1103,6 @@ void sg777_players_init(int32_t numplayers,int32_t numcards,bits256 deckid)
     static int32_t decodebad,decodegood,good,bad;
     int32_t i,j,k,playerid,errs,unpermi,playererrs=0,decoded[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS],permis[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS]; bits256 playerprivs[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS],playercards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS]; char str[65];
     struct pair256 keys[CARDS777_MAXPLAYERS],b_key;
-    struct enc_share *g_shares=NULL;
 
     bits256 temp,decoded256,basepoint,cardprods[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS],finalcards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS],blindingvals[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS],blindedcards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
     dekgen_vendor_perm(numcards);

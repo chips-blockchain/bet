@@ -252,6 +252,11 @@ https://crypto.stanford.edu/~pgolle/papers/poker.pdf
 #define BET_GAMESTART_DELAY 10
 #define BET_RESERVERATE 1.025
 #define LN_FUNDINGERROR "\"Cannot afford funding transaction\""
+
+
+extern bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
+extern bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
+int32_t permis_d[CARDS777_MAXCARDS],permis_b[CARDS777_MAXCARDS];
 /*
 char *LN_idstr,Host_ipaddr[64],Host_peerid[67];BET_ORACLEURL[64] = "127.0.0.1:7797";
 uint16_t LN_port;
@@ -289,7 +294,7 @@ struct BET_shardsinfo
     bits256 recover,data[];
 };
 
-struct gfshare_ctx
+struct gfshare_ctx_bet
 {
     uint32_t sharecount,threshold,size,buffersize,allocsize;
     uint8_t sharenrs[255],buffer[];
@@ -423,6 +428,6 @@ void BET_p2p_bvvloop(void *_ptr);
 void BET_p2p_clientloop(void * _ptr);
 void* BET_response(void* _ptr);
 void* BET_request(void* _ptr);
-
+int bet(int argc, char **argv);
 
 
