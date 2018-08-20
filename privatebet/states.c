@@ -13,7 +13,8 @@
  *                                                                            *
  ******************************************************************************/
 #include "bet.h"
-
+#include "network.h"
+#include "table.h"
 bits256 Mypubkey;
 int32_t IAMHOST;
 int32_t Gamestart,Gamestarted,Lastturni;

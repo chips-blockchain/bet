@@ -13,6 +13,7 @@
  *                                                                            *
  ******************************************************************************/
 #include "bet.h"
+#include "cards777.h"
 char *BET_gameresult(cJSON *argjson)
 {
     return(clonestr("{\"error\":\"sportsbetting is not yet\"}"));

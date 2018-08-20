@@ -14,7 +14,7 @@
  ******************************************************************************/
 
 #include "bet.h"
-
+#include "gfshare.h"
 bits256 *Debug_privkeys;
 bits256 Myprivkey;
 

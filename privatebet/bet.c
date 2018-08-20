@@ -36,6 +36,13 @@
 //  from external: git submodule add https://github.com/ianlancetaylor/libbacktrace.git
 
 #include "bet.h"
+#include "gfshare.h"
+#include "cards777.h"
+#include "client.h"
+#include "host.h"
+#include "table.h"
+#include "network.h"
+
 int32_t IAMLP;
 int32_t Maxplayers = 10;
 int32_t permis_d[CARDS777_MAXCARDS],permis_b[CARDS777_MAXCARDS];

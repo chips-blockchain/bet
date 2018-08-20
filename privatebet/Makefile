@@ -2,8 +2,8 @@ PROJNAME := bet
 LIB := libbet
 SRCFILES := cards777.c  client.c  commands.c  gfshare.c  host.c  network.c  oracle.c  payment.c  states.c  table.c bet.c
 OBJFILES := $(patsubst %.c,%.o,$(SRCFILES))
-
-WARNINGS := -w
+CC := g++
+WARNINGS := -w -fpermissive
 
 CFLAGS := -g -fPIC -std=c99 $(WARNINGS)
 

@@ -39,7 +39,7 @@
  */
 #include "../includes/ppapi/c/pp_stdint.h"
 #include "bet.h"
-
+#include "gfshare.h"
 uint8_t BET_logs[256],BET_exps[510];
 
 void libgfshare_init()
