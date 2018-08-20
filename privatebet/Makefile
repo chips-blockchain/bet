@@ -1,8 +1,8 @@
 PROJNAME := bet
 LIB := libbet
-SRCFILES := cards777.c  client.c  commands.c  gfshare.c  host.c  network.c  oracle.c  payment.c  states.c  table.c bet.c
+SRCFILES := cards777.c  client.c  commands.c  gfshare.c  host.c  network.c  oracle.c  payment.c  states.c  table.c
 OBJFILES := $(patsubst %.c,%.o,$(SRCFILES))
-CC := g++
+CC := gcc
 WARNINGS := -w -fpermissive
 
 CFLAGS := -g -fPIC -std=c99 $(WARNINGS)
@@ -18,8 +18,8 @@ clean:
 
 
 $(PROJNAME): $(OBJFILES)
-	   # @$(CC) $(WARNINGS) -o $@ bet.c $^ ../ccan/obj/*.o ../external/jsmn/jsmn.o ../crypto777/libcrypto777.a -lcurl -ldl -lnng -lbacktrace -lpthread -lm
-	   ar rc $(LIB).a *.o 
+	   @$(CC) $(WARNINGS) -o $@ bet.c $^ ../ccan/obj/*.o ../external/jsmn/jsmn.o ../crypto777/libcrypto777.a -lcurl -ldl -lnng -lbacktrace -lpthread -lm
+	   #ar rc $(LIB).a *.o 
 
 %.o: %.c
 	@$(CC) $(CFLAGS) -c $< -o $@

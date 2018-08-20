@@ -13,13 +13,14 @@
  *                                                                            *
  ******************************************************************************/
 #include "bet.h"
+#include "common.h"
 #include "network.h"
 #include "gfshare.h"
 #include "cards777.h"
-bits256 Mypubkey,Myprivkey;
-char *LN_idstr,Host_ipaddr[64],Host_peerid[67];
-uint16_t LN_port;
-int32_t IAMHOST;
+//bits256 Mypubkey,Myprivkey;
+//char *LN_idstr,Host_ipaddr[64],Host_peerid[67];
+//uint16_t LN_port;
+//int32_t IAMHOST;
 portable_mutex_t BET_shardmutex;
 struct BET_shardsinfo *BET_shardsinfos;
 

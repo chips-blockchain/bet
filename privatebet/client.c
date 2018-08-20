@@ -14,6 +14,7 @@
  ******************************************************************************/
 #include "../includes/cJSON.h"
 #include "../includes/ppapi/c/pp_stdint.h"
+#include "common.h"
 #include "bet.h"
 #include "cards777.h"
 #include "gfshare.h"
@@ -26,18 +27,18 @@
 //bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 //bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 int32_t sharesflag[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
-bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
-char *LN_idstr,Host_ipaddr[64],Host_peerid[67];
-bits256 Mypubkey,Myprivkey;
-int32_t IAMHOST;
-uint16_t LN_port;
-int32_t Num_hostrhashes,Chips_paid;
-bits256 deckid;
-char Host_channel[64];
+//bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
+//char *LN_idstr,Host_ipaddr[64],Host_peerid[67];
+//bits256 Mypubkey;//Myprivkey;
+//int32_t IAMHOST;
+//uint16_t LN_port;
+//int32_t Num_hostrhashes,Chips_paid;
+//bits256 deckid;
+//char Host_channel[64];
 struct deck_player_info player_info;
 struct deck_bvv_info bvv_info;
 int32_t no_of_shares=0;
-uint8_t sharenrs[256];
+//uint8_t sharenrs[256];
 
 
 

@@ -43,15 +43,24 @@
 #include "table.h"
 #include "network.h"
 
+bits256 Myprivkey,Mypubkey;
+int32_t IAMHOST;
+uint16_t LN_port;
+int32_t Gamestart,Gamestarted,Lastturni;
+uint8_t sharenrs[256];
+bits256 deckid;
+char *LN_idstr,Host_ipaddr[64],Host_peerid[67],Host_channel[64];
+int32_t Num_hostrhashes,Chips_paid;
+bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
+
+
+
 int32_t IAMLP;
 int32_t Maxplayers = 10;
 int32_t permis_d[CARDS777_MAXCARDS],permis_b[CARDS777_MAXCARDS];
 bits256 *allshares=NULL;
 bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
-uint8_t sharenrs[256];
-bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
-bits256 deckid;
 struct enc_share *g_shares=NULL;
 /*
 char *LN_idstr,Host_ipaddr[64],Host_peerid[67],BET_ORACLEURL[64] = "127.0.0.1:7797";
@@ -461,7 +470,7 @@ int main(int argc,const char *argv[])
 }
 #endif
 #if 1
-int bet(int argc, char **argv)
+int main(int argc, char **argv)
 {
     uint16_t tmp,rpcport = 7797,port = 7797+1;
     char connectaddr[128],bindaddr[128]="ipc:///tmp/bet.ipc",bindaddr1[128]="ipc:///tmp/bet1.ipc",smartaddr[64],randphrase[32],*modestr,*hostip,*passphrase=0,*retstr; 

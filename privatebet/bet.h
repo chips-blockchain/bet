@@ -215,7 +215,10 @@ https://crypto.stanford.edu/~pgolle/papers/poker.pdf
 
 
 */
-#pragma once
+//#pragma once
+
+#ifndef BET_H
+#define BET_H
 
 #include <stdio.h>
 #include <stdint.h>
@@ -242,7 +245,8 @@ https://crypto.stanford.edu/~pgolle/papers/poker.pdf
 #include "/usr/local/include/nng/compat/nanomsg/tcp.h"
 #include "/usr/local/include/nng/compat/nanomsg/pair.h"
 #endif
-
+#include "common.h"
+/*
 #define CARDS777_MAXCARDS 255 //52    //
 #define CARDS777_MAXPLAYERS 10 //9   //
 #define CARDS777_MAXROUNDS 3 //9   //
@@ -257,6 +261,7 @@ https://crypto.stanford.edu/~pgolle/papers/poker.pdf
 extern bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 extern bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 extern int32_t permis_d[CARDS777_MAXCARDS],permis_b[CARDS777_MAXCARDS];
+*/
 /*
 char *LN_idstr,Host_ipaddr[64],Host_peerid[67];BET_ORACLEURL[64] = "127.0.0.1:7797";
 uint16_t LN_port;
@@ -423,4 +428,7 @@ struct pair256 p2p_bvv_init(bits256 *keys,struct pair256 b_key,bits256 *blinding
 bits256 curve25519_fieldelement(bits256 hash);
 void blinding_vendor_perm(int numcards);
 void dekgen_vendor_perm(int numcards);
+int bet(int argc, char **argv);
 
+
+#endif

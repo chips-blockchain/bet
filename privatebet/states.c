@@ -13,11 +13,12 @@
  *                                                                            *
  ******************************************************************************/
 #include "bet.h"
+#include "common.h"
 #include "network.h"
 #include "table.h"
-bits256 Mypubkey;
-int32_t IAMHOST;
-int32_t Gamestart,Gamestarted,Lastturni;
+//bits256 Mypubkey;
+//int32_t IAMHOST;
+//int32_t Gamestart,Gamestarted,Lastturni;
 
 void BET_client_turnisend(struct privatebet_info *bet,struct privatebet_vars *vars,cJSON *actions)
 {
