@@ -13,7 +13,8 @@
  *                                                                            *
  ******************************************************************************/
 #include "bet.h"
-
+#include "commands.h"
+#include "oracle.h"
 char *LN_idstr,BET_ORACLEURL[64] = "127.0.0.1:7797";
 int32_t IAMHOST,IAMORACLE;
 

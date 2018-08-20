@@ -13,7 +13,8 @@
  *                                                                            *
  ******************************************************************************/
 #include "bet.h"
-
+#include "table.h"
+#include "network.h"
 int32_t Gamestart,Gamestarted,Maxrounds = 3;
 bits256 Mypubkey;
 

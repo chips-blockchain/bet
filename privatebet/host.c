@@ -13,6 +13,14 @@
  *                                                                            *
  ******************************************************************************/
 #include "bet.h"
+#include "host.h"
+#include "cards777.h"
+#include "table.h"
+#include "client.h"
+#include "network.h"
+#include "oracle.h"
+#include "commands.h"
+#include "payment.h"
 bits256 Mypubkey,Myprivkey;
 int32_t IAMHOST;
 int32_t Gamestart,Gamestarted,Lastturni;

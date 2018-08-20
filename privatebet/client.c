@@ -15,7 +15,13 @@
 #include "../includes/cJSON.h"
 #include "../includes/ppapi/c/pp_stdint.h"
 #include "bet.h"
-
+#include "cards777.h"
+#include "gfshare.h"
+#include "client.h"
+#include "commands.h"
+#include "payment.h"
+#include "table.h"
+#include "network.h"
 //struct enc_share *g_shares=NULL;
 //bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 //bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
@@ -27,8 +33,6 @@ int32_t IAMHOST;
 uint16_t LN_port;
 int32_t Num_hostrhashes,Chips_paid;
 bits256 deckid;
-//int32_t permis_b[CARDS777_MAXCARDS];
-uint8_t sharenrs[256];
 char Host_channel[64];
 struct deck_player_info player_info;
 struct deck_bvv_info bvv_info;
@@ -457,9 +461,9 @@ void* BET_request(void* _ptr)
 				cJSON_Delete(shareReq);
 			}
 			else if((j==shareInfo->myplayerid) && (sharesflag[i][j]==0)) {
-				ofCardID=jint(shareInfo,"ofCardID");
-				ofPlayerID=jint(shareInfo,"ofPlayerID");
-				forPlayerID=jint(shareInfo,"forPlayerID");
+				ofCardID=jint(_ptr,"ofCardID");
+				ofPlayerID=jint(_ptr,"ofPlayerID");
+				forPlayerID=jint(_ptr,"forPlayerID");
 				//temp=g_shares[ofPlayerID*shareInfo->numplayers*shareInfo->range + (ofCardID*shareInfo->numplayers + forPlayerID)];
 				temp=g_shares[shareInfo->myplayerid*shareInfo->numplayers*shareInfo->range + (i*shareInfo->numplayers + shareInfo->myplayerid)];
 				recvlen = sizeof(temp);
