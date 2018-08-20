@@ -19,7 +19,7 @@ clean:
 
 $(PROJNAME): $(OBJFILES)
 	   @$(CC) $(WARNINGS) -o $@ bet.c $^ ../ccan/obj/*.o ../external/jsmn/jsmn.o ../crypto777/libcrypto777.a -lcurl -ldl -lnng -lbacktrace -lpthread -lm
-	   #ar rc $(LIB).a *.o 
+	   -@#ar rc $(LIB).a *.o 
 
 %.o: %.c
 	@$(CC) $(CFLAGS) -c $< -o $@
