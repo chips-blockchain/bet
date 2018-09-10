@@ -97,8 +97,8 @@ uint32_t LP_rand()
     retval = (retval << 17) ^ (retval >> 7) ^ rand();
     return(retval);
 }
-
-/*char *issue_LP_psock(char *destip,uint16_t destport,int32_t ispaired)
+/*
+char *issue_LP_psock(char *destip,uint16_t destport,int32_t ispaired)
  {
  char url[512],*retstr;
  sprintf(url,"http://%s:%u/api/stats/psock?ispaired=%d",destip,destport-1,ispaired);
@@ -106,7 +106,8 @@ uint32_t LP_rand()
  retstr = issue_curlt(url,LP_HTTP_TIMEOUT*3);
  printf("issue_LP_psock got (%s) from %s\n",retstr,destip);
  return(retstr);
- }*/
+ }
+ */
 int32_t LP_numpeers()
 {
     printf("this needs to be fixed\n");
@@ -480,7 +481,8 @@ int main(int argc, char **argv)
 	struct privatebet_info **BET_players,*BET_dcv,*BET_bvv;
 	pthread_t players_t[CARDS777_MAXPLAYERS],dcv_t,bvv_t;
 	
-	
+	//ln_bet(argc,argv);
+	#if 1	
     OS_init();
 	libgfshare_init();
 	OS_randombytes((uint8_t *)&range,sizeof(range));
@@ -577,24 +579,6 @@ int main(int argc, char **argv)
 		printf("\nFor DCV: ./bet dcv");
 		printf("\nFor BVV: ./bet bvv");
 		printf("\nFor Player: ./bet player player_id");
-	}
-	#if 0
-	if(pthread_join(dcv_t,NULL))
-	{
-		printf("\nError in joining the main thread for dcv");
-	}
-
-	if(pthread_join(bvv_t,NULL))
-	{
-		printf("\nError in joining the main thread for bvvv");
-	}
-
-	for(int i=0;i<numplayers;i++)
-	{
-		if(pthread_join(players_t[i],NULL))
-		{
-			printf("\nError in joining the main thread for player %d",i);
-		}
 	}
 	#endif
     return 0;
