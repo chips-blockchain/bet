@@ -33,7 +33,7 @@ struct privatebet_rawpeerln Rawpeersln[CARDS777_MAXPLAYERS+1],oldRawpeersln[CARD
 struct privatebet_peerln Peersln[CARDS777_MAXPLAYERS+1];
 int32_t Num_rawpeersln,oldNum_rawpeersln,Num_peersln,Numgames;
 int32_t players_joined=0;
-int32_t turn=0,no_of_cards=0;
+int32_t turn=0,no_of_cards=0,no_of_rounds=0;
 int32_t eval_game_p[CARDS777_MAXPLAYERS],eval_game_c[CARDS777_MAXPLAYERS];
 struct deck_dcv_info dcv_info;
 
@@ -680,6 +680,9 @@ void BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,struct 
 	
 	playerid=jint(playerCardInfo,"playerid");
 	cardid=jint(playerCardInfo,"cardid");
+	cJSON *betGame=NULL;
+	char *rendered=NULL;
+	int32_t bytes;
 	eval_game_p[no_of_cards]=playerid;
 	eval_game_c[no_of_cards]=cardid;
 	no_of_cards++;
@@ -688,6 +691,15 @@ void BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,struct 
 		BET_p2p_dcv_turn(playerCardInfo,bet,vars);
 	if(no_of_cards==bet->maxplayers)
 	{
+		betGame=cJSON_CreateObject();
+		cJSON_AddStringToObject(betGame,"method","bet");
+		cJSON_AddNumberToObject(betGame,"round",no_of_rounds++);
+		rendered=cJSON_Print(betGame);
+		bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+		if(bytes < 0)
+			printf("\n%s:%d::Error",__FUNCTION__,__LINE__);
+		
+		#if 0 //winning logic
 		for(int i=0;i<no_of_cards;i++)
 		{
 			if(eval_game_c[i]>max)
@@ -704,6 +716,7 @@ void BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,struct 
 		
 		printf("\nThe winner of the game is player :%d, it got the card:%d",playerid,max);
 		printf("\n%s:%d",__FUNCTION__,__LINE__);
+		#endif
 	}		
 		
 }
