@@ -1319,7 +1319,7 @@ int32_t BET_p2p_client_turn(cJSON *argjson,struct privatebet_info *bet,struct pr
 	}
 	else 
 	{
-		//retval=BET_p2p_client_give_share(argjson,bet,vars);
+		retval=BET_p2p_client_give_share(argjson,bet,vars);
 	}
 	
 	
