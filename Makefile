@@ -184,25 +184,6 @@ default: build_dep all-programs all-test-programs build_dep1
 #lightning-cli-all
 
 
-
-# include external/Makefile \
-include bitcoin/Makefile\
-include common/Makefile\
-include wire/Makefile\
-include wallet/Makefile\
-include hsmd/Makefile\
-include gossipd/Makefile\
-include openingd/Makefile\
-include channeld/Makefile\
-include closingd/Makefile\
-include onchaind/Makefile\
-include lightningd/Makefile\
-include cli/Makefile\
-include doc/Makefile\
-include devtools/Makefile
-
-
-
 # Git doesn't maintain timestamps, so we only regen if git says we should. 
 CHANGED_FROM_GIT = [ x"`git log $@ | head -n1`" != x"`git log $< | head -n1`" -o x"`git diff $<`" != x"" ]
 
@@ -333,6 +314,7 @@ update-ccan:
 build_dep:
 	make --directory crypto777
 	make --directory external/jsmn
+	mkdir -p ccan/obj
 build_dep1:
 	make --directory privatebet
 # Now ALL_PROGRAMS is fully populated, we can expand it.
@@ -354,7 +336,8 @@ clean:
 	$(RM) ccan/ccan/cdump/tools/cdump-enumstr.o
 	make --directory privatebet clean
 	make --directory external/jsmn clean
-	make --directory crypto777
+	make --directory crypto777 clean
+	$(RM) -d ccan/obj
 update-mocks/%: %
 	@tools/update-mocks.sh "$*"
 

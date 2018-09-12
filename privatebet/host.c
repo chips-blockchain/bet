@@ -13,9 +13,20 @@
  *                                                                            *
  ******************************************************************************/
 #include "bet.h"
-bits256 Mypubkey,Myprivkey;
-int32_t IAMHOST;
-int32_t Gamestart,Gamestarted,Lastturni;
+#include "common.h"
+#include "host.h"
+#include "cards777.h"
+#include "table.h"
+#include "client.h"
+#include "network.h"
+#include "oracle.h"
+#include "commands.h"
+#include "payment.h"
+
+//bits256 Mypubkey,Myprivkey;
+//int32_t IAMHOST;
+//int32_t Gamestart,Gamestarted;
+//int32_t Lastturni;
 //bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 //int32_t permis_d[CARDS777_MAXCARDS];
 struct privatebet_rawpeerln Rawpeersln[CARDS777_MAXPLAYERS+1],oldRawpeersln[CARDS777_MAXPLAYERS+1];

@@ -13,13 +13,16 @@
  *                                                                            *
  ******************************************************************************/
 #include "bet.h"
-
+#include "common.h"
+#include "payment.h"
+#include "network.h"
+#include "commands.h"
 bits256 Host_rhashes[256]; 
-bits256 Mypubkey;
+//bits256 Mypubkey;
 bits256 Clientrhash;
-char Host_channel[64];
-char *LN_idstr,Host_peerid[67];
-int32_t Num_hostrhashes,Chips_paid;
+//char Host_channel[64];
+//char *LN_idstr,Host_peerid[67];
+//int32_t Num_hostrhashes,Chips_paid;
 
 bits256 BET_clientrhash()
 {

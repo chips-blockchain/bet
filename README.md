@@ -4,24 +4,43 @@ The aim of this project is to provide the necessary bet API's which are sufficie
 Basically, there exists three entities in the game DCV, BVV and Player. The role of DCV and BVV is to assist in deck shuffling, dealing and fair play of the game. To test the API's written from the player perspective we run the DCV and BVV nodes, just to start with below or the steps to run DCV and BVV.
 ## Steps to compile
 ```
-cd
-git clone https://github.com/sg777/bet.git
-cd bet
-make
+# Dependencies Check 
+
+$ sudo apt-get install software-properties-common autoconf git build-essential libtool libprotobuf-c-dev libgmp-dev libsqlite3-dev python python3 zip jq libevent-dev pkg-config libssl-dev libcurl4-gnutls-dev cmake
+
+$ apt install make ninja-build libsqlite3-dev libgmp3-dev
+
+#Install nanomsg-next-generation 
+
+$ git clone https://github.com/nanomsg/nng.git
+$ cd nng
+$ mkdir build
+$ cd build
+$ cmake -G Ninja ..
+$ ninja
+$ ninja test
+$ ninja install
+
+
+$ cd ~
+$ git clone https://github.com/sg777/bet.git
+$ cd bet
+$ make
 ```
+
 ## Command to run DCV
 ```
-cd
-cd bet/privatebet
-./bet dcv
+$ cd
+$ cd bet/privatebet
+$ ./bet dcv
 (ipc:///tmp/bet.ipc) bound
 (ipc:///tmp/bet1.ipc) bound
 ```
 ## Command to run BVV
 ```
-cd
-cd bet/privatebet
-./bet dcv
+$ cd
+$ cd bet/privatebet
+$ ./bet dcv
 (ipc:///tmp/bet.ipc) bound
 (ipc:///tmp/bet1.ipc) bound
 ```
@@ -39,4 +58,4 @@ Once after the DCV receives the initialization messages from all the players it 
 The bet-api documentation is [here](./docs/bet-api.md)
 
 ## Help from the community
-Any feedback, suggestions on the API's or new API's which should be present inorder to play the poker from command line, please raise an issue/suggestion or message me(myid: sg777) directly or post in the #CHIPS channel on discord.
+Any feedback, suggestions on the API's or new API's which should be present inorder to play the poker from command line, please raise an issue/suggestion or message me(myid: sg777) directly or post in the #CHIPS channel on [discord](https://discord.gg/jF9uxJM).

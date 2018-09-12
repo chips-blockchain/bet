@@ -36,15 +36,31 @@
 //  from external: git submodule add https://github.com/ianlancetaylor/libbacktrace.git
 
 #include "bet.h"
+#include "gfshare.h"
+#include "cards777.h"
+#include "client.h"
+#include "host.h"
+#include "table.h"
+#include "network.h"
+
+bits256 Myprivkey,Mypubkey;
+int32_t IAMHOST;
+uint16_t LN_port;
+int32_t Gamestart,Gamestarted,Lastturni;
+uint8_t sharenrs[256];
+bits256 deckid;
+char *LN_idstr,Host_ipaddr[64],Host_peerid[67],Host_channel[64];
+int32_t Num_hostrhashes,Chips_paid;
+bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
+
+
+
 int32_t IAMLP;
 int32_t Maxplayers = 10;
 int32_t permis_d[CARDS777_MAXCARDS],permis_b[CARDS777_MAXCARDS];
 bits256 *allshares=NULL;
 bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
-uint8_t sharenrs[256];
-bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
-bits256 deckid;
 struct enc_share *g_shares=NULL;
 /*
 char *LN_idstr,Host_ipaddr[64],Host_peerid[67],BET_ORACLEURL[64] = "127.0.0.1:7797";
@@ -81,8 +97,8 @@ uint32_t LP_rand()
     retval = (retval << 17) ^ (retval >> 7) ^ rand();
     return(retval);
 }
-
-/*char *issue_LP_psock(char *destip,uint16_t destport,int32_t ispaired)
+/*
+char *issue_LP_psock(char *destip,uint16_t destport,int32_t ispaired)
  {
  char url[512],*retstr;
  sprintf(url,"http://%s:%u/api/stats/psock?ispaired=%d",destip,destport-1,ispaired);
@@ -90,7 +106,8 @@ uint32_t LP_rand()
  retstr = issue_curlt(url,LP_HTTP_TIMEOUT*3);
  printf("issue_LP_psock got (%s) from %s\n",retstr,destip);
  return(retstr);
- }*/
+ }
+ */
 int32_t LP_numpeers()
 {
     printf("this needs to be fixed\n");
@@ -454,7 +471,7 @@ int main(int argc,const char *argv[])
 }
 #endif
 #if 1
-int bet(int argc, char **argv)
+int main(int argc, char **argv)
 {
     uint16_t tmp,rpcport = 7797,port = 7797+1;
     char connectaddr[128],bindaddr[128]="ipc:///tmp/bet.ipc",bindaddr1[128]="ipc:///tmp/bet1.ipc",smartaddr[64],randphrase[32],*modestr,*hostip,*passphrase=0,*retstr; 
@@ -464,7 +481,8 @@ int bet(int argc, char **argv)
 	struct privatebet_info **BET_players,*BET_dcv,*BET_bvv;
 	pthread_t players_t[CARDS777_MAXPLAYERS],dcv_t,bvv_t;
 	
-	
+	//ln_bet(argc,argv);
+	#if 1	
     OS_init();
 	libgfshare_init();
 	OS_randombytes((uint8_t *)&range,sizeof(range));
@@ -561,24 +579,6 @@ int bet(int argc, char **argv)
 		printf("\nFor DCV: ./bet dcv");
 		printf("\nFor BVV: ./bet bvv");
 		printf("\nFor Player: ./bet player player_id");
-	}
-	#if 0
-	if(pthread_join(dcv_t,NULL))
-	{
-		printf("\nError in joining the main thread for dcv");
-	}
-
-	if(pthread_join(bvv_t,NULL))
-	{
-		printf("\nError in joining the main thread for bvvv");
-	}
-
-	for(int i=0;i<numplayers;i++)
-	{
-		if(pthread_join(players_t[i],NULL))
-		{
-			printf("\nError in joining the main thread for player %d",i);
-		}
 	}
 	#endif
     return 0;

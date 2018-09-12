@@ -215,7 +215,10 @@ https://crypto.stanford.edu/~pgolle/papers/poker.pdf
 
 
 */
-#pragma once
+//#pragma once
+
+#ifndef BET_H
+#define BET_H
 
 #include <stdio.h>
 #include <stdint.h>
@@ -242,7 +245,8 @@ https://crypto.stanford.edu/~pgolle/papers/poker.pdf
 #include "/usr/local/include/nng/compat/nanomsg/tcp.h"
 #include "/usr/local/include/nng/compat/nanomsg/pair.h"
 #endif
-
+#include "common.h"
+/*
 #define CARDS777_MAXCARDS 255 //52    //
 #define CARDS777_MAXPLAYERS 10 //9   //
 #define CARDS777_MAXROUNDS 3 //9   //
@@ -256,7 +260,8 @@ https://crypto.stanford.edu/~pgolle/papers/poker.pdf
 
 extern bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 extern bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
-int32_t permis_d[CARDS777_MAXCARDS],permis_b[CARDS777_MAXCARDS];
+extern int32_t permis_d[CARDS777_MAXCARDS],permis_b[CARDS777_MAXCARDS];
+*/
 /*
 char *LN_idstr,Host_ipaddr[64],Host_peerid[67];BET_ORACLEURL[64] = "127.0.0.1:7797";
 uint16_t LN_port;
@@ -387,10 +392,8 @@ bits256 BET_clientrhash();
 
 int32_t BET_clientupdate(cJSON *argjson,uint8_t *ptr,int32_t recvlen,struct privatebet_info *bet,struct privatebet_vars *vars);
 int32_t BET_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
-//void BET_cmdloop(bits256 privkey,char *smartaddr,uint8_t *pubkey33,bits256 pubkey,struct privatebet_info *bet);
 cJSON *BET_statemachine_gamestart_actions(struct privatebet_info *bet,struct privatebet_vars *vars);
 cJSON *BET_statemachine_turni_actions(struct privatebet_info *bet,struct privatebet_vars *vars);
-//void BET_statemachine_deali(struct privatebet_info *bet,struct privatebet_vars *vars,int32_t deali,int32_t playerj);
 
 void BET_statemachine_joined_table(struct privatebet_info *bet,struct privatebet_vars *vars);
 void BET_statemachine_unjoined_table(struct privatebet_info *bet,struct privatebet_vars *vars);
@@ -423,11 +426,9 @@ bits256 t_sg777_player_decode(struct privatebet_info *bet,int32_t cardID,int num
 struct pair256 p2p_bvv_init(bits256 *keys,struct pair256 b_key,bits256 *blindings,bits256 *blindedcards,bits256 *finalcards,int32_t numcards,int32_t numplayers,int32_t playerid,bits256 deckid);
 
 bits256 curve25519_fieldelement(bits256 hash);
-void BET_p2p_hostloop(void *_ptr);
-void BET_p2p_bvvloop(void *_ptr);
-void BET_p2p_clientloop(void * _ptr);
-void* BET_response(void* _ptr);
-void* BET_request(void* _ptr);
+void blinding_vendor_perm(int numcards);
+void dekgen_vendor_perm(int numcards);
 int bet(int argc, char **argv);
 
 
+#endif
