@@ -12,14 +12,13 @@ CFLAGS := -g -fPIC -std=c99 $(WARNINGS)
 all: $(PROJNAME)
 
 clean:
-	-@$(RM) $(OBJFILES) 
-	-@$(RM) $(PROJNAME)	    
-	-@$(RM) $(LIB).a
+	$(RM) $(OBJFILES) 
+	$(RM) $(PROJNAME)	    
+	$(RM) $(LIB).a
 
 
 $(PROJNAME): $(OBJFILES)
-	   @$(CC) $(WARNINGS) -o $@ bet.c $^ ../ccan/obj/*.o ../external/jsmn/jsmn.o ../crypto777/libcrypto777.a -lcurl -ldl -lnng -lbacktrace -lpthread -lm
-	   -@#ar rc $(LIB).a *.o 
+	$(CC) $(WARNINGS) -o $@ bet.c $^ ../ccan/obj/*.o ../crypto777/libcrypto777.a -lcurl -ldl -lnng -lbacktrace -lpthread -lm -lcli -L/root/lightning/external -lwallycore -lsecp256k1 -lsodium -ljsmn -lbase58 -lbacktrace -L/usr/local/lib -lm -lgmp -lsqlite3 
 
 %.o: %.c
-	@$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
