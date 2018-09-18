@@ -673,6 +673,11 @@ void BET_broadcast_table_info(struct privatebet_info *bet)
 	printf("\nTable Info:%s",cJSON_Print(tableInfo));
 }
 
+void BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	ln_bet(NULL,NULL);
+}
+
 void BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int32_t playerid,cardid,max=-1;
@@ -772,7 +777,11 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		{
 			BET_evaluate_game(argjson,bet,vars);
 		}
-        else
+		else if(strcmp(method,"invoiceRequest") == 0)
+		{
+			BET_create_invoice(argjson,bet,vars);
+		}
+		else
     	{
     		bytes=nn_send(bet->pubsock,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
 			if(bytes<0)

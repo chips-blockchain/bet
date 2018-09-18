@@ -1152,6 +1152,34 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
 			
 	return tmp;
 }
+int32_t BET_p2p_bet_round(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	int32_t playerid,bet_amount,round,bytes,retval;
+	cJSON *betInfo=NULL;
+	char *rendered=NULL;
+	round=jint(argjson,"round");
+	printf("\nEnter Betting Amount in MilliSatoshis:");
+	scanf("%d",bet_amount);
+
+	betInfo=cJSON_CreateObject(void);
+	cJSON_AddStringToObject(betInfo,"method","invoiceRequest");
+	cJSON_AddNumberToObject(betInfo,"round",round);
+	cJSON_AddNumberToObject(betInfo,"playerID",bet->myplayerid);
+	cJSON_AddNumberToObject(betInfo,"betAmount",bet_amount);
+
+	rendered=cJSON_Print(betInfo);
+
+	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+			
+
+	if(bytes<0)
+		retval=-1;
+	else
+		retval=1;
+	
+	return retval;
+	
+}
 
 int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
@@ -1518,6 +1546,10 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		else if(strcmp(method,"share_info") == 0)
 		{
 			retval=BET_p2p_client_receive_share(argjson,bet,vars);
+		}
+		else if(strcmp(method,"bet") == 0)
+		{
+			retval=BET_p2p_bet_round(argjson,bet,vars);
 		}
         else
         {
