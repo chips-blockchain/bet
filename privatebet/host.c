@@ -675,7 +675,21 @@ void BET_broadcast_table_info(struct privatebet_info *bet)
 
 void BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	ln_bet(NULL,NULL);
+	int argc;
+	char **argv;
+	argv =(char**)malloc(6*sizeof(char*));
+	for(int i=0;i<5;i++)
+	{
+		argv[i]=(char*)malloc(sizeof(char)*20);
+	}
+	strcpy(argv[0],"./bet");
+	strcpy(argv[1],"invoice");
+	strcpy(argv[2],"100");
+	strcpy(argv[3],"test4");
+	strcpy(argv[4],"test4");
+	argv[5]=NULL;
+	argc=5;
+	ln_bet(argc,argv);
 }
 
 void BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars)

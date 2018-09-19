@@ -480,8 +480,16 @@ int main(int argc, char **argv)
 	uint8_t pubkey33[33],taddr=0,pubtype=60; uint32_t i,n,range,numplayers; int32_t testmode=0,pubsock=-1,subsock=-1,pullsock=-1,pushsock=-1; long fsize; 
 	struct privatebet_info **BET_players,*BET_dcv,*BET_bvv;
 	pthread_t players_t[CARDS777_MAXPLAYERS],dcv_t,bvv_t;
-	
-	//ln_bet(argc,argv);
+
+	/*
+	strcpy(argv[0],"./bet");
+        strcpy(argv[1],"invoice");
+        strcpy(argv[2],"100");
+        strcpy(argv[3],"test4");
+        strcpy(argv[4],"test4");
+        argc=5;
+	ln_bet(argc,argv);
+	*/
 	#if 1	
     OS_init();
 	libgfshare_init();

@@ -1159,7 +1159,7 @@ int32_t BET_p2p_bet_round(cJSON *argjson,struct privatebet_info *bet,struct priv
 	char *rendered=NULL;
 	round=jint(argjson,"round");
 	printf("\nEnter Betting Amount in MilliSatoshis:");
-	scanf("%d",bet_amount);
+	scanf("%d",&bet_amount);
 
 	betInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(betInfo,"method","invoiceRequest");
