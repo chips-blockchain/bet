@@ -675,21 +675,39 @@ void BET_broadcast_table_info(struct privatebet_info *bet)
 
 void BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int argc;
-	char **argv;
+	int argc,bytes;
+	char **argv,*buf=NULL,*rendered;
+	int32_t maxsize = 1000000;
+	cJSON *invoiceInfo=NULL;
 	argv =(char**)malloc(6*sizeof(char*));
+	buf=(char*)malloc(maxsize*sizeof(char));
 	for(int i=0;i<5;i++)
 	{
-		argv[i]=(char*)malloc(sizeof(char)*20);
+			argv[i]=(char*)malloc(sizeof(char)*1000);
 	}
 	strcpy(argv[0],"./bet");
 	strcpy(argv[1],"invoice");
-	strcpy(argv[2],"100");
-	strcpy(argv[3],"test4");
-	strcpy(argv[4],"test4");
+	sprintf(argv[2],"%d",jint(argjson,"betAmount"));
+	sprintf(argv[3],"invoice_%d_%d_%d",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
+	sprintf(argv[4],"Invoice details playerID:%d,round:%d,betting Amount:%d",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
 	argv[5]=NULL;
 	argc=5;
-	ln_bet(argc,argv);
+	if(buf)
+	{
+		ln_bet(argc,argv,buf);
+		printf("\n%s",buf);
+		invoiceInfo=cJSON_CreateObject();
+		cJSON_AddStringToObject(invoiceInfo,"method","invoice");
+		cJSON_AddNumberToObject(invoiceInfo,"playerID",jint(argjson,"playerID"));
+		cJSON_AddNumberToObject(invoiceInfo,"round",jint(argjson,"round"));
+		cJSON_AddStringToObject(invoiceInfo,"invoice",buf);
+
+		rendered=cJSON_Print(invoiceInfo);
+		bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+		if(bytes < 0)
+				printf("\n%s:%d::Error",__FUNCTION__,__LINE__);
+		
+	}
 }
 
 void BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
