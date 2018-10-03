@@ -474,27 +474,32 @@ int main(int argc,const char *argv[])
 int main(int argc, char **argv)
 {
     uint16_t tmp,rpcport = 7797,port = 7797+1;
-    char connectaddr[128],bindaddr[128]="ipc:///tmp/bet.ipc",bindaddr1[128]="ipc:///tmp/bet1.ipc",smartaddr[64],randphrase[32],*modestr,*hostip,*passphrase=0,*retstr; 
+    char connectaddr[128],bindaddr[128]/*="ipc:///tmp/bet.ipc"*/,bindaddr1[128]/*="ipc:///tmp/bet1.ipc"*/,smartaddr[64],randphrase[32],*modestr,*hostip,*passphrase=0,*retstr; 
 	cJSON *infojson,*argjson,*reqjson,*deckjson; 
 	uint64_t randvals; bits256 privkey,pubkey,pubkeys[64],privkeys[64]; 
 	uint8_t pubkey33[33],taddr=0,pubtype=60; uint32_t i,n,range,numplayers; int32_t testmode=0,pubsock=-1,subsock=-1,pullsock=-1,pushsock=-1; long fsize; 
 	struct privatebet_info **BET_players,*BET_dcv,*BET_bvv;
 	pthread_t players_t[CARDS777_MAXPLAYERS],dcv_t,bvv_t;
 
-	/*
-	strcpy(argv[0],"./bet");
-        strcpy(argv[1],"invoice");
-        strcpy(argv[2],"100");
-        strcpy(argv[3],"test4");
-        strcpy(argv[4],"test4");
-        argc=5;
-	ln_bet(argc,argv);
-	*/
+	hostip = "127.0.0.1";
+    
+
 	#if 1	
     OS_init();
 	libgfshare_init();
 	OS_randombytes((uint8_t *)&range,sizeof(range));
     OS_randombytes((uint8_t *)&numplayers,sizeof(numplayers));
+
+	#if 1
+	/* This code is for sockets*/
+	BET_transportname(1,bindaddr,hostip,port);
+	printf("\nBinding address:%s",bindaddr);
+    pubsock = BET_nanosock(1,bindaddr,NN_PUB);
+    BET_transportname(1,bindaddr,hostip,port+1);
+	printf("\nBinding address:%s",bindaddr);
+    pullsock = BET_nanosock(1,bindaddr,NN_PULL);
+    #endif                
+
 
 	range = (range % 52) + 1;
 	numplayers = (numplayers % (CARDS777_MAXPLAYERS-1)) + 2;
@@ -506,8 +511,8 @@ int main(int argc, char **argv)
 	if((argc==2)&&(strcmp(argv[1],"dcv")==0))
 	{
 		BET_dcv=calloc(1,sizeof(struct privatebet_info));
-	    BET_dcv->pubsock = BET_nanosock(1,bindaddr,NN_PUB);
-	    BET_dcv->pullsock = BET_nanosock(1,bindaddr1,NN_PULL);
+	    BET_dcv->pubsock = pubsock;//BET_nanosock(1,bindaddr,NN_PUB);
+	    BET_dcv->pullsock = pullsock;//BET_nanosock(1,bindaddr1,NN_PULL);
 	    BET_dcv->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
 	    BET_dcv->maxchips = CARDS777_MAXCHIPS;
 	    BET_dcv->chipsize = CARDS777_CHIPSIZE;
