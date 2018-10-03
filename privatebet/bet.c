@@ -471,37 +471,6 @@ int main(int argc,const char *argv[])
 }
 #endif
 #if 1
-// Returns hostname for the local computer 
-void checkHostName(int hostname) 
-{ 
-    if (hostname == -1) 
-    { 
-        perror("gethostname"); 
-        exit(1); 
-    } 
-} 
-  
-// Returns host information corresponding to host name 
-void checkHostEntry(struct hostent * hostentry) 
-{ 
-    if (hostentry == NULL) 
-    { 
-        perror("gethostbyname"); 
-        exit(1); 
-    } 
-} 
-  
-// Converts space-delimited IPv4 addresses 
-// to dotted-decimal format 
-void checkIPbuffer(char *IPbuffer) 
-{ 
-    if (NULL == IPbuffer) 
-    { 
-        perror("inet_ntoa"); 
-        exit(1); 
-    } 
-} 
-
 int main(int argc, char **argv)
 {
     uint16_t tmp,rpcport = 7797,port = 7797+1;
@@ -519,22 +488,14 @@ int main(int argc, char **argv)
 
 	// To retrieve hostname 
 	hostname = gethostname(hostbuffer, sizeof(hostbuffer)); 
-	checkHostName(hostname); 
-
-	// To retrieve host information 
+		// To retrieve host information 
 	host_entry = gethostbyname(hostbuffer); 
-	checkHostEntry(host_entry); 
-
+	
 	// To convert an Internet network 
 	// address into ASCII string 
-	IPbuffer = inet_ntoa(*((struct in_addr*) 
+	hostip= inet_ntoa(*((struct in_addr*) 
 	                       host_entry->h_addr_list[0])); 
-
-	printf("Hostname: %s\n", hostbuffer); 
-	printf("Host IP: %s", IPbuffer); 
-
-	hostip = "159.69.23.30";
-    
+   printf("\nIp Address:%s",hostip);	
 
 	#if 1	
     OS_init();
