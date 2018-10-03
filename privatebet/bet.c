@@ -471,6 +471,37 @@ int main(int argc,const char *argv[])
 }
 #endif
 #if 1
+// Returns hostname for the local computer 
+void checkHostName(int hostname) 
+{ 
+    if (hostname == -1) 
+    { 
+        perror("gethostname"); 
+        exit(1); 
+    } 
+} 
+  
+// Returns host information corresponding to host name 
+void checkHostEntry(struct hostent * hostentry) 
+{ 
+    if (hostentry == NULL) 
+    { 
+        perror("gethostbyname"); 
+        exit(1); 
+    } 
+} 
+  
+// Converts space-delimited IPv4 addresses 
+// to dotted-decimal format 
+void checkIPbuffer(char *IPbuffer) 
+{ 
+    if (NULL == IPbuffer) 
+    { 
+        perror("inet_ntoa"); 
+        exit(1); 
+    } 
+} 
+
 int main(int argc, char **argv)
 {
     uint16_t tmp,rpcport = 7797,port = 7797+1;
