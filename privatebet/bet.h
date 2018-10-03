@@ -223,6 +223,15 @@ https://crypto.stanford.edu/~pgolle/papers/poker.pdf
 #include <stdio.h>
 #include <stdint.h>
 
+#include <stdlib.h> 
+#include <unistd.h> 
+#include <errno.h> 
+#include <netdb.h> 
+#include <sys/types.h> 
+#include <sys/socket.h> 
+#include <netinet/in.h> 
+#include <arpa/inet.h> 
+
 #include "../crypto777/OS_portable.h"
 //#include "../../SuperNET/iguana/exchanges/LP_include.h"
 //#include "../../SuperNET/iguana/exchanges/LP_nativeDEX.c"
