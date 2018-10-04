@@ -505,7 +505,7 @@ int main(int argc, char **argv)
 
 	#if 1
 	/* This code is for sockets*/
-	BET_transportname(1,bindaddr,hostip,port);
+	BET_transportname(0,bindaddr,hostip,port);
 	printf("\nBinding address:%s",bindaddr);
     pubsock = BET_nanosock(1,bindaddr,NN_PUB);
 	if(pubsock!=-1)
@@ -513,7 +513,7 @@ int main(int argc, char **argv)
 	else
 		printf("\nPubliser Socket is not established");
 
-    BET_transportname(1,bindaddr,hostip,port+1);
+    BET_transportname(0,bindaddr,hostip,port+1);
 	printf("\nBinding address:%s",bindaddr);
     pullsock = BET_nanosock(1,bindaddr,NN_PULL);
 	if(pullsock!=-1)
