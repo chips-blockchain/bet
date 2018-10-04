@@ -319,13 +319,49 @@ int32_t BET_nanosock(int32_t bindflag,char *endpoint,int32_t nntype)
 }
 int32_t BET_nanosock_sg777(int32_t bindflag,char *endpoint,int32_t nntype)
 {
-    int32_t sock,timeout;
+    int32_t sock,timeout,rc;
     if ( (sock= nn_socket(AF_SP,nntype)) >= 0 )
     {
-     
-        if ( nntype == NN_SUB )
+     	if ( nntype == NN_PUB )
+ 		{
+ 			rc = nn_bind (sock, endpoint);
+			    if(rc < 0) {
+			        fprintf (stderr, "Failed bind to \"%s\": %s [%d] (%s:%d)\n",
+			            endpoint,
+			            nn_err_strerror (errno),
+			            (int) errno, __FUNCTION__, __LINE__);
+			        nn_err_abort ();
+			    }
+ 		}
+        else if ( nntype == NN_SUB )
+        {
             nn_setsockopt(sock,NN_SUB,NN_SUB_SUBSCRIBE,"",0);
+        }	
+		else if ( nntype == NN_PUSH )
+		{
+			    rc = nn_bind (sock, endpoint);
+			    if(rc < 0) {
+			        fprintf (stderr, "Failed bind to \"%s\": %s [%d] (%s:%d)\n",
+			            endpoint,
+			            nn_err_strerror (errno),
+			            (int) errno, __FUNCTION__, __LINE__);
+			        nn_err_abort ();
+			    }
+		}
+		else if ( nntype == NN_PULL )
+		{
+			rc = nn_bind (sock, endpoint);
+		    if(rc < 0) {
+		        fprintf (stderr, "Failed bind to \"%s\": %s [%d] (%s:%d)\n",
+		            endpoint,
+		            nn_err_strerror (errno),
+		            (int) errno, __FUNCTION__, __LINE__);
+		        nn_err_abort ();
+		    }
+		}
     }
+
+	
     return(sock);
 }
 
