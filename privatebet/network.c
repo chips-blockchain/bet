@@ -317,6 +317,18 @@ int32_t BET_nanosock(int32_t bindflag,char *endpoint,int32_t nntype)
     }
     return(sock);
 }
+int32_t BET_nanosock_sg777(int32_t bindflag,char *endpoint,int32_t nntype)
+{
+    int32_t sock,timeout;
+    if ( (sock= nn_socket(AF_SP,nntype)) >= 0 )
+    {
+     
+        if ( nntype == NN_SUB )
+            nn_setsockopt(sock,NN_SUB,NN_SUB_SUBSCRIBE,"",0);
+    }
+    return(sock);
+}
+
 #if 1
 void BET_mofn_send(struct privatebet_info *bet,struct privatebet_vars *vars,int32_t cardi,int32_t playerj,int32_t encryptflag)
 {
