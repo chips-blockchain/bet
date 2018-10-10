@@ -474,7 +474,7 @@ int main(int argc,const char *argv[])
 int main(int argc, char **argv)
 {
     uint16_t tmp,rpcport = 7797,port = 7797+1;
-    char connectaddr[128],bindaddr[128]/*="ipc:///tmp/bet.ipc"*/,bindaddr1[128]/*="ipc:///tmp/bet1.ipc"*/,smartaddr[64],randphrase[32],*modestr,*hostip,*passphrase=0,*retstr; 
+    char connectaddr[128],bindaddr[128]/*="ipc:///tmp/bet.ipc"*/,bindaddr1[128]/*="ipc:///tmp/bet1.ipc"*/,smartaddr[64],randphrase[32],*modestr,hostip[20],*passphrase=0,*retstr; 
 	cJSON *infojson,*argjson,*reqjson,*deckjson; 
 	uint64_t randvals; bits256 privkey,pubkey,pubkeys[64],privkeys[64]; 
 	uint8_t pubkey33[33],taddr=0,pubtype=60; uint32_t i,n,range,numplayers; int32_t testmode=0,pubsock=-1,subsock=-1,pullsock=-1,pushsock=-1; long fsize; 
@@ -497,7 +497,8 @@ int main(int argc, char **argv)
 	                       host_entry->h_addr_list[0])); 
    printf("\nIp Address:%s",hostip);	
 	*/
-	hostip="159.69.23.30";
+	//hostip="159.69.23.30";
+	strcpy(hostip,argv[2]);
 	#if 1	
     OS_init();
 	libgfshare_init();
@@ -511,7 +512,7 @@ int main(int argc, char **argv)
     Maxplayers=2;
 	printf("%s:%d, range:%d, numplayers:%d\n",__FUNCTION__,__LINE__,range,numplayers);
 	// for dcv
-	if((argc==2)&&(strcmp(argv[1],"dcv")==0))
+	if((argc==3)&&(strcmp(argv[1],"dcv")==0))
 	{
 		
 #if 1
@@ -555,7 +556,7 @@ int main(int argc, char **argv)
 	}
 
 	// for bvv
-	else if((argc==2)&&(strcmp(argv[1],"bvv")==0))
+	else if((argc==3)&&(strcmp(argv[1],"bvv")==0))
 	{
 
 	
@@ -600,7 +601,7 @@ int main(int argc, char **argv)
 	}
 
 	// for players
-	else if((argc==2)&&(strcmp(argv[1],"player")==0)) 
+	else if((argc==3)&&(strcmp(argv[1],"player")==0)) 
 	{
 
 	
