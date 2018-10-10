@@ -10,4 +10,5 @@ char *BET_transportname(int32_t bindflag,char *str,char *ipaddr,uint16_t port);
 int32_t BET_nanosock(int32_t bindflag,char *endpoint,int32_t nntype);
 void BET_mofn_send(struct privatebet_info *bet,struct privatebet_vars *vars,int32_t cardi,int32_t playerj,int32_t encryptflag);
 int32_t BET_client_deali(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars,int32_t senderid);
+int32_t BET_nanosock_sg777(int32_t bindflag,char *endpoint,int32_t nntype);
 

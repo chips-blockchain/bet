@@ -474,14 +474,31 @@ int main(int argc,const char *argv[])
 int main(int argc, char **argv)
 {
     uint16_t tmp,rpcport = 7797,port = 7797+1;
-    char connectaddr[128],bindaddr[128]="ipc:///tmp/bet.ipc",bindaddr1[128]="ipc:///tmp/bet1.ipc",smartaddr[64],randphrase[32],*modestr,*hostip,*passphrase=0,*retstr; 
+    char connectaddr[128],bindaddr[128]/*="ipc:///tmp/bet.ipc"*/,bindaddr1[128]/*="ipc:///tmp/bet1.ipc"*/,smartaddr[64],randphrase[32],*modestr,hostip[20],*passphrase=0,*retstr; 
 	cJSON *infojson,*argjson,*reqjson,*deckjson; 
 	uint64_t randvals; bits256 privkey,pubkey,pubkeys[64],privkeys[64]; 
 	uint8_t pubkey33[33],taddr=0,pubtype=60; uint32_t i,n,range,numplayers; int32_t testmode=0,pubsock=-1,subsock=-1,pullsock=-1,pushsock=-1; long fsize; 
 	struct privatebet_info **BET_players,*BET_dcv,*BET_bvv;
 	pthread_t players_t[CARDS777_MAXPLAYERS],dcv_t,bvv_t;
+
+	char hostbuffer[256]; 
+	char *IPbuffer; 
+	struct hostent *host_entry; 
+	int hostname; 
+	/*
+	// To retrieve hostname 
+	hostname = gethostname(hostbuffer, sizeof(hostbuffer)); 
+		// To retrieve host information 
+	host_entry = gethostbyname(hostbuffer); 
 	
-	//ln_bet(argc,argv);
+	// To convert an Internet network 
+	// address into ASCII string 
+	hostip= inet_ntoa(*((struct in_addr*) 
+	                       host_entry->h_addr_list[0])); 
+   printf("\nIp Address:%s",hostip);	
+	*/
+	//hostip="159.69.23.30";
+	strcpy(hostip,argv[2]);
 	#if 1	
     OS_init();
 	libgfshare_init();
@@ -495,11 +512,33 @@ int main(int argc, char **argv)
     Maxplayers=2;
 	printf("%s:%d, range:%d, numplayers:%d\n",__FUNCTION__,__LINE__,range,numplayers);
 	// for dcv
-	if((argc==2)&&(strcmp(argv[1],"dcv")==0))
+	if((argc==3)&&(strcmp(argv[1],"dcv")==0))
 	{
+		
+#if 1
+		/* This code is for sockets*/
+		BET_transportname(0,bindaddr,hostip,port);
+		printf("\nBinding address:%s",bindaddr);
+		pubsock = BET_nanosock(1,bindaddr,NN_PUB);
+		if(pubsock!=-1)
+			printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,pubsock);
+		else
+			printf("\nPubliser Socket is not established");
+		
+		BET_transportname(0,bindaddr1,hostip,port+1);
+		printf("\nBinding address:%s",bindaddr);
+		pullsock = BET_nanosock(1,bindaddr1,NN_PULL);
+		if(pullsock!=-1)
+			printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,pullsock);
+		else
+			printf("\nPull Socket is not established");
+		
+		
+#endif				  
+
 		BET_dcv=calloc(1,sizeof(struct privatebet_info));
-	    BET_dcv->pubsock = BET_nanosock(1,bindaddr,NN_PUB);
-	    BET_dcv->pullsock = BET_nanosock(1,bindaddr1,NN_PULL);
+	    BET_dcv->pubsock = pubsock;//BET_nanosock(1,bindaddr,NN_PUB);
+	    BET_dcv->pullsock = pullsock;//BET_nanosock(1,bindaddr1,NN_PULL);
 	    BET_dcv->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
 	    BET_dcv->maxchips = CARDS777_MAXCHIPS;
 	    BET_dcv->chipsize = CARDS777_CHIPSIZE;
@@ -517,11 +556,33 @@ int main(int argc, char **argv)
 	}
 
 	// for bvv
-	else if((argc==2)&&(strcmp(argv[1],"bvv")==0))
+	else if((argc==3)&&(strcmp(argv[1],"bvv")==0))
 	{
+
+	
+#if 1
+	/* This code is for sockets*/
+	BET_transportname(0,bindaddr,hostip,port);
+	printf("\nBinding address:%s",bindaddr);
+    subsock= BET_nanosock(0,bindaddr,NN_SUB);
+	if(subsock!=-1)
+		printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,subsock);
+	else
+		printf("\nPubliser Socket is not established");
+
+    BET_transportname(0,bindaddr1,hostip,port+1);
+	printf("\nBinding address:%s",bindaddr);
+    pushsock = BET_nanosock(0,bindaddr1,NN_PUSH);
+	if(pushsock!=-1)
+		printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,pushsock);
+	else
+		printf("\nPull Socket is not established");
+
+	
+#endif				  
 		BET_bvv=calloc(1,sizeof(struct privatebet_info));
-	    BET_bvv->subsock = BET_nanosock(0,bindaddr,NN_SUB);
-	    BET_bvv->pushsock = BET_nanosock(0,bindaddr1,NN_PUSH);
+	    BET_bvv->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
+	    BET_bvv->pushsock = pushsock/*BET_nanosock(0,bindaddr1,NN_PUSH)*/;
 	    BET_bvv->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
 	    BET_bvv->maxchips = CARDS777_MAXCHIPS;
 	    BET_bvv->chipsize = CARDS777_CHIPSIZE;
@@ -540,8 +601,30 @@ int main(int argc, char **argv)
 	}
 
 	// for players
-	else if((argc==2)&&(strcmp(argv[1],"player")==0)) 
+	else if((argc==3)&&(strcmp(argv[1],"player")==0)) 
 	{
+
+	
+#if 1
+		/* This code is for sockets*/
+		BET_transportname(0,bindaddr,hostip,port);
+		printf("\nBinding address:%s",bindaddr);
+		subsock= BET_nanosock(0,bindaddr,NN_SUB);
+		if(subsock!=-1)
+			printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,subsock);
+		else
+			printf("\nPubliser Socket is not established");
+	
+		BET_transportname(0,bindaddr1,hostip,port+1);
+		printf("\nBinding address:%s",bindaddr);
+		pushsock = BET_nanosock(0,bindaddr1,NN_PUSH);
+		if(pushsock!=-1)
+			printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,pushsock);
+		else
+			printf("\nPull Socket is not established");
+	
+		
+#endif				  
 		char *ptr;
 		i=0;
 		BET_players=calloc(numplayers,sizeof(struct privatebet_info*));
@@ -551,8 +634,8 @@ int main(int argc, char **argv)
 	    
 		/*for(int i=0;i<numplayers;i++)
 		{*/
-			BET_players[i]->subsock = BET_nanosock(0,bindaddr,NN_SUB);
-		    BET_players[i]->pushsock = BET_nanosock(0,bindaddr1,NN_PUSH);
+			BET_players[i]->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
+		    BET_players[i]->pushsock = pushsock/*BET_nanosock(0,bindaddr1,NN_PUSH)*/;
 		    BET_players[i]->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
 		    BET_players[i]->maxchips = CARDS777_MAXCHIPS;
 		    BET_players[i]->chipsize = CARDS777_CHIPSIZE;

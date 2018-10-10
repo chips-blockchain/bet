@@ -1153,6 +1153,60 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
 	return tmp;
 }
 
+int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	cJSON *invoiceInfo=NULL;
+        char *invoice=NULL;
+	int argc,maxsize=10000;
+	char **argv=NULL,*buf=NULL;
+	argv=(char**)malloc(4*sizeof(char*));
+	buf=malloc(maxsize);
+	argc=3;
+	for(int i=0;i<4;i++)
+	{
+		argv[i]=(char*)malloc(sizeof(char)*1000);
+	}
+	invoice=jstr(argjson,"invoice");
+	invoiceInfo=cJSON_Parse(invoice);
+	printf("\nbotl11 string:%s",jstr(invoiceInfo,"bolt11"));
+	strcpy(argv[0],"./bet");
+	strcpy(argv[1],"pay");
+	sprintf(argv[2],"%s",jstr(invoiceInfo,"bolt11"));
+	argv[3]=NULL;
+	ln_bet(argc,argv,buf);
+	printf("\n:%s:%d:Pay response:%s",__FUNCTION__,__LINE__,buf);
+}
+
+
+int32_t BET_p2p_bet_round(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	int32_t playerid,bet_amount,round,bytes,retval;
+	cJSON *betInfo=NULL;
+	char *rendered=NULL;
+	round=jint(argjson,"round");
+	printf("\nEnter Betting Amount in MilliSatoshis:");
+	scanf("%d",&bet_amount);
+
+	betInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(betInfo,"method","invoiceRequest");
+	cJSON_AddNumberToObject(betInfo,"round",round);
+	cJSON_AddNumberToObject(betInfo,"playerID",bet->myplayerid);
+	cJSON_AddNumberToObject(betInfo,"betAmount",bet_amount);
+
+	rendered=cJSON_Print(betInfo);
+
+	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+			
+
+	if(bytes<0)
+		retval=-1;
+	else
+		retval=1;
+	
+	return retval;
+	
+}
+
 int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int32_t retval,bytes,cardid,playerid,errs,unpermi;
@@ -1479,16 +1533,18 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars) // update game state based on host broadcast
 {
+	
     static uint8_t *decoded; static int32_t decodedlen,retval=1;
     char *method; int32_t senderid; bits256 *MofN;
     
     if ( (method= jstr(argjson,"method")) != 0 )
     {
-        printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-        if ( strcmp(method,"join") == 0 )
-    	{
-    		BET_p2p_client_join(argjson,bet,vars);
-    	}
+	      
+	        printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+        	if ( strcmp(method,"join") == 0 )
+    		{
+    			BET_p2p_client_join(argjson,bet,vars);
+    		}
 		else if ( strcmp(method,"join_res") == 0 )
 		{
 			retval=BET_p2p_client_join_res(argjson,bet,vars);
@@ -1496,7 +1552,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		}
 		else if ( strcmp(method,"init") == 0 )
 		{
-            retval=BET_p2p_client_init(argjson,bet,vars);
+            		retval=BET_p2p_client_init(argjson,bet,vars);
 			
 		}
 		else if(strcmp(method,"init_d") == 0)
@@ -1519,14 +1575,21 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		{
 			retval=BET_p2p_client_receive_share(argjson,bet,vars);
 		}
-        else
-        {
-            printf("\n%s:%d:Unknown Command",__FUNCTION__,__LINE__);
-            retval=-1;
-        }
-    }		
-
-		return retval;
+		else if(strcmp(method,"bet") == 0)
+		{
+			retval=BET_p2p_bet_round(argjson,bet,vars);
+		}
+		else if(strcmp(method,"invoice") == 0)
+		{
+			retval=BET_p2p_invoice(argjson,bet,vars);
+		}
+        	else
+        	{ 
+	       		printf("\n%s:%d:Unknown Command",__FUNCTION__,__LINE__);
+			 retval=-1;
+        	}
+	}	
+	return retval;
 }
 
 
