@@ -27,6 +27,8 @@ $ git clone https://github.com/sg777/bet.git
 $ cd bet
 $ make
 ```
+## Communicating over IPC
+Nodes communicating through IPC, `ipc:///tmp/bet.ipc` is an uplink channel{PUSH-PULL} between players to DCV, where as `ipc:///tmp/bet1.ipc` is the downlink channel{PUB-SUB} between DCV and Players.
 
 ## Command to run DCV
 ```
@@ -40,12 +42,46 @@ $ ./bet dcv
 ```
 $ cd
 $ cd bet/privatebet
-$ ./bet dcv
+$ ./bet bvv
+(ipc:///tmp/bet.ipc) bound
+(ipc:///tmp/bet1.ipc) bound
+```
+## Command to run Player
+```
+$ cd
+$ cd bet/privatebet
+$ ./bet player
+(ipc:///tmp/bet.ipc) bound
+(ipc:///tmp/bet1.ipc) bound
+```
+## Communicating over IP Adress
+DCV nodes binds to the sockets created over the ports 7797 and 7798. The BVV and Player nodes connect to the binding address via subscribe and push sockets.
+
+## Command to run DCV
+```
+$ cd
+$ cd bet/privatebet
+$ ./bet dcv ipaddress_of_dcv
+(ipc:///tmp/bet.ipc) bound
+(ipc:///tmp/bet1.ipc) bound
+```
+## Command to run BVV
+```
+$ cd
+$ cd bet/privatebet
+$ ./bet bvv ipaddress_of_dcv
+(ipc:///tmp/bet.ipc) bound
+(ipc:///tmp/bet1.ipc) bound
+```
+## Command to run Player
+```
+$ cd
+$ cd bet/privatebet
+$ ./bet player ipaddress_of_dcv
 (ipc:///tmp/bet.ipc) bound
 (ipc:///tmp/bet1.ipc) bound
 ```
 
-Right now all the nodes communicating through IPC, `ipc:///tmp/bet.ipc` is an uplink channel{PUSH-PULL} between players to DCV, where as `ipc:///tmp/bet1.ipc` is the downlink channel{PUB-SUB} between DCV and Players.
 
 ## Scope of these API's
 Using `create-player` one can create the player then create deck using `create-deck`. Once if the player and deck creation is done, player can join the table using `join-req`.
