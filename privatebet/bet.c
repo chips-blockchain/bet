@@ -563,7 +563,7 @@ int main(int argc, char **argv)
 	/* This code is for sockets*/
 	BET_transportname(0,bindaddr,hostip,port);
 	printf("\nBinding address:%s",bindaddr);
-    subsock= BET_nanosock_sg777(0,bindaddr,NN_SUB);
+    subsock= BET_nanosock(0,bindaddr,NN_SUB);
 	if(subsock!=-1)
 		printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,subsock);
 	else
@@ -571,7 +571,7 @@ int main(int argc, char **argv)
 
     BET_transportname(0,bindaddr1,hostip,port+1);
 	printf("\nBinding address:%s",bindaddr);
-    pushsock = BET_nanosock_sg777(0,bindaddr1,NN_PUSH);
+    pushsock = BET_nanosock(0,bindaddr1,NN_PUSH);
 	if(pushsock!=-1)
 		printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,pushsock);
 	else
