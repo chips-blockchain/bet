@@ -336,7 +336,7 @@ int32_t BET_nanosock_sg777(int32_t bindflag,char *endpoint,int32_t nntype)
         }	
 		else if ( nntype == NN_PUSH )
 		{
-			    rc = nn_bind (sock, endpoint);
+			    rc = nn_connect (sock, endpoint);
 			    if(rc < 0) {
 			        fprintf (stderr, "Failed bind to %s\n",
 			            endpoint);
