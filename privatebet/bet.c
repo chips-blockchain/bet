@@ -212,265 +212,21 @@ void randombytes_buf(void * const buf, const size_t size)
 
 int32_t players_init(int32_t numplayers,int32_t numcards,bits256 deckid);
 void sg777_players_init(int32_t numplayers,int32_t numcards,bits256 deckid);
-#if 0
-int main(int argc,const char *argv[])
+char* gethostip()
 {
-    uint16_t tmp,rpcport = 7797,port = 7797+1;
-    char connectaddr[128],bindaddr[128],smartaddr[64],randphrase[32],*modestr,*hostip,*passphrase=0,*retstr; cJSON *infojson,*argjson,*reqjson,*deckjson; uint64_t randvals; bits256 privkey,pubkey,pubkeys[64],privkeys[64]; uint8_t pubkey33[33],taddr=0,pubtype=60; uint32_t i,n,range,numplayers; int32_t testmode=0,pubsock=-1,subsock=-1,pullsock=-1,pushsock=-1; long fsize; struct privatebet_info *BET,*BET2;
-    hostip = "127.0.0.1";
-    libgfshare_init();
-    OS_init();
-    portable_mutex_init(&LP_peermutex);
-    portable_mutex_init(&LP_commandmutex);
-    portable_mutex_init(&LP_networkmutex);
-    portable_mutex_init(&LP_psockmutex);
-    portable_mutex_init(&LP_messagemutex);
-    portable_mutex_init(&BET_shardmutex);
-    sleep(1);
-    if ( argc > 1 )
-    {
-    	
-        if ( (infojson= chipsln_getinfo()) != 0 )
-        {
-            if ( (LN_idstr= clonestr(jstr(infojson,"id"))) == 0 || strlen(LN_idstr) != 66 )
-                printf("need 33 byte secp pubkey\n"), exit(-1);
-            LN_port = juint(infojson,"port");
-            printf("getinfo.(%s)\n",jprint(infojson,1));
-        } else printf("need to have CHIPS and lightning running\n"), exit(-1);
-        printf("help.(%s)\n",jprint(chipsln_help(),1));
-        printf("LN_idstr.(%s)\n",LN_idstr);
-        
-		if ( (argjson= cJSON_Parse(argv[1])) != 0 )
-        {
-            
-            hostip = jstr(argjson,"hostip");
-            if ( (tmp= juint(argjson,"hostport")) != 0 )
-                port = tmp;
-            if ( (tmp= juint(argjson,"rpcport")) != 0 )
-                rpcport = tmp;
-            if ( OS_thread_create(malloc(sizeof(pthread_t)),NULL,(void *)stats_rpcloop,(void *)&rpcport) != 0 )
-            {
-                printf("error launching stats rpcloop for port.%u\n",port);
-                exit(-1);
-            }
-            
+	char hostbuffer[256]; 
+	char *hostip; 
+	struct hostent *host_entry; 
+	int hostname; 
+	 hostname = gethostname(hostbuffer, sizeof(hostbuffer)); 
 
-            if ( (modestr= jstr(argjson,"mode")) != 0 )
-            {
-                if ( strcmp(modestr,"host") == 0 )
-                {
-                 
-                    if ( hostip == 0 && system("curl -s4 checkip.amazonaws.com > /tmp/myipaddr") == 0 )
-                    {
-                        if ( (hostip= OS_filestr(&fsize,"/tmp/myipaddr")) != 0 && hostip[0] != 0 )
-                        {
-                            n = (int32_t)strlen(hostip);
-                            if ( hostip[n-1] == '\n' )
-                                hostip[--n] = 0;
-                        } else printf("error getting myipaddr\n");
-                    }
-				
-                    BET_transportname(1,bindaddr,hostip,port);
-                    pubsock = BET_nanosock(1,bindaddr,NN_PUB);
-                    BET_transportname(1,bindaddr,hostip,port+1);
-                    pullsock = BET_nanosock(1,bindaddr,NN_PULL);
-                    IAMHOST = 1;
-                    safecopy(Host_peerid,LN_idstr,sizeof(Host_peerid));
-                    safecopy(Host_ipaddr,hostip,sizeof(Host_ipaddr));
-                    // publish to BET chain
-                }
-                else if ( strcmp(modestr,"oracle") == 0 )
-                {
-                    IAMORACLE = 1;
-                    while ( 1 )     // just respond to oracle requests
-                        sleep(777);
-                }
-            }
-            printf("BET API running on %s:%u pub.%d sub.%d; pull.%d push.%d\n",hostip,port,pubsock,subsock,pullsock,pushsock);
-            BET = calloc(1,sizeof(*BET));
-            BET2 = calloc(1,sizeof(*BET2));
-            BET->pubsock = pubsock;
-            BET->pullsock = pullsock;
-            BET->subsock = subsock;
-            BET->pushsock = pushsock;
-            BET->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
-            BET->maxchips = CARDS777_MAXCHIPS;
-            BET->chipsize = CARDS777_CHIPSIZE;
-            *BET2 = *BET;
-            if ( passphrase == 0 || passphrase[0] == 0 )
-            {
-                FILE *fp;
-                if ( (fp= fopen("passphrase","rb")) == 0 )
-                {
-                    OS_randombytes((void *)&randvals,sizeof(randvals));
-                    sprintf(randphrase,"%llu",(long long)randvals);
-                    printf("randphrase.(%s)\n",randphrase);
-                    if ( (fp= fopen("passphrase","wb")) != 0 )
-                    {
-                        fwrite(randphrase,1,strlen(randphrase),fp);
-                        fclose(fp);
-                    }
-                    passphrase = randphrase;
-                }
-                else
-                {
-                    printf("found passphrase file\n");
-                    fread(randphrase,1,sizeof(randphrase),fp);
-                    passphrase = randphrase;
-                    fclose(fp);
-                }
-            }
-            printf("passphrase.(%s) pushsock.%d subsock.%d hostip.(%s)\n",passphrase,pushsock,subsock,hostip);
-            conv_NXTpassword(privkey.bytes,pubkey.bytes,(uint8_t *)passphrase,(int32_t)strlen(passphrase));
-            bitcoin_priv2pub(bitcoin_ctx(),pubkey33,smartaddr,privkey,taddr,pubtype);
-            Mypubkey = pubkey;
-            Myprivkey = privkey;
-            if ( IAMHOST != 0 )
-            {
-                BET_betinfo_set(BET,"demo",36,0,Maxplayers);
-                if ( OS_thread_create(malloc(sizeof(pthread_t)),NULL,(void *)BET_hostloop,(void *)BET) != 0 )
-                {
-                    printf("error launching BET_hostloop for pub.%d pull.%d\n",BET->pubsock,BET->pullsock);
-                    exit(-1);
-                }
-            }
-            else
-            {
-                if ( OS_thread_create(malloc(sizeof(pthread_t)),NULL,(void *)BET_clientloop,(void *)BET) != 0 )
-                {
-                    printf("error launching BET_clientloop for sub.%d\n",BET->subsock);
-                    exit(-1);
-                }
-            }
-            while ( 1 )
-            {
-                sleep(1);
-                // update display
-            }
-            //BET_cmdloop(privkey,smartaddr,pubkey33,pubkey,BET2);
-            /*if ( hostip == 0 || hostip[0] == 0 )
-             hostip = "127.0.0.1";
-             BET_transportname(0,connectaddr,hostip,port);
-             printf("connect %s\n",connectaddr);
-             subsock = BET_nanosock(0,connectaddr,NN_SUB);
-             BET_transportname(0,connectaddr,hostip,port+1);
-             pushsock = BET_nanosock(0,connectaddr,NN_PUSH);
-             sleep(1);*/
-            // printf("connect.(%s)\n",jprint(chipsln_connect(hostip,port,LN_idstr),1));
-            //BET_mainloop(pubsock,pullsock,subsock,pushsock,jstr(argjson,"passphrase"));
-        }
-    }
-    else
-    {
-        
-		
-		#if 0 //using threads
-			cJSON *gameInfo=NULL;
-			pthread_t player_t[CARDS777_MAXPLAYERS],dcv_t,bvv_t;
-			uint32_t values[CARDS777_MAXPLAYERS];
-			OS_randombytes((uint8_t *)&range,sizeof(range));
-			OS_randombytes((uint8_t *)&numplayers,sizeof(numplayers));
-			range = (range % 52) + 1;
-			numplayers = (numplayers % (CARDS777_MAXPLAYERS-1)) + 2;
-
-			gameInfo=cJSON_CreateObject();
-			cJSON_AddNumberToObject(gameInfo,"numplayers",numplayers);
-			cJSON_AddNumberToObject(gameInfo,"range",range);
-			cJSON_AddNumberToObject(gameInfo,"maxnumplayers",CARDS777_MAXPLAYERS);
-			cJSON_AddNumberToObject(gameInfo,"maxrange",CARDS777_MAXCARDS);
-
-			char *rendered=cJSON_Print(gameInfo);
-			
-			printf("\nnumplayers=%d",jint(gameInfo,"numplayers"));
-			printf("\n%s",rendered);
-			numplayers=1;
-			for(i=0;i<numplayers;i++){
-				values[i]=i;
-				if ( OS_thread_create(&player_t[i],NULL,(void *)BET_player,(void *)rendered) != 0 )
-				{
-					printf("error launching BET_clientloop\n");
-					exit(-1);
-				}
-			}
-					
-			if ( OS_thread_create(&dcv_t,NULL,(void *)BET_dcv,(void *)rendered) != 0 )
-			{
-				printf("error launching BET_clientloop\n");
-				exit(-1);
-			}
-			/*
-			if ( OS_thread_create(&bvv_t,NULL,(void *)BET_bvv,(void *)BET) != 0 )
-			{
-				printf("error launching BET_clientloop\n");
-				exit(-1);
-			}
-			*/
-			for(i=0;i<numplayers;i++){
-				if(pthread_join(player_t[i],NULL)){
-					printf("\nError in joining the main thread for player thread %d",i);
-				}
-			}
-			
-			if(pthread_join(dcv_t,NULL)){
-				printf("\nError in joining the main thread for dcv");
-			}
-			/*
-			if(pthread_join(bvv_t,NULL)){
-				printf("\nError in joining the main thread for bvv");
-			}
-	
-			*/
-	
-		#endif
-		testmode=0;
-	
-		while ( testmode != 1 )
-        {
-            testmode=1;
-            OS_randombytes((uint8_t *)&range,sizeof(range));
-            OS_randombytes((uint8_t *)&numplayers,sizeof(numplayers));
-            range = (range % 52) + 1;
-            numplayers = (numplayers % (CARDS777_MAXPLAYERS-1)) + 2;
-			numplayers=2;
-			range=2;
-			printf("\nnumplayers=%d, numcards=%d\n",numplayers,range);
-			sg777_players_init(numplayers,range,rand256(0));
-            continue;
-            for (i=0; i<numplayers; i++)
-                privkeys[i] = curve25519_keypair(&pubkeys[i]);
-            //Debug_privkeys = privkeys;
-            deckjson = 0;
-            if ( (reqjson= BET_createdeck_request(pubkeys,numplayers,range)) != 0 )
-            {
-                if ( (retstr= BET_oracle_request("createdeck",reqjson)) != 0 )
-                {
-                    if ( (deckjson= cJSON_Parse(retstr)) != 0 )
-                    {
-                        printf("BET_roundstart numcards.%d numplayers.%d\n",range,numplayers);
-                        BET_roundstart(-1,deckjson,range,privkeys,pubkeys,numplayers,privkeys[0]);
-                        printf("finished BET_roundstart numcards.%d numplayers.%d\n",range,numplayers);
-                    }
-                    free(retstr);
-                }
-                free_json(reqjson);
-            }
-            if ( deckjson != 0 )
-                free_json(deckjson);
-            {
-                int32_t permi[CARDS777_MAXCARDS],permis[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
-                memset(permi,0,sizeof(permi));
-                memset(permis,0,sizeof(permis));
-                for (i=0; i<numplayers; i++)
-                    BET_permutation(permis[i],range);
-                BET_permutation_sort(permi,permis,numplayers,range);
-            }
-        }
-    }
-    sleep(1);
-    return 0;
+	 // To retrieve host information 
+	 host_entry = gethostbyname(hostbuffer); 
+	 
+	 // To convert an Internet network address into ASCII string 
+	 hostip= inet_ntoa(*((struct in_addr*)host_entry->h_addr_list[0])); 
+	 return hostip;
 }
-#endif
-#if 1
 int main(int argc, char **argv)
 {
     uint16_t tmp,rpcport = 7797,port = 7797+1;
@@ -478,26 +234,9 @@ int main(int argc, char **argv)
 	cJSON *infojson,*argjson,*reqjson,*deckjson; 
 	uint64_t randvals; bits256 privkey,pubkey,pubkeys[64],privkeys[64]; 
 	uint8_t pubkey33[33],taddr=0,pubtype=60; uint32_t i,n,range,numplayers; int32_t testmode=0,pubsock=-1,subsock=-1,pullsock=-1,pushsock=-1; long fsize; 
-	struct privatebet_info **BET_players,*BET_dcv,*BET_bvv;
-	pthread_t players_t[CARDS777_MAXPLAYERS],dcv_t,bvv_t;
+	struct privatebet_info *BET_dcv,*BET_bvv,*BET_player;
+	pthread_t dcv_t,bvv_t,player_t;
 
-	char hostbuffer[256]; 
-	char *IPbuffer; 
-	struct hostent *host_entry; 
-	int hostname; 
-	/*
-	// To retrieve hostname 
-	hostname = gethostname(hostbuffer, sizeof(hostbuffer)); 
-		// To retrieve host information 
-	host_entry = gethostbyname(hostbuffer); 
-	
-	// To convert an Internet network 
-	// address into ASCII string 
-	hostip= inet_ntoa(*((struct in_addr*) 
-	                       host_entry->h_addr_list[0])); 
-   printf("\nIp Address:%s",hostip);	
-	*/
-	//hostip="159.69.23.30";
 	strcpy(hostip,argv[2]);
 	#if 1	
     OS_init();
@@ -511,14 +250,12 @@ int main(int argc, char **argv)
 	numplayers=2;
     Maxplayers=2;
 	printf("%s:%d, range:%d, numplayers:%d\n",__FUNCTION__,__LINE__,range,numplayers);
-	// for dcv
-	if((argc==3)&&(strcmp(argv[1],"dcv")==0))
+	if((argc>=2)&&(strcmp(argv[1],"dcv")==0))
 	{
 		
-#if 1
+		#if 1
 		/* This code is for sockets*/
 		BET_transportname(0,bindaddr,hostip,port);
-		printf("\nBinding address:%s",bindaddr);
 		pubsock = BET_nanosock(1,bindaddr,NN_PUB);
 		if(pubsock!=-1)
 			printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,pubsock);
@@ -526,15 +263,13 @@ int main(int argc, char **argv)
 			printf("\nPubliser Socket is not established");
 		
 		BET_transportname(0,bindaddr1,hostip,port+1);
-		printf("\nBinding address:%s",bindaddr);
 		pullsock = BET_nanosock(1,bindaddr1,NN_PULL);
 		if(pullsock!=-1)
 			printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,pullsock);
 		else
 			printf("\nPull Socket is not established");
-		
-		
-#endif				  
+			
+		#endif				  
 
 		BET_dcv=calloc(1,sizeof(struct privatebet_info));
 	    BET_dcv->pubsock = pubsock;//BET_nanosock(1,bindaddr,NN_PUB);
@@ -554,107 +289,84 @@ int main(int argc, char **argv)
 			printf("\nError in joining the main thread for dcv");
 		}
 	}
-
-	// for bvv
 	else if((argc==3)&&(strcmp(argv[1],"bvv")==0))
 	{
+		#if 1
+			/* This code is for sockets*/
+			BET_transportname(0,bindaddr,hostip,port);
+			printf("\nBinding address:%s",bindaddr);
+		    subsock= BET_nanosock(0,bindaddr,NN_SUB);
+			if(subsock!=-1)
+				printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,subsock);
+			else
+				printf("\nPubliser Socket is not established");
 
-	
-#if 1
-	/* This code is for sockets*/
-	BET_transportname(0,bindaddr,hostip,port);
-	printf("\nBinding address:%s",bindaddr);
-    subsock= BET_nanosock(0,bindaddr,NN_SUB);
-	if(subsock!=-1)
-		printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,subsock);
-	else
-		printf("\nPubliser Socket is not established");
+		    BET_transportname(0,bindaddr1,hostip,port+1);
+			printf("\nBinding address:%s",bindaddr);
+		    pushsock = BET_nanosock(0,bindaddr1,NN_PUSH);
+			if(pushsock!=-1)
+				printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,pushsock);
+			else
+				printf("\nPull Socket is not established");
 
-    BET_transportname(0,bindaddr1,hostip,port+1);
-	printf("\nBinding address:%s",bindaddr);
-    pushsock = BET_nanosock(0,bindaddr1,NN_PUSH);
-	if(pushsock!=-1)
-		printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,pushsock);
-	else
-		printf("\nPull Socket is not established");
-
-	
-#endif				  
-		BET_bvv=calloc(1,sizeof(struct privatebet_info));
-	    BET_bvv->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
-	    BET_bvv->pushsock = pushsock/*BET_nanosock(0,bindaddr1,NN_PUSH)*/;
-	    BET_bvv->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
-	    BET_bvv->maxchips = CARDS777_MAXCHIPS;
-	    BET_bvv->chipsize = CARDS777_CHIPSIZE;
-		BET_bvv->numplayers=numplayers;
-		BET_bvv->myplayerid=0;
-	    BET_betinfo_set(BET_bvv,"demo",range,0,Maxplayers);
-	    if ( OS_thread_create(&bvv_t,NULL,(void *)BET_p2p_bvvloop,(void *)BET_bvv) != 0 )
-	    {
-	        printf("error launching BET_clientloop for sub.%d push.%d\n",BET_bvv->subsock,BET_bvv->pushsock);
-	        exit(-1);
-	    }
-		if(pthread_join(bvv_t,NULL))
-		{
-			printf("\nError in joining the main thread for bvvv");
-		}
+		#endif				  
+			BET_bvv=calloc(1,sizeof(struct privatebet_info));
+		    BET_bvv->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
+		    BET_bvv->pushsock = pushsock/*BET_nanosock(0,bindaddr1,NN_PUSH)*/;
+		    BET_bvv->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
+		    BET_bvv->maxchips = CARDS777_MAXCHIPS;
+		    BET_bvv->chipsize = CARDS777_CHIPSIZE;
+			BET_bvv->numplayers=numplayers;
+			BET_bvv->myplayerid=0;
+		    BET_betinfo_set(BET_bvv,"demo",range,0,Maxplayers);
+		    if ( OS_thread_create(&bvv_t,NULL,(void *)BET_p2p_bvvloop,(void *)BET_bvv) != 0 )
+		    {
+		        printf("error launching BET_clientloop for sub.%d push.%d\n",BET_bvv->subsock,BET_bvv->pushsock);
+		        exit(-1);
+		    }
+			if(pthread_join(bvv_t,NULL))
+			{
+				printf("\nError in joining the main thread for bvvv");
+			}
 	}
-
-	// for players
 	else if((argc==3)&&(strcmp(argv[1],"player")==0)) 
 	{
+		#if 1
+			/* This code is for sockets*/
+			BET_transportname(0,bindaddr,hostip,port);
+			printf("\nBinding address:%s",bindaddr);
+			subsock= BET_nanosock(0,bindaddr,NN_SUB);
+			if(subsock!=-1)
+				printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,subsock);
+			else
+				printf("\nPubliser Socket is not established");
 
-	
-#if 1
-		/* This code is for sockets*/
-		BET_transportname(0,bindaddr,hostip,port);
-		printf("\nBinding address:%s",bindaddr);
-		subsock= BET_nanosock(0,bindaddr,NN_SUB);
-		if(subsock!=-1)
-			printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,subsock);
-		else
-			printf("\nPubliser Socket is not established");
-	
-		BET_transportname(0,bindaddr1,hostip,port+1);
-		printf("\nBinding address:%s",bindaddr);
-		pushsock = BET_nanosock(0,bindaddr1,NN_PUSH);
-		if(pushsock!=-1)
-			printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,pushsock);
-		else
-			printf("\nPull Socket is not established");
-	
-		
-#endif				  
-		char *ptr;
-		i=0;
-		BET_players=calloc(numplayers,sizeof(struct privatebet_info*));
-		//for(int i=0;i<numplayers;i++)
-			BET_players[i]=calloc(1,sizeof(struct privatebet_info));
-		
-	    
-		/*for(int i=0;i<numplayers;i++)
-		{*/
-			BET_players[i]->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
-		    BET_players[i]->pushsock = pushsock/*BET_nanosock(0,bindaddr1,NN_PUSH)*/;
-		    BET_players[i]->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
-		    BET_players[i]->maxchips = CARDS777_MAXCHIPS;
-		    BET_players[i]->chipsize = CARDS777_CHIPSIZE;
-			BET_players[i]->numplayers=numplayers;
-			//BET_players[i]->myplayerid=atoi(argv[2]);
-		    BET_betinfo_set(BET_players[i],"demo",range,0,Maxplayers);
-		    if (OS_thread_create(&players_t[i],NULL,(void *)BET_p2p_clientloop,(void *)BET_players[i]) != 0 )
+			BET_transportname(0,bindaddr1,hostip,port+1);
+			printf("\nBinding address:%s",bindaddr);
+			pushsock = BET_nanosock(0,bindaddr1,NN_PUSH);
+			if(pushsock!=-1)
+				printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,pushsock);
+			else
+				printf("\nPull Socket is not established");
+		#endif				  
+			BET_player=calloc(numplayers,sizeof(struct privatebet_info*));
+			BET_player=calloc(1,sizeof(struct privatebet_info));
+			BET_player->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
+		    BET_player->pushsock = pushsock/*BET_nanosock(0,bindaddr1,NN_PUSH)*/;
+		    BET_player->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
+		    BET_player->maxchips = CARDS777_MAXCHIPS;
+		    BET_player->chipsize = CARDS777_CHIPSIZE;
+			BET_player->numplayers=numplayers;
+		    BET_betinfo_set(BET_player,"demo",range,0,Maxplayers);
+		    if (OS_thread_create(&player_t,NULL,(void *)BET_p2p_clientloop,(void *)BET_player) != 0 )
 		    {
-		        printf("error launching BET_clientloop for sub.%d push.%d\n",BET_players[i]->subsock,BET_players[i]->pushsock);
+		        printf("error launching BET_clientloop for sub.%d push.%d\n",BET_player->subsock,BET_player->pushsock);
 		        exit(-1);
 		    }	
-		/*}*/
-		/*for(int i=0;i<numplayers;i++)
-		{*/
-			if(pthread_join(players_t[i],NULL))
+			if(pthread_join(player_t,NULL))
 			{
 				printf("\nError in joining the main thread for player %d",i);
 			}
-		/*}*/
 	}
 	else
 	{
@@ -666,8 +378,6 @@ int main(int argc, char **argv)
 	#endif
     return 0;
 }
-
-#endif
 
 bits256 curve25519_fieldelement(bits256 hash)
 {
