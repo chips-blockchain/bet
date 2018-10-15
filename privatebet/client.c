@@ -1153,18 +1153,6 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
 	return tmp;
 }
 
-int32_t BET_checkInvoiceValidity(cJSON *bolt11)
-{
-	int argc,maxsize=10000;
-	char **argv=NULL,*buf=NULL;
-	argv=(char**)malloc(4*sizeof(char*));
-	buf=malloc(maxsize);
-	argc=3;
-	strcpy(argv[0],"./bet");
-	strcpy(argv[1],"pay");
-		
-	
-}
 int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	cJSON *invoiceInfo=NULL;
@@ -1525,10 +1513,11 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 {
 	bits256 playerprivs[CARDS777_MAXCARDS],playercards[CARDS777_MAXCARDS];
 	int32_t permis[CARDS777_MAXCARDS],bytes,retval=-1;
-	cJSON *joininfo=NULL;
+	cJSON *joininfo=NULL,*channelInfo=NULL;
 	struct pair256 key;
 	char *rendered=NULL;
-	
+	bits256 channelid;
+	char hexstr [ 65 ];
     if(bet->pushsock>=0)
 	{
 		key = deckgen_player(player_info.cardprivkeys,player_info.cardpubkeys,player_info.permis,bet->range);
@@ -1536,6 +1525,20 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
         joininfo=cJSON_CreateObject();
         cJSON_AddStringToObject(joininfo,"method","join_req");
         jaddbits256(joininfo,"pubkey",key.prod);    
+
+		int argc,maxsize=10000;
+		char **argv=NULL,*buf=NULL;
+		argv=(char**)malloc(4*sizeof(char*));
+		buf=malloc(maxsize);
+		argc=3;
+		strcpy(argv[0],"./bet");
+		strcpy(argv[1],"getinfo");
+		ln_bet(argc,argv,buf);
+		jaddstr(joininfo,"channel_info",buf);
+		printf("\Getinfo:%s",buf);	
+		channelInfo=cJSON_Parse(buf);
+		channelid=jbits256(channelInfo,"id");
+		printf("\nChannel ID:%s",bits256_str(hexstr,channelid));	
         rendered=cJSON_Print(joininfo);
         bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 
