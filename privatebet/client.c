@@ -1153,12 +1153,25 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
 	return tmp;
 }
 
+int32_t BET_checkInvoiceValidity(cJSON *bolt11)
+{
+	int argc,maxsize=10000;
+	char **argv=NULL,*buf=NULL;
+	argv=(char**)malloc(4*sizeof(char*));
+	buf=malloc(maxsize);
+	argc=3;
+	strcpy(argv[0],"./bet");
+	strcpy(argv[1],"pay");
+		
+	
+}
 int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	cJSON *invoiceInfo=NULL;
-        char *invoice=NULL;
+    char *invoice=NULL;
 	int argc,maxsize=10000;
 	char **argv=NULL,*buf=NULL;
+	int32_t playerID;
 	argv=(char**)malloc(4*sizeof(char*));
 	buf=malloc(maxsize);
 	argc=3;
@@ -1166,15 +1179,19 @@ int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 	{
 		argv[i]=(char*)malloc(sizeof(char)*1000);
 	}
+	playerID=jint(argjson,"playerID");
 	invoice=jstr(argjson,"invoice");
 	invoiceInfo=cJSON_Parse(invoice);
 	printf("\nbotl11 string:%s",jstr(invoiceInfo,"bolt11"));
-	strcpy(argv[0],"./bet");
-	strcpy(argv[1],"pay");
-	sprintf(argv[2],"%s",jstr(invoiceInfo,"bolt11"));
-	argv[3]=NULL;
-	ln_bet(argc,argv,buf);
-	printf("\n:%s:%d:Pay response:%s",__FUNCTION__,__LINE__,buf);
+	if(playerID==bet->myplayerid)
+	{
+		strcpy(argv[0],"./bet");
+		strcpy(argv[1],"pay");
+		sprintf(argv[2],"%s",jstr(invoiceInfo,"bolt11"));
+		argv[3]=NULL;
+		ln_bet(argc,argv,buf);
+		printf("\n:%s:%d:Pay response:%s",__FUNCTION__,__LINE__,buf);
+	}
 }
 
 
