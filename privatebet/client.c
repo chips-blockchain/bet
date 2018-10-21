@@ -1515,8 +1515,7 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 	int32_t permis[CARDS777_MAXCARDS],bytes,retval=-1;
 	cJSON *joininfo=NULL,*channelInfo=NULL;
 	struct pair256 key;
-	char *rendered=NULL;
-	bits256 channelid;
+	char *rendered=NULL,*channelid=NULL;
 	char hexstr [ 65 ];
     if(bet->pushsock>=0)
 	{
@@ -1530,15 +1529,19 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 		char **argv=NULL,*buf=NULL;
 		argv=(char**)malloc(4*sizeof(char*));
 		buf=malloc(maxsize);
-		argc=3;
+		argc=2;
+		for(int i=0;i<argc;i++)
+		{
+			argv[i]=(char*)malloc(100*sizeof(char));		
+		}
 		strcpy(argv[0],"./bet");
 		strcpy(argv[1],"getinfo");
 		ln_bet(argc,argv,buf);
-		jaddstr(joininfo,"channel_info",buf);
-		printf("\Getinfo:%s",buf);	
+		printf("\nGetinfo:%s:%d:%s",__FUNCTION__,__LINE__,buf);	
 		channelInfo=cJSON_Parse(buf);
-		channelid=jbits256(channelInfo,"id");
-		printf("\nChannel ID:%s",bits256_str(hexstr,channelid));	
+		cJSON_Print(channelInfo);
+		channelid=jstr(channelInfo,"id");
+		printf("\nChannel ID:%s",channelid);	
         rendered=cJSON_Print(joininfo);
         bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 
