@@ -1505,7 +1505,31 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 	{
 		bet->myplayerid=jint(argjson,"peerid");
 		channelid=jstr(argjson,"id");
-		printf("\n%s:%d,channel id:%s",__FUNCTION__,__LINE__,channelid);
+		
+		int argc,maxsize=10000;
+		char **argv=NULL,*buf=NULL;
+		argv=(char**)malloc(4*sizeof(char*));
+		buf=malloc(maxsize);
+		argc=4;
+		for(int i=0;i<argc;i++)
+		{
+			argv[i]=(char*)malloc(100*sizeof(char));		
+		}
+		argc=3;
+		strcpy(argv[0],"./bet");
+		strcpy(argv[1],"connect");
+		strcpy(argv[2],channelid);
+		ln_bet(argc,argv,buf);
+
+		argc=4;
+		
+		strcpy(argv[0],"./bet");
+		strcpy(argv[1],"fundchannel");
+		strcpy(argv[2],channelid);
+		strcpy(argv[3],"1000000");
+		ln_bet(argc,argv,buf);
+
+		printf("\n The response buffer:%s",buf);
 		return 1;
 	}
 	
