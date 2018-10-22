@@ -564,9 +564,9 @@ int32_t BET_p2p_host_start_init(struct privatebet_info *bet)
 }
 int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	cJSON *playerinfo=NULL;
+	cJSON *playerinfo=NULL,*channelInfo=NULL;
     uint32_t bytes,retval=1;
-	char *rendered=NULL;
+	char *rendered=NULL,*channelid=NULL;
 
     bet->numplayers=++players_joined;
 	dcv_info.peerpubkeys[players_joined-1]=jbits256(argjson,"pubkey");
@@ -575,6 +575,25 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
 	cJSON_AddStringToObject(playerinfo,"method","join_res");
 	cJSON_AddNumberToObject(playerinfo,"peerid",bet->numplayers-1); //players numbering starts from 0(zero)
 	jaddbits256(playerinfo,"pubkey",jbits256(argjson,"pubkey"));
+
+	int argc,maxsize=10000;
+	char **argv=NULL,*buf=NULL;
+	argv=(char**)malloc(4*sizeof(char*));
+	buf=malloc(maxsize);
+	argc=2;
+	for(int i=0;i<argc;i++)
+	{
+		argv[i]=(char*)malloc(100*sizeof(char));		
+	}
+	strcpy(argv[0],"./bet");
+	strcpy(argv[1],"getinfo");
+	ln_bet(argc,argv,buf);
+
+	channelInfo=cJSON_Parse(buf);
+	cJSON_Print(channelInfo);
+	channelid=jstr(channelInfo,"id");
+	cJSON_AddStringToObject(playerinfo,"id",channelid);
+		
 
 	rendered=cJSON_Print(playerinfo);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);

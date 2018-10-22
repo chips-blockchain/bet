@@ -1500,9 +1500,12 @@ int32_t BET_p2p_client_init(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
+	char *channelid=NULL;
 	if(0 == bits256_cmp(player_info.player_key.prod,jbits256(argjson,"pubkey")))
 	{
 		bet->myplayerid=jint(argjson,"peerid");
+		channelid=jstr(argjson,"id");
+		printf("\n%s:%d,channel id:%s",__FUNCTION__,__LINE__,channelid);
 		return 1;
 	}
 	
@@ -1537,12 +1540,13 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 		strcpy(argv[0],"./bet");
 		strcpy(argv[1],"getinfo");
 		ln_bet(argc,argv,buf);
-		printf("\nGetinfo:%s:%d:%s",__FUNCTION__,__LINE__,buf);	
+
 		channelInfo=cJSON_Parse(buf);
 		cJSON_Print(channelInfo);
 		channelid=jstr(channelInfo,"id");
-		printf("\nChannel ID:%s",channelid);	
-        rendered=cJSON_Print(joininfo);
+		cJSON_AddStringToObject(joininfo,"id",channelid);
+
+		rendered=cJSON_Print(joininfo);
         bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 
 		printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,rendered);
