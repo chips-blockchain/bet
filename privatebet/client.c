@@ -1508,28 +1508,41 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		
 		int argc,maxsize=10000;
 		char **argv=NULL,*buf=NULL;
-		argv=(char**)malloc(4*sizeof(char*));
+		argc=5;
+		argv=(char**)malloc(argc*sizeof(char*));
 		buf=malloc(maxsize);
-		argc=4;
 		for(int i=0;i<argc;i++)
 		{
 			argv[i]=(char*)malloc(100*sizeof(char));		
 		}
+		
 		argc=3;
 		strcpy(argv[0],"./bet");
 		strcpy(argv[1],"connect");
 		strcpy(argv[2],channelid);
+		argv[3]=NULL;
 		ln_bet(argc,argv,buf);
-
-		argc=4;
 		
+		printf("\n The response id :%s",buf);
+		argc=5;
+
+		argv=(char**)malloc(argc*sizeof(char*));
+		buf=malloc(maxsize);
+		for(int i=0;i<argc;i++)
+		{
+		        argv[i]=(char*)malloc(100*sizeof(char));
+		}
+		argc=4;
 		strcpy(argv[0],"./bet");
 		strcpy(argv[1],"fundchannel");
 		strcpy(argv[2],channelid);
 		strcpy(argv[3],"1000000");
+		argv[4]=NULL;
 		ln_bet(argc,argv,buf);
-
+	
 		printf("\n The response buffer:%s",buf);
+		
+		printf("\n%s:%d\n",__FUNCTION__,__LINE__);
 		return 1;
 	}
 	
