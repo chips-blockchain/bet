@@ -570,7 +570,8 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
 
     bet->numplayers=++players_joined;
 	dcv_info.peerpubkeys[players_joined-1]=jbits256(argjson,"pubkey");
-	
+	printf("\n%s:%d:channel id:%s",__FUNCTION__,__LINE__,jstr(argjson,"id"));
+	strcpy(dcv_info.peerchannelid[players_joined-1],jstr(argjson,"id"));
 	playerinfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(playerinfo,"method","join_res");
 	cJSON_AddNumberToObject(playerinfo,"peerid",bet->numplayers-1); //players numbering starts from 0(zero)
@@ -593,6 +594,7 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
 	cJSON_Print(channelInfo);
 	channelid=jstr(channelInfo,"id");
 	cJSON_AddStringToObject(playerinfo,"id",channelid);
+
 		
 
 	rendered=cJSON_Print(playerinfo);
@@ -793,6 +795,11 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
                 if(bet->numplayers==bet->maxplayers)
 				{
 					printf("\nTable is filled");
+					for(int i=0;i<bet->maxplayers;i++)
+					{
+						printf("\nplayerid:%d,channel id:%s",i,dcv_info.peerchannelid[i]);
+					}
+					
 					BET_broadcast_table_info(bet);
 					BET_p2p_host_start_init(bet);
 				}
