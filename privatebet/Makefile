@@ -18,7 +18,7 @@ clean:
 
 
 $(PROJNAME): $(OBJFILES)
-	$(CC) $(WARNINGS) -o $@ bet.c $^ ../ccan/obj/*.o ../crypto777/libcrypto777.a -lcurl -ldl -lnng -lbacktrace -lpthread -lm -lcli -L/root/lightning/external -lwallycore -lsecp256k1 -lsodium -ljsmn -lbase58 -lbacktrace -L/usr/local/lib -lm -lgmp -lsqlite3 
+	$(CC) $(WARNINGS) -o $@ bet.c $^ ../ccan/obj/*.o ../crypto777/libcrypto777.a -lcurl -ldl -lnng -lbacktrace -lpthread -lm -lcli -L$(HOME)/lightning/external -lwallycore -lsecp256k1 -lsodium -ljsmn -lbase58 -lbacktrace -L/usr/local/lib -lm -lgmp -lsqlite3 
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
