@@ -230,7 +230,7 @@ char* gethostip()
 int initialize_chips()
 {
 	int argc,maxArguments=10,maxSize=100;
-	char **argv=NULL;
+	char **argv=NULL,*result=NULL;
 	argv=(char**)malloc(maxArguments*sizeof(char*));
 	for(int i=0;i<maxArguments;i++)
 	{
@@ -239,8 +239,10 @@ int initialize_chips()
 	argc=2;
 	strcpy(argv[0],".\bet");
 	strcpy(argv[1],"getinfo");
-	mybet(argc,argv)
+	result=mybet(argc,argv);
 
+	printf("\n%s:%d:%s",__FUNCTION__,__LINE__,result);
+	
 	return -1;	
 }
 int main(int argc, char **argv)
