@@ -239,8 +239,8 @@ int initialize_chips()
 	argc=2;
 	strcpy(argv[0],".\bet");
 	strcpy(argv[1],"getinfo");
-	result=mybet(argc,argv);
-
+	result=(char*)malloc(1000*sizeof(char));
+	my_bet(argc,argv,result);
 	printf("\n%s:%d:%s",__FUNCTION__,__LINE__,result);
 	
 	return -1;	
@@ -258,7 +258,7 @@ int main(int argc, char **argv)
 	//my_bet(argc,argv);
 
 
-	strcpy(hostip,argv[2]);
+	//strcpy(hostip,argv[2]);
 	#if 0	
     OS_init();
 	libgfshare_init();

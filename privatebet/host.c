@@ -754,7 +754,7 @@ void BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebe
 	paymentInfo=cJSON_Parse(payStrInfo);
 	cJSON_Print(paymentInfo);
 	if(dcv_info.betamount == dcv_info.paidamount)
-	
+	{	
 		for(int i=0;i<no_of_cards;i++)
 		{
 			if(eval_game_c[i]>max)

@@ -385,9 +385,9 @@ struct deck_dcv_info
 	bits256 peerpubkeys[CARDS777_MAXPLAYERS];
 	uint32_t numplayers,maxplayers;
 	unsigned char peerchannelid[CARDS777_MAXPLAYERS][100];
-	uint32_t betamount=0;
-	uint32_t commision=0;
-	uint32_t paidamount=0;
+	uint32_t betamount;
+	uint32_t commision;
+	uint32_t paidamount;
 };
 
 struct deck_bvv_info
