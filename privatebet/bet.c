@@ -227,6 +227,22 @@ char* gethostip()
 	 hostip= inet_ntoa(*((struct in_addr*)host_entry->h_addr_list[0])); 
 	 return hostip;
 }
+int initialize_chips()
+{
+	int argc,maxArguments=10,maxSize=100;
+	char **argv=NULL;
+	argv=(char**)malloc(maxArguments*sizeof(char*));
+	for(int i=0;i<maxArguments;i++)
+	{
+		argv[i]=(char*)malloc(maxSize*sizeof(char));
+	}
+	argc=2;
+	strcpy(argv[0],".\bet");
+	strcpy(argv[1],"getinfo");
+	mybet(argc,argv)
+
+	return -1;	
+}
 int main(int argc, char **argv)
 {
     uint16_t tmp,rpcport = 7797,port = 7797+1;
@@ -236,7 +252,10 @@ int main(int argc, char **argv)
 	uint8_t pubkey33[33],taddr=0,pubtype=60; uint32_t i,n,range,numplayers; int32_t testmode=0,pubsock=-1,subsock=-1,pullsock=-1,pushsock=-1; long fsize; 
 	struct privatebet_info *BET_dcv,*BET_bvv,*BET_player;
 	pthread_t dcv_t,bvv_t,player_t;
-	my_bet(argc,argv);
+	initialize_chips();
+	//my_bet(argc,argv);
+
+
 	strcpy(hostip,argv[2]);
 	#if 0	
     OS_init();
