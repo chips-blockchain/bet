@@ -231,7 +231,8 @@ int initialize_chips()
 {
 	int argc,maxArguments=10,maxSize=100;
 	char **argv=NULL,*result=NULL;
-	cJSON *chipsInfo=NULL;
+	cJSON *chipsInfo=NULL,*unspentInfo=NULL,*txInfo=NULL;
+	double balance=0;
 	argv=(char**)malloc(maxArguments*sizeof(char*));
 	for(int i=0;i<maxArguments;i++)
 	{
@@ -239,14 +240,21 @@ int initialize_chips()
 	}
 	argc=2;
 	strcpy(argv[0],".\bet");
-	strcpy(argv[1],"getinfo");
+	strcpy(argv[1],"listunspent");
 	result=(char*)malloc(1000*sizeof(char));
 	my_bet(argc,argv,result);
-	chipsInfo=cJSON_CreateObject();
-	chipsInfo=cJSON_Parse(result);
-	printf("\ntxid:%s",jstr(chipsInfo,"txid"));
-	printf("\nvout:%d",jint(chipsInfo,"vout"));
-	printf("\n%s:%d:%s",__FUNCTION__,__LINE__,result);
+
+	unspentInfo=cJSON_CreateObject();
+	unspentInfo=cJSON_Parse(result);
+
+	for(int i=0;i<cJSON_GetArraySize(unspentInfo);i++)
+	{
+		txInfo=cJSON_GetArrayItem(unspentInfo,i);
+		balance+=jdouble(txInfo,"balance");
+		
+	}
+
+	printf("\n%s:%d:balance:%f",__FUNCTION__,__LINE__,balance);
 	
 	return -1;	
 }
