@@ -231,6 +231,7 @@ int initialize_chips()
 {
 	int argc,maxArguments=10,maxSize=100;
 	char **argv=NULL,*result=NULL;
+	cJSON *chipsInfo=NULL;
 	argv=(char**)malloc(maxArguments*sizeof(char*));
 	for(int i=0;i<maxArguments;i++)
 	{
@@ -241,6 +242,10 @@ int initialize_chips()
 	strcpy(argv[1],"getinfo");
 	result=(char*)malloc(1000*sizeof(char));
 	my_bet(argc,argv,result);
+	chipsInfo=cJSON_CreateObject();
+	chipsInfo=cJSON_Parse(result);
+	printf("\ntxid:%s",jstr(chipsInfo,"txid"));
+	printf("\nvout:%d",jint(chipsInfo,"vout"));
 	printf("\n%s:%d:%s",__FUNCTION__,__LINE__,result);
 	
 	return -1;	
