@@ -227,12 +227,12 @@ char* gethostip()
 	 hostip= inet_ntoa(*((struct in_addr*)host_entry->h_addr_list[0])); 
 	 return hostip;
 }
-int initialize_chips()
+int initialize_chips(double betValue)
 {
-	int argc,maxArguments=10,maxSize=100;
-	char **argv=NULL,*result=NULL;
-	cJSON *chipsInfo=NULL,*unspentInfo=NULL,*txInfo=NULL;
-	double balance=0;
+	int argc,maxArguments=10,maxSize=1000;
+	char **argv=NULL,*result=NULL,output[50];
+	cJSON *chipsInfo=NULL,*getInfo=NULL,*unspentInfo=NULL,*txInfo=NULL,*rawtxInfo=NULL,*change=NULL,*temp=NULL;
+	double balance=0,relayfee;
 	argv=(char**)malloc(maxArguments*sizeof(char*));
 	for(int i=0;i<maxArguments;i++)
 	{
@@ -240,26 +240,48 @@ int initialize_chips()
 	}
 	argc=2;
 	strcpy(argv[0],".\bet");
-	strcpy(argv[1],"getbalance");
+	strcpy(argv[1],"getinfo");
 	result=(char*)malloc(1000*sizeof(char));
 	
 	my_bet(argc,argv,result);
-	balance=atof(result);
-
-	memset(argv[1],0x00,sizeof(argv[1]));
-	strcpy(argv[1],"listunspent");
-	memset(result,0x00,sizeof(result));
-	my_bet(argc,argv,result);
-	unspentInfo=cJSON_CreateObject();
-	unspentInfo=cJSON_Parse(result);
-	for(int i=0;i<cJSON_GetArraySize(unspentInfo);i++)
+	getInfo=cJSON_CreateObject();
+	getInfo=cJSON_Parse(getInfo);
+	balance=jdouble(getInfo,"balance");
+	relayfee=jdouble(getInfo,"relayfee");
+	if((balance-relayfee)>=betValue)
 	{
-		txInfo=cJSON_GetArrayItem(unspentInfo,i);
-		printf("\ntxid:%s",jstr(txInfo,"txid"));
-		printf("\nvout:%d",jint(txInfo,"vout"));
+		memset(argv[1],0x00,sizeof(argv[1]));
+		strcpy(argv[1],"listunspent");
+		memset(result,0x00,sizeof(result));
+		my_bet(argc,argv,result);
+		unspentInfo=cJSON_CreateObject();
+		unspentInfo=cJSON_Parse(result);
+		rawtxInfo=cJSON_CreateArray();
+		for(int i=0;i<cJSON_GetArraySize(unspentInfo);i++)
+		{
+			txInfo=cJSON_GetArrayItem(unspentInfo,i);
+			printf("\ntxid:%s",jstr(txInfo,"txid"));
+			printf("\nvout:%d",jint(txInfo,"vout"));
+			temp=cJSON_CreateObject();
+			cJSON_AddStringToObject(temp,"txid",jstr(txInfo,"txid"));
+			cJSON_AddNumberToObject(temp,"vout",jint(txInfo,"vout"));
+			cJSON_AddItemToArray(rawtxInfo,temp);
+		}
+		printf("\nPrinting raw transaction:\n%s",cJSON_Print(rawtxInfo));
+		change=cJSON_CreateObject();
+		snprintf(output, 50, "%f", betValue);
+		cJSON_AddStringToObject(change,rawtxInfo,output);
+		memset(output,0x00,sizeof(output));
+		snprintf(output, 50, "%f", (balance-betValue-relayfee));
+		cJSON_AddStringToObject(change,jstr(txInfo,"address"),output);
+		printf("\nPrint this:\n%s",cJSON_Print(change));
 	}
-	
-	return -1;	
+	else
+	{
+		printf("\nInsufficient funds to to betting");
+		return -1;
+	}
+	return 1;	
 }
 int main(int argc, char **argv)
 {
