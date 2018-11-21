@@ -233,7 +233,7 @@ int do_bet(double betValue)
 {
 	int argc,maxArguments=10,maxSize=1000;
 	char **argv=NULL,*result=NULL,output[50];
-	cJSON *chipsInfo=NULL,*getInfo=NULL,*unspentInfo=NULL,*txInfo=NULL,*rawtxInfo=NULL,*change=NULL,*temp=NULL;
+	cJSON *chipsInfo=NULL,*getInfo=NULL,*unspentInfo=NULL,*txInfo=NULL,*rawtxInfo=NULL,*change=NULL,*temp=NULL,*signedtxInfo=NULL;
 	double balance=0,relayfee;
 	argv=(char**)malloc(maxArguments*sizeof(char*));
 	for(int i=0;i<maxArguments;i++)
@@ -296,15 +296,19 @@ int do_bet(double betValue)
 		strcpy(argv[1],"signrawtransaction");
 		strcpy(argv[2],result);
 		memset(result,0x00,sizeof(result));
+		argc=3;
 		my_bet(argc,argv,result);
+		signedtxInfo=cJSON_CreateObject();
+		signedtxInfo=cJSON_Parse(result);
 		printf("\nThe signrawtransction output:%s",result);
 		for(int i=1;i<3;i++)
 		{
 			memset(argv[i],0x00,sizeof(argv[i]));
 		}
 		strcpy(argv[1],"sendrawtransaction");
-		strcpy(argv[2],result);
+		strcpy(argv[2],jstr(signedtxInfo,"hex"));
 		memset(result,0x00,sizeof(result));
+		argc=3;
 		my_bet(argc,argv,result);
 		
 		printf("\nThe sendtransationoutput:%s",result);
