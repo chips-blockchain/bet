@@ -277,6 +277,18 @@ int initialize_chips(double betValue)
 		snprintf(output, 50, "%f", (balance-betValue-relayfee));
 		cJSON_AddStringToObject(change,jstr(txInfo,"address"),output);
 		printf("\nPrint this:\n%s",cJSON_Print(change));
+
+		for(int i=1;i<4;i++)
+		{
+			memset(argv[i],0x00,sizeof(argv[i]));
+		}
+		argc=4;
+		strcpy(argv[1],"createrawtransaction");
+		strcpy(argv[2],cJSON_Print(rawtxInfo));
+		strcpy(argv[3],cJSON_Print(change));
+		memset(result,0x00,sizeof(result));
+		my_bet(argc,argv,result);
+		printf("\nThe raw transation is created:%s",result);
 	}
 	else
 	{
