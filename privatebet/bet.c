@@ -229,7 +229,7 @@ char* gethostip()
 	 hostip= inet_ntoa(*((struct in_addr*)host_entry->h_addr_list[0])); 
 	 return hostip;
 }
-int initialize_chips(double betValue)
+int do_bet(double betValue)
 {
 	int argc,maxArguments=10,maxSize=1000;
 	char **argv=NULL,*result=NULL,output[50];
@@ -288,7 +288,26 @@ int initialize_chips(double betValue)
 		strcpy(argv[3],cJSON_Print(change));
 		memset(result,0x00,sizeof(result));
 		my_bet(argc,argv,result);
-		printf("\nThe raw transation is created:%s",result);
+		printf("\nThe createrawtransction output:%s",result);
+		for(int i=1;i<3;i++)
+		{
+			memset(argv[i],0x00,sizeof(argv[i]));
+		}
+		strcpy(argv[1],"signrawtransaction");
+		strcpy(argv[2],result);
+		memset(result,0x00,sizeof(result));
+		my_bet(argc,argv,result);
+		printf("\nThe signrawtransction output:%s",result);
+		for(int i=1;i<3;i++)
+		{
+			memset(argv[i],0x00,sizeof(argv[i]));
+		}
+		strcpy(argv[1],"sendrawtransaction");
+		strcpy(argv[2],result);
+		memset(result,0x00,sizeof(result));
+		my_bet(argc,argv,result);
+		
+		printf("\nThe sendtransationoutput:%s",result);
 	}
 	else
 	{
@@ -306,9 +325,10 @@ int main(int argc, char **argv)
 	uint8_t pubkey33[33],taddr=0,pubtype=60; uint32_t i,n,range,numplayers; int32_t testmode=0,pubsock=-1,subsock=-1,pullsock=-1,pushsock=-1; long fsize; 
 	struct privatebet_info *BET_dcv,*BET_bvv,*BET_player;
 	pthread_t dcv_t,bvv_t,player_t;
-	initialize_chips(0.3);
-	//my_bet(argc,argv);
-
+	double betAmount;
+	printf("\nEnter the Amount that you would like to bet:");
+	scanf("%f",&betAmount);
+	do_bet(betAmount);
 
 	//strcpy(hostip,argv[2]);
 	#if 0	
