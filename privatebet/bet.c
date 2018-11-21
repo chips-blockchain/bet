@@ -250,10 +250,11 @@ int initialize_chips()
 	strcpy(argv[1],"listunspent");
 	memset(result,0x00,sizeof(result));
 	my_bet(argc,argv,result);
-
-	for(int i=0;i<cJSON_GetArraySize(result);i++)
+	unspentInfo=cJSON_CreateObject();
+	unspentInfo=cJSON_Parse(result);
+	for(int i=0;i<cJSON_GetArraySize(unspentInfo);i++)
 	{
-		txInfo=cJSON_GetArrayItem(result,i);
+		txInfo=cJSON_GetArrayItem(unspentInfo,i);
 		printf("\ntxid:%s",jstr(txInfo,"txid"));
 		printf("\nvout:%d",jint(txInfo,"vout"));
 	}
