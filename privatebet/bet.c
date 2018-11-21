@@ -62,6 +62,8 @@ bits256 *allshares=NULL;
 bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 struct enc_share *g_shares=NULL;
+
+char *rootAddress="RVMYRqUqJEuq394KfAgyd13s6ttfcCpLaW";
 /*
 char *LN_idstr,Host_ipaddr[64],Host_peerid[67],BET_ORACLEURL[64] = "127.0.0.1:7797";
 uint16_t LN_port;
@@ -292,7 +294,7 @@ int main(int argc, char **argv)
 	uint8_t pubkey33[33],taddr=0,pubtype=60; uint32_t i,n,range,numplayers; int32_t testmode=0,pubsock=-1,subsock=-1,pullsock=-1,pushsock=-1; long fsize; 
 	struct privatebet_info *BET_dcv,*BET_bvv,*BET_player;
 	pthread_t dcv_t,bvv_t,player_t;
-	initialize_chips();
+	initialize_chips(0.3);
 	//my_bet(argc,argv);
 
 
