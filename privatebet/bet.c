@@ -240,10 +240,13 @@ int initialize_chips()
 	}
 	argc=2;
 	strcpy(argv[0],".\bet");
-	strcpy(argv[1],"listunspent");
+	strcpy(argv[1],"getbalance");
 	result=(char*)malloc(1000*sizeof(char));
+	
 	my_bet(argc,argv,result);
+	balance=atof(result);
 
+	/*
 	unspentInfo=cJSON_CreateObject();
 	unspentInfo=cJSON_Parse(result);
 
@@ -253,7 +256,7 @@ int initialize_chips()
 		balance+=jdouble(txInfo,"balance");
 		
 	}
-
+	*/
 	printf("\n%s:%d:balance:%f",__FUNCTION__,__LINE__,balance);
 	
 	return -1;	
