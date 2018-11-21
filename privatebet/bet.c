@@ -247,7 +247,7 @@ int initialize_chips(double betValue)
 	
 	my_bet(argc,argv,result);
 	getInfo=cJSON_CreateObject();
-	getInfo=cJSON_Parse(getInfo);
+	getInfo=cJSON_Parse(result);
 	balance=jdouble(getInfo,"balance");
 	relayfee=jdouble(getInfo,"relayfee");
 	if((balance-relayfee)>=betValue)
@@ -272,7 +272,7 @@ int initialize_chips(double betValue)
 		printf("\nPrinting raw transaction:\n%s",cJSON_Print(rawtxInfo));
 		change=cJSON_CreateObject();
 		snprintf(output, 50, "%f", betValue);
-		cJSON_AddStringToObject(change,rawtxInfo,output);
+		cJSON_AddStringToObject(change,rootAddress,output);
 		memset(output,0x00,sizeof(output));
 		snprintf(output, 50, "%f", (balance-betValue-relayfee));
 		cJSON_AddStringToObject(change,jstr(txInfo,"address"),output);
