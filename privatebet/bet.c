@@ -246,18 +246,17 @@ int initialize_chips()
 	my_bet(argc,argv,result);
 	balance=atof(result);
 
-	/*
-	unspentInfo=cJSON_CreateObject();
-	unspentInfo=cJSON_Parse(result);
+	memset(argv[1],0x00,sizeof(argv[1]));
+	strcpy(argv[1],"listunspent");
+	memset(result,0x00,sizeof(result));
+	my_bet(argc,argv,result);
 
-	for(int i=0;i<cJSON_GetArraySize(unspentInfo);i++)
+	for(int i=0;i<cJSON_GetArraySize(result);i++)
 	{
-		txInfo=cJSON_GetArrayItem(unspentInfo,i);
-		balance+=jdouble(txInfo,"balance");
-		
+		txInfo=cJSON_GetArrayItem(result,i);
+		printf("\ntxid:%s",jstr(txInfo,"txid"));
+		printf("\nvout:%d",jint(txInfo,"vout"));
 	}
-	*/
-	printf("\n%s:%d:balance:%f",__FUNCTION__,__LINE__,balance);
 	
 	return -1;	
 }
