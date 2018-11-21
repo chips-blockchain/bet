@@ -1155,11 +1155,12 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	cJSON *invoiceInfo=NULL;
+	cJSON *invoiceInfo=NULL,*paymentInfo=NULL;
     char *invoice=NULL;
 	int argc,maxsize=10000;
 	char **argv=NULL,*buf=NULL;
-	int32_t playerID;
+	int32_t playerID,bytes;
+	char *rendered=NULL;
 	argv=(char**)malloc(4*sizeof(char*));
 	buf=malloc(maxsize);
 	argc=3;
@@ -1179,6 +1180,19 @@ int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 		argv[3]=NULL;
 		ln_bet(argc,argv,buf);
 		printf("\n:%s:%d:Pay response:%s",__FUNCTION__,__LINE__,buf);
+		paymentInfo=cJSON_CreateObject();
+		cJSON_AddStringToObject(paymentInfo,"method","pay");
+		cJSON_AddNumberToObject(paymentInfo,"playerid",bet->myplayerid);
+		cJSON_AddStringToObject(paymentInfo,"payInfo",buf);
+		
+		rendered=cJSON_Print(paymentInfo);
+		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+		if(bytes<0)
+		{
+			printf("\nSomething wrong with the paying the Invoice:%s",buf);
+		}
+			
+		
 	}
 }
 

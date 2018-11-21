@@ -62,6 +62,8 @@ bits256 *allshares=NULL;
 bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 struct enc_share *g_shares=NULL;
+
+char *rootAddress="RVMYRqUqJEuq394KfAgyd13s6ttfcCpLaW";
 /*
 char *LN_idstr,Host_ipaddr[64],Host_peerid[67],BET_ORACLEURL[64] = "127.0.0.1:7797";
 uint16_t LN_port;
@@ -227,6 +229,97 @@ char* gethostip()
 	 hostip= inet_ntoa(*((struct in_addr*)host_entry->h_addr_list[0])); 
 	 return hostip;
 }
+int do_bet(double betValue)
+{
+	int argc,maxArguments=10,maxSize=1000;
+	char **argv=NULL,*result=NULL,output[50];
+	cJSON *chipsInfo=NULL,*getInfo=NULL,*unspentInfo=NULL,*txInfo=NULL,*rawtxInfo=NULL,*change=NULL,*temp=NULL,*signedtxInfo=NULL;
+	double balance=0,relayfee;
+	argv=(char**)malloc(maxArguments*sizeof(char*));
+	for(int i=0;i<maxArguments;i++)
+	{
+		argv[i]=(char*)malloc(maxSize*sizeof(char));
+	}
+	argc=2;
+	strcpy(argv[0],".\bet");
+	strcpy(argv[1],"getinfo");
+	result=(char*)malloc(1000*sizeof(char));
+	
+	my_bet(argc,argv,result);
+	getInfo=cJSON_CreateObject();
+	getInfo=cJSON_Parse(result);
+	balance=jdouble(getInfo,"balance");
+	relayfee=jdouble(getInfo,"relayfee");
+	if((balance-relayfee)>=betValue)
+	{
+		memset(argv[1],0x00,sizeof(argv[1]));
+		strcpy(argv[1],"listunspent");
+		memset(result,0x00,sizeof(result));
+		my_bet(argc,argv,result);
+		unspentInfo=cJSON_CreateObject();
+		unspentInfo=cJSON_Parse(result);
+		rawtxInfo=cJSON_CreateArray();
+		for(int i=0;i<cJSON_GetArraySize(unspentInfo);i++)
+		{
+			txInfo=cJSON_GetArrayItem(unspentInfo,i);
+			printf("\ntxid:%s",jstr(txInfo,"txid"));
+			printf("\nvout:%d",jint(txInfo,"vout"));
+			temp=cJSON_CreateObject();
+			cJSON_AddStringToObject(temp,"txid",jstr(txInfo,"txid"));
+			cJSON_AddNumberToObject(temp,"vout",jint(txInfo,"vout"));
+			cJSON_AddItemToArray(rawtxInfo,temp);
+		}
+		printf("\nPrinting raw transaction:\n%s",cJSON_Print(rawtxInfo));
+		change=cJSON_CreateObject();
+		snprintf(output, 50, "%f", betValue);
+		cJSON_AddStringToObject(change,rootAddress,output);
+		memset(output,0x00,sizeof(output));
+		snprintf(output, 50, "%f", (balance-betValue-relayfee));
+		cJSON_AddStringToObject(change,jstr(txInfo,"address"),output);
+		printf("\nPrint this:\n%s",cJSON_Print(change));
+
+		for(int i=1;i<4;i++)
+		{
+			memset(argv[i],0x00,sizeof(argv[i]));
+		}
+		argc=4;
+		strcpy(argv[1],"createrawtransaction");
+		strcpy(argv[2],cJSON_Print(rawtxInfo));
+		strcpy(argv[3],cJSON_Print(change));
+		memset(result,0x00,sizeof(result));
+		my_bet(argc,argv,result);
+		printf("\nThe createrawtransction output:%s",result);
+		for(int i=1;i<3;i++)
+		{
+			memset(argv[i],0x00,sizeof(argv[i]));
+		}
+		strcpy(argv[1],"signrawtransaction");
+		strcpy(argv[2],result);
+		memset(result,0x00,sizeof(result));
+		argc=3;
+		my_bet(argc,argv,result);
+		signedtxInfo=cJSON_CreateObject();
+		signedtxInfo=cJSON_Parse(result);
+		printf("\nThe signrawtransction output:%s",result);
+		for(int i=1;i<3;i++)
+		{
+			memset(argv[i],0x00,sizeof(argv[i]));
+		}
+		strcpy(argv[1],"sendrawtransaction");
+		strcpy(argv[2],jstr(signedtxInfo,"hex"));
+		memset(result,0x00,sizeof(result));
+		argc=3;
+		my_bet(argc,argv,result);
+		
+		printf("\nThe sendtransationoutput:%s",result);
+	}
+	else
+	{
+		printf("\nInsufficient funds to to betting");
+		return -1;
+	}
+	return 1;	
+}
 int main(int argc, char **argv)
 {
     uint16_t tmp,rpcport = 7797,port = 7797+1;
@@ -236,9 +329,8 @@ int main(int argc, char **argv)
 	uint8_t pubkey33[33],taddr=0,pubtype=60; uint32_t i,n,range,numplayers; int32_t testmode=0,pubsock=-1,subsock=-1,pullsock=-1,pushsock=-1; long fsize; 
 	struct privatebet_info *BET_dcv,*BET_bvv,*BET_player;
 	pthread_t dcv_t,bvv_t,player_t;
-	my_bet(argc,argv);
 	strcpy(hostip,argv[2]);
-	#if 0	
+	#if 1	
     OS_init();
 	libgfshare_init();
 	OS_randombytes((uint8_t *)&range,sizeof(range));

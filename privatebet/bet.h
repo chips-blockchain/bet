@@ -385,6 +385,9 @@ struct deck_dcv_info
 	bits256 peerpubkeys[CARDS777_MAXPLAYERS];
 	uint32_t numplayers,maxplayers;
 	unsigned char peerchannelid[CARDS777_MAXPLAYERS][100];
+	uint32_t betamount;
+	uint32_t commision;
+	uint32_t paidamount;
 };
 
 struct deck_bvv_info
@@ -395,6 +398,7 @@ struct deck_bvv_info
 	bits256 bvvblindcards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 	uint32_t numplayers,maxplayers;
 };
+
 
 bits256 *BET_process_packet(bits256 *cardpubs,bits256 *deckidp,bits256 senderpub,bits256 mypriv,uint8_t *decoded,int32_t maxsize,bits256 mypub,uint8_t *sendbuf,int32_t size,int32_t checkplayers,int32_t range);
 cJSON *BET_hostrhashes(struct privatebet_info *bet);

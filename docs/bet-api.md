@@ -1,4 +1,5 @@
 # Usage guide of the bet-api's
+## Note: The below API are obsolete now.
 ## Create a player
 In the context of the game the identity of the player is a point on the Curve25519 which is known to every participating entity in the game.
 ```
