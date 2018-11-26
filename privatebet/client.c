@@ -1336,7 +1336,7 @@ int32_t BET_p2p_client_give_share(cJSON *argjson,struct privatebet_info *bet,str
 	
 	playerid=jint(argjson,"playerid");
 	cardid=jint(argjson,"cardid");
-	if(playerid!=bet->myplayerid)
+	if(playerid==bet->myplayerid)
 		{
 			printf("\nDo Nothing in %s",__FUNCTION__);
 			return 1;
@@ -1420,7 +1420,7 @@ int32_t BET_p2p_client_turn(cJSON *argjson,struct privatebet_info *bet,struct pr
 		{
 			if(!sharesflag[jint(argjson,"cardid")][i])
 			{
-				BET_p2p_client_ask_share(bet,jint(argjson,"cardid"),i);	
+				BET_p2p_client_ask_share(bet,jint(argjson,"cardid"),jint(argjson,"playerid"));	
 			}
 		}
 	}
