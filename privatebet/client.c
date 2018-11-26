@@ -1245,12 +1245,13 @@ int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,
 	playerid=jint(argjson,"playerid");
 
 	
+	if(sharesflag[cardid][playerid] ==0 )
+	{
+			playershares[cardid][playerid]=share;
+			sharesflag[cardid][playerid]=1;
+			no_of_shares++;
+	}
 	
-	playershares[cardid][playerid]=share;
-	sharesflag[cardid][playerid]=1;
-
-	
-	no_of_shares++;
 	
 	if(no_of_shares == bet->maxplayers)
 	{
@@ -1307,6 +1308,23 @@ int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,
 }
 
 
+void BET_p2p_client_ask_share(struct privatebet_info *bet,int32_t cardid,int32_t playerid)
+{
+	cJSON *requestInfo=NULL;
+	char *rendered=NULL;
+	int32_t bytes,retval;
+	requestInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(requestInfo,"method","requestShare");
+	cJSON_AddNumberToObject(requestInfo,"playerid",playerid);
+	cJSON_AddNumberToObject(requestInfo,"cardid",cardid);
+	rendered=cJSON_Print(requestInfo);
+	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+	if(bytes<0)
+		retval=-1;
+	else
+		retval=1;
+	return retval;
+}
 
 int32_t BET_p2p_client_give_share(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
@@ -1396,10 +1414,17 @@ int32_t BET_p2p_client_turn(cJSON *argjson,struct privatebet_info *bet,struct pr
 	{
 		no_of_shares=1;
 		BET_p2p_get_own_share(argjson,bet,vars);
+		for(int i=0;i<bet->numplayers;i++)
+		{
+			if(!sharesflag[jint(argjson,"cardid")][i])
+			{
+				BET_p2p_client_ask_share(bet,jint(argjson,"cardid"),i);	
+			}
+		}
 	}
 	else 
 	{
-		retval=BET_p2p_client_give_share(argjson,bet,vars);
+		//retval=BET_p2p_client_give_share(argjson,bet,vars);
 	}
 	
 	
@@ -1653,6 +1678,10 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 			retval=BET_p2p_client_turn(argjson,bet,vars);
 		}
 		else if(strcmp(method,"ask_share") == 0)
+		{
+			retval=BET_p2p_client_give_share(argjson,bet,vars);
+		}
+		else if(strcmp(method,"requestShare") == 0)
 		{
 			retval=BET_p2p_client_give_share(argjson,bet,vars);
 		}
