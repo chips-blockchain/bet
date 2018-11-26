@@ -1334,7 +1334,11 @@ int32_t BET_p2p_client_give_share(cJSON *argjson,struct privatebet_info *bet,str
 	uint8_t decipher[sizeof(bits256) + 1024],*ptr;
 	bits256 share;
 	
-	
+	if(playerid!=bet->myplayerid)
+		{
+			printf("\nDo Nothing in %s",__FUNCTION__);
+			return 1;
+		}
 	playerid=jint(argjson,"playerid");
 	cardid=jint(argjson,"cardid");
 
