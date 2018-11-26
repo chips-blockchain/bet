@@ -1312,18 +1312,15 @@ void BET_p2p_client_ask_share(struct privatebet_info *bet,int32_t cardid,int32_t
 {
 	cJSON *requestInfo=NULL;
 	char *rendered=NULL;
-	int32_t bytes,retval;
+	int32_t bytes;
 	requestInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(requestInfo,"method","requestShare");
 	cJSON_AddNumberToObject(requestInfo,"playerid",playerid);
 	cJSON_AddNumberToObject(requestInfo,"cardid",cardid);
 	rendered=cJSON_Print(requestInfo);
 	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
-	if(bytes<0)
-		retval=-1;
-	else
-		retval=1;
-	return retval;
+	if(bytes>0)
+		printf("\n%s:%d:%s",__FUNCTION__,__LINE__,rendered);
 }
 
 int32_t BET_p2p_client_give_share(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
@@ -1683,6 +1680,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		}
 		else if(strcmp(method,"requestShare") == 0)
 		{
+			printf("\n%s:%d: requestShare",__FUNCTION__,__LINE__);
 			retval=BET_p2p_client_give_share(argjson,bet,vars);
 		}
 		else if(strcmp(method,"share_info") == 0)
