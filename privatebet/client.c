@@ -1179,7 +1179,7 @@ int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 		sprintf(argv[2],"%s",jstr(invoiceInfo,"bolt11"));
 		argv[3]=NULL;
 		ln_bet(argc,argv,buf);
-		payResponse=cJSON_CreateObject(void);
+		payResponse=cJSON_CreateObject();
 		payResponse=cJSON_Parse(buf);
 		printf("\n%s:%d: Payment Status:%s",__FUNCTION__,__LINE__,jstr(payResponse,"status"));
 
