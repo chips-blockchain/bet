@@ -37,6 +37,9 @@ int32_t turn=0,no_of_cards=0,no_of_rounds=0;
 int32_t eval_game_p[CARDS777_MAXPLAYERS],eval_game_c[CARDS777_MAXPLAYERS];
 struct deck_dcv_info dcv_info;
 
+int32_t invoiceID;
+
+
 struct privatebet_peerln *BET_peerln_find(char *peerid)
 {
     int32_t i;
@@ -707,10 +710,12 @@ void BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 {
 	int argc,bytes;
 	char **argv,*buf=NULL,*rendered;
+	char hexstr [65];
 	int32_t maxsize = 1000000;
 	cJSON *invoiceInfo=NULL;
 	argv =(char**)malloc(6*sizeof(char*));
 	buf=(char*)malloc(maxsize*sizeof(char));
+	invoiceID++;
 	for(int i=0;i<5;i++)
 	{
 			argv[i]=(char*)malloc(sizeof(char)*1000);
@@ -719,7 +724,8 @@ void BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 	strcpy(argv[0],"./bet");
 	strcpy(argv[1],"invoice");
 	sprintf(argv[2],"%d",jint(argjson,"betAmount"));
-	sprintf(argv[3],"invoice_%d_%d_%d",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
+	//sprintf(argv[3],"invoice_%d_%d_%d",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
+	sprintf(argv[3],"%s_%d_%d_%d",bits256_str(hexstr,dcv_info.deckid),invoiceID,jint(argjson,"playerID"),jint(argjson,"round"));
 	sprintf(argv[4],"Invoice details playerID:%d,round:%d,betting Amount:%d",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
 	argv[5]=NULL;
 	argc=5;
@@ -731,7 +737,7 @@ void BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 		cJSON_AddStringToObject(invoiceInfo,"method","invoice");
 		cJSON_AddNumberToObject(invoiceInfo,"playerID",jint(argjson,"playerID"));
 		cJSON_AddNumberToObject(invoiceInfo,"round",jint(argjson,"round"));
-		cJSON_AddStringToObject(invoiceInfo,"invoice",buf);
+		cJSON_AddStringToObject(invoiceInfo,"bolt11",buf);
 
 		rendered=cJSON_Print(invoiceInfo);
 		bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
@@ -908,7 +914,8 @@ void BET_p2p_hostloop(void *_ptr)
 	BET_permutation(dcv_info.permis,bet->range);
     dcv_info.deckid=rand256(0);
 	dcv_info.dcv_key.priv=curve25519_keypair(&dcv_info.dcv_key.prod);
-	
+
+	invoiceID=0;	
 	
 	for(int i=0;i<bet->range;i++)
 	{
