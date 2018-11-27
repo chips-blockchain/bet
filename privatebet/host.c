@@ -752,7 +752,7 @@ void BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 void BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int32_t playerid,max=-1;
-	cJSON *gameInfo=NULL,*invoiceInfo=NULL;
+	cJSON *gameInfo=NULL,*invoicesInfo=NULL,*invoiceInfo=NULL;
 	char *label=NULL;
 	int32_t argc;
 	int32_t maxsize = 1000000;
@@ -770,9 +770,12 @@ void BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebe
 	strcpy(argv[2],label);
 
 	ln_bet(argc,argv,buf);
-	invoiceInfo=cJSON_CreateObject();
-	invoiceInfo=cJSON_Parse(buf);
-
+	invoicesInfo=cJSON_CreateObject();
+	invoicesInfo=cJSON_Parse(buf);
+	cJSON_Print(invoicesInfo);
+	invoiceInfo=cJSON_GetArrayItem(invoicesInfo,0);
+	cJSON_Print(invoiceInfo);
+	printf("\n");
 	if(strcmp(jstr(invoiceInfo,"status"),"paid")==0)
 	{
 		printf("\nAmount paid: %d",jint(invoiceInfo,"msatoshi_received"));
