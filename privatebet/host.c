@@ -33,9 +33,12 @@ struct privatebet_rawpeerln Rawpeersln[CARDS777_MAXPLAYERS+1],oldRawpeersln[CARD
 struct privatebet_peerln Peersln[CARDS777_MAXPLAYERS+1];
 int32_t Num_rawpeersln,oldNum_rawpeersln,Num_peersln,Numgames;
 int32_t players_joined=0;
-int32_t turn=0,no_of_cards=0,no_of_rounds=0;
+int32_t turn=0,no_of_cards=0,no_of_rounds=0,no_of_bets=0;
 int32_t eval_game_p[CARDS777_MAXPLAYERS],eval_game_c[CARDS777_MAXPLAYERS];
 struct deck_dcv_info dcv_info;
+
+int32_t invoiceID;
+
 
 struct privatebet_peerln *BET_peerln_find(char *peerid)
 {
@@ -707,10 +710,12 @@ void BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 {
 	int argc,bytes;
 	char **argv,*buf=NULL,*rendered;
+	char hexstr [65];
 	int32_t maxsize = 1000000;
 	cJSON *invoiceInfo=NULL;
 	argv =(char**)malloc(6*sizeof(char*));
 	buf=(char*)malloc(maxsize*sizeof(char));
+	invoiceID++;
 	for(int i=0;i<5;i++)
 	{
 			argv[i]=(char*)malloc(sizeof(char)*1000);
@@ -719,7 +724,8 @@ void BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 	strcpy(argv[0],"./bet");
 	strcpy(argv[1],"invoice");
 	sprintf(argv[2],"%d",jint(argjson,"betAmount"));
-	sprintf(argv[3],"invoice_%d_%d_%d",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
+	//sprintf(argv[3],"invoice_%d_%d_%d",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
+	sprintf(argv[3],"%s_%d_%d_%d_%d",bits256_str(hexstr,dcv_info.deckid),invoiceID,jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
 	sprintf(argv[4],"Invoice details playerID:%d,round:%d,betting Amount:%d",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
 	argv[5]=NULL;
 	argc=5;
@@ -731,6 +737,7 @@ void BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 		cJSON_AddStringToObject(invoiceInfo,"method","invoice");
 		cJSON_AddNumberToObject(invoiceInfo,"playerID",jint(argjson,"playerID"));
 		cJSON_AddNumberToObject(invoiceInfo,"round",jint(argjson,"round"));
+		cJSON_AddStringToObject(invoiceInfo,"label",argv[3]);
 		cJSON_AddStringToObject(invoiceInfo,"invoice",buf);
 
 		rendered=cJSON_Print(invoiceInfo);
@@ -745,15 +752,42 @@ void BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 void BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int32_t playerid,max=-1;
-	cJSON *gameInfo=NULL;
-	cJSON *paymentInfo=NULL;
-	char *payStrInfo=NULL;
+	cJSON *gameInfo=NULL,*invoicesInfo=NULL,*invoiceInfo=NULL,*invoice=NULL;
+	char *label=NULL;
+	int32_t argc;
+	int32_t maxsize = 1000000;
+	char **argv=NULL,*buf=NULL;
+	argc=3;
+	argv=(char**)malloc(sizeof(char*)*argc);
+	for(int32_t i=0;i<=argc;i++)
+		argv[i]=(char*)malloc(100*sizeof(char));
+	buf=(char*)malloc(maxsize*sizeof(char));
 
-	payStrInfo=jstr(payInfo,"payInfo");
-	printf("\n%s:%d:payInfo:%s",__FUNCTION__,__LINE__,payStrInfo);
-	paymentInfo=cJSON_Parse(payStrInfo);
-	cJSON_Print(paymentInfo);
-	if(dcv_info.betamount == dcv_info.paidamount)
+	
+	label=jstr(payInfo,"label");
+	strcpy(argv[0],".\bet");
+	strcpy(argv[1],"listinvoices");
+	strcpy(argv[2],label);
+	argv[3]=NULL;
+	
+	ln_bet(argc,argv,buf);
+	invoicesInfo=cJSON_CreateObject();
+	invoicesInfo=cJSON_Parse(buf);
+	cJSON_Parse(invoicesInfo);
+
+	invoiceInfo=cJSON_CreateObject();
+	invoiceInfo=cJSON_GetObjectItem(invoicesInfo,"invoices");
+	
+	invoice=cJSON_CreateObject();
+	invoice=cJSON_GetArrayItem(invoiceInfo,0);
+	if(strcmp(jstr(invoice,"status"),"paid")==0)
+	{
+		dcv_info.paidamount+=jint(invoice,"msatoshi_received");
+		printf("\nAmount paid: %d",jint(invoice,"msatoshi_received"));
+	}
+	printf("\n%s:%d:%d",__FUNCTION__,no_of_bets,no_of_cards);
+	no_of_bets++;
+	if(no_of_cards == no_of_bets)
 	{	
 		for(int i=0;i<no_of_cards;i++)
 		{
@@ -771,7 +805,7 @@ void BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebe
 		
 		printf("\nThe winner of the game is player :%d, it got the card:%d",playerid,max);
 		printf("\n%s:%d",__FUNCTION__,__LINE__);
-	}		
+	}	
 		
 }
 
@@ -908,7 +942,8 @@ void BET_p2p_hostloop(void *_ptr)
 	BET_permutation(dcv_info.permis,bet->range);
     dcv_info.deckid=rand256(0);
 	dcv_info.dcv_key.priv=curve25519_keypair(&dcv_info.dcv_key.prod);
-	
+
+	invoiceID=0;	
 	
 	for(int i=0;i<bet->range;i++)
 	{

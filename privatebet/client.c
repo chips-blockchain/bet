@@ -1155,7 +1155,7 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	cJSON *invoiceInfo=NULL,*paymentInfo=NULL;
+	cJSON *invoiceInfo=NULL,*paymentInfo=NULL,*payResponse=NULL;
     char *invoice=NULL;
 	int argc,maxsize=10000;
 	char **argv=NULL,*buf=NULL;
@@ -1179,11 +1179,18 @@ int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 		sprintf(argv[2],"%s",jstr(invoiceInfo,"bolt11"));
 		argv[3]=NULL;
 		ln_bet(argc,argv,buf);
+		payResponse=cJSON_CreateObject();
+		payResponse=cJSON_Parse(buf);
+		printf("\n%s:%d: Payment Status:%s",__FUNCTION__,__LINE__,jstr(payResponse,"status"));
+
+		if(strcmp(jstr(payResponse,"status"),"complete")==0)
+			printf("\nPayment Success");
+			
 		printf("\n:%s:%d:Pay response:%s",__FUNCTION__,__LINE__,buf);
 		paymentInfo=cJSON_CreateObject();
 		cJSON_AddStringToObject(paymentInfo,"method","pay");
 		cJSON_AddNumberToObject(paymentInfo,"playerid",bet->myplayerid);
-		cJSON_AddStringToObject(paymentInfo,"payInfo",buf);
+		cJSON_AddStringToObject(paymentInfo,"label",jstr(argjson,"label"));
 		
 		rendered=cJSON_Print(paymentInfo);
 		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
@@ -1237,13 +1244,15 @@ int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,
 	cardid=jint(argjson,"cardid");
 	playerid=jint(argjson,"playerid");
 
+	printf("\n%s:%d:no_of_shares:%d,maxplayers:%d",__FUNCTION__,__LINE__,no_of_shares,bet->maxplayers);
+	if(sharesflag[cardid][playerid] ==0 )
+	{
+			playershares[cardid][playerid]=share;
+			sharesflag[cardid][playerid]=1;
+			no_of_shares++;
+			printf("\n%s:%d:no_of_shares:%d,maxplayers:%d",__FUNCTION__,__LINE__,no_of_shares,bet->maxplayers);
+	}
 	
-	
-	playershares[cardid][playerid]=share;
-	sharesflag[cardid][playerid]=1;
-
-	
-	no_of_shares++;
 	
 	if(no_of_shares == bet->maxplayers)
 	{
@@ -1300,6 +1309,20 @@ int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,
 }
 
 
+void BET_p2p_client_ask_share(struct privatebet_info *bet,int32_t cardid,int32_t playerid)
+{
+	cJSON *requestInfo=NULL;
+	char *rendered=NULL;
+	int32_t bytes;
+	requestInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(requestInfo,"method","requestShare");
+	cJSON_AddNumberToObject(requestInfo,"playerid",playerid);
+	cJSON_AddNumberToObject(requestInfo,"cardid",cardid);
+	rendered=cJSON_Print(requestInfo);
+	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+	if(bytes>0)
+		printf("\n%s:%d:%s",__FUNCTION__,__LINE__,rendered);
+}
 
 int32_t BET_p2p_client_give_share(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
@@ -1311,10 +1334,14 @@ int32_t BET_p2p_client_give_share(cJSON *argjson,struct privatebet_info *bet,str
 	uint8_t decipher[sizeof(bits256) + 1024],*ptr;
 	bits256 share;
 	
-	
 	playerid=jint(argjson,"playerid");
 	cardid=jint(argjson,"cardid");
-
+	if(playerid==bet->myplayerid)
+		{
+			printf("\nDo Nothing in %s",__FUNCTION__);
+			return 1;
+		}
+	
 	temp=g_shares[playerid*bet->numplayers*bet->range + (cardid*bet->numplayers + bet->myplayerid)];
 
     recvlen = sizeof(temp);
@@ -1379,7 +1406,7 @@ int32_t BET_p2p_get_own_share(cJSON *argjson,struct privatebet_info *bet,struct 
 }
 int32_t BET_p2p_client_turn(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int32_t retval,playerid;
+	int32_t retval=1,playerid;
 	
 	printf("\n%s:%d",__FUNCTION__,__LINE__);
 	
@@ -1389,10 +1416,18 @@ int32_t BET_p2p_client_turn(cJSON *argjson,struct privatebet_info *bet,struct pr
 	{
 		no_of_shares=1;
 		BET_p2p_get_own_share(argjson,bet,vars);
+		for(int i=0;i<bet->numplayers;i++)
+		{
+			if(!sharesflag[jint(argjson,"cardid")][i])
+			{
+				BET_p2p_client_ask_share(bet,jint(argjson,"cardid"),jint(argjson,"playerid"));	
+			}
+		}
 	}
 	else 
 	{
-		retval=BET_p2p_client_give_share(argjson,bet,vars);
+		printf("\nDo Nothing for Turn");
+		//retval=BET_p2p_client_give_share(argjson,bet,vars);
 	}
 	
 	
@@ -1649,6 +1684,11 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		{
 			retval=BET_p2p_client_give_share(argjson,bet,vars);
 		}
+		else if(strcmp(method,"requestShare") == 0)
+		{
+			printf("\n%s:%d: requestShare",__FUNCTION__,__LINE__);
+			retval=BET_p2p_client_give_share(argjson,bet,vars);
+		}
 		else if(strcmp(method,"share_info") == 0)
 		{
 			retval=BET_p2p_client_receive_share(argjson,bet,vars);
@@ -1661,11 +1701,11 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		{
 			retval=BET_p2p_invoice(argjson,bet,vars);
 		}
-        	else
-        	{ 
-	       		printf("\n%s:%d:Unknown Command",__FUNCTION__,__LINE__);
-			 retval=-1;
-        	}
+    	else
+    	{ 
+       		printf("\n%s:%d:Unknown Command",__FUNCTION__,__LINE__);
+		 retval=-1;
+    	}
 	}	
 	return retval;
 }
