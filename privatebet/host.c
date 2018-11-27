@@ -782,6 +782,7 @@ void BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebe
 	invoice=cJSON_GetArrayItem(invoiceInfo,0);
 	if(strcmp(jstr(invoice,"status"),"paid")==0)
 	{
+		dcv_info.paidamount+=jint(invoice,"msatoshi_received");
 		printf("\nAmount paid: %d",jint(invoice,"msatoshi_received"));
 	}
 	
