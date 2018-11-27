@@ -806,7 +806,6 @@ void BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebe
 		printf("\nThe winner of the game is player :%d, it got the card:%d",playerid,max);
 		printf("\n%s:%d",__FUNCTION__,__LINE__);
 	}	
-	printf("\n%s:%d",__FUNCTION__,__LINE__);	
 		
 }
 
