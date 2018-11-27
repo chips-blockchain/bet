@@ -771,11 +771,10 @@ void BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebe
 
 	ln_bet(argc,argv,buf);
 	invoicesInfo=cJSON_CreateObject();
-	invoicesInfo=cJSON_Parse(buf);
-	cJSON_Print(invoicesInfo);
-	invoiceInfo=cJSON_GetArrayItem(invoicesInfo,0);
+	invoicesInfo=cJSON_GetObjectItem(cJSON_Parse(buf),"invoices");
+	invoiceInfo=cJSON_GetArrayItem(invoiceInfo,0);
 	cJSON_Print(invoiceInfo);
-	printf("\n");
+	
 	if(strcmp(jstr(invoiceInfo,"status"),"paid")==0)
 	{
 		printf("\nAmount paid: %d",jint(invoiceInfo,"msatoshi_received"));
