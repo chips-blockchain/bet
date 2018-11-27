@@ -1190,7 +1190,7 @@ int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 		paymentInfo=cJSON_CreateObject();
 		cJSON_AddStringToObject(paymentInfo,"method","pay");
 		cJSON_AddNumberToObject(paymentInfo,"playerid",bet->myplayerid);
-		cJSON_AddStringToObject(paymentInfo,"payInfo",buf);
+		cJSON_AddStringToObject(paymentInfo,"label",jstr(argjson,"label"));
 		
 		rendered=cJSON_Print(paymentInfo);
 		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
@@ -1701,11 +1701,11 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		{
 			retval=BET_p2p_invoice(argjson,bet,vars);
 		}
-        	else
-        	{ 
-	       		printf("\n%s:%d:Unknown Command",__FUNCTION__,__LINE__);
-			 retval=-1;
-        	}
+    	else
+    	{ 
+       		printf("\n%s:%d:Unknown Command",__FUNCTION__,__LINE__);
+		 retval=-1;
+    	}
 	}	
 	return retval;
 }
