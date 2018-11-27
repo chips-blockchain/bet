@@ -33,7 +33,7 @@ struct privatebet_rawpeerln Rawpeersln[CARDS777_MAXPLAYERS+1],oldRawpeersln[CARD
 struct privatebet_peerln Peersln[CARDS777_MAXPLAYERS+1];
 int32_t Num_rawpeersln,oldNum_rawpeersln,Num_peersln,Numgames;
 int32_t players_joined=0;
-int32_t turn=0,no_of_cards=0,no_of_rounds=0;
+int32_t turn=0,no_of_cards=0,no_of_rounds=0,no_of_bets=0;
 int32_t eval_game_p[CARDS777_MAXPLAYERS],eval_game_c[CARDS777_MAXPLAYERS];
 struct deck_dcv_info dcv_info;
 
@@ -785,8 +785,9 @@ void BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebe
 		dcv_info.paidamount+=jint(invoice,"msatoshi_received");
 		printf("\nAmount paid: %d",jint(invoice,"msatoshi_received"));
 	}
-	no_of_rounds++;
-	if(no_of_cards == no_of_rounds)
+	printf("\n%s:%d:%d",__FUNCTION__,no_of_bets,no_of_cards);
+	no_of_bets++;
+	if(no_of_cards == no_of_bets)
 	{	
 		for(int i=0;i<no_of_cards;i++)
 		{
