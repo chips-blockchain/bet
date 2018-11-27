@@ -737,7 +737,7 @@ void BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 		cJSON_AddStringToObject(invoiceInfo,"method","invoice");
 		cJSON_AddNumberToObject(invoiceInfo,"playerID",jint(argjson,"playerID"));
 		cJSON_AddNumberToObject(invoiceInfo,"round",jint(argjson,"round"));
-		cJSON_AddStringToObject(invoiceInfo,"bolt11",buf);
+		cJSON_AddStringToObject(invoiceInfo,"invoice",buf);
 
 		rendered=cJSON_Print(invoiceInfo);
 		bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
