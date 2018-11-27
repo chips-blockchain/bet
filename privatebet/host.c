@@ -771,16 +771,20 @@ void BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebe
 	argv[3]=NULL;
 	
 	ln_bet(argc,argv,buf);
-	/*
 	invoicesInfo=cJSON_CreateObject();
 	invoicesInfo=cJSON_Parse(buf);
+	cJSON_Parse(invoicesInfo);
+
+	invoiceInfo=cJSON_CreateObject();
 	invoiceInfo=cJSON_GetObjectItem(invoicesInfo,"invoices");
+	
+	invoice=cJSON_CreateObject();
 	invoice=cJSON_GetArrayItem(invoiceInfo,0);
 	if(strcmp(jstr(invoice,"status"),"paid")==0)
 	{
 		printf("\nAmount paid: %d",jint(invoice,"msatoshi_received"));
 	}
-	*/
+	
 	if(dcv_info.betamount == dcv_info.paidamount)
 	{	
 		for(int i=0;i<no_of_cards;i++)
@@ -799,7 +803,8 @@ void BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebe
 		
 		printf("\nThe winner of the game is player :%d, it got the card:%d",playerid,max);
 		printf("\n%s:%d",__FUNCTION__,__LINE__);
-	}		
+	}	
+	printf("\n%s:%d",__FUNCTION__,__LINE__);	
 		
 }
 
