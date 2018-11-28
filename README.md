@@ -22,12 +22,28 @@ $ ninja
 $ ninja test
 $ ninja install
 
+#Installing Lightning Repo
+
+$ cd
+$ git clone https://github.com/sg777/lightning.git
+$ cd lightning
+$ make
+
+#Installing CHIPS
+
+$ cd
+$ git clone https://github.com/sg777/chips3.git
+$ cd chips3
+$ make
+
+#Installing Bet
 
 $ cd ~
 $ git clone https://github.com/sg777/bet.git
 $ cd bet
 $ make
 ```
+
 ## Communicating over IP Adress
 DCV nodes binds to the sockets created over the ports 7797 and 7798. The BVV and Player nodes connect to the binding address via subscribe and push sockets. Here DCV and BVV are the trusted notarized nodes in the network, DCV plays the central role in coordinating the game.
 
