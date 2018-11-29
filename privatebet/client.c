@@ -1572,6 +1572,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		strcpy(argv[2],uri);
 		argv[3]=NULL;
 		ln_bet(argc,argv,buf);
+		printf("\n%s:%d:ConnectInfo:%s",__FUNCTION__,__LINE__,buf);
 		connectInfo=cJSON_Parse(buf);
 		cJSON_Print(connectInfo);
 
@@ -1586,9 +1587,11 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		strcpy(argv[0],"./bet");
 		strcpy(argv[1],"fundchannel");
 		strcpy(argv[2],jstr(connectInfo,"id"));
+		printf("\n id:%s",argv[2]);
 		strcpy(argv[3],"1000000");
 		argv[4]=NULL;
 		ln_bet(argc,argv,buf);
+		printf("\n%s:%d:FundChannelInfo:%s",__FUNCTION__,__LINE__,buf);
 		fundChannelInfo=cJSON_Parse(buf);
 		cJSON_Print(fundChannelInfo);
 		retval=1;
