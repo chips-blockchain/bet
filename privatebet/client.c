@@ -1602,7 +1602,7 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 {
 	bits256 playerprivs[CARDS777_MAXCARDS],playercards[CARDS777_MAXCARDS];
 	int32_t permis[CARDS777_MAXCARDS],bytes,retval=-1;
-	cJSON *joininfo=NULL,*channelInfo=NULL;
+	cJSON *joininfo=NULL,*channelInfo=NULL,*address=NULL,*temp=NULL;
 	struct pair256 key;
 	char *rendered=NULL,*uri=NULL;
 	char hexstr [ 65 ];
@@ -1632,7 +1632,10 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 		uri=(char*)malloc(sizeof(char)*100);
 		strcpy(uri,jstr(channelInfo,"id"));
 		strcat(uri,"@");
-		strcat(uri,jstr(channelInfo,"address"));
+		address=cJSON_GetObjectItem(channelInfo,"address");
+		temp=cJSON_GetArrayItem(address,0);
+		strcat(uri,jstr(temp,"address"));
+		printf("\nuri:%s",uri);
 		cJSON_AddStringToObject(joininfo,"uri",uri);
 
 		rendered=cJSON_Print(joininfo);
