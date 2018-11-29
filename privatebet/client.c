@@ -1549,14 +1549,15 @@ int32_t BET_p2p_client_init(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	char *channelid=NULL;
+	char *uri=NULL;
+	int argc,maxsize=10000,retval=-1;
+	char **argv=NULL,*buf=NULL;
+	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
 	if(0 == bits256_cmp(player_info.player_key.prod,jbits256(argjson,"pubkey")))
 	{
 		bet->myplayerid=jint(argjson,"peerid");
-		channelid=jstr(argjson,"id");
+		uri=jstr(argjson,"uri");
 		
-		int argc,maxsize=10000;
-		char **argv=NULL,*buf=NULL;
 		argc=5;
 		argv=(char**)malloc(argc*sizeof(char*));
 		buf=malloc(maxsize);
@@ -1568,13 +1569,13 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		argc=3;
 		strcpy(argv[0],"./bet");
 		strcpy(argv[1],"connect");
-		strcpy(argv[2],channelid);
+		strcpy(argv[2],uri);
 		argv[3]=NULL;
 		ln_bet(argc,argv,buf);
-		
-		printf("\n The response id :%s",buf);
-		argc=5;
+		connectInfo=cJSON_Parse(buf);
+		cJSON_Print(connectInfo);
 
+		argc=5;
 		argv=(char**)malloc(argc*sizeof(char*));
 		buf=malloc(maxsize);
 		for(int i=0;i<argc;i++)
@@ -1584,18 +1585,16 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		argc=4;
 		strcpy(argv[0],"./bet");
 		strcpy(argv[1],"fundchannel");
-		strcpy(argv[2],channelid);
+		strcpy(argv[2],jstr(connectInfo,"id"));
 		strcpy(argv[3],"1000000");
 		argv[4]=NULL;
 		ln_bet(argc,argv,buf);
-	
-		printf("\n The response buffer:%s",buf);
-		
-		printf("\n%s:%d\n",__FUNCTION__,__LINE__);
-		return 1;
+		fundChannelInfo=cJSON_Parse(buf);
+		cJSON_Print(fundChannelInfo);
+		retval=1;
 	}
 	
-	return -1;
+	return retval;
 }
 
 int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
