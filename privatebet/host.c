@@ -595,8 +595,8 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
 	address=cJSON_GetArrayItem(addresses,0);
 
 	strcpy(uri,jstr(getInfo,"id"));
-	strcpy(uri,"@");
-	strcpy(uri,jstr(address,"address"));
+	strcat(uri,"@");
+	strcat(uri,jstr(address,"address"));
 
 	printf("\n%s:%d:uri:%s",__FUNCTION__,__LINE__,uri);
 	
