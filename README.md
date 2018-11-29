@@ -11,8 +11,9 @@ $ sudo apt-get install software-properties-common autoconf git build-essential l
 
 $ apt install make ninja-build libsqlite3-dev libgmp3-dev
 
-#Install nanomsg-next-generation 
+# Install nanomsg-next-generation 
 
+$ cd ~
 $ git clone https://github.com/nanomsg/nng.git
 $ cd nng
 $ mkdir build
@@ -22,19 +23,35 @@ $ ninja
 $ ninja test
 $ ninja install
 
-#Installing Lightning Repo
+# Installing CHIPS
 
-$ cd
+$ cd ~
+$ git clone https://github.com/sg777/chips3.git
+$ cd chips3
+$ ./autogen.sh
+$ ./configure --with-boost=/usr/local/ 
+$ cd src
+$ make -j8 chipsd
+$ make chips-cli
+
+# Running CHIPS Daemon
+
+$ cd ~
+$ cd chips/src
+$ ./chipsd -addnode=5.9.253.195 &
+
+# Installing Lightning Repo
+
+$ cd ~
 $ git clone https://github.com/sg777/lightning.git
 $ cd lightning
 $ make
 
-#Installing CHIPS
+# Running Lightning Daemon
 
-$ cd
-$ git clone https://github.com/sg777/chips3.git
-$ cd chips3
-$ make
+$ cd ~
+$ cd lightning
+$ ./lightningd/lightningd --log-level=debug &
 
 #Installing Bet
 
