@@ -567,7 +567,7 @@ int32_t BET_p2p_host_start_init(struct privatebet_info *bet)
 }
 int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	cJSON *playerinfo=NULL,*channelInfo=NULL;
+	cJSON *playerinfo=NULL,*getInfo=NULL,*addresses=NULL,*address=NULL;
     uint32_t bytes,retval=1;
 	char *rendered=NULL,*uri=NULL;
 	int argc,maxsize=10000;
@@ -588,11 +588,18 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
 	strcpy(argv[0],"./bet");
 	strcpy(argv[1],"getinfo");
 	ln_bet(argc,argv,buf);
-	channelInfo=cJSON_Parse(buf);
+	getInfo=cJSON_Parse(buf);
 	uri=(char*)malloc(100*sizeof(char));
-	strcpy(uri,jstr(channelInfo,"id"));
+	
+	addresses=cJSON_GetObjectItem(getInfo,"address");
+	address=cJSON_GetArrayItem(addresses,0);
+
+	strcpy(uri,jstr(getInfo,"id"));
 	strcpy(uri,"@");
-	strcpy(uri,jstr(channelInfo,"address"));
+	strcpy(uri,jstr(address,"address"));
+
+	printf("\n%s:%d:uri:%s",__FUNCTION__,__LINE__,uri);
+	
 	playerinfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(playerinfo,"method","join_res");
 	cJSON_AddNumberToObject(playerinfo,"peerid",bet->numplayers-1); //players numbering starts from 0(zero)
