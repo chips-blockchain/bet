@@ -1604,7 +1604,7 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 	int32_t permis[CARDS777_MAXCARDS],bytes,retval=-1;
 	cJSON *joininfo=NULL,*channelInfo=NULL;
 	struct pair256 key;
-	char *rendered=NULL,*channelid=NULL;
+	char *rendered=NULL,*uri=NULL;
 	char hexstr [ 65 ];
     if(bet->pushsock>=0)
 	{
@@ -1629,8 +1629,11 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 		channelInfo=cJSON_Parse(buf);
 		cJSON_Print(channelInfo);
-		channelid=jstr(channelInfo,"id");
-		cJSON_AddStringToObject(joininfo,"id",channelid);
+		uri=(char*)malloc(sizeof(char)*100);
+		strcpy(uri,jstr(channelInfo,"id"));
+		strcat(uri,"@");
+		strcat(uri,jstr(channelInfo,"address"));
+		cJSON_AddStringToObject(joininfo,"uri",uri);
 
 		rendered=cJSON_Print(joininfo);
         bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
@@ -1653,11 +1656,11 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
     if ( (method= jstr(argjson,"method")) != 0 )
     {
 	      
-	        printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-        	if ( strcmp(method,"join") == 0 )
-    		{
-    			BET_p2p_client_join(argjson,bet,vars);
-    		}
+        printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+    	if ( strcmp(method,"join") == 0 )
+		{
+			BET_p2p_client_join(argjson,bet,vars);
+		}
 		else if ( strcmp(method,"join_res") == 0 )
 		{
 			retval=BET_p2p_client_join_res(argjson,bet,vars);
