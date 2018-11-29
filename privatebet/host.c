@@ -570,13 +570,14 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
 	cJSON *playerinfo=NULL,*channelInfo=NULL;
     uint32_t bytes,retval=1;
 	char *rendered=NULL,*uri=NULL;
-
-    bet->numplayers=++players_joined;
-	dcv_info.peerpubkeys[players_joined-1]=jbits256(argjson,"pubkey");
-	printf("\n%s:%d:channel id:%s",__FUNCTION__,__LINE__,jstr(argjson,"id"));
-	strcpy(dcv_info.uri[players_joined-1],jstr(argjson,"id"));
 	int argc,maxsize=10000;
 	char **argv=NULL,*buf=NULL;
+
+	
+    bet->numplayers=++players_joined;
+	dcv_info.peerpubkeys[players_joined-1]=jbits256(argjson,"pubkey");
+	strcpy(dcv_info.uri[players_joined-1],jstr(argjson,"uri"));
+
 	argv=(char**)malloc(4*sizeof(char*));
 	buf=malloc(maxsize);
 	argc=2;
