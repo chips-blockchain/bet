@@ -12,6 +12,9 @@
  * Removal or modification of this copyright notice is prohibited.            *
  *                                                                            *
  ******************************************************************************/
+#include <sqlite3.h>
+#include <stdlib.h>
+
 #include "../includes/cJSON.h"
 #include "../includes/ppapi/c/pp_stdint.h"
 #include "common.h"
@@ -40,7 +43,7 @@ struct deck_bvv_info bvv_info;
 int32_t no_of_shares=0;
 //uint8_t sharenrs[256];
 
-
+char *LN_db="../../.chipsln/lightningd.sqlite3";
 
 
 
@@ -1547,6 +1550,50 @@ int32_t BET_p2p_client_init(cJSON *argjson,struct privatebet_info *bet,struct pr
 	return retval;
 }
 
+int32_t LN_get_channel_status(char *id)
+{
+	  sqlite3 *db;
+	  sqlite3_stmt *stmt = NULL;	
+	  char *err_msg = 0,*sql=NULL;
+      int rc;
+	  	
+     rc = sqlite3_open(LN_db, &db);
+
+       if( rc ) {
+           fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
+           return(0);
+      } else {
+              fprintf(stderr, "Opened database successfully\n");
+     }
+	 sql="select * from peers where lower(hex(node_id))=?";
+	 if (rc != SQLITE_OK) {
+	    printf("Failed to prepare statement: %s\n\r", sqlite3_errstr(rc));
+    	sqlite3_close(db);
+    	return 0;
+	}	 
+	else {
+    	printf("SQL statement prepared: OK\n\n\r");
+	}
+
+	
+	rc = sqlite3_bind_int(stmt, 1, id);
+	if (rc != SQLITE_OK) {
+		printf("Failed to bind parameter: %s\n\r", sqlite3_errstr(rc));
+		sqlite3_close(db);
+		return 1;
+	} 
+	else {
+		printf("SQL bind integer param: OK\n\n\r");
+	}
+
+	rc = sqlite3_step(stmt);
+	 if (rc == SQLITE_ROW) {
+        printf("Peer ID:%s\n", sqlite3_column_text(stmt, 0));
+    }
+
+	return 1;    
+
+}
 int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	char *uri=NULL;
@@ -1565,36 +1612,44 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		{
 			argv[i]=(char*)malloc(100*sizeof(char));		
 		}
+	
+		select state from channels where peer_id = (select id from peers where lower(hex(node_id))="03943d572eb97ac78055cf4c708660228a60b2956fdcfeaaceba5551f98e92e727")
+		LN_get_channel_status(strtok(uri, "@"););
 		
-		argc=3;
-		strcpy(argv[0],"./bet");
-		strcpy(argv[1],"connect");
-		strcpy(argv[2],uri);
-		argv[3]=NULL;
-		ln_bet(argc,argv,buf);
-		printf("\n%s:%d:ConnectInfo:%s",__FUNCTION__,__LINE__,buf);
-		connectInfo=cJSON_Parse(buf);
-		cJSON_Print(connectInfo);
-
-		argc=5;
-		argv=(char**)malloc(argc*sizeof(char*));
-		buf=malloc(maxsize);
-		for(int i=0;i<argc;i++)
+		
+		if(LN_get_channel_status(id) == 3)
 		{
-		        argv[i]=(char*)malloc(100*sizeof(char));
+			argc=3;
+			strcpy(argv[0],"./bet");
+			strcpy(argv[1],"connect");
+			strcpy(argv[2],uri);
+			argv[3]=NULL;
+			ln_bet(argc,argv,buf);
+			printf("\n%s:%d:ConnectInfo:%s",__FUNCTION__,__LINE__,buf);
+			connectInfo=cJSON_Parse(buf);
+			cJSON_Print(connectInfo);
+
+			argc=5;
+			argv=(char**)malloc(argc*sizeof(char*));
+			buf=malloc(maxsize);
+			for(int i=0;i<argc;i++)
+			{
+			        argv[i]=(char*)malloc(100*sizeof(char));
+			}
+			argc=4;
+			strcpy(argv[0],"./bet");
+			strcpy(argv[1],"fundchannel");
+			strcpy(argv[2],jstr(connectInfo,"id"));
+			printf("\n id:%s",argv[2]);
+			strcpy(argv[3],"1000000");
+			argv[4]=NULL;
+			ln_bet(argc,argv,buf);
+			printf("\n%s:%d:FundChannelInfo:%s",__FUNCTION__,__LINE__,buf);
+			fundChannelInfo=cJSON_Parse(buf);
+			cJSON_Print(fundChannelInfo);
+			retval=1;
 		}
-		argc=4;
-		strcpy(argv[0],"./bet");
-		strcpy(argv[1],"fundchannel");
-		strcpy(argv[2],jstr(connectInfo,"id"));
-		printf("\n id:%s",argv[2]);
-		strcpy(argv[3],"1000000");
-		argv[4]=NULL;
-		ln_bet(argc,argv,buf);
-		printf("\n%s:%d:FundChannelInfo:%s",__FUNCTION__,__LINE__,buf);
-		fundChannelInfo=cJSON_Parse(buf);
-		cJSON_Print(fundChannelInfo);
-		retval=1;
+		
 	}
 	
 	return retval;
