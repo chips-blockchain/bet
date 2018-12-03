@@ -1612,12 +1612,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		{
 			argv[i]=(char*)malloc(100*sizeof(char));		
 		}
-	
-		select state from channels where peer_id = (select id from peers where lower(hex(node_id))="03943d572eb97ac78055cf4c708660228a60b2956fdcfeaaceba5551f98e92e727")
-		LN_get_channel_status(strtok(uri, "@"););
-		
-		
-		if(LN_get_channel_status(id) == 3)
+		if(LN_get_channel_status(strtok(uri, "@")) == 3)
 		{
 			argc=3;
 			strcpy(argv[0],"./bet");
