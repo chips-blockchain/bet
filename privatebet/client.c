@@ -43,7 +43,7 @@ struct deck_bvv_info bvv_info;
 int32_t no_of_shares=0;
 //uint8_t sharenrs[256];
 
-char *LN_db="../../.chipsln/lightningd.sqlite3";
+char *LN_db="../../.chipsln/lightningd1.sqlite3";
 
 
 
@@ -1656,7 +1656,6 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		}
 		
 	}
-	retval=1;
 	return retval;
 }
 
@@ -1716,8 +1715,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 	
     static uint8_t *decoded; static int32_t decodedlen,retval=1;
     char *method; int32_t senderid; bits256 *MofN;
-    	printf("\n%s:%d",__FUNCTION__,__LINE__);
-	LN_get_channel_status(NULL);
+
     if ( (method= jstr(argjson,"method")) != 0 )
     {
 	      
@@ -1792,8 +1790,6 @@ void BET_p2p_clientloop(void * _ptr)
         flag=0;
 		printf("\n%s:%d:Player joining the table failed",__FUNCTION__,__LINE__);
 	}
-	printf("\n%s:%d",__FUNCTION__,__LINE__);
-	LN_get_channel_status(NULL);
     while ( flag )
     {
         
