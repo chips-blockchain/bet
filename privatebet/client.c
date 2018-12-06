@@ -1678,6 +1678,10 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		        printf("error creating an LN thread");
 		        exit(-1);
 		 }
+		 if(pthread_join(ln_t,NULL))
+		{
+			printf("\nError in joining the main thread");
+		}
 		if((1==2)&&(LN_get_channel_status(strtok(uri, "@")) == 3))
 		{
 			argc=5;
