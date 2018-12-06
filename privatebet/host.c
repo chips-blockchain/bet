@@ -573,6 +573,8 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
 	int argc,maxsize=10000;
 	char **argv=NULL,*buf=NULL;
 
+	printf("\n%s:%d",__FUNCTION__,__LINE__);
+	LN_get_channel_status(NULL);
 	
     bet->numplayers=++players_joined;
 	dcv_info.peerpubkeys[players_joined-1]=jbits256(argjson,"pubkey");
@@ -981,7 +983,6 @@ void BET_p2p_hostloop(void *_ptr)
 		permis_d[i]=dcv_info.permis[i];
 	
 	}
-	
     while ( bet->pullsock >= 0 && bet->pubsock >= 0 )
     {
         if ( (recvlen= nn_recv(bet->pullsock,&ptr,NN_MSG,0)) > 0 )

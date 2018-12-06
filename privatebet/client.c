@@ -1552,19 +1552,28 @@ int32_t BET_p2p_client_init(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 int32_t LN_get_channel_status(char *id)
 {
-	  sqlite3 *db;
-	  sqlite3_stmt *stmt = NULL;	
-	  char *err_msg = 0,*sql=NULL;
-      int rc;
-	  	
-     rc = sqlite3_open(LN_db, &db);
+	 sqlite3 *db;
+	 sqlite3_stmt *stmt = NULL;	
+	 char *err_msg = 0,*sql=NULL;
+     int rc;
 
-       if( rc ) {
+
+	printf("\ndb name:%s\n",LN_db);	 
+	printf("\n%s:%d",__FUNCTION__,__LINE__);	
+
+	rc = sqlite3_open_v2("../../.chipsln/lightningd.sqlite3", &db, SQLITE_OPEN_READONLY, NULL);
+	printf("\nrc=%d\n",rc);
+
+	 if(rc!=0) 
+	 {
            fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
            return(0);
-      } else {
-              fprintf(stderr, "Opened database successfully\n");
+     } 
+	 else 
+	 {
+             fprintf(stderr, "Opened database successfully\n");
      }
+#if 0
 	 sql="select * from peers where lower(hex(node_id))=?";
 	 if (rc != SQLITE_OK) {
 	    printf("Failed to prepare statement: %s\n\r", sqlite3_errstr(rc));
@@ -1590,7 +1599,8 @@ int32_t LN_get_channel_status(char *id)
 	 if (rc == SQLITE_ROW) {
         printf("Peer ID:%s\n", sqlite3_column_text(stmt, 0));
     }
-
+	#endif
+	sqlite3_close(db);
 	return 1;    
 
 }
@@ -1605,15 +1615,15 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		bet->myplayerid=jint(argjson,"peerid");
 		uri=jstr(argjson,"uri");
 		
-		argc=5;
-		argv=(char**)malloc(argc*sizeof(char*));
-		buf=malloc(maxsize);
-		for(int i=0;i<argc;i++)
+		if((LN_get_channel_status(strtok(uri, "@")) == 3))
 		{
-			argv[i]=(char*)malloc(100*sizeof(char));		
-		}
-		if(LN_get_channel_status(strtok(uri, "@")) == 3)
-		{
+			argc=5;
+	                argv=(char**)malloc(argc*sizeof(char*));
+	                buf=malloc(maxsize);
+	                for(int i=0;i<argc;i++)
+	                {
+		             argv[i]=(char*)malloc(100*sizeof(char));
+		        }
 			argc=3;
 			strcpy(argv[0],"./bet");
 			strcpy(argv[1],"connect");
@@ -1646,7 +1656,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		}
 		
 	}
-	
+	retval=1;
 	return retval;
 }
 
@@ -1706,7 +1716,8 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 	
     static uint8_t *decoded; static int32_t decodedlen,retval=1;
     char *method; int32_t senderid; bits256 *MofN;
-    
+    	printf("\n%s:%d",__FUNCTION__,__LINE__);
+	LN_get_channel_status(NULL);
     if ( (method= jstr(argjson,"method")) != 0 )
     {
 	      
@@ -1781,6 +1792,8 @@ void BET_p2p_clientloop(void * _ptr)
         flag=0;
 		printf("\n%s:%d:Player joining the table failed",__FUNCTION__,__LINE__);
 	}
+	printf("\n%s:%d",__FUNCTION__,__LINE__);
+	LN_get_channel_status(NULL);
     while ( flag )
     {
         
