@@ -1555,16 +1555,23 @@ int32_t LN_get_channel_status(char *id)
 	 sqlite3 *db;
 	 sqlite3_stmt *stmt = NULL;	
 	 char *err_msg = 0,*sql=NULL;
-     	 int rc;
+     int rc;
+
+
 	printf("\ndb name:%s\n",LN_db);	 
 	printf("\n%s:%d",__FUNCTION__,__LINE__);	
-    	 rc = sqlite3_open_v2("../../.chipsln/lightningd.sqlite3", &db, SQLITE_OPEN_READONLY, NULL);
+
+	rc = sqlite3_open_v2("../../.chipsln/lightningd.sqlite3", &db, SQLITE_OPEN_READONLY, NULL);
 	printf("\nrc=%d\n",rc);
-       if( rc ) {
+
+	 if(rc!=0) 
+	 {
            fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
            return(0);
-      } else {
-              fprintf(stderr, "Opened database successfully\n");
+     } 
+	 else 
+	 {
+             fprintf(stderr, "Opened database successfully\n");
      }
 #if 0
 	 sql="select * from peers where lower(hex(node_id))=?";
@@ -1709,7 +1716,8 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 	
     static uint8_t *decoded; static int32_t decodedlen,retval=1;
     char *method; int32_t senderid; bits256 *MofN;
-    
+    	printf("\n%s:%d",__FUNCTION__,__LINE__);
+	LN_get_channel_status(NULL);
     if ( (method= jstr(argjson,"method")) != 0 )
     {
 	      
@@ -1784,6 +1792,8 @@ void BET_p2p_clientloop(void * _ptr)
         flag=0;
 		printf("\n%s:%d:Player joining the table failed",__FUNCTION__,__LINE__);
 	}
+	printf("\n%s:%d",__FUNCTION__,__LINE__);
+	LN_get_channel_status(NULL);
     while ( flag )
     {
         
