@@ -1608,7 +1608,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		bet->myplayerid=jint(argjson,"peerid");
 		uri=jstr(argjson,"uri");
 		
-		if((LN_get_channel_status(strtok(uri, "@")) == 3) &&(1==2))
+		if((LN_get_channel_status(strtok(uri, "@")) == 3))
 		{
 			argc=5;
 	                argv=(char**)malloc(argc*sizeof(char*));
@@ -1649,7 +1649,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		}
 		
 	}
-	
+	retval=1;
 	return retval;
 }
 
