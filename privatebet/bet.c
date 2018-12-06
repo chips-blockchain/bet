@@ -330,6 +330,7 @@ int main(int argc, char **argv)
 	struct privatebet_info *BET_dcv,*BET_bvv,*BET_player;
 	pthread_t dcv_t,bvv_t,player_t;
 	strcpy(hostip,argv[2]);
+	LN_get_channel_status(NULL);
 	#if 1	
     OS_init();
 	libgfshare_init();
