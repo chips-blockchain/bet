@@ -578,7 +578,7 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
     bet->numplayers=++players_joined;
 	dcv_info.peerpubkeys[players_joined-1]=jbits256(argjson,"pubkey");
 	strcpy(dcv_info.uri[players_joined-1],jstr(argjson,"uri"));
-
+	
 	argv=(char**)malloc(4*sizeof(char*));
 	buf=malloc(maxsize);
 	argc=2;
@@ -761,7 +761,7 @@ void BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 void BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int32_t playerid,max=-1;
-	cJSON *gameInfo=NULL,*invoicesInfo=NULL,*invoiceInfo=NULL,*invoice=NULL;
+	cJSON *gameInfo=NULL,*invoicesInfo=NULL,*invoiceInfo=NULL,*invoice=NULL,*winnerInfo=NULL;
 	char *label=NULL;
 	int32_t argc;
 	int32_t maxsize = 1000000;
@@ -810,7 +810,26 @@ void BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebe
 		cJSON_AddStringToObject(gameInfo,"method","result");
 		cJSON_AddNumberToObject(gameInfo,"playerid",playerid);
 		cJSON_AddNumberToObject(gameInfo,"cardid",max);
-		
+		/*
+		argc=5;
+		argv=(char**)malloc(sizeof(char*)*argc);
+		for(int32_t i=0;i<argc;i++)
+			argv[i]=(char*)malloc(100*sizeof(char));
+
+		memset(buf,0,sizeof(buf));
+		strcpy(argv[0],".\bet");
+		strcpy(argv[1],"fundchannel");
+		strcpy(argv[2],dcv_info.peerpubkeys[playerid]);
+		strcpy(argv[3],"1000000");
+		argv[4]=NULL;
+		argc=4;
+		ln_bet(argc,argv,buf);
+		*/
+		winnerInfo=cJSON_CreateObject();
+		cJSON_AddStringToObject(winnerInfo,"method","winner");
+		cJSON_AddNumberToObject(winnerInfo,"playerid",playerid);
+		cJSON_AddNumberToObject(winnerInfo,"cardid",max);
+		cJSON_AddNumberToObject(winnerInfo,"winning_amount",dcv_info.betamount);
 		
 		printf("\nThe winner of the game is player :%d, it got the card:%d",playerid,max);
 		printf("\n%s:%d",__FUNCTION__,__LINE__);
@@ -889,6 +908,35 @@ void BET_establish_ln_channels(struct privatebet_info *bet)
 		printf("\n%s:%d:Conncet Response:%s",__FUNCTION__,__LINE__,buf);
 	}
 }
+
+void BET_award_winner(cJSON *invoiceInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	int argc,maxsize=1000;
+	char **argv=NULL,*buf=NULL;
+	cJSON *payResponse=NULL;
+	buf=(char*)malloc(maxsize*sizeof(char));
+	argc=4;
+	argv=(char**)malloc(argc*sizeof(char*));
+	for(int i=0;i<argc;i++)
+	{
+		argv[i]=(char*)malloc(100*sizeof(char));
+	}
+	argv[3]=NULL;
+	argc=3;
+	strcpy(argv[0],"./bet");
+	strcpy(argv[1],"pay");
+	sprintf(argv[2],"%s",jstr(invoiceInfo,"bolt11"));
+	argv[3]=NULL;
+	ln_bet(argc,argv,buf);
+	payResponse=cJSON_CreateObject();
+	payResponse=cJSON_Parse(buf);
+	printf("\n%s:%d: Payment Status:%s",__FUNCTION__,__LINE__,jstr(payResponse,"status"));
+
+	if(strcmp(jstr(payResponse,"status"),"complete")==0)
+			printf("\nPayment Success");
+}
+
+
 int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
     char *method; int32_t bytes,retval=1;
@@ -952,6 +1000,11 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		else if(strcmp(method,"pay") == 0)
 		{
 			BET_settle_game(argjson,bet,vars);
+		}
+		else if(strcmp(method,"claim") == 0)
+		{
+
+			BET_award_winner(argjson,bet,vars);
 		}
 		else
     	{
