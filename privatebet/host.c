@@ -895,11 +895,11 @@ void BET_establish_ln_channels(struct privatebet_info *bet)
 	}
 }
 
-void BET_award_winner(cJSON *invoiceInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
+void BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int argc,maxsize=100000;
-	char **argv=NULL,*buf=NULL,hexstr[65];
-	cJSON *payResponse=NULL;
+	char **argv=NULL,*buf=NULL,hexstr[65],channel_id[100],*invoice=NULL;
+	cJSON *payResponse=NULL,*invoiceInfo=NULL;
 
 	buf=(char*)malloc(maxsize*sizeof(char));
 
@@ -908,18 +908,21 @@ void BET_award_winner(cJSON *invoiceInfo,struct privatebet_info *bet,struct priv
 	argv=(char**)malloc(sizeof(char*)*argc);
 	for(int32_t i=0;i<argc;i++)
 		argv[i]=(char*)malloc(100*sizeof(char));
-	
-	strcpy(argv[0],".\bet");
-	strcpy(argv[1],"fundchannel");
-	strcpy(argv[2],strtok(dcv_info.uri[jint(invoiceInfo,"playerid")], "@"));
-	printf("\nID:%s",argv[2]);
-	strcpy(argv[3],"1000000");
-	argv[4]=NULL;
-	argc=4;
-	ln_bet(argc,argv,buf);
+	strcpy(channel_id,strtok(dcv_info.uri[jint(argjson,"playerid")], "@"));
+	if(LN_get_channel_status(channel_id)!=3)
+	{
+		strcpy(argv[0],".\bet");
+		strcpy(argv[1],"fundchannel");
+		strcpy(argv[2],channel_id);
+		strcpy(argv[3],"1000000");
+		argv[4]=NULL;
+		argc=4;
+		ln_bet(argc,argv,buf);
 
-	printf("\nFund channel response:%s\n",buf);
-
+		printf("\nFund channel response:%s\n",buf);
+	}
+	invoice=jstr(argjson,"invoice");
+	invoiceInfo=cJSON_Parse(invoice);
 	
 	for(int32_t i=0;i<argc;i++)
 		memset(argv[i],0,sizeof(argv[i]));
