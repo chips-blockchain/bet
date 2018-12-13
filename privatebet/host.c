@@ -916,7 +916,7 @@ void BET_award_winner(cJSON *invoiceInfo,struct privatebet_info *bet,struct priv
 	argc=4;
 	ln_bet(argc,argv,buf);
 
-	printf("\nFund channel response:%s",buf);
+	printf("\nFund channel response:%s\n",buf);
 
 
 	
