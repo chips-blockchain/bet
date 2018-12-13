@@ -1622,7 +1622,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 	{
 		bet->myplayerid=jint(argjson,"peerid");
 		uri=jstr(argjson,"uri");
-		if((LN_get_channel_status(strtok(uri, "@")) != 3)) // 3 means channel is already established with the peer
+		if((LN_get_channel_status(strtok(jstr(argjson,"uri"), "@")) != 3)) // 3 means channel is already established with the peer
 		{
 						
 			argc=5;
@@ -1635,7 +1635,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			argc=3;
 			strcpy(argv[0],"./bet");
 			strcpy(argv[1],"connect");
-			strcpy(argv[2],uri);
+			strcpy(argv[2],jstr(argjson,"uri"));
 			argv[3]=NULL;
 			ln_bet(argc,argv,buf);
 			printf("\n%s:%d:ConnectInfo:%s",__FUNCTION__,__LINE__,buf);
