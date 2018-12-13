@@ -1230,7 +1230,6 @@ int32_t BET_p2p_winner(cJSON *argjson,struct privatebet_info *bet,struct private
 		if(buf)
 		{
 			ln_bet(argc,argv,buf);
-			printf("\n%s",buf);
 			invoiceInfo=cJSON_CreateObject();
 			cJSON_AddStringToObject(invoiceInfo,"method","claim");
 			cJSON_AddNumberToObject(invoiceInfo,"playerid",bet->myplayerid);

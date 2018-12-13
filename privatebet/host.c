@@ -900,6 +900,7 @@ void BET_award_winner(cJSON *invoiceInfo,struct privatebet_info *bet,struct priv
 	int argc,maxsize=1000;
 	char **argv=NULL,*buf=NULL,hexstr[65];
 	cJSON *payResponse=NULL;
+
 	buf=(char*)malloc(maxsize*sizeof(char));
 
 	
@@ -918,15 +919,10 @@ void BET_award_winner(cJSON *invoiceInfo,struct privatebet_info *bet,struct priv
 
 	printf("\nFund channel response:%s\n",buf);
 
-
 	
-	argc=4;
-	argv=(char**)malloc(argc*sizeof(char*));
-	for(int i=0;i<argc;i++)
-	{
-		argv[i]=(char*)malloc(100*sizeof(char));
-	}
-	argv[3]=NULL;
+	for(int32_t i=0;i<argc;i++)
+		memset(argv[i],0,sizeof(argv[i]));
+	
 	argc=3;
 	strcpy(argv[0],"./bet");
 	strcpy(argv[1],"pay");
