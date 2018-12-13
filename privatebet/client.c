@@ -12,6 +12,9 @@
  * Removal or modification of this copyright notice is prohibited.            *
  *                                                                            *
  ******************************************************************************/
+#include <sqlite3.h>
+#include <stdlib.h>
+
 #include "../includes/cJSON.h"
 #include "../includes/ppapi/c/pp_stdint.h"
 #include "common.h"
@@ -40,7 +43,7 @@ struct deck_bvv_info bvv_info;
 int32_t no_of_shares=0;
 //uint8_t sharenrs[256];
 
-
+char *LN_db="../../.chipsln/lightningd1.sqlite3";
 
 
 
@@ -1547,64 +1550,92 @@ int32_t BET_p2p_client_init(cJSON *argjson,struct privatebet_info *bet,struct pr
 	return retval;
 }
 
+int32_t LN_get_channel_status(char *id)
+{
+	int argc,maxsize=10000;
+	char **argv=NULL,*buf=NULL;
+	cJSON *channelStateInfo=NULL;
+	argc=4;
+    argv=(char**)malloc(argc*sizeof(char*));
+    buf=malloc(maxsize);
+    for(int i=0;i<argc;i++)
+    {
+     argv[i]=(char*)malloc(100*sizeof(char));
+    }
+	strcpy(argv[0],"./bet");
+	strcpy(argv[1],"peer-channel-state");
+	strcpy(argv[2],id);
+	argv[3]=NULL;
+	argc=3;
+	ln_bet(argc,argv,buf);
+	channelStateInfo=cJSON_CreateObject();
+	channelStateInfo=cJSON_Parse(buf);
+	return jint(channelStateInfo,"channel-state");
+}
 int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	char *channelid=NULL;
+	char *uri=NULL;
+	int argc,maxsize=10000,retval=-1;
+	char **argv=NULL,*buf=NULL;
+	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
+	pthread_t ln_t;
 	if(0 == bits256_cmp(player_info.player_key.prod,jbits256(argjson,"pubkey")))
 	{
 		bet->myplayerid=jint(argjson,"peerid");
-		channelid=jstr(argjson,"id");
-		
-		int argc,maxsize=10000;
-		char **argv=NULL,*buf=NULL;
-		argc=5;
-		argv=(char**)malloc(argc*sizeof(char*));
-		buf=malloc(maxsize);
-		for(int i=0;i<argc;i++)
+		uri=jstr(argjson,"uri");
+		if((LN_get_channel_status(strtok(uri, "@")) != 3)) // 3 means channel is already established with the peer
 		{
-			argv[i]=(char*)malloc(100*sizeof(char));		
-		}
-		
-		argc=3;
-		strcpy(argv[0],"./bet");
-		strcpy(argv[1],"connect");
-		strcpy(argv[2],channelid);
-		argv[3]=NULL;
-		ln_bet(argc,argv,buf);
-		
-		printf("\n The response id :%s",buf);
-		argc=5;
+						
+			argc=5;
+            argv=(char**)malloc(argc*sizeof(char*));
+            buf=malloc(maxsize);
+            for(int i=0;i<argc;i++)
+            {
+             argv[i]=(char*)malloc(100*sizeof(char));
+	        }
+			argc=3;
+			strcpy(argv[0],"./bet");
+			strcpy(argv[1],"connect");
+			strcpy(argv[2],uri);
+			argv[3]=NULL;
+			ln_bet(argc,argv,buf);
+			printf("\n%s:%d:ConnectInfo:%s",__FUNCTION__,__LINE__,buf);
+			connectInfo=cJSON_Parse(buf);
+			cJSON_Print(connectInfo);
 
-		argv=(char**)malloc(argc*sizeof(char*));
-		buf=malloc(maxsize);
-		for(int i=0;i<argc;i++)
-		{
-		        argv[i]=(char*)malloc(100*sizeof(char));
+			argc=5;
+			argv=(char**)malloc(argc*sizeof(char*));
+			buf=malloc(maxsize);
+			for(int i=0;i<argc;i++)
+			{
+			        argv[i]=(char*)malloc(100*sizeof(char));
+			}
+			argc=4;
+			strcpy(argv[0],"./bet");
+			strcpy(argv[1],"fundchannel");
+			strcpy(argv[2],jstr(connectInfo,"id"));
+			printf("\n id:%s",argv[2]);
+			strcpy(argv[3],"1000000");
+			argv[4]=NULL;
+			ln_bet(argc,argv,buf);
+			printf("\n%s:%d:FundChannelInfo:%s",__FUNCTION__,__LINE__,buf);
+			fundChannelInfo=cJSON_Parse(buf);
+			cJSON_Print(fundChannelInfo);
+			retval=1;
+			
 		}
-		argc=4;
-		strcpy(argv[0],"./bet");
-		strcpy(argv[1],"fundchannel");
-		strcpy(argv[2],channelid);
-		strcpy(argv[3],"1000000");
-		argv[4]=NULL;
-		ln_bet(argc,argv,buf);
-	
-		printf("\n The response buffer:%s",buf);
 		
-		printf("\n%s:%d\n",__FUNCTION__,__LINE__);
-		return 1;
 	}
-	
-	return -1;
+	return retval;
 }
 
 int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	bits256 playerprivs[CARDS777_MAXCARDS],playercards[CARDS777_MAXCARDS];
 	int32_t permis[CARDS777_MAXCARDS],bytes,retval=-1;
-	cJSON *joininfo=NULL,*channelInfo=NULL;
+	cJSON *joininfo=NULL,*channelInfo=NULL,*addresses=NULL,*address=NULL;
 	struct pair256 key;
-	char *rendered=NULL,*channelid=NULL;
+	char *rendered=NULL,*uri=NULL;
 	char hexstr [ 65 ];
     if(bet->pushsock>=0)
 	{
@@ -1629,8 +1660,13 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 		channelInfo=cJSON_Parse(buf);
 		cJSON_Print(channelInfo);
-		channelid=jstr(channelInfo,"id");
-		cJSON_AddStringToObject(joininfo,"id",channelid);
+		uri=(char*)malloc(sizeof(char)*100);
+		strcpy(uri,jstr(channelInfo,"id"));
+		strcat(uri,"@");
+		addresses=cJSON_GetObjectItem(channelInfo,"address");
+		address=cJSON_GetArrayItem(addresses,0);
+		strcat(uri,jstr(address,"address"));
+		cJSON_AddStringToObject(joininfo,"uri",uri);
 
 		rendered=cJSON_Print(joininfo);
         bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
@@ -1649,15 +1685,15 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 	
     static uint8_t *decoded; static int32_t decodedlen,retval=1;
     char *method; int32_t senderid; bits256 *MofN;
-    
+
     if ( (method= jstr(argjson,"method")) != 0 )
     {
 	      
-	        printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-        	if ( strcmp(method,"join") == 0 )
-    		{
-    			BET_p2p_client_join(argjson,bet,vars);
-    		}
+        printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+    	if ( strcmp(method,"join") == 0 )
+		{
+			BET_p2p_client_join(argjson,bet,vars);
+		}
 		else if ( strcmp(method,"join_res") == 0 )
 		{
 			retval=BET_p2p_client_join_res(argjson,bet,vars);
