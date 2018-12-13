@@ -1238,7 +1238,7 @@ int32_t BET_p2p_winner(cJSON *argjson,struct privatebet_info *bet,struct private
 			cJSON_AddStringToObject(invoiceInfo,"invoice",buf);
 
 			rendered=cJSON_Print(invoiceInfo);
-			bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+			bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 			printf("\n%s\n",rendered);
 			if(bytes < 0)
 					return -1;
