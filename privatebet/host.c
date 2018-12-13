@@ -761,11 +761,11 @@ void BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 void BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int32_t playerid,max=-1;
-	cJSON *gameInfo=NULL,*invoicesInfo=NULL,*invoiceInfo=NULL,*invoice=NULL,*winnerInfo=NULL;
+	cJSON *invoicesInfo=NULL,*invoiceInfo=NULL,*invoice=NULL,*winnerInfo=NULL;
 	char *label=NULL;
-	int32_t argc;
+	int32_t argc,bytes;
 	int32_t maxsize = 1000000;
-	char **argv=NULL,*buf=NULL;
+	char **argv=NULL,*buf=NULL,*rendered=NULL;
 	argc=3;
 	argv=(char**)malloc(sizeof(char*)*argc);
 	for(int32_t i=0;i<=argc;i++)
@@ -806,18 +806,19 @@ void BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebe
 				playerid=i;
 			}
 		}
-		gameInfo=cJSON_CreateObject();
-		cJSON_AddStringToObject(gameInfo,"method","result");
-		cJSON_AddNumberToObject(gameInfo,"playerid",playerid);
-		cJSON_AddNumberToObject(gameInfo,"cardid",max);
 		winnerInfo=cJSON_CreateObject();
 		cJSON_AddStringToObject(winnerInfo,"method","winner");
 		cJSON_AddNumberToObject(winnerInfo,"playerid",playerid);
 		cJSON_AddNumberToObject(winnerInfo,"cardid",max);
 		cJSON_AddNumberToObject(winnerInfo,"winning_amount",dcv_info.betamount);
+		rendered=cJSON_Print(winnerInfo);
+		bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+		if(bytes < 0)
+			printf("\n%s:%d::Error",__FUNCTION__,__LINE__);
+
 		
-		printf("\nThe winner of the game is player :%d, it got the card:%d",playerid,max);
-		printf("\n%s:%d",__FUNCTION__,__LINE__);
+		printf("\nThe winner of the game is player :%d, it got the card:%d\n",playerid,max);
+		
 	}	
 		
 }
