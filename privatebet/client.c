@@ -1550,63 +1550,6 @@ int32_t BET_p2p_client_init(cJSON *argjson,struct privatebet_info *bet,struct pr
 	return retval;
 }
 
-
-int32_t LN_get_channel_status_temp(void *ptr)
-{
-	 sqlite3 *db;
-	 sqlite3_stmt *stmt = NULL;	
-	 char *err_msg = 0,*sql=NULL;
-     int rc;
-	 char *id;	
-
-	printf("\ndb name:%s\n",LN_db);	 
-	printf("\n%s:%d",__FUNCTION__,__LINE__);	
-
-	rc = sqlite3_open_v2("../../.chipsln/lightningd.sqlite3", &db, SQLITE_OPEN_READONLY, NULL);
-	printf("\nrc=%d\n",rc);
-
-	 if(rc!=0) 
-	 {
-           fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
-           return(0);
-     } 
-	 else 
-	 {
-             fprintf(stderr, "Opened database successfully\n");
-     }
-#if 0
-	 sql="select * from peers where lower(hex(node_id))=?";
-	 if (rc != SQLITE_OK) {
-	    printf("Failed to prepare statement: %s\n\r", sqlite3_errstr(rc));
-    	sqlite3_close(db);
-    	return 0;
-	}	 
-	else {
-    	printf("SQL statement prepared: OK\n\n\r");
-	}
-
-	
-	rc = sqlite3_bind_int(stmt, 1, id);
-	if (rc != SQLITE_OK) {
-		printf("Failed to bind parameter: %s\n\r", sqlite3_errstr(rc));
-		sqlite3_close(db);
-		return 1;
-	} 
-	else {
-		printf("SQL bind integer param: OK\n\n\r");
-	}
-
-	rc = sqlite3_step(stmt);
-	 if (rc == SQLITE_ROW) {
-        printf("Peer ID:%s\n", sqlite3_column_text(stmt, 0));
-    }
-	#endif
-	sqlite3_close(db);
-	return 1;    
-
-}
-
-
 int32_t LN_get_channel_status(char *id)
 {
 	int argc,maxsize=10000;
@@ -1640,20 +1583,9 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 	{
 		bet->myplayerid=jint(argjson,"peerid");
 		uri=jstr(argjson,"uri");
-
-		 if ( OS_thread_create(&ln_t,NULL,(void *)LN_get_channel_status_temp,(void *)ln_t) != 0 )
-		 {
-		        printf("error creating an LN thread");
-		        exit(-1);
-		 }
-		 if(pthread_join(ln_t,NULL))
+		if((LN_get_channel_status(strtok(uri, "@")) != 3)) // 3 means channel is already established with the peer
 		{
-			printf("\nError in joining the main thread");
-		}
-		if((LN_get_channel_status(strtok(uri, "@")) == 3))
-		{
-			printf("\n %s:%d\n",__FUNCTION__,__LINE__);
-			#if 0		
+						
 			argc=5;
             argv=(char**)malloc(argc*sizeof(char*));
             buf=malloc(maxsize);
@@ -1690,7 +1622,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			fundChannelInfo=cJSON_Parse(buf);
 			cJSON_Print(fundChannelInfo);
 			retval=1;
-			#endif
+			
 		}
 		
 	}
