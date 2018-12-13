@@ -1206,6 +1206,44 @@ int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 	}
 }
 
+int32_t BET_p2p_winner(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	int argc,bytes,maxsize=10000;
+	char **argv,*buf,hexstr [65],*rendered=NULL;
+	cJSON *invoiceInfo=NULL;
+	if(jint(argjson,"playerid")==bet->myplayerid)
+	{
+		argv =(char**)malloc(6*sizeof(char*));
+		buf=(char*)malloc(maxsize*sizeof(char));
+		for(int i=0;i<5;i++)
+		{
+				argv[i]=(char*)malloc(sizeof(char)*1000);
+		}
+		
+		strcpy(argv[0],"./bet");
+		strcpy(argv[1],"invoice");
+		sprintf(argv[2],"%d",jint(argjson,"winning_amount"));
+		sprintf(argv[3],"%s_%d",bits256_str(hexstr,player_info.deckid),jint(argjson,"winning_amount"));
+		sprintf(argv[4],"Winning claim");
+		argv[5]=NULL;
+		argc=5;
+		if(buf)
+		{
+			ln_bet(argc,argv,buf);
+			printf("\n%s",buf);
+			invoiceInfo=cJSON_CreateObject();
+			cJSON_AddStringToObject(invoiceInfo,"method","claim");
+			cJSON_AddStringToObject(invoiceInfo,"label",argv[3]);
+			cJSON_AddStringToObject(invoiceInfo,"invoice",buf);
+
+			rendered=cJSON_Print(invoiceInfo);
+			bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+			if(bytes < 0)
+					return -1;
+		}
+	}
+	return 1;
+}
 
 int32_t BET_p2p_bet_round(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
@@ -1736,6 +1774,10 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		else if(strcmp(method,"invoice") == 0)
 		{
 			retval=BET_p2p_invoice(argjson,bet,vars);
+		}
+		else if(strcmp(method,"winner") == 0)
+		{
+			retval=BET_p2p_winner(argjson,bet,vars);
 		}
     	else
     	{ 
