@@ -897,7 +897,7 @@ void BET_establish_ln_channels(struct privatebet_info *bet)
 
 void BET_award_winner(cJSON *invoiceInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int argc,maxsize=1000;
+	int argc,maxsize=100000;
 	char **argv=NULL,*buf=NULL,hexstr[65];
 	cJSON *payResponse=NULL;
 
@@ -911,7 +911,8 @@ void BET_award_winner(cJSON *invoiceInfo,struct privatebet_info *bet,struct priv
 	
 	strcpy(argv[0],".\bet");
 	strcpy(argv[1],"fundchannel");
-	strcpy(argv[2],bits256_str(hexstr,dcv_info.peerpubkeys[jint(invoiceInfo,"playerid")]));
+	strcpy(argv[2],strtok(dcv_info.uri[jint(invoiceInfo,"playerid")], "@"));
+	printf("\nID:%s",argv[2]);
 	strcpy(argv[3],"1000000");
 	argv[4]=NULL;
 	argc=4;
