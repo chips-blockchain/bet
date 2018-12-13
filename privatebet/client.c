@@ -1654,7 +1654,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			strcpy(argv[1],"fundchannel");
 			strcpy(argv[2],jstr(connectInfo,"id"));
 			printf("\n id:%s",argv[2]);
-			strcpy(argv[3],"1000000");
+			strcpy(argv[3],"500000");
 			argv[4]=NULL;
 			ln_bet(argc,argv,buf);
 			printf("\n%s:%d:FundChannelInfo:%s",__FUNCTION__,__LINE__,buf);

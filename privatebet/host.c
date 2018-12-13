@@ -914,7 +914,7 @@ void BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct privateb
 		strcpy(argv[0],".\bet");
 		strcpy(argv[1],"fundchannel");
 		strcpy(argv[2],channel_id);
-		strcpy(argv[3],"1000000");
+		strcpy(argv[3],"500000");
 		argv[4]=NULL;
 		argc=4;
 		ln_bet(argc,argv,buf);
