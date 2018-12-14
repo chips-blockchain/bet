@@ -907,7 +907,7 @@ void BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct privateb
 	argc=5;
 	argv=(char**)malloc(sizeof(char*)*argc);
 	for(int32_t i=0;i<argc;i++)
-		argv[i]=(char*)malloc(100*sizeof(char));
+		argv[i]=(char*)malloc(1000*sizeof(char));
 	strcpy(channel_id,strtok(dcv_info.uri[jint(argjson,"playerid")], "@"));
 	if(LN_get_channel_status(channel_id)!=3)
 	{
