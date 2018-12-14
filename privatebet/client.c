@@ -1613,7 +1613,7 @@ int32_t LN_get_channel_status(char *id)
 }
 int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	char *uri=NULL;
+	char uri[100];
 	int argc,maxsize=10000,retval=-1;
 	char **argv=NULL,*buf=NULL;
 	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
@@ -1621,7 +1621,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 	if(0 == bits256_cmp(player_info.player_key.prod,jbits256(argjson,"pubkey")))
 	{
 		bet->myplayerid=jint(argjson,"peerid");
-		uri=jstr(argjson,"uri");
+		strcpy(uri,jstr(argjson,"uri"));
 		if((LN_get_channel_status(strtok(jstr(argjson,"uri"), "@")) != 3)) // 3 means channel is already established with the peer
 		{
 						
@@ -1635,7 +1635,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			argc=3;
 			strcpy(argv[0],"./bet");
 			strcpy(argv[1],"connect");
-			strcpy(argv[2],jstr(argjson,"uri"));
+			strcpy(argv[2],uri);
 			argv[3]=NULL;
 			ln_bet(argc,argv,buf);
 			printf("\n%s:%d:ConnectInfo:%s",__FUNCTION__,__LINE__,buf);
