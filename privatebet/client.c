@@ -1663,8 +1663,17 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			int state;
 			while((state=LN_get_channel_status(jstr(connectInfo,"id"))) != 3)
 			{
+				if(state == 2)
+				 {
+				          printf("\nCHANNELD_AWAITING_LOCKIN");
+				  }
+				  else if(state == 8)
+				  {
+				           printf("\nONCHAIN");
+				  }
+				   else
+				           printf("\n%s:%d:channel-state:%d\n",__FUNCTION__,__LINE__,state);
 				sleep(10);
-				printf("\n%s:%d:channel-state:%d\n",__FUNCTION__,__LINE__);
 			}
 			
 		}
