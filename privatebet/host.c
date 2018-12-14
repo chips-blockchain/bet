@@ -920,6 +920,21 @@ void BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct privateb
 		ln_bet(argc,argv,buf);
 
 		printf("\nFund channel response:%s\n",buf);
+		int state;
+		while((state=LN_get_channel_status(channel_id)) != 3)
+		 {
+			 if(state == 2)
+			 {
+				 printf("\nCHANNELD_AWAITING_LOCKIN");
+			 }
+			 else if(state == 8)
+			 {
+				 printf("\nONCHAIN");
+			 }
+			 else
+				 printf("\n%s:%d:channel-state:%d\n",__FUNCTION__,__LINE__,state);
+			 sleep(10);
+		  }
 	}
 	invoice=jstr(argjson,"invoice");
 	invoiceInfo=cJSON_Parse(invoice);
