@@ -1001,7 +1001,7 @@ int32_t BET_p2p_bvv_join_init(cJSON *argjson,struct privatebet_info *bet,struct 
 	int argc,bytes,retval,maxsize=10000;
 	char **argv,*buf,*uri,*rendered;
 	argc=3;
-	argc=(char**)malloc(argc*sizeof(char*));
+	argv=(char**)malloc(argc*sizeof(char*));
 	for(int i=0;i<argc;i++)
 		argv[i]=(char*)malloc(100*sizeof(char));
 	
@@ -1082,7 +1082,7 @@ void BET_p2p_bvvloop(void *_ptr)
 	cJSON_AddStringToObject(bvvJoinInfo,"method","bvv_join");
 	if ( BET_p2p_bvvcommand(bvvJoinInfo,bet,VARS) < 0 )
 	{
-        printf("\n%s:%d:Player joining the table failed",__FUNCTION__,__LINE__);
+        printf("\n%s:%d:BVV joining the table failed",__FUNCTION__,__LINE__);
 	}
 
 
