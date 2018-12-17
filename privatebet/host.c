@@ -650,14 +650,15 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
 	
 	argv=(char**)malloc(4*sizeof(char*));
 	buf=malloc(maxsize);
-	argc=2;
+	argc=3;
 	for(int i=0;i<argc;i++)
-	{
 		argv[i]=(char*)malloc(100*sizeof(char));		
-	}
+	
 	strcpy(argv[0],"./bet");
 	strcpy(argv[1],"getinfo");
-	ln_bet(argc,argv,buf);
+	argv[2]=NULL;
+	
+	ln_bet(argc-1,argv,buf);
 	getInfo=cJSON_Parse(buf);
 	uri=(char*)malloc(100*sizeof(char));
 	
@@ -676,20 +677,9 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
 	jaddbits256(playerinfo,"pubkey",jbits256(argjson,"pubkey"));
 	cJSON_AddStringToObject(playerinfo,"uri",uri);
 	
-	if(buf)
-		free(buf);
-	for(int i=0;i<argc;i++)
-	{
-		if(argv[i])
-			free(argv[i]);
-	}
-	if(argv)
-		free(argv);	
-	
 
 	rendered=cJSON_Print(playerinfo);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
-	
 
 	if(bytes<0)
 		return 0;
