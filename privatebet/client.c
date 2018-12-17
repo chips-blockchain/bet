@@ -995,6 +995,51 @@ int32_t BET_p2p_bvv_init(cJSON *argjson,struct privatebet_info *bet,struct priva
 	return retval;
 }
 
+int32_t BET_p2p_bvv_join_init(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	cJSON *channelInfo,*addresses,*address,*bvvResponseInfo=NULL;
+	int argc,bytes,retval,maxsize=10000;
+	char **argv,*buf,*uri,*rendered;
+	argc=3;
+	argc=(char**)malloc(argc*sizeof(char*));
+	for(int i=0;i<argc;i++)
+		argv[i]=(char*)malloc(100*sizeof(char));
+	
+	buf=(char*)malloc(maxsize*sizeof(char));
+
+	strcpy(argv[0],"./bet");
+	strcpy(argv[1],"getinfo");
+	argv[2]=NULL;
+
+	ln_bet(argc-1,argv,buf);
+	printf("\n%s:%d:buf:%s",__FUNCTION__,__LINE__,buf);
+
+	channelInfo=cJSON_Parse(buf);
+	cJSON_Print(channelInfo);
+	uri=(char*)malloc(sizeof(char)*100);
+	strcpy(uri,jstr(channelInfo,"id"));
+	strcat(uri,"@");
+	addresses=cJSON_GetObjectItem(channelInfo,"address");
+	address=cJSON_GetArrayItem(addresses,0);
+	strcat(uri,jstr(address,"address"));
+
+	bvvResponseInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(bvvResponseInfo,"method","bvv_join");
+	cJSON_AddStringToObject(bvvResponseInfo,"uri",uri);
+
+	rendered=cJSON_Print(bvvResponseInfo);
+    bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+
+	printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,rendered);
+	
+    if(bytes>0)
+        retval=1;
+	else
+		retval=-1;
+
+	return retval;
+	
+}
 
 int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
@@ -1008,6 +1053,10 @@ int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct pri
 		{
 			 BET_p2p_bvv_init(argjson,bet,vars);
 		}
+		else if(strcmp(method,"bvv_join") == 0)
+		{
+			BET_p2p_bvv_join_init(argjson,bet,vars);
+		}
         else
             retval=-1;
     }
@@ -1020,14 +1069,25 @@ void BET_p2p_bvvloop(void *_ptr)
     uint32_t lasttime = 0; uint8_t r; int32_t nonz,recvlen,sendlen; cJSON *argjson,*timeoutjson; void *ptr; double lastmilli = 0.; struct privatebet_info *bet = _ptr; struct privatebet_vars *VARS;
     VARS = calloc(1,sizeof(*VARS));
 
+	cJSON *bvvJoinInfo=NULL;
+	
 	BET_permutation(bvv_info.permis,bet->range);
-    
-	for(int i=0;i<bet->range;i++)
+    for(int i=0;i<bet->range;i++)
 	{
 		permis_b[i]=bvv_info.permis[i];
 	
 	}
+	
+	bvvJoinInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(bvvJoinInfo,"method","bvv_join");
+	if ( BET_p2p_bvvcommand(bvvJoinInfo,bet,VARS) < 0 )
+	{
+        printf("\n%s:%d:Player joining the table failed",__FUNCTION__,__LINE__);
+	}
 
+
+	
+	
 	while ( bet->pushsock>= 0 && bet->subsock>= 0 )
     {
         if ( (recvlen= nn_recv(bet->subsock,&ptr,NN_MSG,0)) > 0 )
