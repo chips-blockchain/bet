@@ -20,7 +20,7 @@ int32_t BET_p2p_highest_card(cJSON *argjson,struct privatebet_info *bet,struct p
 int32_t BET_relay(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
 void BET_broadcast_table_info(struct privatebet_info *bet);
 int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars);
-void BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebet_vars *vars);
+int32_t BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebet_vars *vars);
 int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
 void BET_p2p_hostloop(void *_ptr);
 
