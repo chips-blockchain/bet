@@ -1674,7 +1674,7 @@ int32_t LN_get_channel_status(char *id)
 int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	char uri[100];
-	int argc,maxsize=10000,retval=-1;
+	int argc,maxsize=10000,retval=1;
 	char **argv=NULL,*buf=NULL;
 	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
 	if(0 == bits256_cmp(player_info.player_key.prod,jbits256(argjson,"pubkey")))
@@ -1748,7 +1748,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 				           printf("\n%s:%d:channel-state:%d\n",__FUNCTION__,__LINE__,state);
 				sleep(10);
 			}
-			retval=1;			
+			
 		}
 		
 	}
