@@ -524,12 +524,11 @@ int32_t BET_p2p_host_deck_init_info(cJSON *argjson,struct privatebet_info *bet,s
 
 int32_t BET_p2p_host_init(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-  	int32_t peerid,retval=-1;
+  	int32_t peerid,retval=1;
   	bits256 cardpubvalues[CARDS777_MAXPLAYERS];
 	cJSON *cardinfo=NULL;
 	char str[65];
 
-	
   	peerid=jint(argjson,"peerid");
   	cardinfo=cJSON_GetObjectItem(argjson,"cardinfo");
 	for(int i=0;i<cJSON_GetArraySize(cardinfo);i++)
@@ -537,15 +536,8 @@ int32_t BET_p2p_host_init(cJSON *argjson,struct privatebet_info *bet,struct priv
 			cardpubvalues[i]=jbits256i(cardinfo,i);
 	} 	
 	
-	sg777_deckgen_vendor(peerid,dcv_info.cardprods[peerid],dcv_info.dcvblindcards[peerid],bet->range,cardpubvalues,dcv_info.deckid);
+	retval=sg777_deckgen_vendor(peerid,dcv_info.cardprods[peerid],dcv_info.dcvblindcards[peerid],bet->range,cardpubvalues,dcv_info.deckid);
 	dcv_info.numplayers=dcv_info.numplayers+1;
-	/*
-	printf("\n%s:%d:DCV blinded cards of peerid:%d\n",__FUNCTION__,__LINE__,peerid);
-	for(int i=0;i<bet->range;i++)
-	{
-		printf("\n%s",bits256_str(str,dcv_info.dcvblindcards[peerid][i]));
-	}
- 	*/
 	return retval;
 }
 
@@ -682,9 +674,13 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 
 	if(bytes<0)
-		return 0;
-	else
-		return 1;
+	{
+		retval=-1;
+		printf("\n%s:%d: Failed to send data");
+		goto end;
+	}
+	end:
+		return retval;
  }
 
 int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
@@ -701,13 +697,14 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 	rendered=cJSON_Print(turninfo);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 
-	printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,rendered);
-	printf("\n%s:%d:%s\n",__FUNCTION__,__LINE__,cJSON_Print(cJSON_CreateString(rendered)));
-
-	if(bytes<0)
-		retval=-1;	
-	
-	return retval;
+	if(bytes < 0)
+	{
+		retval=-1;
+		printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
+		goto end;
+	}	
+	end:	
+		return retval;
 }
 
 int32_t BET_p2p_dcv_turn_status(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
@@ -753,11 +750,13 @@ int32_t BET_relay(cJSON *argjson,struct privatebet_info *bet,struct privatebet_v
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 
 	if(bytes<0)
+	{
 		retval=-1;
-	else
-		retval=1;
-	
-	return retval;
+		printf("\n%s :%d Failed to send data",__FUNCTION__,__LINE__);
+		goto end;
+	}
+	end:
+		return retval;
 }
 
 void BET_broadcast_table_info(struct privatebet_info *bet)
@@ -774,46 +773,63 @@ void BET_broadcast_table_info(struct privatebet_info *bet)
 	printf("\nTable Info:%s",cJSON_Print(tableInfo));
 }
 
-void BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+int32_t BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int argc,bytes;
+	int argc,bytes,retval=1;
 	char **argv,*buf=NULL,*rendered;
 	char hexstr [65];
 	int32_t maxsize = 1000000;
-	cJSON *invoiceInfo=NULL;
-	argv =(char**)malloc(6*sizeof(char*));
+	cJSON *invoiceInfo=NULL,*invoice=NULL;
+	argc=6;
+	argv =(char**)malloc(argc*sizeof(char*));
 	buf=(char*)malloc(maxsize*sizeof(char));
 	invoiceID++;
-	for(int i=0;i<5;i++)
+	for(int i=0;i<argc;i++)
 	{
 			argv[i]=(char*)malloc(sizeof(char)*1000);
 	}
 	dcv_info.betamount+=jint(argjson,"betAmount");
+
 	strcpy(argv[0],"./bet");
 	strcpy(argv[1],"invoice");
 	sprintf(argv[2],"%d",jint(argjson,"betAmount"));
-	//sprintf(argv[3],"invoice_%d_%d_%d",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
 	sprintf(argv[3],"%s_%d_%d_%d_%d",bits256_str(hexstr,dcv_info.deckid),invoiceID,jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
 	sprintf(argv[4],"Invoice details playerID:%d,round:%d,betting Amount:%d",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
 	argv[5]=NULL;
 	argc=5;
-	if(buf)
+
+	ln_bet(argc,argv,buf);
+	invoice=cJSON_CreateObject();
+	invoice=cJSON_Parse(buf);
+	if(jint(invoice,"code") == -1)
 	{
-		ln_bet(argc,argv,buf);
-		printf("\n%s",buf);
+		retval=-1;
+		printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(invoice,"message"));
+		goto end;
+	}
+	else
+	{
 		invoiceInfo=cJSON_CreateObject();
 		cJSON_AddStringToObject(invoiceInfo,"method","invoice");
 		cJSON_AddNumberToObject(invoiceInfo,"playerID",jint(argjson,"playerID"));
 		cJSON_AddNumberToObject(invoiceInfo,"round",jint(argjson,"round"));
 		cJSON_AddStringToObject(invoiceInfo,"label",argv[3]);
 		cJSON_AddStringToObject(invoiceInfo,"invoice",buf);
-
+		
 		rendered=cJSON_Print(invoiceInfo);
 		bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
-		if(bytes < 0)
-				printf("\n%s:%d::Error",__FUNCTION__,__LINE__);
 		
+		if(bytes<0)
+		{
+			retval=-1;
+			printf("\n%s :%d Failed to send data",__FUNCTION__,__LINE__);
+			goto end;
+		}
+					
 	}
+	
+	end:
+		return retval;
 }
 
 	
@@ -882,9 +898,9 @@ void BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebe
 		
 }
 
-void BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
+int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int32_t playerid,cardid,max=-1;
+	int32_t retval=1,playerid,cardid,max=-1;
 	cJSON *gameInfo=NULL;
 	
 	playerid=jint(playerCardInfo,"playerid");
@@ -895,9 +911,10 @@ void BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,struct 
 	eval_game_p[no_of_cards]=playerid;
 	eval_game_c[no_of_cards]=cardid;
 	no_of_cards++;
-        printf("\n%s:%d:playerid:%d,cardid:%d,no_of_Cards:%d,max_players:%d",__FUNCTION__,__LINE__,playerid,cardid,no_of_cards,bet->maxplayers);	
+        
 	if(no_of_cards<bet->maxplayers) //bet->range
-		BET_p2p_dcv_turn(playerCardInfo,bet,vars);
+		retval=BET_p2p_dcv_turn(playerCardInfo,bet,vars);
+
 	if(no_of_cards==bet->maxplayers)
 	{
 		betGame=cJSON_CreateObject();
@@ -906,27 +923,15 @@ void BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,struct 
 		rendered=cJSON_Print(betGame);
 		bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 		if(bytes < 0)
-			printf("\n%s:%d::Error",__FUNCTION__,__LINE__);
-		
-		#if 0 //winning logic
-		for(int i=0;i<no_of_cards;i++)
 		{
-			if(eval_game_c[i]>max)
-			{
-				max=eval_game_c[i];
-				playerid=i;
-			}
+			retval=-1;
+			printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
+			goto end;
 		}
-		gameInfo=cJSON_CreateObject();
-		cJSON_AddStringToObject(gameInfo,"method","result");
-		cJSON_AddNumberToObject(gameInfo,"playerid",playerid);
-		cJSON_AddNumberToObject(gameInfo,"cardid",max);
-		
-		
-		printf("\nThe winner of the game is player :%d, it got the card:%d",playerid,max);
-		printf("\n%s:%d",__FUNCTION__,__LINE__);
-		#endif
-	}		
+			
+	}
+	end:
+		return retval;
 		
 }
 

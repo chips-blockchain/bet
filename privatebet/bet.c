@@ -715,7 +715,10 @@ int32_t sg777_deckgen_vendor(int32_t playerid, bits256 *cardprods,bits256 *final
 	if ( bits256_cmp(deckid,active_deckid) != 0 )
         deckgen_common2(randcards,numcards);
 	else
+	{
 		retval=-1;
+		goto end;
+	}
 	
 	for (int32_t i=0; i<numcards; i++)
     {
@@ -733,7 +736,8 @@ int32_t sg777_deckgen_vendor(int32_t playerid, bits256 *cardprods,bits256 *final
 		cardprods[i] = randcards[i].prod; // same cardprods[] returned for each player
 
      }
-	return retval;
+	end:
+		return retval;
 }
 bits256 t_sg777_player_decode(struct privatebet_info *bet,int32_t cardID,int numplayers,struct pair256 key,bits256 public_key_b,bits256 blindedcard,bits256 *cardprods,bits256 *playerprivs,int32_t numcards)
 {
