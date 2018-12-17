@@ -549,6 +549,74 @@ int32_t BET_p2p_host_init(cJSON *argjson,struct privatebet_info *bet,struct priv
 	return retval;
 }
 
+void BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	int argc,maxsize=10000,retval;
+	char **argv,uri[100],*buf;
+	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
+	strcpy(uri,jstr(argjson,"uri"));
+	if((LN_get_channel_status(strtok(jstr(argjson,"uri"), "@")) != 3)) // 3 means channel is already established with the peer
+		{
+						
+			argc=5;
+            argv=(char**)malloc(argc*sizeof(char*));
+            buf=malloc(maxsize);
+            for(int i=0;i<argc;i++)
+            {
+             argv[i]=(char*)malloc(100*sizeof(char));
+	        }
+			argc=3;
+			strcpy(argv[0],"./bet");
+			strcpy(argv[1],"connect");
+			strcpy(argv[2],uri);
+			argv[3]=NULL;
+			ln_bet(argc,argv,buf);
+			printf("\n%s:%d:ConnectInfo:%s",__FUNCTION__,__LINE__,buf);
+			connectInfo=cJSON_Parse(buf);
+			cJSON_Print(connectInfo);
+
+			argc=5;
+			argv=(char**)malloc(argc*sizeof(char*));
+			buf=malloc(maxsize);
+			for(int i=0;i<argc;i++)
+			{
+			        argv[i]=(char*)malloc(100*sizeof(char));
+			}
+			argc=4;
+			strcpy(argv[0],"./bet");
+			strcpy(argv[1],"fundchannel");
+			strcpy(argv[2],jstr(connectInfo,"id"));
+			printf("\n id:%s",argv[2]);
+			strcpy(argv[3],"500000");
+			argv[4]=NULL;
+			ln_bet(argc,argv,buf);
+			printf("\n%s:%d:FundChannelInfo:%s",__FUNCTION__,__LINE__,buf);
+			fundChannelInfo=cJSON_Parse(buf);
+			cJSON_Print(fundChannelInfo);
+			retval=1;
+			int state;
+			while((state=LN_get_channel_status(jstr(connectInfo,"id"))) != 3)
+			{
+				if(state == 2)
+				 {
+				          printf("\nCHANNELD_AWAITING_LOCKIN");
+				  }
+				  else if(state == 8)
+				  {
+				           printf("\nONCHAIN");
+				  }
+				   else
+				           printf("\n%s:%d:channel-state:%d\n",__FUNCTION__,__LINE__,state);
+				sleep(10);
+			}
+
+			printf("\nDCV-->BVV LN Channel established");
+			
+		}
+		
+	
+}
+
 int32_t BET_p2p_host_start_init(struct privatebet_info *bet)
 {
 	int32_t bytes,retval=-1;
@@ -992,6 +1060,10 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 			{
 				BET_p2p_host_deck_init_info(argjson,bet,vars);
 			}
+		}
+		else if(strcmp(method,"bvv_join") == 0)
+		{
+			BET_p2p_bvv_join(argjson,bet,vars);
 		}
 		else if((strcmp(method,"init_b") == 0) || (strcmp(method,"next_turn") == 0))
 		{
