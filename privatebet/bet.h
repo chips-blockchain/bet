@@ -388,6 +388,7 @@ struct deck_dcv_info
 	uint32_t betamount;
 	uint32_t commision;
 	uint32_t paidamount;
+	unsigned char bvv_uri[100];
 };
 
 struct deck_bvv_info

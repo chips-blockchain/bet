@@ -555,6 +555,7 @@ void BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct privateb
 	char **argv,uri[100],*buf;
 	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
 	strcpy(uri,jstr(argjson,"uri"));
+	strcpy(dcv_info.bvv_uri,uri);
 	if((LN_get_channel_status(strtok(jstr(argjson,"uri"), "@")) != 3)) // 3 means channel is already established with the peer
 		{
 						
@@ -962,7 +963,28 @@ void BET_establish_ln_channels(struct privatebet_info *bet)
 		printf("\n%s:%d:Conncet Response:%s",__FUNCTION__,__LINE__,buf);
 	}
 }
+void BET_LN_check(struct privatebet_info *bet)
+{
+	char channel_id[100];
+	strcpy(channel_id,strtok(dcv_info.bvv_uri, "@"));
 
+	while(LN_get_channel_status(channel_id) != 3)
+	{
+		sleep(5);
+		printf("\nChecking channels with BVV");
+	}
+	printf("\nDCV-->BVV channel ready");
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		strcpy(channel_id,strtok(dcv_info.uri[i], "@"));
+		while(LN_get_channel_status(channel_id) != 3)
+		{
+			sleep(5);
+			printf("\nChecking channel with player :%d",i)
+		}
+		printf("\nPlayer %d --> DCV channel ready",i);
+	}
+}
 void BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int argc,maxsize=100000;
@@ -1045,9 +1067,9 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 					for(int i=0;i<bet->maxplayers;i++)
 					{
 						printf("\nplayerid:%d,channel id:%s",i,dcv_info.uri[i]);
-						BET_establish_ln_channels(bet);
+						//BET_establish_ln_channels(bet);
 					}
-					
+					BET_LN_check(bet);
 					BET_broadcast_table_info(bet);
 					BET_p2p_host_start_init(bet);
 				}
