@@ -980,7 +980,7 @@ void BET_LN_check(struct privatebet_info *bet)
 		while(LN_get_channel_status(channel_id) != 3)
 		{
 			sleep(5);
-			printf("\nChecking channel with player :%d",i)
+			printf("\nChecking channel with player :%d",i);
 		}
 		printf("\nPlayer %d --> DCV channel ready",i);
 	}
