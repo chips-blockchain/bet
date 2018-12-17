@@ -833,15 +833,16 @@ int32_t BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct pri
 }
 
 	
-void BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
+int32_t BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int32_t playerid,max=-1;
+	int32_t playerid,max=-1,retval=1;
 	cJSON *invoicesInfo=NULL,*invoiceInfo=NULL,*invoice=NULL,*winnerInfo=NULL;
 	char *label=NULL;
 	int32_t argc,bytes;
 	int32_t maxsize = 1000000;
 	char **argv=NULL,*buf=NULL,*rendered=NULL;
 	argc=3;
+
 	argv=(char**)malloc(sizeof(char*)*argc);
 	for(int32_t i=0;i<=argc;i++)
 		argv[i]=(char*)malloc(100*sizeof(char));
@@ -857,44 +858,61 @@ void BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebe
 	ln_bet(argc,argv,buf);
 	invoicesInfo=cJSON_CreateObject();
 	invoicesInfo=cJSON_Parse(buf);
-	cJSON_Parse(invoicesInfo);
 
-	invoiceInfo=cJSON_CreateObject();
-	invoiceInfo=cJSON_GetObjectItem(invoicesInfo,"invoices");
-	
-	invoice=cJSON_CreateObject();
-	invoice=cJSON_GetArrayItem(invoiceInfo,0);
-	if(strcmp(jstr(invoice,"status"),"paid")==0)
+	if(jint(invoicesInfo,"code") ==-1 )
 	{
-		dcv_info.paidamount+=jint(invoice,"msatoshi_received");
-		printf("\nAmount paid: %d",jint(invoice,"msatoshi_received"));
+		retval=-1;
+		printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(invoicesInfo,"message"));
+		goto end;
 	}
-	printf("\n%s:%d:%d",__FUNCTION__,no_of_bets,no_of_cards);
-	no_of_bets++;
-	if(no_of_cards == no_of_bets)
-	{	
-		for(int i=0;i<no_of_cards;i++)
+	else
+	{
+		
+		cJSON_Parse(invoicesInfo);
+		
+		invoiceInfo=cJSON_CreateObject();
+		invoiceInfo=cJSON_GetObjectItem(invoicesInfo,"invoices");
+		
+		invoice=cJSON_CreateObject();
+		invoice=cJSON_GetArrayItem(invoiceInfo,0);
+		if(strcmp(jstr(invoice,"status"),"paid")==0)
 		{
-			if(eval_game_c[i]>max)
-			{
-				max=eval_game_c[i];
-				playerid=i;
-			}
+			dcv_info.paidamount+=jint(invoice,"msatoshi_received");
+			printf("\nAmount paid: %d",jint(invoice,"msatoshi_received"));
 		}
-		winnerInfo=cJSON_CreateObject();
-		cJSON_AddStringToObject(winnerInfo,"method","winner");
-		cJSON_AddNumberToObject(winnerInfo,"playerid",playerid);
-		cJSON_AddNumberToObject(winnerInfo,"cardid",max);
-		cJSON_AddNumberToObject(winnerInfo,"winning_amount",dcv_info.betamount);
-		rendered=cJSON_Print(winnerInfo);
-		bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
-		if(bytes < 0)
-			printf("\n%s:%d::Error",__FUNCTION__,__LINE__);
-
-		
-		printf("\nThe winner of the game is player :%d, it got the card:%d\n",playerid,max);
-		
-	}	
+		printf("\n%s:%d:%d",__FUNCTION__,no_of_bets,no_of_cards);
+		no_of_bets++;
+		if(no_of_cards == no_of_bets)
+		{	
+			for(int i=0;i<no_of_cards;i++)
+			{
+				if(eval_game_c[i]>max)
+				{
+					max=eval_game_c[i];
+					playerid=i;
+				}
+			}
+			winnerInfo=cJSON_CreateObject();
+			cJSON_AddStringToObject(winnerInfo,"method","winner");
+			cJSON_AddNumberToObject(winnerInfo,"playerid",playerid);
+			cJSON_AddNumberToObject(winnerInfo,"cardid",max);
+			cJSON_AddNumberToObject(winnerInfo,"winning_amount",dcv_info.betamount);
+			rendered=cJSON_Print(winnerInfo);
+			bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+			if(bytes < 0)
+			{
+				retval=-1;
+				printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
+				goto end;
+			}
+			
+			printf("\nThe winner of the game is player :%d, it got the card:%d\n",playerid,max);
+			
+		}
+	}
+	
+	end:
+		return retval;
 		
 }
 
