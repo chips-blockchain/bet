@@ -801,7 +801,7 @@ int32_t BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct pri
 	ln_bet(argc,argv,buf);
 	invoice=cJSON_CreateObject();
 	invoice=cJSON_Parse(buf);
-	if(jint(invoice,"code") == -1)
+	if(jint(invoice,"code") != 0)
 	{
 		retval=-1;
 		printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(invoice,"message"));
@@ -859,7 +859,7 @@ int32_t BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privat
 	invoicesInfo=cJSON_CreateObject();
 	invoicesInfo=cJSON_Parse(buf);
 
-	if(jint(invoicesInfo,"code") ==-1 )
+	if(jint(invoicesInfo,"code") != 0 )
 	{
 		retval=-1;
 		printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(invoicesInfo,"message"));

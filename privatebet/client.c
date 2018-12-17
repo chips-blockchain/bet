@@ -1015,7 +1015,7 @@ int32_t BET_p2p_bvv_join_init(cJSON *argjson,struct privatebet_info *bet,struct 
 	ln_bet(argc-1,argv,buf);
 	channelInfo=cJSON_Parse(buf);
 	cJSON_Print(channelInfo);
-	if(jint(channelInfo,"code") == -1)
+	if(jint(channelInfo,"code") != 0)
 	{
 		retval=-1;
 		printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(channelInfo,"message"));
@@ -1252,7 +1252,7 @@ int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 		payResponse=cJSON_CreateObject();
 		payResponse=cJSON_Parse(buf);
 			
-		if(jint(payResponse,"code") == -1)
+		if(jint(payResponse,"code") != 0)
 		{
 			retval=-1;
 			printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(payResponse,"message"));
@@ -1727,7 +1727,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			connectInfo=cJSON_Parse(buf);
 			cJSON_Print(connectInfo);
 
-			if(jint(connectInfo,"code") == -1)
+			if(jint(connectInfo,"code") != 0)
 			{
 				retval=-1;
 				printf("\n%s:%d:Message:%s",__FUNCTION__,__LINE__,jstr(connectInfo,"method"));
@@ -1752,7 +1752,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			fundChannelInfo=cJSON_Parse(buf);
 			cJSON_Print(fundChannelInfo);
 
-			if(jint(fundChannelInfo,"code") ==-1 )
+			if(jint(fundChannelInfo,"code") != 0 )
 			{
 				retval=-1;
 				printf("\n%s:%d:Message:%s",__FUNCTION__,__LINE__,jstr(fundChannelInfo,"message"));
@@ -1813,7 +1813,7 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 		ln_bet(argc,argv,buf);
 		channelInfo=cJSON_Parse(buf);
 		cJSON_Print(channelInfo);
-		if(jint(channelInfo,"code") ==-1 )
+		if(jint(channelInfo,"code") != 0 )
 		{
 			retval=-1;
 			printf("\n%s:%d:Message:%s",__FUNCTION__,__LINE__,jstr(channelInfo,"message"));
@@ -1867,7 +1867,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		}
 		else if ( strcmp(method,"init") == 0 )
 		{
-            		retval=BET_p2p_client_init(argjson,bet,vars);
+            retval=BET_p2p_client_init(argjson,bet,vars);
 			
 		}
 		else if(strcmp(method,"init_d") == 0)
