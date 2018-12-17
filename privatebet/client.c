@@ -1617,7 +1617,6 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 	int argc,maxsize=10000,retval=-1;
 	char **argv=NULL,*buf=NULL;
 	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
-	pthread_t ln_t;
 	if(0 == bits256_cmp(player_info.player_key.prod,jbits256(argjson,"pubkey")))
 	{
 		bet->myplayerid=jint(argjson,"peerid");
@@ -1661,6 +1660,21 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			fundChannelInfo=cJSON_Parse(buf);
 			cJSON_Print(fundChannelInfo);
 			retval=1;
+			int state;
+			while((state=LN_get_channel_status(jstr(connectInfo,"id"))) != 3)
+			{
+				if(state == 2)
+				 {
+				          printf("\nCHANNELD_AWAITING_LOCKIN");
+				  }
+				  else if(state == 8)
+				  {
+				           printf("\nONCHAIN");
+				  }
+				   else
+				           printf("\n%s:%d:channel-state:%d\n",__FUNCTION__,__LINE__,state);
+				sleep(10);
+			}
 			
 		}
 		
