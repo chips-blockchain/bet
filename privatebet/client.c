@@ -1697,10 +1697,16 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			strcpy(argv[2],uri);
 			argv[3]=NULL;
 			ln_bet(argc,argv,buf);
-			printf("\n%s:%d:ConnectInfo:%s",__FUNCTION__,__LINE__,buf);
 			connectInfo=cJSON_Parse(buf);
 			cJSON_Print(connectInfo);
 
+			if(jint(connectInfo,"code") == -1)
+			{
+				retval=-1;
+				printf("\n%s:%d:Message:%s",__FUNCTION__,__LINE__,jstr(connectInfo,"method"));
+				goto exit;
+			}
+			
 			argc=5;
 			argv=(char**)malloc(argc*sizeof(char*));
 			buf=malloc(maxsize);
@@ -1716,14 +1722,17 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			strcpy(argv[3],"500000");
 			argv[4]=NULL;
 			ln_bet(argc,argv,buf);
-			printf("\n%s:%d:FundChannelInfo:%s",__FUNCTION__,__LINE__,buf);
 			fundChannelInfo=cJSON_Parse(buf);
 			cJSON_Print(fundChannelInfo);
+
 			if(jint(fundChannelInfo,"code") ==-1 )
 			{
+				retval=-1;
 				printf("\n%s:%d:Message:%s",__FUNCTION__,__LINE__,jstr(fundChannelInfo,"message"));
+				goto exit;
 			}
-			retval=1;
+
+			
 			int state;
 			while((state=LN_get_channel_status(jstr(connectInfo,"id"))) != 3)
 			{
@@ -1739,10 +1748,11 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 				           printf("\n%s:%d:channel-state:%d\n",__FUNCTION__,__LINE__,state);
 				sleep(10);
 			}
-			
+			retval=1;			
 		}
 		
 	}
+	exit:
 	return retval;
 }
 
@@ -1891,6 +1901,7 @@ void BET_p2p_clientloop(void * _ptr)
                 {
                     if ( BET_p2p_clientupdate(msgjson,bet,VARS) < 0 )
                     {
+                    	printf("\nFAILURE\n");
                     	// do something here, possibly this could be because unknown commnad or because of encountering a special case which state machine fails to handle
                     }           
                    
