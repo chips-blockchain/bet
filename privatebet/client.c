@@ -1719,6 +1719,10 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			printf("\n%s:%d:FundChannelInfo:%s",__FUNCTION__,__LINE__,buf);
 			fundChannelInfo=cJSON_Parse(buf);
 			cJSON_Print(fundChannelInfo);
+			if(jint(fundChannelInfo,"code") ==-1 )
+			{
+				printf("\n%s:%d:Message:%s",__FUNCTION__,__LINE__,jstr(fundChannelInfo,"message"));
+			}
 			retval=1;
 			int state;
 			while((state=LN_get_channel_status(jstr(connectInfo,"id"))) != 3)
