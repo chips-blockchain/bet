@@ -1085,11 +1085,11 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 	end:
 		return retval;
 }
-void BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+int32_t BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int argc,maxsize=100000;
+	int argc,maxsize=100000,retval=1;
 	char **argv=NULL,*buf=NULL,hexstr[65],channel_id[100],*invoice=NULL;
-	cJSON *payResponse=NULL,*invoiceInfo=NULL;
+	cJSON *payResponse=NULL,*invoiceInfo=NULL,*fundChannelInfo=NULL;
 
 	buf=(char*)malloc(maxsize*sizeof(char));
 
@@ -1108,6 +1108,16 @@ void BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct privateb
 		argv[4]=NULL;
 		argc=4;
 		ln_bet(argc,argv,buf);
+
+		fundChannelInfo=cJSON_CreateObject();
+		fundChannelInfo=cJSON_Parse(buf);
+
+		if(jint(fundChannelInfo,"code") != 0)
+		{
+			retval=-1;
+			printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(fundChannelInfo,"message"));
+			goto end;
+		}
 
 		printf("\nFund channel response:%s\n",buf);
 		int state;
@@ -1142,10 +1152,18 @@ void BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct privateb
 	ln_bet(argc,argv,buf);
 	payResponse=cJSON_CreateObject();
 	payResponse=cJSON_Parse(buf);
-	printf("\n%s:%d: Payment Status:%s",__FUNCTION__,__LINE__,jstr(payResponse,"status"));
+
+	if(jint(payResponse,"code") != 0)
+	{
+		retval=-1;
+		printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(payResponse,"message"));
+		goto end;
+	}
 
 	if(strcmp(jstr(payResponse,"status"),"complete")==0)
 			printf("\nPayment Success");
+	end:
+		return retval;
 }
 
 
@@ -1160,32 +1178,31 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		{
 			if(bet->numplayers<bet->maxplayers)
 			{
-				BET_p2p_client_join_req(argjson,bet,vars);
+				retval=BET_p2p_client_join_req(argjson,bet,vars);
+				if(retval<0)
+					goto end;
                 if(bet->numplayers==bet->maxplayers)
 				{
 					printf("\nTable is filled");
-					for(int i=0;i<bet->maxplayers;i++)
-					{
-						printf("\nplayerid:%d,channel id:%s",i,dcv_info.uri[i]);
-						//BET_establish_ln_channels(bet);
-					}
-					BET_LN_check(bet);
+					retval=BET_LN_check(bet);
+					if(retval<0)
+						goto end;
 					BET_broadcast_table_info(bet);
-					BET_p2p_host_start_init(bet);
+					retval=BET_p2p_host_start_init(bet);
 				}
 			}
 		}
 		else if(strcmp(method,"init_p") == 0)
 		{
-			BET_p2p_host_init(argjson,bet,vars);
+			retval=BET_p2p_host_init(argjson,bet,vars);
 			if(dcv_info.numplayers==dcv_info.maxplayers)
 			{
-				BET_p2p_host_deck_init_info(argjson,bet,vars);
+				retval=BET_p2p_host_deck_init_info(argjson,bet,vars);
 			}
 		}
 		else if(strcmp(method,"bvv_join") == 0)
 		{
-			BET_p2p_bvv_join(argjson,bet,vars);
+			retval=BET_p2p_bvv_join(argjson,bet,vars);
 		}
 		else if((strcmp(method,"init_b") == 0) || (strcmp(method,"next_turn") == 0))
 		{
@@ -1193,34 +1210,33 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 			if(strcmp(method,"init_b") == 0)
 			{
-				BET_relay(argjson,bet,vars);
+				retval=BET_relay(argjson,bet,vars);
+				if(retval<0)
+					goto end;
 			}
-
-			//BET_p2p_highest_card(argjson,bet,vars);
-			BET_p2p_dcv_start(argjson,bet,vars);
-			
+			retval=BET_p2p_dcv_start(argjson,bet,vars);
 		}
 		else if(strcmp(method,"turn_status") == 0)
 		{
 			printf("\n%s:%d:Game Start",__FUNCTION__,__LINE__);
-			BET_p2p_dcv_turn_status(argjson,bet,vars);
+			retval=BET_p2p_dcv_turn_status(argjson,bet,vars);
 		}
 		else if(strcmp(method,"playerCardInfo") == 0)
 		{
-			BET_evaluate_game(argjson,bet,vars);
+			retval=BET_evaluate_game(argjson,bet,vars);
 		}
 		else if(strcmp(method,"invoiceRequest") == 0)
 		{
-			BET_create_invoice(argjson,bet,vars);
+			retval=BET_create_invoice(argjson,bet,vars);
 		}
 		else if(strcmp(method,"pay") == 0)
 		{
-			BET_settle_game(argjson,bet,vars);
+			retval=BET_settle_game(argjson,bet,vars);
 		}
 		else if(strcmp(method,"claim") == 0)
 		{
 
-			BET_award_winner(argjson,bet,vars);
+			retval=BET_award_winner(argjson,bet,vars);
 		}
 		else
     	{
@@ -1229,7 +1245,8 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 				retval=-1;
     	}
     }
-    return retval;
+	end:
+    	return retval;
 }
 
 
