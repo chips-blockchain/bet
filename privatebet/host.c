@@ -541,9 +541,9 @@ int32_t BET_p2p_host_init(cJSON *argjson,struct privatebet_info *bet,struct priv
 	return retval;
 }
 
-void BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int argc,maxsize=10000,retval;
+	int argc,maxsize=10000,retval=1,state;
 	char **argv,uri[100],*buf;
 	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
 	strcpy(uri,jstr(argjson,"uri"));
@@ -564,10 +564,15 @@ void BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct privateb
 			strcpy(argv[2],uri);
 			argv[3]=NULL;
 			ln_bet(argc,argv,buf);
-			printf("\n%s:%d:ConnectInfo:%s",__FUNCTION__,__LINE__,buf);
 			connectInfo=cJSON_Parse(buf);
 			cJSON_Print(connectInfo);
-
+			if(jint(connectInfo,"code") != 0)
+			{
+				retval=-1;
+				printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(connectInfo,"message"));
+				goto end;
+			}
+		
 			argc=5;
 			argv=(char**)malloc(argc*sizeof(char*));
 			buf=malloc(maxsize);
@@ -575,19 +580,22 @@ void BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct privateb
 			{
 			        argv[i]=(char*)malloc(100*sizeof(char));
 			}
-			argc=4;
 			strcpy(argv[0],"./bet");
 			strcpy(argv[1],"fundchannel");
 			strcpy(argv[2],jstr(connectInfo,"id"));
 			printf("\n id:%s",argv[2]);
 			strcpy(argv[3],"500000");
 			argv[4]=NULL;
+			argc=4;	
 			ln_bet(argc,argv,buf);
-			printf("\n%s:%d:FundChannelInfo:%s",__FUNCTION__,__LINE__,buf);
 			fundChannelInfo=cJSON_Parse(buf);
 			cJSON_Print(fundChannelInfo);
-			retval=1;
-			int state;
+			if(jint(fundChannelInfo,"code") != 0)
+			{
+				retval=-1;
+				printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(fundChannelInfo,"message"));
+				goto end;
+			}
 			while((state=LN_get_channel_status(jstr(connectInfo,"id"))) != 3)
 			{
 				if(state == 2)
@@ -607,7 +615,8 @@ void BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct privateb
 			
 		}
 		
-	
+	end:
+		return retval;
 }
 
 int32_t BET_p2p_host_start_init(struct privatebet_info *bet)
