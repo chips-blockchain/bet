@@ -841,8 +841,8 @@ int32_t BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privat
 	int32_t argc,bytes;
 	int32_t maxsize = 1000000;
 	char **argv=NULL,*buf=NULL,*rendered=NULL;
-	argc=3;
 
+	argc=4;
 	argv=(char**)malloc(sizeof(char*)*argc);
 	for(int32_t i=0;i<=argc;i++)
 		argv[i]=(char*)malloc(100*sizeof(char));
@@ -855,7 +855,7 @@ int32_t BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privat
 	strcpy(argv[2],label);
 	argv[3]=NULL;
 	
-	ln_bet(argc,argv,buf);
+	ln_bet(argc-1,argv,buf);
 	invoicesInfo=cJSON_CreateObject();
 	invoicesInfo=cJSON_Parse(buf);
 
