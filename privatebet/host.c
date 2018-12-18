@@ -1022,7 +1022,7 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 	{
 		argc=6;
 		for(int i=0;i<argc;i++)
-			memeset(argv[i],0x00,sizeof(argv[i]));
+			memset(argv[i],0x00,sizeof(argv[i]));
 		strcpy(argv[0],"./bet");
 		strcpy(argv[1],"connect");
 		strcpy(argv[2],dcv_info.bvv_uri);
@@ -1033,7 +1033,7 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 
 		argc=6;
 		for(int i=0;i<argc;i++)
-			memeset(argv[i],0x00,sizeof(argv[i]));
+			memset(argv[i],0x00,sizeof(argv[i]));
 		strcpy(argv[0],"./bet");
 		strcpy(argv[1],"fundchannel");
 		strcpy(argv[2],channel_id);
