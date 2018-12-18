@@ -993,7 +993,7 @@ int BET_LN_check_if_peer_exists(char *channel_id)
 	strcpy(argv[1],"check-if-peer-exists");
 	strcpy(argv[2],channel_id);
 	argv[3]=NULL;
-	argc=3
+	argc=3;
 
 	ln_bet(argc,argv,buf);
 	
