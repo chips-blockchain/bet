@@ -1094,6 +1094,28 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 	end:
 		return retval;
 }
+
+void BET_p2p_LN_close(struct privatebet_info *bet)
+{
+	int argc,maxsize=10000;
+	char **argv,*buf;
+	argc=4;
+	argv=(char**)malloc(argc*sizeof(char*));
+	for(int i=0;i<argc;i++)
+		argv[i]=(char*)malloc(100*sizeof(char));
+	buf=(char*)malloc(maxsize);
+	strcpy(argv[0],"./bet");
+	strcpy(argv[1],"close");
+	argv[3]=NULL;
+	argc=3;
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		strcpy(argv[2],strtok(dcv_info.uri[i],"@"));
+		ln_bet(argc,argv,buf);
+		printf("\n%s:%d: %s\n",__FUNCTION__,__LINE__,buf);
+	}
+	
+}
 int32_t BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int argc,maxsize=100000,retval=1;
@@ -1170,7 +1192,11 @@ int32_t BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct priva
 	}
 
 	if(strcmp(jstr(payResponse,"status"),"complete")==0)
-			printf("\nPayment Success");
+	{
+		printf("\nPayment Success\n");
+		BET_p2p_LN_close(bet);
+	}
+			
 	end:
 		return retval;
 }
