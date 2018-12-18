@@ -1017,8 +1017,8 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 	for(int i=0;i<argc;i++)
 		argv[i]=(char*)malloc(100);
 	buf=(char*)malloc(10000);
-
-	if(BET_LN_check_if_peer_exists(strtok(dcv_info.bvv_uri, "@"))== 0)
+	strcpy(channel_id,strtok(dcv_info.bvv_uri, "@"));
+	if(BET_LN_check_if_peer_exists(channel_id)== 0)
 	{
 		argc=6;
 		for(int i=0;i<argc;i++)
