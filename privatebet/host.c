@@ -976,27 +976,114 @@ void BET_establish_ln_channels(struct privatebet_info *bet)
 		printf("\n%s:%d:Conncet Response:%s",__FUNCTION__,__LINE__,buf);
 	}
 }
-void BET_LN_check(struct privatebet_info *bet)
+
+int BET_LN_check_if_peer_exists(char *channel_id)
+{
+	int argc,retval=1;
+	char **argv,*buf=NULL;
+	cJSON *peerInfo=NULL;
+	
+	argc=4;	
+	argv=(char**)malloc(argc*sizeof(char*));
+	for(int i=0;i<argc;i++)
+		argv[i]=(char*)malloc(100);
+	buf=(char*)malloc(10000);
+
+	strcpy(argv[0],"./bet");
+	strcpy(argv[1],"check-if-peer-exists");
+	strcpy(argv[2],channel_id);
+	argv[3]=NULL;
+	argc=3
+
+	ln_bet(argc,argv,buf);
+	
+	peerInfo=cJSON_CreateObject();
+	peerInfo=cJSON_Parse(buf);
+
+	if(strcmp(jstr(peerInfo,"peer-exists"),"true")==0)
+		return 1;
+	else 
+		return 0;
+		
+}
+int32_t BET_LN_check(struct privatebet_info *bet)
 {
 	char channel_id[100];
-	strcpy(channel_id,strtok(dcv_info.bvv_uri, "@"));
+	int argc,retval=1;
+	char **argv,*buf=NULL;
+	cJSON *peerInfo=NULL,*fundChannelInfo=NULL;
+	argc=6;
+	argv=(char**)malloc(argc*sizeof(char*));
+	for(int i=0;i<argc;i++)
+		argv[i]=(char*)malloc(100);
+	buf=(char*)malloc(10000);
+
+	if(BET_LN_check_if_peer_exists(strtok(dcv_info.bvv_uri, "@"))== 0)
+	{
+		argc=6;
+		for(int i=0;i<argc;i++)
+			memeset(argv[i],0x00,sizeof(argv[i]));
+		strcpy(argv[0],"./bet");
+		strcpy(argv[1],"connect");
+		strcpy(argv[2],dcv_info.bvv_uri);
+		argv[3]=NULL;
+		argc=3;
+		memset(buf,0x00,sizeof(buf));
+		ln_bet(argc,argv,buf);
+
+		argc=6;
+		for(int i=0;i<argc;i++)
+			memeset(argv[i],0x00,sizeof(argv[i]));
+		strcpy(argv[0],"./bet");
+		strcpy(argv[1],"fundchannel");
+		strcpy(argv[2],channel_id);
+		strcpy(argv[3],"500000");
+		argv[4]=NULL;
+		argc=4;
+
+		
+		memset(buf,0x00,sizeof(buf));
+		ln_bet(argc,argv,buf);
+
+		fundChannelInfo=cJSON_CreateObject();
+		fundChannelInfo=cJSON_Parse(buf);
+
+		if(jint(fundChannelInfo,"code") == -1)
+		{
+			retval=-1;
+			printf("\n%s:%d: Message: %s",__FUNCTION__,__LINE__,jstr(fundChannelInfo,"message"));
+			goto end;
+		}
+	}
 
 	while(LN_get_channel_status(channel_id) != 3)
 	{
 		sleep(5);
 		printf("\nChecking channels with BVV");
-	}
+	}	
+		
 	printf("\nDCV-->BVV channel ready");
 	for(int i=0;i<bet->maxplayers;i++)
 	{
 		strcpy(channel_id,strtok(dcv_info.uri[i], "@"));
-		while(LN_get_channel_status(channel_id) != 3)
+		if(BET_LN_check_if_peer_exists(channel_id) == 1)
 		{
-			sleep(5);
-			printf("\nChecking channel with player :%d",i);
+			while(LN_get_channel_status(channel_id) != 3)
+			{
+				sleep(5);
+				printf("\nChecking channel with player :%d",i);
+			}
+			printf("\nPlayer %d --> DCV channel ready",i);	
 		}
-		printf("\nPlayer %d --> DCV channel ready",i);
+		else
+		{
+			retval=-1;
+			printf("\n%s:%d DCV doesn't connected as Peer to Player %d",__FUNCTION__,__LINE__,i);
+			goto end;
+		}
 	}
+	end:
+		return retval;
 }
 void BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
