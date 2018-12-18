@@ -112,7 +112,7 @@ char *issue_LP_psock(char *destip,uint16_t destport,int32_t ispaired)
  */
 int32_t LP_numpeers()
 {
-    printf("this needs to be fixed\n");
+	LOG_DEBUG("This needs to be fixed");
     return(9);
 }
 struct LP_millistats
@@ -315,7 +315,7 @@ int do_bet(double betValue)
 	}
 	else
 	{
-		printf("\nInsufficient funds to to betting");
+		printf("\nInsufficient funds to do betting");
 		return -1;
 	}
 	return 1;	

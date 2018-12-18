@@ -88,12 +88,11 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-			printf("\nCommand Not Found");
+			LOG_DEBUG("Command Not Found");
 		}
 	}
 	end:
-		//printf("\nInvalid Arguments");
-	return 0;
+		return 0;
 }
 
 
@@ -117,10 +116,9 @@ struct pair256 bet_player_create()
 
 	cJSON_AddStringToObject(playerInfo,"command","create-player");
     jaddbits256(playerInfo,"PubKey",key.prod);
-	printf("\nPlayer PubKey: %s",cJSON_Print(cJSON_CreateString(cJSON_Print(playerInfo))));
-
 	jaddbits256(playerInfo,"PrivKey",key.priv); 
-	printf("\n%s",cJSON_Print(playerInfo));
+
+	LOG_DEBUG(%s,cJSON_Print(playerInfo));
 	cJSON_Delete(playerInfo);
 
 	return(key);

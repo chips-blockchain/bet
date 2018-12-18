@@ -1755,7 +1755,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			if(jint(fundChannelInfo,"code") != 0 )
 			{
 				retval=-1;
-				printf("\n%s:%d:Message:%s",__FUNCTION__,__LINE__,jstr(fundChannelInfo,"message"));
+				LOG_ERROR("Message:%s",jstr(fundChannelInfo,"message"));
 				goto end;
 			}
 
@@ -1766,7 +1766,8 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 				if(state == 2)
 				 {
 				          printf("\nCHANNELD_AWAITING_LOCKIN");
-				  }
+				 }
+				 
 				  else if(state == 8)
 				  {
 				           printf("\nONCHAIN");
