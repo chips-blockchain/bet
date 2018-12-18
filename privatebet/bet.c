@@ -42,7 +42,7 @@
 #include "host.h"
 #include "table.h"
 #include "network.h"
-
+#include "../log/macrologger.h"
 bits256 Myprivkey,Mypubkey;
 int32_t IAMHOST;
 uint16_t LN_port;
