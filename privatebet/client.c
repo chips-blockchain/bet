@@ -1779,7 +1779,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		}
 		
 		int state;
-		while((state=LN_get_channel_status(channel_id) != 3)
+		while((state=LN_get_channel_status(channel_id)) != 3)
 		{
 			if(state == 2)
 			 {
