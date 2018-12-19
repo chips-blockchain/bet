@@ -1714,7 +1714,7 @@ int32_t BET_p2p_client_bvv_init(cJSON *argjson,struct privatebet_info *bet,struc
 
 int32_t BET_p2p_client_dcv_init(cJSON *dcv_info,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int32_t retval=-1;
+	int32_t retval=1;
 	cJSON *cjsoncardprods,*cjsong_hash;
 	
 	
@@ -1762,9 +1762,6 @@ int32_t BET_p2p_client_init(cJSON *argjson,struct privatebet_info *bet,struct pr
 			
     rendered=cJSON_Print(init_p);
     bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
-
-    printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,rendered);
-
     if(bytes<0)
     {
     	retval=-1;
@@ -1945,8 +1942,6 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 		rendered=cJSON_Print(joininfo);
         bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
-
-		printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,rendered);
 		if(bytes<0)
 		{
 			retval=-1;
