@@ -22,6 +22,7 @@
 #include "oracle.h"
 #include "commands.h"
 #include "payment.h"
+#include "../log/macrologger.h"
 
 //bits256 Mypubkey,Myprivkey;
 //int32_t IAMHOST;
