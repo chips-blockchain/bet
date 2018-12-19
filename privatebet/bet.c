@@ -338,7 +338,7 @@ int main(int argc, char **argv)
 
 	range = (range % 52) + 1;
 	numplayers = (numplayers % (CARDS777_MAXPLAYERS-1)) + 2;
-	range=6;
+	range=52;
 	numplayers=2;
     Maxplayers=2;
 	printf("%s:%d, range:%d, numplayers:%d\n",__FUNCTION__,__LINE__,range,numplayers);
