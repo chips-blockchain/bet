@@ -782,6 +782,28 @@ void BET_broadcast_table_info(struct privatebet_info *bet)
 	printf("\nTable Info:%s",cJSON_Print(tableInfo));
 }
 
+int32_t BET_check_BVV_Ready(struct privatebet_info *bet)
+{
+	int32_t bytes,retval=-1;
+	char *rendered=NULL;
+	cJSON *bvvReady=NULL,*uriInfo=NULL;
+	bvvReady=cJSON_CreateObject();
+	cJSON_AddStringToObject(bvvReady,"method","check_bvv_ready");
+	uriInfo=cJSON_CreateArray();
+	cJSON_AddItemToObject(uriInfo,"uri_info",uriInfo);
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		cJSON_AddItemToArray(uriInfo,cJSON_CreateString(dcv_info.uri[i]));
+	}
+	rendered=cJSON_Print(bvvReady);
+	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+
+	if(bytes<0)
+			retval=-1;
+	end:
+		return retval;
+}
+
 int32_t BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int argc,bytes,retval=1;
@@ -1017,7 +1039,7 @@ int BET_LN_check_if_peer_exists(char *channel_id)
 }
 int32_t BET_LN_check(struct privatebet_info *bet)
 {
-	char channel_id[100];
+	char channel_id[100],channel_state;
 	int argc,retval=1;
 	char **argv,*buf=NULL;
 	cJSON *peerInfo=NULL,*fundChannelInfo=NULL;
@@ -1027,7 +1049,8 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 		argv[i]=(char*)malloc(100);
 	buf=(char*)malloc(10000);
 	strcpy(channel_id,strtok(dcv_info.bvv_uri, "@"));
-	if(BET_LN_check_if_peer_exists(channel_id)== 0)
+	channel_state=LN_get_channel_status(channel_id);
+	if((channel_state != 2) && (channel_state != 3))
 	{
 		argc=6;
 		for(int i=0;i<argc;i++)
@@ -1065,31 +1088,42 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 		}
 	}
 
-	while(LN_get_channel_status(channel_id) != 3)
+	while((channel_state=LN_get_channel_status(channel_id)) != 3)
 	{
-		sleep(5);
-		printf("\nChecking channels with BVV");
-	}	
-		
-	printf("\nDCV-->BVV channel ready");
-	for(int i=0;i<bet->maxplayers;i++)
-	{
-		strcpy(channel_id,strtok(dcv_info.uri[i], "@"));
-		if(BET_LN_check_if_peer_exists(channel_id) == 1)
+		if(channel_state == 2)
 		{
-			while(LN_get_channel_status(channel_id) != 3)
-			{
-				sleep(5);
-				printf("\nChecking channel with player :%d",i);
-			}
-			printf("\nPlayer %d --> DCV channel ready",i);	
+			printf("\nCHANNELD AWAITING LOCKIN");
+			sleep(5);
 		}
 		else
 		{
 			retval=-1;
-			printf("\n%s:%d DCV doesn't connected as Peer to Player %d",__FUNCTION__,__LINE__,i);
+			printf("\n%s:%d: DCV is failed to establish the channel with BVV",__FUNCTION__,__LINE__);
 			goto end;
 		}
+	}	
+	printf("\nDCV-->BVV channel ready");
+
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		strcpy(channel_id,strtok(dcv_info.uri[i], "@"));
+
+		while((channel_state=LN_get_channel_status(channel_id)) != 3)
+		{
+			if(channel_state == 2)
+			{
+				printf("\nCHANNELD AWAITING LOCKIN");
+				sleep(5);
+			}
+			else
+			{
+				retval=-1;
+				printf("\n%s:%d: Player: %d is failed to establish the channel with DCV",__FUNCTION__,__LINE__,i);
+				goto end;
+			}
+		}
+		
+		printf("\nPlayer %d --> DCV channel ready",i);	
 	}
 	end:
 		return retval;
@@ -1223,9 +1257,14 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 					if(retval<0)
 						goto end;
 					BET_broadcast_table_info(bet);
-					retval=BET_p2p_host_start_init(bet);
+					BET_check_BVV_Ready(bet);
+					//retval=BET_p2p_host_start_init(bet);
 				}
 			}
+		}
+		else if(strcmp(method,"bvv_ready") == 0)
+		{
+			retval=BET_p2p_host_start_init(bet);
 		}
 		else if(strcmp(method,"init_p") == 0)
 		{
