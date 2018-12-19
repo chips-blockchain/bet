@@ -750,12 +750,12 @@ int32_t BET_p2p_highest_card(cJSON *argjson,struct privatebet_info *bet,struct p
 
 int32_t BET_relay(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int32_t retval,bytes;
+	int32_t retval=1,bytes;
 	char *rendered=NULL;
 
 	rendered=cJSON_Print(argjson);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
-
+	
 	if(bytes<0)
 	{
 		retval=-1;
