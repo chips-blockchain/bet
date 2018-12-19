@@ -1052,6 +1052,98 @@ int32_t BET_p2p_bvv_join_init(cJSON *argjson,struct privatebet_info *bet,struct 
 	
 }
 
+int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	int retval,channel_state,argc,maxsize=10000,bytes;
+	cJSON *uriInfo=NULL,*fundChannelInfo=NULL,*bvvReady=NULL;
+	char uri[100],channel_id,**argv,*buf,*rendered;
+	argc=6;
+	argv=(char**)malloc(argc*sizeof(char*));
+	for(int i=0;i<argc;i++)
+	{
+		argv[i]=(char*)malloc(100*sizeof(char));
+	}
+	buf=(char*)malloc(maxsize);
+	
+	uriInfo=cJSON_GetObjectItem(argjson,"uri_info");
+	for(int i=0;i<cJSON_GetArraySize(uriInfo);i++)
+	{
+		strcpy(uri,jstri(uriInfo,i));
+		printf("\n%s:%d::%s",__FUNCTION__,__LINE__,uri);
+		strcpy(channel_id,strtok(jstri(uriInfo,i),"@"));
+		channel_state=LN_get_channel_status(channel_id);
+		if((channel_state != 2) && (channel_state != 3))
+		{
+			argc=6;
+			for(int i=0;i<argc;i++)
+				memset(argv[i],0x00,sizeof(argv[i]));
+			strcpy(argv[0],"./bet");
+			strcpy(argv[1],"connect");
+			strcpy(argv[2],uri);
+			argv[3]=NULL;
+			argc=3;
+			memset(buf,0x00,sizeof(buf));
+			ln_bet(argc,argv,buf);
+
+			argc=6;
+			for(int i=0;i<argc;i++)
+				memset(argv[i],0x00,sizeof(argv[i]));
+			strcpy(argv[0],"./bet");
+			strcpy(argv[1],"fundchannel");
+			strcpy(argv[2],channel_id);
+			strcpy(argv[3],"500000");
+			argv[4]=NULL;
+			argc=4;
+
+			
+			memset(buf,0x00,sizeof(buf));
+			ln_bet(argc,argv,buf);
+
+			fundChannelInfo=cJSON_CreateObject();
+			fundChannelInfo=cJSON_Parse(buf);
+
+			if(jint(fundChannelInfo,"code") == -1)
+			{
+				retval=-1;
+				printf("\n%s:%d: Message: %s",__FUNCTION__,__LINE__,jstr(fundChannelInfo,"message"));
+				goto end;
+			}
+		}
+	}
+	for(int i=0;i<cJSON_GetArraySize(uriInfo);i++)
+	{
+		strcpy(channel_id,strtok(jstri(uriInfo,i),"@"));
+		while((channel_state=LN_get_channel_status(channel_id)) != 3)
+		{
+			if(channel_state == 2)
+			{
+				printf("\nCHANNELD AWAITING LOCKIN");
+				sleep(5);
+			}
+			else
+			{
+				retval=-1;
+				printf("\n%s:%d: BVV is failed to establish the channel with Player: %d",__FUNCTION__,__LINE__,i);
+				goto end;
+			}
+		}
+		
+		printf("\nBVV  --> Player %d channel ready",i);	
+	}
+
+	bvvReady=cJSON_CreateObject();
+	cJSON_AddStringToObject(bvvReady,"method","bvv_ready");
+	
+	rendered=cJSON_Print(bvvReady);
+    bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+	if(bytes<0)
+		retval=-1;
+	
+	end:
+		return retval;
+}
+
+
 int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
     char *method; int32_t senderid,retval=1;
@@ -1067,6 +1159,10 @@ int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct pri
 		else if(strcmp(method,"bvv_join") == 0)
 		{
 			BET_p2p_bvv_join_init(argjson,bet,vars);
+		}
+		else if(strcmp(method,"check_bvv_ready") == 0)
+		{
+			BET_p2P_check_bvv_ready(argjson,bet,vars);
 		}
         else
             retval=-1;
