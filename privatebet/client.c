@@ -1681,9 +1681,9 @@ int32_t BET_p2p_client_init(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 int32_t LN_get_channel_status(char *id)
 {
-	int argc,maxsize=10000;
+	int argc,maxsize=10000,channel_state=0;
 	char **argv=NULL,*buf=NULL;
-	cJSON *channelStateInfo=NULL;
+	cJSON *channelStateInfo=NULL,*channelStates=NULL,*channelState=NULL;
 	argc=4;
     argv=(char**)malloc(argc*sizeof(char*));
     buf=malloc(maxsize);
@@ -1699,19 +1699,34 @@ int32_t LN_get_channel_status(char *id)
 	ln_bet(argc,argv,buf);
 	channelStateInfo=cJSON_CreateObject();
 	channelStateInfo=cJSON_Parse(buf);
-	return jint(channelStateInfo,"channel-state");
+
+	channelStates=cJSON_CreateObject();
+	channelStates=cJSON_GetObjectItem(channelStateInfo,"channel-states");
+	channelState=cJSON_CreateObject();
+	for(int i=0;i<cJSON_GetArraySize(channelStates);i++)
+	{
+		channelState=cJSON_GetArrayItem(channelStates,i);
+		channel_state=jint(channelState,"channel-state");
+		if(channel_state <= 3)
+		{
+				break;
+		}
+	
+	}
+	return channel_state;
 }
 int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	char uri[100];
-	int argc,maxsize=10000,retval=1;
+	int argc,maxsize=10000,retval=1,channel_state;
 	char **argv=NULL,*buf=NULL;
 	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
 	if(0 == bits256_cmp(player_info.player_key.prod,jbits256(argjson,"pubkey")))
 	{
 		bet->myplayerid=jint(argjson,"peerid");
 		strcpy(uri,jstr(argjson,"uri"));
-		if((LN_get_channel_status(strtok(jstr(argjson,"uri"), "@")) != 3)) // 3 means channel is already established with the peer
+
+		if((LN_get_channel_status(strtok(jstr(argjson,"uri"), "@")) > 3)) // 3 means channel is already established with the peer
 		{
 						
 			argc=5;
@@ -1761,25 +1776,23 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 				LOG_ERROR("Message:%s",jstr(fundChannelInfo,"message"));
 				goto end;
 			}
-
-			
-			int state;
-			while((state=LN_get_channel_status(jstr(connectInfo,"id"))) != 3)
-			{
-				if(state == 2)
-				 {
-				          printf("\nCHANNELD_AWAITING_LOCKIN");
-				 }
-				 
-				  else if(state == 8)
-				  {
-				           printf("\nONCHAIN");
-				  }
-				   else
-				           printf("\n%s:%d:channel-state:%d\n",__FUNCTION__,__LINE__,state);
-				sleep(10);
-			}
-			
+		}
+		
+		int state;
+		while((state=LN_get_channel_status(jstr(connectInfo,"id"))) != 3)
+		{
+			if(state == 2)
+			 {
+					  printf("\nCHANNELD_AWAITING_LOCKIN");
+			 }
+			  else
+		  	 {
+		  		retval=-1;
+				printf("\n%s:%d: Channel establishment with DCV is not happening, please check the connectivity with the DCV node\n");
+				goto end;
+		  	 }
+				
+			sleep(10);
 		}
 		
 	}
