@@ -525,7 +525,7 @@ int32_t BET_p2p_host_deck_init_info(cJSON *argjson,struct privatebet_info *bet,s
 int32_t BET_p2p_host_init(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
   	int32_t peerid,retval=1;
-  	bits256 cardpubvalues[CARDS777_MAXPLAYERS];
+  	bits256 cardpubvalues[CARDS777_MAXCARDS];
 	cJSON *cardinfo=NULL;
 	char str[65];
 
@@ -1271,7 +1271,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 			retval=BET_p2p_host_init(argjson,bet,vars);
 			if(dcv_info.numplayers==dcv_info.maxplayers)
 			{
-				retval=BET_p2p_host_deck_init_info(argjson,bet,vars);
+				//retval=BET_p2p_host_deck_init_info(argjson,bet,vars);
 			}
 		}
 		else if(strcmp(method,"bvv_join") == 0)
