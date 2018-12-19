@@ -112,7 +112,7 @@ char *issue_LP_psock(char *destip,uint16_t destport,int32_t ispaired)
  */
 int32_t LP_numpeers()
 {
-	LOG_DEBUG("This needs to be fixed");
+	printf("This needs to be fixed");
     return(9);
 }
 struct LP_millistats

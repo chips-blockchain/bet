@@ -1150,8 +1150,8 @@ int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct pri
 	
     if ( (method= jstr(argjson,"method")) != 0 )
     {
-    	//printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-		LOG_DEBUG("%s",method);
+    	printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,method);
+		
    		if(strcmp(method,"init_d") == 0)
 		{
 			 BET_p2p_bvv_init(argjson,bet,vars);
@@ -1632,7 +1632,7 @@ int32_t BET_p2p_client_turn(cJSON *argjson,struct privatebet_info *bet,struct pr
 {
 	int32_t retval=1,playerid;
 	
-	LOG_DEBUG("%s",cJSON_Print(argjson));
+   	printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 	
 	playerid=jint(argjson,"playerid");
 	
@@ -1642,7 +1642,7 @@ int32_t BET_p2p_client_turn(cJSON *argjson,struct privatebet_info *bet,struct pr
 		retval=BET_p2p_get_own_share(argjson,bet,vars);
 		if(retval == -1)
 		{
-			LOG_DEBUG("Failing to get own share: Decryption Error");
+			printf("Failing to get own share: Decryption Error");
 			goto end;
 		}
 		for(int i=0;i<bet->numplayers;i++)
@@ -1964,7 +1964,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
     {
 	      
         //printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-        LOG_DEBUG("\n%s",method);
+		printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,method);
     	if ( strcmp(method,"join") == 0 )
 		{
 			retval=BET_p2p_client_join(argjson,bet,vars);
@@ -1990,7 +1990,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		}
 		else if(strcmp(method,"turn") == 0)
 		{
-			LOG_DEBUG("%s",cJSON_Print(argjson));
+			printf("%s",cJSON_Print(argjson));
 			retval=BET_p2p_client_turn(argjson,bet,vars);
 		}
 		else if(strcmp(method,"ask_share") == 0)
@@ -1999,12 +1999,12 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		}
 		else if(strcmp(method,"requestShare") == 0)
 		{
-			LOG_DEBUG("%s",cJSON_Print(argjson));
+			printf("%s",cJSON_Print(argjson));
 			retval=BET_p2p_client_give_share(argjson,bet,vars);
 		}
 		else if(strcmp(method,"share_info") == 0)
 		{
-			LOG_DEBUG("%s",cJSON_Print(argjson));
+			printf("%s",cJSON_Print(argjson));
 			retval=BET_p2p_client_receive_share(argjson,bet,vars);
 		}
 		else if(strcmp(method,"bet") == 0)
