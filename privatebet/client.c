@@ -1599,7 +1599,7 @@ int32_t BET_p2p_client_give_share(cJSON *argjson,struct privatebet_info *bet,str
 int32_t BET_p2p_get_own_share(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	struct enc_share temp;
-	int32_t cardid,retval=-1,playerid,recvlen;
+	int32_t cardid,retval=1,playerid,recvlen;
 	uint8_t decipher[sizeof(bits256) + 1024],*ptr;
 	bits256 share;
 	char enc_share[177],str[65];
