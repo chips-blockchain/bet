@@ -1726,7 +1726,8 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		bet->myplayerid=jint(argjson,"peerid");
 		strcpy(uri,jstr(argjson,"uri"));
 		strcpy(channel_id,strtok(jstr(argjson,"uri"), "@"));
-		if((LN_get_channel_status(channel_id) > 3)) // 3 means channel is already established with the peer
+		channel_state=LN_get_channel_status(channel_id);
+		if((channel_state != 2)&&(channel_state !=3)) // 3 means channel is already established with the peer
 		{
 						
 			argc=5;
@@ -1788,7 +1789,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			  else
 		  	 {
 		  		retval=-1;
-				printf("\n%s:%d: Channel establishment with DCV is not happening, please check the connectivity with the DCV node\n");
+				printf("\n%s:%d:Channel establishment with DCV is not happening, please check the connectivity with the DCV node\n",__FUNCTION__,__LINE__);
 				goto end;
 		  	 }
 				
