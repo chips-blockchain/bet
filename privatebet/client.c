@@ -2024,7 +2024,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
     	else
     	{ 
        		printf("\n%s:%d:Unknown Command",__FUNCTION__,__LINE__);
-		 retval=-1;
+		 retval=1;
     	}
 	}	
 	return retval;
