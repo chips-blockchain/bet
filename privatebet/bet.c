@@ -409,11 +409,9 @@ int main(int argc, char **argv)
 		#if 1
 			/* This code is for sockets*/
 			BET_transportname(0,bindaddr,hostip,port);
-			printf("\nBinding address:%s",bindaddr);
 			subsock= BET_nanosock(0,bindaddr,NN_SUB);
 
 			BET_transportname(0,bindaddr1,hostip,port+1);
-			printf("\nBinding address:%s",bindaddr);
 			pushsock = BET_nanosock(0,bindaddr1,NN_PUSH);
 		#endif				  
 			BET_player=calloc(numplayers,sizeof(struct privatebet_info*));
@@ -903,13 +901,14 @@ struct pair256 p2p_bvv_init(bits256 *keys,struct pair256 b_key,bits256 *blinding
 		blindedcards[i] = fmul_donna(finalcards[permis_b[i]],blindings[i]);
 		//g_hash[playerid][i]=temp_hash[permis_b[i]];//optimization
 	}
+	/*
 	printf("\n%s:%d:For Player id:%d",__FUNCTION__,__LINE__,playerid);
 
 	for(i=0;i<numcards;i++)
 	{
 		printf("\nDCV card:%s",bits256_str(str,finalcards[permis_b[i]]));
 		printf("\nBVV card:%s",bits256_str(str,blindedcards[i]));
-	}
+	}*/
 	
     M = (numplayers/2) + 1;
     
