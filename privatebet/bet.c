@@ -42,7 +42,7 @@
 #include "host.h"
 #include "table.h"
 #include "network.h"
-
+#include "../log/macrologger.h"
 bits256 Myprivkey,Mypubkey;
 int32_t IAMHOST;
 uint16_t LN_port;
@@ -112,7 +112,7 @@ char *issue_LP_psock(char *destip,uint16_t destport,int32_t ispaired)
  */
 int32_t LP_numpeers()
 {
-    printf("this needs to be fixed\n");
+	LOG_DEBUG("This needs to be fixed");
     return(9);
 }
 struct LP_millistats
@@ -315,7 +315,7 @@ int do_bet(double betValue)
 	}
 	else
 	{
-		printf("\nInsufficient funds to to betting");
+		printf("\nInsufficient funds to do betting");
 		return -1;
 	}
 	return 1;	
@@ -715,7 +715,10 @@ int32_t sg777_deckgen_vendor(int32_t playerid, bits256 *cardprods,bits256 *final
 	if ( bits256_cmp(deckid,active_deckid) != 0 )
         deckgen_common2(randcards,numcards);
 	else
+	{
 		retval=-1;
+		goto end;
+	}
 	
 	for (int32_t i=0; i<numcards; i++)
     {
@@ -733,7 +736,8 @@ int32_t sg777_deckgen_vendor(int32_t playerid, bits256 *cardprods,bits256 *final
 		cardprods[i] = randcards[i].prod; // same cardprods[] returned for each player
 
      }
-	return retval;
+	end:
+		return retval;
 }
 bits256 t_sg777_player_decode(struct privatebet_info *bet,int32_t cardID,int numplayers,struct pair256 key,bits256 public_key_b,bits256 blindedcard,bits256 *cardprods,bits256 *playerprivs,int32_t numcards)
 {
