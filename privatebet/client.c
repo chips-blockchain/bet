@@ -1151,7 +1151,7 @@ int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct pri
     if ( (method= jstr(argjson,"method")) != 0 )
     {
     	//printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-		LOG_DEBUG("%s",method);
+		LOG_DEBUG("\n%s",cJSON_Print(argjson));
    		if(strcmp(method,"init_d") == 0)
 		{
 			 BET_p2p_bvv_init(argjson,bet,vars);
@@ -1965,10 +1965,10 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
     {
 	      
         //printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-        LOG_DEBUG("%s",method);
+        LOG_DEBUG("\n%s",cJSON_Print(argjson));
     	if ( strcmp(method,"join") == 0 )
 		{
-			BET_p2p_client_join(argjson,bet,vars);
+			retval=BET_p2p_client_join(argjson,bet,vars);
 		}
 		else if ( strcmp(method,"join_res") == 0 )
 		{
