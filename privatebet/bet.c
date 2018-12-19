@@ -341,7 +341,6 @@ int main(int argc, char **argv)
 	range=52;
 	numplayers=2;
     Maxplayers=2;
-	printf("%s:%d, range:%d, numplayers:%d\n",__FUNCTION__,__LINE__,range,numplayers);
 	if((argc>=2)&&(strcmp(argv[1],"dcv")==0))
 	{
 		
@@ -349,17 +348,9 @@ int main(int argc, char **argv)
 		/* This code is for sockets*/
 		BET_transportname(0,bindaddr,hostip,port);
 		pubsock = BET_nanosock(1,bindaddr,NN_PUB);
-		if(pubsock!=-1)
-			printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,pubsock);
-		else
-			printf("\nPubliser Socket is not established");
 		
 		BET_transportname(0,bindaddr1,hostip,port+1);
 		pullsock = BET_nanosock(1,bindaddr1,NN_PULL);
-		if(pullsock!=-1)
-			printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,pullsock);
-		else
-			printf("\nPull Socket is not established");
 			
 		#endif				  
 
@@ -388,18 +379,10 @@ int main(int argc, char **argv)
 			BET_transportname(0,bindaddr,hostip,port);
 			printf("\nBinding address:%s",bindaddr);
 		    subsock= BET_nanosock(0,bindaddr,NN_SUB);
-			if(subsock!=-1)
-				printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,subsock);
-			else
-				printf("\nPubliser Socket is not established");
 
 		    BET_transportname(0,bindaddr1,hostip,port+1);
 			printf("\nBinding address:%s",bindaddr);
 		    pushsock = BET_nanosock(0,bindaddr1,NN_PUSH);
-			if(pushsock!=-1)
-				printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,pushsock);
-			else
-				printf("\nPull Socket is not established");
 
 		#endif				  
 			BET_bvv=calloc(1,sizeof(struct privatebet_info));
@@ -428,18 +411,10 @@ int main(int argc, char **argv)
 			BET_transportname(0,bindaddr,hostip,port);
 			printf("\nBinding address:%s",bindaddr);
 			subsock= BET_nanosock(0,bindaddr,NN_SUB);
-			if(subsock!=-1)
-				printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,subsock);
-			else
-				printf("\nPubliser Socket is not established");
 
 			BET_transportname(0,bindaddr1,hostip,port+1);
 			printf("\nBinding address:%s",bindaddr);
 			pushsock = BET_nanosock(0,bindaddr1,NN_PUSH);
-			if(pushsock!=-1)
-				printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,pushsock);
-			else
-				printf("\nPull Socket is not established");
 		#endif				  
 			BET_player=calloc(numplayers,sizeof(struct privatebet_info*));
 			BET_player=calloc(1,sizeof(struct privatebet_info));
