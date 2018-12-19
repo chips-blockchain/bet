@@ -1242,7 +1242,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 	
     if ( (method= jstr(argjson,"method")) != 0 )
     {
-		printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+		//printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 		if(strcmp(method,"join_req") == 0)
 		{
 			if(bet->numplayers<bet->maxplayers)

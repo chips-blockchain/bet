@@ -1150,7 +1150,7 @@ int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct pri
 	
     if ( (method= jstr(argjson,"method")) != 0 )
     {
-    	printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+    	//printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 		
    		if(strcmp(method,"init_d") == 0)
 		{
@@ -1664,7 +1664,7 @@ int32_t BET_p2p_client_bvv_init(cJSON *argjson,struct privatebet_info *bet,struc
 
 {
 		static int32_t decodebad,decodegood,good,bad,errs;
-		int32_t unpermi,playererrs=0,decoded[CARDS777_MAXCARDS],retval=-1;
+		int32_t unpermi,playererrs=0,decoded[CARDS777_MAXCARDS],retval=1;
 		bits256 decoded256;
 		bits256 bvvblindcards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 		cJSON *cjsonbvvblindcards,*cjsonshamirshards;
@@ -1969,7 +1969,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
     if ( (method= jstr(argjson,"method")) != 0 )
     {
 	      
-        printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+        //printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
     	if ( strcmp(method,"join") == 0 )
 		{
 			BET_p2p_client_join(argjson,bet,vars);
