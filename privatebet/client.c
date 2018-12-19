@@ -1965,7 +1965,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
     {
 	      
         //printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-        //LOG_DEBUG("\n%s",cJSON_Print(argjson));
+        LOG_DEBUG("\n%s",method);
     	if ( strcmp(method,"join") == 0 )
 		{
 			retval=BET_p2p_client_join(argjson,bet,vars);
