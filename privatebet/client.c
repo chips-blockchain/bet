@@ -1719,7 +1719,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 {
 	char uri[100];
 	int argc,maxsize=10000,retval=1,channel_state;
-	char **argv=NULL,*buf=NULL,*channel_id;
+	char **argv=NULL,*buf=NULL,channel_id[100];
 	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
 	if(0 == bits256_cmp(player_info.player_key.prod,jbits256(argjson,"pubkey")))
 	{
