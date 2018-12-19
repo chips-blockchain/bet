@@ -1151,7 +1151,7 @@ int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct pri
     if ( (method= jstr(argjson,"method")) != 0 )
     {
     	//printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-		//LOG_DEBUG("\n%s",cJSON_Print(argjson));
+		LOG_DEBUG("%s",method);
    		if(strcmp(method,"init_d") == 0)
 		{
 			 BET_p2p_bvv_init(argjson,bet,vars);
@@ -1199,8 +1199,7 @@ void BET_p2p_bvvloop(void *_ptr)
     {
         if ( (recvlen= nn_recv(bet->subsock,&ptr,NN_MSG,0)) > 0 )
         {
-            printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,ptr);
-        	
+          
             if ( (argjson= cJSON_Parse(ptr)) != 0 )
             {
                 if ( BET_p2p_bvvcommand(argjson,bet,VARS) != 0 ) // usually just relay to players

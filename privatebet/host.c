@@ -1241,7 +1241,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
     if ( (method= jstr(argjson,"method")) != 0 )
     {
 		//printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-		
+		LOG_DEBUG("%s",method);
 		if(strcmp(method,"join_req") == 0)
 		{
 			if(bet->numplayers<bet->maxplayers)
@@ -1345,7 +1345,6 @@ void BET_p2p_hostloop(void *_ptr)
     {
         if ( (recvlen= nn_recv(bet->pullsock,&ptr,NN_MSG,0)) > 0 )
         {
-            printf("\nBytes Received:%d:%s",recvlen,ptr);	
             if ( (argjson= cJSON_Parse(ptr)) != 0 )
             {
                 if ( BET_p2p_hostcommand(argjson,bet,VARS) != 0 ) // usually just relay to players
