@@ -509,9 +509,6 @@ int32_t BET_p2p_host_deck_init_info(cJSON *argjson,struct privatebet_info *bet,s
 	  rendered=cJSON_Print(deck_init_info);
 	  bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 
-	  printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,rendered);	
-
-	  printf("\n%s\n",cJSON_Print(cJSON_CreateString(cJSON_Print(deck_init_info))));
 	  if(bytes<0)
 	  	retval=-1;
 
@@ -705,7 +702,7 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 	turn++;
 	rendered=cJSON_Print(turninfo);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
-
+	LOG_DEBUG("%s",rendered);
 	if(bytes < 0)
 	{
 		retval=-1;
@@ -1243,6 +1240,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
     if ( (method= jstr(argjson,"method")) != 0 )
     {
 		//printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+		LOG_DEBUG("%s",method);
 		if(strcmp(method,"join_req") == 0)
 		{
 			if(bet->numplayers<bet->maxplayers)
@@ -1252,7 +1250,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 					goto end;
                 if(bet->numplayers==bet->maxplayers)
 				{
-					printf("\nTable is filled");
+					LOG_DEBUG("Table is filled");
 					retval=BET_LN_check(bet);
 					if(retval<0)
 						goto end;
