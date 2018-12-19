@@ -75,7 +75,7 @@ static inline char *timenow();
 #define DEBUG_TAG   "DEBUG"
 
 #if LOG_LEVEL >= DEBUG_LEVEL
-#define LOG_DEBUG(message, args...)     PRINTFUNCTION(LOG_FMT message NEWLINE, LOG_ARGS(DEBUG_TAG), ## args)
+#define LOG_DEBUG(format, ...) fprintf (stderr, format, ## __VA_ARGS__)
 #else
 #define LOG_DEBUG(message, args...)
 #endif
