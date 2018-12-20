@@ -1077,8 +1077,8 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 		if((channel_state != 2) && (channel_state != 3))
 		{
 			argc=6;
-			for(int i=0;i<argc;i++)
-				memset(argv[i],0x00,sizeof(argv[i]));
+			for(int j=0;j<argc;j++)
+				memset(argv[j],0x00,sizeof(argv[j]));
 			strcpy(argv[0],"./bet");
 			strcpy(argv[1],"connect");
 			strcpy(argv[2],jstri(uriInfo,i));
@@ -1088,8 +1088,8 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 			ln_bet(argc,argv,buf);
 
 			argc=6;
-			for(int i=0;i<argc;i++)
-				memset(argv[i],0x00,sizeof(argv[i]));
+			for(int j=0;j<argc;j++)
+				memset(argv[j],0x00,sizeof(argv[j]));
 			strcpy(argv[0],"./bet");
 			strcpy(argv[1],"fundchannel");
 			strcpy(argv[2],channel_id);
