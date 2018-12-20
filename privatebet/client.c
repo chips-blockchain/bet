@@ -1070,7 +1070,7 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 	{
 		for(int i=0;i<cJSON_GetArraySize(uriInfo);i++)
 		{
-			printf("\n%s",jstri(uriInfo,i);
+			printf("\n%s",jstri(uriInfo,i));
 		}
 	}
 	else
