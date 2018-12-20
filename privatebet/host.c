@@ -1238,6 +1238,7 @@ int32_t BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct priva
 int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
     char *method; int32_t bytes,retval=1;
+	char *rendered=NULL;
 	
     if ( (method= jstr(argjson,"method")) != 0 )
     {
@@ -1312,11 +1313,27 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 			retval=BET_award_winner(argjson,bet,vars);
 		}
+		else if(strcmp(method,"requestShare") == 0 )
+		{	
+			rendered= cJSON_Print(argjson);
+			printf("\n%s:%d::%s",__FUNCTION__,__LINE__,rendered);
+			bytes=nn_bytes(bet->pubsock,rendered,strlen(rendered),0);
+			if(bytes<0)
+			{
+				retval=-1;
+				printf("\nMehtod: %s Failed to send data",method);
+				goto end;
+			}
+		}
 		else
     	{
     		bytes=nn_send(bet->pubsock,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
 			if(bytes<0)
+			{
 				retval=-1;
+				printf("\nMehtod: %s Failed to send data",method);
+				goto end;
+			}
     	}
     }
 	printf("\n");
