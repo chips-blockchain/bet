@@ -1317,7 +1317,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		{	
 			rendered= cJSON_Print(argjson);
 			printf("\n%s:%d::%s",__FUNCTION__,__LINE__,rendered);
-			for(int i=0;i<2;i++)
+			for(int i=0;i<1;i++)
 			{
 				bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 				if(bytes<0)
@@ -1326,8 +1326,8 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 					printf("\nMehtod: %s Failed to send data",method);
 					goto end;
 				}
-				sleep(5);
-				printf("\nSending again");
+				//sleep(5);
+				//printf("\nSending again");
 			}
 		}
 		else

@@ -1644,7 +1644,7 @@ int32_t BET_p2p_get_own_share(cJSON *argjson,struct privatebet_info *bet,struct 
 }
 int32_t BET_p2p_client_turn(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int32_t retval=1,playerid;
+	int32_t retval=1,playerid,flag=1;
 	
    	
 	playerid=jint(argjson,"playerid");
@@ -1658,12 +1658,20 @@ int32_t BET_p2p_client_turn(cJSON *argjson,struct privatebet_info *bet,struct pr
 			printf("Failing to get own share: Decryption Error");
 			goto end;
 		}
-		for(int i=0;i<bet->numplayers;i++)
+		while(1)
 		{
-			if(!sharesflag[jint(argjson,"cardid")][i])
+			flag=1;
+			for(int i=0;i<bet->numplayers;i++)
 			{
-				retval=BET_p2p_client_ask_share(bet,jint(argjson,"cardid"),jint(argjson,"playerid"));	
+				if((!sharesflag[jint(argjson,"cardid")][i]) && (i != bet->myplayerid))
+				{
+					retval=BET_p2p_client_ask_share(bet,jint(argjson,"cardid"),jint(argjson,"playerid"));	
+					flag=0;
+					sleep(5);
+				}
 			}
+			if(flag)
+				break;
 		}
 	}
 	end:	
