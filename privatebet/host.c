@@ -791,7 +791,7 @@ int32_t BET_check_BVV_Ready(struct privatebet_info *bet)
 	for(int i=0;i<bet->maxplayers;i++)
 	{
 		cJSON_AddItemToArray(uriInfo,cJSON_CreateString(dcv_info.uri[i]));
-		printf("\n%s:%d::%s",,__FUNCTION__,__LINE__,cJSON_CreateString(dcv_info.uri[i]));
+		printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(cJSON_CreateString(dcv_info.uri[i])));
 	}
 	rendered=cJSON_Print(bvvReady);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
