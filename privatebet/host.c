@@ -1319,6 +1319,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 				retval=-1;
     	}
     }
+	printf("\n");
 	end:
     	return retval;
 }

@@ -1570,7 +1570,7 @@ int32_t BET_p2p_client_give_share(cJSON *argjson,struct privatebet_info *bet,str
 	
 	playerid=jint(argjson,"playerid");
 	cardid=jint(argjson,"cardid");
-
+	printf("\nplayerid= %d, my player id: %d",playerid,bet->myplayerid);
 	if(playerid==bet->myplayerid)
 		goto end;
 	
