@@ -338,7 +338,7 @@ int main(int argc, char **argv)
 
 	range = (range % 52) + 1;
 	numplayers = (numplayers % (CARDS777_MAXPLAYERS-1)) + 2;
-	range=52;
+	range=6;
 	numplayers=2;
     Maxplayers=2;
 	if((argc>=2)&&(strcmp(argv[1],"dcv")==0))
@@ -891,6 +891,7 @@ struct pair256 p2p_bvv_init(bits256 *keys,struct pair256 b_key,bits256 *blinding
     int32_t i,j,k,M,permi,permis[256]; uint8_t space[8192]; bits256 cardshares[CARDS777_MAXPLAYERS],basepoint,temp_hash[CARDS777_MAXCARDS];
     char str[65],share_str[177];
     struct enc_share temp;
+	char hexstr[65];
 	/*
 	for (i=0; i<numcards; i++){
 		temp_hash[i]=g_hash[playerid][i];
@@ -913,12 +914,14 @@ struct pair256 p2p_bvv_init(bits256 *keys,struct pair256 b_key,bits256 *blinding
     M = (numplayers/2) + 1;
     
     gfshare_calc_sharenrs(sharenrs,numplayers,deckid.bytes,sizeof(deckid)); // same for all players for this round
-	
+		printf("\nPlayer id:%d", playerid);
         for (i=0; i<numcards; i++)
         {
+        	printf("\nCard id: %d", i);
             gfshare_calc_shares(cardshares[0].bytes,blindings[i].bytes,sizeof(bits256),sizeof(bits256),M,numplayers,sharenrs,space,sizeof(space));
             // create combined allshares
             for (j=0; j<numplayers; j++) {
+				printf("%s --> ",bits256_str(hexstr,cardshares[j]));
 				BET_ciphercreate(b_key.priv,keys[j],temp.bytes,cardshares[j].bytes,sizeof(cardshares[j]));
 				memcpy(g_shares[numplayers*numcards*playerid+ i*numplayers + j].bytes,temp.bytes,sizeof(temp));
 			}
