@@ -1056,7 +1056,7 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 {
 	int retval,channel_state,argc,maxsize=10000,bytes;
 	cJSON *uriInfo=NULL,*fundChannelInfo=NULL,*bvvReady=NULL;
-	char uri[100],channel_id,**argv,*buf,*rendered;
+	char uri[100],channel_id[100],**argv,*buf,*rendered;
 	argc=6;
 	argv=(char**)malloc(argc*sizeof(char*));
 	for(int i=0;i<argc;i++)
