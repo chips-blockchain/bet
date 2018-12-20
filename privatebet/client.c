@@ -1071,9 +1071,9 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 	for(int i=0;i<cJSON_GetArraySize(uriInfo);i++)
 	{
 		
-		strcpy(uri,cJSON_str(cJSON_GetArrayItem(uriInfo,i)));
+		strcpy(uri,jstri(uriInfo,i));
 		printf("\n%s:%d::%s",__FUNCTION__,__LINE__,uri);
-		strcpy(channel_id,strtok(cJSON_str(cJSON_GetArrayItem(uriInfo,i)),"@"));
+		strcpy(channel_id,strtok(jstri(uriInfo,i),"@"));
 		channel_state=LN_get_channel_status(channel_id);
 		if((channel_state != 2) && (channel_state != 3))
 		{
@@ -1115,7 +1115,7 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 	}
 	for(int i=0;i<cJSON_GetArraySize(uriInfo);i++)
 	{
-		strcpy(channel_id,strtok(cJSON_str(cJSON_GetArrayItem(uriInfo,i)),"@"));
+		strcpy(channel_id,strtok(jstri(uriInfo,i),"@"));
 		while((channel_state=LN_get_channel_status(channel_id)) != 3)
 		{
 			if(channel_state == 2)
