@@ -792,7 +792,6 @@ int32_t BET_check_BVV_Ready(struct privatebet_info *bet)
 	{
 		printf("\n%s--->%s\n",dcv_info.uri[i],cJSON_Print(cJSON_CreateString(dcv_info.uri[i])));
 		cJSON_AddItemToArray(uriInfo,cJSON_CreateString(dcv_info.uri[i]));
-		cJSON_AddItemToArray(cJSON * array,cJSON * item)
 	}
 	rendered=cJSON_Print(bvvReady);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
