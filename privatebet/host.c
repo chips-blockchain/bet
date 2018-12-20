@@ -1289,6 +1289,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 				if(retval<0)
 					goto end;
 			}
+			sleep(5);
 			retval=BET_p2p_dcv_start(argjson,bet,vars);
 		}
 		else if(strcmp(method,"turn_status") == 0)
