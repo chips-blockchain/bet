@@ -1074,7 +1074,15 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 			{
 				cJSON_Print(cJSON_GetArrayItem(uriInfo,i));
 			}
+			else
+			{
+				printf("\nNot an object");
+			}
 		}
+	}
+	else
+	{
+		printf("\nNot an array");
 	}
 	printf("\n%s:%d Number of uris:%d",__FUNCTION__,__LINE__,cJSON_GetArraySize(uriInfo));
 	#if 0
