@@ -1227,7 +1227,7 @@ int32_t BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct priva
 	if(strcmp(jstr(payResponse,"status"),"complete")==0)
 	{
 		printf("\nPayment Success\n");
-		BET_p2p_LN_close(bet);
+		//BET_p2p_LN_close(bet);
 	}
 			
 	end:
