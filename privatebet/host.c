@@ -1038,7 +1038,7 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 {
 	char channel_id[100],channel_state;
 	int argc,retval=1;
-	char **argv,*buf=NULL;
+	char **argv,*buf=NULL,uri[100];
 	cJSON *peerInfo=NULL,*fundChannelInfo=NULL;
 	argc=6;
 	argv=(char**)malloc(argc*sizeof(char*));
@@ -1046,7 +1046,8 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 		argv[i]=(char*)malloc(100);
 	buf=(char*)malloc(10000);
 	printf("\nBefore:%s",dcv_info.bvv_uri);
-	strcpy(channel_id,strtok(dcv_info.bvv_uri, "@"));
+	strcpy(uri,dcv_info.bvv_uri);
+	strcpy(channel_id,strtok(uri, "@"));
 	channel_state=LN_get_channel_status(channel_id);
 	printf("\nAfter:%s",dcv_info.bvv_uri);
 	if((channel_state != 2) && (channel_state != 3))
@@ -1105,7 +1106,8 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 
 	for(int i=0;i<bet->maxplayers;i++)
 	{
-		strcpy(channel_id,strtok(dcv_info.uri[i], "@"));
+		strcpy(uri,dcv_info.uri[i]);
+		strcpy(channel_id,strtok(uri, "@"));
 
 		while((channel_state=LN_get_channel_status(channel_id)) != 3)
 		{
