@@ -1070,26 +1070,24 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 	{
 		
 		strcpy(uri,jstri(uriInfo,i));
-		printf("\n%s:%d::%s",__FUNCTION__,__LINE__,uri);
 		strcpy(channel_id,strtok(uri,"@"));
-		printf("\n%s:%d::%s",__FUNCTION__,__LINE__,channel_id);
 		channel_state=LN_get_channel_status(channel_id);
 		if((channel_state != 2) && (channel_state != 3))
 		{
 			argc=6;
 			for(int j=0;j<argc;j++)
-				memset(argv[j],0x00,sizeof(argv[j]));
+				memset(argv[j],0,sizeof(argv[j]));
 			strcpy(argv[0],"./bet");
 			strcpy(argv[1],"connect");
 			strcpy(argv[2],jstri(uriInfo,i));
 			argv[3]=NULL;
 			argc=3;
-			memset(buf,0x00,sizeof(buf));
+			memset(buf,0,sizeof(buf));
 			ln_bet(argc,argv,buf);
 
 			argc=6;
 			for(int j=0;j<argc;j++)
-				memset(argv[j],0x00,sizeof(argv[j]));
+				memset(argv[j],0,sizeof(argv[j]));
 			strcpy(argv[0],"./bet");
 			strcpy(argv[1],"fundchannel");
 			strcpy(argv[2],channel_id);
@@ -1098,7 +1096,7 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 			argc=4;
 
 			
-			memset(buf,0x00,sizeof(buf));
+			memset(buf,0,sizeof(buf));
 			ln_bet(argc,argv,buf);
 
 			fundChannelInfo=cJSON_CreateObject();
