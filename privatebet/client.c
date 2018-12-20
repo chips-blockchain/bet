@@ -1066,6 +1066,7 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 	buf=(char*)malloc(maxsize);
 	
 	uriInfo=cJSON_GetObjectItem(argjson,"uri_info");
+	printf("\n%s:%d Number of uris:%d",__FUNCTION__,__LINE__,cJSON_GetArraySize(uriInfo));
 	for(int i=0;i<cJSON_GetArraySize(uriInfo);i++)
 	{
 		strcpy(uri,jstri(uriInfo,i));
@@ -1162,6 +1163,7 @@ int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct pri
 		}
 		else if(strcmp(method,"check_bvv_ready") == 0)
 		{
+			printf("\n%s:%d:: %s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 			BET_p2P_check_bvv_ready(argjson,bet,vars);
 		}
         else

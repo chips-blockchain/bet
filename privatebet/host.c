@@ -787,8 +787,7 @@ int32_t BET_check_BVV_Ready(struct privatebet_info *bet)
 	cJSON *bvvReady=NULL,*uriInfo=NULL;
 	bvvReady=cJSON_CreateObject();
 	cJSON_AddStringToObject(bvvReady,"method","check_bvv_ready");
-	uriInfo=cJSON_CreateArray();
-	cJSON_AddItemToObject(uriInfo,"uri_info",uriInfo);
+	cJSON_AddItemToObject(bvvReady,"uri_info",uriInfo=cJSON_CreateArray());
 	for(int i=0;i<bet->maxplayers;i++)
 	{
 		cJSON_AddItemToArray(uriInfo,cJSON_CreateString(dcv_info.uri[i]));
