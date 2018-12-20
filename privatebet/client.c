@@ -1070,7 +1070,9 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 	{
 		
 		strcpy(uri,jstri(uriInfo,i));
+		printf("\n%s:%d::%s",__FUNCTION__,__LINE__,uri);
 		strcpy(channel_id,strtok(uri,"@"));
+		printf("\n%s:%d::%s",__FUNCTION__,__LINE__,channel_id);
 		channel_state=LN_get_channel_status(channel_id);
 		if((channel_state != 2) && (channel_state != 3))
 		{
