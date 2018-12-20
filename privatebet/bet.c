@@ -917,7 +917,7 @@ struct pair256 p2p_bvv_init(bits256 *keys,struct pair256 b_key,bits256 *blinding
 		printf("\nPlayer id:%d", playerid);
         for (i=0; i<numcards; i++)
         {
-        	printf("\nCard id: %d", i);
+        	printf("\nCard id: %d\n", i);
             gfshare_calc_shares(cardshares[0].bytes,blindings[i].bytes,sizeof(bits256),sizeof(bits256),M,numplayers,sharenrs,space,sizeof(space));
             // create combined allshares
             for (j=0; j<numplayers; j++) {

@@ -960,6 +960,7 @@ int32_t BET_p2p_bvv_init(cJSON *argjson,struct privatebet_info *bet,struct priva
 	{
 		p2p_bvv_init(peerpubkeys,bvv_info.bvv_key,bvvblindingvalues[playerid],bvvblindcards[playerid],
 			dcvblindcards[playerid],bet->range,bvv_info.numplayers,playerid,bvv_info.deckid);
+		sleep(5);
 
 	}
 	
