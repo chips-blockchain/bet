@@ -1317,12 +1317,17 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		{	
 			rendered= cJSON_Print(argjson);
 			printf("\n%s:%d::%s",__FUNCTION__,__LINE__,rendered);
-			bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
-			if(bytes<0)
+			for(int i=0;i<2;i++)
 			{
-				retval=-1;
-				printf("\nMehtod: %s Failed to send data",method);
-				goto end;
+				bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+				if(bytes<0)
+				{
+					retval=-1;
+					printf("\nMehtod: %s Failed to send data",method);
+					goto end;
+				}
+				sleep(5);
+				printf("\nSending again");
 			}
 		}
 		else
