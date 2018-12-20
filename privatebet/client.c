@@ -1051,6 +1051,40 @@ int32_t BET_p2p_bvv_join_init(cJSON *argjson,struct privatebet_info *bet,struct 
 		return retval;
 	
 }
+void BET_p2p_connect(char *response, char *uri)
+{
+	char **argv;
+	int argc=4;
+	argv=(char**)malloc(argc*sizeof(char*));
+	for(int i=0;i<argc;i++)
+		argv[i]=(char*)malloc(100*sizeof(char));
+
+	strcpy(argv[0],"./bet");
+	strcpy(argv[1],"connect");
+	strcpy(argv[2],uri);
+	argv[3]=NULL
+
+	ln_bet(argc-1,argv,response);
+}
+
+void BET_p2p_fundchannel(char *response, char *channel_id,char *satohis)
+{
+	char **argv;
+	int argc=5;
+	argv=(char**)malloc(argc*sizeof(char*));
+	for(int i=0;i<argc;i++)
+		argv[i]=(char*)malloc(100*sizeof(char));
+
+	strcpy(argv[0],"./bet");
+	strcpy(argv[1],"fundchannel");
+	strcpy(argv[2],channel_id);
+	strcpy(argv[3],satohis);
+	argv[4]=NULL
+
+	ln_bet(argc-1,argv,response);
+}
+
+
 
 int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
@@ -1074,26 +1108,9 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 		channel_state=LN_get_channel_status(channel_id);
 		if((channel_state != 2) && (channel_state != 3))
 		{
-			strcpy(argv[0],"./bet");
-			strcpy(argv[1],"connect");
-			strcpy(argv[2],jstri(uriInfo,i));
-			argv[3]=NULL;
-			argc=3;
+			BET_p2p_connect(buf,jstri(uriInfo,i));
 			memset(buf,0,sizeof(buf));
-			ln_bet(argc,argv,buf);
-
-			#if 0
-			strcpy(argv[0],"./bet");
-			strcpy(argv[1],"fundchannel");
-			strcpy(argv[2],channel_id);
-			strcpy(argv[3],"500000");
-			argv[4]=NULL;
-			argc=4;
-
-			
-			memset(buf,0,sizeof(buf));
-			ln_bet(argc,argv,buf);
-
+			BET_p2p_fundchannel(buf,channel_id,"50000");
 			fundChannelInfo=cJSON_CreateObject();
 			fundChannelInfo=cJSON_Parse(buf);
 
@@ -1103,10 +1120,8 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 				printf("\n%s:%d: Message: %s",__FUNCTION__,__LINE__,jstr(fundChannelInfo,"message"));
 				goto end;
 			}
-			#endif
 		}
 	}
-	#if 0
 	for(int i=0;i<cJSON_GetArraySize(uriInfo);i++)
 	{
 		strcpy(uri,jstri(uriInfo,i));
@@ -1136,7 +1151,6 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
     bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 	if(bytes<0)
 		retval=-1;
-	#endif
 	end:
 		return retval;
 }
