@@ -1062,7 +1062,7 @@ void BET_p2p_connect(char *response, char *uri)
 	strcpy(argv[0],"./bet");
 	strcpy(argv[1],"connect");
 	strcpy(argv[2],uri);
-	argv[3]=NULL
+	argv[3]=NULL;
 
 	ln_bet(argc-1,argv,response);
 }
@@ -1079,7 +1079,7 @@ void BET_p2p_fundchannel(char *response, char *channel_id,char *satohis)
 	strcpy(argv[1],"fundchannel");
 	strcpy(argv[2],channel_id);
 	strcpy(argv[3],satohis);
-	argv[4]=NULL
+	argv[4]=NULL;
 
 	ln_bet(argc-1,argv,response);
 }
