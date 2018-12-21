@@ -998,7 +998,7 @@ int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 			printf("\n For Player id: %d, cards: ",i);
 			for(int j=0;j<hand_size;j++)
 			{
-				printf("%d\t",card_values[hand_size][i]);
+				printf("%d\t",card_values[j][i]);
 			}
 		}
 	}
