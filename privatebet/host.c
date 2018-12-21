@@ -1012,7 +1012,8 @@ int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 	card_matrix[(cardid/bet->maxplayers)][(cardid%bet->maxplayers)]=1;
 	card_values[(cardid/bet->maxplayers)][(cardid%bet->maxplayers)]=jint(playerCardInfo,"decoded_card");
 
-	
+	unsigned char h[5];
+	unsigned long score[2];
 	if((retval=BET_p2p_dcv_turn(playerCardInfo,bet,vars)) ==2)
 	{
 		printf("\nHere are the cards:\n");
@@ -1024,7 +1025,19 @@ int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 				int temp=card_values[i][j];
 				//printf("%d\t",card_values[j][i]);
 				printf("%s-->%s \t",suit[temp/13],face[temp%13]);
+				h[j]=(unsigned char)card_values[i][j];
+			
 			}
+				printf("\nscore:%ld",FiveCardDrawScore(h));
+				score[i]=FiveCardDrawScore(h);
+		}
+		if(score[0]>score[1])
+		{
+			printf("\nPlayer 0 is won");
+		}
+		else
+		{
+			printf("\nPlayer 1 is won");
 		}
 	}
 	/*	
