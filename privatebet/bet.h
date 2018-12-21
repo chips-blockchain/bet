@@ -256,9 +256,6 @@ https://crypto.stanford.edu/~pgolle/papers/poker.pdf
 #endif
 #include "common.h"
 
-#define hand_size 5
-#define NSUITS 4
-#define NFACES 13
 char* suit[NSUITS]= {"hearts","spades","clubs","diamonds"};
 char* face[NFACES]= {"ace","two","three","four","five","six","seven","eight","nine",
                      "ten","jack","queen","king"
