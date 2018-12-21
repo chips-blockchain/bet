@@ -34,8 +34,11 @@ struct privatebet_rawpeerln Rawpeersln[CARDS777_MAXPLAYERS+1],oldRawpeersln[CARD
 struct privatebet_peerln Peersln[CARDS777_MAXPLAYERS+1];
 int32_t Num_rawpeersln,oldNum_rawpeersln,Num_peersln,Numgames;
 int32_t players_joined=0;
-int32_t turn=0,no_of_cards=0,no_of_rounds=0,no_of_bets=0;
+int32_t turn=0,no_of_cards=0,no_of_rounds=0,no_of_bets=0,hand_size=0;
 int32_t eval_game_p[CARDS777_MAXPLAYERS],eval_game_c[CARDS777_MAXPLAYERS];
+int32_t card_matrix[CARDS777_MAXPLAYERS][hand_size];
+int32_t card_values[CARDS777_MAXPLAYERS][hand_size];
+int32_t all_player_cards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 struct deck_dcv_info dcv_info;
 
 int32_t invoiceID;
@@ -695,7 +698,29 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 	int32_t retval=1,bytes;
 	cJSON *turninfo=NULL;
 	char *rendered=NULL;
+	int flag=1;
 
+	for(int i=0;i<hand_size;i++)
+	{
+		for(int j=0;j<bet->maxplayers;j++)
+		{
+			if(card_matrix[i][j] == 0)
+			{
+				flag=0
+				turninfo=cJSON_CreateObject();
+				cJSON_AddStringToObject(turninfo,"method","turn");
+				cJSON_AddNumberToObject(turninfo,"playerid",j);
+				cJSON_AddNumberToObject(turninfo,"cardid",((i*bet->maxplayers)+j));
+				rendered=cJSON_Print(turninfo);
+				bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+				if(bytes<0)
+					retval=-1;
+				goto end;
+	
+			}
+		}
+	}
+	/*
 	turninfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(turninfo,"method","turn");
 	cJSON_AddNumberToObject(turninfo,"playerid",(turn)%bet->maxplayers);
@@ -709,7 +734,10 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 		retval=-1;
 		printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
 		goto end;
-	}	
+	}
+	*/
+	if(flag)
+		retval=2;
 	end:	
 		return retval;
 }
@@ -953,14 +981,31 @@ int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 	cardid=jint(playerCardInfo,"cardid");
 	cJSON *betGame=NULL;
 	char *rendered=NULL;
-	int32_t bytes;
+	int32_t bytes,flag=0;
 	eval_game_p[no_of_cards]=playerid;
 	eval_game_c[no_of_cards]=cardid;
 	no_of_cards++;
-        
-	if(no_of_cards<bet->maxplayers) //bet->range
-		retval=BET_p2p_dcv_turn(playerCardInfo,bet,vars);
 
+	card_matrix[(cardid/bet->maxplayers)][(cardid%bet->maxplayers)]=1;
+	card_values[(cardid/bet->maxplayers)][(cardid%bet->maxplayers)]=cardid;
+
+	
+	if(BET_p2p_dcv_turn(playerCardInfo,bet,vars) ==2)
+	{
+		printf("\nHere are the cards:\n");
+		for(int i=0;i<bet->maxplayers;i++)
+		{
+			printf("\n For Player id: %d, cards: ",i);
+			for(int j=0;j<hand_size;j++)
+			{
+				printf("%d\t",card_values[hand_size][i]);
+			}
+		}
+	}
+	/*	
+	
+	if(no_of_cards<bet->maxplayers) //bet->range
+			retval=BET_p2p_dcv_turn(playerCardInfo,bet,vars);
 	if(no_of_cards==bet->maxplayers)
 	{
 		betGame=cJSON_CreateObject();
@@ -975,7 +1020,7 @@ int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 			goto end;
 		}
 			
-	}
+	}*/
 	end:
 		return retval;
 		
@@ -1360,6 +1405,13 @@ void BET_p2p_hostloop(void *_ptr)
 	dcv_info.dcv_key.priv=curve25519_keypair(&dcv_info.dcv_key.prod);
 
 	invoiceID=0;	
+	for(int i=0;i<hand_size;i++)
+	{
+		for(int j=0;j<bet->maxplayers;j++)
+		{
+			card_matrix[i][j]=0;
+		}
+	}
 	
 	for(int i=0;i<bet->range;i++)
 	{

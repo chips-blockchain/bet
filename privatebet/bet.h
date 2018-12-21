@@ -255,6 +255,12 @@ https://crypto.stanford.edu/~pgolle/papers/poker.pdf
 #include "/usr/local/include/nng/compat/nanomsg/pair.h"
 #endif
 #include "common.h"
+char* suit[NSUITS]= {"hearts","spades","clubs","diamonds"};
+char* face[NFACES]= {"ace","two","three","four","five","six","seven","eight","nine",
+                     "ten","jack","queen","king"
+                    };
+
+
 /*
 #define CARDS777_MAXCARDS 255 //52    //
 #define CARDS777_MAXPLAYERS 10 //9   //

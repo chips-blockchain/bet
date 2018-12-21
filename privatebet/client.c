@@ -44,6 +44,8 @@ int32_t sharesflag[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 struct deck_player_info player_info;
 struct deck_bvv_info bvv_info;
 int32_t no_of_shares=0;
+int32_t player_cards[CARDS777_MAXCARDS];
+int32_t no_of_player_cards=0;
 //uint8_t sharenrs[256];
 
 char *LN_db="../../.chipsln/lightningd1.sqlite3";
@@ -1299,6 +1301,8 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
 				            {
 				                printf("\nplayer.%d decoded card %s value %d\n",bet->myplayerid,bits256_str(str,decoded),player_info.cardprivkeys[m].bytes[30]);
 								printf("\n");
+								player_cards[no_of_player_cards]=bits256_str(str,decoded);
+								no_of_player_cards++;
 				        		tmp=player_info.cardprivkeys[m];
 								flag=1;
 								goto end;
