@@ -34,7 +34,7 @@ struct privatebet_rawpeerln Rawpeersln[CARDS777_MAXPLAYERS+1],oldRawpeersln[CARD
 struct privatebet_peerln Peersln[CARDS777_MAXPLAYERS+1];
 int32_t Num_rawpeersln,oldNum_rawpeersln,Num_peersln,Numgames;
 int32_t players_joined=0;
-int32_t turn=0,no_of_cards=0,no_of_rounds=0,no_of_bets=0,hand_size=0;
+int32_t turn=0,no_of_cards=0,no_of_rounds=0,no_of_bets=0,hand_size=5;
 int32_t eval_game_p[CARDS777_MAXPLAYERS],eval_game_c[CARDS777_MAXPLAYERS];
 int32_t card_matrix[CARDS777_MAXPLAYERS][hand_size];
 int32_t card_values[CARDS777_MAXPLAYERS][hand_size];
@@ -706,7 +706,7 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 		{
 			if(card_matrix[i][j] == 0)
 			{
-				flag=0
+				flag=0;
 				turninfo=cJSON_CreateObject();
 				cJSON_AddStringToObject(turninfo,"method","turn");
 				cJSON_AddNumberToObject(turninfo,"playerid",j);
@@ -990,7 +990,7 @@ int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 	card_values[(cardid/bet->maxplayers)][(cardid%bet->maxplayers)]=cardid;
 
 	
-	if(BET_p2p_dcv_turn(playerCardInfo,bet,vars) ==2)
+	if((retval=BET_p2p_dcv_turn(playerCardInfo,bet,vars)) ==2)
 	{
 		printf("\nHere are the cards:\n");
 		for(int i=0;i<bet->maxplayers;i++)
