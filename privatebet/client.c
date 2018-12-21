@@ -1238,7 +1238,7 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
 	uint8_t **shares;
     uint8_t decipher[sizeof(bits256) + 1024],*ptr; int32_t recvlen;
 	char str[65];
-	
+	char hexstr [ 65 ];
 	numplayers=bet->maxplayers;
 	numcards=bet->range;
 	shares=calloc(numplayers,sizeof(uint8_t*));
@@ -1271,7 +1271,16 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
 		}
 	}
 
+	printf("\nV- Hashes\n");
+	for (int i=0; i<bet->range; i++)
+    {
+        for (int j=0; j<bet->range; j++)
+        {
+        	printf("\n%d:%d::%s",i,j,bits256_str(hexstr,v_hash[i][j]));
+        }
+	}	
 
+	printf("\nSearching Hash:%s\n",bits256_str(str,g_hash[bet->myplayerid][cardid]));
 	basepoint=curve25519_basepoint9();
 	for (int i=0; i<bet->range; i++)
     {
@@ -1752,7 +1761,7 @@ int32_t BET_p2p_client_dcv_init(cJSON *dcv_info,struct privatebet_info *bet,stru
 {
 	int32_t retval=1;
 	cJSON *cjsoncardprods,*cjsong_hash;
-	
+	char hexstr [ 65 ];
 	
 	player_info.deckid=jbits256(dcv_info,"deckid");
 	cjsoncardprods=cJSON_GetObjectItem(dcv_info,"cardprods");
@@ -1768,14 +1777,18 @@ int32_t BET_p2p_client_dcv_init(cJSON *dcv_info,struct privatebet_info *bet,stru
 	
 	cjsong_hash=cJSON_GetObjectItem(dcv_info,"g_hash");
 	
+	printf("\nG- Hashes:\n");
 	for(int i=0;i<bet->numplayers;i++)
 	{
 		for(int j=0;j<bet->range;j++)
 		{
 			g_hash[i][j]=jbits256i(cjsong_hash,i*bet->range+j);
+			printf("\n%d:%d:%s",i,j,bits256_str(hexstr,g_hash[i][j]));
 		}
 	}
 
+	
+	
 	return retval;
 }
 
