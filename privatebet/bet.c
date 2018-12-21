@@ -914,14 +914,14 @@ struct pair256 p2p_bvv_init(bits256 *keys,struct pair256 b_key,bits256 *blinding
     M = (numplayers/2) + 1;
     
     gfshare_calc_sharenrs(sharenrs,numplayers,deckid.bytes,sizeof(deckid)); // same for all players for this round
-		//printf("\nPlayer id:%d", playerid);
+		printf("\nPlayer id:%d", playerid);
         for (i=0; i<numcards; i++)
         {
-        	//printf("\nCard id: %d\n", i);
+        	printf("\nCard id: %d\n", i);
             gfshare_calc_shares(cardshares[0].bytes,blindings[i].bytes,sizeof(bits256),sizeof(bits256),M,numplayers,sharenrs,space,sizeof(space));
             // create combined allshares
             for (j=0; j<numplayers; j++) {
-				//printf("%s --> ",bits256_str(hexstr,cardshares[j]));
+				printf("%s --> ",bits256_str(hexstr,cardshares[j]));
 				BET_ciphercreate(b_key.priv,keys[j],temp.bytes,cardshares[j].bytes,sizeof(cardshares[j]));
 				memcpy(g_shares[numplayers*numcards*playerid+ i*numplayers + j].bytes,temp.bytes,sizeof(temp));
 			}
