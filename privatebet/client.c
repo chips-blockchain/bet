@@ -1761,7 +1761,7 @@ int32_t BET_p2p_client_bvv_init(cJSON *argjson,struct privatebet_info *bet,struc
 				vcalc_sha256(0,v_hash[i][j].bytes,temp.bytes,sizeof(temp));
 			}
 		}
-
+	BET_p2p_client_player_ready(argjson,bet,vars);
 	return retval;
 }
 
@@ -2045,8 +2045,6 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		else if(strcmp(method,"init_b") == 0)
 		{
 			retval=BET_p2p_client_bvv_init(argjson,bet,vars);
-			if(retval)
-				BET_p2p_client_player_ready(argjson,bet,vars);
 		}
 		else if(strcmp(method,"turn") == 0)
 		{
