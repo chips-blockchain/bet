@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#define CARDS777_MAXCARDS 255 //52    //
+#define CARDS777_MAXCARDS 52 //52    //
 #define CARDS777_MAXPLAYERS 10 //9   //
 #define CARDS777_MAXROUNDS 3 //9   //
 #define CARDS777_MAXCHIPS 1000

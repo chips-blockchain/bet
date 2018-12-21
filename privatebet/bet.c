@@ -112,7 +112,7 @@ char *issue_LP_psock(char *destip,uint16_t destport,int32_t ispaired)
  */
 int32_t LP_numpeers()
 {
-	LOG_DEBUG("This needs to be fixed");
+	printf("This needs to be fixed");
     return(9);
 }
 struct LP_millistats
@@ -338,10 +338,9 @@ int main(int argc, char **argv)
 
 	range = (range % 52) + 1;
 	numplayers = (numplayers % (CARDS777_MAXPLAYERS-1)) + 2;
-	range=6;
+	range=52;
 	numplayers=2;
     Maxplayers=2;
-	printf("%s:%d, range:%d, numplayers:%d\n",__FUNCTION__,__LINE__,range,numplayers);
 	if((argc>=2)&&(strcmp(argv[1],"dcv")==0))
 	{
 		
@@ -349,17 +348,9 @@ int main(int argc, char **argv)
 		/* This code is for sockets*/
 		BET_transportname(0,bindaddr,hostip,port);
 		pubsock = BET_nanosock(1,bindaddr,NN_PUB);
-		if(pubsock!=-1)
-			printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,pubsock);
-		else
-			printf("\nPubliser Socket is not established");
 		
 		BET_transportname(0,bindaddr1,hostip,port+1);
 		pullsock = BET_nanosock(1,bindaddr1,NN_PULL);
-		if(pullsock!=-1)
-			printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,pullsock);
-		else
-			printf("\nPull Socket is not established");
 			
 		#endif				  
 
@@ -388,18 +379,10 @@ int main(int argc, char **argv)
 			BET_transportname(0,bindaddr,hostip,port);
 			printf("\nBinding address:%s",bindaddr);
 		    subsock= BET_nanosock(0,bindaddr,NN_SUB);
-			if(subsock!=-1)
-				printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,subsock);
-			else
-				printf("\nPubliser Socket is not established");
 
 		    BET_transportname(0,bindaddr1,hostip,port+1);
 			printf("\nBinding address:%s",bindaddr);
 		    pushsock = BET_nanosock(0,bindaddr1,NN_PUSH);
-			if(pushsock!=-1)
-				printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,pushsock);
-			else
-				printf("\nPull Socket is not established");
 
 		#endif				  
 			BET_bvv=calloc(1,sizeof(struct privatebet_info));
@@ -426,20 +409,10 @@ int main(int argc, char **argv)
 		#if 1
 			/* This code is for sockets*/
 			BET_transportname(0,bindaddr,hostip,port);
-			printf("\nBinding address:%s",bindaddr);
 			subsock= BET_nanosock(0,bindaddr,NN_SUB);
-			if(subsock!=-1)
-				printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,subsock);
-			else
-				printf("\nPubliser Socket is not established");
 
 			BET_transportname(0,bindaddr1,hostip,port+1);
-			printf("\nBinding address:%s",bindaddr);
 			pushsock = BET_nanosock(0,bindaddr1,NN_PUSH);
-			if(pushsock!=-1)
-				printf("\n%s:%d:socket value:%d",__FUNCTION__,__LINE__,pushsock);
-			else
-				printf("\nPull Socket is not established");
 		#endif				  
 			BET_player=calloc(numplayers,sizeof(struct privatebet_info*));
 			BET_player=calloc(1,sizeof(struct privatebet_info));
@@ -918,6 +891,7 @@ struct pair256 p2p_bvv_init(bits256 *keys,struct pair256 b_key,bits256 *blinding
     int32_t i,j,k,M,permi,permis[256]; uint8_t space[8192]; bits256 cardshares[CARDS777_MAXPLAYERS],basepoint,temp_hash[CARDS777_MAXCARDS];
     char str[65],share_str[177];
     struct enc_share temp;
+	char hexstr[65];
 	/*
 	for (i=0; i<numcards; i++){
 		temp_hash[i]=g_hash[playerid][i];
@@ -928,23 +902,26 @@ struct pair256 p2p_bvv_init(bits256 *keys,struct pair256 b_key,bits256 *blinding
 		blindedcards[i] = fmul_donna(finalcards[permis_b[i]],blindings[i]);
 		//g_hash[playerid][i]=temp_hash[permis_b[i]];//optimization
 	}
+	/*
 	printf("\n%s:%d:For Player id:%d",__FUNCTION__,__LINE__,playerid);
 
 	for(i=0;i<numcards;i++)
 	{
 		printf("\nDCV card:%s",bits256_str(str,finalcards[permis_b[i]]));
 		printf("\nBVV card:%s",bits256_str(str,blindedcards[i]));
-	}
+	}*/
 	
     M = (numplayers/2) + 1;
     
     gfshare_calc_sharenrs(sharenrs,numplayers,deckid.bytes,sizeof(deckid)); // same for all players for this round
-	
+		//printf("\nPlayer id:%d", playerid);
         for (i=0; i<numcards; i++)
         {
+        	//printf("\nCard id: %d\n", i);
             gfshare_calc_shares(cardshares[0].bytes,blindings[i].bytes,sizeof(bits256),sizeof(bits256),M,numplayers,sharenrs,space,sizeof(space));
             // create combined allshares
             for (j=0; j<numplayers; j++) {
+				//printf("%s --> ",bits256_str(hexstr,cardshares[j]));
 				BET_ciphercreate(b_key.priv,keys[j],temp.bytes,cardshares[j].bytes,sizeof(cardshares[j]));
 				memcpy(g_shares[numplayers*numcards*playerid+ i*numplayers + j].bytes,temp.bytes,sizeof(temp));
 			}

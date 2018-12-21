@@ -88,7 +88,7 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-			LOG_DEBUG("Command Not Found");
+			printf("Command Not Found");
 		}
 	}
 	end:
@@ -118,7 +118,7 @@ struct pair256 bet_player_create()
     jaddbits256(playerInfo,"PubKey",key.prod);
 	jaddbits256(playerInfo,"PrivKey",key.priv); 
 
-	LOG_DEBUG(%s,cJSON_Print(playerInfo));
+	printf(%s,cJSON_Print(playerInfo));
 	cJSON_Delete(playerInfo);
 
 	return(key);
