@@ -23,7 +23,7 @@
 #include "commands.h"
 #include "payment.h"
 #include "../log/macrologger.h"
-
+#include "poker.c"
 //bits256 Mypubkey,Myprivkey;
 //int32_t IAMHOST;
 //int32_t Gamestart,Gamestarted;
