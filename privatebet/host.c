@@ -987,7 +987,7 @@ int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 	no_of_cards++;
 
 	card_matrix[(cardid/bet->maxplayers)][(cardid%bet->maxplayers)]=1;
-	card_values[(cardid/bet->maxplayers)][(cardid%bet->maxplayers)]=cardid;
+	card_values[(cardid/bet->maxplayers)][(cardid%bet->maxplayers)]=jint(playerCardInfo,"decoded_card");
 
 	
 	if((retval=BET_p2p_dcv_turn(playerCardInfo,bet,vars)) ==2)

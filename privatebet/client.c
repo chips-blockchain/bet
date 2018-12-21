@@ -1525,7 +1525,8 @@ int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,
 			playerCardInfo=cJSON_CreateObject();
 			cJSON_AddStringToObject(playerCardInfo,"method","playerCardInfo");
 			cJSON_AddNumberToObject(playerCardInfo,"playerid",bet->myplayerid);
-			cJSON_AddNumberToObject(playerCardInfo,"cardid",decoded256.bytes[30]);
+			cJSON_AddNumberToObject(playerCardInfo,"cardid",cardid);
+			cJSON_AddNumberToObject(playerCardInfo,"decoded_card",decoded256.bytes[30]);
 			
 			rendered=cJSON_Print(playerCardInfo);
 			bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
