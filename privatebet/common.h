@@ -25,11 +25,6 @@ extern int32_t Num_hostrhashes,Chips_paid;
 extern bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 
 #define hand_size 5
-#define NSUITS 4
-#define NFACES 13
-
-extern char* suit[NSUITS];
-extern char* face[NFACES];
 
 #endif
 
