@@ -149,7 +149,7 @@ static u32 FiveCardDrawScoreFast (u32 c0, u32 c1, u32 c2, u32 c3, u32 c4, u32 u)
 	return FOUR_KIND_SCORE + (m4 << SUBR_SHL) + m1;
 }
 
-static u32 FiveCardDrawScore (const u8 * h)
+u32 FiveCardDrawScore (const u8 * h)
 {
     u32 c0, c1, c2, c3, c4,u;
 	// Make suits powers of two.
