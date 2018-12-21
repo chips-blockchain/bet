@@ -1279,7 +1279,7 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
         {
         	if ( bits256_cmp(v_hash[i][j],g_hash[bet->myplayerid][cardid]) == 0 )
 			{
-				
+				printf("\nThere is a match\n");
 				#if 1
 				for(int m=0;m<bet->range;m++)
 				{
@@ -1293,8 +1293,6 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
 			            fe = crecip_donna(curve25519_fieldelement(hash));
 
 						decoded = curve25519(fmul_donna(refval,fe),basepoint);
-						printf("\nDecoded card:%s",bits256_str(str,decoded));
-						
 						for(int k=0;k<bet->range;k++)
 						{
 				            if ( bits256_cmp(decoded,player_info.cardprods[bet->myplayerid][k]) == 0 )
