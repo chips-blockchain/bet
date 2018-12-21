@@ -1293,7 +1293,7 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
 			            fe = crecip_donna(curve25519_fieldelement(hash));
 
 						decoded = curve25519(fmul_donna(refval,fe),basepoint);
-
+						printf("\nDecoded card:%s",bits256_str(str,decoded));
 						
 						for(int k=0;k<bet->range;k++)
 						{
@@ -1943,6 +1943,8 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
     if(bet->pushsock>=0)
 	{
 		key = deckgen_player(player_info.cardprivkeys,player_info.cardpubkeys,player_info.permis,bet->range);
+		for(int i=0;i<bet->range;i++)
+			printf("\ncardid:%d, private key:%s",i,bits256_str(hexstr,player_info.cardprivkeys[i]));
 		player_info.player_key=key;
         joininfo=cJSON_CreateObject();
         cJSON_AddStringToObject(joininfo,"method","join_req");
