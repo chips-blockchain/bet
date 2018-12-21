@@ -11,7 +11,6 @@
 #define BET_RESERVERATE 1.025
 #define LN_FUNDINGERROR "\"Cannot afford funding transaction\""
 
-
 extern bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 extern bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 extern int32_t permis_d[CARDS777_MAXCARDS],permis_b[CARDS777_MAXCARDS];
@@ -25,6 +24,7 @@ extern char *LN_idstr,Host_ipaddr[64],Host_peerid[67],Host_channel[64];
 extern int32_t Num_hostrhashes,Chips_paid;
 extern bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 
+#define hand_size 5
 #define NSUITS 4
 #define NFACES 13
 char* suit[NSUITS]= {"hearts","spades","clubs","diamonds"};
