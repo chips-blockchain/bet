@@ -42,8 +42,13 @@ int32_t all_player_cards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 struct deck_dcv_info dcv_info;
 int32_t player_ready[CARDS777_MAXPLAYERS];
 
-
+#define NSUITS 4
+#define NFACES 13
 int32_t invoiceID;
+char* suit[NSUITS]= {"hearts","spades","clubs","diamonds"};
+char* face[NFACES]= {"ace","two","three","four","five","six","seven","eight","nine",
+                     "ten","jack","queen","king"
+                    };
 
 
 struct privatebet_peerln *BET_peerln_find(char *peerid)
@@ -1016,7 +1021,9 @@ int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 			printf("\n For Player id: %d, cards: ",i);
 			for(int j=0;j<hand_size;j++)
 			{
-				printf("%d\t",card_values[j][i]);
+				int temp=card_values[i][j];
+				//printf("%d\t",card_values[j][i]);
+				printf("%s-->%s \t",suit[temp/13],face[temp%13]);
 			}
 		}
 	}
