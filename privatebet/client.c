@@ -1485,7 +1485,8 @@ int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,
 	share=jbits256(argjson,"share");
 	cardid=jint(argjson,"cardid");
 	playerid=jint(argjson,"playerid");
-
+	if(playerid==bet->myplayerid)
+		goto end;
 	printf("\n%s:%d:no_of_shares:%d,maxplayers:%d",__FUNCTION__,__LINE__,no_of_shares,bet->maxplayers);
 	if(sharesflag[cardid][playerid] ==0 )
 	{
