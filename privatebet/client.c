@@ -1945,8 +1945,6 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
     if(bet->pushsock>=0)
 	{
 		key = deckgen_player(player_info.cardprivkeys,player_info.cardpubkeys,player_info.permis,bet->range);
-		for(int i=0;i<bet->range;i++)
-			printf("\ncardid:%d, private key:%s",i,bits256_str(hexstr,player_info.cardprivkeys[i]));
 		player_info.player_key=key;
         joininfo=cJSON_CreateObject();
         cJSON_AddStringToObject(joininfo,"method","join_req");
