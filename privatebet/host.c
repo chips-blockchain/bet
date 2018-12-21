@@ -976,7 +976,7 @@ int32_t BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privat
 
 void BET_p2p_check_player_ready(cJSON *playerReady,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int flag=0;
+	int flag=1;
 	player_ready[jint(playerReady,"playerid")]=1;
 	for(int i=0;i<bet->maxplayers;i++)
 	{

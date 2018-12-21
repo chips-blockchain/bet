@@ -1706,6 +1706,7 @@ int32_t BET_p2p_client_player_ready(cJSON *argjson,struct privatebet_info *bet,s
 	cJSON_AddNumberToObject(playerReady,"playerid",bet->myplayerid);
 	rendered=cJSON_Print(playerReady);
 	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+	printf("\n%s",rendered);
 	if(bytes<0)
 		retval=-1;
 
