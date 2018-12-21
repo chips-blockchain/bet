@@ -34,3 +34,5 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars); // update game state based on host broadcast
 void BET_p2p_clientloop(void * _ptr);
 int32_t LN_get_channel_status(char *id);
+int32_t BET_p2p_client_player_ready(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
+

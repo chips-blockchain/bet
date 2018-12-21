@@ -1695,6 +1695,23 @@ int32_t BET_p2p_client_turn(cJSON *argjson,struct privatebet_info *bet,struct pr
 }
 
 
+int32_t BET_p2p_client_player_ready(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	cJSON *playerReady=NULL;
+	char *rendered=NULL;
+	int bytes,retval=1;
+	
+	playerReady=cJSON_CreateObject();
+	cJSON_AddStringToObject(playerReady,"method","player_ready");
+	cJSON_AddNumberToObject(playerReady,"playerid",bet->myplayerid);
+	rendered=cJSON_Print(playerReady);
+	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+	if(bytes<0)
+		retval=-1;
+
+	return retval;
+}
+
 
 int32_t BET_p2p_client_bvv_init(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 
@@ -2028,6 +2045,8 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		else if(strcmp(method,"init_b") == 0)
 		{
 			retval=BET_p2p_client_bvv_init(argjson,bet,vars);
+			if(retval)
+				BET_p2p_client_player_ready(argjson,bet,vars);
 		}
 		else if(strcmp(method,"turn") == 0)
 		{

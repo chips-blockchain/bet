@@ -40,6 +40,8 @@ int32_t card_matrix[CARDS777_MAXPLAYERS][hand_size];
 int32_t card_values[CARDS777_MAXPLAYERS][hand_size];
 int32_t all_player_cards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 struct deck_dcv_info dcv_info;
+int32_t player_ready[CARDS777_MAXPLAYERS];
+
 
 int32_t invoiceID;
 
@@ -972,6 +974,23 @@ int32_t BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privat
 		
 }
 
+void BET_p2p_check_player_ready(cJSON *playerReady,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	int flag=0;
+	jint(playerReady,"playerid");
+	player_ready[jint(playerReady,"playerid")]=1;
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		if(player_ready[i]==0)
+		{
+			flag=0;
+			break;
+		}
+	}
+	if(flag)
+		BET_p2p_dcv_start(NULL,bet,vars);
+}
+
 int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int32_t retval=1,playerid,cardid,max=-1;
@@ -1334,8 +1353,12 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 				if(retval<0)
 					goto end;
 			}
-			sleep(5);
-			retval=BET_p2p_dcv_start(argjson,bet,vars);
+			//sleep(5);
+			//retval=BET_p2p_dcv_start(argjson,bet,vars);
+		}
+		else if(strcmp(method,"player_ready") == 0)
+		{
+			BET_p2p_check_player_ready(argjson,bet,vars);
 		}
 		else if(strcmp(method,"turn_status") == 0)
 		{
@@ -1404,6 +1427,9 @@ void BET_p2p_hostloop(void *_ptr)
     dcv_info.deckid=rand256(0);
 	dcv_info.dcv_key.priv=curve25519_keypair(&dcv_info.dcv_key.prod);
 
+	for(int i=0;i<bet->maxplayers;i++)
+		player_ready[i]=0;	
+	
 	invoiceID=0;	
 	for(int i=0;i<hand_size;i++)
 	{
