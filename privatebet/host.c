@@ -716,23 +716,28 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 		}
 		printf("\n");
 	}
-	for(int i=0;i<hole_cards;i++)
+	if(!hole_cards_drawn)
 	{
-		for(int j=0;j<bet->maxplayers;j++)
+		for(int i=0;i<hole_cards;i++)
 		{
-			if(card_matrix[i][j]==0)
-				{
-					flag=0;
-					break;
-				}
+			for(int j=0;j<bet->maxplayers;j++)
+			{
+				if(card_matrix[i][j]==0)
+					{
+						flag=0;
+						break;
+					}
+			}
+			if(!flag)
+				break;
 		}
-		if(!flag)
-			break;
+		if(flag)
+			hole_cards_drawn=1;
+		else
+			flag=1;	
 	}
-	if(flag)
-		hole_cards_drawn=1;
-	else
-		flag=1;
+	
+	
 	
 	if(hole_cards_drawn == 0)
 	{
