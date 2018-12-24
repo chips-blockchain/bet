@@ -707,7 +707,15 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 	cJSON *turninfo=NULL;
 	char *rendered=NULL;
 	int flag=1;
-
+	printf("\nCard Matrix:\n");
+	for(int i=0;i<hole_cards;i++)
+	{
+		for(int j=0;j<bet->maxplayers;j++)
+		{
+			printf("%d\t",card_matrix[i][j]);
+		}
+		printf("\n");
+	}
 	for(int i=0;i<hole_cards;i++)
 		{
 			for(int j=0;j<bet->maxplayers;j++)
