@@ -2080,15 +2080,11 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		{
 			retval=BET_p2p_winner(argjson,bet,vars);
 		}
-		else if(strcmp(method,"small_blind") == 0)
+		else if(strcmp(method,"betting") == 0)
 		{
-			retval=BET_p2p_small_blind(argjson,bet,vars);	
+			retval=BET_p2p_betting_statemachine(argjson,bet,vars);
 		}
-		else if(strcmp(method,"large_blind") == 0)
-		{
-			retval=BET_p2p_large_blind(argjson,bet,vars);	
-		}
-    	else
+	   	else
     	{ 
        		printf("\n%s:%d:Unknown Command",__FUNCTION__,__LINE__);
 		 retval=1;

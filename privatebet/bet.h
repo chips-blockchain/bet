@@ -357,6 +357,8 @@ struct privatebet_vars
     cJSON *actions[CARDS777_MAXROUNDS][CARDS777_MAXPLAYERS+1];
     int32_t mypermi[CARDS777_MAXCARDS],permi[CARDS777_MAXCARDS],turni,round,validperms,roundready,lastround,numconsensus;
 	int32_t small_blind,large_blind;
+	int32_t betamount[CARDS777_MAXPLAYERS][CARDS777_MAXROUNDS];
+	int32_t actions[CARDS777_MAXPLAYERS][CARDS777_MAXROUNDS];
 };
 
 struct pair256 { bits256 priv,prod; };

@@ -823,31 +823,6 @@ int32_t BET_p2p_dcv_turn_status(cJSON *argjson,struct privatebet_info *bet,struc
 	
 	return retval;
 }
-int32_t BET_p2p_do_blinds(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
-{
-	cJSON *small_blind_info=NULL;
-	char *rendered=NULL;
-	int32_t bytes,retval=1;
-	vars->turni=0;
-	
-	small_blind_info=cJSON_CreateObject();
-	cJSON_AddStringToObject(small_blind_info,"method","small_blind");
-	cJSON_AddNumberToObject(small_blind_info,"playerid",vars->turni);
-
-	rendered=cJSON_Print(small_blind_info);
-	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
-	
-	if(bytes<0)
-	{
-		retval=-1;
-		printf("\n%s :%d Failed to send data",__FUNCTION__,__LINE__);
-		goto end;
-	}
-	end:
-		return retval;
-	
-}
-
 int32_t BET_p2p_dcv_start(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	return BET_p2p_dcv_turn(argjson,bet,vars);
@@ -1483,7 +1458,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		{
 			if(BET_p2p_check_player_ready(argjson,bet,vars))
 			{
-				BET_p2p_do_blinds(NULL,bet,vars);
+				BET_p2p_initiate_statemachine(NULL,bet,vars);
 				//retval=BET_p2p_dcv_start(NULL,bet,vars); This has to be uncommented
 				  
 			}				
@@ -1528,16 +1503,9 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 				//printf("\nSending again");
 			}
 		}
-		else if(strcmp(method,"small_blind_bet") == 0)
+		else if(strcmp(method,"betting") == 0)
 		{
-			
-			vars->small_blind=jint(argjson,"small_blind");
-			BET_p2p_small_blind_bet(argjson,bet,vars);
-		}
-		else if(strcmp(method,"large_blind_bet") == 0)
-		{
-			vars->large_blind=jint(argjson,"large_blind");
-			BET_p2p_large_blind_bet(argjson,bet,vars);
+			retval=BET_p2p_betting_statemachine(argjson,bet,vars);
 		}
 		else
     	{

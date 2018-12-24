@@ -233,6 +233,51 @@ void BET_statemachine(struct privatebet_info *bet,struct privatebet_vars *vars)
 }
 ////////////////////////// end Game statemachine
 
+
+int32_t BET_p2p_initiate_statemachine(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	int32_t retval=1;
+	vars->turni=0;
+	vars->round=0;
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		for(int j=0;j<CARDS777_MAXROUNDS;j++)
+		{
+			vars->actions[i][j]=0;
+		}
+	}
+	retval = BET_p2p_do_blinds(argjson,bet,vars);
+		
+	end:
+		return retval;
+}
+
+int32_t BET_p2p_do_blinds(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	cJSON *small_blind_info=NULL;
+	char *rendered=NULL;
+	int32_t bytes,retval=1;
+	
+	small_blind_info=cJSON_CreateObject();
+	cJSON_AddStringToObject(argjson,"method","betting");
+	cJSON_AddStringToObject(small_blind_info,"action","small_blind");
+	cJSON_AddNumberToObject(small_blind_info,"playerid",vars->turni);
+
+	rendered=cJSON_Print(small_blind_info);
+	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+	
+	if(bytes<0)
+	{
+		retval=-1;
+		printf("\n%s :%d Failed to send data",__FUNCTION__,__LINE__);
+		goto end;
+	}
+	end:
+		return retval;
+	
+}
+
+
 int32_t BET_p2p_large_blind_bet(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int retval=1,bytes;
@@ -252,18 +297,24 @@ int32_t BET_p2p_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,struc
 	cJSON *large_blind_info=NULL;
 
 	vars->turni=(vars->turni+1)%bet->maxplayers;
-	large_blind_info=cJSON_CreateObject();
-	cJSON_AddStringToObject(large_blind_info,"method","large_blind");
-	cJSON_AddNumberToObject(large_blind_info,"playerid",vars->turni);
-	
-	rendered=cJSON_Print(large_blind_info);
-	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
-	
-	if(bytes<0)
+	vars->small_blind=jint(argjson,"small_blind");
+	if(jint(argjson,"playerid") == bet->myplayerid)
 	{
-		retval=-1;
-		printf("\n%s :%d Failed to send data",__FUNCTION__,__LINE__);
-		goto end;
+		large_blind_info=cJSON_CreateObject();
+		cJSON_AddStringToObject(argjson,"method","betting");
+		cJSON_AddStringToObject(large_blind_info,"action","large_blind");
+		cJSON_AddNumberToObject(large_blind_info,"playerid",vars->turni);
+		
+		rendered=cJSON_Print(large_blind_info);
+		bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+		
+		if(bytes<0)
+		{
+			retval=-1;
+			printf("\n%s :%d Failed to send data",__FUNCTION__,__LINE__);
+			goto end;
+		}
+				
 	}
 
 	end:
@@ -280,7 +331,8 @@ int32_t BET_p2p_large_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 	if(jint(argjson,"playerid") == bet->myplayerid)
 	{
 		large_blind_info=cJSON_CreateObject();
-		cJSON_AddStringToObject(large_blind_info,"method","large_blind_bet");
+		cJSON_AddStringToObject(argjson,"method","betting");
+		cJSON_AddStringToObject(large_blind_info,"action","large_blind_bet");
 		printf("\nEnter large blind:");
 		scanf("%d",&amount);
 		cJSON_AddNumberToObject(large_blind_info,"large_blind",amount);
@@ -308,9 +360,10 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 	if(jint(argjson,"playerid") == bet->myplayerid)
 	{
 		small_blind_info=cJSON_CreateObject();
+		cJSON_AddStringToObject(argjson,"method","betting");
 		printf("\nEnter small blind:");
 		scanf("%d",&amount);
-		cJSON_AddStringToObject(small_blind_info,"method","small_blind_bet");
+		cJSON_AddStringToObject(small_blind_info,"action","small_blind_bet");
 		cJSON_AddNumberToObject(small_blind_info,"small_blind",amount);
 		
 		rendered=cJSON_Print(small_blind_info);
@@ -327,6 +380,33 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 		return retval;
 }
 
+int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	char *action=NULL;
+	int retval=1;
+		if((action=jstr(argjson,"action")) != 0)
+		{
+			
+			if(strcmp(action,"small_blind") == 0)
+			{
+				retval=BET_p2p_small_blind(argjson,bet,vars);	
+			}
+			else if(strcmp(action,"large_blind") == 0)
+			{
+				retval=BET_p2p_large_blind(argjson,bet,vars);	
+			}
+			else if(strcmp(action,"small_blind_bet") == 0)
+			{
+				retval=BET_p2p_small_blind_bet(argjson,bet,vars);
+			}
+			else if(strcmp(action,"large_blind_bet") == 0)
+			{
+				retval=BET_p2p_large_blind_bet(argjson,bet,vars);
+			}
+		}
+		end:
+			return retval;
+}
 
 
 
