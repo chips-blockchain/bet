@@ -1406,9 +1406,9 @@ int32_t BET_p2p_large_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 	if(jint(argjson,"playerid") == bet->myplayerid)
 	{
 		large_blind_info=cJSON_CreateObject();
+		cJSON_AddStringToObject(large_blind_info,"method","large_blind_bet");
 		printf("\nEnter large blind:");
 		scanf("%d",&amount);
-		cJSON_AddStringToObject(large_blind_info,"method","large_blind_bet");
 		cJSON_AddNumberToObject(large_blind_info,"large_blind",amount);
 		
 		rendered=cJSON_Print(large_blind_info);

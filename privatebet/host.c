@@ -826,7 +826,8 @@ int32_t BET_p2p_large_blind_bet(cJSON *argjson,struct privatebet_info *bet,struc
 {
 	int retval=1,bytes;
 	char *rendered=NULL;
-	
+
+	printf("\nlarge_blind :%d",jint(argjson,"large_blind"));
 
 	end:
 		return retval;
@@ -842,10 +843,7 @@ int32_t BET_p2p_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,struc
 	large_blind_info=cJSON_CreateObject();
 	cJSON_AddStringToObject(large_blind_info,"method","large_blind");
 	cJSON_AddNumberToObject(large_blind_info,"playerid",vars->turni);
-	printf("\nEnter large blind:\n");
-	scanf("%d",&amount);
-	cJSON_AddNumberToObject(large_blind_info,"large_blind",amount);
-
+	
 	rendered=cJSON_Print(large_blind_info);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 	
