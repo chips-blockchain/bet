@@ -43,6 +43,9 @@ struct deck_dcv_info dcv_info;
 int32_t player_ready[CARDS777_MAXPLAYERS];
 int32_t hole_cards_drawn=0,community_cards_drawn=0;
 
+int32_t bet_amount[CARDS777_MAXPLAYERS][CARDS777_MAXROUNDS];
+
+
 #define NSUITS 4
 #define NFACES 13
 int32_t invoiceID;
@@ -819,6 +822,68 @@ int32_t BET_p2p_dcv_turn_status(cJSON *argjson,struct privatebet_info *bet,struc
 	
 	return retval;
 }
+int32_t BET_p2p_large_blind_bet(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	int retval=1,bytes;
+	char *rendered=NULL;
+	
+
+	end:
+		return retval;
+}
+	
+int32_t BET_p2p_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	char *rendered=NULL;
+	int32_t retval=1,bytes,amount;
+	cJSON *large_blind_info=NULL;
+
+	large_blind_info=cJSON_CreateObject();
+	cJSON_AddStringToObject(large_blind_info,"method","large_blind");
+	printf("\nEnter large blind:\n");
+	scanf("%d",&amount);
+	cJSON_AddNumberToObject(large_blind_info,"large_blind",amount);
+
+	rendered=cJSON_Print(argjson);
+	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+	
+	if(bytes<0)
+	{
+		retval=-1;
+		printf("\n%s :%d Failed to send data",__FUNCTION__,__LINE__);
+		goto end;
+	}
+
+	return retval;
+	
+	
+	
+}
+
+int32_t BET_p2p_do_blinds(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	cJSON *small_blind_info=NULL;
+	char *rendered=NULL;
+	int32_t bytes,retval=1;
+	vars.turni=0;
+	
+	small_blind_info=cJSON_CreateObject();
+	cJSON_AddStringToObject(small_blind_info,"method","small_blind");
+	cJSON_AddNumberToObject(small_blind_info,"playerid",vars.turni);
+
+	rendered=cJSON_Print(argjson);
+	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+	
+	if(bytes<0)
+	{
+		retval=-1;
+		printf("\n%s :%d Failed to send data",__FUNCTION__,__LINE__);
+		goto end;
+	}
+
+	return retval;
+	
+}
 
 int32_t BET_p2p_dcv_start(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
@@ -1455,13 +1520,14 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		{
 			if(BET_p2p_check_player_ready(argjson,bet,vars))
 			{
+				BET_p2p_do_blinds(NULL,bet,vars);
 				retval=BET_p2p_dcv_start(NULL,bet,vars);
 				  
 			}				
 		}
 		else if(strcmp(method,"turn_status") == 0)
 		{
-			printf("\n%s:%d:Game Start",__FUNCTION__,__LINE__);
+			//obsolete now
 			retval=BET_p2p_dcv_turn_status(argjson,bet,vars);
 		}
 		else if(strcmp(method,"playerCardInfo") == 0)
@@ -1498,6 +1564,18 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 				//sleep(5);
 				//printf("\nSending again");
 			}
+		}
+		else if(strcmp(method,"small_blind_bet") == 0)
+		{
+			
+			printf("\nsmall_blind:%d",jint(argjson,"small_blind"));
+			BET_p2p_small_blind_bet(argjson,bet,vars);
+		}
+		else if(strcmp(method,"large_blind_bet") == 0)
+		{
+			
+			printf("\nsmall_blind:%d",jint(argjson,"large_blind"));
+			BET_p2p_large_blind_bet(argjson,bet,vars);
 		}
 		else
     	{

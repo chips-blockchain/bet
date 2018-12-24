@@ -1397,6 +1397,56 @@ int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 		return retval;
 }
 
+int32_t BET_p2p_large_blind(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	cJSON *large_blind_info=NULL;
+	int32_t amount,retval=1,bytes;
+	char *rendered=NULL;
+
+	large_blind_info=cJSON_CreateObject();
+	printf("\nEnter large blind:");
+	scanf("%d",&amount);
+	cJSON_AddStringToObject(large_blind_info,"method","large_blind_bet");
+	cJSON_AddNumberToObject(large_blind_info,"large_blind",amount);
+
+	rendered=cJSON_Print(large_blind_info);
+	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+	if(bytes<0)
+	{
+			retval=-1;
+			printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
+			goto end;
+	}
+	end:
+		return retval;
+}
+
+
+int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	cJSON *small_blind_info=NULL;
+	int32_t amount,retval=1,bytes;
+	char *rendered=NULL;
+	
+	small_blind_info=cJSON_CreateObject();
+	printf("\nEnter small blind:");
+	scanf("%d",&amount);
+	cJSON_AddStringToObject(small_blind_info,"method","small_blind_bet");
+	cJSON_AddNumberToObject(small_blind_info,"small_blind",amount);
+
+	rendered=cJSON_Print(small_blind_info);
+	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+	if(bytes<0)
+	{
+			retval=-1;
+			printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
+			goto end;
+	}
+	end:
+		return retval;
+}
+
+
 int32_t BET_p2p_winner(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int argc,bytes,maxsize=10000,retval=1;
@@ -2078,6 +2128,14 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		else if(strcmp(method,"winner") == 0)
 		{
 			retval=BET_p2p_winner(argjson,bet,vars);
+		}
+		else if(strcmp(method,"small_blind") == 0)
+		{
+			retval=BET_p2p_small_blind(argjson,bet,vars);	
+		}
+		else if(strcmp(method,"large_blind") == 0)
+		{
+			retval=BET_p2p_large_blind(argjson,bet,vars);	
 		}
     	else
     	{ 
