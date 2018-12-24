@@ -1403,19 +1403,23 @@ int32_t BET_p2p_large_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 	int32_t amount,retval=1,bytes;
 	char *rendered=NULL;
 
-	large_blind_info=cJSON_CreateObject();
-	printf("\nEnter large blind:");
-	scanf("%d",&amount);
-	cJSON_AddStringToObject(large_blind_info,"method","large_blind_bet");
-	cJSON_AddNumberToObject(large_blind_info,"large_blind",amount);
-
-	rendered=cJSON_Print(large_blind_info);
-	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
-	if(bytes<0)
+	if(jint(argjson,"playerid") == bet->myplayerid)
 	{
-			retval=-1;
-			printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
-			goto end;
+		large_blind_info=cJSON_CreateObject();
+		printf("\nEnter large blind:");
+		scanf("%d",&amount);
+		cJSON_AddStringToObject(large_blind_info,"method","large_blind_bet");
+		cJSON_AddNumberToObject(large_blind_info,"large_blind",amount);
+		
+		rendered=cJSON_Print(large_blind_info);
+		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+		if(bytes<0)
+		{
+				retval=-1;
+				printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
+				goto end;
+		}
+				
 	}
 	end:
 		return retval;
@@ -1427,20 +1431,23 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 	cJSON *small_blind_info=NULL;
 	int32_t amount,retval=1,bytes;
 	char *rendered=NULL;
-	
-	small_blind_info=cJSON_CreateObject();
-	printf("\nEnter small blind:");
-	scanf("%d",&amount);
-	cJSON_AddStringToObject(small_blind_info,"method","small_blind_bet");
-	cJSON_AddNumberToObject(small_blind_info,"small_blind",amount);
-
-	rendered=cJSON_Print(small_blind_info);
-	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
-	if(bytes<0)
+	if(jint(argjson,"playerid")==bet->myplayerid)
 	{
-			retval=-1;
-			printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
-			goto end;
+		small_blind_info=cJSON_CreateObject();
+		printf("\nEnter small blind:");
+		scanf("%d",&amount);
+		cJSON_AddStringToObject(small_blind_info,"method","small_blind_bet");
+		cJSON_AddNumberToObject(small_blind_info,"small_blind",amount);
+		
+		rendered=cJSON_Print(small_blind_info);
+		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+		if(bytes<0)
+		{
+				retval=-1;
+				printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
+				goto end;
+		}
+				
 	}
 	end:
 		return retval;

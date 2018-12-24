@@ -838,8 +838,10 @@ int32_t BET_p2p_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,struc
 	int32_t retval=1,bytes,amount;
 	cJSON *large_blind_info=NULL;
 
+	vars->turni=(vars->turni+1)%bet->maxplayers;
 	large_blind_info=cJSON_CreateObject();
 	cJSON_AddStringToObject(large_blind_info,"method","large_blind");
+	cJSON_AddNumberToObject(large_blind_info,"playerid",vars->turni);
 	printf("\nEnter large blind:\n");
 	scanf("%d",&amount);
 	cJSON_AddNumberToObject(large_blind_info,"large_blind",amount);
@@ -870,7 +872,7 @@ int32_t BET_p2p_do_blinds(cJSON *argjson,struct privatebet_info *bet,struct priv
 	
 	small_blind_info=cJSON_CreateObject();
 	cJSON_AddStringToObject(small_blind_info,"method","small_blind");
-	cJSON_AddNumberToObject(small_blind_info,"playerid",vars.turni);
+	cJSON_AddNumberToObject(small_blind_info,"playerid",vars->turni);
 
 	rendered=cJSON_Print(argjson);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
@@ -881,8 +883,8 @@ int32_t BET_p2p_do_blinds(cJSON *argjson,struct privatebet_info *bet,struct priv
 		printf("\n%s :%d Failed to send data",__FUNCTION__,__LINE__);
 		goto end;
 	}
-
-	return retval;
+	end:
+		return retval;
 	
 }
 
