@@ -1431,7 +1431,7 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 	cJSON *small_blind_info=NULL;
 	int32_t amount,retval=1,bytes;
 	char *rendered=NULL;
-	if(jint(argjson,"playerid")==bet->myplayerid)
+	if(jint(argjson,"playerid") == bet->myplayerid)
 	{
 		small_blind_info=cJSON_CreateObject();
 		printf("\nEnter small blind:");

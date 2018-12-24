@@ -846,7 +846,7 @@ int32_t BET_p2p_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,struc
 	scanf("%d",&amount);
 	cJSON_AddNumberToObject(large_blind_info,"large_blind",amount);
 
-	rendered=cJSON_Print(argjson);
+	rendered=cJSON_Print(large_blind_info);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 	
 	if(bytes<0)
@@ -874,7 +874,7 @@ int32_t BET_p2p_do_blinds(cJSON *argjson,struct privatebet_info *bet,struct priv
 	cJSON_AddStringToObject(small_blind_info,"method","small_blind");
 	cJSON_AddNumberToObject(small_blind_info,"playerid",vars->turni);
 
-	rendered=cJSON_Print(argjson);
+	rendered=cJSON_Print(small_blind_info);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 	
 	if(bytes<0)
@@ -1524,7 +1524,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 			if(BET_p2p_check_player_ready(argjson,bet,vars))
 			{
 				BET_p2p_do_blinds(NULL,bet,vars);
-				retval=BET_p2p_dcv_start(NULL,bet,vars);
+				//retval=BET_p2p_dcv_start(NULL,bet,vars); This has to be uncommented
 				  
 			}				
 		}
