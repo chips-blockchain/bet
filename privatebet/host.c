@@ -708,9 +708,9 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 	char *rendered=NULL;
 	int flag=1;
 	printf("\nCard Matrix:\n");
-	for(int i=0;i<hole_cards;i++)
+	for(int i=0;i<bet->maxplayers;i++)
 	{
-		for(int j=0;j<bet->maxplayers;j++)
+		for(int j=0;j<hand_size;j++)
 		{
 			printf("%d\t",card_matrix[i][j]);
 		}
@@ -1039,8 +1039,8 @@ int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 	eval_game_c[no_of_cards]=cardid;
 	no_of_cards++;
 
-	card_matrix[(cardid/bet->maxplayers)][(cardid%bet->maxplayers)]=1;
-	card_values[(cardid/bet->maxplayers)][(cardid%bet->maxplayers)]=jint(playerCardInfo,"decoded_card");
+	card_matrix[(cardid%bet->maxplayers)][(cardid/bet->maxplayers)]=1;
+	card_values[(cardid%bet->maxplayers)][(cardid/bet->maxplayers)]=jint(playerCardInfo,"decoded_card");
 
 	unsigned char h[5];
 	unsigned long score[2];
