@@ -764,7 +764,7 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 	}
 	else if(hole_cards_drawn)
 	{
-		for(int i=hole_cards;i<(community_cards+hole_cards);i++)
+		for(int i=hole_cards;i<hand_size;i++)
 		{
 			for(int j=0;j<bet->maxplayers;j++)
 			{
