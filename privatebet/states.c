@@ -233,4 +233,100 @@ void BET_statemachine(struct privatebet_info *bet,struct privatebet_vars *vars)
 }
 ////////////////////////// end Game statemachine
 
+int32_t BET_p2p_large_blind_bet(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	int retval=1,bytes;
+	char *rendered=NULL;
+
+	printf("\nlarge_blind :%d",jint(argjson,"large_blind"));
+	vars->large_blind=jint(argjson,"large_blind");
+
+	end:
+		return retval;
+}
+	
+int32_t BET_p2p_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	char *rendered=NULL;
+	int32_t retval=1,bytes,amount;
+	cJSON *large_blind_info=NULL;
+
+	vars->turni=(vars->turni+1)%bet->maxplayers;
+	large_blind_info=cJSON_CreateObject();
+	cJSON_AddStringToObject(large_blind_info,"method","large_blind");
+	cJSON_AddNumberToObject(large_blind_info,"playerid",vars->turni);
+	
+	rendered=cJSON_Print(large_blind_info);
+	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+	
+	if(bytes<0)
+	{
+		retval=-1;
+		printf("\n%s :%d Failed to send data",__FUNCTION__,__LINE__);
+		goto end;
+	}
+
+	end:
+		return retval;
+}
+
+
+int32_t BET_p2p_large_blind(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	cJSON *large_blind_info=NULL;
+	int32_t amount,retval=1,bytes;
+	char *rendered=NULL;
+
+	if(jint(argjson,"playerid") == bet->myplayerid)
+	{
+		large_blind_info=cJSON_CreateObject();
+		cJSON_AddStringToObject(large_blind_info,"method","large_blind_bet");
+		printf("\nEnter large blind:");
+		scanf("%d",&amount);
+		cJSON_AddNumberToObject(large_blind_info,"large_blind",amount);
+		
+		rendered=cJSON_Print(large_blind_info);
+		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+		if(bytes<0)
+		{
+				retval=-1;
+				printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
+				goto end;
+		}
+				
+	}
+	end:
+		return retval;
+}
+
+
+int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	cJSON *small_blind_info=NULL;
+	int32_t amount,retval=1,bytes;
+	char *rendered=NULL;
+	if(jint(argjson,"playerid") == bet->myplayerid)
+	{
+		small_blind_info=cJSON_CreateObject();
+		printf("\nEnter small blind:");
+		scanf("%d",&amount);
+		cJSON_AddStringToObject(small_blind_info,"method","small_blind_bet");
+		cJSON_AddNumberToObject(small_blind_info,"small_blind",amount);
+		
+		rendered=cJSON_Print(small_blind_info);
+		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+		if(bytes<0)
+		{
+				retval=-1;
+				printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
+				goto end;
+		}
+				
+	}
+	end:
+		return retval;
+}
+
+
+
 

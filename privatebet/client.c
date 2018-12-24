@@ -26,6 +26,7 @@
 #include "payment.h"
 #include "table.h"
 #include "network.h"
+#include "states.h"
 #include "../log/macrologger.h"
 
 
@@ -1396,63 +1397,6 @@ int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 	end:
 		return retval;
 }
-
-int32_t BET_p2p_large_blind(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
-{
-	cJSON *large_blind_info=NULL;
-	int32_t amount,retval=1,bytes;
-	char *rendered=NULL;
-
-	if(jint(argjson,"playerid") == bet->myplayerid)
-	{
-		large_blind_info=cJSON_CreateObject();
-		cJSON_AddStringToObject(large_blind_info,"method","large_blind_bet");
-		printf("\nEnter large blind:");
-		scanf("%d",&amount);
-		cJSON_AddNumberToObject(large_blind_info,"large_blind",amount);
-		
-		rendered=cJSON_Print(large_blind_info);
-		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
-		if(bytes<0)
-		{
-				retval=-1;
-				printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
-				goto end;
-		}
-				
-	}
-	end:
-		return retval;
-}
-
-
-int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
-{
-	cJSON *small_blind_info=NULL;
-	int32_t amount,retval=1,bytes;
-	char *rendered=NULL;
-	if(jint(argjson,"playerid") == bet->myplayerid)
-	{
-		small_blind_info=cJSON_CreateObject();
-		printf("\nEnter small blind:");
-		scanf("%d",&amount);
-		cJSON_AddStringToObject(small_blind_info,"method","small_blind_bet");
-		cJSON_AddNumberToObject(small_blind_info,"small_blind",amount);
-		
-		rendered=cJSON_Print(small_blind_info);
-		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
-		if(bytes<0)
-		{
-				retval=-1;
-				printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
-				goto end;
-		}
-				
-	}
-	end:
-		return retval;
-}
-
 
 int32_t BET_p2p_winner(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {

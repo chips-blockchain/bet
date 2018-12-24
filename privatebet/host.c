@@ -22,6 +22,7 @@
 #include "oracle.h"
 #include "commands.h"
 #include "payment.h"
+#include "states.h"
 #include "../log/macrologger.h"
 #include "poker.h"
 //bits256 Mypubkey,Myprivkey;
@@ -822,45 +823,6 @@ int32_t BET_p2p_dcv_turn_status(cJSON *argjson,struct privatebet_info *bet,struc
 	
 	return retval;
 }
-int32_t BET_p2p_large_blind_bet(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
-{
-	int retval=1,bytes;
-	char *rendered=NULL;
-
-	printf("\nlarge_blind :%d",jint(argjson,"large_blind"));
-
-	end:
-		return retval;
-}
-	
-int32_t BET_p2p_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
-{
-	char *rendered=NULL;
-	int32_t retval=1,bytes,amount;
-	cJSON *large_blind_info=NULL;
-
-	vars->turni=(vars->turni+1)%bet->maxplayers;
-	large_blind_info=cJSON_CreateObject();
-	cJSON_AddStringToObject(large_blind_info,"method","large_blind");
-	cJSON_AddNumberToObject(large_blind_info,"playerid",vars->turni);
-	
-	rendered=cJSON_Print(large_blind_info);
-	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
-	
-	if(bytes<0)
-	{
-		retval=-1;
-		printf("\n%s :%d Failed to send data",__FUNCTION__,__LINE__);
-		goto end;
-	}
-
-	end:
-		return retval;
-	
-	
-	
-}
-
 int32_t BET_p2p_do_blinds(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	cJSON *small_blind_info=NULL;
@@ -1569,13 +1531,12 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		else if(strcmp(method,"small_blind_bet") == 0)
 		{
 			
-			printf("\nsmall_blind:%d",jint(argjson,"small_blind"));
+			vars->small_blind=jint(argjson,"small_blind");
 			BET_p2p_small_blind_bet(argjson,bet,vars);
 		}
 		else if(strcmp(method,"large_blind_bet") == 0)
 		{
-			
-			printf("\nsmall_blind:%d",jint(argjson,"large_blind"));
+			vars->large_blind=jint(argjson,"large_blind");
 			BET_p2p_large_blind_bet(argjson,bet,vars);
 		}
 		else
