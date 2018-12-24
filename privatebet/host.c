@@ -716,6 +716,24 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 		}
 		printf("\n");
 	}
+	for(int i=0;i<hole_cards;i++)
+	{
+		for(int j=0;j<bet->maxplayers;j++)
+		{
+			if(card_matrix[i][j]==0)
+				{
+					flag=0;
+					break;
+				}
+		}
+		if(!flag)
+			break;
+	}
+	if(flag)
+		hole_cards_drawn=1;
+	else
+		flag=1;
+	
 	if(hole_cards_drawn == 0)
 	{
 		for(int i=0;i<hole_cards;i++)
@@ -765,9 +783,7 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 	}
 	if(flag)
 	{
-		if(hole_cards_drawn == 0)
-			hole_cards_drawn=1;
-		else
+		if(hole_cards_drawn == 1)
 		{
 			community_cards_drawn=1;
 			retval=2;
