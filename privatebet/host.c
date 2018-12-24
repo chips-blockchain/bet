@@ -707,7 +707,7 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 	char *rendered=NULL;
 	int flag=1;
 
-	for(int i=0;i<hand_size;i++)
+	for(int i=0;i<hole_cards;i++)
 	{
 		for(int j=0;j<bet->maxplayers;j++)
 		{
@@ -979,7 +979,7 @@ int32_t BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privat
 		
 }
 
-void BET_p2p_check_player_ready(cJSON *playerReady,struct privatebet_info *bet,struct privatebet_vars *vars)
+int32_t BET_p2p_check_player_ready(cJSON *playerReady,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int flag=1;
 	player_ready[jint(playerReady,"playerid")]=1;
@@ -991,8 +991,11 @@ void BET_p2p_check_player_ready(cJSON *playerReady,struct privatebet_info *bet,s
 			break;
 		}
 	}
+	/*
 	if(flag)
 		BET_p2p_dcv_start(NULL,bet,vars);
+	*/
+	return flag;
 }
 
 int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
@@ -1016,11 +1019,11 @@ int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 	unsigned long score[2];
 	if((retval=BET_p2p_dcv_turn(playerCardInfo,bet,vars)) ==2)
 	{
-		printf("\nHere are the cards:\n");
+		printf("\nEach player now got the hole cards:\n");
 		for(int i=0;i<bet->maxplayers;i++)
 		{
 			printf("\n For Player id: %d, cards: ",i);
-			for(int j=0;j<hand_size;j++)
+			for(int j=0;j<hole_cards;j++)
 			{
 				int temp=card_values[i][j];
 				//printf("%d\t",card_values[j][i]);
@@ -1031,6 +1034,7 @@ int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 				printf("\nscore:%ld",FiveCardDrawScore(h));
 				score[i]=FiveCardDrawScore(h);
 		}
+		/*
 		if(score[0]>score[1])
 		{
 			printf("\nPlayer 0 is won");
@@ -1038,7 +1042,7 @@ int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 		else
 		{
 			printf("\nPlayer 1 is won");
-		}
+		}*/
 	}
 	/*	
 	
@@ -1377,7 +1381,11 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		}
 		else if(strcmp(method,"player_ready") == 0)
 		{
-			BET_p2p_check_player_ready(argjson,bet,vars);
+			if(BET_p2p_check_player_ready(argjson,bet,vars))
+			{
+				retval=BET_p2p_dcv_start(NULL,bet,vars);
+				  
+			}				
 		}
 		else if(strcmp(method,"turn_status") == 0)
 		{
