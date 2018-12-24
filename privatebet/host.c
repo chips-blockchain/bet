@@ -41,6 +41,7 @@ int32_t card_values[CARDS777_MAXPLAYERS][hand_size];
 int32_t all_player_cards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 struct deck_dcv_info dcv_info;
 int32_t player_ready[CARDS777_MAXPLAYERS];
+int32_t hole_cards_drawn=0,community_cards_drawn=0;
 
 #define NSUITS 4
 #define NFACES 13
@@ -707,44 +708,64 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 	char *rendered=NULL;
 	int flag=1;
 
-	for(int i=0;i<hole_cards;i++)
+	if(hole_cards_drawn ==0)
 	{
-		for(int j=0;j<bet->maxplayers;j++)
+		for(int i=0;i<hole_cards;i++)
 		{
-			if(card_matrix[i][j] == 0)
+			for(int j=0;j<bet->maxplayers;j++)
 			{
-				flag=0;
-				turninfo=cJSON_CreateObject();
-				cJSON_AddStringToObject(turninfo,"method","turn");
-				cJSON_AddNumberToObject(turninfo,"playerid",j);
-				cJSON_AddNumberToObject(turninfo,"cardid",((i*bet->maxplayers)+j));
-				rendered=cJSON_Print(turninfo);
-				bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
-				if(bytes<0)
-					retval=-1;
-				goto end;
-	
+				if(card_matrix[j][i] == 0)
+				{
+					flag=0;
+					turninfo=cJSON_CreateObject();
+					cJSON_AddStringToObject(turninfo,"method","turn");
+					cJSON_AddNumberToObject(turninfo,"playerid",j);
+					cJSON_AddNumberToObject(turninfo,"cardid",((i*bet->maxplayers)+j));
+					rendered=cJSON_Print(turninfo);
+					bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+					if(bytes<0)
+						retval=-1;
+					goto end;
+		
+				}
 			}
 		}
+				
 	}
-	/*
-	turninfo=cJSON_CreateObject();
-	cJSON_AddStringToObject(turninfo,"method","turn");
-	cJSON_AddNumberToObject(turninfo,"playerid",(turn)%bet->maxplayers);
-	cJSON_AddNumberToObject(turninfo,"cardid",turn);
-	turn++;
-	rendered=cJSON_Print(turninfo);
-	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
-	printf("\n%s:%d:%s",__FUNCTION__,__LINE__,rendered);
-	if(bytes < 0)
+	else
 	{
-		retval=-1;
-		printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
-		goto end;
+		for(int i=hole_cards;i<(community_cards+hole_cards);i++)
+		{
+			for(int j=0;j<bet->maxplayers;j++)
+			{
+				if(card_matrix[j][i] == 0)
+				{
+					flag=0;
+					turninfo=cJSON_CreateObject();
+					cJSON_AddStringToObject(turninfo,"method","turn");
+					cJSON_AddNumberToObject(turninfo,"playerid",j);
+					cJSON_AddNumberToObject(turninfo,"cardid",((hole_cards*bet->maxplayers)+(i-hole_cards)));
+					rendered=cJSON_Print(turninfo);
+					bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+					if(bytes<0)
+						retval=-1;
+					goto end;
+				}
+				
+			}
+		}
+		
 	}
-	*/
 	if(flag)
-		retval=2;
+	{
+		if(hole_cards_drawn == 0)
+			hole_cards_drawn=1;
+		else
+		{
+			community_cards_drawn=1;
+			retval=2;
+		}	
+	}
 	end:	
 		return retval;
 }
@@ -1019,11 +1040,23 @@ int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 	unsigned long score[2];
 	if((retval=BET_p2p_dcv_turn(playerCardInfo,bet,vars)) ==2)
 	{
+		/*
 		printf("\nEach player now got the hole cards:\n");
 		for(int i=0;i<bet->maxplayers;i++)
 		{
-			printf("\n For Player id: %d, cards: ",i);
+			printf("\n For Player id :%d, cards: ",i);
 			for(int j=0;j<hole_cards;j++)
+			{
+				int temp=card_values[i][j];
+				printf("%s-->%s \t",suit[temp/13],face[temp%13]);
+			}
+		}
+		*/
+		printf("\nEach player got the below cards:\n");
+		for(int i=0;i<bet->maxplayers;i++)
+		{
+			printf("\n For Player id: %d, cards: ",i);
+			for(int j=0;j<hand_size;j++)
 			{
 				int temp=card_values[i][j];
 				//printf("%d\t",card_values[j][i]);
@@ -1031,10 +1064,10 @@ int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 				h[j]=(unsigned char)card_values[i][j];
 			
 			}
-				printf("\nscore:%ld",FiveCardDrawScore(h));
-				score[i]=FiveCardDrawScore(h);
+				printf("\nscore:%ld",SevenCardDrawScore(h));
+				score[i]=SevenCardDrawScore(h);
 		}
-		/*
+		
 		if(score[0]>score[1])
 		{
 			printf("\nPlayer 0 is won");
@@ -1042,7 +1075,7 @@ int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 		else
 		{
 			printf("\nPlayer 1 is won");
-		}*/
+		}
 	}
 	/*	
 	
