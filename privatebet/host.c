@@ -716,7 +716,9 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 		}
 		printf("\n");
 	}
-	for(int i=0;i<hole_cards;i++)
+	if(hole_cards_drawn == 0)
+	{
+		for(int i=0;i<hole_cards;i++)
 		{
 			for(int j=0;j<bet->maxplayers;j++)
 			{
@@ -735,9 +737,9 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 		
 				}
 			}
-		}
-				
-	/*else if(hole_cards_drawn)
+		}	
+	}
+	else if(hole_cards_drawn)
 	{
 		for(int i=hole_cards;i<(community_cards+hole_cards);i++)
 		{
@@ -760,10 +762,9 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 			}
 		}
 		
-	}*/
+	}
 	if(flag)
 	{
-		retval=2;
 		if(hole_cards_drawn == 0)
 			hole_cards_drawn=1;
 		else
@@ -1039,10 +1040,18 @@ int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 	eval_game_c[no_of_cards]=cardid;
 	no_of_cards++;
 
-	card_matrix[(cardid%bet->maxplayers)][(cardid/bet->maxplayers)]=1;
-	card_values[(cardid%bet->maxplayers)][(cardid/bet->maxplayers)]=jint(playerCardInfo,"decoded_card");
-
-	unsigned char h[5];
+	if(hole_cards_drawn ==0)
+	{
+		card_matrix[(cardid%bet->maxplayers)][(cardid/bet->maxplayers)]=1;
+		card_values[(cardid%bet->maxplayers)][(cardid/bet->maxplayers)]=jint(playerCardInfo,"decoded_card");
+				
+	}
+	else
+	{
+		card_matrix[jint(playerCardInfo,"playerid")][(cardid%(hole_cards*bet->maxplayers))+hole_cards]=1;
+		card_matrix[jint(playerCardInfo,"playerid")][(cardid%(hole_cards*bet->maxplayers))+hole_cards]=jint(playerCardInfo,"decoded_card");
+	}
+	unsigned char h[7];
 	unsigned long score[2];
 	if((retval=BET_p2p_dcv_turn(playerCardInfo,bet,vars)) ==2)
 	{
