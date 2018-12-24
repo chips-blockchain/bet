@@ -768,6 +768,7 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 		{
 			for(int j=0;j<bet->maxplayers;j++)
 			{
+				printf("%d\t",card_matrix[i][j]);
 				if(card_matrix[j][i] == 0)
 				{
 					flag=0;
@@ -783,6 +784,7 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 				}
 				
 			}
+			printf("\n");
 		}
 		
 	}
