@@ -1072,8 +1072,8 @@ int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 	}
 	else
 	{
-		card_matrix[jint(playerCardInfo,"playerid")][(cardid%(hole_cards*bet->maxplayers))+hole_cards]=1;
-		card_values[jint(playerCardInfo,"playerid")][(cardid%(hole_cards*bet->maxplayers))+hole_cards]=jint(playerCardInfo,"decoded_card");
+		card_matrix[jint(playerCardInfo,"playerid")][(cardid-(hole_cards*bet->maxplayers))+hole_cards]=1;
+		card_values[jint(playerCardInfo,"playerid")][(cardid-(hole_cards*bet->maxplayers))+hole_cards]=jint(playerCardInfo,"decoded_card");
 	}
 	unsigned char h[7];
 	unsigned long score[2];
