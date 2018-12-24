@@ -854,7 +854,8 @@ int32_t BET_p2p_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,struc
 		goto end;
 	}
 
-	return retval;
+	end:
+		return retval;
 	
 	
 	
@@ -865,7 +866,7 @@ int32_t BET_p2p_do_blinds(cJSON *argjson,struct privatebet_info *bet,struct priv
 	cJSON *small_blind_info=NULL;
 	char *rendered=NULL;
 	int32_t bytes,retval=1;
-	vars.turni=0;
+	vars->turni=0;
 	
 	small_blind_info=cJSON_CreateObject();
 	cJSON_AddStringToObject(small_blind_info,"method","small_blind");
