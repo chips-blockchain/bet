@@ -240,6 +240,38 @@ int32_t BET_p2p_display_current_state(cJSON *argjson,struct privatebet_info *bet
 	printf("\nsmall_blind:%d",vars->small_blind);
 	printf("\nlarge_blind:%d",vars->large_blind);
 
+	printf("\nDisplay Actions:\n");
+
+	for(int j=0;j<CARDS777_MAXROUNDS;j++)
+	{
+		printf("\nRound:%d\n",j);
+		for(int i=0;i<bet->maxplayers;i++)
+		{
+			if(vars->bet_actions[i][j] == blind)
+			{
+				printf("blind ");
+			}
+			else if(vars->bet_actions[i][j] == raise)
+			{
+				printf("raise ");
+			}
+			else if(vars->bet_actions[i][j] == check)
+			{
+				printf("check ");
+			}
+			else if(vars->bet_actions[i][j] == call)
+			{
+				printf("call ");
+			}
+			else if(vars->bet_actions[i][j] == fold)
+			{
+				printf("fold ");
+			}
+		}	
+	}
+
+	
+	
 	printf("\n");
 	end:
 		return retval;
@@ -253,7 +285,7 @@ int32_t BET_p2p_initiate_statemachine(cJSON *argjson,struct privatebet_info *bet
 	{
 		for(int j=0;j<CARDS777_MAXROUNDS;j++)
 		{
-			vars->actions[i][j]=0;
+			vars->bet_actions[i][j]=0;
 		}
 	}
 	retval = BET_p2p_do_blinds(argjson,bet,vars);
@@ -296,7 +328,8 @@ int32_t BET_p2p_large_blind_bet(cJSON *argjson,struct privatebet_info *bet,struc
 	
 	printf("\nlarge_blind :%d",jint(argjson,"large_blind"));
 	vars->large_blind=jint(argjson,"large_blind");
-
+	vars->bet_actions[jint(argjson,"playerid")][no_of_rounds]=blind;
+	
 	display=cJSON_CreateObject();
 	cJSON_AddStringToObject(display,"method","display_current_state");
 	rendered=cJSON_Print(display);
@@ -318,6 +351,7 @@ int32_t BET_p2p_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,struc
 
 	vars->turni=(vars->turni+1)%bet->maxplayers;
 	vars->small_blind=jint(argjson,"small_blind");
+	vars->bet_actions[jint(argjson,"playerid")][no_of_rounds]=blind;
 	if(jint(argjson,"playerid") == bet->myplayerid)
 	{
 		large_blind_info=cJSON_CreateObject();
