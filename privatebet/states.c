@@ -301,7 +301,7 @@ int32_t BET_p2p_do_blinds(cJSON *argjson,struct privatebet_info *bet,struct priv
 	int32_t bytes,retval=1;
 	
 	small_blind_info=cJSON_CreateObject();
-	cJSON_AddStringToObject(argjson,"method","betting");
+	cJSON_AddStringToObject(small_blind_info,"method","betting");
 	cJSON_AddStringToObject(small_blind_info,"action","small_blind");
 	cJSON_AddNumberToObject(small_blind_info,"playerid",vars->turni);
 
@@ -355,7 +355,7 @@ int32_t BET_p2p_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,struc
 	if(jint(argjson,"playerid") == bet->myplayerid)
 	{
 		large_blind_info=cJSON_CreateObject();
-		cJSON_AddStringToObject(argjson,"method","betting");
+		cJSON_AddStringToObject(large_blind_info,"method","betting");
 		cJSON_AddStringToObject(large_blind_info,"action","large_blind");
 		cJSON_AddNumberToObject(large_blind_info,"playerid",vars->turni);
 		
@@ -385,7 +385,7 @@ int32_t BET_p2p_large_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 	if(jint(argjson,"playerid") == bet->myplayerid)
 	{
 		large_blind_info=cJSON_CreateObject();
-		cJSON_AddStringToObject(argjson,"method","betting");
+		cJSON_AddStringToObject(large_blind_info,"method","betting");
 		cJSON_AddStringToObject(large_blind_info,"action","large_blind_bet");
 		printf("\nEnter large blind:");
 		scanf("%d",&amount);
@@ -414,7 +414,7 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 	if(jint(argjson,"playerid") == bet->myplayerid)
 	{
 		small_blind_info=cJSON_CreateObject();
-		cJSON_AddStringToObject(argjson,"method","betting");
+		cJSON_AddStringToObject(small_blind_info,"method","betting");
 		printf("\nEnter small blind:");
 		scanf("%d",&amount);
 		cJSON_AddStringToObject(small_blind_info,"action","small_blind_bet");
