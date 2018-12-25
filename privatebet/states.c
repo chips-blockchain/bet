@@ -300,7 +300,7 @@ int32_t BET_p2p_large_blind_bet(cJSON *argjson,struct privatebet_info *bet,struc
 	display=cJSON_CreateObject();
 	cJSON_AddStringToObject(display,"method","display_current_state");
 	rendered=cJSON_Print(display);
-	bytes=nn_send(bet->pubsock,rendered,srlen(rendered),0);
+	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 	if(bytes<0)
 	{	
 		retval=-1;
