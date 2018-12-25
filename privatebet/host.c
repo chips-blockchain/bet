@@ -1505,6 +1505,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		}
 		else if(strcmp(method,"betting") == 0)
 		{
+			BET_relay(argjson,bet,vars);
 			retval=BET_p2p_betting_statemachine(argjson,bet,vars);
 		}
 		else if(strcmp(method,"display_current_state") == 0)
