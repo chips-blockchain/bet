@@ -1507,6 +1507,10 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		{
 			retval=BET_p2p_betting_statemachine(argjson,bet,vars);
 		}
+		else if(strcmp(method,"display_current_state") == 0)
+		{
+			retval=BET_p2p_display_current_state(argjson,bet,vars);
+		}
 		else
     	{
     		bytes=nn_send(bet->pubsock,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);

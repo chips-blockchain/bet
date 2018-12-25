@@ -233,7 +233,17 @@ void BET_statemachine(struct privatebet_info *bet,struct privatebet_vars *vars)
 }
 ////////////////////////// end Game statemachine
 
+int32_t BET_p2p_display_current_state(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	int32_t retval;
+	
+	printf("\nsmall_blind:%d",vars->small_blind);
+	printf("\nlarge_blind:%d",vars->large_blind);
 
+	printf("\n");
+	end:
+		return retval;
+}
 int32_t BET_p2p_initiate_statemachine(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int32_t retval=1;
@@ -282,10 +292,20 @@ int32_t BET_p2p_large_blind_bet(cJSON *argjson,struct privatebet_info *bet,struc
 {
 	int retval=1,bytes;
 	char *rendered=NULL;
-
+	cJSON *display=NULL;
+	
 	printf("\nlarge_blind :%d",jint(argjson,"large_blind"));
 	vars->large_blind=jint(argjson,"large_blind");
 
+	display=cJSON_CreateObject();
+	cJSON_AddStringToObject(display,"method","display_current_state");
+	rendered=cJSON_Print(display);
+	bytes=nn_send(bet->pubsock,rendered,srlen(rendered),0);
+	if(bytes<0)
+	{	
+		retval=-1;
+		printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
+	}
 	end:
 		return retval;
 }

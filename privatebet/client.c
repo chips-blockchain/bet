@@ -2084,6 +2084,10 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		{
 			retval=BET_p2p_betting_statemachine(argjson,bet,vars);
 		}
+		else if(strcmp(method,"display_current_state") == 0)
+		{
+			retval=BET_p2p_display_current_state(argjson,bet,vars);
+		}
 	   	else
     	{ 
        		printf("\n%s:%d:Unknown Command",__FUNCTION__,__LINE__);
