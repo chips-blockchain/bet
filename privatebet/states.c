@@ -461,6 +461,7 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 				printf("\n%s:%d:: Large_blind:%d",__FUNCTION__,__LINE__,vars->large_blind);
 			}
 		}
+		printf("\n");
 		end:
 			return retval;
 }
