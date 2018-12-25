@@ -328,7 +328,7 @@ int32_t BET_p2p_large_blind_bet(cJSON *argjson,struct privatebet_info *bet,struc
 	
 	printf("\nlarge_blind :%d",jint(argjson,"large_blind"));
 	vars->large_blind=jint(argjson,"large_blind");
-	vars->bet_actions[jint(argjson,"playerid")][no_of_rounds]=blind;
+	vars->bet_actions[jint(argjson,"playerid")][vars->round]=blind;
 	
 	display=cJSON_CreateObject();
 	cJSON_AddStringToObject(display,"method","display_current_state");
@@ -351,7 +351,7 @@ int32_t BET_p2p_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,struc
 
 	vars->turni=(vars->turni+1)%bet->maxplayers;
 	vars->small_blind=jint(argjson,"small_blind");
-	vars->bet_actions[jint(argjson,"playerid")][no_of_rounds]=blind;
+	vars->bet_actions[jint(argjson,"playerid")][vars->round]=blind;
 	if(jint(argjson,"playerid") == bet->myplayerid)
 	{
 		large_blind_info=cJSON_CreateObject();
