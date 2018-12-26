@@ -22,7 +22,7 @@
 //int32_t Gamestart,Gamestarted,Lastturni;
 
 
-char action_str[6][100]={"small_blind","big_blind","check","raise","call","fold"};
+char action_str[7][100]={"","small_blind","big_blind","check","raise","call","fold"};
 
 void BET_client_turnisend(struct privatebet_info *bet,struct privatebet_vars *vars,cJSON *actions)
 {
