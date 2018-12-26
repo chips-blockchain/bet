@@ -1181,6 +1181,10 @@ int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct pri
 			printf("\n%s:%d:: %s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 			BET_p2P_check_bvv_ready(argjson,bet,vars);
 		}
+		else if(strcmp(method,"dealer") == 0)
+		{
+			retval=BET_p2p_dealer_info(argjson,bet,vars);
+		}
         else
             retval=-1;
     }
@@ -2087,6 +2091,10 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		else if(strcmp(method,"display_current_state") == 0)
 		{
 			retval=BET_p2p_display_current_state(argjson,bet,vars);
+		}
+		else if(strcmp(method,"dealer") == 0)
+		{
+			retval=BET_p2p_dealer_info(argjson,bet,vars);
 		}
 	   	else
     	{ 

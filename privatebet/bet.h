@@ -305,7 +305,8 @@ bits256 Host_rhashes[256]; int32_t Num_hostrhashes,Chips_paid;
 
 enum action_type
 {
-	blind=1,
+	small_blind=1,
+	big_blind,	
 	raise,
 	call,
 	check,
@@ -356,9 +357,10 @@ struct privatebet_vars
     uint32_t endround[CARDS777_MAXPLAYERS+1],evalcrcs[CARDS777_MAXPLAYERS+1],consensus;
     cJSON *actions[CARDS777_MAXROUNDS][CARDS777_MAXPLAYERS+1];
     int32_t mypermi[CARDS777_MAXCARDS],permi[CARDS777_MAXCARDS],turni,round,validperms,roundready,lastround,numconsensus;
-	int32_t small_blind,large_blind;
+	int32_t small_blind,big_blind;
 	int32_t betamount[CARDS777_MAXPLAYERS][CARDS777_MAXROUNDS];
 	int32_t bet_actions[CARDS777_MAXPLAYERS][CARDS777_MAXROUNDS];
+	int32_t dealer;
 };
 
 struct pair256 { bits256 priv,prod; };
