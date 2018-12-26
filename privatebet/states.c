@@ -21,6 +21,9 @@
 //int32_t IAMHOST;
 //int32_t Gamestart,Gamestarted,Lastturni;
 
+
+char action_str[6][100]={"small_blind","big_blind","check","raise","call","fold"};
+
 void BET_client_turnisend(struct privatebet_info *bet,struct privatebet_vars *vars,cJSON *actions)
 {
     cJSON *cmdjson;
@@ -364,6 +367,8 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 		//raise or fold or call or check
 	}
 
+	cJSON_AddNumberToObject(roundBetting,"min_amount",(maxamount-vars->betamount[vars->turni][vars->round]));
+	
 	rendered=cJSON_Print(roundBetting);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 
@@ -377,6 +382,59 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	end:
 		return retval;
 	
+}
+
+int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	int retval=1,playerid,round,bet_amount=0,maxamount=0,flag=0;
+	char *action =NULL;
+
+	playerid=jint(argjson,"playerid");
+	round=jint(argjson,"round");
+	bet_amount=jint(argjson,"bet_amount");
+
+	vars->betamount[playerid][round]+=bet_amount;
+	if((action=jstr(argjson,"action")) != NULL)
+	{
+		if(strcmp(action,"check") == 0)
+		{
+			vars->bet_actions[playerid][round]=check;
+		}
+		else if(strcmp(action,"call") == 0)
+		{
+			vars->bet_actions[playerid][round]=call;
+		}
+		else if(strcmp(action,"raise") == 0)
+		{
+			vars->bet_actions[playerid][round]=raise;
+		}
+		else if(strcmp(action,"fold") == 0)
+		{
+			vars->bet_actions[playerid][round]=fold;
+		}
+	}
+
+	maxamount=vars->betamount[playerid][round];
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		if((vars->bet_actions[i][round] != fold) &&(maxamount != vars->betamount[i][round]))
+		{
+			flag=1;
+			break;
+		}
+	}
+
+	if(flag)
+		retval=BET_DCV_round_betting(argjson,bet,vars);
+	else
+	{
+		vars->round+=1;
+		vars->turni=vars->dealer;
+		printf("\nRound:%d is completed",vars->round);
+	}
+	
+	end:
+		retval;
 }
 
 
@@ -535,6 +593,11 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 				{
 					BET_player_round_betting(argjson,bet,vars);
 				}
+			}
+			else if((strcmp(action,"check") == 0) || (strcmp(action,"call") == 0) || (strcmp(action,"raise") == 0)
+									|| (strcmp(action,"fold") == 0))																					
+			{
+				retval=BET_DCV_round_betting_response(argjson,bet,vars);
 			}
 		}
 		printf("\n");
@@ -745,16 +808,57 @@ int32_t BET_p2p_big_blind(cJSON *argjson,struct privatebet_info *bet,struct priv
 
 int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	cJSON *roundBetting=NULL,*possibilities=NULL;
-	int maxamount=0,bytes,retval=1;
+	cJSON *roundBetting=NULL,*possibilities=NULL,*action_response=NULL;
+	int maxamount=0,bytes,retval=1,playerid,round,min_amount,option,raise_amount=0;
 	char *rendered=NULL;
 
+	playerid=jint(argjson,"playerid");
+	round=jint(argjson,"round");
+	min_amount=jint(argjson,"min_amount");
+	
+	action_response=cJSON_CreateObject();
+	cJSON_AddStringToObject(action_response,"method","betting");
+	cJSON_AddNumberToObject(action_response,"playerid",jint(argjson,"playerid"));
+	cJSON_AddNumberToObject(action_response,"round",jint(argjson,"round"));
 	possibilities=cJSON_GetObjectItem(argjson,"possibilities");
-
+	printf("\nHere is the possibilities");
 	for(int i=0;i<cJSON_GetArraySize(possibilities);i++)
 	{
-		printf("%d ",jinti(possibilities,i));
+		printf("\n%d %s ",(i+1),action_str[jinti(possibilities,i)]);
+		if(call==jinti(possibilities,i))
+			printf("%d",min_amount);
 	}
+	printf("\nEnter your option, to chose one::");
+	scanf("%d",&option);
+
+	vars->bet_actions[playerid][round]=option;
+
+	cJSON_AddStringToObject(action_response,"action",action_str[option]);
+	
+	if(option == raise)
+	{
+		printf("\nEnter the amount > :%d",min_amount);
+		scanf("%d",raise_amount);
+		vars->betamount[playerid][round]+=raise_amount;
+		cJSON_AddNumberToObject(action_response,"bet_amount",raise_amount);
+	}
+	else if(option == call)
+	{
+		vars->betamount[playerid][round]+=min_amount;
+		cJSON_AddNumberToObject(action_response,"bet_amount",min_amount);
+	}
+
+	rendered=cJSON_Print(action_response);
+	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,rendered);
+	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+
+	if(bytes<0)
+	{
+		retval = -1;
+		printf("\nFailed to send data");
+		goto end;
+	}
+	
 
 	printf("\n");
 
