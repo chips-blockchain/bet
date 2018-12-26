@@ -369,7 +369,7 @@ int32_t BET_DCV_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,struc
 
 	big_blind_info=cJSON_CreateObject();
 	cJSON_AddStringToObject(big_blind_info,"method","betting");
-	cJSON_AddStringToObject(big_blind_info,"action","large_blind");
+	cJSON_AddStringToObject(big_blind_info,"action","big_blind");
 	cJSON_AddNumberToObject(big_blind_info,"playerid",vars->turni);
 	cJSON_AddNumberToObject(big_blind_info,"min_amount",(vars->small_blind*2));
 	
@@ -385,37 +385,6 @@ int32_t BET_DCV_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,struc
 	}
 				
 
-	end:
-		return retval;
-}
-
-
-int32_t BET_p2p_big_blind(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
-{
-	cJSON *big_blind_info=NULL;
-	int32_t amount,retval=1,bytes;
-	char *rendered=NULL;
-
-	if(jint(argjson,"playerid") == bet->myplayerid)
-	{
-		big_blind_info=cJSON_CreateObject();
-		cJSON_AddStringToObject(big_blind_info,"method","betting");
-		cJSON_AddStringToObject(big_blind_info,"action","large_blind_bet");
-		printf("\nEnter large blind:");
-		scanf("%d",&amount);
-		cJSON_AddNumberToObject(big_blind_info,"large_blind",amount);
-		vars->betamount[bet->myplayerid][vars->round]=vars->betamount[bet->myplayerid][vars->round]+amount;
-		
-		rendered=cJSON_Print(big_blind_info);
-		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
-		if(bytes<0)
-		{
-				retval=-1;
-				printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
-				goto end;
-		}
-				
-	}
 	end:
 		return retval;
 }
@@ -659,4 +628,36 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 	end:
 		return retval;
 }
+
+
+int32_t BET_p2p_big_blind(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	cJSON *big_blind_info=NULL;
+	int32_t amount,retval=1,bytes;
+	char *rendered=NULL;
+
+	if(jint(argjson,"playerid") == bet->myplayerid)
+	{
+		big_blind_info=cJSON_CreateObject();
+		cJSON_AddStringToObject(big_blind_info,"method","betting");
+		cJSON_AddStringToObject(big_blind_info,"action","big_blind_bet");
+		printf("\nEnter big blind:");
+		scanf("%d",&amount);
+		cJSON_AddNumberToObject(big_blind_info,"big_blind",amount);
+		vars->betamount[bet->myplayerid][vars->round]=vars->betamount[bet->myplayerid][vars->round]+amount;
+		
+		rendered=cJSON_Print(big_blind_info);
+		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+		if(bytes<0)
+		{
+				retval=-1;
+				printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
+				goto end;
+		}
+				
+	}
+	end:
+		return retval;
+}
+
 
