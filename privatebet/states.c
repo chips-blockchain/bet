@@ -421,12 +421,14 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 	{
 		if((vars->bet_actions[i][round] != fold) &&(maxamount != vars->betamount[i][round]))
 		{
+			printf("\n%s:%d::%d:%d::maxamount:%d\n",__FUNCTION__,__LINE__,vars->bet_actions[i][round],vars->betamount[i][round],maxamount);
 			flag1=1;
-			
+			break;
 		}
 		if(!(((vars->bet_actions[i][round] ==check) || (vars->bet_actions[i][round] ==raise) || (vars->bet_actions[i][round] ==call))
 			&& (maxamount == vars->betamount[i][round])))
 		{
+			printf("\n%s:%d::%d:%d::maxamount:%d\n",__FUNCTION__,__LINE__,vars->bet_actions[i][round],vars->betamount[i][round],maxamount);
 			flag2=1;
 			break;
 		}
