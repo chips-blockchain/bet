@@ -831,9 +831,9 @@ int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,stru
 	printf("\nEnter your option, to chose one::");
 	scanf("%d",&option);
 
-	vars->bet_actions[playerid][round]=jinti(possibilities,(option-1);
+	vars->bet_actions[playerid][round]=jinti(possibilities,(option-1));
 
-	cJSON_AddStringToObject(action_response,"action",action_str[jinti(possibilities,(option-1)]);
+	cJSON_AddStringToObject(action_response,"action",action_str[jinti(possibilities,(option-1))]);
 	
 	if(jinti(possibilities,(option-1))== raise)
 	{
@@ -842,7 +842,7 @@ int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,stru
 		vars->betamount[playerid][round]+=raise_amount;
 		cJSON_AddNumberToObject(action_response,"bet_amount",raise_amount);
 	}
-	else if(jinti(possibilities,(option-1) == call)
+	else if(jinti(possibilities,(option-1)) == call)
 	{
 		vars->betamount[playerid][round]+=min_amount;
 		cJSON_AddNumberToObject(action_response,"bet_amount",min_amount);
