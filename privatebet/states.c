@@ -441,7 +441,17 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 	{
 		vars->round+=1;
 		vars->turni=vars->dealer;
+		/*
+		if(vars->round ==1)
+			printf("\n Hole cards are drawn");
+		else if(vars->round == 2)
+			printf("\nFlop cards are drawn");
+		else if(vars->round ==3)
+			printf("\nTurn card is drawn");
+		else if(vars->round ==4)
+			printf("\nRiver card is drawn");
 		printf("\nRound:%d is completed",vars->round);
+		*/
 		if(vars->round<CARDS777_MAXROUNDS)
 			BET_DCV_round_betting(argjson,bet,vars);
 	}
