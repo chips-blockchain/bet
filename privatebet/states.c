@@ -269,7 +269,7 @@ int32_t BET_p2p_initiate_statemachine(cJSON *argjson,struct privatebet_info *bet
 	cJSON_AddNumberToObject(dealerInfo,"playerid",vars->dealer);
 
 	rendered=cJSON_Print(dealerInfo);
-	bytes=nn_bytes(bet->pubsock,rendered,strlen(rendered),0);
+	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 	if(bytes<0)
 	{
 		retval=-1;
