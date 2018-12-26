@@ -388,7 +388,7 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 
 int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int retval=1,playerid,round,bet_amount=0,maxamount=0,flag=0;
+	int retval=1,playerid,round,bet_amount=0,maxamount=0,flag1=0,flag2=0;
 	char *action =NULL;
 
 	playerid=jint(argjson,"playerid");
@@ -421,12 +421,18 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 	{
 		if((vars->bet_actions[i][round] != fold) &&(maxamount != vars->betamount[i][round]))
 		{
-			flag=1;
+			flag1=1;
+			
+		}
+		if(!(((vars->bet_actions[i][round] ==check) || (vars->bet_actions[i][round] ==raise) || (vars->bet_actions[i][round] ==call))
+			&& (maxamount == vars->betamount[i][round])))
+		{
+			flag2=1;
 			break;
 		}
 	}
 
-	if(flag)
+	if((flag1) || (flag2))
 		retval=BET_DCV_round_betting(argjson,bet,vars);
 	else
 	{
