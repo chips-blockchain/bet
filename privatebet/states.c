@@ -536,7 +536,7 @@ int32_t BET_DCV_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 	cJSON *smallBlindInfo=NULL;
 	int32_t amount,retval=1,bytes;
 	char *rendered=NULL;
-	vars->turni=(vars->turni+1)%bet->maxplayers;
+	vars->turni=(vars->dealer+1)%bet->maxplayers;
 
 	smallBlindInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(smallBlindInfo,"method","betting");
