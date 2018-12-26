@@ -883,7 +883,7 @@ int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,stru
 			printf("\nEnter the amount > %d:",min_amount);
 			scanf("%d",&raise_amount);
 						
-		}while(raise_amount<min_amount);
+		}while((raise_amount<min_amount)||(raise_amount<=0));
 		vars->betamount[playerid][round]+=raise_amount;
 		cJSON_AddNumberToObject(action_response,"bet_amount",raise_amount);
 	}
