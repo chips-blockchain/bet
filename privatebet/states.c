@@ -439,6 +439,8 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 		vars->round+=1;
 		vars->turni=vars->dealer;
 		printf("\nRound:%d is completed",vars->round);
+		if(vars->round<CARDS777_MAXCARDS)
+			BET_DCV_round_betting(argjson,bet,vars);
 	}
 	
 	end:
@@ -753,12 +755,14 @@ int32_t BET_p2p_dealer_info(cJSON *argjson,struct privatebet_info *bet,struct pr
 int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	cJSON *small_blind_info=NULL;
-	int32_t amount,retval=1,bytes;
+	int32_t amount,retval=1,bytes,c;
+	
 	char *rendered=NULL;
 	if(jint(argjson,"playerid") == bet->myplayerid)
 	{
 		small_blind_info=cJSON_CreateObject();
 		cJSON_AddStringToObject(small_blind_info,"method","betting");
+		while ((c = getchar()) != '\n' && c != EOF) { }
 		printf("\nEnter small blind:");
 		scanf("%d",&amount);
 		cJSON_AddStringToObject(small_blind_info,"action","small_blind_bet");
