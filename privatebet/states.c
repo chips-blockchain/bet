@@ -850,7 +850,7 @@ int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,stru
 	if(jinti(possibilities,(option-1))== raise)
 	{
 		printf("\nEnter the amount > :%d",min_amount);
-		scanf("%d",raise_amount);
+		scanf("%d",&raise_amount);
 		vars->betamount[playerid][round]+=raise_amount;
 		cJSON_AddNumberToObject(action_response,"bet_amount",raise_amount);
 	}
