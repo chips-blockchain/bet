@@ -361,7 +361,7 @@ int main(int argc, char **argv)
 	    BET_dcv->maxchips = CARDS777_MAXCHIPS;
 	    BET_dcv->chipsize = CARDS777_CHIPSIZE;
 		BET_dcv->numplayers=0;
-		BET_dcv->myplayerid=-1;
+		BET_dcv->myplayerid=-2;
 	    BET_betinfo_set(BET_dcv,"demo",range,0,Maxplayers);
 	    if ( OS_thread_create(&dcv_t,NULL,(void *)BET_p2p_hostloop,(void *)BET_dcv) != 0 )
 	    {
@@ -393,7 +393,7 @@ int main(int argc, char **argv)
 		    BET_bvv->maxchips = CARDS777_MAXCHIPS;
 		    BET_bvv->chipsize = CARDS777_CHIPSIZE;
 			BET_bvv->numplayers=numplayers;
-			BET_bvv->myplayerid=-2;
+			BET_bvv->myplayerid=-1;
 		    BET_betinfo_set(BET_bvv,"demo",range,0,Maxplayers);
 		    if ( OS_thread_create(&bvv_t,NULL,(void *)BET_p2p_bvvloop,(void *)BET_bvv) != 0 )
 		    {
