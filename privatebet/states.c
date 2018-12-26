@@ -604,7 +604,7 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 			{
 				if(bet->myplayerid == jint(argjson,"playerid"))
 				{
-					BET_player_round_betting(argjson,bet,vars);
+					retval=BET_player_round_betting(argjson,bet,vars);
 				}
 			}
 			else if((strcmp(action,"check") == 0) || (strcmp(action,"call") == 0) || (strcmp(action,"raise") == 0)
