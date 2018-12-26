@@ -450,8 +450,8 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 			printf("\nTurn card is drawn");
 		else if(vars->round ==4)
 			printf("\nRiver card is drawn");
-		printf("\nRound:%d is completed",vars->round);
 		*/
+		printf("\nRound:%d is completed",vars->round);
 		if(vars->round<CARDS777_MAXROUNDS)
 			BET_DCV_round_betting(argjson,bet,vars);
 	}
