@@ -389,7 +389,7 @@ int32_t BET_DCV_big_blind_bet(cJSON *argjson,struct privatebet_info *bet,struct 
 	playerid=jint(argjson,"playerid");
 	round=jint(argjson,"round");
 
-	vars->turni=(vars->turni+1)%bet->maxplayers;
+	//vars->turni=(vars->turni+1)%bet->maxplayers;
 	vars->big_blind=jint(argjson,"amount");
 	vars->bet_actions[playerid][round]=big_blind;
 	vars->betamount[playerid][round]=jint(argjson,"amount");
@@ -410,21 +410,15 @@ int32_t BET_DCV_big_blind_bet(cJSON *argjson,struct privatebet_info *bet,struct 
 	end:
 		return retval;
 }
-	
-int32_t BET_DCV_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
-{
-	char *rendered=NULL;
-	int32_t retval=1,bytes,amount,playerid,round;
-	cJSON *big_blind_info=NULL;
 
-	playerid=jint(argjson,"playerid");
-	round=jint(argjson,"round");
+int32_t BET_DCV_big_blind(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	
+	char *rendered=NULL;
+	int32_t retval=1,bytes;
+	cJSON *big_blind_info=NULL;
 	
 	vars->turni=(vars->turni+1)%bet->maxplayers;
-	vars->small_blind=jint(argjson,"amount");
-	vars->bet_actions[playerid][round]=small_blind;
-	vars->betamount[playerid][round]=jint(argjson,"amount");
-
 	big_blind_info=cJSON_CreateObject();
 	cJSON_AddStringToObject(big_blind_info,"method","betting");
 	cJSON_AddStringToObject(big_blind_info,"action","big_blind");
@@ -441,7 +435,25 @@ int32_t BET_DCV_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,struc
 		printf("\n%s :%d Failed to send data",__FUNCTION__,__LINE__);
 		goto end;
 	}
-				
+	
+	end:
+		return retval;
+		
+}
+	
+int32_t BET_DCV_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	int32_t retval=1,amount,playerid,round;
+
+	playerid=jint(argjson,"playerid");
+	round=jint(argjson,"round");
+	
+
+	vars->small_blind=jint(argjson,"amount");
+	vars->bet_actions[playerid][round]=small_blind;
+	vars->betamount[playerid][round]=jint(argjson,"amount");
+
+	retval=BET_DCV_big_blind(argjson,bet,vars);
 
 	end:
 		return retval;
