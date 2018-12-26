@@ -336,7 +336,7 @@ int32_t BET_DCV_big_blind_bet(cJSON *argjson,struct privatebet_info *bet,struct 
 	round=jint(argjson,"round");
 
 	vars->turni=(vars->turni+1)%bet->maxplayers;
-	vars->big_blind=jint(argjson,"big_blind");
+	vars->big_blind=jint(argjson,"amount");
 	vars->bet_actions[playerid][round]=big_blind;
 	vars->betamount[playerid][round]=jint(argjson,"amount");
 	
@@ -363,7 +363,7 @@ int32_t BET_DCV_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,struc
 	round=jint(argjson,"round");
 	
 	vars->turni=(vars->turni+1)%bet->maxplayers;
-	vars->small_blind=jint(argjson,"small_blind");
+	vars->small_blind=jint(argjson,"amount");
 	vars->bet_actions[playerid][round]=small_blind;
 	vars->betamount[playerid][round]=jint(argjson,"amount");
 
@@ -531,7 +531,7 @@ int32_t BET_player_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,st
 	
 	
 	vars->turni=(vars->turni+1)%bet->maxplayers;
-	vars->small_blind=jint(argjson,"small_blind");
+	vars->small_blind=jint(argjson,"amount");
 	vars->bet_actions[playerid][round]=small_blind;
 	vars->betamount[playerid][round]=jint(argjson,"amount");
 
@@ -551,7 +551,7 @@ int32_t BET_player_big_blind_bet(cJSON *argjson,struct privatebet_info *bet,stru
 	round=jint(argjson,"round");
 
 	vars->turni=(vars->turni+1)%bet->maxplayers;
-	vars->big_blind=jint(argjson,"big_blind");
+	vars->big_blind=jint(argjson,"amount");
 	vars->bet_actions[playerid][round]=big_blind;
 	vars->betamount[playerid][round]=jint(argjson,"amount");
 	
@@ -614,8 +614,11 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 		printf("\nEnter small blind:");
 		scanf("%d",&amount);
 		cJSON_AddStringToObject(small_blind_info,"action","small_blind_bet");
-		cJSON_AddNumberToObject(small_blind_info,"small_blind",amount);
+		cJSON_AddNumberToObject(small_blind_info,"amount",amount);
 		vars->betamount[bet->myplayerid][vars->round]=vars->betamount[bet->myplayerid][vars->round]+amount;
+		cJSON_AddNumberToObject(small_blind_info,"playerid",jint(argjson,"playerid"));
+		cJSON_AddNumberToObject(small_blind_info,"round",jint(argjson,"round"));
+
 		rendered=cJSON_Print(small_blind_info);
 		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 		if(bytes<0)
@@ -644,9 +647,11 @@ int32_t BET_p2p_big_blind(cJSON *argjson,struct privatebet_info *bet,struct priv
 		cJSON_AddStringToObject(big_blind_info,"action","big_blind_bet");
 		printf("\nEnter big blind:");
 		scanf("%d",&amount);
-		cJSON_AddNumberToObject(big_blind_info,"big_blind",amount);
+		cJSON_AddNumberToObject(big_blind_info,"amount",amount);
 		vars->betamount[bet->myplayerid][vars->round]=vars->betamount[bet->myplayerid][vars->round]+amount;
-		
+		cJSON_AddNumberToObject(big_blind_info,"playerid",jint(argjson,"playerid"));
+		cJSON_AddNumberToObject(big_blind_info,"round",jint(argjson,"round"));
+
 		rendered=cJSON_Print(big_blind_info);
 		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 		if(bytes<0)
