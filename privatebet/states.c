@@ -324,6 +324,58 @@ int32_t BET_p2p_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 		return retval;	
 }
 
+int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	cJSON *roundBetting=NULL,*possibilities=NULL;
+	int maxamount=0,bytes,retval=1;
+	char *rendered=NULL;
+	
+	roundBetting=cJSON_CreateObject();
+	cJSON_AddStringToObject(roundBetting,"method","betting");
+	cJSON_AddStringToObject(roundBetting,"action","round_betting");
+	cJSON_AddNumberToObject(roundBetting,"playerid",jint(argjson,"playerid"));
+	cJSON_AddNumberToObject(roundBetting,"round",jint(argjson,"round"));
+	cJSON_AddItemToObject(roundBetting,"possibilities",possibilities=cJSON_CreateArray());
+
+	vars->turni=(vars->turni+1)%bet->maxplayers;
+	for(int i=0;i<bet->maxplayers;i++)
+	{	
+		if(maxamount<vars->betamount[i][vars->round])
+		{
+			maxamount=vars->betamount[i][vars->round];
+		}
+	}
+
+	if(maxamount>vars->betamount[vars->turni][vars->round])
+	{
+		for(int i=raise;i<=fold;i++)
+		{
+			cJSON_AddItemToArray(possibilities,cJSON_CreateNumber(i));
+		}
+		//raise or fold or call
+	}
+	else if(maxamount == vars->betamount[vars->turni][vars->round])
+	{
+		
+		for(int i=check;i<=fold;i++)
+		{
+			cJSON_AddItemToArray(possibilities,cJSON_CreateNumber(i));
+		}
+		//raise or fold or call or check
+	}
+
+	rendered=cJSON_Print(roundBetting);
+	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+	if(bytes<0)
+	{
+		retval =-1;
+		goto end;
+	}
+
+	end:
+		return retval;
+	
+}
 
 
 int32_t BET_DCV_big_blind_bet(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
@@ -339,7 +391,10 @@ int32_t BET_DCV_big_blind_bet(cJSON *argjson,struct privatebet_info *bet,struct 
 	vars->big_blind=jint(argjson,"amount");
 	vars->bet_actions[playerid][round]=big_blind;
 	vars->betamount[playerid][round]=jint(argjson,"amount");
+
+	retval=BET_DCV_round_betting(argjson,bet,vars);
 	
+	/*
 	display=cJSON_CreateObject();
 	cJSON_AddStringToObject(display,"method","display_current_state");
 	rendered=cJSON_Print(display);
@@ -349,6 +404,7 @@ int32_t BET_DCV_big_blind_bet(cJSON *argjson,struct privatebet_info *bet,struct 
 		retval=-1;
 		printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
 	}
+	*/
 	end:
 		return retval;
 }
@@ -459,6 +515,13 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 				}
 				
 			}
+			else if(strcmp(action,"round_betting"))
+			{
+				if(bet->myplayerid>= 0)
+				{
+					BET_player_round_betting(argjson,bet,vars);
+				}
+			}
 		}
 		printf("\n");
 		end:
@@ -487,11 +550,11 @@ int32_t BET_p2p_display_current_state(cJSON *argjson,struct privatebet_info *bet
 			{
 				printf("big blind ");
 			}
-			else if(vars->bet_actions[i][j] == raise)
+			else if(vars->bet_actions[i][j] == check)
 			{
 				printf("raise ");
 			}
-			else if(vars->bet_actions[i][j] == check)
+			else if(vars->bet_actions[i][j] == raise)
 			{
 				printf("check ");
 			}
@@ -666,4 +729,23 @@ int32_t BET_p2p_big_blind(cJSON *argjson,struct privatebet_info *bet,struct priv
 		return retval;
 }
 
+int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	cJSON *roundBetting=NULL,*possibilities=NULL;
+	int maxamount=0,bytes,retval=1;
+	char *rendered=NULL;
+
+	possibilities=cJSON_GetObjectItem(argjson,"possibilities");
+
+	for(int i=0;i<cJSON_GetArraySize(possibilities);i++)
+	{
+		printf("%d ",jinti(possibilities,i));
+	}
+
+	printf("\n");
+
+	end:
+		return retval;
+	
+}
 

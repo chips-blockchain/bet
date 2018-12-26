@@ -307,9 +307,9 @@ enum action_type
 {
 	small_blind=1,
 	big_blind,	
+	check,
 	raise,
 	call,
-	check,
 	fold
 };
 struct BET_shardsinfo
