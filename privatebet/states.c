@@ -503,6 +503,7 @@ int32_t BET_p2p_display_current_state(cJSON *argjson,struct privatebet_info *bet
 			{
 				printf("fold ");
 			}
+			printf("%d ",vars->betamount[i][j]);
 		}	
 	}
 
