@@ -769,16 +769,19 @@ int32_t BET_p2p_dealer_info(cJSON *argjson,struct privatebet_info *bet,struct pr
 int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	cJSON *small_blind_info=NULL;
-	int32_t amount,retval=1,bytes,c;
+	int32_t amount,retval=1,bytes;
 	
 	char *rendered=NULL;
 	if(jint(argjson,"playerid") == bet->myplayerid)
 	{
 		small_blind_info=cJSON_CreateObject();
 		cJSON_AddStringToObject(small_blind_info,"method","betting");
-		while ((c = getchar()) != '\n' && c != EOF) { }
-		printf("\nEnter small blind:");
-		scanf("%d",&amount);
+		do
+		{
+			printf("\nEnter small blind:");
+			scanf("%d",&amount);
+		}while(amount<0);
+
 		cJSON_AddStringToObject(small_blind_info,"action","small_blind_bet");
 		cJSON_AddNumberToObject(small_blind_info,"amount",amount);
 		vars->betamount[bet->myplayerid][vars->round]=vars->betamount[bet->myplayerid][vars->round]+amount;
@@ -811,8 +814,13 @@ int32_t BET_p2p_big_blind(cJSON *argjson,struct privatebet_info *bet,struct priv
 		big_blind_info=cJSON_CreateObject();
 		cJSON_AddStringToObject(big_blind_info,"method","betting");
 		cJSON_AddStringToObject(big_blind_info,"action","big_blind_bet");
-		printf("\nEnter big blind:");
-		scanf("%d",&amount);
+
+		do
+		{
+			printf("\nEnter big blind:");
+			scanf("%d",&amount);
+		}while(amount!=(2*vars->small_blind));
+
 		cJSON_AddNumberToObject(big_blind_info,"amount",amount);
 		vars->betamount[bet->myplayerid][vars->round]=vars->betamount[bet->myplayerid][vars->round]+amount;
 		cJSON_AddNumberToObject(big_blind_info,"playerid",jint(argjson,"playerid"));
@@ -847,6 +855,8 @@ int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,stru
 	cJSON_AddNumberToObject(action_response,"playerid",jint(argjson,"playerid"));
 	cJSON_AddNumberToObject(action_response,"round",jint(argjson,"round"));
 	possibilities=cJSON_GetObjectItem(argjson,"possibilities");
+
+	
 	printf("\nHere is the possibilities");
 	for(int i=0;i<cJSON_GetArraySize(possibilities);i++)
 	{
@@ -854,8 +864,13 @@ int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,stru
 		if(call==jinti(possibilities,i))
 			printf("%d",min_amount);
 	}
-	printf("\nEnter your option, to chose one::");
-	scanf("%d",&option);
+
+	do
+	{
+		printf("\nEnter your option, to chose one::");
+		scanf("%d",&option);	
+	}while(option<1)&&(option>=cJSON_GetArraySize(possibilities));
+	
 
 	vars->bet_actions[playerid][round]=jinti(possibilities,(option-1));
 
@@ -863,8 +878,12 @@ int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,stru
 	
 	if(jinti(possibilities,(option-1))== raise)
 	{
-		printf("\nEnter the amount > :%d",min_amount);
-		scanf("%d",&raise_amount);
+		do
+		{
+			printf("\nEnter the amount > %d:",min_amount);
+			scanf("%d",&raise_amount);
+						
+		}while(raise_amount<min_amount);
 		vars->betamount[playerid][round]+=raise_amount;
 		cJSON_AddNumberToObject(action_response,"bet_amount",raise_amount);
 	}
