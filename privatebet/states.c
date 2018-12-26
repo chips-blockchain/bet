@@ -869,7 +869,7 @@ int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,stru
 	{
 		printf("\nEnter your option, to chose one::");
 		scanf("%d",&option);	
-	}while(option<1)&&(option>=cJSON_GetArraySize(possibilities));
+	}while((option<1)||(option>=cJSON_GetArraySize(possibilities)));
 	
 
 	vars->bet_actions[playerid][round]=jinti(possibilities,(option-1));
