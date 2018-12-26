@@ -332,15 +332,17 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	cJSON *roundBetting=NULL,*possibilities=NULL;
 	int maxamount=0,bytes,retval=1;
 	char *rendered=NULL;
+
+	vars->turni=(vars->turni+1)%bet->maxplayers;
 	
 	roundBetting=cJSON_CreateObject();
 	cJSON_AddStringToObject(roundBetting,"method","betting");
 	cJSON_AddStringToObject(roundBetting,"action","round_betting");
-	cJSON_AddNumberToObject(roundBetting,"playerid",jint(argjson,"playerid"));
+	cJSON_AddNumberToObject(roundBetting,"playerid",vars->turni);
 	cJSON_AddNumberToObject(roundBetting,"round",jint(argjson,"round"));
 	cJSON_AddItemToObject(roundBetting,"possibilities",possibilities=cJSON_CreateArray());
 
-	vars->turni=(vars->turni+1)%bet->maxplayers;
+	
 	for(int i=0;i<bet->maxplayers;i++)
 	{	
 		if(maxamount<vars->betamount[i][vars->round])
