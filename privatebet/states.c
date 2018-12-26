@@ -339,7 +339,7 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	cJSON_AddStringToObject(roundBetting,"method","betting");
 	cJSON_AddStringToObject(roundBetting,"action","round_betting");
 	cJSON_AddNumberToObject(roundBetting,"playerid",vars->turni);
-	cJSON_AddNumberToObject(roundBetting,"round",jint(argjson,"round"));
+	cJSON_AddNumberToObject(roundBetting,"round",vars->round);
 	cJSON_AddItemToObject(roundBetting,"possibilities",possibilities=cJSON_CreateArray());
 
 	
@@ -364,7 +364,8 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 		
 		for(int i=check;i<=fold;i++)
 		{
-			cJSON_AddItemToArray(possibilities,cJSON_CreateNumber(i));
+			if(i != call)
+				cJSON_AddItemToArray(possibilities,cJSON_CreateNumber(i));
 		}
 		//raise or fold or call or check
 	}
