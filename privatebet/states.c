@@ -738,6 +738,7 @@ int32_t BET_p2p_dealer_info(cJSON *argjson,struct privatebet_info *bet,struct pr
 	
 	if(vars->dealer == bet->myplayerid)
 	{
+		printf("\n%s:%d::I AM THE DEALER: %d\n",__FUNCTION__,__LINE__,bet->myplayerid);
 		dealerReady=cJSON_CreateObject();
 		cJSON_AddStringToObject(dealerReady,"method","dealer_ready");
 		rendered=cJSON_Print(dealerReady);
