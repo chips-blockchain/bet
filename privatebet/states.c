@@ -375,7 +375,8 @@ int32_t BET_DCV_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,struc
 	
 	rendered=cJSON_Print(big_blind_info);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
-	
+
+	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,rendered);
 	if(bytes<0)
 	{
 		retval=-1;
@@ -553,6 +554,8 @@ int32_t BET_player_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,st
 	int32_t amount,retval=1,bytes,playerid,round;
 	char *rendered=NULL;
 
+	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
+	
 	playerid=jint(argjson,"playerid");
 	round=jint(argjson,"round");
 	
@@ -571,6 +574,8 @@ int32_t BET_player_big_blind_bet(cJSON *argjson,struct privatebet_info *bet,stru
 	int retval=1,bytes,amount,playerid,round;
 	char *rendered=NULL;
 	cJSON *display=NULL;
+
+	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
 
 	playerid=jint(argjson,"playerid");
 	round=jint(argjson,"round");
