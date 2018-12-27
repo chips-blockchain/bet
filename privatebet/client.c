@@ -1502,8 +1502,6 @@ int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,
 	if(no_of_shares == bet->maxplayers)
 	{
 		no_of_shares=0;
-		for(int i=0;i<bet->maxplayers;i++)
-			sharesflag[cardid][i]=0;
 		
 		for(int i=0;i<bet->maxplayers;i++)
 		{
