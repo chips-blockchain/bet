@@ -372,6 +372,17 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 		printf("\nRound:%d is completed",vars->round);
 		if(vars->round>=CARDS777_MAXROUNDS)
 		{
+			printf("\nFunds Report:\n");
+			for(int i=0;i<bet->maxplayers;i++)
+			{
+				int sum=0;
+				for(int j=0;j<CARDS777_MAXROUNDS;j++)
+				{
+					sum+=vars->betamount[i][j];
+				}
+				printf("\nused:%d , remained:%d",sum,vars->funds[i]);
+			}
+			printf("\npot:%d\n",vars->pot);
 			goto end;
 		}
 	}
