@@ -26,6 +26,9 @@ extern bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 
 #define hand_size 7
 #define hole_cards 2
+#define flop_cards 3
+#define turn_card 1
+#define river_card 1
 #define community_cards 5
 
 #endif

@@ -362,6 +362,7 @@ int main(int argc, char **argv)
 	    BET_dcv->chipsize = CARDS777_CHIPSIZE;
 		BET_dcv->numplayers=0;
 		BET_dcv->myplayerid=-2;
+		BET_dcv->cardid=-1;
 	    BET_betinfo_set(BET_dcv,"demo",range,0,Maxplayers);
 	    if ( OS_thread_create(&dcv_t,NULL,(void *)BET_p2p_hostloop,(void *)BET_dcv) != 0 )
 	    {
