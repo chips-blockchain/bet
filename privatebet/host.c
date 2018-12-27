@@ -713,6 +713,11 @@ int32_t BET_DCV_turn(cJSON *argjson,struct privatebet_info *bet,struct privatebe
 	char *rendered=NULL;
 	int flag=1;
 	int no_of_hole_cards;
+	if(river_card_drawn)
+	{
+		retval=2;
+		goto end;
+	}
 
 	if(!hole_cards_drawn)
 	{
@@ -1155,6 +1160,7 @@ int32_t BET_DCV_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,
 	{
 		river_card_drawn=1;
 	}
+
 	retval=BET_DCV_turn(playerCardInfo,bet,vars);
 
 	if(retval==2)
