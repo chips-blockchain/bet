@@ -340,7 +340,7 @@ int32_t BET_DCV_next_turn(cJSON *argjson,struct privatebet_info *bet,struct priv
 			maxamount=vars->betamount[i][vars->round];
 	}
 	
-	for(int i=vars->last_turn+1;(i != vars->last_turn);i=((i+1)%bet->maxplayers))
+	for(int i=((vars->turni+1)%bet->maxplayers);(i != vars->turni);i=((i+1)%bet->maxplayers))
 	{
 		if((vars->bet_actions[i][vars->round] != fold)&&(vars->bet_actions[i][vars->round] != allin))
 		{
