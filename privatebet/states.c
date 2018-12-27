@@ -367,8 +367,20 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	int flag=0,maxamount=0,bytes,retval=1;
 	char *rendered=NULL;
 
+	if((retval=BET_DCV_next_turn(argjson,bet,vars)) == -1)
+	{
+		
+		vars->round+=1;
+		vars->turni=vars->dealer;
+		vars->last_raise=0;
+		printf("\nRound:%d is completed",vars->round);
+		if(vars->round>=CARDS777_MAXROUNDS)
+		{
+			goto end;
+		}
+	}
 	vars->last_turn=vars->turni;
-	vars->turni=BET_DCV_next_turn(argjson,bet,vars);
+	vars->turni=retval;
 
 	//vars->turni=(vars->turni+1)%bet->maxplayers;
 	
@@ -418,7 +430,7 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 		retval =-1;
 		goto end;
 	}
-
+	
 	end:
 		return retval;
 	
@@ -462,6 +474,7 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 			
 		}
 	}
+	retval=BET_DCV_round_betting(argjson,bet,vars);
 	/*
 	maxamount=vars->betamount[playerid][round];
 	for(int i=0;i<bet->maxplayers;i++)
@@ -486,6 +499,7 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 	if((flag1) || (flag2))
 		retval=BET_DCV_round_betting(argjson,bet,vars);
 	*/
+	/*
 	if(BET_DCV_next_turn(argjson,bet,vars) != -1)
 	{
 		retval=BET_DCV_round_betting(argjson,bet,vars);
@@ -517,7 +531,7 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 				printf("\nThe pot is in-valid and the amount is:%d\n",vars->pot);
 		}
 	}
-	
+	*/
 	end:
 		return retval;
 }
