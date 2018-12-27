@@ -1572,7 +1572,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 				if(retval<0)
 					goto end;
 			}
-			sleep(5);
+			//sleep(5);
 			//retval=BET_p2p_dcv_start(argjson,bet,vars);
 		}
 		else if(strcmp(method,"player_ready") == 0)
@@ -1594,7 +1594,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 				printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 				//retval=BET_evaluate_game(argjson,bet,vars);
 				retval=BET_DCV_evaluate_game(argjson,bet,vars);
-				sleep(2);
+				
 		}
 		else if(strcmp(method,"invoiceRequest") == 0)
 		{
