@@ -1176,7 +1176,8 @@ int32_t BET_DCV_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,
 			{
 				int temp=card_values[i][j];
 				//printf("%d\t",card_values[j][i]);
-				printf("%s-->%s \t",suit[temp/13],face[temp%13]);
+				//printf("%s-->%s \t",suit[temp/13],face[temp%13]);
+				printf("%d \t");
 				h[j]=(unsigned char)card_values[i][j];
 			
 			}
