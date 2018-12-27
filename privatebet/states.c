@@ -445,6 +445,7 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 	{
 		vars->round+=1;
 		vars->turni=vars->dealer;
+		vars->last_raise=0;
 		/*
 		if(vars->round ==1)
 			printf("\n Hole cards are drawn");
@@ -910,7 +911,7 @@ int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,stru
 			printf("\nEnter the amount > %d:",min_amount);
 			scanf("%d",&raise_amount);
 						
-		}while((raise_amount<min_amount)||(raise_amount<=0));
+		}while((raise_amount<min_amount)||(raise_amount<=0)||(raise_amount<(vars->last_raise+min_amount)));
 		vars->betamount[playerid][round]+=raise_amount;
 		cJSON_AddNumberToObject(action_response,"bet_amount",raise_amount);
 	}
