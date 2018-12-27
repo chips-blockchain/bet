@@ -360,7 +360,8 @@ struct privatebet_vars
 	int32_t small_blind,big_blind;
 	int32_t betamount[CARDS777_MAXPLAYERS][CARDS777_MAXROUNDS];
 	int32_t bet_actions[CARDS777_MAXPLAYERS][CARDS777_MAXROUNDS];
-	int32_t dealer;
+	int32_t dealer,last_turn,last_raise;
+	int32_t pot;
 };
 
 struct pair256 { bits256 priv,prod; };
