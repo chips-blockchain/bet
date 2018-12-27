@@ -43,7 +43,7 @@ int32_t all_player_cards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 struct deck_dcv_info dcv_info;
 int32_t player_ready[CARDS777_MAXPLAYERS];
 int32_t hole_cards_drawn=0,community_cards_drawn=0,flop_cards_drawn=0,turn_card_drawn=0,river_card_drawn=0;
-int32_t first_card=0,second_card=0,third_card=0;
+int32_t no_of_flop_cards=0;
 int32_t bet_amount[CARDS777_MAXPLAYERS][CARDS777_MAXROUNDS];
 
 
@@ -738,19 +738,8 @@ int32_t BET_DCV_turn(cJSON *argjson,struct privatebet_info *bet,struct privatebe
 	else if(!flop_cards_drawn)
 	{
 		bet->cardid=(hole_cards*bet->maxplayers)+1;
-		if(first_card==0)
-		{
-			first_card=1;
-		}
-		else if(second_card==0)
-		{
-			second_card=1;
-		}
-		else if(third_card==0)
-		{
-			third_card=1;
-		}
-		bet->cardid=bet->cardid+first_card+second_card+third_card;
+		bet->cardid=bet->cardid+no_of_flop_cards;
+		no_of_flop_cards++;
 	}
 	else if(!turn_card_drawn)
 	{
