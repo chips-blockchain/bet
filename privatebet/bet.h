@@ -310,6 +310,7 @@ enum action_type
 	check,
 	raise,
 	call,
+	allin,
 	fold
 };
 struct BET_shardsinfo

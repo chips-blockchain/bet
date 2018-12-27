@@ -22,7 +22,7 @@
 //int32_t Gamestart,Gamestarted,Lastturni;
 
 
-char action_str[7][100]={"","small_blind","big_blind","check","raise","call","fold"};
+char action_str[8][100]={"","small_blind","big_blind","check","raise","call","all-in","fold"};
 
 void BET_client_turnisend(struct privatebet_info *bet,struct privatebet_vars *vars,cJSON *actions)
 {
@@ -330,13 +330,47 @@ int32_t BET_p2p_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 		return retval;	
 }
 
+int32_t BET_DCV_next_turn(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	int32_t flag=0,maxamount=0,retval=-1;
+	
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		if(maxamount<vars->betamount[i][vars->round])
+			maxamount=vars->betamount[i][vars->round];
+	}
+	
+	for(int i=vars->last_turn+1;(i != vars->last_turn);i++)
+	{
+		if((vars->bet_actions[i][vars->round] != fold)&&(vars->bet_actions[i][vars->round] != allin))
+		{
+
+			if((vars->bet_actions[i][vars->round] == 0) || (((vars->bet_actions[i][vars->round] == check) || (vars->bet_actions[i][vars->round] == call) 
+							|| (vars->bet_actions[i][vars->round] == raise)) && (maxamount !=vars->betamount[i][vars->round])) )
+			{
+				retval=i;
+				break;
+								
+			}
+
+			
+		}
+
+	}
+	end:
+		return retval;
+		
+}
 int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	cJSON *roundBetting=NULL,*possibilities=NULL;
-	int maxamount=0,bytes,retval=1;
+	int flag=0,maxamount=0,bytes,retval=1;
 	char *rendered=NULL;
 
-	vars->turni=(vars->turni+1)%bet->maxplayers;
+	vars->last_turn=vars->turni;
+	vars->turni=BET_DCV_next_turn(argjson,bet,vars);
+
+	//vars->turni=(vars->turni+1)%bet->maxplayers;
 	
 	roundBetting=cJSON_CreateObject();
 	cJSON_AddStringToObject(roundBetting,"method","betting");
@@ -415,12 +449,20 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 		{
 			vars->bet_actions[playerid][round]=raise;
 		}
+		else if(strcmp(action,"allin") == 0)
+		{
+			for(int i=vars->round;i<CARDS777_MAXROUNDS;i++)
+				vars->bet_actions[playerid][round]=allin;
+		}
 		else if(strcmp(action,"fold") == 0)
 		{
-			vars->bet_actions[playerid][round]=fold;
+			
+			for(int i=vars->round;i<CARDS777_MAXROUNDS;i++)
+				vars->bet_actions[playerid][round]=fold;
+			
 		}
 	}
-
+	/*
 	maxamount=vars->betamount[playerid][round];
 	for(int i=0;i<bet->maxplayers;i++)
 	{
@@ -438,36 +480,36 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 			break;
 		}
 	}
-
+*/
+	
+	/*
 	if((flag1) || (flag2))
 		retval=BET_DCV_round_betting(argjson,bet,vars);
+	*/
+	if(BET_DCV_next_turn(argjson,bet,vars) != -1)
+	{
+		retval=BET_DCV_round_betting(argjson,bet,vars);
+	}
 	else
 	{
 		vars->round+=1;
 		vars->turni=vars->dealer;
 		vars->last_raise=0;
-		/*
-		if(vars->round ==1)
-			printf("\n Hole cards are drawn");
-		else if(vars->round == 2)
-			printf("\nFlop cards are drawn");
-		else if(vars->round ==3)
-			printf("\nTurn card is drawn");
-		else if(vars->round ==4)
-			printf("\nRiver card is drawn");
-		*/
 		printf("\nRound:%d is completed",vars->round);
 		if(vars->round<CARDS777_MAXROUNDS)
 			BET_DCV_round_betting(argjson,bet,vars);
 		else
 		{	int amount=0;
+		
 			printf("\nChecking pot\n");
 			for(int i=0;i<bet->maxplayers;i++)
 			{
 				for(int j=0;j<CARDS777_MAXROUNDS;j++)
 				{
 					amount+=vars->betamount[i][j];
+					printf("%d ",vars->betamount[i][j]);
 				}
+				printf("\n")
 			}
 			if(vars->pot==amount)
 				printf("\nThe pot is valid and the amount is:%d\n",vars->pot);
@@ -493,7 +535,8 @@ int32_t BET_DCV_big_blind_bet(cJSON *argjson,struct privatebet_info *bet,struct 
 	//vars->turni=(vars->turni+1)%bet->maxplayers;
 	vars->big_blind=jint(argjson,"amount");
 	vars->bet_actions[playerid][round]=big_blind;
-	vars->betamount[playerid][round]=jint(argjson,"amount");
+	vars->betamount[playerid][round]=vars->big_blind;
+	vars->pot+=vars->big_blind;
 
 	retval=BET_DCV_round_betting(argjson,bet,vars);
 	
@@ -554,7 +597,8 @@ int32_t BET_DCV_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,struc
 
 	vars->small_blind=jint(argjson,"amount");
 	vars->bet_actions[playerid][round]=small_blind;
-	vars->betamount[playerid][round]=jint(argjson,"amount");
+	vars->betamount[playerid][round]=vars->small_blind;
+	vars->pot+=vars->small_blind;
 
 	retval=BET_DCV_big_blind(argjson,bet,vars);
 
@@ -723,7 +767,8 @@ int32_t BET_player_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,st
 	vars->turni=(vars->turni+1)%bet->maxplayers;
 	vars->small_blind=jint(argjson,"amount");
 	vars->bet_actions[playerid][round]=small_blind;
-	vars->betamount[playerid][round]=jint(argjson,"amount");
+	vars->betamount[playerid][round]=vars->small_blind;
+	vars->pot+=vars->small_blind;
 
 	end:
 		return retval;
@@ -743,7 +788,8 @@ int32_t BET_player_big_blind_bet(cJSON *argjson,struct privatebet_info *bet,stru
 	vars->turni=(vars->turni+1)%bet->maxplayers;
 	vars->big_blind=jint(argjson,"amount");
 	vars->bet_actions[playerid][round]=big_blind;
-	vars->betamount[playerid][round]=jint(argjson,"amount");
+	vars->betamount[playerid][round]=vars->big_blind;
+	vars->pot+=vars->big_blind;
 	
 	end:
 		return retval;
