@@ -336,6 +336,7 @@ struct privatebet_info
     uint32_t timestamp;
     char peerids[CARDS777_MAXPLAYERS+1][67];
 	int32_t cardid,turni;
+	int32_t no_of_turns;
 };
 
 struct privatebet_rawpeerln

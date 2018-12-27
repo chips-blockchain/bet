@@ -1140,7 +1140,9 @@ int32_t BET_DCV_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,
 	unsigned char h[7];
 	unsigned long score[2];
 
-	card_values[playerid][bet->turni]=jint(playerCardInfo,"decoded_card");
+	card_values[playerid][bet->no_of_turns]=jint(playerCardInfo,"decoded_card");
+	if(bet->turni==(bet->maxplayers-1))
+		bet->no_of_turns++;
 	if(cardid==((hole_cards*bet->maxplayers)-1))
 	{
 		hole_cards_drawn=1;
