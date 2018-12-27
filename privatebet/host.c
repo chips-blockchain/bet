@@ -1404,10 +1404,10 @@ void test()
 		h1[i-3]=i;
 		h2[i-3]=i;
 	}
-	h1[6]= 11;
-	h1[7]= 12;
-	h2[6]=13;
-	h2[7]=14;
+	h1[5]= 11;
+	h1[6]= 12;
+	h2[5]=13;
+	h2[6]=14;
 	printf("\nh1 score= %ld",SevenCardDrawScore(h1));
 	printf("\nh2 score= %ld",SevenCardDrawScore(h2));
 	printf("\n");
