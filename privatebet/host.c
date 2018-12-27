@@ -1396,29 +1396,10 @@ int32_t BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct priva
 		return retval;
 }
 
-void test()
-{
-	unsigned char h1[7],h2[7];
-	for(int i=3;i<8;i++)
-	{
-		h1[i-3]=i;
-		h2[i-3]=i;
-	}
-	h1[5]= 11;
-	h1[6]= 12;
-	h2[5]=13;
-	h2[6]=14;
-	printf("\nh1 score= %ld",SevenCardDrawScore(h1));
-	printf("\nh2 score= %ld",SevenCardDrawScore(h2));
-	printf("\n");
-	
-	
-}
 int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
     char *method; int32_t bytes,retval=1;
 	char *rendered=NULL;
-	test();
     if ( (method= jstr(argjson,"method")) != 0 )
     {
 		//printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));

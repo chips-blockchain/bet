@@ -345,8 +345,9 @@ int32_t BET_DCV_next_turn(cJSON *argjson,struct privatebet_info *bet,struct priv
 		if((vars->bet_actions[i][vars->round] != fold)&&(vars->bet_actions[i][vars->round] != allin))
 		{
 
-			if((vars->bet_actions[i][vars->round] == 0) || (((vars->bet_actions[i][vars->round] == check) || (vars->bet_actions[i][vars->round] == call) 
-							|| (vars->bet_actions[i][vars->round] == raise)) && (maxamount !=vars->betamount[i][vars->round])) )
+			if((vars->bet_actions[i][vars->round] == 0) || (vars->bet_actions[i][vars->round] == small_blind) || 
+				(vars->bet_actions[i][vars->round] == big_blind) ||	(((vars->bet_actions[i][vars->round] == check) || (vars->bet_actions[i][vars->round] == call) 
+										|| (vars->bet_actions[i][vars->round] == raise)) && (maxamount !=vars->betamount[i][vars->round])) )
 			{
 				retval=i;
 				break;
@@ -380,7 +381,7 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 		}
 	}
 	vars->last_turn=vars->turni;
-	vars->turni=retval;
+	vars->turni=BET_DCV_next_turn(argjson,bet,vars);
 
 	//vars->turni=(vars->turni+1)%bet->maxplayers;
 	
