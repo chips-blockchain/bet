@@ -363,6 +363,8 @@ struct privatebet_vars
 	int32_t bet_actions[CARDS777_MAXPLAYERS][CARDS777_MAXROUNDS];
 	int32_t dealer,last_turn,last_raise;
 	int32_t pot;
+	int32_t player_funds;
+	int32_t funds[CARDS777_MAXPLAYERS];
 };
 
 struct pair256 { bits256 priv,prod; };

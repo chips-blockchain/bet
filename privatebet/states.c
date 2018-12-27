@@ -256,15 +256,10 @@ int32_t BET_p2p_initiate_statemachine(cJSON *argjson,struct privatebet_info *bet
 	vars->last_raise=0;
 	for(int i=0;i<bet->maxplayers;i++)
 	{
+		vars->funds[i]=10000;
 		for(int j=0;j<CARDS777_MAXROUNDS;j++)
 		{
 			vars->bet_actions[i][j]=0;
-		}
-	}
-	for(int i=0;i<bet->maxplayers;i++)
-	{
-		for(int j=0;j<CARDS777_MAXROUNDS;j++)
-		{
 			vars->betamount[i][j]=0;
 		}
 	}
@@ -403,19 +398,35 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 
 	if(maxamount>vars->betamount[vars->turni][vars->round])
 	{
-		for(int i=raise;i<=fold;i++)
+		if(maxamount>=vars->funds[vars->turni])
 		{
-			cJSON_AddItemToArray(possibilities,cJSON_CreateNumber(i));
+			for(int i=allin;i<=fold;i++)
+					cJSON_AddItemToArray(possibilities,cJSON_CreateNumber(i));
+			
 		}
+		else
+		{
+			for(int i=raise;i<=fold;i++)
+				cJSON_AddItemToArray(possibilities,cJSON_CreateNumber(i));
+		}
+		
 		//raise or fold or call
 	}
 	else if(maxamount == vars->betamount[vars->turni][vars->round])
 	{
-		
-		for(int i=check;i<=fold;i++)
+		if(maxamount>=vars->funds[vars->turni])
+		{	cJSON_AddItemToArray(possibilities,cJSON_CreateNumber(check));
+			for(int i=allin;i<=fold;i++)
+					cJSON_AddItemToArray(possibilities,cJSON_CreateNumber(i));
+			
+		}
+		else
 		{
-			if(i != call)
-				cJSON_AddItemToArray(possibilities,cJSON_CreateNumber(i));
+			for(int i=check;i<=fold;i++)
+			{
+				if(i != call)
+					cJSON_AddItemToArray(possibilities,cJSON_CreateNumber(i));
+			}
 		}
 		//raise or fold or call or check
 	}
@@ -448,6 +459,7 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 
 	vars->betamount[playerid][round]+=bet_amount;
 	vars->pot+=bet_amount;
+	vars->funds[playerid]-=bet_amount;
 	if((action=jstr(argjson,"action")) != NULL)
 	{
 		if(strcmp(action,"check") == 0)
@@ -552,7 +564,8 @@ int32_t BET_DCV_big_blind_bet(cJSON *argjson,struct privatebet_info *bet,struct 
 	vars->bet_actions[playerid][round]=big_blind;
 	vars->betamount[playerid][round]=vars->big_blind;
 	vars->pot+=vars->big_blind;
-
+	vars->funds[playerid]-=vars->big_blind;
+	
 	retval=BET_DCV_round_betting(argjson,bet,vars);
 	
 	/*
@@ -614,6 +627,7 @@ int32_t BET_DCV_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,struc
 	vars->bet_actions[playerid][round]=small_blind;
 	vars->betamount[playerid][round]=vars->small_blind;
 	vars->pot+=vars->small_blind;
+	vars->funds[playerid]-=vars->small_blind;
 
 	retval=BET_DCV_big_blind(argjson,bet,vars);
 
@@ -819,7 +833,7 @@ int32_t BET_p2p_dealer_info(cJSON *argjson,struct privatebet_info *bet,struct pr
 	vars->dealer=jint(argjson,"playerid");
 	vars->turni=vars->dealer;
 	vars->pot=0;
-
+	vars->player_funds=10000;
 	for(int i=0;i<bet->maxplayers;i++)
 	{
 		for(int j=0;j<CARDS777_MAXROUNDS;j++)
@@ -869,8 +883,9 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 		{
 			printf("\nEnter small blind:");
 			scanf("%d",&amount);
-		}while(amount<0);
-
+		}while((amount<0)||(amount>vars->player_funds));
+		vars->player_funds-=amount;
+		
 		cJSON_AddStringToObject(small_blind_info,"action","small_blind_bet");
 		cJSON_AddNumberToObject(small_blind_info,"amount",amount);
 		vars->betamount[bet->myplayerid][vars->round]=vars->betamount[bet->myplayerid][vars->round]+amount;
@@ -908,8 +923,9 @@ int32_t BET_p2p_big_blind(cJSON *argjson,struct privatebet_info *bet,struct priv
 		{
 			printf("\nEnter big blind:");
 			scanf("%d",&amount);
-		}while(amount!=(2*vars->small_blind));
-
+		}while((amount!=(2*vars->small_blind))||(amount>vars->player_funds));
+		vars->player_funds-=amount;
+		
 		cJSON_AddNumberToObject(big_blind_info,"amount",amount);
 		vars->betamount[bet->myplayerid][vars->round]=vars->betamount[bet->myplayerid][vars->round]+amount;
 		cJSON_AddNumberToObject(big_blind_info,"playerid",jint(argjson,"playerid"));
@@ -958,7 +974,7 @@ int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,stru
 	{
 		printf("\nEnter your option, to chose one::");
 		scanf("%d",&option);	
-	}while((option<1)||(option>=cJSON_GetArraySize(possibilities)));
+	}while((option<1)||(option>cJSON_GetArraySize(possibilities)));
 	
 
 	vars->bet_actions[playerid][round]=jinti(possibilities,(option-1));
@@ -972,16 +988,23 @@ int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,stru
 			printf("\nEnter the amount > %d:",min_amount);
 			scanf("%d",&raise_amount);
 						
-		}while((raise_amount<min_amount)||(raise_amount<=0)||(raise_amount<(vars->last_raise+min_amount)));
+		}while((raise_amount<min_amount)||(raise_amount<=0)||(raise_amount<(vars->last_raise+min_amount) || (raise_amount>vars->player_funds)));
+		vars->player_funds-=raise_amount;
 		vars->betamount[playerid][round]+=raise_amount;
 		cJSON_AddNumberToObject(action_response,"bet_amount",raise_amount);
 	}
 	else if(jinti(possibilities,(option-1)) == call)
 	{
 		vars->betamount[playerid][round]+=min_amount;
+		vars->player_funds-=min_amount;
 		cJSON_AddNumberToObject(action_response,"bet_amount",min_amount);
 	}
-
+	else if(jinti(possibilities,(option-1)) == allin)
+	{
+		vars->betamount[playerid][round]+=vars->player_funds;
+		cJSON_AddNumberToObject(action_response,"bet_amount",vars->player_funds);
+		vars->player_funds=0;
+	}
 	rendered=cJSON_Print(action_response);
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,rendered);
 	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
