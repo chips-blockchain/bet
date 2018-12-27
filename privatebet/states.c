@@ -509,7 +509,7 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 					amount+=vars->betamount[i][j];
 					printf("%d ",vars->betamount[i][j]);
 				}
-				printf("\n")
+				printf("\n");
 			}
 			if(vars->pot==amount)
 				printf("\nThe pot is valid and the amount is:%d\n",vars->pot);
