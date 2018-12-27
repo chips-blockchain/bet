@@ -1590,8 +1590,8 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		{
 			if(BET_p2p_check_player_ready(argjson,bet,vars))
 			{
-				retval=BET_p2p_initiate_statemachine(NULL,bet,vars);
-				//retval=BET_p2p_dcv_start(NULL,bet,vars); This has to be uncommented
+				//retval=BET_p2p_initiate_statemachine(NULL,bet,vars);
+				retval=BET_p2p_dcv_start(NULL,bet,vars); This has to be uncommented
 				  
 			}				
 		}
@@ -1603,8 +1603,8 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		else if(strcmp(method,"playerCardInfo") == 0)
 		{
 				printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-				//retval=BET_evaluate_game(argjson,bet,vars);
-				retval=BET_DCV_evaluate_game(argjson,bet,vars);
+				retval=BET_evaluate_game(argjson,bet,vars);
+				//retval=BET_DCV_evaluate_game(argjson,bet,vars);
 				
 		}
 		else if(strcmp(method,"invoiceRequest") == 0)
