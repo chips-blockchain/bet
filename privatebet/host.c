@@ -1162,10 +1162,45 @@ int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struc
 			river_card_drawn=1;
 		
 	}
-	
+
+		if(flag)
+			BET_DCV_round_betting(NULL,bet,vars);
 		
 		return retval;
 	
+}
+int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	int retval=1;
+	unsigned char h[7];
+	unsigned long score[2];
+		
+	printf("\nEach player got the below cards:\n");
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		printf("\n For Player id: %d, cards: ",i);
+		for(int j=0;j<hand_size;j++)
+		{
+			int temp=card_values[i][j];
+			//printf("%d\t",card_values[j][i]);
+			printf("%s-->%s \t",suit[temp/13],face[temp%13]);
+			h[j]=(unsigned char)card_values[i][j];
+		
+		}
+			printf("\nscore:%ld",SevenCardDrawScore(h));
+			score[i]=SevenCardDrawScore(h);
+	}
+	
+	if(score[0]>score[1])
+	{
+		printf("\nPlayer 0 is won");
+	}
+	else
+	{
+		printf("\nPlayer 1 is won");
+	}
+	
+	return retval;
 }
 int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
@@ -1569,8 +1604,8 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		}
 		else if(strcmp(method, "dealer_ready") == 0)
 		{
-			retval=BET_p2p_dcv_start(argjson,bet,vars);
-			//retval=BET_DCV_small_blind(argjson,bet,vars);
+			//retval=BET_p2p_dcv_start(argjson,bet,vars);
+			retval=BET_DCV_small_blind(argjson,bet,vars);
 		}
 		else if(strcmp(method,"betting") == 0)
 		{

@@ -355,8 +355,11 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 
 		if(vars->round>=CARDS777_MAXROUNDS)
 		{
+			retval=BET_evaluate_hand(argjson,bet,vars);
 			goto end;
 		}
+		retval=BET_p2p_dcv_turn(argjson,bet,vars);
+		goto end;
 	}
 	vars->last_turn=vars->turni;
 	vars->turni=BET_DCV_next_turn(argjson,bet,vars);
