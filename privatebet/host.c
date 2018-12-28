@@ -847,7 +847,7 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 		{
 			for(int j=0;j<bet->maxplayers;j++)
 			{
-				if(card_matrix[i][j] == 0)
+				if(card_matrix[j][i] == 0)
 				{
 					if((i-(no_of_hole_cards+no_of_flop_cards)) ==0)
 					{
@@ -872,7 +872,7 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 		{
 			for(int j=0;j<bet->maxplayers;j++)
 			{
-				if(card_matrix[i][j] == 0)
+				if(card_matrix[j][i] == 0)
 				{
 					retval=BET_send_turn_info(bet,j,(no_of_hole_cards*bet->maxplayers)+(i-no_of_hole_cards)+2,turn_card);
 				}
@@ -885,7 +885,7 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 		{
 			for(int j=0;j<bet->maxplayers;j++)
 			{
-				if(card_matrix[i][j] == 0)
+				if(card_matrix[j][i] == 0)
 				{
 					retval=BET_send_turn_info(bet,j,(no_of_hole_cards*bet->maxplayers)+(i-no_of_hole_cards)+3,river_card);
 				}
@@ -1312,13 +1312,13 @@ int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struc
 		{
 			for(int j=0;((j<bet->maxplayers) &&(flag));j++)
 			{
-				if(card_matrix[i][j] == 0)
+				if(card_matrix[j][i] == 0)
 				{
 					flag=0;
 				}
 			}
 		}
-		if(!flag)
+		if(flag)
 			hole_cards_drawn=1;
 				
 	}
@@ -1329,13 +1329,13 @@ int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struc
 		{
 			for(int j=0;((j<bet->maxplayers) &&(flag));j++)
 			{
-				if(card_matrix[i][j] == 0)
+				if(card_matrix[j][i] == 0)
 				{
 					flag=0;
 				}
 			}
 		}
-		if(!flag)
+		if(flag)
 			flop_cards_drawn=1;
 		
 	}
@@ -1345,13 +1345,13 @@ int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struc
 		{
 			for(int j=0;((j<bet->maxplayers) &&(flag));j++)
 			{
-				if(card_matrix[i][j] == 0)
+				if(card_matrix[j][i] == 0)
 				{
 					flag=0;
 				}
 			}
 		}
-		if(!flag)
+		if(flag)
 			turn_card_drawn=1;
 		
 	}
@@ -1361,13 +1361,13 @@ int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struc
 		{
 			for(int j=0;((j<bet->maxplayers) &&(flag));j++)
 			{
-				if(card_matrix[i][j] == 0)
+				if(card_matrix[j][i] == 0)
 				{
 					flag=0;
 				}
 			}
 		}
-		if(!flag)
+		if(flag)
 			river_card_drawn=1;
 		
 	}
