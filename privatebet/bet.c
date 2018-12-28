@@ -381,11 +381,9 @@ int main(int argc, char **argv)
 		#if 1
 			/* This code is for sockets*/
 			BET_transportname(0,bindaddr,hostip,port);
-			printf("\nBinding address:%s",bindaddr);
 		    subsock= BET_nanosock(0,bindaddr,NN_SUB);
 
 		    BET_transportname(0,bindaddr1,hostip,port+1);
-			printf("\nBinding address:%s",bindaddr);
 		    pushsock = BET_nanosock(0,bindaddr1,NN_PUSH);
 
 		#endif				  
