@@ -792,7 +792,18 @@ int32_t BET_p2p_dealer_info(cJSON *argjson,struct privatebet_info *bet,struct pr
 			goto end;
 		}
 	}
+	printf("\nThe players final states are:\n");
 
+	for(int j=0;j<vars->round;j++)
+	{
+		for(int i=0;i<bet->maxplayers;i++)
+		{
+			printf("\n%d \t",vars->bet_actions[i][j]);
+			
+		}
+		printf("\n");
+				
+	}
 	end:
 		return retval;
 }
