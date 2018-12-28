@@ -1288,27 +1288,27 @@ int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struc
 	else if(card_type == flop_card_1)
 	{
 		card_matrix[playerid][no_of_hole_cards]=1;
-		card_matrix[playerid][no_of_hole_cards]=jint(playerCardInfo,"decoded_card");
+		card_values[playerid][no_of_hole_cards]=jint(playerCardInfo,"decoded_card");
 	}
 	else if(card_type == flop_card_2)
 	{
 		card_matrix[playerid][no_of_hole_cards+1]=1;
-		card_matrix[playerid][no_of_hole_cards+1]=jint(playerCardInfo,"decoded_card");
+		card_values[playerid][no_of_hole_cards+1]=jint(playerCardInfo,"decoded_card");
 	}
 	else if(card_type == flop_card_3)
 	{
 		card_matrix[playerid][no_of_hole_cards+2]=1;
-		card_matrix[playerid][no_of_hole_cards+2]=jint(playerCardInfo,"decoded_card");
+		card_values[playerid][no_of_hole_cards+2]=jint(playerCardInfo,"decoded_card");
 	}
 	else if(card_type == turn_card)
 	{
 		card_matrix[playerid][no_of_hole_cards+no_of_flop_cards]=1;
-		card_matrix[playerid][no_of_hole_cards+no_of_flop_cards]=jint(playerCardInfo,"decoded_card");
+		card_values[playerid][no_of_hole_cards+no_of_flop_cards]=jint(playerCardInfo,"decoded_card");
 	}
 	else if(card_type == river_card)
 	{
 		card_matrix[playerid][no_of_hole_cards+no_of_flop_cards+no_of_turn_card]=1;
-		card_matrix[playerid][no_of_hole_cards+no_of_flop_cards+no_of_turn_card]=jint(playerCardInfo,"decoded_card");
+		card_values[playerid][no_of_hole_cards+no_of_flop_cards+no_of_turn_card]=jint(playerCardInfo,"decoded_card");
 	}
 
 	if(hole_cards_drawn == 0)
