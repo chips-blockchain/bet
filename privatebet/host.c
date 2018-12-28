@@ -1030,6 +1030,10 @@ int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struc
 	cardid=jint(playerCardInfo,"cardid");
 	card_type=jint(playerCardInfo,"card_type");
 
+	eval_game_p[no_of_cards]=playerid;
+	eval_game_c[no_of_cards]=cardid;
+	no_of_cards++;
+
 	if(card_type == hole_card)
 	{
 		card_matrix[(cardid%bet->maxplayers)][(cardid/bet->maxplayers)]=1;
