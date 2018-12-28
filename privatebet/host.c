@@ -789,6 +789,7 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 	int32_t retval=1,bytes;
 	cJSON *turninfo=NULL;
 	char *rendered=NULL;
+	int flag=1;
 
 	/*
 	if(!hole_cards_drawn)
@@ -818,6 +819,7 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 	
 	if(hole_cards_drawn == 0)
 	{
+		flag=1;
 		for(int i=0;i<no_of_hole_cards;i++)
 		{
 			for(int j=0;j<bet->maxplayers;j++)
@@ -825,6 +827,7 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 				if(card_matrix[j][i] == 0)
 				{
 					retval=BET_send_turn_info(bet,j,(i*bet->maxplayers)+j,hole_card);
+					goto end;
 					/*
 					turninfo=cJSON_CreateObject();
 					cJSON_AddStringToObject(turninfo,"method","turn");
@@ -861,6 +864,7 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 					{
 						retval=BET_send_turn_info(bet,j,(no_of_hole_cards*bet->maxplayers)+(i-no_of_hole_cards)+1,flop_card_3);	
 					}
+					goto end;
 					
 				}
 			}
@@ -875,6 +879,7 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 				if(card_matrix[j][i] == 0)
 				{
 					retval=BET_send_turn_info(bet,j,(no_of_hole_cards*bet->maxplayers)+(i-no_of_hole_cards)+2,turn_card);
+					goto end;
 				}
 			}
 		}
@@ -888,6 +893,7 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 				if(card_matrix[j][i] == 0)
 				{
 					retval=BET_send_turn_info(bet,j,(no_of_hole_cards*bet->maxplayers)+(i-no_of_hole_cards)+3,river_card);
+					goto end;
 				}
 			}
 		}

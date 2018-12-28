@@ -1580,6 +1580,8 @@ int32_t BET_p2p_client_give_share(cJSON *argjson,struct privatebet_info *bet,str
 	char str[65],enc_str[177];
 	uint8_t decipher[sizeof(bits256) + 1024],*ptr;
 	bits256 share;
+
+	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 	
 	playerid=jint(argjson,"playerid");
 	cardid=jint(argjson,"cardid");
