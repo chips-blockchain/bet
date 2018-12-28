@@ -1216,6 +1216,10 @@ int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 		else
 			winners[i]=0;
 	}
+	printf("\n maxscore=%d\n",max_score);
+	for(int i=0;i<bet->maxplayers;i++)
+		printf("%d\t",winners[i]);
+	
 	printf("\nWinning Amount:%d",(vars->pot/no_of_winners));
 	printf("\nWinning Players Are:");
 	for(int i=0;i<bet->maxplayers;i++)
@@ -1223,7 +1227,7 @@ int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 		if(winners[i]==1)
 			printf("%d\t",i);
 	}
-	
+	printf("\n");
 	return retval;
 }
 
