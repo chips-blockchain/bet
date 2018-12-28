@@ -464,13 +464,13 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 		else if(strcmp(action,"allin") == 0)
 		{
 			for(int i=vars->round;i<CARDS777_MAXROUNDS;i++)
-				vars->bet_actions[playerid][round]=allin;
+				vars->bet_actions[playerid][i]=allin;
 		}
 		else if(strcmp(action,"fold") == 0)
 		{
 			
 			for(int i=vars->round;i<CARDS777_MAXROUNDS;i++)
-				vars->bet_actions[playerid][round]=fold;
+				vars->bet_actions[playerid][i]=fold;
 			
 		}
 		// The below logic is to check if the number of active players < 2
