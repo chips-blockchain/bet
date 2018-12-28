@@ -852,15 +852,15 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 			{
 				if(card_matrix[j][i] == 0)
 				{
-					if((i-(no_of_hole_cards+no_of_flop_cards)) ==0)
+					if((i-(no_of_hole_cards)) == 0)
 					{
 						retval=BET_send_turn_info(bet,j,(no_of_hole_cards*bet->maxplayers)+(i-no_of_hole_cards)+1,flop_card_1);	
 					}
-					else if((i-(no_of_hole_cards+no_of_flop_cards)) ==1)
+					else if((i-(no_of_hole_cards)) == 1)
 					{
 						retval=BET_send_turn_info(bet,j,(no_of_hole_cards*bet->maxplayers)+(i-no_of_hole_cards)+1,flop_card_2);	
 					}
-					else if((i-(no_of_hole_cards+no_of_flop_cards)) ==2)
+					else if((i-(no_of_hole_cards)) == 2)
 					{
 						retval=BET_send_turn_info(bet,j,(no_of_hole_cards*bet->maxplayers)+(i-no_of_hole_cards)+1,flop_card_3);	
 					}
