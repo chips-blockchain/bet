@@ -1065,7 +1065,7 @@ int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struc
 		card_matrix[playerid][no_of_hole_cards+no_of_flop_cards+no_of_turn_card]=1;
 		card_values[playerid][no_of_hole_cards+no_of_flop_cards+no_of_turn_card]=jint(playerCardInfo,"decoded_card");
 	}
-
+	/*
 	printf("\nCard Matrix:\n");
 	for(int i=0;i<hand_size;i++)
 	{
@@ -1075,7 +1075,7 @@ int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struc
 		}
 		printf("\n");
 	}
-	
+	*/
 	if(hole_cards_drawn == 0)
 	{
 		flag=1;

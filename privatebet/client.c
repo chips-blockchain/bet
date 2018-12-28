@@ -1043,7 +1043,6 @@ int32_t BET_p2p_bvv_join_init(cJSON *argjson,struct privatebet_info *bet,struct 
 	rendered=cJSON_Print(bvvResponseInfo);
     bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 
-	printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,rendered);
 	
     if(bytes<0)
 	{
@@ -1261,7 +1260,7 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
 	gfshare_recoverdata(shares,sharenrs, M,recover.bytes,sizeof(bits256),M);
 	refval = fmul_donna(player_info.bvvblindcards[bet->myplayerid][cardid],crecip_donna(recover));
 
-	printf("\nDCV blinded card:%s",bits256_str(str,refval));
+	//printf("\nDCV blinded card:%s",bits256_str(str,refval));
 	
 	
 	for(int i=0;i<bet->range;i++)
@@ -1281,7 +1280,7 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
         {
         	if ( bits256_cmp(v_hash[i][j],g_hash[bet->myplayerid][cardid]) == 0 )
 			{
-				printf("\nThere is a match\n");
+				//printf("\nThere is a match\n");
 				#if 1
 				for(int m=0;m<bet->range;m++)
 				{
@@ -1299,8 +1298,8 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
 						{
 				            if ( bits256_cmp(decoded,player_info.cardprods[bet->myplayerid][k]) == 0 )
 				            {
-				                printf("\nplayer.%d decoded card %s value %d\n",bet->myplayerid,bits256_str(str,decoded),player_info.cardprivkeys[m].bytes[30]);
-								printf("\n");
+				               // printf("\nplayer.%d decoded card %s value %d\n",bet->myplayerid,bits256_str(str,decoded),player_info.cardprivkeys[m].bytes[30]);
+								//printf("\n");
 								player_cards[no_of_player_cards]=bits256_str(str,decoded);
 								no_of_player_cards++;
 				        		tmp=player_info.cardprivkeys[m];

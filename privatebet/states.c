@@ -519,7 +519,6 @@ int32_t BET_DCV_big_blind(cJSON *argjson,struct privatebet_info *bet,struct priv
 	rendered=cJSON_Print(big_blind_info);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 
-	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,rendered);
 	if(bytes<0)
 	{
 		retval=-1;
