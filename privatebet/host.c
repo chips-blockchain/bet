@@ -643,8 +643,7 @@ int32_t BET_p2p_host_start_init(struct privatebet_info *bet)
 	rendered=cJSON_Print(init);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 
-	printf("\n%s:%d:data:%s",__FUNCTION__,__LINE__,rendered);
-	
+
 	return retval;
 }
 int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
@@ -682,8 +681,6 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
 	strcat(uri,"@");
 	strcat(uri,jstr(address,"address"));
 
-	printf("\n%s:%d:uri:%s",__FUNCTION__,__LINE__,uri);
-	
 	playerinfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(playerinfo,"method","join_res");
 	cJSON_AddNumberToObject(playerinfo,"peerid",bet->numplayers-1); //players numbering starts from 0(zero)
@@ -859,7 +856,7 @@ int32_t BET_check_BVV_Ready(struct privatebet_info *bet)
 	}
 	rendered=cJSON_Print(bvvReady);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
-	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,rendered);
+
 	if(bytes<0)
 			retval=-1;
 	end:
