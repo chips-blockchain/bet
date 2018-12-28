@@ -1564,6 +1564,7 @@ int32_t BET_p2p_client_ask_share(struct privatebet_info *bet,int32_t cardid,int3
 	cJSON_AddNumberToObject(requestInfo,"cardid",cardid);
 	cJSON_AddNumberToObject(requestInfo,"card_type",card_type);
 	rendered=cJSON_Print(requestInfo);
+	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,rendered);
 	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 	if(bytes<0)
 		retval=-1;
