@@ -495,7 +495,6 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 		{
 			for(int i=0;i<bet->maxplayers;i++)
 			{
-				p[i]=vars->bet_actions[i][vars->round];
 				printf("\n%d \t",vars->bet_actions[i][j]);
 				
 			}
