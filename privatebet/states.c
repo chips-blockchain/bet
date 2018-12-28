@@ -436,7 +436,7 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 
 int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int retval=1,playerid,round,bet_amount=0,maxamount=0,flag1=0,flag2=0;
+	int retval=1,playerid,round,bet_amount=0,players_left=0;
 	char *action =NULL;
 
 	playerid=jint(argjson,"playerid");
@@ -471,6 +471,22 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 			for(int i=vars->round;i<CARDS777_MAXROUNDS;i++)
 				vars->bet_actions[playerid][round]=fold;
 			
+		}
+		// The below logic is to check if the number of active players < 2
+		for(int i=0;i<bet->maxplayers;i++)
+		{
+			if((vars->bet_actions[i][round]==fold)|| (vars->bet_actions[i][round]==allin))
+				players_left++;
+		}
+		if(players_left<2)
+		{
+			for(int i=0;i<bet->maxplayers;i++)
+			{
+				for(int j=vars->round+1;j<CARDS777_MAXROUNDS;j++)
+				{
+					vars->bet_actions[i][j]==vars->bet_actions[i][vars->round];
+				}
+			}
 		}
 	}
 	retval=BET_DCV_round_betting(argjson,bet,vars);
