@@ -1856,7 +1856,8 @@ void BET_p2p_hostloop(void *_ptr)
 	{
 		for(int j=0;j<bet->maxplayers;j++)
 		{
-			card_matrix[i][j]=0;
+			card_matrix[j][i]=0;
+			card_values[j][i]=-1;
 		}
 	}
 	
