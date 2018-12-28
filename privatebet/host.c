@@ -1312,7 +1312,7 @@ int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struc
 	}
 
 	printf("\nCard Matrix:\n");
-	for(int i=0;i<no_of_hole_cards;i++)
+	for(int i=0;i<hand_size;i++)
 	{
 		for(int j=0;j<bet->maxplayers;j++)
 		{
