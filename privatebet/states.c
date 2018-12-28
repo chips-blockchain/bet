@@ -646,7 +646,7 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 
 int32_t BET_p2p_display_current_state(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int32_t retval;
+	int32_t retval=1;
 	
 	printf("\nsmall_blind:%d",vars->small_blind);
 	printf("\nbig_blind:%d",vars->big_blind);
