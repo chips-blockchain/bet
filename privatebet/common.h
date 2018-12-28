@@ -25,11 +25,11 @@ extern int32_t Num_hostrhashes,Chips_paid;
 extern bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 
 #define hand_size 7
-#define hole_cards 2
-#define flop_cards 3
-#define turn_card 1
-#define river_card 1
-#define community_cards 5
+#define no_of_hole_cards 2
+#define no_of_flop_cards 3
+#define no_of_turn_card 1
+#define no_of_river_card 1
+#define no_of_community_cards 5
 
 #endif
 

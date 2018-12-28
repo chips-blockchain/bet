@@ -313,6 +313,17 @@ enum action_type
 	allin,
 	fold
 };
+
+enum card_type
+{
+	burn_card=0,
+	hole_card,
+	flop_card_1,
+	flop_card_2,
+	flop_card_3,
+	turn_card,
+	river_card
+}
 struct BET_shardsinfo
 {
     UT_hash_handle hh;

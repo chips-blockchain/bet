@@ -25,6 +25,5 @@ int32_t BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privat
 int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
 void BET_p2p_hostloop(void *_ptr);
 
-int32_t BET_DCV_turn(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
 
 
