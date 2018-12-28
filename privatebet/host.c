@@ -1560,7 +1560,8 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		{
 			if(BET_p2p_check_player_ready(argjson,bet,vars))
 			{
-				retval=BET_p2p_dcv_start(NULL,bet,vars); // approach 1
+				//retval=BET_p2p_dcv_start(NULL,bet,vars); // approach 1
+				retval=BET_p2p_initiate_statemachine(argjson,bet,vars);
 				  
 			}				
 		}
