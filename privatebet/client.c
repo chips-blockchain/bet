@@ -2097,10 +2097,6 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		{
 			retval=BET_p2p_dealer_info(argjson,bet,vars);
 		}
-	   	else
-    	{ 
-			 retval=-1;
-    	}
 	}	
 	return retval;
 }
@@ -2129,7 +2125,7 @@ void BET_p2p_clientloop(void * _ptr)
                 {
                     if ( BET_p2p_clientupdate(msgjson,bet,VARS) < 0 )
                     {
-                    	//printf("\nFAILURE\n");
+                    	printf("\nFAILURE\n");
                     	// do something here, possibly this could be because unknown commnad or because of encountering a special case which state machine fails to handle
                     }           
                    
