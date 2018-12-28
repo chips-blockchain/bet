@@ -323,7 +323,8 @@ enum card_type
 	flop_card_3,
 	turn_card,
 	river_card
-}
+};
+
 struct BET_shardsinfo
 {
     UT_hash_handle hh;
