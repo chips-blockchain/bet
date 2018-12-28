@@ -478,6 +478,7 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 			if((vars->bet_actions[i][round]==fold)|| (vars->bet_actions[i][round]==allin))
 				players_left++;
 		}
+		players_left=bet->maxplayers-players_left;
 		if(players_left<2)
 		{
 			for(int i=0;i<bet->maxplayers;i++)
@@ -487,6 +488,19 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 					vars->bet_actions[i][j]==vars->bet_actions[i][vars->round];
 				}
 			}
+		}
+		printf("\nThe players final states are:\n");
+
+		for(int j=0;j<vars->round;j++)
+		{
+			for(int i=0;i<bet->maxplayers;i++)
+			{
+				p[i]=vars->bet_actions[i][vars->round];
+				printf("\n%d \t",vars->bet_actions[i][j]);
+				
+			}
+			printf("\n");
+					
 		}
 	}
 	retval=BET_DCV_round_betting(argjson,bet,vars);
@@ -792,18 +806,7 @@ int32_t BET_p2p_dealer_info(cJSON *argjson,struct privatebet_info *bet,struct pr
 			goto end;
 		}
 	}
-	printf("\nThe players final states are:\n");
-
-	for(int j=0;j<vars->round;j++)
-	{
-		for(int i=0;i<bet->maxplayers;i++)
-		{
-			printf("\n%d \t",vars->bet_actions[i][j]);
-			
-		}
-		printf("\n");
-				
-	}
+	
 	end:
 		return retval;
 }
