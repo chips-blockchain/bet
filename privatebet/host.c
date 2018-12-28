@@ -43,7 +43,6 @@ int32_t all_player_cards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 struct deck_dcv_info dcv_info;
 int32_t player_ready[CARDS777_MAXPLAYERS];
 int32_t hole_cards_drawn=0,community_cards_drawn=0,flop_cards_drawn=0,turn_card_drawn=0,river_card_drawn=0;
-int32_t no_of_flop_cards=0;
 int32_t bet_amount[CARDS777_MAXPLAYERS][CARDS777_MAXROUNDS];
 
 
@@ -790,8 +789,8 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 	int32_t retval=1,bytes;
 	cJSON *turninfo=NULL;
 	char *rendered=NULL;
-	int flag=1;
-	
+
+	/*
 	if(!hole_cards_drawn)
 	{
 		for(int i=0;i<hole_cards;i++)
@@ -812,20 +811,19 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 		else
 			flag=1;	
 	}
-
+	*/
 
 	
 	
 	
 	if(hole_cards_drawn == 0)
 	{
-		for(int i=0;i<hole_cards;i++)
+		for(int i=0;i<no_of_hole_cards;i++)
 		{
 			for(int j=0;j<bet->maxplayers;j++)
 			{
 				if(card_matrix[j][i] == 0)
 				{
-					flag=0;
 					retval=BET_send_turn_info(bet,j,(i*bet->maxplayers)+j,hole_card);
 					/*
 					turninfo=cJSON_CreateObject();
@@ -894,7 +892,9 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 			}
 		}
 	}
-	else if(hole_cards_drawn)
+	else
+		retval=2;
+	/*else if(hole_cards_drawn)
 	{
 		printf("\nCard Matrix:\n");
 		for(int i=0;i<bet->maxplayers;i++)
@@ -914,7 +914,7 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 				{
 					flag=0;
 					retval=BET_send_turn_info(bet,j,(no_of_hole_cards*bet->maxplayers)+(i-no_of_hole_cards));
-					/*
+					#if 0
 					turninfo=cJSON_CreateObject();
 					cJSON_AddStringToObject(turninfo,"method","turn");
 					cJSON_AddNumberToObject(turninfo,"playerid",j);
@@ -924,7 +924,7 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 					if(bytes<0)
 						retval=-1;
 					goto end;
-					*/
+					#endif
 				}
 				
 			}
@@ -939,7 +939,7 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 			community_cards_drawn=1;
 			retval=2;
 		}	
-	}
+	}*/
 	end:	
 		return retval;
 }
