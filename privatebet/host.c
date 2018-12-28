@@ -1164,7 +1164,16 @@ int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struc
 	}
 
 		if(flag)
-			BET_DCV_round_betting(NULL,bet,vars);
+		{
+			if(vars->round == 0)
+			{
+				retval=BET_DCV_small_blind(NULL,bet,vars);
+			}
+			else
+			{
+				retval=BET_DCV_round_betting(NULL,bet,vars);
+			}
+		}
 		
 		return retval;
 	
