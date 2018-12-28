@@ -446,6 +446,7 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 	vars->betamount[playerid][round]+=bet_amount;
 	vars->pot+=bet_amount;
 	vars->funds[playerid]-=bet_amount;
+	printf("\n%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 	if((action=jstr(argjson,"action")) != NULL)
 	{
 		if(strcmp(action,"check") == 0)
