@@ -1174,6 +1174,10 @@ int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struc
 				retval=BET_DCV_round_betting(NULL,bet,vars);
 			}
 		}
+		else
+		{
+			retval=BET_p2p_dcv_turn(playerCardInfo,bet,vars);
+		}
 		
 		return retval;
 	
@@ -1228,8 +1232,8 @@ int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 	eval_game_c[no_of_cards]=cardid;
 	no_of_cards++;
 
-	BET_receive_card(playerCardInfo,bet,vars);
-	retval=BET_p2p_dcv_turn(playerCardInfo,bet,vars);
+	retval=BET_receive_card(playerCardInfo,bet,vars);
+	//retval=BET_p2p_dcv_turn(playerCardInfo,bet,vars);
 	/*
 	if((retval=BET_p2p_dcv_turn(playerCardInfo,bet,vars)) ==2)
 	{
@@ -1576,6 +1580,11 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 				  
 			}				
 		}
+		else if(strcmp(method, "dealer_ready") == 0)
+		{
+			//retval=BET_DCV_small_blind(argjson,bet,vars);
+			retval=BET_p2p_dcv_turn(argjson,bet,vars);
+		}
 		else if(strcmp(method,"turn_status") == 0)
 		{
 			//obsolete now
@@ -1584,7 +1593,8 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		else if(strcmp(method,"playerCardInfo") == 0)
 		{
 				printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-				retval=BET_evaluate_game(argjson,bet,vars); // approach 1
+				//retval=BET_evaluate_game(argjson,bet,vars); // approach 1
+				retval = BET_receive_card(argjson,bet,vars);
 		}
 		else if(strcmp(method,"invoiceRequest") == 0)
 		{
@@ -1614,11 +1624,6 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 				}
 			}
 		}
-		else if(strcmp(method, "dealer_ready") == 0)
-		{
-			//retval=BET_DCV_small_blind(argjson,bet,vars);
-			retval=BET_p2p_dcv_turn(argjson,bet,vars);
-		}
 		else if(strcmp(method,"betting") == 0)
 		{
 
