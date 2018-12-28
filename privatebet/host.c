@@ -36,7 +36,6 @@ struct privatebet_peerln Peersln[CARDS777_MAXPLAYERS+1];
 int32_t Num_rawpeersln,oldNum_rawpeersln,Num_peersln,Numgames;
 int32_t players_joined=0;
 int32_t turn=0,no_of_cards=0,no_of_rounds=0,no_of_bets=0;
-int32_t eval_game_p[CARDS777_MAXPLAYERS],eval_game_c[CARDS777_MAXPLAYERS];
 int32_t card_matrix[CARDS777_MAXPLAYERS][hand_size];
 int32_t card_values[CARDS777_MAXPLAYERS][hand_size];
 int32_t all_player_cards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
@@ -804,30 +803,6 @@ int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct priva
 		return retval;
 }
 
-int32_t BET_p2p_dcv_turn_status(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
-{
-	int32_t retval;
-
-	if(strcmp(jstr(argjson,"status"),"complete") == 0)
-	{
-		no_of_cards++;
-		if(no_of_cards<bet->range) 
-			retval=BET_p2p_dcv_turn(argjson,bet,vars);
-
-	}
-	else
-	{
-		//some action needs to be taken by DCV incase if the turn is not complete
-	}
-	
-	return retval;
-}
-int32_t BET_p2p_dcv_start(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
-{
-	return BET_p2p_dcv_turn(argjson,bet,vars);
-}
-
-
 int32_t BET_p2p_highest_card(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	for(int i=0;i<1;i++)
@@ -1215,57 +1190,6 @@ int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 	
 	return retval;
 }
-int32_t BET_evaluate_game(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
-{
-	int32_t retval=1,playerid,cardid,max=-1;
-	cJSON *gameInfo=NULL;
-	unsigned char h[7];
-	unsigned long score[2];
-	cJSON *betGame=NULL;
-	char *rendered=NULL;
-	int32_t bytes,flag=0;
-
-	
-	playerid=jint(playerCardInfo,"playerid");
-	cardid=jint(playerCardInfo,"cardid");
-	eval_game_p[no_of_cards]=playerid;
-	eval_game_c[no_of_cards]=cardid;
-	no_of_cards++;
-
-	retval=BET_receive_card(playerCardInfo,bet,vars);
-	//retval=BET_p2p_dcv_turn(playerCardInfo,bet,vars);
-	/*
-	if((retval=BET_p2p_dcv_turn(playerCardInfo,bet,vars)) ==2)
-	{
-		printf("\nEach player got the below cards:\n");
-		for(int i=0;i<bet->maxplayers;i++)
-		{
-			printf("\n For Player id: %d, cards: ",i);
-			for(int j=0;j<hand_size;j++)
-			{
-				int temp=card_values[i][j];
-				//printf("%d\t",card_values[j][i]);
-				printf("%s-->%s \t",suit[temp/13],face[temp%13]);
-				h[j]=(unsigned char)card_values[i][j];
-			
-			}
-				printf("\nscore:%ld",SevenCardDrawScore(h));
-				score[i]=SevenCardDrawScore(h);
-		}
-		
-		if(score[0]>score[1])
-		{
-			printf("\nPlayer 0 is won");
-		}
-		else
-		{
-			printf("\nPlayer 1 is won");
-		}
-	}*/
-	end:
-		return retval;
-		
-}
 
 void BET_establish_ln_channels(struct privatebet_info *bet)
 {
@@ -1575,25 +1499,16 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		{
 			if(BET_p2p_check_player_ready(argjson,bet,vars))
 			{
-				//retval=BET_p2p_dcv_start(NULL,bet,vars); // approach 1
 				retval=BET_p2p_initiate_statemachine(argjson,bet,vars);
 				  
 			}				
 		}
 		else if(strcmp(method, "dealer_ready") == 0)
 		{
-			//retval=BET_DCV_small_blind(argjson,bet,vars);
 			retval=BET_p2p_dcv_turn(argjson,bet,vars);
 		}
-		else if(strcmp(method,"turn_status") == 0)
-		{
-			//obsolete now
-			retval=BET_p2p_dcv_turn_status(argjson,bet,vars);
-		}
 		else if(strcmp(method,"playerCardInfo") == 0)
 		{
-				printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-				//retval=BET_evaluate_game(argjson,bet,vars); // approach 1
 				retval = BET_receive_card(argjson,bet,vars);
 		}
 		else if(strcmp(method,"invoiceRequest") == 0)
@@ -1612,7 +1527,6 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		else if(strcmp(method,"requestShare") == 0 )
 		{	
 			rendered= cJSON_Print(argjson);
-			printf("\n%s:%d::%s",__FUNCTION__,__LINE__,rendered);
 			for(int i=0;i<2;i++)
 			{
 				bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
@@ -1644,7 +1558,6 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 			}
     	}
     }
-	printf("\n");
 	end:
     	return retval;
 }
