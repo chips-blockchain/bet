@@ -1161,11 +1161,11 @@ int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struc
 }
 int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int retval=1;
+	int retval=1,max_score=0,no_of_winners=0,winning_amount=0;
 	unsigned char h[7];
-	unsigned long score[2];
+	unsigned long scores[CARDS777_MAXPLAYERS];
 	int p[CARDS777_MAXPLAYERS];
-
+	int winners[CARDS777_MAXPLAYERS];
 	printf("\nThe players final states are:\n");
 
 	for(int j=0;j<vars->round;j++)
@@ -1184,26 +1184,44 @@ int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 	printf("\nEach player got the below cards:\n");
 	for(int i=0;i<bet->maxplayers;i++)
 	{
-		printf("\n For Player id: %d, cards: ",i);
-		for(int j=0;j<hand_size;j++)
+		if(p[i]==fold)
+			scores[i]=0;
+		else
 		{
-			int temp=card_values[i][j];
-			//printf("%d\t",card_values[j][i]);
-			printf("%s-->%s \t",suit[temp/13],face[temp%13]);
-			h[j]=(unsigned char)card_values[i][j];
-		
+			printf("\n For Player id: %d, cards: ",i);
+			for(int j=0;j<hand_size;j++)
+			{
+				int temp=card_values[i][j];
+				//printf("%d\t",card_values[j][i]);
+				printf("%s-->%s \t",suit[temp/13],face[temp%13]);
+				h[j]=(unsigned char)card_values[i][j];
+			
+			}
+				printf("\nscore:%ld",SevenCardDrawScore(h));
+				scores[i]=SevenCardDrawScore(h);
+			}
+	}
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		if(max_score<scores[i])
+			max_score=scores[i];
+	}
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		if(scores[i]==max_score)
+		{
+			winners[i]=1;
+			no_of_winners++;
 		}
-			printf("\nscore:%ld",SevenCardDrawScore(h));
-			score[i]=SevenCardDrawScore(h);
+		else
+			winners[i]=0;
 	}
-	
-	if(score[0]>score[1])
+	printf("\nWinning Amount:%d",(vars->pot/no_of_winners));
+	printf("\nWinning Players Are:");
+	for(int i=0;i<bet->maxplayers;i++)
 	{
-		printf("\nPlayer 0 is won");
-	}
-	else
-	{
-		printf("\nPlayer 1 is won");
+		if(winners[i]==1)
+			printf("%d\t",i);
 	}
 	
 	return retval;
