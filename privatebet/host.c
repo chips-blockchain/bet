@@ -1311,6 +1311,16 @@ int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struc
 		card_values[playerid][no_of_hole_cards+no_of_flop_cards+no_of_turn_card]=jint(playerCardInfo,"decoded_card");
 	}
 
+	printf("\nCard Matrix:\n");
+	for(int i=0;i<no_of_hole_cards;i++)
+	{
+		for(int j=0;j<bet->maxplayers;j++)
+		{
+			printf("%d\t",card_matrix[j][i]);
+		}
+		printf("\n");
+	}
+	
 	if(hole_cards_drawn == 0)
 	{
 		flag=1;
