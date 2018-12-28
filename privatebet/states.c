@@ -487,7 +487,7 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 			{
 				for(int j=vars->round+1;j<CARDS777_MAXROUNDS;j++)
 				{
-					vars->bet_actions[i][j]==vars->bet_actions[i][vars->round];
+					vars->bet_actions[i][j]=check;
 				}
 			}
 		}
