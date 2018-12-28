@@ -43,6 +43,7 @@ struct deck_dcv_info dcv_info;
 int32_t player_ready[CARDS777_MAXPLAYERS];
 int32_t hole_cards_drawn=0,community_cards_drawn=0,flop_cards_drawn=0,turn_card_drawn=0,river_card_drawn=0;
 int32_t bet_amount[CARDS777_MAXPLAYERS][CARDS777_MAXROUNDS];
+int32_t eval_game_p[CARDS777_MAXPLAYERS],eval_game_c[CARDS777_MAXPLAYERS];
 
 
 #define NSUITS 4
