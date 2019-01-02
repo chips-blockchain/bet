@@ -301,7 +301,7 @@ int32_t BET_DCV_invoice_pay(struct privatebet_info *bet,struct privatebet_vars *
 	return retval;
 }
 
-int32_t BET_DCV_pay(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars,int amount)
+int32_t BET_DCV_pay(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	
 	cJSON *invoiceInfo=NULL,*paymentInfo=NULL,*payResponse=NULL;
