@@ -258,7 +258,7 @@ void BET_p2p_paymentloop(void * _ptr)
     uint8_t flag=1;
 	void *ptr;
 	cJSON *msgjson=NULL;
-	char *method=NULL
+	char *method=NULL;
 
 	while ( flag )
     {
