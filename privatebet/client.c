@@ -1165,7 +1165,13 @@ int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct pri
 	
     if ( (method= jstr(argjson,"method")) != 0 )
     {
-   		if(strcmp(method,"init_d") == 0)
+    	
+		if ( strcmp(method,"TableInfo") == 0 )
+		{
+			BET_p2p_table_info(argjson,bet,vars);
+			
+		}
+   		else if(strcmp(method,"init_d") == 0)
 		{
 			 BET_p2p_bvv_init(argjson,bet,vars);
 		}
@@ -2025,6 +2031,13 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
     	return retval;	
 }
 
+
+void BET_p2p_table_info(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	printf("\nTable Info:%s",cJSON_Print(argjson));	
+}
+
+
 int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars) // update game state based on host broadcast
 {
 	
@@ -2041,6 +2054,11 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		else if ( strcmp(method,"join_res") == 0 )
 		{
 			retval=BET_p2p_client_join_res(argjson,bet,vars);
+			
+		}
+		else if ( strcmp(method,"TableInfo") == 0 )
+		{
+			BET_p2p_table_info(argjson,bet,vars);
 			
 		}
 		else if ( strcmp(method,"init") == 0 )

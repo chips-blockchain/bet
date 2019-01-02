@@ -828,10 +828,12 @@ int32_t BET_relay(cJSON *argjson,struct privatebet_info *bet,struct privatebet_v
 		return retval;
 }
 
-void BET_broadcast_table_info(struct privatebet_info *bet)
+int32_t BET_broadcast_table_info(struct privatebet_info *bet)
 {
 	cJSON *tableInfo=NULL,*playersInfo=NULL;
-	char str[65];
+	char str[65],*rendered=NULL;
+	int32_t bytes,retval=1;;
+	
 	tableInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(tableInfo,"method","TableInfo");
 	cJSON_AddItemToObject(tableInfo,"playersInfo",playersInfo=cJSON_CreateArray());
@@ -839,7 +841,14 @@ void BET_broadcast_table_info(struct privatebet_info *bet)
 	{
 		cJSON_AddItemToArray(playersInfo,cJSON_CreateString(bits256_str(str,dcv_info.peerpubkeys[i])));
 	}
+	rendered=cJSON_Print(tableInfo);
+	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+	
 	printf("\nTable Info:%s",cJSON_Print(tableInfo));
+
+	if(bytes<0)
+		retval=-1;
+	return retval;
 }
 
 int32_t BET_check_BVV_Ready(struct privatebet_info *bet)
