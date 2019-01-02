@@ -2045,7 +2045,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 	
     static uint8_t *decoded; static int32_t decodedlen,retval=1;
     char *method; int32_t senderid; bits256 *MofN;
-
+	char hexstr[65];
     if ( (method= jstr(argjson,"method")) != 0 )
     {
 	      
@@ -2121,7 +2121,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		}
 		else if(strcmp(method,"invoiceRequest_player") == 0)
 		{
-			retval=BET_player_create_invoice(argjson,bet,vars,player_info.deckid);
+			retval=BET_player_create_invoice(argjson,bet,vars,bits256_str(hexstr,player_info.deckid));
 		}
 	}	
 	return retval;
