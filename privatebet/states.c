@@ -20,7 +20,7 @@
 #include "payment.h"
 
 
-char action_str[8][100]={"","small_blind","big_blind","check","raise","call","all-in","fold"};
+char action_str[8][100]={"","small_blind","big_blind","check","raise","call","allin","fold"};
 
 void BET_client_turnisend(struct privatebet_info *bet,struct privatebet_vars *vars,cJSON *actions)
 {
