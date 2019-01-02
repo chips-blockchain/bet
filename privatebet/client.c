@@ -1885,6 +1885,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 	if(0 == bits256_cmp(player_info.player_key.prod,jbits256(argjson,"pubkey")))
 	{
 		bet->myplayerid=jint(argjson,"peerid");
+		printf("\nPlayer ID:%d",bet->myplayerid);
 		strcpy(uri,jstr(argjson,"uri"));
 		strcpy(channel_id,strtok(jstr(argjson,"uri"), "@"));
 		channel_state=LN_get_channel_status(channel_id);
@@ -1973,6 +1974,7 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
     if(bet->pushsock>=0)
 	{
 		key = deckgen_player(player_info.cardprivkeys,player_info.cardpubkeys,player_info.permis,bet->range);
+		printf("\nPublic Key:%s",bits256_str(hexstr,key.prod));
 		player_info.player_key=key;
         joininfo=cJSON_CreateObject();
         cJSON_AddStringToObject(joininfo,"method","join_req");
