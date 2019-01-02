@@ -254,14 +254,35 @@ void BET_channels_parse()
 
 void BET_p2p_paymentloop(void * _ptr)
 {	
-	int32_t *amount=_ptr;
+	int32_t *amount=_ptr,recvlen;
     uint8_t flag=1;
+	void *ptr;
+	cJSON *msgjson=NULL;
+	char *method=NULL
 
-    while ( flag )
+	while ( flag )
     {
-    	printf("\nInvoice amount:%d",*amount);
-    	sleep(2);
-    }    
+        
+        if ( bet->subsock >= 0 && bet->pushsock >= 0 )
+        {
+	        	recvlen= nn_recv (bet->subsock, &ptr, NN_MSG, 0);
+                if (( (msgjson= cJSON_Parse(ptr)) != 0 ) && (recvlen>0))
+                {
+                   if ( (method= jstr(msgjson,"method")) != 0 )
+    			   {
+    			   		if(strcmp(method,"invoice") == 0)
+			   			{
+			   				printf("\n%s:%d:%s",__FUNCTION__,__LINE__,cJSON_Print(msgjson));
+							flag=0;
+			   			}
+                   }
+                   
+                    free_json(msgjson);
+                }
+                
+        }
+        
+    }   
  
 }
 
