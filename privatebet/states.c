@@ -845,7 +845,7 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 			}
 
 
-			printf("\nThe thread hasn't joined yet");
+			printf("\nThe thread has joined");
 
 
 
@@ -859,6 +859,7 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 		rendered=cJSON_Print(small_blind_info);
 		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+		printf("\n%s:%d:%s",__FUNCTION__,__LINE__,rendered);
 		if(bytes<0)
 		{
 				retval=-1;
