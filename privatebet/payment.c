@@ -251,3 +251,17 @@ void BET_channels_parse()
         free_json(channels);
     }
 }
+
+void BET_p2p_paymentloop(void * _ptr)
+{	
+	int32_t *amount=_ptr;
+    uint8_t flag=1;
+
+    while ( flag )
+    {
+    	printf("\nInvoice amount:%d",*amount);
+    	sleep(2);
+    }    
+ 
+}
+

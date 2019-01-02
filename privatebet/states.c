@@ -817,8 +817,11 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 {
 	cJSON *small_blind_info=NULL;
 	int32_t amount,retval=1,bytes;
-	
 	char *rendered=NULL;
+
+	pthread_t pay_t;
+
+
 	if(jint(argjson,"playerid") == bet->myplayerid)
 	{
 		small_blind_info=cJSON_CreateObject();
@@ -829,6 +832,23 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 			scanf("%d",&amount);
 		}while((amount<0)||(amount>vars->player_funds));
 		vars->player_funds-=amount;
+
+
+		 if (OS_thread_create(&pay_t,NULL,(void *)BET_p2p_paymentloop,(void *)&amount) != 0 )
+		    {
+		        exit(-1);
+		    }	
+			if(pthread_join(player_t,NULL))
+			{
+				printf("\nError in joining the main thread for player %d",bet->myplayerid);
+			}
+
+
+			printf("\nThe thread hasn't joined yet");
+
+
+
+
 		
 		cJSON_AddStringToObject(small_blind_info,"action","small_blind_bet");
 		cJSON_AddNumberToObject(small_blind_info,"amount",amount);
