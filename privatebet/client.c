@@ -1383,7 +1383,6 @@ int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 		if(strcmp(jstr(payResponse,"status"),"complete")==0)
 			printf("\nPayment Success");
 			
-		printf("\n:%s:%d:Pay response:%s",__FUNCTION__,__LINE__,buf);
 		paymentInfo=cJSON_CreateObject();
 		cJSON_AddStringToObject(paymentInfo,"method","pay");
 		cJSON_AddNumberToObject(paymentInfo,"playerid",bet->myplayerid);
