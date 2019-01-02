@@ -1480,36 +1480,6 @@ int32_t BET_p2p_bet_round(cJSON *argjson,struct privatebet_info *bet,struct priv
 	
 }
 
-int32_t BET_p2p_create_invoice_request(cJSON *argjson,struct privatebet_info *bet,int32_t amount)
-{
-	int32_t retval=1,bytes;
-	cJSON *betInfo=NULL;
-	char *rendered=NULL;
-
-	betInfo=cJSON_CreateObject();
-	cJSON_AddStringToObject(betInfo,"method","invoiceRequest");
-	cJSON_AddNumberToObject(betInfo,"round",jint(argjson,"round"));
-	cJSON_AddNumberToObject(betInfo,"playerID",bet->myplayerid);
-	cJSON_AddNumberToObject(betInfo,"betAmount",amount);
-
-	rendered=cJSON_Print(betInfo);
-
-	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
-
-	printf("\n%s:%d:%s",__FUNCTION__,__LINE__,rendered);		
-
-	if(bytes<0)
-	{
-			retval=-1;
-			printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
-			goto end;
-	}
-
-	end:
-		return retval;
-	
-}
-
 int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int32_t retval=1,bytes,cardid,playerid,errs,unpermi,card_type;

@@ -18,9 +18,6 @@
 #include "table.h"
 #include "host.h"
 #include "payment.h"
-//bits256 Mypubkey;
-//int32_t IAMHOST;
-//int32_t Gamestart,Gamestarted,Lastturni;
 
 
 char action_str[8][100]={"","small_blind","big_blind","check","raise","call","all-in","fold"};
@@ -834,22 +831,9 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 		}while((amount<0)||(amount>vars->player_funds));
 		vars->player_funds-=amount;
 
-		 BET_p2p_create_invoice_request(argjson,bet,amount);
-		 if (OS_thread_create(&pay_t,NULL,(void *)BET_p2p_paymentloop,(void *)bet) != 0 )
-		    {
-		        exit(-1);
-		    }	
-			if(pthread_join(pay_t,NULL))
-			{
-				printf("\nError in joining the main thread for player %d",bet->myplayerid);
-			}
-
-
-			printf("\nThe thread has joined");
-
-
-
-
+    	retval=BET_player_invoice_pay(argjson,bet,vars,amount);
+		if(retval<0)
+			goto end;
 		
 		cJSON_AddStringToObject(small_blind_info,"action","small_blind_bet");
 		cJSON_AddNumberToObject(small_blind_info,"amount",amount);
@@ -1025,5 +1009,4 @@ int32_t BET_player_round_betting_response(cJSON *argjson,struct privatebet_info 
 	end:
 		return retval;
 }
-
 

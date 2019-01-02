@@ -36,7 +36,6 @@ void BET_p2p_clientloop(void * _ptr);
 int32_t LN_get_channel_status(char *id);
 int32_t BET_p2p_client_player_ready(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
 void BET_p2p_table_info(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
-int32_t BET_p2p_create_invoice_request(cJSON *argjson,struct privatebet_info *bet,int32_t amount);
 
 
 

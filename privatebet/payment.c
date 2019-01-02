@@ -252,6 +252,55 @@ void BET_channels_parse()
     }
 }
 
+int32_t BET_player_create_invoice_request(cJSON *argjson,struct privatebet_info *bet,int32_t amount)
+{
+	int32_t retval=1,bytes;
+	cJSON *betInfo=NULL;
+	char *rendered=NULL;
+
+	betInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(betInfo,"method","invoiceRequest");
+	cJSON_AddNumberToObject(betInfo,"round",jint(argjson,"round"));
+	cJSON_AddNumberToObject(betInfo,"playerID",bet->myplayerid);
+	cJSON_AddNumberToObject(betInfo,"betAmount",amount);
+
+	rendered=cJSON_Print(betInfo);
+
+	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+
+	printf("\n%s:%d:%s",__FUNCTION__,__LINE__,rendered);		
+
+	if(bytes<0)
+	{
+			retval=-1;
+			printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
+			goto end;
+	}
+
+	end:
+		return retval;
+	
+}
+
+int32_t BET_player_invoice_pay(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars,int amount)
+{
+	pthread_t pay_t;
+	int32_t retval=1;
+
+	  retval=BET_player_create_invoice_request(argjson,bet,amount);
+   	  if (OS_thread_create(&pay_t,NULL,(void *)BET_p2p_paymentloop,(void *)bet) != 0 )
+	  {
+		  exit(-1);
+	  }   
+	  if(pthread_join(pay_t,NULL))
+	  {
+		  printf("\nError in joining the main thread for player %d",bet->myplayerid);
+		  retval=-1;
+	  }
+
+	return retval;
+}
+
 void BET_p2p_paymentloop(void * _ptr)
 {	
 	int32_t recvlen,retval=1;
@@ -273,7 +322,6 @@ void BET_p2p_paymentloop(void * _ptr)
     			   		if(strcmp(method,"invoice") == 0)
 			   			{
 			   				retval=BET_p2p_invoice(msgjson,bet,NULL);
-			   				printf("\n%s:%d:%s",__FUNCTION__,__LINE__,cJSON_Print(msgjson));
 							flag=0;
 			   			}
                    }
