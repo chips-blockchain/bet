@@ -660,7 +660,7 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 				}
 			}
 			else if((strcmp(action,"check") == 0) || (strcmp(action,"call") == 0) || (strcmp(action,"raise") == 0)
-									|| (strcmp(action,"fold") == 0))																					
+									|| (strcmp(action,"fold") == 0) || (strcmp(action,"allin") == 0))																					
 			{
 				if(bet->myplayerid == -2)
 					retval=BET_DCV_round_betting_response(argjson,bet,vars);
