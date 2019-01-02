@@ -835,7 +835,7 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 		vars->player_funds-=amount;
 
 		 BET_p2p_create_invoice_request(argjson,bet,amount);
-		 if (OS_thread_create(&pay_t,NULL,(void *)BET_p2p_paymentloop,(void *)&amount) != 0 )
+		 if (OS_thread_create(&pay_t,NULL,(void *)BET_p2p_paymentloop,(void *)bet) != 0 )
 		    {
 		        exit(-1);
 		    }	

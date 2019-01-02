@@ -254,12 +254,12 @@ void BET_channels_parse()
 
 void BET_p2p_paymentloop(void * _ptr)
 {	
-	int32_t *amount=_ptr,recvlen;
+	int32_t recvlen;
     uint8_t flag=1;
 	void *ptr;
 	cJSON *msgjson=NULL;
 	char *method=NULL;
-
+	struct privatebet_info *bet = _ptr;
 	while ( flag )
     {
         
