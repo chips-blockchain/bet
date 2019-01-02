@@ -838,7 +838,7 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 		    {
 		        exit(-1);
 		    }	
-			if(pthread_join(player_t,NULL))
+			if(pthread_join(pay_t,NULL))
 			{
 				printf("\nError in joining the main thread for player %d",bet->myplayerid);
 			}
