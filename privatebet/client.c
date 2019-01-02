@@ -1865,7 +1865,7 @@ int32_t LN_get_channel_status(char *id)
 	argv[3]=NULL;
 	argc=3;
 	ln_bet(argc,argv,buf);
-	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,buf);
+
 	channelStateInfo=cJSON_CreateObject();
 	channelStateInfo=cJSON_Parse(buf);
 
