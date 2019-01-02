@@ -254,7 +254,7 @@ void BET_channels_parse()
 
 void BET_p2p_paymentloop(void * _ptr)
 {	
-	int32_t recvlen;
+	int32_t recvlen,retval=1;
     uint8_t flag=1;
 	void *ptr;
 	cJSON *msgjson=NULL;
@@ -272,6 +272,7 @@ void BET_p2p_paymentloop(void * _ptr)
     			   {
     			   		if(strcmp(method,"invoice") == 0)
 			   			{
+			   				retval=BET_p2p_invoice(msgjson,bet,NULL);
 			   				printf("\n%s:%d:%s",__FUNCTION__,__LINE__,cJSON_Print(msgjson));
 							flag=0;
 			   			}
