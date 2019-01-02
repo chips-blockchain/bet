@@ -17,6 +17,7 @@
 #include "network.h"
 #include "table.h"
 #include "host.h"
+#include "payment.h"
 //bits256 Mypubkey;
 //int32_t IAMHOST;
 //int32_t Gamestart,Gamestarted,Lastturni;
