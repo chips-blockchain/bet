@@ -252,6 +252,180 @@ void BET_channels_parse()
     }
 }
 
+/***************************************************************
+Here contains the functions which are specific to DCV
+****************************************************************/
+int32_t BET_DCV_create_invoice_request(struct privatebet_info *bet,int32_t playerid, int32_t amount)
+{
+	int32_t retval=1,bytes;
+	cJSON *betInfo=NULL;
+	char *rendered=NULL;
+
+	betInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(betInfo,"method","invoiceRequest_player");
+	cJSON_AddNumberToObject(betInfo,"playerID",playerid);
+	cJSON_AddNumberToObject(betInfo,"betAmount",amount);
+
+	rendered=cJSON_Print(betInfo);
+
+	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+
+	if(bytes<0)
+	{
+			retval=-1;
+			printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
+			goto end;
+	}
+
+	end:
+		return retval;
+	
+}
+
+int32_t BET_DCV_invoice_pay(struct privatebet_info *bet,struct privatebet_vars *vars,int playerid,int amount)
+{
+	pthread_t pay_t;
+	int32_t retval=1;
+
+	  retval=BET_DCV_create_invoice_request(bet,playerid,amount);
+   	  if (OS_thread_create(&pay_t,NULL,(void *)BET_DCV_paymentloop,(void *)bet) != 0 )
+	  {
+		  exit(-1);
+	  }   
+	  if(pthread_join(pay_t,NULL))
+	  {
+		  printf("\nError in joining the main thread for player %d",bet->myplayerid);
+		  retval=-1;
+	  }
+
+	return retval;
+}
+
+int32_t BET_DCV_pay(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars,int amount)
+{
+	
+	cJSON *invoiceInfo=NULL,*paymentInfo=NULL,*payResponse=NULL;
+	int argc,maxsize=10000,retval=1,bytes;
+	char **argv=NULL,*buf=NULL,*rendered=NULL,*invoice=NULL;
+
+	argv=(char**)malloc(4*sizeof(char*));
+	buf=malloc(maxsize);
+	argc=3;
+	for(int i=0;i<4;i++)
+	{
+		argv[i]=(char*)malloc(sizeof(char)*1000);
+	}
+	invoice=jstr(argjson,"invoice");
+	invoiceInfo=cJSON_Parse(invoice);
+
+	strcpy(argv[0],"./bet");
+	strcpy(argv[1],"pay");
+	sprintf(argv[2],"%s",jstr(invoiceInfo,"bolt11"));
+	argv[3]=NULL;
+	ln_bet(argc,argv,buf);
+	payResponse=cJSON_CreateObject();
+	payResponse=cJSON_Parse(buf);
+		
+	if(jint(payResponse,"code") != 0)
+	{
+		retval=-1;
+		printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(payResponse,"message"));
+		goto end;
+	}
+	
+	if(strcmp(jstr(payResponse,"status"),"complete")==0)
+		printf("\nPayment Success");
+		
+	end:
+		return retval;
+	
+}
+
+void BET_DCV_paymentloop(void * _ptr)
+{	
+	int32_t recvlen,retval=1;
+    uint8_t flag=1;
+	void *ptr;
+	cJSON *msgjson=NULL;
+	char *method=NULL;
+	struct privatebet_info *bet = _ptr;
+	while ( flag )
+    {
+        
+        if ( bet->subsock >= 0 && bet->pushsock >= 0 )
+        {
+	        	recvlen= nn_recv (bet->pullsock, &ptr, NN_MSG, 0);
+                if (( (msgjson= cJSON_Parse(ptr)) != 0 ) && (recvlen>0))
+                {
+                   if ( (method= jstr(msgjson,"method")) != 0 )
+    			   {
+    			   		if(strcmp(method,"invoice") == 0)
+			   			{
+			   				retval=BET_DCV_pay(msgjson,bet,NULL);
+							flag=0;
+			   			}
+                   }
+                   
+                    free_json(msgjson);
+                }
+                
+        }
+        
+    }   
+ 
+}
+
+
+
+/***************************************************************
+Here contains the functions which are specific to players and BVV
+****************************************************************/
+
+int32_t BET_player_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars,char* deckid)
+{
+	int argc,bytes,maxsize=10000,retval=1;
+	char **argv,*buf,hexstr [65],*rendered=NULL;
+	cJSON *invoiceInfo=NULL;
+	if(jint(argjson,"playerid")==bet->myplayerid)
+	{
+		argv =(char**)malloc(6*sizeof(char*));
+		buf=(char*)malloc(maxsize*sizeof(char));
+		for(int i=0;i<5;i++)
+		{
+				argv[i]=(char*)malloc(sizeof(char)*1000);
+		}
+		
+		strcpy(argv[0],"./bet");
+		strcpy(argv[1],"invoice");
+		sprintf(argv[2],"%d",jint(argjson,"betAmount"));
+		sprintf(argv[3],"%s_%d",deckid,jint(argjson,"betAmount"));
+		sprintf(argv[4],"Winning claim");
+		argv[5]=NULL;
+		argc=5;
+		if(buf)
+		{
+			ln_bet(argc,argv,buf);
+			invoiceInfo=cJSON_CreateObject();
+			cJSON_AddStringToObject(invoiceInfo,"method","invoice");
+			cJSON_AddNumberToObject(invoiceInfo,"playerid",bet->myplayerid);
+			cJSON_AddStringToObject(invoiceInfo,"label",argv[3]);
+			cJSON_AddStringToObject(invoiceInfo,"invoice",buf);
+	
+			rendered=cJSON_Print(invoiceInfo);
+			bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+			if(bytes<0)
+			{
+				retval=-1;
+				printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
+				goto end;
+			}
+		}
+	}
+	end:
+		return retval;
+		
+}
+
 int32_t BET_player_create_invoice_request(cJSON *argjson,struct privatebet_info *bet,int32_t amount)
 {
 	int32_t retval=1,bytes;
@@ -267,8 +441,6 @@ int32_t BET_player_create_invoice_request(cJSON *argjson,struct privatebet_info 
 	rendered=cJSON_Print(betInfo);
 
 	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
-
-	printf("\n%s:%d:%s",__FUNCTION__,__LINE__,rendered);		
 
 	if(bytes<0)
 	{
@@ -288,7 +460,7 @@ int32_t BET_player_invoice_pay(cJSON *argjson,struct privatebet_info *bet,struct
 	int32_t retval=1;
 
 	  retval=BET_player_create_invoice_request(argjson,bet,amount);
-   	  if (OS_thread_create(&pay_t,NULL,(void *)BET_p2p_paymentloop,(void *)bet) != 0 )
+   	  if (OS_thread_create(&pay_t,NULL,(void *)BET_player_paymentloop,(void *)bet) != 0 )
 	  {
 		  exit(-1);
 	  }   
@@ -301,7 +473,7 @@ int32_t BET_player_invoice_pay(cJSON *argjson,struct privatebet_info *bet,struct
 	return retval;
 }
 
-void BET_p2p_paymentloop(void * _ptr)
+void BET_player_paymentloop(void * _ptr)
 {	
 	int32_t recvlen,retval=1;
     uint8_t flag=1;

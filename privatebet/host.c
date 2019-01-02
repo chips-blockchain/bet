@@ -1221,7 +1221,10 @@ int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 	for(int i=0;i<bet->maxplayers;i++)
 	{
 		if(winners[i]==1)
+		{
+			BET_DCV_invoice_pay(bet,vars,i,(vars->pot/no_of_winners));
 			printf("%d\t",i);
+		}
 	}
 	printf("\n");
 	return retval;
@@ -1553,7 +1556,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		}
 		else if(strcmp(method,"pay") == 0)
 		{
-			retval=BET_settle_game(argjson,bet,vars);
+			//retval=BET_settle_game(argjson,bet,vars);
 		}
 		else if(strcmp(method,"claim") == 0)
 		{

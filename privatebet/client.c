@@ -1382,7 +1382,9 @@ int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 		
 		if(strcmp(jstr(payResponse,"status"),"complete")==0)
 			printf("\nPayment Success");
-			
+		else
+			retval=-1;
+		/*	
 		paymentInfo=cJSON_CreateObject();
 		cJSON_AddStringToObject(paymentInfo,"method","pay");
 		cJSON_AddNumberToObject(paymentInfo,"playerid",bet->myplayerid);
@@ -1397,7 +1399,7 @@ int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 				goto end;
 		}
 			
-		
+		*/
 	}
 	end:
 		return retval;
@@ -2116,6 +2118,10 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		else if(strcmp(method,"dealer") == 0)
 		{
 			retval=BET_p2p_dealer_info(argjson,bet,vars);
+		}
+		else if(strcmp(method,"invoiceRequest_player") == 0)
+		{
+			retval=BET_player_create_invoice(argjson,bet,vars,player_info.deckid);
 		}
 	}	
 	return retval;
