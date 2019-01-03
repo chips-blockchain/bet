@@ -1524,8 +1524,6 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		}
 		else if((strcmp(method,"init_b") == 0) || (strcmp(method,"next_turn") == 0))
 		{
-			printf("\n%s:%d:Game Start",__FUNCTION__,__LINE__);
-
 			if(strcmp(method,"init_b") == 0)
 			{
 				retval=BET_relay(argjson,bet,vars);

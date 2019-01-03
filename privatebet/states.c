@@ -254,7 +254,7 @@ int32_t BET_p2p_initiate_statemachine(cJSON *argjson,struct privatebet_info *bet
 	vars->last_raise=0;
 	for(int i=0;i<bet->maxplayers;i++)
 	{
-		vars->funds[i]=5000000;// hardcoded max funds to 5000 satoshis
+		vars->funds[i]=10000000;// hardcoded max funds to 10000 satoshis
 		for(int j=0;j<CARDS777_MAXROUNDS;j++)
 		{
 			vars->bet_actions[i][j]=0;
@@ -771,7 +771,7 @@ int32_t BET_p2p_dealer_info(cJSON *argjson,struct privatebet_info *bet,struct pr
 	vars->dealer=jint(argjson,"playerid");
 	vars->turni=vars->dealer;
 	vars->pot=0;
-	vars->player_funds=5000000; //hardcoding to 5000 satoshis
+	vars->player_funds=10000000; // hardcoded to 10000 satoshis
 	for(int i=0;i<bet->maxplayers;i++)
 	{
 		for(int j=0;j<CARDS777_MAXROUNDS;j++)
