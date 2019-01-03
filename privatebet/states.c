@@ -307,7 +307,15 @@ int32_t BET_p2p_do_blinds(cJSON *argjson,struct privatebet_info *bet,struct priv
 
 int32_t BET_DCV_next_turn(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int32_t flag=0,maxamount=0,retval=-1;
+	int32_t flag=0,maxamount=0,retval=-1,players_left=0;
+
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		if((vars->bet_actions[i][vars->round]==fold)|| (vars->bet_actions[i][vars->round]==allin))
+			players_left++;
+	}
+	if(players_left<2)
+		goto end;
 	
 	for(int i=0;i<bet->maxplayers;i++)
 	{
@@ -487,8 +495,6 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 					vars->bet_actions[i][j]=vars->bet_actions[i][round]; //check
 				}
 			}
-			retval=-1;
-			goto end;
 		}
 		/*
 		printf("\nThe players final states are:\n");
