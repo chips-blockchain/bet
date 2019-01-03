@@ -254,7 +254,7 @@ int32_t BET_p2p_initiate_statemachine(cJSON *argjson,struct privatebet_info *bet
 	vars->last_raise=0;
 	for(int i=0;i<bet->maxplayers;i++)
 	{
-		vars->funds[i]=10000;
+		vars->funds[i]=5000000;// hardcoded max funds to 5000 satoshis
 		for(int j=0;j<CARDS777_MAXROUNDS;j++)
 		{
 			vars->bet_actions[i][j]=0;
