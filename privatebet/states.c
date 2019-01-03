@@ -349,7 +349,7 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 		vars->round+=1;
 		vars->turni=vars->dealer;
 		vars->last_raise=0;
-		printf("\nRound:%d is completed",vars->round);
+		//printf("\nRound:%d is completed",vars->round);
 
 		if(vars->round>=CARDS777_MAXROUNDS)
 		{

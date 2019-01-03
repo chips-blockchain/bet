@@ -1147,7 +1147,7 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 			}
 		}
 		
-		printf("\nBVV  --> Player %d channel ready",i);	
+		printf("BVV  --> Player %d channel ready\n",i);	
 	}
 
 	bvvReady=cJSON_CreateObject();
