@@ -497,19 +497,6 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 				}
 			}
 		}
-		/*
-		printf("\nThe players final states are:\n");
-
-		for(int j=0;j<CARDS777_MAXROUNDS;j++)
-		{
-			for(int i=0;i<bet->maxplayers;i++)
-			{
-				printf("%d \t",vars->bet_actions[i][j]);
-				
-			}
-			printf("\n");
-					
-		}*/
 	}
 	retval=BET_DCV_round_betting(argjson,bet,vars);
 	end:
