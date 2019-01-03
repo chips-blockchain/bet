@@ -2134,7 +2134,6 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		}
 		else if(strcmp(method,"betting") == 0)
 		{
-			display_cards();
 			retval=BET_p2p_betting_statemachine(argjson,bet,vars);
 		}
 		else if(strcmp(method,"display_current_state") == 0)

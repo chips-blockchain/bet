@@ -332,10 +332,10 @@ int32_t BET_DCV_pay(cJSON *argjson,struct privatebet_info *bet,struct privatebet
 		printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(payResponse,"message"));
 		goto end;
 	}
-	
+	/*	
 	if(strcmp(jstr(payResponse,"status"),"complete")==0)
 		printf("\nPayment Success");
-		
+	*/	
 	end:
 		return retval;
 	

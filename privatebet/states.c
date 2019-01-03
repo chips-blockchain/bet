@@ -621,11 +621,19 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 			
 			if(strcmp(action,"small_blind") == 0)
 			{
-				retval=BET_p2p_small_blind(argjson,bet,vars);	
+				if(jint(argjson,"playerid") == bet->myplayerid)
+				{
+					display_cards();
+					retval=BET_p2p_small_blind(argjson,bet,vars);	
+				}
 			}
 			else if(strcmp(action,"big_blind") == 0)
 			{
-				retval=BET_p2p_big_blind(argjson,bet,vars);	
+				if(jint(argjson,"playerid") == bet->myplayerid)
+				{
+					display_cards();
+					retval=BET_p2p_big_blind(argjson,bet,vars); 
+				}
 			}
 			else if(strcmp(action,"small_blind_bet") == 0)
 			{
@@ -656,6 +664,7 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 			{
 				if(bet->myplayerid == jint(argjson,"playerid"))
 				{
+					display_cards();
 					retval=BET_player_round_betting(argjson,bet,vars);
 				}
 			}
@@ -816,8 +825,6 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 	pthread_t pay_t;
 
 
-	if(jint(argjson,"playerid") == bet->myplayerid)
-	{
 		small_blind_info=cJSON_CreateObject();
 		cJSON_AddStringToObject(small_blind_info,"method","betting");
 		do
@@ -846,7 +853,6 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 				goto end;
 		}
 				
-	}
 	end:
 		return retval;
 }
@@ -858,8 +864,6 @@ int32_t BET_p2p_big_blind(cJSON *argjson,struct privatebet_info *bet,struct priv
 	int32_t amount,retval=1,bytes;
 	char *rendered=NULL;
 
-	if(jint(argjson,"playerid") == bet->myplayerid)
-	{
 		big_blind_info=cJSON_CreateObject();
 		cJSON_AddStringToObject(big_blind_info,"method","betting");
 		cJSON_AddStringToObject(big_blind_info,"action","big_blind_bet");
@@ -888,8 +892,6 @@ int32_t BET_p2p_big_blind(cJSON *argjson,struct privatebet_info *bet,struct priv
 				printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
 				goto end;
 		}
-				
-	}
 	end:
 		return retval;
 }
@@ -899,7 +901,7 @@ int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,stru
 	cJSON *roundBetting=NULL,*possibilities=NULL,*action_response=NULL;
 	int maxamount=0,bytes,retval=1,playerid,round,min_amount,option,raise_amount=0;
 	char *rendered=NULL;
-
+	
 	playerid=jint(argjson,"playerid");
 	round=jint(argjson,"round");
 	min_amount=jint(argjson,"min_amount");
