@@ -420,7 +420,7 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	rendered=cJSON_Print(roundBetting);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 
-	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,rendered);
+	//printf("\n%s:%d::%s",__FUNCTION__,__LINE__,rendered);
 	if(bytes<0)
 	{
 		retval =-1;
@@ -444,7 +444,7 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 	vars->betamount[playerid][round]+=bet_amount;
 	vars->pot+=bet_amount;
 	vars->funds[playerid]-=bet_amount;
-	printf("\n%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+	//printf("\n%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 	if((action=jstr(argjson,"action")) != NULL)
 	{
 		if(strcmp(action,"check") == 0)
