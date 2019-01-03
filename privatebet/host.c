@@ -46,8 +46,7 @@ int32_t bet_amount[CARDS777_MAXPLAYERS][CARDS777_MAXROUNDS];
 int32_t eval_game_p[CARDS777_MAXPLAYERS],eval_game_c[CARDS777_MAXPLAYERS];
 
 
-#define NSUITS 4
-#define NFACES 13
+
 int32_t invoiceID;
 char* suit[NSUITS]= {"hearts","spades","clubs","diamonds"};
 char* face[NFACES]= {"ace","two","three","four","five","six","seven","eight","nine",
