@@ -31,6 +31,10 @@ extern bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 #define no_of_river_card 1
 #define no_of_community_cards 5
 
+#define NSUITS 4
+#define NFACES 13
+
+
 #endif
 
 
