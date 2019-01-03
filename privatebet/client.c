@@ -29,6 +29,9 @@
 #include "states.h"
 #include "../log/macrologger.h"
 
+int32_t player_card_matrix[hand_size];
+int32_t player_card_values[hand_size];
+int32_t number_cards_drawn=0;
 
 //struct enc_share *g_shares=NULL;
 //bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
@@ -1481,6 +1484,23 @@ int32_t BET_p2p_bet_round(cJSON *argjson,struct privatebet_info *bet,struct priv
 	
 }
 
+void display_cards()
+{
+	printf("\nPlayer Cards:");
+	printf("\nHole Cards:");
+	for(int32_t i=0;((i<no_of_hole_cards)&&(i<number_cards_drawn));i++)
+	{
+		
+		printf("%s-->%s \t",suit[player_card_values[i]/13],face[player_card_values[i]%13]);
+	}
+	
+	printf("\nCommunity Cards:");
+	for(int32_t i=no_of_player_cards;((i<hand_size)&&(i<number_cards_drawn));i++)
+	{
+		
+		printf("%s-->%s \t",suit[player_card_values[i]/13],face[player_card_values[i]%13]);
+	}
+}
 int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int32_t retval=1,bytes,cardid,playerid,errs,unpermi,card_type;
@@ -1529,7 +1549,8 @@ int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,
 
 		if(unpermi != -1)
 		{
-			
+			player_card_values[number_cards_drawn++]=decoded256.bytes[30];
+			display_cards();
 			playerCardInfo=cJSON_CreateObject();
 			cJSON_AddStringToObject(playerCardInfo,"method","playerCardInfo");
 			cJSON_AddNumberToObject(playerCardInfo,"playerid",bet->myplayerid);
@@ -2109,6 +2130,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		}
 		else if(strcmp(method,"betting") == 0)
 		{
+			display_cards();
 			retval=BET_p2p_betting_statemachine(argjson,bet,vars);
 		}
 		else if(strcmp(method,"display_current_state") == 0)
