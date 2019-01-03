@@ -1178,8 +1178,8 @@ int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 	printf("\nFinal states are:\n");
 	for(int i=0;i<bet->maxplayers;i++)
 	{
-			p[i]=vars->bet_actions[i][vars->round];
-			printf("\np[%d]=%d::vars->round:%d",i,p[i],vars->round);
+			p[i]=vars->bet_actions[i][(vars->round-1)];
+			printf("\np[%d]=%d::vars->round:%d",i,p[i],(vars->round-1));
 		
 	}
 		
