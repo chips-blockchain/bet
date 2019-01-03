@@ -1486,6 +1486,11 @@ int32_t BET_p2p_bet_round(cJSON *argjson,struct privatebet_info *bet,struct priv
 
 void display_cards()
 {
+	
+	char* suit[NSUITS]= {"hearts","spades","clubs","diamonds"};
+	char* face[NFACES]= {"ace","two","three","four","five","six","seven","eight","nine",
+						 "ten","jack","queen","king"
+						};
 	printf("\nPlayer Cards:");
 	printf("\nHole Cards:");
 	for(int32_t i=0;((i<no_of_hole_cards)&&(i<number_cards_drawn));i++)
