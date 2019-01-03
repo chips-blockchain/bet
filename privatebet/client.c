@@ -1492,15 +1492,15 @@ void display_cards()
 						 "ten","jack","queen","king"
 						};
 	printf("\nPlayer Cards:");
-	printf("\nHole Cards:");
+	printf("\nHole Cards:\n");
 	for(int32_t i=0;((i<no_of_hole_cards)&&(i<number_cards_drawn));i++)
 	{
 		
 		printf("%s-->%s \t",suit[player_card_values[i]/13],face[player_card_values[i]%13]);
 	}
 	
-	printf("\nCommunity Cards:");
-	for(int32_t i=no_of_player_cards;((i<hand_size)&&(i<number_cards_drawn));i++)
+	printf("\nCommunity Cards:\n");
+	for(int32_t i=no_of_hole_cards;((i<hand_size)&&(i<number_cards_drawn));i++)
 	{
 		
 		printf("%s-->%s \t",suit[player_card_values[i]/13],face[player_card_values[i]%13]);
@@ -1555,7 +1555,6 @@ int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,
 		if(unpermi != -1)
 		{
 			player_card_values[number_cards_drawn++]=decoded256.bytes[30];
-			display_cards();
 			playerCardInfo=cJSON_CreateObject();
 			cJSON_AddStringToObject(playerCardInfo,"method","playerCardInfo");
 			cJSON_AddNumberToObject(playerCardInfo,"playerid",bet->myplayerid);
