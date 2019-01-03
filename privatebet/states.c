@@ -668,7 +668,6 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 					retval=BET_player_round_betting_response(argjson,bet,vars);
 			}
 		}
-		printf("\n");
 		end:
 			return retval;
 }
@@ -715,9 +714,6 @@ int32_t BET_p2p_display_current_state(cJSON *argjson,struct privatebet_info *bet
 		}	
 	}
 
-	
-	
-	printf("\n");
 	end:
 		return retval;
 }
@@ -983,10 +979,6 @@ int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,stru
 		printf("\nFailed to send data");
 		goto end;
 	}
-	
-
-	printf("\n");
-
 	end:
 		return retval;
 	
