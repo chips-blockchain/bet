@@ -314,6 +314,7 @@ int32_t BET_DCV_next_turn(cJSON *argjson,struct privatebet_info *bet,struct priv
 		if((vars->bet_actions[i][vars->round]==fold)|| (vars->bet_actions[i][vars->round]==allin))
 			players_left++;
 	}
+	players_left=bet->maxplayers-players_left;
 	if(players_left<2)
 		goto end;
 	
