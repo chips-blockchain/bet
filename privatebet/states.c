@@ -487,6 +487,8 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 					vars->bet_actions[i][j]=vars->bet_actions[i][round]; //check
 				}
 			}
+			retval=-1;
+			goto end;
 		}
 		/*
 		printf("\nThe players final states are:\n");
