@@ -1237,7 +1237,7 @@ int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 			if((vars->bet_actions[i][vars->round]==fold)|| (vars->bet_actions[i][vars->round]==allin)) 
 				players_left++;
 			else
-				only_winner=i
+				only_winner=i;
 		
 	}
 	players_left=bet->maxplayers-players_left;
