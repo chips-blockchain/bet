@@ -1238,7 +1238,6 @@ int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 				players_left++;
 			else
 				only_winner=i;
-		
 	}
 	players_left=bet->maxplayers-players_left;
 	if(players_left<2)
@@ -1246,6 +1245,7 @@ int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 		if(only_winner != -1)
 		{
 			retval=BET_DCV_invoice_pay(bet,vars,only_winner,vars->pot);
+			printf("\nWinning player is :%d, winning amount:%d",only_winner,vars->pot);
 			goto end;
 		}
 	}
