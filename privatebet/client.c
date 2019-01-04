@@ -2021,11 +2021,13 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 		argv=(char**)malloc(4*sizeof(char*));
 		buf=malloc(maxsize);
 		memset(buf,0x00,sizeof(buf));
-		argc=2;
+		argc=3;
 		for(int i=0;i<argc;i++)
 		{
 			argv[i]=(char*)malloc(100*sizeof(char));		
 		}
+		argv[2]=NULL;
+		argc=2;
 		
 		strcpy(argv[0],"./bet");
 		strcpy(argv[1],"getinfo");
