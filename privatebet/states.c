@@ -384,6 +384,7 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	cJSON_AddStringToObject(roundBetting,"action","round_betting");
 	cJSON_AddNumberToObject(roundBetting,"playerid",vars->turni);
 	cJSON_AddNumberToObject(roundBetting,"round",vars->round);
+	cJSON_AddNumberToObject(roundBetting,"pot",vars->pot);
 	cJSON_AddItemToObject(roundBetting,"possibilities",possibilities=cJSON_CreateArray());
 
 	
@@ -546,6 +547,7 @@ int32_t BET_DCV_big_blind(cJSON *argjson,struct privatebet_info *bet,struct priv
 	cJSON_AddStringToObject(big_blind_info,"action","big_blind");
 	cJSON_AddNumberToObject(big_blind_info,"playerid",vars->turni);
 	cJSON_AddNumberToObject(big_blind_info,"min_amount",(vars->small_blind*2));
+	cJSON_AddNumberToObject(big_blind_info,"pot",vars->pot);
 	
 	rendered=cJSON_Print(big_blind_info);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
@@ -597,7 +599,7 @@ int32_t BET_DCV_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 	cJSON_AddStringToObject(smallBlindInfo,"action","small_blind");
 	cJSON_AddNumberToObject(smallBlindInfo,"playerid",vars->turni);
 	cJSON_AddNumberToObject(smallBlindInfo,"round",vars->round);
-
+	cJSON_AddNumberToObject(smallBlindInfo,"pot",vars->pot);
 	rendered=cJSON_Print(smallBlindInfo);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 	if(bytes<0)
@@ -625,7 +627,7 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 			{
 				if(jint(argjson,"playerid") == bet->myplayerid)
 				{
-					display_cards(bet,vars);
+					display_cards(argjson,bet,vars);
 					retval=BET_p2p_small_blind(argjson,bet,vars);	
 				}
 			}
@@ -633,7 +635,7 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 			{
 				if(jint(argjson,"playerid") == bet->myplayerid)
 				{
-					display_cards(bet,vars);
+					display_cards(argjson,bet,vars);
 					retval=BET_p2p_big_blind(argjson,bet,vars); 
 				}
 			}
@@ -666,7 +668,7 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 			{
 				if(bet->myplayerid == jint(argjson,"playerid"))
 				{
-					display_cards(bet,vars);
+					display_cards(argjson,bet,vars);
 					retval=BET_player_round_betting(argjson,bet,vars);
 				}
 			}

@@ -1486,7 +1486,7 @@ int32_t BET_p2p_bet_round(cJSON *argjson,struct privatebet_info *bet,struct priv
 	
 }
 
-void display_cards(struct privatebet_info *bet,struct privatebet_vars *vars)
+void display_cards(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	
 	char* suit[NSUITS]= {"hearts","spades","clubs","diamonds"};
@@ -1507,7 +1507,7 @@ void display_cards(struct privatebet_info *bet,struct privatebet_vars *vars)
 		
 		printf("%s-->%s \t",suit[player_card_values[i]/13],face[player_card_values[i]%13]);
 	}
-	printf("\npot size:%d",vars->pot);
+	printf("\npot size:%d",jint(argjson,"pot"));
 }
 int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
