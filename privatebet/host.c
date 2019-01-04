@@ -1226,14 +1226,28 @@ int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 	unsigned char h[7];
 	unsigned long scores[CARDS777_MAXPLAYERS];
 	int p[CARDS777_MAXPLAYERS];
-	int winners[CARDS777_MAXPLAYERS];
+	int winners[CARDS777_MAXPLAYERS],players_left=0,only_winner=-1;
 	cJSON *resetInfo=NULL;
 	char *rendered=NULL;
 	
 	for(int i=0;i<bet->maxplayers;i++)
 	{
 			p[i]=vars->bet_actions[i][(vars->round-1)];
+			
+			if((vars->bet_actions[i][vars->round]==fold)|| (vars->bet_actions[i][vars->round]==allin)) 
+				players_left++;
+			else
+				only_winner=i
 		
+	}
+	players_left=bet->maxplayers-players_left;
+	if(players_left<2)
+	{
+		if(only_winner != -1)
+		{
+			retval=BET_DCV_invoice_pay(bet,vars,only_winner,vars->pot);
+			goto end;
+		}
 	}
 		
 	printf("\nEach player got the below cards:\n");
@@ -1281,18 +1295,19 @@ int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 		}
 	}
 	printf("\n");
-	if(retval)
-	{
-		resetInfo=cJSON_CreateObject();
-		cJSON_AddStringToObject(resetInfo,"method","reset");
-		rendered=cJSON_Print(resetInfo);
-		bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
-		if(bytes<0)
-			retval=-1;
-		BET_DCV_reset(bet,vars);
-	}
-		
-	return retval;
+
+	end:	
+		if(retval)
+		{
+			resetInfo=cJSON_CreateObject();
+			cJSON_AddStringToObject(resetInfo,"method","reset");
+			rendered=cJSON_Print(resetInfo);
+			bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+			if(bytes<0)
+				retval=-1;
+			BET_DCV_reset(bet,vars);
+		}
+		return retval;
 }
 
 void BET_establish_ln_channels(struct privatebet_info *bet)
