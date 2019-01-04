@@ -34,6 +34,9 @@ extern bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 #define NSUITS 4
 #define NFACES 13
 
+#define small_blind_amount 1000000
+#define big_blind_amount 2000000
+
 
 #endif
 
