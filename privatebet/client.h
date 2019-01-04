@@ -21,6 +21,11 @@ void* BET_clientbvv(void * _ptr);
 int32_t BET_p2p_bvv_init(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
 int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
 void BET_p2p_bvvloop(void *_ptr);
+void BET_BVV_reset(struct privatebet_info *bet,struct privatebet_vars *vars);
+
+
+
+
 bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars,int32_t cardid);
 int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
 int32_t BET_p2p_client_give_share(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
@@ -37,6 +42,7 @@ int32_t LN_get_channel_status(char *id);
 int32_t BET_p2p_client_player_ready(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
 void BET_p2p_table_info(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
 void display_cards();
+int32_t BET_player_reset(struct privatebet_info *bet,struct privatebet_vars *vars);
 
 
 

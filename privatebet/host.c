@@ -1222,12 +1222,14 @@ void BET_DCV_reset(struct privatebet_info *bet,struct privatebet_vars *vars)
 }
 int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int retval=1,max_score=0,no_of_winners=0,winning_amount=0;
+	int retval=1,max_score=0,no_of_winners=0,winning_amount=0,bytes;
 	unsigned char h[7];
 	unsigned long scores[CARDS777_MAXPLAYERS];
 	int p[CARDS777_MAXPLAYERS];
 	int winners[CARDS777_MAXPLAYERS];
-
+	cJSON *resetInfo=NULL;
+	char *rendered=NULL;
+	
 	for(int i=0;i<bet->maxplayers;i++)
 	{
 			p[i]=vars->bet_actions[i][(vars->round-1)];
@@ -1280,7 +1282,16 @@ int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 	}
 	printf("\n");
 	if(retval)
+	{
+		resetInfo=cJSON_CreateObject();
+		cJSON_AddStringToObject(resetInfo,"method","reset");
+		rendered=cJSON_Print(resetInfo);
+		bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+		if(bytes<0)
+			retval=-1;
 		BET_DCV_reset(bet,vars);
+	}
+		
 	return retval;
 }
 

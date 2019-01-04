@@ -33,24 +33,12 @@ int32_t player_card_matrix[hand_size];
 int32_t player_card_values[hand_size];
 int32_t number_cards_drawn=0;
 
-//struct enc_share *g_shares=NULL;
-//bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
-//bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 int32_t sharesflag[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
-//bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
-//char *LN_idstr,Host_ipaddr[64],Host_peerid[67];
-//bits256 Mypubkey;//Myprivkey;
-//int32_t IAMHOST;
-//uint16_t LN_port;
-//int32_t Num_hostrhashes,Chips_paid;
-//bits256 deckid;
-//char Host_channel[64];
 struct deck_player_info player_info;
 struct deck_bvv_info bvv_info;
 int32_t no_of_shares=0;
 int32_t player_cards[CARDS777_MAXCARDS];
 int32_t no_of_player_cards=0;
-//uint8_t sharenrs[256];
 
 char *LN_db="../../.chipsln/lightningd1.sqlite3";
 
@@ -1161,6 +1149,16 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 		return retval;
 }
 
+void BET_BVV_reset(struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	
+	BET_permutation(bvv_info.permis,bet->range);
+    for(int i=0;i<bet->range;i++)
+	{
+		permis_b[i]=bvv_info.permis[i];
+	
+	}
+}
 
 int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
@@ -1189,6 +1187,10 @@ int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct pri
 		else if(strcmp(method,"dealer") == 0)
 		{
 			retval=BET_p2p_dealer_info(argjson,bet,vars);
+		}
+		else if(strcmp(method,"reset") == 0)
+		{
+			BET_BVV_reset(bet,vars);
 		}
         else
             retval=-1;
@@ -2064,6 +2066,38 @@ void BET_p2p_table_info(cJSON *argjson,struct privatebet_info *bet,struct privat
 	printf("\nTable Info:%s",cJSON_Print(argjson));	
 }
 
+int32_t BET_player_reset(struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+
+	no_of_shares=0;
+	no_of_player_cards=0;
+	for(int i=0;i<bet->range;i++)
+	{
+		for(int j=0;j<bet->numplayers;j++)
+		{
+			sharesflag[i][j]=0;
+		}
+	}
+	number_cards_drawn=0;	
+	for(int i=0;i<hand_size;i++)
+	{
+		player_card_matrix[i]=0;
+		player_card_values[i]=-1;
+	}
+	
+	vars->pot=0;
+	vars->player_funds=10000000; // hardcoded to 10000 satoshis
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		for(int j=0;j<CARDS777_MAXROUNDS;j++)
+		{
+			vars->bet_actions[i][j]=0;
+			vars->betamount[i][j]=0;
+		}
+	}
+	
+	return(BET_p2p_client_join(NULL,bet,vars));
+}
 
 int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars) // update game state based on host broadcast
 {
@@ -2147,6 +2181,10 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		else if(strcmp(method,"invoiceRequest_player") == 0)
 		{
 			retval=BET_player_create_invoice(argjson,bet,vars,bits256_str(hexstr,player_info.deckid));
+		}
+		else if(strcmp(method,"reset") == 0)
+		{
+			retval=BET_player_reset(bet,vars);
 		}
 	}	
 	return retval;
