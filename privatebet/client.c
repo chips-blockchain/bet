@@ -1507,6 +1507,7 @@ void display_cards(cJSON *argjson,struct privatebet_info *bet,struct privatebet_
 		
 		printf("%s-->%s \t",suit[player_card_values[i]/13],face[player_card_values[i]%13]);
 	}
+	printf("\nsmall_blind:%d, big_blind:%d",small_blind_amount,big_blind_amount);
 	printf("\npot size:%d",jint(argjson,"pot"));
 }
 int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
