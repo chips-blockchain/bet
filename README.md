@@ -33,7 +33,9 @@ $ ./configure --with-boost=/usr/local/
 $ cd src
 $ make -j8 chipsd
 $ make chips-cli
-
+$ cp chips-cli /usr/bin # just need to get chips-cli to work from command line
+# make -> will build everything, including QT wallet
+$ sudo ldconfig /usr/local/lib # thanks smaragda!
 # Running CHIPS Daemon
 
 $ cd ~
