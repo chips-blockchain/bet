@@ -1018,6 +1018,10 @@ int32_t BET_player_round_betting_response(cJSON *argjson,struct privatebet_info 
 		{
 			vars->bet_actions[playerid][round]=fold;
 		}
+		else if(strcmp(action,"allin") == 0)
+		{
+			vars->bet_actions[playerid][round]=allin;
+		}
 	}
 
 	end:
