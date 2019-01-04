@@ -831,14 +831,17 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 		small_blind_info=cJSON_CreateObject();
 		cJSON_AddStringToObject(small_blind_info,"method","betting");
+		/*
 		do
 		{
 			printf("\nEnter small blind:");
 			scanf("%d",&amount);
 		}while((amount<0)||(amount>vars->player_funds));
+		*/
+		amount=small_blind_amount;
 		vars->player_funds-=amount;
-
     	retval=BET_player_invoice_pay(argjson,bet,vars,amount);
+		
 		if(retval<0)
 			goto end;
 		
@@ -871,12 +874,14 @@ int32_t BET_p2p_big_blind(cJSON *argjson,struct privatebet_info *bet,struct priv
 		big_blind_info=cJSON_CreateObject();
 		cJSON_AddStringToObject(big_blind_info,"method","betting");
 		cJSON_AddStringToObject(big_blind_info,"action","big_blind_bet");
-
+		/*
 		do
 		{
 			printf("\nEnter big blind:");
 			scanf("%d",&amount);
 		}while((amount!=(2*vars->small_blind))||(amount>vars->player_funds));
+		*/
+		amount=big_blind_amount;
 		vars->player_funds-=amount;
 
 		retval=BET_player_invoice_pay(argjson,bet,vars,amount);
