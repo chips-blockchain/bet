@@ -2006,6 +2006,7 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 	struct pair256 key;
 	char *rendered=NULL,*uri=NULL;
 	char hexstr [ 65 ];
+	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
     if(bet->pushsock>=0)
 	{
 		key = deckgen_player(player_info.cardprivkeys,player_info.cardpubkeys,player_info.permis,bet->range);
@@ -2068,7 +2069,7 @@ void BET_p2p_table_info(cJSON *argjson,struct privatebet_info *bet,struct privat
 
 int32_t BET_player_reset(struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-
+	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
 	no_of_shares=0;
 	no_of_player_cards=0;
 	for(int i=0;i<bet->range;i++)
