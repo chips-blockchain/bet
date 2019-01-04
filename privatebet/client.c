@@ -2020,11 +2020,13 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 		char **argv=NULL,*buf=NULL;
 		argv=(char**)malloc(4*sizeof(char*));
 		buf=malloc(maxsize);
+		memset(buf,0x00,sizeof(buf));
 		argc=2;
 		for(int i=0;i<argc;i++)
 		{
 			argv[i]=(char*)malloc(100*sizeof(char));		
 		}
+		
 		strcpy(argv[0],"./bet");
 		strcpy(argv[1],"getinfo");
 		ln_bet(argc,argv,buf);
@@ -2054,7 +2056,14 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 			printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
 			goto end;
 		}
-		
+
+		if(buf)
+			free(buf);
+		for(int i=0;i<argc;i++)
+			free(argv[i]);
+		if(argv)
+			free(argv);
+				
         
     }
 	end:
