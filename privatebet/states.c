@@ -311,7 +311,7 @@ int32_t BET_DCV_next_turn(cJSON *argjson,struct privatebet_info *bet,struct priv
 
 	for(int i=0;i<bet->maxplayers;i++)
 	{
-		if((vars->bet_actions[i][vars->round]==fold)|| (vars->bet_actions[i][vars->round]==allin))
+		if((vars->bet_actions[i][vars->round]==fold)) /*|| (vars->bet_actions[i][vars->round]==allin)*/
 			players_left++;
 	}
 	players_left=bet->maxplayers-players_left;
@@ -349,18 +349,24 @@ int32_t BET_DCV_next_turn(cJSON *argjson,struct privatebet_info *bet,struct priv
 int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	cJSON *roundBetting=NULL,*possibilities=NULL;
-	int flag=0,maxamount=0,bytes,retval=1;
+	int flag=0,maxamount=0,bytes,retval=1,players_left=0;
 	char *rendered=NULL;
 
 	if((retval=BET_DCV_next_turn(argjson,bet,vars)) == -1)
 	{
-		
+		for(int i=0;i<bet->maxplayers;i++)
+		{
+			if((vars->bet_actions[i][vars->round]==fold)|| (vars->bet_actions[i][vars->round]==allin)) 
+				players_left++;
+		}	
+		players_left=bet->maxplayers-players_left;
+
 		vars->round+=1;
 		vars->turni=vars->dealer;
 		vars->last_raise=0;
 		//printf("\nRound:%d is completed",vars->round);
 
-		if(vars->round>=CARDS777_MAXROUNDS)
+		if((vars->round>=CARDS777_MAXROUNDS) || (players_left<2))
 		{
 			retval=BET_evaluate_hand(argjson,bet,vars);
 			goto end;
@@ -483,7 +489,7 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 		// The below logic is to check if the number of active players < 2
 		for(int i=0;i<bet->maxplayers;i++)
 		{
-			if((vars->bet_actions[i][round]==fold)|| (vars->bet_actions[i][round]==allin))
+			if((vars->bet_actions[i][round]==fold)) /*|| (vars->bet_actions[i][round]==allin)*/
 				players_left++;
 		}
 		players_left=bet->maxplayers-players_left;
