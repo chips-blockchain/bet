@@ -625,7 +625,7 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 			{
 				if(jint(argjson,"playerid") == bet->myplayerid)
 				{
-					display_cards();
+					display_cards(bet,vars);
 					retval=BET_p2p_small_blind(argjson,bet,vars);	
 				}
 			}
@@ -633,7 +633,7 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 			{
 				if(jint(argjson,"playerid") == bet->myplayerid)
 				{
-					display_cards();
+					display_cards(bet,vars);
 					retval=BET_p2p_big_blind(argjson,bet,vars); 
 				}
 			}
@@ -666,7 +666,7 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 			{
 				if(bet->myplayerid == jint(argjson,"playerid"))
 				{
-					display_cards();
+					display_cards(bet,vars);
 					retval=BET_player_round_betting(argjson,bet,vars);
 				}
 			}
