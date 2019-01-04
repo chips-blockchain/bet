@@ -1167,6 +1167,59 @@ int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struc
 		return retval;
 	
 }
+void BET_DCV_reset(struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	
+	players_joined=0;
+	turn=0;no_of_cards=0;no_of_rounds=0;no_of_bets=0;
+	hole_cards_drawn=0;community_cards_drawn=0;flop_cards_drawn=0;turn_card_drawn=0;river_card_drawn=0;
+	invoiceID=0;	
+		
+	for(int i=0;i<bet->maxplayers;i++)
+		player_ready[i]=0;	
+	
+	for(int i=0;i<hand_size;i++)
+	{
+		for(int j=0;j<bet->maxplayers;j++)
+		{
+			card_matrix[j][i]=0;
+			card_values[j][i]=-1;
+		}
+	}
+
+	
+	dcv_info.numplayers=0;
+	dcv_info.maxplayers=bet->maxplayers;
+	BET_permutation(dcv_info.permis,bet->range);
+    dcv_info.deckid=rand256(0);
+	dcv_info.dcv_key.priv=curve25519_keypair(&dcv_info.dcv_key.prod);
+	for(int i=0;i<bet->range;i++)
+	{
+		permis_d[i]=dcv_info.permis[i];
+	
+	}
+	
+	vars->turni=0;
+	vars->round=0;
+	vars->pot=0;
+	vars->last_turn=0;
+	vars->last_raise=0;
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		vars->funds[i]=10000000;// hardcoded max funds to 10000 satoshis
+		for(int j=0;j<CARDS777_MAXROUNDS;j++)
+		{
+			vars->bet_actions[i][j]=0;
+			vars->betamount[i][j]=0;
+		}
+	}
+	
+	bet->numplayers=0;
+	bet->cardid=-1;
+	bet->turni=-1;
+	bet->no_of_turns=0;
+		
+}
 int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int retval=1,max_score=0,no_of_winners=0,winning_amount=0;
@@ -1221,11 +1274,13 @@ int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 	{
 		if(winners[i]==1)
 		{
-			BET_DCV_invoice_pay(bet,vars,i,(vars->pot/no_of_winners));
+			retval=BET_DCV_invoice_pay(bet,vars,i,(vars->pot/no_of_winners));
 			printf("%d\t",i);
 		}
 	}
 	printf("\n");
+	if(retval)
+		BET_DCV_reset(bet,vars);
 	return retval;
 }
 
