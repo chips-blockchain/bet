@@ -945,10 +945,12 @@ int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,stru
 	{
 		do
 		{
+			if(min_amount<big_blind_amount)
+				min_amount=big_blind_amount;
 			printf("\nEnter the amount > %d:",min_amount);
 			scanf("%d",&raise_amount);
 						
-		}while((raise_amount<min_amount)||(raise_amount<=0)||(raise_amount<(vars->last_raise+min_amount) || (raise_amount>vars->player_funds)));
+		}while((raise_amount<min_amount)||(raise_amount<big_blind_amount)||(raise_amount<(vars->last_raise+min_amount) || (raise_amount>vars->player_funds)));
 		vars->player_funds-=raise_amount;
 		vars->betamount[playerid][round]+=raise_amount;
 
