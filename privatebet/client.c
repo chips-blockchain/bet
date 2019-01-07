@@ -1493,6 +1493,7 @@ void display_cards(cJSON *argjson,struct privatebet_info *bet,struct privatebet_
 	char* face[NFACES]= {"ace","two","three","four","five","six","seven","eight","nine",
 						 "ten","jack","queen","king"
 						};
+	char action_str[8][100]={"","small_blind","big_blind","check","raise","call","allin","fold"};
 	printf("\nPlayer Cards:");
 	printf("\nHole Cards:\n");
 	for(int32_t i=0;((i<no_of_hole_cards)&&(i<number_cards_drawn));i++)
@@ -1506,6 +1507,16 @@ void display_cards(cJSON *argjson,struct privatebet_info *bet,struct privatebet_
 	{
 		
 		printf("%s-->%s \t",suit[player_card_values[i]/13],face[player_card_values[i]%13]);
+	}
+
+	for(int i=0;i<vars->round;i++)
+	{
+		printf("\nRound %d actions:\n");
+		for(int j=0;j<bet->maxplayers;j++)
+		{
+			if(vars->actions[j][i]>0)
+				printf("\nplayer id:%d, action:%s",j,action_str[vars->actions[j][i]]);
+		}
 	}
 	printf("\nsmall_blind:%d, big_blind:%d",small_blind_amount,big_blind_amount);
 	printf("\npot size:%d",jint(argjson,"pot"));
