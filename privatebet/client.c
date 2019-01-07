@@ -1514,8 +1514,8 @@ void display_cards(cJSON *argjson,struct privatebet_info *bet,struct privatebet_
 		printf("\nRound %d actions:\n");
 		for(int j=0;j<bet->maxplayers;j++)
 		{
-			if(vars->actions[j][i]>0)
-				printf("\nplayer id:%d, action:%s",j,action_str[vars->actions[j][i]]);
+			if(vars->bet_actions[j][i]>0)
+				printf("\nplayer id:%d, action:%s",j,action_str[vars->bet_actions[j][i]]);
 		}
 	}
 	printf("\nsmall_blind:%d, big_blind:%d",small_blind_amount,big_blind_amount);
