@@ -1495,6 +1495,7 @@ void display_cards(cJSON *argjson,struct privatebet_info *bet,struct privatebet_
 						};
 	char action_str[8][100]={"","small_blind","big_blind","check","raise","call","allin","fold"};
 	cJSON *actions=NULL;
+	int flag;
 	printf("\nPlayer Cards:");
 	printf("\nHole Cards:\n");
 	for(int32_t i=0;((i<no_of_hole_cards)&&(i<number_cards_drawn));i++)
@@ -1503,10 +1504,14 @@ void display_cards(cJSON *argjson,struct privatebet_info *bet,struct privatebet_
 		printf("%s-->%s \t",suit[player_card_values[i]/13],face[player_card_values[i]%13]);
 	}
 	
-	printf("\nCommunity Cards:\n");
+	flag=1;
 	for(int32_t i=no_of_hole_cards;((i<hand_size)&&(i<number_cards_drawn));i++)
 	{
-		
+		if(flag)
+		{
+			printf("\nCommunity Cards:\n");
+			flag=0;
+		}	
 		printf("%s-->%s \t",suit[player_card_values[i]/13],face[player_card_values[i]%13]);
 	}
 	/*
@@ -1521,12 +1526,23 @@ void display_cards(cJSON *argjson,struct privatebet_info *bet,struct privatebet_
 	}*/
 	actions=cJSON_GetObjectItem(argjson,"actions");
 	printf("\nActions are:\n");
-	for(int i=0;i<jint(argjson,"round");i++)
+	printf("\t\t\t");
+	for(int i=0;i<bet->maxplayers;i++)
 	{
-		for(int j=0;j<bet->maxplayers;j++)
+		printf("Player:%d\t",i);
+	}
+	int count=0;
+	flag=1;
+	for(int i=0;((i<jint(argjson,"round"))&&(flag));i++)
+	{
+		printf("\nRound:%d",i);
+		for(int j=0;((j<bet->maxplayers)&&(flag));j++)
 		{
 			if(jinti(actions,((i*bet->maxplayers)+j))>0)
 				printf("%s\t",action_str[jinti(actions,((i*bet->maxplayers)+j))]);
+			count++;	
+			if(count==cJSON_GetArraySize(actions))
+					flag=0;
 		}
 		printf("\n");
 	}

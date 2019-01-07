@@ -387,11 +387,12 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	cJSON_AddNumberToObject(roundBetting,"pot",vars->pot);
 	/* */
 	cJSON_AddItemToObject(roundBetting,"actions",actions=cJSON_CreateArray());
-	for(int i=0;i<vars->round;i++)
+	for(int i=0;i<=vars->round;i++)
 	{
 		for(int j=0;j<bet->maxplayers;j++)
 		{
-			cJSON_AddItemToArray(actions,cJSON_CreateNumber(vars->bet_actions[j][i]));
+			if(vars->bet_actions[j][i]>0)
+				cJSON_AddItemToArray(actions,cJSON_CreateNumber(vars->bet_actions[j][i]));
 		}
 	}
 	
