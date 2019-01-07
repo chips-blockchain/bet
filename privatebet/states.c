@@ -348,7 +348,7 @@ int32_t BET_DCV_next_turn(cJSON *argjson,struct privatebet_info *bet,struct priv
 }
 int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	cJSON *roundBetting=NULL,*possibilities=NULL;
+	cJSON *roundBetting=NULL,*possibilities=NULL,*actions=NULL;
 	int flag=0,maxamount=0,bytes,retval=1,players_left=0;
 	char *rendered=NULL;
 
@@ -385,6 +385,16 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	cJSON_AddNumberToObject(roundBetting,"playerid",vars->turni);
 	cJSON_AddNumberToObject(roundBetting,"round",vars->round);
 	cJSON_AddNumberToObject(roundBetting,"pot",vars->pot);
+	/* */
+	cJSON_AddItemToObject(roundBetting,"actions",actions=cJSON_CreateArray());
+	for(int i=0;i<vars->round;i++)
+	{
+		for(int j=0;j<bet->maxplayers;j++)
+		{
+			cJSON_AddItemToArray(actions,cJSON_CreateNumber(vars->bet_actions[j][i]));
+		}
+	}
+	
 	cJSON_AddItemToObject(roundBetting,"possibilities",possibilities=cJSON_CreateArray());
 
 	
