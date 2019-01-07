@@ -1533,7 +1533,7 @@ void display_cards(cJSON *argjson,struct privatebet_info *bet,struct privatebet_
 	}
 	int count=0;
 	flag=1;
-	for(int i=0;((i<jint(argjson,"round"))&&(flag));i++)
+	for(int i=0;((i<=jint(argjson,"round"))&&(flag));i++)
 	{
 		printf("\nRound:%d",i);
 		for(int j=0;((j<bet->maxplayers)&&(flag));j++)
