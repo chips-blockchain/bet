@@ -348,7 +348,7 @@ int32_t BET_DCV_next_turn(cJSON *argjson,struct privatebet_info *bet,struct priv
 }
 int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	cJSON *roundBetting=NULL,*possibilities=NULL;
+	cJSON *roundBetting=NULL,*possibilities=NULL,*actions=NULL;
 	int flag=0,maxamount=0,bytes,retval=1,players_left=0;
 	char *rendered=NULL;
 
@@ -385,6 +385,17 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	cJSON_AddNumberToObject(roundBetting,"playerid",vars->turni);
 	cJSON_AddNumberToObject(roundBetting,"round",vars->round);
 	cJSON_AddNumberToObject(roundBetting,"pot",vars->pot);
+	/* */
+	cJSON_AddItemToObject(roundBetting,"actions",actions=cJSON_CreateArray());
+	for(int i=0;i<=vars->round;i++)
+	{
+		for(int j=0;j<bet->maxplayers;j++)
+		{
+			if(vars->bet_actions[j][i]>0)
+				cJSON_AddItemToArray(actions,cJSON_CreateNumber(vars->bet_actions[j][i]));
+		}
+	}
+	
 	cJSON_AddItemToObject(roundBetting,"possibilities",possibilities=cJSON_CreateArray());
 
 	
@@ -436,7 +447,7 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	rendered=cJSON_Print(roundBetting);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 
-	//printf("\n%s:%d::%s",__FUNCTION__,__LINE__,rendered);
+	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,rendered);
 	if(bytes<0)
 	{
 		retval =-1;
@@ -945,10 +956,12 @@ int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,stru
 	{
 		do
 		{
+			if(min_amount<big_blind_amount)
+				min_amount=big_blind_amount;
 			printf("\nEnter the amount > %d:",min_amount);
 			scanf("%d",&raise_amount);
 						
-		}while((raise_amount<min_amount)||(raise_amount<=0)||(raise_amount<(vars->last_raise+min_amount) || (raise_amount>vars->player_funds)));
+		}while((raise_amount<min_amount)||(raise_amount<big_blind_amount)||(raise_amount<(vars->last_raise+min_amount) || (raise_amount>vars->player_funds)));
 		vars->player_funds-=raise_amount;
 		vars->betamount[playerid][round]+=raise_amount;
 

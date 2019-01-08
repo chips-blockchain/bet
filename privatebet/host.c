@@ -1227,7 +1227,7 @@ int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 	unsigned long scores[CARDS777_MAXPLAYERS];
 	int p[CARDS777_MAXPLAYERS];
 	int winners[CARDS777_MAXPLAYERS],players_left=0,only_winner=-1;
-	cJSON *resetInfo=NULL;
+	cJSON *resetInfo=NULL,*gameInfo=NULL;
 	char *rendered=NULL;
 	
 	for(int i=0;i<bet->maxplayers;i++)
