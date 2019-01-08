@@ -1,3 +1,13 @@
 *.o
 privatebet/bet
 *.sisc
+bet.IAB
+bet.IAD
+bet.IMB
+bet.IMD
+bet.PFI
+bet.PO
+bet.PR
+bet.PRI
+bet.PS
+
