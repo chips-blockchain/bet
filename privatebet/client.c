@@ -1526,11 +1526,6 @@ void display_cards(cJSON *argjson,struct privatebet_info *bet,struct privatebet_
 	}*/
 	actions=cJSON_GetObjectItem(argjson,"actions");
 	printf("\nActions are:\n");
-	printf("\t\t\t");
-	for(int i=0;i<bet->maxplayers;i++)
-	{
-		printf("Player:%d\t",i);
-	}
 	int count=0;
 	flag=1;
 	for(int i=0;((i<=jint(argjson,"round"))&&(flag));i++)
@@ -1539,7 +1534,7 @@ void display_cards(cJSON *argjson,struct privatebet_info *bet,struct privatebet_
 		for(int j=0;((j<bet->maxplayers)&&(flag));j++)
 		{
 			if(jinti(actions,((i*bet->maxplayers)+j))>0)
-				printf("%s\t",action_str[jinti(actions,((i*bet->maxplayers)+j))]);
+				printf("\nplayed id:%d, action: %s",j,action_str[jinti(actions,((i*bet->maxplayers)+j))]);
 			count++;	
 			if(count==cJSON_GetArraySize(actions))
 					flag=0;
