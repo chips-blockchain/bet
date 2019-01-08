@@ -35,6 +35,7 @@
 // redo unpaid deletes
 //  from external: git submodule add https://github.com/ianlancetaylor/libbacktrace.git
 
+#include "../includes/curl/curl.h"
 
 
 #include "bet.h"
@@ -331,7 +332,13 @@ int main(int argc, char **argv)
 	uint8_t pubkey33[33],taddr=0,pubtype=60; uint32_t i,n,range,numplayers; int32_t testmode=0,pubsock=-1,subsock=-1,pullsock=-1,pushsock=-1; long fsize; 
 	struct privatebet_info *BET_dcv,*BET_bvv,*BET_player;
 	pthread_t dcv_t,bvv_t,player_t;
-    #if 1
+	CURL *curl;
+		curl = curl_easy_init();
+		 	if(curl)
+					{
+								printf("\ncurl initialization is done");
+									}
+    #if 0
 	strcpy(hostip,argv[2]);
     OS_init();
 	libgfshare_init();
