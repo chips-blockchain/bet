@@ -35,7 +35,7 @@
 // redo unpaid deletes
 //  from external: git submodule add https://github.com/ianlancetaylor/libbacktrace.git
 
-#include <includes/curl/curl.h>
+#include "../../curl/include/curl/curl.h"
 
 
 #include "bet.h"

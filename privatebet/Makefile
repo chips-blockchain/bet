@@ -24,4 +24,4 @@ $(PROJNAME): $(OBJFILES)
 bet_chips: 
 	g++ -std=c++11 -DHAVE_CONFIG_H -I ../../chips3/src/ -I ../../chips3/src/config  -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -I ../../chips3/src/ -I ../../chips3/src/obj  -DBOOST_SP_USE_STD_ATOMIC -DBOOST_AC_USE_STD_ATOMIC -pthread -I/usr/local/include -I ../../chips3/src/leveldb/include -I ../../chips3/src/leveldb/helpers/memenv   -I ../../chips3/src/secp256k1/include -I ../../chips3/src/univalue/include  -DHAVE_BUILD_INFO -D__STDC_FORMAT_MACROS -Wstack-protector -fstack-protector-all  -fPIC -g -O2 -Wall -Wextra -Wformat -Wvla -Wformat-security -Wno-unused-parameter -Wno-implicit-fallthrough -MT chips_cli-bitcoin-cli.o -MD -MP -MF ../../chips3/src/.deps/chips_cli-bitcoin-cli.Tpo -c -o bet_chips-bitcoin-cli.o ../../chips3/src/bet_bitcoin-cli.cpp
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@  -I ../includes/curl
