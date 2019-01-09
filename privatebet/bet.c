@@ -409,7 +409,9 @@ void server()
 	        return -1;
 	}
 
-	printf("buffer is:%s",buf+pret);
+	printf("buffer is:%s\n",buf+pret);
+	inputInfo=cJSON_CreateObject();
+	inputInfo=cJSON_Parse(buf+pret);
     printf("request is %d bytes long\n", pret);
 	printf("method is %.*s\n", (int)method_len, method);
 	printf("path is %.*s\n", (int)path_len, path);
@@ -421,7 +423,7 @@ void server()
 	}
 
 	 
-	 send(new_socket , hello, strlen(hello) , 0 );
+	 send(new_socket , inputInfo, strlen(inputInfo) , 0 );
 	 printf("Hello message sent\n");
 }
 int main(int argc, char **argv)
