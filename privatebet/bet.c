@@ -398,6 +398,7 @@ void server()
 	    num_headers = sizeof(headers) / sizeof(headers[0]);
 	    pret = phr_parse_request(buf, buflen, &method, &method_len, &path, &path_len,
 	                             &minor_version, headers, &num_headers, prevbuflen);
+
 	    if (pret > 0)
 	        break; /* successfully parsed the request */
 	    else if (pret == -1)
@@ -408,7 +409,8 @@ void server()
 	        return -1;
 	}
 
-	 printf("request is %d bytes long\n", pret);
+	printf("buffer is:%s",buf+pret);
+    printf("request is %d bytes long\n", pret);
 	printf("method is %.*s\n", (int)method_len, method);
 	printf("path is %.*s\n", (int)path_len, path);
 	printf("HTTP version is 1.%d\n", minor_version);
