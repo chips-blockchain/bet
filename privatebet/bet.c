@@ -423,7 +423,7 @@ void server()
 	}
 
 	 
-	 send(new_socket , inputInfo, strlen(inputInfo) , 0 );
+	 send(new_socket , cJSON_Print(inputInfo), strlen(cJSON_Print(inputInfo)) , 0 );
 	 printf("Hello message sent\n");
 }
 int main(int argc, char **argv)
