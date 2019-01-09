@@ -342,7 +342,7 @@ void server()
 	int addrlen = sizeof(address);
 	char buffer[1024] = {0};
 	char *hello = "Hello from server";
-	
+	cJSON *inputInfo=NULL
 	// Creating socket file descriptor 
 	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
 	{
@@ -379,8 +379,11 @@ void server()
 	 }
 	 valread = read( new_socket , buffer, 1024);
 	 printf("%s\n",buffer );
+
+	 inputInfo=cJSON_CreateObject();
+	 inputInfo=cJSON_Parse(buffer);
 	 
-	 send(new_socket , hello , strlen(hello) , 0 );
+	 send(new_socket , cJSON_Print(inputInfo), strlen(cJSON_Print(inputInfo)) , 0 );
 	 printf("Hello message sent\n");
 }
 int main(int argc, char **argv)
