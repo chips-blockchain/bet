@@ -2025,7 +2025,21 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 	end:
 	return retval;
 }
-
+cJSON* BET_rest_client_join(cJSON *argjson)
+{
+	cJSON *joininfo=NULL;
+	struct pair256 key;
+	char hexstr[65],*rendered=NULL;
+	int bytes;
+	
+	key = deckgen_player(player_info.cardprivkeys,player_info.cardpubkeys,player_info.permis,2);
+	printf("\nPublic Key:%s",bits256_str(hexstr,key.prod));
+	player_info.player_key=key;
+	joininfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(joininfo,"method","join_req");
+	jaddbits256(joininfo,"pubkey",key.prod);
+	return joininfo;
+}
 int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	bits256 playerprivs[CARDS777_MAXCARDS],playercards[CARDS777_MAXCARDS];

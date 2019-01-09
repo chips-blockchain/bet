@@ -421,8 +421,11 @@ void server()
 	    printf("%.*s: %.*s\n", (int)headers[i].name_len, headers[i].name,
 	           (int)headers[i].value_len, headers[i].value);
 	}
-
-	 
+	cJSON *msgjson=NULL;
+	 msgjson=cJSON_CreateObject();
+	cJSON_AddStringToObject(msgjson,"method","join");	
+	printf("\n%s",cJSON_Print(msgjson));
+	 inputInfo=BET_rest_client_join(NULL);
 	 send(new_socket , cJSON_Print(inputInfo), strlen(cJSON_Print(inputInfo)) , 0 );
 	 printf("Hello message sent\n");
 }

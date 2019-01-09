@@ -44,6 +44,7 @@ void BET_p2p_table_info(cJSON *argjson,struct privatebet_info *bet,struct privat
 void display_cards(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
 int32_t BET_player_reset(struct privatebet_info *bet,struct privatebet_vars *vars);
 
-
+/* REST API's */
+cJSON* BET_rest_client_join(cJSON *argjson);
 
 
