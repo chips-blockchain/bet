@@ -343,7 +343,7 @@ void server()
 	int addrlen = sizeof(address);
 	char buffer[1024] = {0};
 	char *hello = "Hello from server";
-	cJSON *inputInfo=NULL
+	cJSON *inputInfo=NULL;
 
 	char buf[4096], *method, *path;
 	int pret, minor_version;
