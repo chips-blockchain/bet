@@ -53,6 +53,7 @@
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <string.h>
+
 #define PORT 8080 
 
 
@@ -402,11 +403,11 @@ void server()
 	    if (pret > 0)
 	        break; /* successfully parsed the request */
 	    else if (pret == -1)
-	        return -1;
+	        return ParseError;
 	    /* request is incomplete, continue the loop */
 	    assert(pret == -2);
 	    if (buflen == sizeof(buf))
-	        return -1;
+	        return RequestIsTooLongError;
 	}
 
 	printf("buffer is:%s\n",buf+pret);
