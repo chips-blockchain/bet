@@ -345,7 +345,7 @@ int32_t get_http_body(char *buf,int buflen,int prevbuflen)
 	pret = phr_parse_request(buf, buflen, &method, &method_len, &path, &path_len,
 							 &minor_version, headers, &num_headers, prevbuflen);
     if (pret > 0)
-        break; /* successfully parsed the request */
+        return pret;
     else if (pret == -1)
     {
        printf("\nParseError");	
@@ -356,7 +356,6 @@ int32_t get_http_body(char *buf,int buflen,int prevbuflen)
     	printf("\nRequestIsTooLongError");
         return -1;
     }	
-	return pret;
 }
 void server()
 {
