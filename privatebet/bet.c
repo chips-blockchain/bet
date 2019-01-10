@@ -334,7 +334,31 @@ int do_bet(double betValue)
 	}
 	return 1;	
 }
-
+int32_t get_http_body(char *buf,int buflen,int prevbuflen)
+{
+	char *method, *path;
+	int pret, minor_version;
+	struct phr_header headers[100];
+	size_t buflen = 0, prevbuflen = 0, method_len, path_len, num_headers;
+	ssize_t rret;
+	/* parse the request */
+	num_headers = sizeof(headers) / sizeof(headers[0]);
+	pret = phr_parse_request(buf, buflen, &method, &method_len, &path, &path_len,
+							 &minor_version, headers, &num_headers, prevbuflen);
+    if (pret > 0)
+        break; /* successfully parsed the request */
+    else if (pret == -1)
+    {
+       printf("\nParseError");	
+       return -1;
+    }
+    if (buflen == sizeof(buf))
+    {
+    	printf("\nRequestIsTooLongError");
+        return -1;
+    }	
+	return pret;
+}
 void server()
 {
 	
@@ -346,10 +370,10 @@ void server()
 	char *hello = "Hello from server";
 	cJSON *inputInfo=NULL;
 
-	char buf[4096], *method, *path;
-	int pret, minor_version;
-	struct phr_header headers[100];
-	size_t buflen = 0, prevbuflen = 0, method_len, path_len, num_headers;
+	char buf[4096];//, *method, *path;
+	int pret;//, minor_version;
+	//struct phr_header headers[100];
+	size_t buflen = 0, prevbuflen = 0;//, method_len, path_len, num_headers;
 	ssize_t rret;
 
 	// Creating socket file descriptor 
@@ -389,12 +413,13 @@ void server()
 
 	 while (1) {
 	    /* read the request */
-	    while ((rret = read(new_socket, buf + buflen, sizeof(buf) - buflen)) == -1 )
-	        ;
+	    while ((rret = read(new_socket, buf + buflen, sizeof(buf) - buflen)) == -1 );
+		
 	    if (rret <= 0)
 	        return -1;
 	    prevbuflen = buflen;
 	    buflen += rret;
+		#if 0
 	    /* parse the request */
 	    num_headers = sizeof(headers) / sizeof(headers[0]);
 	    pret = phr_parse_request(buf, buflen, &method, &method_len, &path, &path_len,
@@ -403,32 +428,22 @@ void server()
 	    if (pret > 0)
 	        break; /* successfully parsed the request */
 	    else if (pret == -1)
-	        return ParseError;
-	    /* request is incomplete, continue the loop */
-	    assert(pret == -2);
+	    {
+	       printf("\nParseError");	
+	       return -1;
+	    }
 	    if (buflen == sizeof(buf))
-	        return RequestIsTooLongError;
+	    {
+	    	printf("\nRequestIsTooLongError");
+	        return -1;
+	    }
+		#endif
+		pret=get_http_body(buf,buflen,prevbuflen);
 	}
-
-	printf("buffer is:%s\n",buf+pret);
 	inputInfo=cJSON_CreateObject();
 	inputInfo=cJSON_Parse(buf+pret);
-    printf("request is %d bytes long\n", pret);
-	printf("method is %.*s\n", (int)method_len, method);
-	printf("path is %.*s\n", (int)path_len, path);
-	printf("HTTP version is 1.%d\n", minor_version);
-	printf("headers:\n");
-	for (int i = 0; i != num_headers; ++i) {
-	    printf("%.*s: %.*s\n", (int)headers[i].name_len, headers[i].name,
-	           (int)headers[i].value_len, headers[i].value);
-	}
-	cJSON *msgjson=NULL;
-	 msgjson=cJSON_CreateObject();
-	cJSON_AddStringToObject(msgjson,"method","join");	
-	printf("\n%s",cJSON_Print(msgjson));
-	 inputInfo=BET_rest_client_join(NULL);
-	 send(new_socket , cJSON_Print(inputInfo), strlen(cJSON_Print(inputInfo)) , 0 );
-	 printf("Hello message sent\n");
+
+	send(new_socket , cJSON_Print(inputInfo), strlen(cJSON_Print(inputInfo)) , 0 );
 }
 int main(int argc, char **argv)
 {
