@@ -334,115 +334,6 @@ int do_bet(double betValue)
 	}
 	return 1;	
 }
-int32_t get_http_body(char *buf,int buflen,int prevbuflen)
-{
-	char *method, *path;
-	int pret, minor_version;
-	struct phr_header headers[100];
-	size_t method_len, path_len, num_headers;
-	/* parse the request */
-	num_headers = sizeof(headers) / sizeof(headers[0]);
-	pret = phr_parse_request(buf, buflen, &method, &method_len, &path, &path_len,
-							 &minor_version, headers, &num_headers, prevbuflen);
-    if (pret > 0)
-        return pret;
-    else if (pret == -1)
-    {
-       printf("\nParseError");	
-       return -1;
-    }
-    if (buflen == sizeof(buf))
-    {
-    	printf("\nRequestIsTooLongError");
-        return -1;
-    }	
-}
-void server()
-{
-	
-	int server_fd, new_socket, valread;
-	struct sockaddr_in address;
-	int opt = 1;
-	int addrlen = sizeof(address);
-	char buffer[1024] = {0};
-	char *hello = "Hello from server";
-	cJSON *inputInfo=NULL;
-
-	char buf[4096];//, *method, *path;
-	int pret;//, minor_version;
-	//struct phr_header headers[100];
-	size_t buflen = 0, prevbuflen = 0;//, method_len, path_len, num_headers;
-	ssize_t rret;
-
-	// Creating socket file descriptor 
-	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
-	{
-			perror("socket failed");
-			exit(EXIT_FAILURE);
-	}
-	
-	// Forcefully attaching socket to the port 8080 
-	if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
-	{
-			perror("setsockopt");
-			exit(EXIT_FAILURE);
-	}
-	address.sin_family = AF_INET;
-	address.sin_addr.s_addr = INADDR_ANY;
-	address.sin_port = htons( PORT );
-	
-	// Forcefully attaching socket to the port 8080 
-	if (bind(server_fd, (struct sockaddr *)&address,sizeof(address))<0)
-	{
-			perror("bind failed");
-			exit(EXIT_FAILURE);
-	}
-	if (listen(server_fd, 3) < 0)
-		
-	{
-			 perror("listen");
-			 exit(EXIT_FAILURE);
-	 }
-	 if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
-	 {
-			 perror("accept");
-			 exit(EXIT_FAILURE);
-	 }
-
-	 while (1) {
-	    /* read the request */
-	    while ((rret = read(new_socket, buf + buflen, sizeof(buf) - buflen)) == -1 );
-		
-	    if (rret <= 0)
-	        return -1;
-	    prevbuflen = buflen;
-	    buflen += rret;
-		#if 0
-	    /* parse the request */
-	    num_headers = sizeof(headers) / sizeof(headers[0]);
-	    pret = phr_parse_request(buf, buflen, &method, &method_len, &path, &path_len,
-	                             &minor_version, headers, &num_headers, prevbuflen);
-
-	    if (pret > 0)
-	        break; /* successfully parsed the request */
-	    else if (pret == -1)
-	    {
-	       printf("\nParseError");	
-	       return -1;
-	    }
-	    if (buflen == sizeof(buf))
-	    {
-	    	printf("\nRequestIsTooLongError");
-	        return -1;
-	    }
-		#endif
-		pret=get_http_body(buf,buflen,prevbuflen);
-	}
-	inputInfo=cJSON_CreateObject();
-	inputInfo=cJSON_Parse(buf+pret);
-
-	send(new_socket , cJSON_Print(inputInfo), strlen(cJSON_Print(inputInfo)) , 0 );
-}
 int main(int argc, char **argv)
 {
     uint16_t tmp,rpcport = 7797,port = 7797+1;
@@ -452,7 +343,7 @@ int main(int argc, char **argv)
 	uint8_t pubkey33[33],taddr=0,pubtype=60; uint32_t i,n,range,numplayers; int32_t testmode=0,pubsock=-1,subsock=-1,pullsock=-1,pushsock=-1; long fsize; 
 	struct privatebet_info *BET_dcv,*BET_bvv,*BET_player;
 	pthread_t dcv_t,bvv_t,player_t;
-	server();
+
 	#if 0
 	CURL *curl;
 	CURLcode res;
@@ -475,7 +366,7 @@ int main(int argc, char **argv)
 			printf("\ncurl initialization is done");
 	}
 	#endif
-    #if 0
+    #if 1
 	strcpy(hostip,argv[2]);
     OS_init();
 	libgfshare_init();
@@ -512,7 +403,7 @@ int main(int argc, char **argv)
 		BET_dcv->turni=-1;
 		BET_dcv->no_of_turns=0;
 	    BET_betinfo_set(BET_dcv,"demo",range,0,Maxplayers);
-	    if ( OS_thread_create(&dcv_t,NULL,(void *)BET_p2p_hostloop,(void *)BET_dcv) != 0 )
+	    if ( OS_thread_create(&dcv_t,NULL,(void *)BET_rest_hostloop,(void *)BET_dcv) != 0 )
 	    {
 	        printf("error launching BET_hostloop for pub.%d pull.%d\n",BET_dcv->pubsock,BET_dcv->pullsock);
 	        exit(-1);

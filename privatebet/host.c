@@ -1729,4 +1729,103 @@ void BET_p2p_hostloop(void *_ptr)
           
     }
 }
+/*
+BET API loop
+*/
+int32_t get_http_body(char *buf,int buflen)
+{
+	char *method, *path;
+	int pret, minor_version;
+	struct phr_header headers[100];
+	size_t method_len, path_len, num_headers;
+	/* parse the request */
+	num_headers = sizeof(headers) / sizeof(headers[0]);
+	pret = phr_parse_request(buf, buflen, &method, &method_len, &path, &path_len,
+							 &minor_version, headers, &num_headers, 0);
+    if (pret > 0)
+        return pret;
+    else if (pret == -1)
+    {
+       printf("\nParseError");	
+       return -1;
+    }
+    if (buflen == sizeof(buf))
+    {
+    	printf("\nRequestIsTooLongError");
+        return -1;
+    }	
+}
+void BET_rest_hostcommand(cJSON * inputInfo,struct privatebet_info * bet,struct privatebet_vars * vars,int socketid)
+{
+	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(inputInfo));
+	send(socketid, cJSON_Print(inputInfo), strlen(cJSON_Print(inputInfo)) , 0 );
+}
+void BET_rest_hostloop(void *_ptr)
+{
+	struct privatebet_info *bet = _ptr; struct privatebet_vars *VARS;
+	int server_fd, new_socket;
+	struct sockaddr_in address;
+	int opt = 1;
+	int addrlen = sizeof(address);
+	cJSON *inputInfo=NULL;
+
+	char buf[4096];
+	int pret;
+	size_t buflen = 0, prevbuflen = 0;
+	ssize_t rret;
+	
+	VARS = calloc(1,sizeof(*VARS));
+	// Creating socket file descriptor 
+	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+	{
+			perror("socket failed");
+			exit(EXIT_FAILURE);
+	}
+	
+	// Forcefully attaching socket to the port 8080 
+	if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
+	{
+			perror("setsockopt");
+			exit(EXIT_FAILURE);
+	}
+	address.sin_family = AF_INET;
+	address.sin_addr.s_addr = INADDR_ANY;
+	address.sin_port = htons( PORT );
+	
+	// Forcefully attaching socket to the port 8080 
+	if (bind(server_fd, (struct sockaddr *)&address,sizeof(address))<0)
+	{
+			perror("bind failed");
+			exit(EXIT_FAILURE);
+	}
+	if (listen(server_fd, 3) < 0)
+		
+	{
+			 perror("listen");
+			 exit(EXIT_FAILURE);
+	 }
+	 if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
+	 {
+			 perror("accept");
+			 exit(EXIT_FAILURE);
+	 }
+
+	 while (1) {
+	 	buflen=0;
+	    if ((rret = read(new_socket, buf + buflen, sizeof(buf) - buflen)) >0 )
+    	{
+			buflen += rret;
+			pret=get_http_body(buf,buflen);
+			if(pret>0)
+			{
+				inputInfo=cJSON_CreateObject();
+				inputInfo=cJSON_Parse(buf+pret);
+				BET_rest_hostcommand(inputInfo,bet,VARS,new_socket);
+			}
+		
+    	}
+	}
+	//send(new_socket , cJSON_Print(inputInfo), strlen(cJSON_Print(inputInfo)) , 0 );
+}
+
 
