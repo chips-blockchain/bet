@@ -1757,6 +1757,12 @@ void BET_rest_hostcommand(cJSON * inputInfo,struct privatebet_info * bet,struct 
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(inputInfo));
 	send(socketid, cJSON_Print(inputInfo), strlen(cJSON_Print(inputInfo)) , 0 );
 }
+
+void BET_rest_hostloop1(void *_ptr)
+{
+	printf("\n%s:%d",__FUNCTION__,__LINE__);
+}
+
 void BET_rest_hostloop(void *_ptr)
 {
 	struct privatebet_info *bet = _ptr; struct privatebet_vars *VARS;
@@ -1770,6 +1776,8 @@ void BET_rest_hostloop(void *_ptr)
 	int pret;
 	size_t buflen = 0, prevbuflen = 0;
 	ssize_t rret;
+
+	pthread_t t;
 	
 	VARS = calloc(1,sizeof(*VARS));
 	// Creating socket file descriptor 
@@ -1795,12 +1803,18 @@ void BET_rest_hostloop(void *_ptr)
 			perror("bind failed");
 			exit(EXIT_FAILURE);
 	}
-	if (listen(server_fd, 3) < 0)
+	int temp;
+	while((temp=listen(server_fd,3))>=0)
+	{
+		printf("\n%s::%d::%d",__FUNCTION__,__LINE__,temp);
+		sleep(2);
 		
+	}
+	if (listen(server_fd, 3) < 0)
 	{
 			 perror("listen");
 			 exit(EXIT_FAILURE);
-	 }
+	}
 	 if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
 	 {
 			 perror("accept");
