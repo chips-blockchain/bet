@@ -25,12 +25,9 @@
 #include "states.h"
 #include "../log/macrologger.h"
 #include "poker.h"
-//bits256 Mypubkey,Myprivkey;
-//int32_t IAMHOST;
-//int32_t Gamestart,Gamestarted;
-//int32_t Lastturni;
-//bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
-//int32_t permis_d[CARDS777_MAXCARDS];
+#include "../picohttpparser/picohttpparser.h"
+
+
 struct privatebet_rawpeerln Rawpeersln[CARDS777_MAXPLAYERS+1],oldRawpeersln[CARDS777_MAXPLAYERS+1];
 struct privatebet_peerln Peersln[CARDS777_MAXPLAYERS+1];
 int32_t Num_rawpeersln,oldNum_rawpeersln,Num_peersln,Numgames;
