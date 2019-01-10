@@ -339,8 +339,7 @@ int32_t get_http_body(char *buf,int buflen,int prevbuflen)
 	char *method, *path;
 	int pret, minor_version;
 	struct phr_header headers[100];
-	size_t buflen = 0, prevbuflen = 0, method_len, path_len, num_headers;
-	ssize_t rret;
+	size_t method_len, path_len, num_headers;
 	/* parse the request */
 	num_headers = sizeof(headers) / sizeof(headers[0]);
 	pret = phr_parse_request(buf, buflen, &method, &method_len, &path, &path_len,
