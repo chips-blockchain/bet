@@ -1808,14 +1808,16 @@ void BET_rest_hostloop(void *_ptr)
 			 perror("listen");
 			 exit(EXIT_FAILURE);
 	}
+	while(1)
+	{
 		if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
 		{
 				perror("accept");
 				exit(EXIT_FAILURE);
 		}
-		printf("\n%s:%d",__FUNCTION__,__LINE__);
+		printf("\n%s:%d\n",__FUNCTION__,__LINE__);
 				
-	
+	}
 	/*
 	 if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
 	 {
