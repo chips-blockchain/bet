@@ -316,6 +316,7 @@ build_dep:
 	make --directory external/jsmn
 	mkdir -p ccan/obj
 build_dep1:
+	make --directory picohttpparser
 	make --directory privatebet
 # Now ALL_PROGRAMS is fully populated, we can expand it.
 all-programs: $(ALL_PROGRAMS)
