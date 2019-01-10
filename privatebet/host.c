@@ -1808,8 +1808,6 @@ void BET_rest_hostloop(void *_ptr)
 			 perror("listen");
 			 exit(EXIT_FAILURE);
 	}
-	while(1)
-	{
 		if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
 		{
 				perror("accept");
@@ -1817,7 +1815,7 @@ void BET_rest_hostloop(void *_ptr)
 		}
 		printf("\n%s:%d",__FUNCTION__,__LINE__);
 				
-	}
+	
 	/*
 	 if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
 	 {
