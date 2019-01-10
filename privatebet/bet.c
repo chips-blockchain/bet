@@ -54,8 +54,6 @@
 #include <netinet/in.h>
 #include <string.h>
 
-#define PORT 8080 
-
 
 bits256 Myprivkey,Mypubkey;
 int32_t IAMHOST;

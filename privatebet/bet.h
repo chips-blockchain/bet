@@ -302,6 +302,7 @@ bits256 deckid;
 bits256 Host_rhashes[256]; int32_t Num_hostrhashes,Chips_paid;
 
 */
+#define PORT 8080 
 
 enum action_type
 {
