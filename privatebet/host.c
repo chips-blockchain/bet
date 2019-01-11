@@ -27,6 +27,8 @@
 #include "poker.h"
 #include "../picohttpparser/picohttpparser.h"
 
+#define MAX_THREADS 10
+
 
 struct privatebet_rawpeerln Rawpeersln[CARDS777_MAXPLAYERS+1],oldRawpeersln[CARDS777_MAXPLAYERS+1];
 struct privatebet_peerln Peersln[CARDS777_MAXPLAYERS+1];
@@ -1760,7 +1762,11 @@ void BET_rest_hostcommand(cJSON * inputInfo,struct privatebet_info * bet,struct 
 
 void BET_rest_hostloop1(void *_ptr)
 {
+	int *socketid=_ptr;
+	char *hello="Hello World";
 	printf("\n%s:%d",__FUNCTION__,__LINE__);
+	send(*socketid, hello, strlen(hello) , 0 );
+
 }
 
 void BET_rest_hostloop(void *_ptr)
@@ -1776,8 +1782,9 @@ void BET_rest_hostloop(void *_ptr)
 	int pret;
 	size_t buflen = 0, prevbuflen = 0;
 	ssize_t rret;
+	int no_of_threads=0;
 
-	pthread_t t;
+	pthread_t t[MAX_THREADS];
 	
 	VARS = calloc(1,sizeof(*VARS));
 	// Creating socket file descriptor 
@@ -1808,14 +1815,40 @@ void BET_rest_hostloop(void *_ptr)
 			 perror("listen");
 			 exit(EXIT_FAILURE);
 	}
-	while(1)
+	while(no_of_threads<MAX_THREADS)
 	{
 		if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
 		{
 				perror("accept");
 				exit(EXIT_FAILURE);
 		}
-		printf("\n%s:%d\n",__FUNCTION__,__LINE__);
+		else
+		{
+			
+			if ( OS_thread_create(&t[no_of_threads++],NULL,(void *)BET_rest_hostloop1,(void *)new_socket) != 0 )
+			{
+				printf("error launching BET_hostloop1\n");
+				exit(-1);
+			}
+			for(int i=0;i<MAX_THREADS;i++)
+			{
+				if(!pthread_join(t[i],NULL))
+					no_of_threads-=1;
+			}
+			printf("\nNumber of threads:%d",no_of_threads);
+			/*
+			if(pthread_join(t,NULL))
+			{
+				printf("\nError in joining the main thread for dcv");
+			}
+			else
+			{
+				no_of_threads-=1;
+				printf("\n no_of_threads:%d",no_of_threads);
+				
+			}
+			*/
+		}
 				
 	}
 	/*
