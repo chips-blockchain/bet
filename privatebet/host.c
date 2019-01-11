@@ -1825,7 +1825,7 @@ void BET_rest_hostloop(void *_ptr)
 		else
 		{
 			
-			if ( OS_thread_create(&t[no_of_threads++],NULL,(void *)BET_rest_hostloop1,(void *)new_socket) != 0 )
+			if ( OS_thread_create(&t[no_of_threads++],NULL,(void *)BET_rest_hostloop1,(void *)&new_socket) != 0 )
 			{
 				printf("error launching BET_hostloop1\n");
 				exit(-1);
