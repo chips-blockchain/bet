@@ -1780,7 +1780,7 @@ void BET_rest_hostcommand(cJSON * inputInfo,struct privatebet_info * bet,struct 
 void BET_rest_hostloop1(void *_ptr)
 {
 	struct privatebet_info * bet;
-	struct privatebet_vars * VARS,
+	struct privatebet_vars * VARS;
 	cJSON *inputInfo=NULL;
 	int *index = (int *)_ptr;
     int err = 0;
