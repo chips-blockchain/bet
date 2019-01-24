@@ -27,7 +27,24 @@
 #include "poker.h"
 #include "../picohttpparser/picohttpparser.h"
 
+#include <pthread.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <string.h>
+#include <netinet/in.h>
+#include <errno.h>
+
+
 #define MAX_THREADS 10
+
+#define MAX_CONNECTION 5
+typedef struct pool
+{
+    int fd;
+    pthread_t tid;
+    int is_allocated;
+}connection_pool_t;
+connection_pool_t connections[MAX_CONNECTION] = {};
 
 
 struct privatebet_rawpeerln Rawpeersln[CARDS777_MAXPLAYERS+1],oldRawpeersln[CARDS777_MAXPLAYERS+1];
@@ -1762,12 +1779,75 @@ void BET_rest_hostcommand(cJSON * inputInfo,struct privatebet_info * bet,struct 
 
 void BET_rest_hostloop1(void *_ptr)
 {
-	int *socketid=_ptr;
-	char *hello="Hello World";
-	printf("\n%s:%d",__FUNCTION__,__LINE__);
-	send(*socketid, hello, strlen(hello) , 0 );
+	struct privatebet_info * bet;
+	struct privatebet_vars * VARS,
+	cJSON *inputInfo=NULL;
+	int *index = (int *)_ptr;
+    int err = 0;
+    char data[1024] = {0};
+	
+	char buf[4096];
+	int pret;
+	size_t buflen = 0, prevbuflen = 0;
+	ssize_t rret;
+
+	while (1) {
+		buflen=0;
+	    if ((rret = read(connections[*index].fd, buf + buflen, sizeof(buf) - buflen)) >0 )
+    	{
+			buflen += rret;
+			pret=get_http_body(buf,buflen);
+			if(pret>0)
+			{
+				inputInfo=cJSON_CreateObject();
+				inputInfo=cJSON_Parse(buf+pret);
+				BET_rest_hostcommand(inputInfo,bet,connections[*index].fd);
+			}
+		
+    	}
+	}
+		 
+    send(connections[*index].fd, "received data", strlen("received data"),0);
+    close(connections[*index].fd);
+    /* time to free t the connection pool index*/
+    connections[*index].is_allocated = 0;
+
 
 }
+ /* to get the not allocated index from connection*/ 
+int get_connection(int **fd , int *index)
+{
+    int i =0;
+    int err = 0;
+    for (i =0; i < MAX_CONNECTION; i++)
+    {
+        if (!connections[i].is_allocated)
+        {
+            *fd = &connections[i].fd;
+            connections[i].is_allocated = 1;
+            *index = i;
+            return 0;
+            
+        }
+    }
+    
+    /* it mean all pool has been exhausted*/
+    return 1;
+}
+ /* fucntion to get the total thread at any point of time*/
+ int get_total_thread()
+ {
+	 int i = 0;
+	 int count = 0;
+	 for (i =0; i < MAX_CONNECTION; i++)
+	 {
+		 if (connections[i].is_allocated)
+		 {
+			 count++;
+		 }
+	 }
+	 return count;
+ }
 
 void BET_rest_hostloop(void *_ptr)
 {
@@ -1793,13 +1873,14 @@ void BET_rest_hostloop(void *_ptr)
 			perror("socket failed");
 			exit(EXIT_FAILURE);
 	}
-	
+	/*
 	// Forcefully attaching socket to the port 8080 
 	if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
 	{
 			perror("setsockopt");
 			exit(EXIT_FAILURE);
 	}
+	*/
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = INADDR_ANY;
 	address.sin_port = htons( PORT );
@@ -1810,7 +1891,7 @@ void BET_rest_hostloop(void *_ptr)
 			perror("bind failed");
 			exit(EXIT_FAILURE);
 	}
-	if (listen(server_fd, 3) < 0)
+	if (listen(server_fd, MAX_THREADS) < 0)
 	{
 			 perror("listen");
 			 exit(EXIT_FAILURE);
@@ -1858,6 +1939,7 @@ void BET_rest_hostloop(void *_ptr)
 			 exit(EXIT_FAILURE);
 	 }
 	*/
+	/*
 	 while (1) {
 	 	buflen=0;
 	    if ((rret = read(new_socket, buf + buflen, sizeof(buf) - buflen)) >0 )
@@ -1872,7 +1954,7 @@ void BET_rest_hostloop(void *_ptr)
 			}
 		
     	}
-	}
+	}*/
 	//send(new_socket , cJSON_Print(inputInfo), strlen(cJSON_Print(inputInfo)) , 0 );
 }
 
