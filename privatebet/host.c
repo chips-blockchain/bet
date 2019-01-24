@@ -1801,7 +1801,7 @@ void BET_rest_hostloop1(void *_ptr)
 			{
 				inputInfo=cJSON_CreateObject();
 				inputInfo=cJSON_Parse(buf+pret);
-				BET_rest_hostcommand(inputInfo,bet,connections[*index].fd);
+				BET_rest_hostcommand(inputInfo,bet,VARS,connections[*index].fd);
 			}
 		
     	}
