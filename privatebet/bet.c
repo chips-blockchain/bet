@@ -381,12 +381,13 @@ int main(int argc, char **argv)
 		
 		#if 1
 		/* This code is for sockets*/
+		/*
 		BET_transportname(0,bindaddr,hostip,port);
 		pubsock = BET_nanosock(1,bindaddr,NN_PUB);
 		
 		BET_transportname(0,bindaddr1,hostip,port+1);
 		pullsock = BET_nanosock(1,bindaddr1,NN_PULL);
-			
+		*/	
 		#endif				  
 
 		BET_dcv=calloc(1,sizeof(struct privatebet_info));

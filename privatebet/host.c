@@ -1790,7 +1790,7 @@ void * thread_function(void * arg)
     return NULL;
 }
 
-void BET_rest_hostloop1(void *_ptr)
+void BET_rest_hostloop1(int fd)
 {
 	struct privatebet_info * bet;
 	struct privatebet_vars * VARS;
@@ -1804,10 +1804,13 @@ void BET_rest_hostloop1(void *_ptr)
 	size_t buflen = 0, prevbuflen = 0;
 	ssize_t rret;
 
+	read(fd,buf,buflen);
+	printf("\n%s:%d::buf:%s\n",__FUNCTION__,__LINE__,buf);
+	/*
 	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
 	while (1) {
 		buflen=0;
-	    if ((rret = read(connections[*index].fd, buf + buflen, sizeof(buf) - buflen)) >0 )
+	    if ((rret = read(fd, buf + buflen, sizeof(buf) - buflen)) >0 )
     	{
 			buflen += rret;
 			printf("\n%s:%d::buf:%s\n",__FUNCTION__,__LINE__,buf);
@@ -1821,13 +1824,7 @@ void BET_rest_hostloop1(void *_ptr)
 		
     	}
 	}
-		 
-    send(connections[*index].fd, "received data", strlen("received data"),0);
-    close(connections[*index].fd);
-    /* time to free t the connection pool index*/
-    connections[*index].is_allocated = 0;
-
-
+	*/
 }
  /* to get the not allocated index from connection*/ 
 int get_connection(int **fd , int *index)
@@ -1888,14 +1885,6 @@ void BET_rest_hostloop(void *_ptr)
 			perror("socket failed");
 			exit(EXIT_FAILURE);
 	}
-	/*
-	// Forcefully attaching socket to the port 8080 
-	if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
-	{
-			perror("setsockopt");
-			exit(EXIT_FAILURE);
-	}
-	*/
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = INADDR_ANY;
 	addr.sin_port = htons( PORT );
@@ -1911,99 +1900,14 @@ void BET_rest_hostloop(void *_ptr)
 			 perror("listen");
 			 exit(EXIT_FAILURE);
 	}
-	#if 0
-	while(no_of_threads<MAX_THREADS)
+	int fd;
+	fd=accept(server_fd,(struct sockaddr *) &addr,(socklen_t *)&addrlen);
+	if(fd<0)
 	{
-		if ((new_socket = accept(server_fd, (struct sockaddr *)&addr, (socklen_t*)&addrlen))<0)
-		{
-				perror("accept");
-				exit(EXIT_FAILURE);
-		}
-		else
-		{
-			
-			if ( OS_thread_create(&t[no_of_threads++],NULL,(void *)thread_function,(void *)&new_socket) != 0 )
-			{
-				printf("error launching BET_hostloop1\n");
-				exit(-1);
-			}
-			for(int i=0;i<MAX_THREADS;i++)
-			{
-				if(!pthread_join(t[i],NULL))
-					no_of_threads-=1;
-			}
-			printf("\nNumber of threads:%d",no_of_threads);
-			/*
-			if(pthread_join(t,NULL))
-			{
-				printf("\nError in joining the main thread for dcv");
-			}
-			else
-			{
-				no_of_threads-=1;
-				printf("\n no_of_threads:%d",no_of_threads);
-				
-			}
-			*/
-		}
-				
+		perror("socket accept failed");
+		exit(EXIT_FAILURE);
+		BET_rest_hostloop1(fd);
 	}
-	/*
-	 if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
-	 {
-			 perror("accept");
-			 exit(EXIT_FAILURE);
-	 }
-	*/
-	#endif
-	for(int i=0;i<MAX_CONNECTION;i++)
-		connections[i].is_allocated=0;
-	while (1)
-    {
-        /* here we need to create the pool of fd and use instead of fd1 , so every time a request come we took a fd from pool*/
-        
-        /* get a fd from connection pool*/
-        int *fd1;
-        int connection_index = -1;
-        err = get_connection(&fd1, &connection_index);
-        /* it mean pool is busy*/
-        if (1 == err)
-        {	printf("\nThe pool is busy");
-            continue;
-        }
-        *fd1 = accept(server_fd,(struct sockaddr *) &addr,(socklen_t *)&addrlen);
-        if (*fd1 < 0)
-        {
-            printf("accept failed: %d", errno);
-            exit(-1);
-        }
-        
-        /* Now create a create so thread can do a read and write to socket*/
-        pthread_t tid;
-		if ( OS_thread_create(&tid,NULL,(void *)thread_function,(void *)&connection_index) != 0 )
-		{
-			printf("error launching BET_hostloop1\n");
-			exit(-1);
-		}
-		connections[connection_index].tid = tid;
-    }
-	/*
-	 while (1) {
-	 	buflen=0;
-	    if ((rret = read(new_socket, buf + buflen, sizeof(buf) - buflen)) >0 )
-    	{
-			buflen += rret;
-			pret=get_http_body(buf,buflen);
-			if(pret>0)
-			{
-				inputInfo=cJSON_CreateObject();
-				inputInfo=cJSON_Parse(buf+pret);
-				BET_rest_hostcommand(inputInfo,bet,VARS,new_socket);
-			}
-		
-    	}
-	}*/
-	//send(new_socket , cJSON_Print(inputInfo), strlen(cJSON_Print(inputInfo)) , 0 );
 }
 
 
