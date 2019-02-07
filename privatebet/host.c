@@ -1806,6 +1806,7 @@ void BET_rest_hostloop1(int fd)
 
 	read(fd,buf,sizeof(buf));
 	printf("\n%s:%d::buf:%s\n",__FUNCTION__,__LINE__,buf);
+	close(fd);
 	/*
 	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
 	while (1) {
@@ -1824,6 +1825,7 @@ void BET_rest_hostloop1(int fd)
 		
     	}
 	}
+	
 	*/
 }
  /* to get the not allocated index from connection*/ 
@@ -1907,7 +1909,10 @@ void BET_rest_hostloop(void *_ptr)
 		perror("socket accept failed");
 		exit(EXIT_FAILURE);
 	}
-	BET_rest_hostloop1(fd);
+	while(1)
+	{
+	`BET_rest_hostloop1(fd);
+	}
 }
 
 
