@@ -1782,6 +1782,7 @@ void * thread_function(void * arg)
     int err = 0;
     char data[1024] = {0};
     read(connections[*index].fd, data, sizeof(data));
+	printf("\n%s:%d::data:%s\n",__FUNCTION__,__LINE__,data);
     send(connections[*index].fd, "received data", strlen("received data"),0);
     close(connections[*index].fd);
     /* time to free t the connection pool index*/
