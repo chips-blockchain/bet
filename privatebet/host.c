@@ -1972,7 +1972,7 @@ void BET_rest_hostloop(void *_ptr)
         if (*fd1 < 0)
         {
             printf("accept failed: %d", errno);
-            goto exit;
+            exit(-1);
         }
         
         /* Now create a create so thread can do a read and write to socket*/
