@@ -1791,12 +1791,13 @@ void BET_rest_hostloop1(void *_ptr)
 	size_t buflen = 0, prevbuflen = 0;
 	ssize_t rret;
 
-	printf("\n%s:%d",__FUNCTION__,__LINE__);
+	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
 	while (1) {
 		buflen=0;
 	    if ((rret = read(connections[*index].fd, buf + buflen, sizeof(buf) - buflen)) >0 )
     	{
 			buflen += rret;
+			printf("\n%s:%d::buf:%s\n",__FUNCTION__,__LINE__,buf);
 			pret=get_http_body(buf,buflen);
 			if(pret>0)
 			{
