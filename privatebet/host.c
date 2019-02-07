@@ -1871,7 +1871,7 @@ void BET_rest_hostloop(void *_ptr)
 	int opt = 1;
 	int addrlen = sizeof(addr);
 	cJSON *inputInfo=NULL;
-
+	int err = 0;
 	char buf[4096];
 	int pret;
 	size_t buflen = 0, prevbuflen = 0;
