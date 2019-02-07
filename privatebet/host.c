@@ -1805,8 +1805,8 @@ void BET_rest_hostloop1(int *fd)
 	ssize_t rret;
 
 	read(*fd,buf,sizeof(buf));
+	read(*fd,buf,sizeof(buf),0);
 	printf("\n%s:%d::buf:%s\n",__FUNCTION__,__LINE__,buf);
-	close(*fd);
 	/*
 	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
 	while (1) {
