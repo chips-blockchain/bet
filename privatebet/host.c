@@ -1803,10 +1803,19 @@ void BET_rest_hostloop1(int *fd)
 	int pret;
 	size_t buflen = 0, prevbuflen = 0;
 	ssize_t rret;
-
-	read(*fd,buf,sizeof(buf));
-	send(*fd,buf,sizeof(buf),0);
-	printf("\n%s:%d::buf:%s\n",__FUNCTION__,__LINE__,buf);
+	while(1)
+	{
+		if((rret = read(*fd,buf,sizeof(buf)))>0)
+		{
+			printf("\n%s:%d::buf:%s\n",__FUNCTION__,__LINE__,buf);
+			send(*fd,buf,sizeof(buf),0);		
+		}
+		else 
+			continue;
+	}
+	//read(*fd,buf,sizeof(buf));
+	//send(*fd,buf,sizeof(buf),0);
+	//printf("\n%s:%d::buf:%s\n",__FUNCTION__,__LINE__,buf);
 	/*
 	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
 	while (1) {
