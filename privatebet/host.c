@@ -1776,6 +1776,18 @@ void BET_rest_hostcommand(cJSON * inputInfo,struct privatebet_info * bet,struct 
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(inputInfo));
 	send(socketid, cJSON_Print(inputInfo), strlen(cJSON_Print(inputInfo)) , 0 );
 }
+void * thread_function(void * arg)
+{
+    int *index = (int *)arg;
+    int err = 0;
+    char data[1024] = {0};
+    read(connections[*index].fd, data, sizeof(data));
+    send(connections[*index].fd, "received data", strlen("received data"),0);
+    close(connections[*index].fd);
+    /* time to free t the connection pool index*/
+    connections[*index].is_allocated = 0;
+    return NULL;
+}
 
 void BET_rest_hostloop1(void *_ptr)
 {
@@ -1855,9 +1867,9 @@ void BET_rest_hostloop(void *_ptr)
 {
 	struct privatebet_info *bet = _ptr; struct privatebet_vars *VARS;
 	int server_fd, new_socket;
-	struct sockaddr_in address;
+	struct sockaddr_in addr;
 	int opt = 1;
-	int addrlen = sizeof(address);
+	int addrlen = sizeof(addr);
 	cJSON *inputInfo=NULL;
 
 	char buf[4096];
@@ -1883,12 +1895,12 @@ void BET_rest_hostloop(void *_ptr)
 			exit(EXIT_FAILURE);
 	}
 	*/
-	address.sin_family = AF_INET;
-	address.sin_addr.s_addr = INADDR_ANY;
-	address.sin_port = htons( PORT );
+	addr.sin_family = AF_INET;
+	addr.sin_addr.s_addr = INADDR_ANY;
+	addr.sin_port = htons( PORT );
 	
 	// Forcefully attaching socket to the port 8080 
-	if (bind(server_fd, (struct sockaddr *)&address,sizeof(address))<0)
+	if (bind(server_fd, (struct sockaddr *)&addr,sizeof(addr))<0)
 	{
 			perror("bind failed");
 			exit(EXIT_FAILURE);
@@ -1898,9 +1910,10 @@ void BET_rest_hostloop(void *_ptr)
 			 perror("listen");
 			 exit(EXIT_FAILURE);
 	}
+	#if 0
 	while(no_of_threads<MAX_THREADS)
 	{
-		if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
+		if ((new_socket = accept(server_fd, (struct sockaddr *)&addr, (socklen_t*)&addrlen))<0)
 		{
 				perror("accept");
 				exit(EXIT_FAILURE);
@@ -1908,7 +1921,7 @@ void BET_rest_hostloop(void *_ptr)
 		else
 		{
 			
-			if ( OS_thread_create(&t[no_of_threads++],NULL,(void *)BET_rest_hostloop1,(void *)&new_socket) != 0 )
+			if ( OS_thread_create(&t[no_of_threads++],NULL,(void *)thread_function,(void *)&new_socket) != 0 )
 			{
 				printf("error launching BET_hostloop1\n");
 				exit(-1);
@@ -1941,6 +1954,36 @@ void BET_rest_hostloop(void *_ptr)
 			 exit(EXIT_FAILURE);
 	 }
 	*/
+	#endif
+	while (1)
+    {
+        /* here we need to create the pool of fd and use instead of fd1 , so every time a request come we took a fd from pool*/
+        
+        /* get a fd from connection pool*/
+        int *fd1;
+        int connection_index = -1;
+        err = get_connection(&fd1, &connection_index);
+        /* it mean pool is busy*/
+        if (1 == err)
+        {
+            continue;
+        }
+        *fd1 = accept(server_fd,(struct sockaddr *) &addr,(socklen_t *)&addrlen);
+        if (*fd1 < 0)
+        {
+            printf("accept failed: %d", errno);
+            goto exit;
+        }
+        
+        /* Now create a create so thread can do a read and write to socket*/
+        pthread_t tid;
+		if ( OS_thread_create(&tid,NULL,(void *)thread_function,(void *)&connection_index) != 0 )
+		{
+			printf("error launching BET_hostloop1\n");
+			exit(-1);
+		}
+		connections[connection_index].tid = tid;
+    }
 	/*
 	 while (1) {
 	 	buflen=0;
