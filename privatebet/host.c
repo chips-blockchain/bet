@@ -1795,7 +1795,7 @@ void BET_rest_hostloop1(int fd)
 	struct privatebet_info * bet;
 	struct privatebet_vars * VARS;
 	cJSON *inputInfo=NULL;
-	int *index = (int *)_ptr;
+	//int *index = (int *)_ptr;
     int err = 0;
     char data[1024] = {0};
 	
