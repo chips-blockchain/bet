@@ -1906,8 +1906,8 @@ void BET_rest_hostloop(void *_ptr)
 	{
 		perror("socket accept failed");
 		exit(EXIT_FAILURE);
-		BET_rest_hostloop1(fd);
 	}
+	BET_rest_hostloop1(fd);
 }
 
 
