@@ -1790,7 +1790,7 @@ void * thread_function(void * arg)
     return NULL;
 }
 
-void BET_rest_hostloop1(int fd)
+void BET_rest_hostloop1(int *fd)
 {
 	struct privatebet_info * bet;
 	struct privatebet_vars * VARS;
@@ -1804,9 +1804,9 @@ void BET_rest_hostloop1(int fd)
 	size_t buflen = 0, prevbuflen = 0;
 	ssize_t rret;
 
-	read(fd,buf,sizeof(buf));
+	read(*fd,buf,sizeof(buf));
 	printf("\n%s:%d::buf:%s\n",__FUNCTION__,__LINE__,buf);
-	close(fd);
+	close(*fd);
 	/*
 	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
 	while (1) {
@@ -1902,16 +1902,19 @@ void BET_rest_hostloop(void *_ptr)
 			 perror("listen");
 			 exit(EXIT_FAILURE);
 	}
-	int fd;
-	fd=accept(server_fd,(struct sockaddr *) &addr,(socklen_t *)&addrlen);
-	if(fd<0)
-	{
-		perror("socket accept failed");
-		exit(EXIT_FAILURE);
-	}
+	
 	while(1)
 	{
-		BET_rest_hostloop1(fd);
+		int fd;
+		fd=accept(server_fd,(struct sockaddr *) &addr,(socklen_t *)&addrlen);
+		if(fd<0)
+		{
+			perror("socket accept failed");
+			exit(EXIT_FAILURE);
+		}
+		BET_rest_hostloop1(&fd);
+		close(fd);
+		
 	}
 }
 
