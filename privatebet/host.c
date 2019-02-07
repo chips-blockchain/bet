@@ -1911,7 +1911,7 @@ void BET_rest_hostloop(void *_ptr)
 	}
 	while(1)
 	{
-	`BET_rest_hostloop1(fd);
+		BET_rest_hostloop1(fd);
 	}
 }
 
