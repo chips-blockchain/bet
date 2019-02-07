@@ -1956,6 +1956,8 @@ void BET_rest_hostloop(void *_ptr)
 	 }
 	*/
 	#endif
+	for(int i=0;i<MAX_CONNECTION;i++)
+		connections[i].is_allocated=0;
 	while (1)
     {
         /* here we need to create the pool of fd and use instead of fd1 , so every time a request come we took a fd from pool*/
@@ -1966,7 +1968,7 @@ void BET_rest_hostloop(void *_ptr)
         err = get_connection(&fd1, &connection_index);
         /* it mean pool is busy*/
         if (1 == err)
-        {
+        {	printf("\nThe pool is busy");
             continue;
         }
         *fd1 = accept(server_fd,(struct sockaddr *) &addr,(socklen_t *)&addrlen);
