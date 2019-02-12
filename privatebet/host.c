@@ -1808,7 +1808,7 @@ void BET_rest_hostloop1(int *fd)
 		if((rret = read(*fd,buf,sizeof(buf)))>0)
 		{
 			printf("\n%s:%d::buf:%s\n",__FUNCTION__,__LINE__,buf);
-			send(*fd,buf,sizeof(buf),0);		
+			send(*fd,"{chat : hi}",sizeof("{chat : hi}"),0);		
 		}
 		else 
 			continue;
