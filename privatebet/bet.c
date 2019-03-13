@@ -402,7 +402,7 @@ int main(int argc, char **argv)
 		BET_dcv->turni=-1;
 		BET_dcv->no_of_turns=0;
 	    BET_betinfo_set(BET_dcv,"demo",range,0,Maxplayers);
-	    if ( OS_thread_create(&dcv_t,NULL,(void *)BET_rest_hostloop,(void *)BET_dcv) != 0 )
+	    if ( OS_thread_create(&dcv_t,NULL,(void *)BET_ws_dcvloop,(void *)BET_dcv) != 0 )
 	    {
 	        printf("error launching BET_hostloop for pub.%d pull.%d\n",BET_dcv->pubsock,BET_dcv->pullsock);
 	        exit(-1);
