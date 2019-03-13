@@ -1984,9 +1984,6 @@ void BET_ws_dcvloop(void *_ptr)
 
 	signal(SIGINT, sigint_handler);
 
-	if ((p = lws_cmdline_option(argc, argv, "-d")))
-		logs = atoi(p);
-
 	lws_set_log_level(logs, NULL);
 	lwsl_user("LWS minimal ws broker | visit http://localhost:7681\n");
 
