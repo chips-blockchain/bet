@@ -58,9 +58,11 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
         {
                 case LWS_CALLBACK_RECEIVE:
                         printf("%s:%d:%s: LWS_CALLBACK_RECEIVE\n",__FUNCTION__,__LINE__,buf);
+						argjson=cJSON_CreateObject();
 						argjson=cJSON_Parse(buf);
 						cJSON_Print(argjson);
-						
+						printf("\nchat::%s",jstr(argjson,"chat"));
+						printf("\n");
                         lws_write(wsi,in,len,0);
                         break;
                 default:
