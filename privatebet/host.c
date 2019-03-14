@@ -2009,7 +2009,7 @@ void BET_ws_dcvloop(void *_ptr)
 	lwsl_user("LWS minimal ws broker | visit http://localhost:7681\n");
 
 	memset(&info, 0, sizeof info); /* otherwise uninitialized garbage */
-	info.port = 7681;
+	info.port = 9000;
 	info.mounts = &mount;
 	info.protocols = protocols;
 	info.options =
