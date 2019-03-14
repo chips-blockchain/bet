@@ -42,6 +42,9 @@
 #define LWS_PLUGIN_STATIC
 #include "protocol_lws_minimal.c"
 
+
+
+
 int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
                         void *user, void *in, size_t len)
 {
@@ -50,11 +53,14 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
         buf=(char*)malloc(len);
         strncpy(buf,in,len);
         printf("\n%s:reason::%d,len::%d\n",__FUNCTION__,(int)reason,(int)len);
-
+		cJSON *argjson=NULL;
         switch(reason)
         {
                 case LWS_CALLBACK_RECEIVE:
                         printf("%s:%d:%s: LWS_CALLBACK_RECEIVE\n",__FUNCTION__,__LINE__,buf);
+						argjson=cJSON_Parse(buf);
+						cJSON_Print(argjson);
+						
                         lws_write(wsi,in,len,0);
                         break;
                 default:
