@@ -37,7 +37,7 @@
 #if 1 //this is for websockets
 #include <libwebsockets.h>
 #include <string.h>
-#include <signal.h>
+
 
 #define LWS_PLUGIN_STATIC
 #include "protocol_lws_minimal.c"
@@ -1982,7 +1982,6 @@ void BET_ws_dcvloop(void *_ptr)
 			/* | LLL_EXT */ /* | LLL_CLIENT */ /* | LLL_LATENCY */
 			/* | LLL_DEBUG */;
 
-	signal(SIGINT, sigint_handler);
 
 	lws_set_log_level(logs, NULL);
 	lwsl_user("LWS minimal ws broker | visit http://localhost:7681\n");
