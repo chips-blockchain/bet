@@ -42,6 +42,28 @@
 #define LWS_PLUGIN_STATIC
 #include "protocol_lws_minimal.c"
 
+int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
+                        void *user, void *in, size_t len)
+{
+        int ret_val,ret_len;
+        char *buf=NULL;
+        buf=(char*)malloc(len);
+        strncpy(buf,in,len);
+        printf("\n%s:reason::%d,len::%d\n",__FUNCTION__,(int)reason,(int)len);
+
+        switch(reason)
+        {
+                case LWS_CALLBACK_RECEIVE:
+                        printf("%s:%d:%s: LWS_CALLBACK_RECEIVE\n",__FUNCTION__,__LINE__,buf);
+                        lws_write(wsi,in,len,0);
+                        break;
+                default:
+                        printf("At default case\n");
+        }
+        return 0;
+}
+
+
 static struct lws_protocols protocols[] = {
 	{ "http", lws_callback_http_dummy, 0, 0 },
 	LWS_PLUGIN_PROTOCOL_MINIMAL,
