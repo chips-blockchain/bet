@@ -1703,7 +1703,8 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		else if(strcmp(method, "dealer_ready") == 0)
 		{
 			retval=BET_p2p_dcv_turn(argjson,bet,vars);
-		}
+		
+}
 		else if(strcmp(method,"playerCardInfo") == 0)
 		{
 				retval = BET_receive_card(argjson,bet,vars);
@@ -2010,7 +2011,6 @@ void BET_ws_dcvloop(void *_ptr)
 
 	memset(&info, 0, sizeof info); /* otherwise uninitialized garbage */
 	info.port = 9000;
-	info.iface="159.69.23.28";
 	info.mounts = &mount;
 	info.protocols = protocols;
 	info.options =
