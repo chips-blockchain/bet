@@ -71,9 +71,10 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 						gameInfo=cJSON_CreateObject();
 						cJSON_AddItemToObject(gameInfo,"game",gameDetails);
 
-						printf("\nGame Info:%s\n",cJSON_str(gameInfo));
+						printf("\nGame Info:%s\n",cJSON_Print(gameDetails));
+						printf("\nGame Info:%s\n",cJSON_Print(gameInfo));
 						
-                        lws_write(wsi,in,len,0);
+                        lws_write(wsi,cJSON_Print(gameInfo),strlen(cJSON_Print(gameInfo)),0);
                         break;
                 default:
                         printf("At default case\n");
