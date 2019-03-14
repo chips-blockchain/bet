@@ -2010,6 +2010,7 @@ void BET_ws_dcvloop(void *_ptr)
 
 	memset(&info, 0, sizeof info); /* otherwise uninitialized garbage */
 	info.port = 9000;
+	info.iface="159.69.23.28";
 	info.mounts = &mount;
 	info.protocols = protocols;
 	info.options =
