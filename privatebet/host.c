@@ -53,7 +53,7 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
         buf=(char*)malloc(len);
         strncpy(buf,in,len);
         printf("\n%s:reason::%d,len::%d\n",__FUNCTION__,(int)reason,(int)len);
-		cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL;
+		cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
         switch(reason)
         {
                 case LWS_CALLBACK_RECEIVE:
@@ -66,14 +66,12 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 
 						gameDetails=cJSON_CreateObject();
 						cJSON_AddNumberToObject(gameDetails,"tocall",0);
-						cJSON_AddNumberToObject(gameDetails,"pot",0);
+						potInfo=cJSON_CreateArray();
+						cJSON_AddItemToArray(potInfo,cJSON_CreateNumber(0));
+						cJSON_AddItemToObject(gameDetails,"pot",potInfo);
 						cJSON_AddStringToObject(gameDetails,"gametype","NL Hold'em<br>Blinds: 3/6");
 						gameInfo=cJSON_CreateObject();
 						cJSON_AddItemToObject(gameInfo,"game",gameDetails);
-
-						printf("\nGame Info:%s\n",cJSON_Print(gameDetails));
-						printf("\nGame Info:%s\n",cJSON_Print(gameInfo));
-						
                         lws_write(wsi,cJSON_Print(gameInfo),strlen(cJSON_Print(gameInfo)),0);
                         break;
                 default:
