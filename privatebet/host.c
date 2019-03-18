@@ -111,6 +111,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 {
 
 	int retval=-1;
+	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
 	if(strcmp(jstr(argjson,"method"),"game") == 0)	
 	{
 		retval=BET_rest_game(wsi,argjson);
@@ -119,9 +120,11 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	{
 		retval=BET_rest_seats(wsi,argjson);
 	}
-	else
+	else if(strcmp(jstr(argjson,"method"),"action") == 0)	
 	{
+		cJSON_Print(argjson);
 		retval=BET_rest_default(wsi,argjson);
+		printf("\n");
 	}
 	return 0;
 }
