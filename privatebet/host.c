@@ -42,7 +42,16 @@
 #define LWS_PLUGIN_STATIC
 #include "protocol_lws_minimal.c"
 
-//{"seats": [{"name": "espasasp4", "seat": 0, "stack": 563.67, "empty": 0, "playing": 1}]}
+
+
+int32_t BET_rest_default(struct lws *wsi, cJSON *argjson)
+{
+	cJSON *defaultInfo=NULL;
+	defaultInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(defaultInfo,"other","No method found in the back end for the action");
+	lws_write(wsi,cJSON_Print(defaultInfo),strlen(cJSON_Print(defaultInfo)));
+	return 0;
+}
 
 int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 {
@@ -109,6 +118,10 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	else if(strcmp(jstr(argjson,"method"),"seats") == 0)
 	{
 		retval=BET_rest_seats(wsi,argjson);
+	}
+	else
+	{
+		retval=BET_rest_default(wsi,argjson);
 	}
 	return 0;
 }
