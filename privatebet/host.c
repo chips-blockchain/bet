@@ -58,6 +58,16 @@ int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 	seatsInfo=cJSON_CreateArray();
 	cJSON_AddItemToArray(seatsInfo,seatInfo);
 
+	
+	seatInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(seatInfo,"name","player2");
+	cJSON_AddNumberToObject(seatInfo,"seat",1);
+	cJSON_AddNumberToObject(seatInfo,"stack",563.67);
+	cJSON_AddNumberToObject(seatInfo,"empty",0);
+	cJSON_AddNumberToObject(seatInfo,"playing",1);
+
+	cJSON_AddItemToArray(seatsInfo,seatInfo);
+
 	tableInfo=cJSON_CreateObject();
 	cJSON_AddItemToObject(tableInfo,"seats",seatsInfo);
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(tableInfo));
@@ -73,7 +83,8 @@ int32_t BET_rest_game(struct lws *wsi, cJSON *argjson)
 	
 	gameDetails=cJSON_CreateObject();
 	cJSON_AddNumberToObject(gameDetails,"tocall",0);
-
+	cJSON_AddNumberToObject(gameDetails,"seats",2);
+	
 	potInfo=cJSON_CreateArray();
 	cJSON_AddItemToArray(potInfo,cJSON_CreateNumber(0));
 
