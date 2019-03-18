@@ -49,7 +49,7 @@ int32_t BET_rest_default(struct lws *wsi, cJSON *argjson)
 	cJSON *defaultInfo=NULL;
 	defaultInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(defaultInfo,"other","No method found in the back end for the action");
-	lws_write(wsi,cJSON_Print(defaultInfo),strlen(cJSON_Print(defaultInfo)));
+	lws_write(wsi,cJSON_Print(defaultInfo),strlen(cJSON_Print(defaultInfo)),0);
 	return 0;
 }
 
