@@ -34,7 +34,7 @@ void BET_ws_dcvloop(void * _ptr);
 /*
 REST API's starts from here
 */
-
+int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson);
 int32_t BET_rest_game(struct lws *wsi, cJSON *argjson);
 int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson);
 

@@ -42,6 +42,31 @@
 #define LWS_PLUGIN_STATIC
 #include "protocol_lws_minimal.c"
 
+//{"seats": [{"name": "espasasp4", "seat": 0, "stack": 563.67, "empty": 0, "playing": 1}]}
+
+int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
+{
+	cJSON *tableInfo=NULL,*seatInfo=NULL,*seatsInfo=NULL;
+
+	seatInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(seatInfo,"name","player1");
+	cJSON_AddNumberToObject(seatInfo,"seat",0);
+	cJSON_AddNumberToObject(seatInfo,"stack",563.67);
+	cJSON_AddNumberToObject(seatInfo,"empty",0);
+	cJSON_AddNumberToObject(seatInfo,"playing",1);
+
+	seatsInfo=cJSON_CreateArray();
+	cJSON_AddItemToArray(seatsInfo,seatInfo);
+
+	tableInfo=cJSON_CreateObject();
+	cJSON_AddItemToObject(tableInfo,"seats",seatsInfo);
+	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(tableInfo));
+	lws_write(wsi,cJSON_Print(tableInfo),strlen(cJSON_Print(tableInfo)),0);
+	return 0;
+	
+}
+
+
 int32_t BET_rest_game(struct lws *wsi, cJSON *argjson)
 {
 	cJSON *gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
@@ -69,6 +94,10 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	if(strcmp(jstr(argjson,"method"),"game") == 0)	
 	{
 		retval=BET_rest_game(wsi,argjson);
+	}
+	else if(strcmp(jstr(argjson,"method"),"seats") == 0)
+	{
+		retval=BET_rest_seats(wsi,argjson);
 	}
 	return 0;
 }
