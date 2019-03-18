@@ -53,6 +53,15 @@ int32_t BET_rest_default(struct lws *wsi, cJSON *argjson)
 	return 0;
 }
 
+int32_t BET_rest_chat(struct lws *wsi, cJSON *argjson)
+{
+	cJSON *chatInfo=NULL;
+	chatInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(chatInfo,"chat",jstr(argjson,"value"));
+	lws_write(wsi,cJSON_Print(chatInfo),strlen(cJSON_Print(chatInfo)),0);
+	return 0;
+}
+
 int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 {
 	cJSON *tableInfo=NULL,*seatInfo=NULL,*seatsInfo=NULL;
@@ -120,12 +129,17 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	{
 		retval=BET_rest_seats(wsi,argjson);
 	}
+	else if(strcmp(jstr(argjson,"method"),"chat") == 0)
+	{
+		retval=	BET_rest_chat(wsi,argjson);
+	}
 	else if(strcmp(jstr(argjson,"method"),"action") == 0)	
 	{
 		cJSON_Print(argjson);
 		retval=BET_rest_default(wsi,argjson);
 		printf("\n");
 	}
+
 	return 0;
 }
 
