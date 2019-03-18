@@ -1,3 +1,4 @@
+#include <libwebsockets.h>
 struct privatebet_peerln *BET_peerln_find(char *peerid);
 struct privatebet_peerln *BET_peerln_create(struct privatebet_rawpeerln *raw,int32_t maxplayers,int32_t maxchips,int32_t chipsize);
 int32_t BET_host_join(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
@@ -30,7 +31,11 @@ void BET_rest_hostloop(void * _ptr);
 void BET_ws_dcvloop(void * _ptr);
 
 
+/*
+REST API's starts from here
+*/
 
-
+int32_t BET_rest_game(struct lws *wsi, cJSON *argjson);
+int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson);
 
 

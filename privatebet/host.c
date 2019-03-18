@@ -35,13 +35,43 @@
 #include <errno.h>
 
 #if 1 //this is for websockets
-#include <libwebsockets.h>
+
 #include <string.h>
 
 
 #define LWS_PLUGIN_STATIC
 #include "protocol_lws_minimal.c"
 
+int32_t BET_rest_game(struct lws *wsi, cJSON *argjson)
+{
+	cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
+	
+	gameDetails=cJSON_CreateObject();
+	cJSON_AddNumberToObject(gameDetails,"tocall",0);
+
+	potInfo=cJSON_CreateArray();
+	cJSON_AddItemToArray(potInfo,cJSON_CreateNumber(0));
+
+	cJSON_AddItemToObject(gameDetails,"pot",potInfo);
+	cJSON_AddStringToObject(gameDetails,"gametype","NL Hold'em<br>Blinds: 3/6");
+
+	gameInfo=cJSON_CreateObject();
+	cJSON_AddItemToObject(gameInfo,"game",gameDetails);
+
+	lws_write(wsi,cJSON_Print(gameInfo),strlen(cJSON_Print(gameInfo)),0);
+	return 0;
+		
+}
+int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
+{
+
+	int retval=-1;
+	if(strcmp(jstr(argjson,"method"),"game") == 0)	
+	{
+		retval=BET_rest_game(wsi,argjson);
+	}
+	return 0;
+}
 
 
 
@@ -60,10 +90,12 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
                         printf("%s:%d:%s: LWS_CALLBACK_RECEIVE\n",__FUNCTION__,__LINE__,buf);
 						argjson=cJSON_CreateObject();
 						argjson=cJSON_Parse(buf);
+						if ( BET_process_rest_method(wsi,argjson) != 0 )
+						{
+							printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
+						}
+						/*
 						cJSON_Print(argjson);
-						printf("\nchat::%s",jstr(argjson,"chat"));
-
-
 						gameDetails=cJSON_CreateObject();
 						cJSON_AddNumberToObject(gameDetails,"tocall",0);
 						potInfo=cJSON_CreateArray();
@@ -73,6 +105,7 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 						gameInfo=cJSON_CreateObject();
 						cJSON_AddItemToObject(gameInfo,"game",gameDetails);
                         lws_write(wsi,cJSON_Print(gameInfo),strlen(cJSON_Print(gameInfo)),0);
+                        */
                         break;
                 default:
                         printf("At default case\n");
