@@ -43,6 +43,7 @@
 #include "protocol_lws_minimal.c"
 
 
+int global_test_variable=0;
 
 int32_t BET_rest_default(struct lws *wsi, cJSON *argjson)
 {
@@ -158,7 +159,7 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
         switch(reason)
         {
                 case LWS_CALLBACK_RECEIVE:
-                        printf("%s:%d:%s: LWS_CALLBACK_RECEIVE :: test_variable:%d\n",__FUNCTION__,__LINE__,buf,test_variable);
+                        printf("%s:%d:%s: LWS_CALLBACK_RECEIVE :: test_variable::%d, global_test_variable::%d\n",__FUNCTION__,__LINE__,buf,test_variable++,global_test_variable++);
 						argjson=cJSON_CreateObject();
 						argjson=cJSON_Parse(buf);
 						while( BET_process_rest_method(wsi,argjson) != 0 )
