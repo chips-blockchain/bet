@@ -42,7 +42,44 @@
 #define LWS_PLUGIN_STATIC
 #include "protocol_lws_minimal.c"
 
+#define MAX_THREADS 10
 
+#define MAX_CONNECTION 5
+typedef struct pool
+{
+    int fd;
+    pthread_t tid;
+    int is_allocated;
+}connection_pool_t;
+connection_pool_t connections[MAX_CONNECTION] = {};
+
+
+struct privatebet_rawpeerln Rawpeersln[CARDS777_MAXPLAYERS+1],oldRawpeersln[CARDS777_MAXPLAYERS+1];
+struct privatebet_peerln Peersln[CARDS777_MAXPLAYERS+1];
+int32_t Num_rawpeersln,oldNum_rawpeersln,Num_peersln,Numgames;
+int32_t players_joined=0;
+int32_t turn=0,no_of_cards=0,no_of_rounds=0,no_of_bets=0;
+int32_t card_matrix[CARDS777_MAXPLAYERS][hand_size];
+int32_t card_values[CARDS777_MAXPLAYERS][hand_size];
+int32_t all_player_cards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
+struct deck_dcv_info dcv_info;
+int32_t player_ready[CARDS777_MAXPLAYERS];
+int32_t hole_cards_drawn=0,community_cards_drawn=0,flop_cards_drawn=0,turn_card_drawn=0,river_card_drawn=0;
+int32_t bet_amount[CARDS777_MAXPLAYERS][CARDS777_MAXROUNDS];
+int32_t eval_game_p[CARDS777_MAXPLAYERS],eval_game_c[CARDS777_MAXPLAYERS];
+
+
+
+int32_t invoiceID;
+char* suit[NSUITS]= {"hearts","spades","clubs","diamonds"};
+char* face[NFACES]= {"ace","two","three","four","five","six","seven","eight","nine",
+                     "ten","jack","queen","king"
+                    };
+
+
+/*
+Below are the API's which are written to support REST
+*/
 int32_t BET_rest_dcv(struct lws *wsi, cJSON *argjson)
 {
 	cJSON *dcvInfo=NULL;
@@ -52,7 +89,7 @@ int32_t BET_rest_dcv(struct lws *wsi, cJSON *argjson)
 	jaddbits256(dcvInfo,"deckid",dcv_info.deckid);
 	jaddbits256(dcvInfo,"pubkey",dcv_info.dcv_key.prod);
 	cJSON_AddStringToObject(dcvInfo,"default",cJSON_Print(dcvInfo));
-	lws_write(wsi,cJSON_Print(dcvInfo),strlen(cJSON_Print(dcvInfo)));
+	lws_write(wsi,cJSON_Print(dcvInfo),strlen(cJSON_Print(dcvInfo)),0);
 	return 0;
 }
 int32_t BET_rest_default(struct lws *wsi, cJSON *argjson)
@@ -217,41 +254,6 @@ void sigint_handler(int sig)
 }
 
 #endif
-
-#define MAX_THREADS 10
-
-#define MAX_CONNECTION 5
-typedef struct pool
-{
-    int fd;
-    pthread_t tid;
-    int is_allocated;
-}connection_pool_t;
-connection_pool_t connections[MAX_CONNECTION] = {};
-
-
-struct privatebet_rawpeerln Rawpeersln[CARDS777_MAXPLAYERS+1],oldRawpeersln[CARDS777_MAXPLAYERS+1];
-struct privatebet_peerln Peersln[CARDS777_MAXPLAYERS+1];
-int32_t Num_rawpeersln,oldNum_rawpeersln,Num_peersln,Numgames;
-int32_t players_joined=0;
-int32_t turn=0,no_of_cards=0,no_of_rounds=0,no_of_bets=0;
-int32_t card_matrix[CARDS777_MAXPLAYERS][hand_size];
-int32_t card_values[CARDS777_MAXPLAYERS][hand_size];
-int32_t all_player_cards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
-struct deck_dcv_info dcv_info;
-int32_t player_ready[CARDS777_MAXPLAYERS];
-int32_t hole_cards_drawn=0,community_cards_drawn=0,flop_cards_drawn=0,turn_card_drawn=0,river_card_drawn=0;
-int32_t bet_amount[CARDS777_MAXPLAYERS][CARDS777_MAXROUNDS];
-int32_t eval_game_p[CARDS777_MAXPLAYERS],eval_game_c[CARDS777_MAXPLAYERS];
-
-
-
-int32_t invoiceID;
-char* suit[NSUITS]= {"hearts","spades","clubs","diamonds"};
-char* face[NFACES]= {"ace","two","three","four","five","six","seven","eight","nine",
-                     "ten","jack","queen","king"
-                    };
-
 
 struct privatebet_peerln *BET_peerln_find(char *peerid)
 {
