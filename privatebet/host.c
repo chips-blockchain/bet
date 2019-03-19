@@ -183,9 +183,19 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	}
 	else if(strcmp(jstr(argjson,"method"),"action") == 0)	
 	{
-		cJSON_Print(argjson);
 		retval=BET_rest_default(wsi,argjson);
-		printf("\n");
+	}	
+	else if(strcmp(jstr(argjson,"method"),"dcv") == 0)
+	{
+		retval=	BET_rest_dcv(wsi,argjson);
+	}
+	else if(strcmp(jstr(argjson,"method"),"bvv") == 0)
+	{
+		//retval=	BET_rest_chat(wsi,argjson);
+	}
+	else if(strcmp(jstr(argjson,"method"),"player") == 0)
+	{
+		//retval=	BET_rest_chat(wsi,argjson);
 	}
 
 	return 0;
