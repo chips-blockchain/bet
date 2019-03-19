@@ -82,12 +82,12 @@ Below are the API's which are written to support REST
 */
 int32_t BET_rest_dcv(struct lws *wsi, cJSON *argjson)
 {
-	cJSON *dcvInfo=NULL;
+	cJSON *dcvInfo=NULL,*dcvKeyInfo=NULL;
 	dcv_info.deckid=rand256(0);
 	dcv_info.dcv_key.priv=curve25519_keypair(&dcv_info.dcv_key.prod);
-	dcvInfo=cJSON_CreateObject();
-	jaddbits256(dcvInfo,"deckid",dcv_info.deckid);
-	jaddbits256(dcvInfo,"pubkey",dcv_info.dcv_key.prod);
+	dcvKeyInfo=cJSON_CreateObject();
+	jaddbits256(dcvKeyInfo,"deckid",dcv_info.deckid);
+	jaddbits256(dcvKeyInfo,"pubkey",dcv_info.dcv_key.prod);
 	cJSON_AddStringToObject(dcvInfo,"default",cJSON_Print(dcvInfo));
 	lws_write(wsi,cJSON_Print(dcvInfo),strlen(cJSON_Print(dcvInfo)),0);
 	return 0;
