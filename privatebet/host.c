@@ -42,10 +42,19 @@
 #define LWS_PLUGIN_STATIC
 #include "protocol_lws_minimal.c"
 
-char global_buf[1024];
 
-int global_test_variable=0;
-
+int32_t BET_rest_dcv(struct lws *wsi, cJSON *argjson)
+{
+	cJSON *dcvInfo=NULL;
+	dcv_info.deckid=rand256(0);
+	dcv_info.dcv_key.priv=curve25519_keypair(&dcv_info.dcv_key.prod);
+	dcvInfo=cJSON_CreateObject();
+	jaddbits256(dcvInfo,"deckid",dcv_info.deckid);
+	jaddbits256(dcvInfo,"pubkey",dcv_info.dcv_key.prod);
+	cJSON_AddStringToObject(dcvInfo,"default",cJSON_Print(dcvInfo));
+	lws_write(wsi,cJSON_Print(dcvInfo),strlen(cJSON_Print(dcvInfo)));
+	return 0;
+}
 int32_t BET_rest_default(struct lws *wsi, cJSON *argjson)
 {
 	cJSON *defaultInfo=NULL;
@@ -154,35 +163,21 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
         char *buf=NULL;
         buf=(char*)malloc(len);
         strncpy(buf,in,len);
-		strncpy(global_buf,in,len);
+		
         printf("\n%s:reason::%d,len::%d\n",__FUNCTION__,(int)reason,(int)len);
 		cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
-		int test_variable=0;
         switch(reason)
         {
-                case LWS_CALLBACK_RECEIVE:
-                        printf("%s:%d:%s: LWS_CALLBACK_RECEIVE :: test_variable::%d, global_test_variable::%d\n",__FUNCTION__,__LINE__,buf,test_variable++,global_test_variable++);
-						argjson=cJSON_CreateObject();
-						argjson=cJSON_Parse(buf);
-						while( BET_process_rest_method(wsi,argjson) != 0 )
-						{
-							printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
-						}
-						/*
-						cJSON_Print(argjson);
-						gameDetails=cJSON_CreateObject();
-						cJSON_AddNumberToObject(gameDetails,"tocall",0);
-						potInfo=cJSON_CreateArray();
-						cJSON_AddItemToArray(potInfo,cJSON_CreateNumber(0));
-						cJSON_AddItemToObject(gameDetails,"pot",potInfo);
-						cJSON_AddStringToObject(gameDetails,"gametype","NL Hold'em<br>Blinds: 3/6");
-						gameInfo=cJSON_CreateObject();
-						cJSON_AddItemToObject(gameInfo,"game",gameDetails);
-                        lws_write(wsi,cJSON_Print(gameInfo),strlen(cJSON_Print(gameInfo)),0);
-                        */
-                        break;
-                default:
-                        printf("At default case\n");
+            case LWS_CALLBACK_RECEIVE:
+              	argjson=cJSON_CreateObject();
+				argjson=cJSON_Parse(buf);
+				while( BET_process_rest_method(wsi,argjson) != 0 )
+				{
+					printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
+				}
+                break;
+            default:
+                printf("At default case\n");
         }
         return 0;
 }
@@ -2145,14 +2140,9 @@ void BET_ws_dcvloop(void *_ptr)
 		lwsl_err("lws init failed\n");
 		return 1;
 	}
-	printf("\n%s:%d",__FUNCTION__,__LINE__);
-	printf("\nblobal_buf:%s\n",global_buf);
 	while (n >= 0 && !interrupted)
 	{
 		n = lws_service(context, 1000);
-		printf("\nblobal_buf:%s\n",global_buf);
-		memset(global_buf,0x00,sizeof(global_buf));
-		
 	}
 	lws_context_destroy(context);
 
