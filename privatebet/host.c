@@ -154,10 +154,11 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
         strncpy(buf,in,len);
         printf("\n%s:reason::%d,len::%d\n",__FUNCTION__,(int)reason,(int)len);
 		cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
+		int test_variable=0;
         switch(reason)
         {
                 case LWS_CALLBACK_RECEIVE:
-                        printf("%s:%d:%s: LWS_CALLBACK_RECEIVE\n",__FUNCTION__,__LINE__,buf);
+                        printf("%s:%d:%s: LWS_CALLBACK_RECEIVE :: test_variable:%d\n",__FUNCTION__,__LINE__,buf,test_variable);
 						argjson=cJSON_CreateObject();
 						argjson=cJSON_Parse(buf);
 						if ( BET_process_rest_method(wsi,argjson) != 0 )
@@ -2125,7 +2126,7 @@ void BET_ws_dcvloop(void *_ptr)
 			/* | LLL_EXT */ /* | LLL_CLIENT */ /* | LLL_LATENCY */
 			/* | LLL_DEBUG */;
 
-
+	printf("\n%s::%d",__FUNCTION__,__LINE__);
 	lws_set_log_level(logs, NULL);
 	lwsl_user("LWS minimal ws broker | visit http://localhost:7681\n");
 
