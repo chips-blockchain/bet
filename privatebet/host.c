@@ -2130,8 +2130,8 @@ void BET_rest_hostloop(void *_ptr)
 
 void BET_ws_dcvloop(void *_ptr)
 {
-	struct lws_context_creation_info info;
-	struct lws_context *context;
+	struct lws_context_creation_info info,info_1;
+	struct lws_context *context,*context_1;
 	const char *p;
 	int n = 0, logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE
 			/* for LLL_ verbosity above NOTICE to be built into lws,
@@ -2144,7 +2144,8 @@ void BET_ws_dcvloop(void *_ptr)
 	printf("\n%s::%d",__FUNCTION__,__LINE__);
 	lws_set_log_level(logs, NULL);
 	lwsl_user("LWS minimal ws broker | visit http://localhost:7681\n");
-
+	
+	// for port 9000
 	memset(&info, 0, sizeof info); /* otherwise uninitialized garbage */
 	info.port = 9000;
 	info.mounts = &mount;
@@ -2157,11 +2158,29 @@ void BET_ws_dcvloop(void *_ptr)
 		lwsl_err("lws init failed\n");
 		return 1;
 	}
+	// for port 90001
+	
+	memset(&info_1, 0, sizeof info_1); /* otherwise uninitialized garbage */
+	info_1.port = 9001;
+	info_1.mounts = &mount;
+	info_1.protocols = protocols;
+	info_1.options =
+		LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
+
+	context_1 = lws_create_context(&info_1);
+	if (!context_1) {
+		lwsl_err("lws init failed\n");
+		return 1;
+	}
+
+
 	while (n >= 0 && !interrupted)
 	{
 		n = lws_service(context, 1000);
+		n = lws_service(context_1, 1000);
 	}
 	lws_context_destroy(context);
+	lws_context_destroy(context_1);
 
 		
 }
