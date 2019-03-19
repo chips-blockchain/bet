@@ -42,6 +42,7 @@
 #define LWS_PLUGIN_STATIC
 #include "protocol_lws_minimal.c"
 
+char global_buf[1024];
 
 int global_test_variable=0;
 
@@ -153,6 +154,7 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
         char *buf=NULL;
         buf=(char*)malloc(len);
         strncpy(buf,in,len);
+		strncpy(global_buf,in,len);
         printf("\n%s:reason::%d,len::%d\n",__FUNCTION__,(int)reason,(int)len);
 		cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
 		int test_variable=0;
@@ -2143,10 +2145,15 @@ void BET_ws_dcvloop(void *_ptr)
 		lwsl_err("lws init failed\n");
 		return 1;
 	}
-
+	printf("\n%s:%d",__FUNCTION__,__LINE__);
+	printf("\nblobal_buf:%s\n",global_buf);
 	while (n >= 0 && !interrupted)
+	{
 		n = lws_service(context, 1000);
-
+		printf("\nblobal_buf:%s\n",global_buf);
+		memset(global_buf,0x00,sizeof(global_buf));
+		
+	}
 	lws_context_destroy(context);
 
 		
