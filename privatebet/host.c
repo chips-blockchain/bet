@@ -92,7 +92,7 @@ int32_t BET_rest_dcv(struct lws *wsi, cJSON *argjson)
 	jaddbits256(dcvKeyInfo,"pubkey",dcv_info.dcv_key.prod);
 
 	dcvInfo=cJSON_CreateObject();
-	cJSON_AddStringToObject(dcvInfo,"default",cJSON_Print(dcvInfo));
+	cJSON_AddStringToObject(dcvInfo,"default",cJSON_Print(dcvKeyInfo));
 
 	lws_write(wsi,cJSON_Print(dcvInfo),strlen(cJSON_Print(dcvInfo)),0);
 	return 0;
