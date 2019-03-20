@@ -2130,8 +2130,8 @@ void BET_rest_hostloop(void *_ptr)
 
 void BET_ws_dcvloop(void *_ptr)
 {
-	struct lws_context_creation_info info,info_1;
-	struct lws_context *context,*context_1;
+	struct lws_context_creation_info info,info_1,dcv_info,bvv_info,player1_info,player2_info;
+	struct lws_context *context,*context_1,*dcv_context,*bvv_context,*player1_context,*player2_context;
 	const char *p;
 	int n = 0, logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE
 			/* for LLL_ verbosity above NOTICE to be built into lws,
@@ -2144,7 +2144,7 @@ void BET_ws_dcvloop(void *_ptr)
 	printf("\n%s::%d",__FUNCTION__,__LINE__);
 	lws_set_log_level(logs, NULL);
 	lwsl_user("LWS minimal ws broker | visit http://localhost:7681\n");
-	
+	#if 0
 	// for port 9000
 	memset(&info, 0, sizeof info); /* otherwise uninitialized garbage */
 	info.port = 9000;
@@ -2172,15 +2172,78 @@ void BET_ws_dcvloop(void *_ptr)
 		lwsl_err("lws init failed\n");
 		return 1;
 	}
+    #endif
+    #if 1
+    // for DCV
+    memset(&dcv_info, 0, sizeof dcv_info); /* otherwise uninitialized garbage */
+    dcv_info.port = 9000;
+    dcv_info.mounts = &mount;
+    dcv_info.protocols = protocols;
+    dcv_info.options =
+        LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
 
+    dcv_context = lws_create_context(&dcv_info);
+    if (!dcv_context) {
+        lwsl_err("lws init failed\n");
+        return 1;
+    }   
+    //for BVV    
+    memset(&bvv_info, 0, sizeof bvv_info); /* otherwise uninitialized garbage */
+    bvv_info.port = 9001;
+    bvv_info.mounts = &mount;
+    bvv_info.protocols = protocols;
+    bvv_info.options =
+        LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
+
+    bvv_context = lws_create_context(&bvv_info);
+    if (!bvv_context) {
+        lwsl_err("lws init failed\n");
+        return 1;
+    }
+    //for Player1
+    memset(&player1_info, 0, sizeof player1_info); /* otherwise uninitialized garbage */
+    player1_info.port = 9002;
+    player1_info.mounts = &mount;
+    player1_info.protocols = protocols;
+    player1_info.options =
+        LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
+
+    player1_context = lws_create_context(&player1_info);
+    if (!player1_context) {
+        lwsl_err("lws init failed\n");
+        return 1;
+    }
+    //for Player2
+    memset(&player2_info, 0, sizeof player2_info); /* otherwise uninitialized garbage */
+    player2_info.port = 9003;
+    player2_info.mounts = &mount;
+    player2_info.protocols = protocols;
+    player2_info.options =
+        LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
+
+    player2_context = lws_create_context(&player2_info);
+    if (!player2_context) {
+        lwsl_err("lws init failed\n");
+        return 1;
+    }
+
+    #endif
 
 	while (n >= 0 && !interrupted)
 	{
-		n = lws_service(context, 1000);
-		n = lws_service(context_1, 1000);
+		//n = lws_service(context, 1000);
+		//n = lws_service(context_1, 1000);
+        n = lws_service(dcv_context, 1000);
+        n = lws_service(bvv_context, 1000);
+        n = lws_service(player1_context, 1000);
+        n = lws_service(player2_context, 1000);
 	}
-	lws_context_destroy(context);
-	lws_context_destroy(context_1);
+	//lws_context_destroy(context);
+	//lws_context_destroy(context_1);
+    lws_context_destroy(dcv_context);
+    lws_context_destroy(bvv_context);
+    lws_context_destroy(player1_context);
+    lws_context_destroy(player2_context);
 
 		
 }
