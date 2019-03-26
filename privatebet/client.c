@@ -2288,23 +2288,30 @@ int32_t BET_rest_bvv(struct lws *wsi, cJSON *argjson)
 {
 	cJSON *bvvInfo=NULL,*bvvKeyInfo=NULL;
 
-	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
 	bvv_info.bvv_key.priv=curve25519_keypair(&bvv_info.bvv_key.prod);
 	bvvKeyInfo=cJSON_CreateObject();
 	jaddbits256(bvvKeyInfo,"pubkey",bvv_info.bvv_key.prod);
-	lws_write(wsi,cJSON_Print(bvvKeyInfo),strlen(cJSON_Print(bvvKeyInfo)),0);
+	cJSON_AddStringToObject(bvvInfo,"default",cJSON_Print(bvvKeyInfo));
+
+	printf("\n%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(bvvInfo));
+	
+	lws_write(wsi,cJSON_Print(bvvInfo),strlen(cJSON_Print(bvvInfo)),0);
 	return 0;
 }
 
 int32_t BET_rest_player(struct lws *wsi, cJSON *argjson)
 {
-	cJSON *playerKeyInfo=NULL;
+	cJSON *playerInfo=NULL,*playerKeyInfo=NULL;
 	
 	printf("\n%s:%d\n",__FUNCTION__,__LINE__);	
 	player_info.player_key.priv=curve25519_keypair(&player_info.player_key.prod);
 	playerKeyInfo=cJSON_CreateObject();
 	jaddbits256(playerKeyInfo,"pubkey",player_info.player_key.prod);
-	lws_write(wsi,cJSON_Print(playerKeyInfo),strlen(cJSON_Print(playerKeyInfo)),0);
+	cJSON_AddStringToObject(playerInfo,"default",cJSON_Print(playerKeyInfo));
+
+	printf("\n%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(playerInfo));
+	
+	lws_write(wsi,cJSON_Print(playerInfo),strlen(cJSON_Print(playerInfo)),0);
 	return 0;
 }
 
