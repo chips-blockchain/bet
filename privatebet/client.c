@@ -2300,7 +2300,7 @@ int32_t BET_rest_player(struct lws *wsi, cJSON *argjson)
 	cJSON *playerKeyInfo=NULL;
 	player_info.player_key.priv=curve25519_keypair(&player_info.player_key.prod);
 	playerKeyInfo=cJSON_CreateObject();
-	jaddbits256(playerKeyInfo,"pubkey",player_info.bvv_key.prod);
+	jaddbits256(playerKeyInfo,"pubkey",player_info.player_key.prod);
 	lws_write(wsi,cJSON_Print(playerKeyInfo),strlen(cJSON_Print(playerKeyInfo)),0);
 	return 0;
 }
