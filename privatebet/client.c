@@ -2294,7 +2294,7 @@ int32_t BET_rest_bvv(struct lws *wsi, cJSON *argjson)
 	jaddbits256(bvvKeyInfo,"pubkey",bvv_info.bvv_key.prod);
 
 	bvvInfo=cJSON_CreateObject();
-	cJSON_AddStringToObject(bvvInfo,"default",cJSON_Print(bvvKeyInfo));
+	cJSON_AddStringToObject(bvvInfo,"bvv",cJSON_Print(bvvKeyInfo));
 
 	printf("\n%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(bvvInfo));
 	
@@ -2312,7 +2312,7 @@ int32_t BET_rest_player(struct lws *wsi, cJSON *argjson)
 	jaddbits256(playerKeyInfo,"pubkey",player_info.player_key.prod);
 
 	playerInfo=cJSON_CreateObject();
-	cJSON_AddStringToObject(playerInfo,"default",cJSON_Print(playerKeyInfo));
+	cJSON_AddStringToObject(playerInfo,"player",cJSON_Print(playerKeyInfo));
 
 	printf("\n%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(playerInfo));
 	
