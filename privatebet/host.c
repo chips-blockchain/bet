@@ -174,6 +174,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 
 	int retval=-1;
 	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
+	printf("\n%s\n",cJSON_Print(argjson));
 	if(strcmp(jstr(argjson,"method"),"game") == 0)	
 	{
 		retval=BET_rest_game(wsi,argjson);
