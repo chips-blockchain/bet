@@ -49,5 +49,5 @@ int32_t BET_player_reset(struct privatebet_info *bet,struct privatebet_vars *var
 /* REST API's */
 cJSON* BET_rest_client_join(cJSON *argjson);
 int32_t BET_rest_bvv(struct lws *wsi, cJSON *argjson);
-
+int32_t BET_rest_player(struct lws *wsi, cJSON *argjson);
 
