@@ -97,6 +97,7 @@ int32_t BET_rest_dcv(struct lws *wsi, cJSON *argjson)
 	lws_write(wsi,cJSON_Print(dcvInfo),strlen(cJSON_Print(dcvInfo)),0);
 	return 0;
 }
+
 int32_t BET_rest_default(struct lws *wsi, cJSON *argjson)
 {
 	cJSON *defaultInfo=NULL;
@@ -197,11 +198,11 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	}
 	else if(strcmp(jstr(argjson,"method"),"bvv") == 0)
 	{
-		retval=	BET_rest_chat(wsi,argjson);
+		retval=	BET_rest_bvv(wsi,argjson);
 	}
 	else if(strcmp(jstr(argjson,"method"),"player") == 0)
 	{
-		retval=	BET_rest_chat(wsi,argjson);
+		//retval=	BET_rest_player(wsi,argjson);
 	}
 
 	return 0;

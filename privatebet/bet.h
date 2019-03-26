@@ -233,6 +233,10 @@ https://crypto.stanford.edu/~pgolle/papers/poker.pdf
 #include <arpa/inet.h> 
 
 #include "../crypto777/OS_portable.h"
+
+#include <libwebsockets.h>
+
+
 //#include "../../SuperNET/iguana/exchanges/LP_include.h"
 //#include "../../SuperNET/iguana/exchanges/LP_nativeDEX.c"
 

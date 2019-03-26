@@ -2281,3 +2281,18 @@ void BET_p2p_clientloop(void * _ptr)
 }
 
 
+/*
+The below API's are relate to BVV and Player functionalities
+*/
+int32_t BET_rest_bvv(struct lws *wsi, cJSON *argjson)
+{
+	cJSON *bvvInfo=NULL,*bvvKeyInfo=NULL;
+
+	bvv_info.bvv_key.priv=curve25519_keypair(&bvv_info.bvv_key.prod);
+	bvvKeyInfo=cJSON_CreateObject();
+	jaddbits256(bvvKeyInfo,"pubkey",bvv_info.bvv_key.prod);
+	lws_write(wsi,cJSON_Print(bvvKeyInfo),strlen(cJSON_Print(bvvKeyInfo)),0);
+	return 0;
+}
+
+

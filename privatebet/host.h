@@ -1,4 +1,3 @@
-#include <libwebsockets.h>
 struct privatebet_peerln *BET_peerln_find(char *peerid);
 struct privatebet_peerln *BET_peerln_create(struct privatebet_rawpeerln *raw,int32_t maxplayers,int32_t maxchips,int32_t chipsize);
 int32_t BET_host_join(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);

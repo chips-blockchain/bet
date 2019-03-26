@@ -1,3 +1,5 @@
+#include "bet.h"
+
 int32_t BET_client_onechip(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars,int32_t senderid);
 int32_t BET_client_gameeval(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars,int32_t senderid);
 int32_t BET_client_join(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars,int32_t senderid);
@@ -46,5 +48,6 @@ int32_t BET_player_reset(struct privatebet_info *bet,struct privatebet_vars *var
 
 /* REST API's */
 cJSON* BET_rest_client_join(cJSON *argjson);
+int32_t BET_rest_bvv(struct lws *wsi, cJSON *argjson);
 
 
