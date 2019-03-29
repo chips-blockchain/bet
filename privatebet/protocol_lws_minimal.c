@@ -87,7 +87,6 @@ callback_minimal(struct lws *wsi, enum lws_callback_reasons reason,
 	struct msg amsg;
 	char buf[32];
 	int n, m;
-	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
 	switch (reason) {
 	case LWS_CALLBACK_PROTOCOL_INIT:
 		vhd = lws_protocol_vh_priv_zalloc(lws_get_vhost(wsi),

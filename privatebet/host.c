@@ -262,8 +262,7 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
         buf=(char*)malloc(len);
         strncpy(buf,in,len);
 		
-        printf("\n%s:reason::%d,len::%d\n",__FUNCTION__,(int)reason,(int)len);
-		cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
+        cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
         switch(reason)
         {
             case LWS_CALLBACK_RECEIVE:
@@ -275,7 +274,7 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 				}
                 break;
             default:
-                printf("At default case\n");
+                // Do Nothing
         }
         return 0;
 }
