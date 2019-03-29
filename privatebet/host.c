@@ -98,6 +98,19 @@ int32_t BET_rest_dcv(struct lws *wsi, cJSON *argjson)
 	return 0;
 }
 
+int32_t BET_rest_from_dcv(struct lws *wsi, cJSON *argjson)
+{
+	cJSON *info=NULL;
+	info=cJSON_CreateObject();
+	info=cJSON_Parse(jstr(argjson,"dcv"));
+	printf("\n%s\n",jstr(argjson,"dcv"));
+	printf("\n%s",jstr(info,"deckid"));
+	printf("\n%s",jstr(info,"pubkey"));
+	
+	return 0;
+}
+
+
 int32_t BET_rest_default(struct lws *wsi, cJSON *argjson)
 {
 	cJSON *defaultInfo=NULL;
@@ -203,6 +216,10 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	else if(strcmp(jstr(argjson,"method"),"player") == 0)
 	{
 		retval=	BET_rest_player(wsi,argjson);
+	}
+	else if(strcmp(jstr(argjson,"method"),"from_dcv") == 0)
+	{
+		retval=	BET_rest_from_dcv(wsi,argjson);
 	}
 
 	return 0;
