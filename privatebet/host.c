@@ -78,7 +78,7 @@ char* face[NFACES]= {"ace","two","three","four","five","six","seven","eight","ni
 
 
 struct privatebet_info *BET_dcv;
-struct privatebet_vars *BET_VARS;
+struct privatebet_vars *DCV_VARS;
 
 
 /*
@@ -90,7 +90,7 @@ int32_t BET_rest_dcv_init(struct lws *wsi, cJSON *argjson)
 	int32_t range=52;
 	cJSON *dcvInfo=NULL,*dcvKeyInfo=NULL;
 	
-	BET_VARS = calloc(1,sizeof(*BET_VARS));
+	DCV_VARS = calloc(1,sizeof(*DCV_VARS));
 	
 	BET_dcv=calloc(1,sizeof(struct privatebet_info));
 	//BET_dcv->pubsock = pubsock;//BET_nanosock(1,bindaddr,NN_PUB);

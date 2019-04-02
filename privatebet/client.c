@@ -44,6 +44,13 @@ char *LN_db="../../.chipsln/lightningd1.sqlite3";
 
 
 
+struct privatebet_info *BET_bvv;
+struct privatebet_vars *BVV_VARS;
+
+struct privatebet_info *BET_player;
+struct privatebet_vars *Player_VARS;
+
+
 int32_t BET_client_onechip(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars,int32_t senderid)
 {
     printf("client onechop.(%s)\n",jprint(argjson,0));
@@ -2284,6 +2291,38 @@ void BET_p2p_clientloop(void * _ptr)
 /*
 The below API's are relate to BVV and Player functionalities
 */
+int32_t BET_rest_bvv(struct lws *wsi, cJSON *argjson)
+{
+	int32_t numplayers=2,range=52;
+	cJSON *bvvJoinInfo=NULL;
+	
+	BET_bvv=calloc(1,sizeof(struct privatebet_info));
+    //BET_bvv->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
+    //BET_bvv->pushsock = pushsock/*BET_nanosock(0,bindaddr1,NN_PUSH)*/;
+    BET_bvv->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
+    BET_bvv->maxchips = CARDS777_MAXCHIPS;
+    BET_bvv->chipsize = CARDS777_CHIPSIZE;
+	BET_bvv->numplayers=numplayers;
+	BET_bvv->myplayerid=-1;
+    BET_betinfo_set(BET_bvv,"demo",range,0,Maxplayers);
+
+			
+    BVV_VARS = calloc(1,sizeof(*BVV_VARS));
+
+	BET_permutation(bvv_info.permis,BET_bvv->range);
+    for(int i=0;i<BET_bvv->range;i++) {
+		permis_b[i]=bvv_info.permis[i];
+	}
+
+	bvvJoinInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(bvvJoinInfo,"method","bvv_join");
+	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(bvvJoinInfo));
+	lws_write(wsi,cJSON_Print(bvvJoinInfo),strlen(cJSON_Print(bvvJoinInfo)));
+	
+	return 0;
+}
+
+
 int32_t BET_rest_bvv(struct lws *wsi, cJSON *argjson)
 {
 	cJSON *bvvInfo=NULL,*bvvKeyInfo=NULL;
