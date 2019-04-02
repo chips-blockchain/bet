@@ -2291,11 +2291,11 @@ void BET_p2p_clientloop(void * _ptr)
 /*
 The below API's are relate to BVV and Player functionalities
 */
-int32_t BET_rest_bvv(struct lws *wsi, cJSON *argjson)
+int32_t BET_rest_bvv_init(struct lws *wsi, cJSON *argjson)
 {
 	int32_t numplayers=2,range=52;
 	cJSON *bvvJoinInfo=NULL;
-	
+    int32_t Maxplayers=10;
 	BET_bvv=calloc(1,sizeof(struct privatebet_info));
     //BET_bvv->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
     //BET_bvv->pushsock = pushsock/*BET_nanosock(0,bindaddr1,NN_PUSH)*/;
@@ -2317,7 +2317,7 @@ int32_t BET_rest_bvv(struct lws *wsi, cJSON *argjson)
 	bvvJoinInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(bvvJoinInfo,"method","bvv_join");
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(bvvJoinInfo));
-	lws_write(wsi,cJSON_Print(bvvJoinInfo),strlen(cJSON_Print(bvvJoinInfo)));
+	lws_write(wsi,cJSON_Print(bvvJoinInfo),strlen(cJSON_Print(bvvJoinInfo)),0);
 	
 	return 0;
 }

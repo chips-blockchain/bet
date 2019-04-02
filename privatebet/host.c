@@ -262,7 +262,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	}
 	else if(strcmp(jstr(argjson,"method"),"bvv") == 0)
 	{
-		retval=	BET_rest_bvv(wsi,argjson);
+		retval=	BET_rest_bvv_init(wsi,argjson);
 	}
 	else if(strcmp(jstr(argjson,"method"),"player") == 0)
 	{
