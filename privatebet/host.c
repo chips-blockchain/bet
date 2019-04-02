@@ -111,7 +111,7 @@ int32_t BET_rest_dcv_init(struct lws *wsi, cJSON *argjson)
 		
 	invoiceID=0;	
 		
-	for(int i=0;i<bet->range;i++) {
+	for(int i=0;i<BET_dcv->range;i++) {
 		permis_d[i]=dcv_info.permis[i];
 	}
 
