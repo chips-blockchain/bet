@@ -89,6 +89,7 @@ int32_t BET_rest_dcv_init(struct lws *wsi, cJSON *argjson)
 {
 	int32_t range=52;
 	cJSON *dcvInfo=NULL,*dcvKeyInfo=NULL;
+	int32_t Maxplayers=10;
 	
 	DCV_VARS = calloc(1,sizeof(*DCV_VARS));
 	
