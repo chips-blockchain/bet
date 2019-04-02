@@ -342,28 +342,6 @@ int main(int argc, char **argv)
 	struct privatebet_info *BET_dcv,*BET_bvv,*BET_player;
 	pthread_t dcv_t,bvv_t,player_t;
 
-	#if 0
-	CURL *curl;
-	CURLcode res;
-	curl = curl_easy_init();
-	if(curl)
-	{
-		curl_easy_setopt(curl, CURLOPT_URL, "http://domain.com/");
-		 /* example.com is redirected, so we tell libcurl to follow redirection */ 
-    	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
- 
-    	/* Perform the request, res will get the return code */ 
-    	res = curl_easy_perform(curl);
-    	/* Check for errors */ 
-	    if(res != CURLE_OK)
-	      fprintf(stderr, "curl_easy_perform() failed: %s\n",
-	              curl_easy_strerror(res));
-	 
-	    /* always cleanup */ 
-	    curl_easy_cleanup(curl);
-			printf("\ncurl initialization is done");
-	}
-	#endif
     #if 1
 	strcpy(hostip,argv[2]);
     OS_init();

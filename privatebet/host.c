@@ -77,16 +77,44 @@ char* face[NFACES]= {"ace","two","three","four","five","six","seven","eight","ni
                     };
 
 
+struct privatebet_info *BET_dcv;
+struct privatebet_vars *BET_VARS;
+
+
 /*
 Below are the API's which are written to support REST
 */
-int32_t BET_rest_dcv(struct lws *wsi, cJSON *argjson)
-{
-	cJSON *dcvInfo=NULL,*dcvKeyInfo=NULL;
 
-	dcv_info.deckid=rand256(0);
+int32_t BET_rest_dcv_init(struct lws *wsi, cJSON *argjson)
+{
+	int32_t range=52;
+	cJSON *dcvInfo=NULL,*dcvKeyInfo=NULL;
+	
+	BET_VARS = calloc(1,sizeof(*BET_VARS));
+	
+	BET_dcv=calloc(1,sizeof(struct privatebet_info));
+	//BET_dcv->pubsock = pubsock;//BET_nanosock(1,bindaddr,NN_PUB);
+	//BET_dcv->pullsock = pullsock;//BET_nanosock(1,bindaddr1,NN_PULL);
+	BET_dcv->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
+	BET_dcv->maxchips = CARDS777_MAXCHIPS;
+	BET_dcv->chipsize = CARDS777_CHIPSIZE;
+	BET_dcv->numplayers=0;
+	BET_betinfo_set(BET_dcv,"demo",range,0,Maxplayers);
+
+	dcv_info.numplayers=0;
+	dcv_info.maxplayers=BET_dcv->maxplayers;
+	BET_permutation(dcv_info.permis,BET_dcv->range);
+    dcv_info.deckid=rand256(0);
 	dcv_info.dcv_key.priv=curve25519_keypair(&dcv_info.dcv_key.prod);
 
+		
+	invoiceID=0;	
+		
+	for(int i=0;i<bet->range;i++) {
+		permis_d[i]=dcv_info.permis[i];
+	}
+
+	
 	dcvKeyInfo=cJSON_CreateObject();
 	jaddbits256(dcvKeyInfo,"deckid",dcv_info.deckid);
 	jaddbits256(dcvKeyInfo,"pubkey",dcv_info.dcv_key.prod);
@@ -95,8 +123,10 @@ int32_t BET_rest_dcv(struct lws *wsi, cJSON *argjson)
 	cJSON_AddStringToObject(dcvInfo,"dcv",cJSON_Print(dcvKeyInfo));
 
 	lws_write(wsi,cJSON_Print(dcvInfo),strlen(cJSON_Print(dcvInfo)),0);
+
 	return 0;
 }
+
 
 int32_t BET_rest_from_dcv(struct lws *wsi, cJSON *argjson)
 {
@@ -203,6 +233,7 @@ int32_t BET_rest_game(struct lws *wsi, cJSON *argjson)
 	return 0;
 		
 }
+
 int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 {
 
@@ -227,7 +258,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	}	
 	else if(strcmp(jstr(argjson,"method"),"dcv") == 0)
 	{
-		retval=	BET_rest_dcv(wsi,argjson);
+		retval=	BET_rest_dcv_init(wsi,argjson);
 	}
 	else if(strcmp(jstr(argjson,"method"),"bvv") == 0)
 	{
