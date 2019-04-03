@@ -42,17 +42,6 @@
 #define LWS_PLUGIN_STATIC
 #include "protocol_lws_minimal.c"
 
-#define MAX_THREADS 10
-
-#define MAX_CONNECTION 5
-typedef struct pool
-{
-    int fd;
-    pthread_t tid;
-    int is_allocated;
-}connection_pool_t;
-connection_pool_t connections[MAX_CONNECTION] = {};
-
 
 struct privatebet_rawpeerln Rawpeersln[CARDS777_MAXPLAYERS+1],oldRawpeersln[CARDS777_MAXPLAYERS+1];
 struct privatebet_peerln Peersln[CARDS777_MAXPLAYERS+1];
@@ -2009,10 +1998,7 @@ void BET_p2p_hostloop(void *_ptr)
             {
                 if ( BET_p2p_hostcommand(argjson,bet,VARS) != 0 ) // usually just relay to players
                 {
-                    //printf("RELAY.(%s)\n",jprint(argjson,0));
-                    // BET_message_send("BET_relay",bet->pubsock,argjson,0,bet);
-                    //if ( (sendlen= nn_send(bet->pubsock,ptr,recvlen,0)) != recvlen )
-                    //    printf("sendlen.%d != recvlen.%d for %s\n",sendlen,recvlen,jprint(argjson,0));
+                	// Do something
                 }
                 free_json(argjson);
             }
@@ -2024,230 +2010,17 @@ void BET_p2p_hostloop(void *_ptr)
 /*
 BET API loop
 */
-int32_t get_http_body(char *buf,int buflen)
-{
-	char *method, *path;
-	int pret, minor_version;
-	struct phr_header headers[100];
-	size_t method_len, path_len, num_headers;
-	/* parse the request */
-	num_headers = sizeof(headers) / sizeof(headers[0]);
-	pret = phr_parse_request(buf, buflen, &method, &method_len, &path, &path_len,
-							 &minor_version, headers, &num_headers, 0);
-    if (pret > 0)
-        return pret;
-    else if (pret == -1)
-    {
-       printf("\nParseError");	
-       return -1;
-    }
-    if (buflen == sizeof(buf))
-    {
-    	printf("\nRequestIsTooLongError");
-        return -1;
-    }	
-}
-void BET_rest_hostcommand(cJSON * inputInfo,struct privatebet_info * bet,struct privatebet_vars * vars,int socketid)
-{
-	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(inputInfo));
-	send(socketid, cJSON_Print(inputInfo), strlen(cJSON_Print(inputInfo)) , 0 );
-}
-void * thread_function(void * arg)
-{
-    int *index = (int *)arg;
-    int err = 0;
-    char data[1024] = {0};
-    read(connections[*index].fd, data, sizeof(data));
-	printf("\n%s:%d::data:%s\n",__FUNCTION__,__LINE__,data);
-    send(connections[*index].fd, "received data", strlen("received data"),0);
-    close(connections[*index].fd);
-    /* time to free t the connection pool index*/
-    connections[*index].is_allocated = 0;
-    return NULL;
-}
-
-void BET_rest_hostloop1(int *fd)
-{
-	struct privatebet_info * bet;
-	struct privatebet_vars * VARS;
-	cJSON *inputInfo=NULL;
-	//int *index = (int *)_ptr;
-    int err = 0;
-    char data[1024] = {0};
-	
-	char buf[4096];
-	int pret;
-	size_t buflen = 0, prevbuflen = 0;
-	ssize_t rret;
-	while(1)
-	{
-		if((rret = read(*fd,buf,sizeof(buf)))>0)
-		{
-			printf("\n%s:%d::buf:%s\n",__FUNCTION__,__LINE__,buf);
-			send(*fd,"{chat : hi}",sizeof("{chat : hi}"),0);		
-		}
-		else 
-			continue;
-	}
-	//read(*fd,buf,sizeof(buf));
-	//send(*fd,buf,sizeof(buf),0);
-	//printf("\n%s:%d::buf:%s\n",__FUNCTION__,__LINE__,buf);
-	/*
-	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
-	while (1) {
-		buflen=0;
-	    if ((rret = read(fd, buf + buflen, sizeof(buf) - buflen)) >0 )
-    	{
-			buflen += rret;
-			printf("\n%s:%d::buf:%s\n",__FUNCTION__,__LINE__,buf);
-			pret=get_http_body(buf,buflen);
-			if(pret>0)
-			{
-				inputInfo=cJSON_CreateObject();
-				inputInfo=cJSON_Parse(buf+pret);
-				BET_rest_hostcommand(inputInfo,bet,VARS,connections[*index].fd);
-			}
-		
-    	}
-	}
-	
-	*/
-}
- /* to get the not allocated index from connection*/ 
-int get_connection(int **fd , int *index)
-{
-    int i =0;
-    int err = 0;
-    for (i =0; i < MAX_CONNECTION; i++)
-    {
-        if (!connections[i].is_allocated)
-        {
-            *fd = &connections[i].fd;
-            connections[i].is_allocated = 1;
-            *index = i;
-            return 0;
-            
-        }
-    }
-    
-    /* it mean all pool has been exhausted*/
-    return 1;
-}
- /* fucntion to get the total thread at any point of time*/
- int get_total_thread()
- {
-	 int i = 0;
-	 int count = 0;
-	 for (i =0; i < MAX_CONNECTION; i++)
-	 {
-		 if (connections[i].is_allocated)
-		 {
-			 count++;
-		 }
-	 }
-	 return count;
- }
-
-void BET_rest_hostloop(void *_ptr)
-{
-	struct privatebet_info *bet = _ptr; struct privatebet_vars *VARS;
-	int server_fd, new_socket;
-	struct sockaddr_in addr;
-	int opt = 1;
-	int addrlen = sizeof(addr);
-	cJSON *inputInfo=NULL;
-	int err = 0;
-	char buf[4096];
-	int pret;
-	size_t buflen = 0, prevbuflen = 0;
-	ssize_t rret;
-	int no_of_threads=0;
-
-	pthread_t t[MAX_THREADS];
-	
-	VARS = calloc(1,sizeof(*VARS));
-	// Creating socket file descriptor 
-	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
-	{
-			perror("socket failed");
-			exit(EXIT_FAILURE);
-	}
-	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = INADDR_ANY;
-	addr.sin_port = htons( PORT );
-	
-	// Forcefully attaching socket to the port 8080 
-	if (bind(server_fd, (struct sockaddr *)&addr,sizeof(addr))<0)
-	{
-			perror("bind failed");
-			exit(EXIT_FAILURE);
-	}
-	if (listen(server_fd, MAX_THREADS) < 0)
-	{
-			 perror("listen");
-			 exit(EXIT_FAILURE);
-	}
-	
-	while(1)
-	{
-		int fd;
-		fd=accept(server_fd,(struct sockaddr *) &addr,(socklen_t *)&addrlen);
-		if(fd<0)
-		{
-			perror("socket accept failed");
-			exit(EXIT_FAILURE);
-		}
-		BET_rest_hostloop1(&fd);
-		close(fd);
-		
-	}
-}
 
 void BET_ws_dcvloop(void *_ptr)
 {
 	struct lws_context_creation_info info,info_1,dcv_info,bvv_info,player1_info,player2_info;
 	struct lws_context *context,*context_1,*dcv_context,*bvv_context,*player1_context,*player2_context;
 	const char *p;
-	int n = 0, logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE
-			/* for LLL_ verbosity above NOTICE to be built into lws,
-			 * lws must have been configured and built with
-			 * -DCMAKE_BUILD_TYPE=DEBUG instead of =RELEASE */
-			/* | LLL_INFO */ /* | LLL_PARSER */ /* | LLL_HEADER */
-			/* | LLL_EXT */ /* | LLL_CLIENT */ /* | LLL_LATENCY */
-			/* | LLL_DEBUG */;
+	int n = 0, logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE;
 
 	printf("\n%s::%d",__FUNCTION__,__LINE__);
 	lws_set_log_level(logs, NULL);
 	lwsl_user("LWS minimal ws broker | visit http://localhost:7681\n");
-	#if 0
-	// for port 9000
-	memset(&info, 0, sizeof info); /* otherwise uninitialized garbage */
-	info.port = 9000;
-	info.mounts = &mount;
-	info.protocols = protocols;
-	info.options =
-		LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
-
-	context = lws_create_context(&info);
-	if (!context) {
-		lwsl_err("lws init failed\n");
-		return 1;
-	}
-	// for port 90001
-	
-	memset(&info_1, 0, sizeof info_1); /* otherwise uninitialized garbage */
-	info_1.port = 9001;
-	info_1.mounts = &mount;
-	info_1.protocols = protocols;
-	info_1.options =
-		LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
-
-	context_1 = lws_create_context(&info_1);
-	if (!context_1) {
-		lwsl_err("lws init failed\n");
-		return 1;
-	}
-    #endif
     #if 1
     // for DCV
     memset(&dcv_info, 0, sizeof dcv_info); /* otherwise uninitialized garbage */
