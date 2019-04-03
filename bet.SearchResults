@@ -1,3 +1,0 @@
----- global_test_variable Matches (3 in 1 files) ----
-Host.c (privatebet):int global_test_variable=0;
-Host.c (privatebet):                        printf("%s:%d:%s: LWS_CALLBACK_RECEIVE :: test_variable::%d, global_test_variable::%d\n",__FUNCTION__,__LINE__,buf,test_variable++,global_test_variable++);
