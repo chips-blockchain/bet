@@ -225,17 +225,6 @@ int32_t BET_rest_game(struct lws *wsi, cJSON *argjson)
 }
 
 
-int32_t BET_rest_bvv_join(struct lws *wsi, cJSON *argjson)
-{
-	cJSON *bvvJoinInfo=NULL;
-	bvvJoinInfo=cJSON_CreateObject();
-	cJSON_AddStringToObject(bvvJoinInfo,"method","bvv_join");
-	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(bvvJoinInfo));
-	lws_write(wsi,cJSON_Print(bvvJoinInfo),strlen(cJSON_Print(bvvJoinInfo)),0);
-
-	return 0;
-}
-
 	
 int32_t BET_rest_dcv_default(struct lws *wsi, cJSON *argjson)
 {
