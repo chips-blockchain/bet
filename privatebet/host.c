@@ -257,6 +257,45 @@ int32_t BET_rest_client_join_req(struct lws *wsi, cJSON *argjson)
 	return 0;
 }
 
+int32_t BET_rest_broadcast_table_info(struct lws *wsi)
+{
+	cJSON *tableInfo=NULL,*playersInfo=NULL;
+	char str[65];
+	int32_t bytes,retval=1;;
+	
+	tableInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(tableInfo,"method","TableInfo");
+	cJSON_AddItemToObject(tableInfo,"playersInfo",playersInfo=cJSON_CreateArray());
+	for(int32_t i=0;i<BET_dcv->maxplayers;i++)
+	{
+		cJSON_AddItemToArray(playersInfo,cJSON_CreateString(bits256_str(str,dcv_info.peerpubkeys[i])));
+	}
+	printf("\nTable Info:%s",cJSON_Print(tableInfo));
+
+	lws_write(wsi,cJSON_Print(tableInfo),strlen(cJSON_Print(tableInfo)),0);
+	
+	return retval;
+}
+
+int32_t BET_rest_check_BVV_Ready(struct lws *wsi)
+{
+	int32_t bytes,retval=-1;
+	cJSON *bvvReady=NULL,*uriInfo=NULL;
+	bvvReady=cJSON_CreateObject();
+	cJSON_AddStringToObject(bvvReady,"method","check_bvv_ready");
+	cJSON_AddItemToObject(bvvReady,"uri_info",uriInfo=cJSON_CreateArray());
+	for(int i=0;i<BET_dcv->maxplayers;i++)
+	{
+		jaddistr(uriInfo,dcv_info.uri[i]);
+	}
+
+	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(bvvReady));
+	lws_write(wsi,cJSON_Print(bvvReady),strlen(cJSON_Print(bvvReady)),0);
+	
+	return retval;
+}
+
+
 int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 {
 
@@ -320,6 +359,8 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 			{
 				printf("Table is filled\n");
 			}
+			BET_rest_broadcast_table_info(wsi);
+			BET_rest_check_BVV_Ready(wsi);
 		}
 	}
 	else
