@@ -40,7 +40,7 @@ int32_t no_of_shares=0;
 int32_t player_cards[CARDS777_MAXCARDS];
 int32_t no_of_player_cards=0;
 
-int32_t player_id=0
+int32_t player_id=0;
 
 
 char *LN_db="../../.chipsln/lightningd1.sqlite3";
