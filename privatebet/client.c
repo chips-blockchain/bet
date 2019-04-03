@@ -45,11 +45,6 @@ int32_t player_id=0
 
 char *LN_db="../../.chipsln/lightningd1.sqlite3";
 
-struct privatebet_info *BET_Player;
-struct privatebet_vars *Player_VARS;
-
-
-
 
 struct privatebet_info *BET_Player1;
 struct privatebet_vars *Player1_VARS;
