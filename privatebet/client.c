@@ -40,10 +40,14 @@ int32_t no_of_shares=0;
 int32_t player_cards[CARDS777_MAXCARDS];
 int32_t no_of_player_cards=0;
 
+int32_t player_id=0
+
+
 char *LN_db="../../.chipsln/lightningd1.sqlite3";
 
 struct privatebet_info *BET_Player;
 struct privatebet_vars *Player_VARS;
+
 
 
 
@@ -61,8 +65,9 @@ struct deck_player_info player2_info;
 struct privatebet_info *BET_bvv;
 struct privatebet_vars *BVV_VARS;
 
-struct privatebet_info *BET_player;
-struct privatebet_vars *Player_VARS;
+struct privatebet_info *BET_player[CARDS777_MAXPLAYERS];
+struct privatebet_vars *Player_VARS[CARDS777_MAXPLAYERS];
+struct deck_player_info all_players_info[CARDS777_MAXPLAYERS];
 
 
 int32_t BET_client_onechip(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars,int32_t senderid)
@@ -2394,21 +2399,23 @@ int32_t BET_rest_player_join(struct lws *wsi, cJSON *argjson)
 	struct pair256 key;
 	int32_t Maxplayers=10,numplayers=2,range=52;
 	
-	BET_player=calloc(1,sizeof(struct privatebet_info));
-//	BET_player->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
-//	BET_player->pushsock = pushsock/*BET_nanosock(0,bindaddr1,NN_PUSH)*/;
-	BET_player->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
-	BET_player->maxchips = CARDS777_MAXCHIPS;
-	BET_player->chipsize = CARDS777_CHIPSIZE;
-	BET_player->numplayers=numplayers;
-	BET_betinfo_set(BET_player,"demo",range,0,Maxplayers);
+	BET_player[player_id]=calloc(1,sizeof(struct privatebet_info));
+	BET_player[player_id]->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
+	BET_player[player_id]->maxchips = CARDS777_MAXCHIPS;
+	BET_player[player_id]->chipsize = CARDS777_CHIPSIZE;
+	BET_player[player_id]->numplayers=numplayers;
+	BET_betinfo_set(BET_player[player_id],"demo",range,0,Maxplayers);
 		
 		
-	key = deckgen_player(player_info.cardprivkeys,player_info.cardpubkeys,player_info.permis,BET_player->range);
-	player_info.player_key=key;
+	key = deckgen_player(all_players_info[player_id].cardprivkeys,all_players_info[player_id].cardpubkeys,all_players_info[player_id].permis,BET_player[player_id]->range);
+	all_players_info[player_id].player_key=key;
+	player_id++;
+	
     joinInfo=cJSON_CreateObject();
     cJSON_AddStringToObject(joinInfo,"method","join_req");
-    jaddbits256(joinInfo,"pubkey",key.prod);    
+	jaddnum(joinInfo,"player_id",player_id);
+	jaddbits256(joinInfo,"pubkey",key.prod);
+	
 
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(joinInfo));
 	lws_write(wsi,cJSON_Print(joinInfo),strlen(cJSON_Print(joinInfo)),0);
