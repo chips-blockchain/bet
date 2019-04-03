@@ -298,6 +298,10 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	{
 		retval=	BET_rest_bvv_join(wsi,argjson);
 	}
+	else if(strcmp(jstr(argjson,"method"),"player_join") == 0)
+	{
+		retval=	BET_rest_player_join(wsi,argjson);
+	}
 	else
 	{
 		retval=BET_rest_dcv_default(wsi,argjson);

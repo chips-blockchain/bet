@@ -42,6 +42,20 @@ int32_t no_of_player_cards=0;
 
 char *LN_db="../../.chipsln/lightningd1.sqlite3";
 
+struct privatebet_info *BET_Player;
+struct privatebet_vars *Player_VARS;
+
+
+
+struct privatebet_info *BET_Player1;
+struct privatebet_vars *Player1_VARS;
+struct deck_player_info player1_info;
+
+
+struct privatebet_info *BET_Player2;
+struct privatebet_vars *Player2_VARS;
+struct deck_player_info player2_info;
+
 
 
 struct privatebet_info *BET_bvv;
@@ -2358,4 +2372,48 @@ int32_t BET_rest_player(struct lws *wsi, cJSON *argjson)
 	lws_write(wsi,cJSON_Print(playerInfo),strlen(cJSON_Print(playerInfo)),0);
 	return 0;
 }
+
+
+int32_t BET_rest_bvv_join(struct lws *wsi, cJSON *argjson)
+{
+	cJSON *bvvJoinInfo=NULL;
+	bvvJoinInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(bvvJoinInfo,"method","bvv_join");
+	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(bvvJoinInfo));
+	lws_write(wsi,cJSON_Print(bvvJoinInfo),strlen(cJSON_Print(bvvJoinInfo)),0);
+
+	return 0;
+}
+
+int32_t BET_rest_player_join(struct lws *wsi, cJSON *argjson)
+{
+	
+	bits256 playerprivs[CARDS777_MAXCARDS],playercards[CARDS777_MAXCARDS];
+	int32_t permis[CARDS777_MAXCARDS];
+	cJSON *joinInfo=NULL;
+	struct pair256 key;
+	int32_t Maxplayers=10,numplayers=2,range=52;
+	
+	BET_player=calloc(1,sizeof(struct privatebet_info));
+//	BET_player->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
+//	BET_player->pushsock = pushsock/*BET_nanosock(0,bindaddr1,NN_PUSH)*/;
+	BET_player->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
+	BET_player->maxchips = CARDS777_MAXCHIPS;
+	BET_player->chipsize = CARDS777_CHIPSIZE;
+	BET_player->numplayers=numplayers;
+	BET_betinfo_set(BET_player,"demo",range,0,Maxplayers);
+		
+		
+	key = deckgen_player(player_info.cardprivkeys,player_info.cardpubkeys,player_info.permis,BET_player->range);
+	player_info.player_key=key;
+    joinInfo=cJSON_CreateObject();
+    cJSON_AddStringToObject(joinInfo,"method","join_req");
+    jaddbits256(joinInfo,"pubkey",key.prod);    
+
+	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(joinInfo));
+	lws_write(wsi,cJSON_Print(joinInfo),strlen(cJSON_Print(joinInfo)),0);
+	
+	return 0;
+}
+
 
