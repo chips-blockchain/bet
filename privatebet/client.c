@@ -2309,7 +2309,7 @@ int32_t BET_rest_bvv_init(struct lws *wsi, cJSON *argjson)
 {
 	int32_t numplayers=2,range=52;
 	cJSON *bvvJoinInfo=NULL;
-    int32_t Maxplayers=10;
+    int32_t Maxplayers=2;
 	BET_bvv=calloc(1,sizeof(struct privatebet_info));
     //BET_bvv->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
     //BET_bvv->pushsock = pushsock/*BET_nanosock(0,bindaddr1,NN_PUSH)*/;
@@ -2392,7 +2392,7 @@ int32_t BET_rest_player_join(struct lws *wsi, cJSON *argjson)
 	int32_t permis[CARDS777_MAXCARDS];
 	cJSON *joinInfo=NULL;
 	struct pair256 key;
-	int32_t Maxplayers=10,numplayers=2,range=52;
+	int32_t Maxplayers=2,numplayers=2,range=52;
 	
 	BET_player[player_id]=calloc(1,sizeof(struct privatebet_info));
 	BET_player[player_id]->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
