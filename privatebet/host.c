@@ -240,19 +240,18 @@ int32_t BET_rest_dcv_default(struct lws *wsi, cJSON *argjson)
 int32_t BET_rest_client_join_req(struct lws *wsi, cJSON *argjson)
 {
 	cJSON *playerInfo=NULL;
-	
-	 BET_dcv->numplayers=++players_joined;
-	dcv_info.peerpubkeys[players_joined-1]=jbits256(argjson,"pubkey");
-	strcpy(dcv_info.uri[players_joined-1],jstr(argjson,"uri"));
 
-	
+	BET_dcv->numplayers=++players_joined;
+	dcv_info.peerpubkeys[players_joined-1]=jbits256(argjson,"pubkey");
+
+
 	playerInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(playerInfo,"method","join_res");
 	cJSON_AddNumberToObject(playerInfo,"peerid",BET_dcv->numplayers-1); //players numbering starts from 0(zero)
 	jaddbits256(playerInfo,"pubkey",jbits256(argjson,"pubkey"));
 
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(playerInfo));
-	
+
 	lws_write(wsi,cJSON_Print(playerInfo),strlen(cJSON_Print(playerInfo)),0);
 
 	return 0;
