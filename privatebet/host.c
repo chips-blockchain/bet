@@ -237,6 +237,26 @@ int32_t BET_rest_dcv_default(struct lws *wsi, cJSON *argjson)
 	return 0;
 }
 
+int32_t BET_rest_client_join_req(struct lws *wsi, cJSON *argjson)
+{
+	cJSON *playerInfo=NULL;
+	
+	 BET_dcv->numplayers=++players_joined;
+	dcv_info.peerpubkeys[players_joined-1]=jbits256(argjson,"pubkey");
+	strcpy(dcv_info.uri[players_joined-1],jstr(argjson,"uri"));
+
+	
+	playerInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(playerInfo,"method","join_res");
+	cJSON_AddNumberToObject(playerInfo,"peerid",BET_dcv->numplayers-1); //players numbering starts from 0(zero)
+	jaddbits256(playerInfo,"pubkey",jbits256(argjson,"pubkey"));
+
+	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(playerInfo));
+	
+	lws_write(wsi,cJSON_Print(playerInfo),strlen(cJSON_Print(playerInfo)),0);
+
+	return 0;
+}
 
 int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 {
@@ -291,12 +311,33 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	{
 		retval=	BET_rest_player_join(wsi,argjson);
 	}
+	else if(strcmp(jstr(argjson,"method"),"join_req") == 0)
+	{
+		if(BET_dcv->numplayers<BET_dcv->maxplayers)
+		{
+			retval=BET_rest_client_join_req(wsi,argjson);
+			if(retval<0)
+				goto end;
+            if(BET_dcv->numplayers==BET_dcv->maxplayers)
+			{
+				printf("Table is filled");
+				/*
+				retval=BET_LN_check(bet);
+				if(retval<0)
+					goto end;
+				BET_broadcast_table_info(bet);
+				BET_check_BVV_Ready(bet);
+				*/
+			}
+		}
+	}
 	else
 	{
 		retval=BET_rest_dcv_default(wsi,argjson);
 
 	}
-	return 0;
+	end:	
+		return 0;
 }
 
 
