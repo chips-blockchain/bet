@@ -315,9 +315,10 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 		if(BET_dcv->numplayers<BET_dcv->maxplayers)
 		{
 			retval=BET_rest_client_join_req(wsi,argjson);
+			printf("\nBET_dcv->numplayers=%d, BET_dcv->maxplayers=%d",BET_dcv->numplayers,BET_dcv->maxplayers);
             if(BET_dcv->numplayers==BET_dcv->maxplayers)
 			{
-				printf("Table is filled");
+				printf("Table is filled\n");
 			}
 		}
 	}
