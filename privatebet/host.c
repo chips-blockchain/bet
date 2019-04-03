@@ -315,18 +315,9 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 		if(BET_dcv->numplayers<BET_dcv->maxplayers)
 		{
 			retval=BET_rest_client_join_req(wsi,argjson);
-			if(retval<0)
-				goto end;
             if(BET_dcv->numplayers==BET_dcv->maxplayers)
 			{
 				printf("Table is filled");
-				/*
-				retval=BET_LN_check(bet);
-				if(retval<0)
-					goto end;
-				BET_broadcast_table_info(bet);
-				BET_check_BVV_Ready(bet);
-				*/
 			}
 		}
 	}
@@ -335,7 +326,6 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 		retval=BET_rest_dcv_default(wsi,argjson);
 
 	}
-	end:	
 		return 0;
 }
 
