@@ -375,9 +375,9 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
             if(BET_dcv->numplayers==BET_dcv->maxplayers)
 			{
 				printf("Table is filled\n");
+				BET_rest_broadcast_table_info(wsi);
+				BET_rest_check_BVV_Ready(wsi);
 			}
-			BET_rest_broadcast_table_info(wsi);
-			BET_rest_check_BVV_Ready(wsi);
 		}
 	}
 	else if(strcmp(jstr(argjson,"method"),"bvv_ready") == 0)
