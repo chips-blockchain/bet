@@ -309,6 +309,72 @@ int32_t BET_rest_dcv_start_init(struct lws *wsi, cJSON *argjson)
 	return 0;
 }
 
+int32_t BET_rest_dcv_process_init_p(struct lws *wsi, cJSON *argjson)
+{
+  	int32_t peerid,retval=1;
+  	bits256 cardpubvalues[CARDS777_MAXCARDS];
+	cJSON *cardinfo=NULL;
+	char str[65];
+
+  	peerid=jint(argjson,"peerid");
+  	cardinfo=cJSON_GetObjectItem(argjson,"cardinfo");
+	for(int i=0;i<cJSON_GetArraySize(cardinfo);i++)
+	{
+			cardpubvalues[i]=jbits256i(cardinfo,i);
+	} 	
+	
+	retval=sg777_deckgen_vendor(peerid,dcv_info.cardprods[peerid],dcv_info.dcvblindcards[peerid],BET_dcv->range,cardpubvalues,dcv_info.deckid);
+	dcv_info.numplayers=dcv_info.numplayers+1;
+	return retval;
+}
+
+
+int32_t BET_rest_dcv_deck_init_info(struct lws *wsi, cJSON *argjson)
+{
+      cJSON *deck_init_info,*cjsoncardprods,*cjsondcvblindcards,*cjsong_hash,*cjsonpeerpubkeys;
+	  char str[65],*rendered;
+	  int32_t bytes,retval=1;
+	  
+	  deck_init_info=cJSON_CreateObject();
+	  cJSON_AddStringToObject(deck_init_info,"method","init_d");
+	  jaddbits256(deck_init_info,"deckid",dcv_info.deckid);
+	  cJSON_AddItemToObject(deck_init_info,"cardprods",cjsoncardprods=cJSON_CreateArray());
+	  for(int i=0;i<dcv_info.numplayers;i++)
+	  {
+		for(int j=0;j<BET_dcv->range;j++)
+		{
+			cJSON_AddItemToArray(cjsoncardprods,cJSON_CreateString(bits256_str(str,dcv_info.cardprods[i][j])));
+		}
+	  }
+	  cJSON_AddItemToObject(deck_init_info,"dcvblindcards",cjsondcvblindcards=cJSON_CreateArray());
+	  for(int i=0;i<dcv_info.numplayers;i++)
+	  {
+		for(int j=0;j<BET_dcv->range;j++)
+		{
+			cJSON_AddItemToArray(cjsondcvblindcards,cJSON_CreateString(bits256_str(str,dcv_info.dcvblindcards[i][j])));
+		}
+	  }
+
+	  cJSON_AddItemToObject(deck_init_info,"g_hash",cjsong_hash=cJSON_CreateArray());
+	  for(int i=0;i<dcv_info.numplayers;i++)
+	  {
+		for(int j=0;j<BET_dcv->range;j++)
+		{
+			cJSON_AddItemToArray(cjsong_hash,cJSON_CreateString(bits256_str(str,g_hash[i][j])));
+		}
+	  }
+	  cJSON_AddItemToObject(deck_init_info,"peerpubkeys",cjsonpeerpubkeys=cJSON_CreateArray());
+	  for(int i=0;i<dcv_info.numplayers;i++)
+      {
+      	cJSON_AddItemToArray(cjsonpeerpubkeys,cJSON_CreateString(bits256_str(str,dcv_info.peerpubkeys[i])));
+	  }
+
+	  lws_write(wsi,cJSON_Print(deck_init_info),strlen(cJSON_Print(deck_init_info)),0);
+	  return retval;
+}
+
+
+
 int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 {
 
@@ -388,9 +454,17 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	{
 		retval=BET_rest_dcv_start_init(wsi,argjson);
 	}
+	else if(strcmp(method,"init_p") == 0)
+	{
+		retval=BET_rest_dcv_process_init_p(wsi,argjson);
+		if(dcv_info.numplayers==dcv_info.maxplayers)
+		{
+		
+			retval=BET_rest_dcv_deck_init_info(wsi,argjson);
+		}
+	}
 	else
 	{
-		printf("\n%s:%d\n",__FUNCTION__,__LINE__);
 		retval=BET_rest_dcv_default(wsi,argjson);
 
 	}
