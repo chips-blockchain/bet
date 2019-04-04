@@ -230,7 +230,7 @@ int32_t BET_rest_dcv_default(struct lws *wsi, cJSON *argjson)
 {
 	cJSON *defaultInfo=NULL;
 	defaultInfo=cJSON_CreateObject();
-	cJSON_AddStringToObject(defaultInfo,"default",sprintf("Unable to process %s",cJSON_Print(argjson)));
+	cJSON_AddStringToObject(defaultInfo,"default","Unable to process this command");
 
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(defaultInfo));
 	lws_write(wsi,cJSON_Print(defaultInfo),strlen(cJSON_Print(defaultInfo)),0);
@@ -366,7 +366,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	{
 		retval=	BET_rest_player_join(wsi,argjson);
 	}
-	else if(strcmp(jstr(argjson,"method"),"int") == 0)
+	else if(strcmp(jstr(argjson,"method"),"init") == 0)
 	{
 		retval=BET_rest_player_init(wsi,argjson);
 	}
@@ -390,6 +390,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	}
 	else
 	{
+		printf("\n%s:%d\n",__FUNCTION__,__LINE__);
 		retval=BET_rest_dcv_default(wsi,argjson);
 
 	}
