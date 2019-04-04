@@ -464,6 +464,16 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 			retval=BET_rest_dcv_deck_init_info(wsi,argjson);
 		}
 	}
+	else if(strcmp(method,"init_d_bvv") == 0)
+	{
+		printf("\n%s:%d::init_d_bvv",__FUNCTION__,__LINE__);
+		 //BET_p2p_bvv_init(argjson,bet,vars);
+	}
+	else if(strcmp(method,"init_d_player") == 0)
+	{
+		printf("\n%s:%d::init_d_player",__FUNCTION__,__LINE__);
+		 //BET_p2p_bvv_init(argjson,bet,vars);
+	}
 	else
 	{
 		retval=BET_rest_dcv_default(wsi,argjson);
