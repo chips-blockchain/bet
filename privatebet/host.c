@@ -366,6 +366,10 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	{
 		retval=	BET_rest_player_join(wsi,argjson);
 	}
+	else if(strcmp(jstr(argjson,"method"),"int") == 0)
+	{
+		retval=BET_rest_player_init(wsi,argjson);
+	}
 	else if(strcmp(jstr(argjson,"method"),"join_req") == 0)
 	{
 		if(BET_dcv->numplayers<BET_dcv->maxplayers)

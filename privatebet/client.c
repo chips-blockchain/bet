@@ -2374,17 +2374,6 @@ int32_t BET_rest_player(struct lws *wsi, cJSON *argjson)
 }
 
 
-int32_t BET_rest_bvv_join(struct lws *wsi, cJSON *argjson)
-{
-	cJSON *bvvJoinInfo=NULL;
-	bvvJoinInfo=cJSON_CreateObject();
-	cJSON_AddStringToObject(bvvJoinInfo,"method","bvv_join");
-	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(bvvJoinInfo));
-	lws_write(wsi,cJSON_Print(bvvJoinInfo),strlen(cJSON_Print(bvvJoinInfo)),0);
-
-	return 0;
-}
-
 int32_t BET_rest_player_join(struct lws *wsi, cJSON *argjson)
 {
 	
@@ -2417,6 +2406,41 @@ int32_t BET_rest_player_join(struct lws *wsi, cJSON *argjson)
 	
 	return 0;
 }
+
+
+int32_t BET_rest_player_init(struct lws *wsi, cJSON *argjson)
+{
+	cJSON *cjsonplayercards,*init_p=NULL;
+    char str[65];
+	int32_t playerID;
+
+	playerID=jint(argjson,"playerID");
+	init_p=cJSON_CreateObject();
+
+	cJSON_AddStringToObject(init_p,"method","init_p");
+	cJSON_AddNumberToObject(init_p,"peerid",playerID);
+	jaddbits256(init_p,"pubkey",all_players_info[playerID].player_key.prod);
+	cJSON_AddItemToObject(init_p,"cardinfo",cjsonplayercards=cJSON_CreateArray());
+	for(int i=0;i<bet->range;i++) 
+	{
+		cJSON_AddItemToArray(cjsonplayercards,cJSON_CreateString(bits256_str(str,all_players_info[playerID].cardpubkeys[i])));
+	}
+	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(init_p));
+	lws_write(wsi,cJSON_Print(init_p),strlen(cJSON_Print(init_p)),0);
+	
+	return 0;
+}
+int32_t BET_rest_bvv_join(struct lws *wsi, cJSON *argjson)
+{
+	cJSON *bvvJoinInfo=NULL;
+	bvvJoinInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(bvvJoinInfo,"method","bvv_join");
+	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(bvvJoinInfo));
+	lws_write(wsi,cJSON_Print(bvvJoinInfo),strlen(cJSON_Print(bvvJoinInfo)),0);
+
+	return 0;
+}
+
 
 int32_t BET_rest_bvv_check_bvv_ready(struct lws *wsi, cJSON *argjson)
 {
