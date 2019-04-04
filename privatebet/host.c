@@ -454,7 +454,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	{
 		retval=BET_rest_dcv_start_init(wsi,argjson);
 	}
-	else if(strcmp(method,"init_p") == 0)
+	else if(strcmp(jstr(argjson,"method"),"init_p") == 0)
 	{
 		retval=BET_rest_dcv_process_init_p(wsi,argjson);
 		if(dcv_info.numplayers==dcv_info.maxplayers)
