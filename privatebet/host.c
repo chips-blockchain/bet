@@ -369,6 +369,7 @@ int32_t BET_rest_dcv_deck_init_info(struct lws *wsi, cJSON *argjson)
       	cJSON_AddItemToArray(cjsonpeerpubkeys,cJSON_CreateString(bits256_str(str,dcv_info.peerpubkeys[i])));
 	  }
 
+	  printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(deck_init_info));	
 	  lws_write(wsi,cJSON_Print(deck_init_info),strlen(cJSON_Print(deck_init_info)),0);
 	  return retval;
 }
