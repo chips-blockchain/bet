@@ -2421,7 +2421,7 @@ int32_t BET_rest_player_init(struct lws *wsi, cJSON *argjson)
 	cJSON_AddNumberToObject(init_p,"peerid",playerID);
 	jaddbits256(init_p,"pubkey",all_players_info[playerID].player_key.prod);
 	cJSON_AddItemToObject(init_p,"cardinfo",cjsonplayercards=cJSON_CreateArray());
-	for(int i=0;i<bet->range;i++) 
+	for(int i=0;i<BET_player[playerID]->range;i++) 
 	{
 		cJSON_AddItemToArray(cjsonplayercards,cJSON_CreateString(bits256_str(str,all_players_info[playerID].cardpubkeys[i])));
 	}
