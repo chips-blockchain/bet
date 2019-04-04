@@ -296,6 +296,19 @@ int32_t BET_rest_check_BVV_Ready(struct lws *wsi)
 }
 
 
+int32_t BET_rest_dcv_start_init(struct lws *wsi, cJSON *argjson)
+{
+	cJSON *init=NULL;
+
+	
+	init=cJSON_CreateObject();
+	cJSON_AddStringToObject(init,"method","init");
+
+	lws_write(wsi,cJSON_Print(init),strlen(cJSON_Print(init)),0);
+
+	return 0;
+}
+
 int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 {
 
@@ -345,6 +358,10 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	{
 		retval=	BET_rest_bvv_join(wsi,argjson);
 	}
+	else if(strcmp(jstr(argjson,"method"),"check_bvv_ready") == 0)
+	{
+		retval=	BET_rest_bvv_check_bvv_ready(wsi,argjson);
+	}
 	else if(strcmp(jstr(argjson,"method"),"player_join") == 0)
 	{
 		retval=	BET_rest_player_join(wsi,argjson);
@@ -362,6 +379,10 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 			BET_rest_broadcast_table_info(wsi);
 			BET_rest_check_BVV_Ready(wsi);
 		}
+	}
+	else if(strcmp(jstr(argjson,"method"),"bvv_ready") == 0)
+	{
+		retval=BET_rest_dcv_start_init(wsi,argjson);
 	}
 	else
 	{

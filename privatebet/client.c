@@ -2418,4 +2418,14 @@ int32_t BET_rest_player_join(struct lws *wsi, cJSON *argjson)
 	return 0;
 }
 
+int32_t BET_rest_bvv_check_bvv_ready(struct lws *wsi, cJSON *argjson)
+{
+	cJSON *bvvReady=NULL;	
+
+	bvvReady=cJSON_CreateObject();
+	cJSON_AddStringToObject(bvvReady,"method","bvv_ready");
+	lws_write(wsi,cJSON_Print(bvvReady),strlen(cJSON_Print(bvvReady)),0);
+	
+	return 0;
+}
 
