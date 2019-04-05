@@ -79,7 +79,8 @@ int32_t BET_rest_dcv_init(struct lws *wsi, cJSON *argjson)
 	int32_t range=52;
 	cJSON *dcvInfo=NULL,*dcvKeyInfo=NULL;
 	int32_t Maxplayers=2;
-	
+	char temp[24002];	
+	/*
 	DCV_VARS = calloc(1,sizeof(*DCV_VARS));
 	
 	BET_dcv=calloc(1,sizeof(struct privatebet_info));
@@ -94,7 +95,7 @@ int32_t BET_rest_dcv_init(struct lws *wsi, cJSON *argjson)
 	dcv_info.numplayers=0;
 	dcv_info.maxplayers=BET_dcv->maxplayers;
 	BET_permutation(dcv_info.permis,BET_dcv->range);
-    dcv_info.deckid=rand256(0);
+        dcv_info.deckid=rand256(0);
 	dcv_info.dcv_key.priv=curve25519_keypair(&dcv_info.dcv_key.prod);
 
 		
@@ -113,7 +114,15 @@ int32_t BET_rest_dcv_init(struct lws *wsi, cJSON *argjson)
 	cJSON_AddStringToObject(dcvInfo,"dcv",cJSON_Print(dcvKeyInfo));
 
 	lws_write(wsi,cJSON_Print(dcvInfo),strlen(cJSON_Print(dcvInfo)),0);
-
+	*/
+	memset(temp,'x',sizeof(temp));
+	temp[24001]='\0';
+	temp[24000]='\0';
+	dcvInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(dcvInfo,"method","dcv");
+	cJSON_AddStringToObject(dcvInfo,"value",temp);
+	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(dcvInfo));
+	lws_write(wsi,cJSON_Print(dcvInfo),strlen(cJSON_Print(dcvInfo)),0);
 	return 0;
 }
 
@@ -464,16 +473,17 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 			retval=BET_rest_dcv_deck_init_info(wsi,argjson);
 		}
 	}
-	else if(strcmp(jstr(argjson,"method"),"init_d_bvv") == 0)
+/*
+	else if(strcmp(jstr(argjson,"method"),"init_d") == 0)
 	{
-		printf("\n%s:%d::init_d_bvv",__FUNCTION__,__LINE__);
+		//printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 		 //BET_p2p_bvv_init(argjson,bet,vars);
 	}
 	else if(strcmp(jstr(argjson,"method"),"init_d_player") == 0)
 	{
 		printf("\n%s:%d::init_d_player",__FUNCTION__,__LINE__);
 		 //BET_p2p_bvv_init(argjson,bet,vars);
-	}
+	}*/
 	else
 	{
 		retval=BET_rest_dcv_default(wsi,argjson);
@@ -482,7 +492,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 		return 0;
 }
 
-
+int def_var=0;
 
 int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
                         void *user, void *in, size_t len)
@@ -496,12 +506,19 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
         switch(reason)
         {
             case LWS_CALLBACK_RECEIVE:
-              	argjson=cJSON_CreateObject();
+	
+              			argjson=cJSON_CreateObject();
 				argjson=cJSON_Parse(buf);
+				printf("\nIf Final fragment:%d\n",lws_is_final_fragment(wsi));
+				printf("\nReceived Buffer:%s\n",buf);
+				if(def_var<1)
+				{
 				while( BET_process_rest_method(wsi,argjson) != 0 )
 				{
 					printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
 				}
+				}
+				def_var++;
                 break;
         }
         return 0;
