@@ -473,8 +473,12 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	{
 		//retval=BET_rest_player_process_init_d(wsi,argjson);
 	}
-	else
+	else if(strcmp(jstr(argjson,"method"),"init_b_player") == 0)
 	{
+		retval=BET_rest_player_process_init_b(wsi,argjson);
+	}
+	else
+	{		
 		retval=BET_rest_dcv_default(wsi,argjson);
 
 	}

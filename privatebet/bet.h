@@ -402,6 +402,9 @@ struct enc_share { uint8_t bytes[sizeof(bits256)+crypto_box_NONCEBYTES+crypto_bo
 
 extern struct enc_share *g_shares;
 
+extern struct enc_share *all_g_shares[CARDS777_MAXPLAYERS];
+
+
 struct deck_player_info
 {
 	struct pair256 player_key;

@@ -43,6 +43,7 @@ int32_t no_of_player_cards=0;
 int32_t player_id=0;
 bits256 all_v_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 bits256 all_g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
+struct enc_share *all_g_shares[CARDS777_MAXPLAYERS];
 
 
 char *LN_db="../../.chipsln/lightningd1.sqlite3";
@@ -2563,5 +2564,76 @@ int32_t BET_rest_bvv_compute_init_b(struct lws *wsi, cJSON *argjson)
 
 	return 0;
 	
+}
+
+int32_t BET_rest_player_ready(struct lws *wsi,int32_t playerID)
+{
+	cJSON *playerReady=NULL;
+	char *rendered=NULL;
+	int bytes,retval=1;
+	
+	playerReady=cJSON_CreateObject();
+	cJSON_AddStringToObject(playerReady,"method","player_ready");
+	cJSON_AddNumberToObject(playerReady,"playerid",playerID);
+
+	lws_write(wsi,cJSON_Print(playerReady),strlen(cJSON_Print(playerReady)),0);
+	
+	return 0;
+}
+
+
+
+int32_t BET_rest_player_process_init_b(struct lws *wsi, cJSON *argjson)
+
+{
+		static int32_t decodebad,decodegood,good,bad,errs;
+		int32_t unpermi,playererrs=0,decoded[CARDS777_MAXCARDS],retval=1;
+		bits256 decoded256;
+		bits256 bvvblindcards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
+		cJSON *cjsonbvvblindcards,*cjsonshamirshards;
+		bits256 temp,playerprivs[CARDS777_MAXCARDS];
+		int32_t playerID;
+
+		playerID=jint(argjson,"playerID");
+
+		all_players_info[playerID].bvvpubkey=jbits256(argjson,"bvvpubkey");
+		all_g_shares[playerID]=(struct enc_share*)malloc(CARDS777_MAXPLAYERS*CARDS777_MAXPLAYERS*CARDS777_MAXCARDS*sizeof(struct enc_share));
+		cjsonbvvblindcards=cJSON_GetObjectItem(argjson,"bvvblindcards");
+		
+		for(int i=0;i<BET_player[playerID]->numplayers;i++)
+		{
+			for(int j=0;j<BET_player[playerID]->range;j++)
+			{
+				all_players_info[playerID].bvvblindcards[i][j]=jbits256i(cjsonbvvblindcards,i*BET_player[playerID]->range+j);
+			}
+		}
+
+
+		cjsonshamirshards=cJSON_GetObjectItem(argjson,"shamirshards");
+		int k=0;
+		for(int playerid=0;playerid<BET_player[playerID]->numplayers;playerid++)
+		{
+			for (int i=0; i<BET_player[playerID]->range; i++)
+	        {
+	            for (int j=0; j<BET_player[playerID]->numplayers; j++) 
+				{
+					all_g_shares[playerID][k]=get_API_enc_share(cJSON_GetArrayItem(cjsonshamirshards,k));
+					k++;
+	            }
+	        }
+		}
+
+
+		
+		for(int i=0;i<BET_player[playerID]->range;i++)
+		{
+			for(int j=0;j<BET_player[playerID]->range;j++)
+			{
+				temp=xoverz_donna(curve25519(all_players_info[playerID].player_key.priv,curve25519(playerprivs[i],all_players_info[playerID].cardprods[BET_player[playerID]->myplayerid][j])));
+				vcalc_sha256(0,all_v_hash[playerID][i][j].bytes,temp.bytes,sizeof(temp));
+			}
+		}
+	retval=BET_rest_player_ready(wsi,playerID);
+	return retval;
 }
 
