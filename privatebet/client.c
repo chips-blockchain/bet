@@ -2477,8 +2477,9 @@ int32_t BET_rest_bvv_compute_init_b(struct lws *wsi, cJSON *argjson)
 			dcvblindcards[playerID][i]=jbits256i(cjsondcvblindcards,playerID*BET_bvv->range+i); //bvv_info.maxplayers
 		}
 	}
-    g_shares=(struct enc_share*)malloc(CARDS777_MAXPLAYERS*CARDS777_MAXPLAYERS*CARDS777_MAXCARDS*sizeof(struct enc_share));
-
+	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
+    g_shares=(struct enc_share*)malloc(BET_bvv->maxplayers*BET_bvv->maxplayers*BET_bvv->range*sizeof(struct enc_share));
+	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
 	
 	for (int playerid=0; playerid<bvv_info.maxplayers; playerid++)
 	{
