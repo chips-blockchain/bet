@@ -466,7 +466,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	else if(strcmp(jstr(argjson,"method"),"init_d_bvv") == 0)
 	{
 		printf("\n%s:%d",__FUNCTION__,__LINE__);
-		BET_rest_bvv_compute_init_p(wsi,argjson);
+		BET_rest_bvv_compute_init_b(wsi,argjson);
 		 //BET_p2p_bvv_init(argjson,bet,vars);
 	}
 /*	else if(strcmp(jstr(argjson,"method"),"init_d_player") == 0)

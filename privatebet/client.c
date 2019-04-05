@@ -2453,7 +2453,7 @@ int32_t BET_rest_bvv_check_bvv_ready(struct lws *wsi, cJSON *argjson)
 	return 0;
 }
 
-int32_t BET_rest_bvv_compute_init_p(struct lws *wsi, cJSON *argjson)
+int32_t BET_rest_bvv_compute_init_b(struct lws *wsi, cJSON *argjson)
 {
 	int32_t bytes,retval=1;
 	char *rendered,str[65],enc_str[177];
