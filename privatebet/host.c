@@ -80,7 +80,7 @@ int32_t BET_rest_dcv_init(struct lws *wsi, cJSON *argjson)
 	cJSON *dcvInfo=NULL,*dcvKeyInfo=NULL;
 	int32_t Maxplayers=2;
 	char temp[24002];	
-	/*
+	
 	DCV_VARS = calloc(1,sizeof(*DCV_VARS));
 	
 	BET_dcv=calloc(1,sizeof(struct privatebet_info));
@@ -114,7 +114,7 @@ int32_t BET_rest_dcv_init(struct lws *wsi, cJSON *argjson)
 	cJSON_AddStringToObject(dcvInfo,"dcv",cJSON_Print(dcvKeyInfo));
 
 	lws_write(wsi,cJSON_Print(dcvInfo),strlen(cJSON_Print(dcvInfo)),0);
-	*/
+	/*
 	memset(temp,'x',sizeof(temp));
 	temp[24001]='\0';
 	temp[24000]='\0';
@@ -123,6 +123,7 @@ int32_t BET_rest_dcv_init(struct lws *wsi, cJSON *argjson)
 	cJSON_AddStringToObject(dcvInfo,"value",temp);
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(dcvInfo));
 	lws_write(wsi,cJSON_Print(dcvInfo),strlen(cJSON_Print(dcvInfo)),0);
+	*/
 	return 0;
 }
 
