@@ -2517,11 +2517,10 @@ int32_t BET_rest_bvv_compute_init_b(struct lws *wsi, cJSON *argjson)
 	temp_buf=(char*)malloc(strlen(cJSON_Print(bvv_init_info))+LWS_PRE);
 	strncpy(temp_buf+LWS_PRE,cJSON_Print(bvv_init_info),strlen(cJSON_Print(bvv_init_info)));
 	temp_buf[strlen(cJSON_Print(bvv_init_info))+LWS_PRE]='\0';
-	printf("\n%s LWS_PRE=%d",temp_buf+LWS_PRE,LWS_PRE);
-	printf("\nLength:%d\n",strlen(cJSON_Print(bvv_init_info)));
-	
-
 	lws_write(wsi,temp_buf+LWS_PRE,strlen(cJSON_Print(bvv_init_info)),0);
+
+	if(temp_buf)
+		free(temp_buf);
 	return 0;
 	
 }
