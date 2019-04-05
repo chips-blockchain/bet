@@ -79,7 +79,6 @@ int32_t BET_rest_dcv_init(struct lws *wsi, cJSON *argjson)
 	int32_t range=52;
 	cJSON *dcvInfo=NULL,*dcvKeyInfo=NULL;
 	int32_t Maxplayers=2;
-	char temp[24002];	
 	
 	DCV_VARS = calloc(1,sizeof(*DCV_VARS));
 	
@@ -114,16 +113,6 @@ int32_t BET_rest_dcv_init(struct lws *wsi, cJSON *argjson)
 	cJSON_AddStringToObject(dcvInfo,"dcv",cJSON_Print(dcvKeyInfo));
 
 	lws_write(wsi,cJSON_Print(dcvInfo),strlen(cJSON_Print(dcvInfo)),0);
-	/*
-	memset(temp,'x',sizeof(temp));
-	temp[24001]='\0';
-	temp[24000]='\0';
-	dcvInfo=cJSON_CreateObject();
-	cJSON_AddStringToObject(dcvInfo,"method","dcv");
-	cJSON_AddStringToObject(dcvInfo,"value",temp);
-	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(dcvInfo));
-	lws_write(wsi,cJSON_Print(dcvInfo),strlen(cJSON_Print(dcvInfo)),0);
-	*/
 	return 0;
 }
 
@@ -474,9 +463,10 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 			retval=BET_rest_dcv_deck_init_info(wsi,argjson);
 		}
 	}
-	else if(strcmp(jstr(argjson,"method"),"init_d") == 0)
+	else if(strcmp(jstr(argjson,"method"),"init_d_bvv") == 0)
 	{
-		printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+		printf("\n%s:%d",__FUNCTION__,__LINE__);
+		BET_rest_bvv_compute_init_p(wsi,argjson);
 		 //BET_p2p_bvv_init(argjson,bet,vars);
 	}
 /*	else if(strcmp(jstr(argjson,"method"),"init_d_player") == 0)

@@ -2453,3 +2453,66 @@ int32_t BET_rest_bvv_check_bvv_ready(struct lws *wsi, cJSON *argjson)
 	return 0;
 }
 
+int32_t BET_rest_bvv_compute_init_p(struct lws *wsi, cJSON *argjson)
+{
+	int32_t bytes,retval=1;
+	char *rendered,str[65],enc_str[177];
+	cJSON *cjsondcvblindcards,*cjsonpeerpubkeys,*bvv_init_info,*cjsonbvvblindcards,*cjsonshamirshards;
+	bits256 dcvblindcards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS],peerpubkeys[CARDS777_MAXPLAYERS];
+	bits256 bvvblindingvalues[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
+	bits256 bvvblindcards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
+	
+	bvv_info.numplayers=BET_bvv->numplayers;
+	bvv_info.maxplayers=BET_bvv->maxplayers;
+	bvv_info.deckid=jbits256(argjson,"deckid");
+	bvv_info.bvv_key.priv=curve25519_keypair(&bvv_info.bvv_key.prod);
+	cjsonpeerpubkeys=cJSON_GetObjectItem(argjson,"peerpubkeys");
+	cjsondcvblindcards=cJSON_GetObjectItem(argjson,"dcvblindcards");
+	
+	for(int playerID=0;playerID<bvv_info.maxplayers;playerID++) 
+	{
+		peerpubkeys[playerID]=jbits256i(cjsonpeerpubkeys,playerID);
+		for(int i=0;i<BET_bvv->range;i++) 
+		{
+			dcvblindcards[playerID][i]=jbits256i(cjsondcvblindcards,playerID*BET_bvv->range+i); //bvv_info.maxplayers
+		}
+	}
+    g_shares=(struct enc_share*)malloc(CARDS777_MAXPLAYERS*CARDS777_MAXPLAYERS*CARDS777_MAXCARDS*sizeof(struct enc_share));
+
+	
+	for (int playerid=0; playerid<bvv_info.maxplayers; playerid++)
+	{
+		p2p_bvv_init(peerpubkeys,bvv_info.bvv_key,bvvblindingvalues[playerid],bvvblindcards[playerid],
+			dcvblindcards[playerid],BET_bvv->range,bvv_info.numplayers,playerid,bvv_info.deckid);
+		//sleep(5);
+
+	}
+	
+	bvv_init_info=cJSON_CreateObject();
+	cJSON_AddStringToObject(bvv_init_info,"method","init_b");
+	jaddbits256(bvv_init_info,"bvvpubkey",bvv_info.bvv_key.prod);
+	cJSON_AddItemToObject(bvv_init_info,"bvvblindcards",cjsonbvvblindcards=cJSON_CreateArray());
+	for(int i=0;i<bvv_info.numplayers;i++)
+	{
+		for(int j=0;j<BET_bvv->range;j++)
+		{
+			cJSON_AddItemToArray(cjsonbvvblindcards,cJSON_CreateString(bits256_str(str,bvvblindcards[i][j])));
+		}
+	}
+	cJSON_AddItemToObject(bvv_init_info,"shamirshards",cjsonshamirshards=cJSON_CreateArray());
+	int k=0;
+	for(int playerid=0;playerid<bvv_info.numplayers;playerid++)
+	{
+		for(int i=0;i<BET_bvv->range;i++)
+		{
+			for(int j=0;j<bvv_info.numplayers;j++)
+			{
+				cJSON_AddItemToArray(cjsonshamirshards,cJSON_CreateString(enc_share_str(enc_str,g_shares[k++])));
+			}
+		}
+	}
+	lws_write(wsi,cJSON_Print(bvv_init_info),strlen(cJSON_Print(bvv_init_info)),0);
+	return 0;
+	
+}
+
