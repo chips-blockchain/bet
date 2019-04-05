@@ -2560,8 +2560,6 @@ int32_t BET_rest_bvv_compute_init_b(struct lws *wsi, cJSON *argjson)
 	temp_buf[strlen(cJSON_Print(bvv_init_info))+LWS_PRE]='\0';
 	lws_write(wsi,temp_buf+LWS_PRE,strlen(cJSON_Print(bvv_init_info)),0);
 
-	if(temp_buf)
-		free(temp_buf);
 	return 0;
 	
 }
