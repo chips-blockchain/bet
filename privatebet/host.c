@@ -482,7 +482,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 		return 0;
 }
 
-char lws_buf[16384];
+char lws_buf[32768];
 int32_t lws_buf_length=0;
 int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
                         void *user, void *in, size_t len)
