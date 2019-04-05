@@ -521,6 +521,10 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 				
 				if(def_var<1)
 				{
+					argjson=cJSON_CreateObject();
+					argjson=cJSON_Parse(lws_buf);
+					memset(lws_buf,0x00,sizeof(lws_buf));
+					lws_buf_length=0;
 					while( BET_process_rest_method(wsi,argjson) != 0 )
 					{
 						printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
