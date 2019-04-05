@@ -494,6 +494,8 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 
 int def_var=0;
 
+char lws_buf[65536];
+int32_t lws_buf_length=0;
 int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
                         void *user, void *in, size_t len)
 {
@@ -507,16 +509,22 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
         {
             case LWS_CALLBACK_RECEIVE:
 	
-              			argjson=cJSON_CreateObject();
-				argjson=cJSON_Parse(buf);
-				printf("\nIf Final fragment:%d\n",lws_is_final_fragment(wsi));
-				printf("\nReceived Buffer:%s\n",buf);
+              	//argjson=cJSON_CreateObject();
+				//argjson=cJSON_Parse(buf);
+
+				memcpy(lws_buf+lws_buf_length,in,len);
+				lws_buf_length+=len;
+				if (!lws_is_final_fragment(wsi))
+						break;
+				printf("\n%s\n",lws_buf);
+				printf("\nlws_buf_length=%d",lws_buf_length);
+				
 				if(def_var<1)
 				{
-				while( BET_process_rest_method(wsi,argjson) != 0 )
-				{
-					printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
-				}
+					while( BET_process_rest_method(wsi,argjson) != 0 )
+					{
+						printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
+					}
 				}
 				def_var++;
                 break;
