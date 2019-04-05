@@ -41,6 +41,8 @@ int32_t player_cards[CARDS777_MAXCARDS];
 int32_t no_of_player_cards=0;
 
 int32_t player_id=0;
+bits256 all_v_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS][CARDS777_MAXCARDS];
+bits256 all_g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 
 
 char *LN_db="../../.chipsln/lightningd1.sqlite3";
@@ -2430,6 +2432,45 @@ int32_t BET_rest_player_init(struct lws *wsi, cJSON *argjson)
 	
 	return 0;
 }
+
+
+int32_t BET_rest_player_process_init_d(struct lws *wsi, cJSON *argjson)
+{
+	int32_t retval=1,playerID;
+	cJSON *cjsoncardprods,*cjsong_hash;
+	char hexstr [ 65 ];
+
+	playerID=jint(argjson,"playerID");
+	player_info.deckid=jbits256(argjson,"deckid");
+	cjsoncardprods=cJSON_GetObjectItem(argjson,"cardprods");
+	
+	for(int i=0;i<BET_player[playerID]->numplayers;i++)
+	{
+		for(int j=0;j<BET_player[playerID]->range;j++)
+		{
+			player_info.cardprods[i][j]=jbits256i(cjsoncardprods,i*BET_player[playerID]->range+j);
+		}
+	}
+
+	
+	cjsong_hash=cJSON_GetObjectItem(argjson,"g_hash");
+	
+
+	for(int i=0;i<BET_player[playerID]->numplayers;i++)
+	{
+		for(int j=0;j<BET_player[playerID]->range;j++)
+		{
+			all_g_hash[playerID][i][j]=jbits256i(cjsong_hash,i*BET_player[playerID]->range+j);
+		
+		}
+	}
+
+	
+	
+	return retval;
+}
+
+
 int32_t BET_rest_bvv_join(struct lws *wsi, cJSON *argjson)
 {
 	cJSON *bvvJoinInfo=NULL;

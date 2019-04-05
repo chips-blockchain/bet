@@ -441,8 +441,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 		if(BET_dcv->numplayers<BET_dcv->maxplayers)
 		{
 			retval=BET_rest_client_join_req(wsi,argjson);
-			printf("\nBET_dcv->numplayers=%d, BET_dcv->maxplayers=%d",BET_dcv->numplayers,BET_dcv->maxplayers);
-            if(BET_dcv->numplayers==BET_dcv->maxplayers)
+		    if(BET_dcv->numplayers==BET_dcv->maxplayers)
 			{
 				printf("Table is filled\n");
 				BET_rest_broadcast_table_info(wsi);
@@ -465,15 +464,12 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	}
 	else if(strcmp(jstr(argjson,"method"),"init_d_bvv") == 0)
 	{
-		printf("\n%s:%d\n",__FUNCTION__,__LINE__);
 		BET_rest_bvv_compute_init_b(wsi,argjson);
-		 //BET_p2p_bvv_init(argjson,bet,vars);
 	}
-/*	else if(strcmp(jstr(argjson,"method"),"init_d_player") == 0)
+	else if(strcmp(jstr(argjson,"method"),"init_d_player") == 0)
 	{
-		printf("\n%s:%d::init_d_player",__FUNCTION__,__LINE__);
-		 //BET_p2p_bvv_init(argjson,bet,vars);
-	}*/
+		BET_rest_player_process_init_d(wsi,argjson);
+	}
 	else
 	{
 		retval=BET_rest_dcv_default(wsi,argjson);
