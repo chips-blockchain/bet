@@ -2513,6 +2513,7 @@ int32_t BET_rest_bvv_compute_init_b(struct lws *wsi, cJSON *argjson)
 		}
 	}
 	printf("\n%s",cJSON_Print(bvv_init_info));
+	printf("\nLength:%d\n",strlen(cJSON_Print(bvv_init_info)));
 	//lws_write(wsi,cJSON_Print(bvv_init_info),strlen(cJSON_Print(bvv_init_info)),0);
 	return 0;
 	
