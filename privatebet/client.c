@@ -2633,3 +2633,19 @@ int32_t BET_rest_player_process_init_b(struct lws *wsi, cJSON *argjson,int32_t p
 	return retval;
 }
 
+int32_t BET_rest_player_join_res(cJSON *argjson)
+{
+	int32_t playerID;
+	playerID=jint(argjson,"playerID");
+	for(int32_t i=0;i<CARDS777_MAXPLAYERS;i++)
+	{
+		if(0 == bits256_cmp(all_players_info[playerID].player_key.prod,jbits256(argjson,"pubkey")))
+		{
+			BET_player[playerID]->myplayerid=jint(argjson,"peerid");
+		
+		}
+	}
+	return 0;
+}
+
+
