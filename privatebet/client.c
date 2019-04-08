@@ -2392,7 +2392,7 @@ int32_t BET_rest_player_join(struct lws *wsi, cJSON *argjson)
 	BET_player[player_id]->chipsize = CARDS777_CHIPSIZE;
 	BET_player[player_id]->numplayers=numplayers;
 	BET_betinfo_set(BET_player[player_id],"demo",range,0,Maxplayers);
-		
+	BET_player[player_id]->myplayerid=player_id;
 		
 	key = deckgen_player(all_players_info[player_id].cardprivkeys,all_players_info[player_id].cardpubkeys,all_players_info[player_id].permis,BET_player[player_id]->range);
 	all_players_info[player_id].player_key=key;
@@ -2634,20 +2634,7 @@ int32_t BET_rest_player_process_init_b(struct lws *wsi, cJSON *argjson,int32_t p
 int32_t BET_rest_player_join_res(cJSON *argjson)
 {
 	int32_t playerID;
-	playerID=jint(argjson,"playerID");
-	BET_player[playerID]->myplayerid=jint(argjson,"peerid");
-	/*
-	for(int32_t i=0;i<CARDS777_MAXPLAYERS;i++)
-	{
-		if(0 == bits256_cmp(all_players_info[i].player_key.prod,jbits256(argjson,"pubkey")))
-		{
-			printf("BET_player[playerID]->myplayerid=%d,playerID=%d\n",BET_player[playerID]->myplayerid,playerID);
-			BET_player[playerID]->myplayerid=jint(argjson,"peerid");
-			
-		
-		}
-	}
-	*/
+	//Do nothing
 	return 0;
 }
 
