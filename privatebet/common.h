@@ -26,7 +26,6 @@ extern struct privatebet_vars *BVV_VARS;
 
 extern struct privatebet_info *BET_player[CARDS777_MAXPLAYERS];
 extern struct privatebet_vars *Player_VARS[CARDS777_MAXPLAYERS];
-extern struct deck_player_info all_players_info[CARDS777_MAXPLAYERS];
 
 
 
