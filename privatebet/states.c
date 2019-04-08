@@ -1146,6 +1146,7 @@ int32_t BET_rest_player_dealer_info(struct lws *wsi, cJSON *argjson)
 		}
 	}
 	printf("\nPlayer_VARS[playerID]->dealer = %d, BET_player[playerID]->myplayerid =%d",Player_VARS[playerID]->dealer,BET_player[playerID]->myplayerid);
+	printf("playerID=%d\n",playerID);
 	if(Player_VARS[playerID]->dealer == BET_player[playerID]->myplayerid)
 	{
 		printf("\n%s:%d::I AM THE DEALER: %d\n",__FUNCTION__,__LINE__,BET_player[playerID]->myplayerid);
