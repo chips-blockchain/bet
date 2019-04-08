@@ -1048,3 +1048,10 @@ int32_t BET_player_round_betting_response(cJSON *argjson,struct privatebet_info 
 		return retval;
 }
 
+
+
+/*
+REST API's starts from here
+*/
+
+

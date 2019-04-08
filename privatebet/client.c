@@ -2441,8 +2441,7 @@ int32_t BET_rest_player_process_init_d(struct lws *wsi, cJSON *argjson,int32_t p
 	cJSON *cjsoncardprods,*cjsong_hash;
 	char hexstr [ 65 ];
 
-	//playerID=jint(argjson,"playerID");
-	printf("%s:%d::playerID:%d",__FUNCTION__,__LINE__,playerID);
+	printf("%s:%d::playerID:%d\n",__FUNCTION__,__LINE__,playerID);
 	player_info.deckid=jbits256(argjson,"deckid");
 	cjsoncardprods=cJSON_GetObjectItem(argjson,"cardprods");
 	

@@ -373,6 +373,20 @@ int32_t BET_rest_dcv_deck_init_info(struct lws *wsi, cJSON *argjson)
 	  return retval;
 }
 
+int32_t BET_rest_check_player_ready(struct lws *wsi, cJSON *argjson)
+{
+	int flag=1;
+	player_ready[jint(argjson,"playerID")]=1;
+	for(int i=0;i<BET_dcv->maxplayers;i++)
+	{
+		if(player_ready[i]==0)
+		{
+			flag=0;
+			break;
+		}
+	}
+	return flag;
+}
 
 
 int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
@@ -475,19 +489,20 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	}
 	else if(strcmp(jstr(argjson,"method"),"init_b_player") == 0)
 	{
-		printf("%s:%d\n",__FUNCTION__,__LINE__);
+		printf("%s:%d::%d\n",__FUNCTION__,__LINE__,jint(argjson,"playerID"));
 		retval=BET_rest_player_process_init_b(wsi,argjson);
 	}
 	else if(strcmp(jstr(argjson,"method"),"player_ready") == 0)
 	{
 		printf("%s:%d::%s\n",__FUNCTION__,__LINE__,jstr(argjson,"method"));
-		/*
-		if(BET_p2p_check_player_ready(argjson,bet,vars))
+
+		if(BET_rest_check_player_ready(wsi,argjson))
 		{
-			retval=BET_p2p_initiate_statemachine(argjson,bet,vars);
+			//retval=BET_p2p_initiate_statemachine(argjson,bet,vars);
+			printf("\n%s::%d::Initiate the state machine\n",__FUNCTION__,__LINE__);
 			  
 		}
-		*/
+		
 	}
 	else
 	{		
