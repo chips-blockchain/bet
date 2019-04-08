@@ -2582,7 +2582,7 @@ int32_t BET_rest_player_ready(struct lws *wsi,int32_t playerID)
 
 
 
-int32_t BET_rest_player_process_init_b(struct lws *wsi, cJSON *argjson)
+int32_t BET_rest_player_process_init_b(struct lws *wsi, cJSON *argjson,int32_t playerID)
 
 {
 		static int32_t decodebad,decodegood,good,bad,errs;
@@ -2591,9 +2591,6 @@ int32_t BET_rest_player_process_init_b(struct lws *wsi, cJSON *argjson)
 		bits256 bvvblindcards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 		cJSON *cjsonbvvblindcards,*cjsonshamirshards;
 		bits256 temp,playerprivs[CARDS777_MAXCARDS];
-		int32_t playerID;
-
-		playerID=jint(argjson,"playerID");
 
 		all_players_info[playerID].bvvpubkey=jbits256(argjson,"bvvpubkey");
 		all_g_shares[playerID]=(struct enc_share*)malloc(CARDS777_MAXPLAYERS*CARDS777_MAXPLAYERS*CARDS777_MAXCARDS*sizeof(struct enc_share));
