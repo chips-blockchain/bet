@@ -2635,7 +2635,7 @@ int32_t BET_rest_player_join_res(cJSON *argjson)
 {
 	int32_t playerID;
 	playerID=jint(argjson,"playerID");
-	printf("peerid=%d\n",jint(argjson,"peerid"));
+	BET_player[playerID]->myplayerid=jint(argjson,"peerid");
 	/*
 	for(int32_t i=0;i<CARDS777_MAXPLAYERS;i++)
 	{
