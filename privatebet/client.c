@@ -2396,17 +2396,15 @@ int32_t BET_rest_player_join(struct lws *wsi, cJSON *argjson)
 		
 	key = deckgen_player(all_players_info[player_id].cardprivkeys,all_players_info[player_id].cardpubkeys,all_players_info[player_id].permis,BET_player[player_id]->range);
 	all_players_info[player_id].player_key=key;
-	player_id++;
-	
+
     joinInfo=cJSON_CreateObject();
     cJSON_AddStringToObject(joinInfo,"method","join_req");
 	jaddnum(joinInfo,"player_id",player_id);
 	jaddbits256(joinInfo,"pubkey",key.prod);
-	
 
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(joinInfo));
 	lws_write(wsi,cJSON_Print(joinInfo),strlen(cJSON_Print(joinInfo)),0);
-	
+	player_id++;	
 	return 0;
 }
 
