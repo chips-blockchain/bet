@@ -465,7 +465,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	}
 	else if(strcmp(jstr(argjson,"method"),"join_res") == 0)
 	{
-		BET_rest_player_join_res(argjson);
+		retval=BET_rest_player_join_res(argjson);
 	}
 	else if(strcmp(jstr(argjson,"method"),"bvv_ready") == 0)
 	{
