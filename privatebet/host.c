@@ -499,7 +499,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 
 		if(BET_rest_check_player_ready(wsi,argjson))
 		{
-			retval=BET_p2p_initiate_statemachine(argjson,bet,vars);
+			retval=BET_rest_initiate_statemachine(wsi,argjson);
 			printf("\n%s::%d::Initiate the state machine\n",__FUNCTION__,__LINE__);
 			  
 		}
