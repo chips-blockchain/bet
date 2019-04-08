@@ -17,6 +17,10 @@ extern bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 extern bits256 all_v_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 extern bits256 all_g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 
+extern struct privatebet_info *BET_dcv;
+extern struct privatebet_vars *DCV_VARS;
+
+
 
 extern int32_t permis_d[CARDS777_MAXCARDS],permis_b[CARDS777_MAXCARDS];
 extern bits256 Myprivkey,Mypubkey;

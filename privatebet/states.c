@@ -241,7 +241,6 @@ void BET_statemachine(struct privatebet_info *bet,struct privatebet_vars *vars)
 Here contains the functions which are specific to DCV
 ****************************************************************/
 
-
 int32_t BET_p2p_initiate_statemachine(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	cJSON *dealerInfo=NULL;
@@ -1048,10 +1047,74 @@ int32_t BET_player_round_betting_response(cJSON *argjson,struct privatebet_info 
 		return retval;
 }
 
+/***************************************************************
+Here contains the functions which are specific to REST calls
+****************************************************************/
+int32_t BET_p2p_initiate_statemachine(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	cJSON *dealerInfo=NULL;
+	int32_t retval=1,bytes;
+	char *rendered=NULL;
+	vars->turni=0;
+	vars->round=0;
+	vars->pot=0;
+	vars->last_turn=0;
+	vars->last_raise=0;
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		vars->funds[i]=10000000;// hardcoded max funds to 10000 satoshis
+		for(int j=0;j<CARDS777_MAXROUNDS;j++)
+		{
+			vars->bet_actions[i][j]=0;
+			vars->betamount[i][j]=0;
+		}
+	}
+	srand(time(0));
+	vars->dealer=rand()%bet->maxplayers;
+	dealerInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(dealerInfo,"method","dealer");
+	cJSON_AddNumberToObject(dealerInfo,"playerid",vars->dealer);
 
+	rendered=cJSON_Print(dealerInfo);
+	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+	if(bytes<0)
+	{
+		retval=-1;
+		printf("\n Failed to send data");
+		goto end;
+	}
+	
+	end:
+		return retval;
+}
 
-/*
-REST API's starts from here
-*/
+int32_t BET_rest_initiate_statemachine(struct lws *wsi, cJSON *argjson)
+{
+	cJSON *dealerInfo=NULL;
+	int32_t retval=1,bytes;
+	char *rendered=NULL;
+	DCV_VARS->turni=0;
+	DCV_VARS->round=0;
+	DCV_VARS->pot=0;
+	DCV_VARS->last_turn=0;
+	DCV_VARS->last_raise=0;
+	for(int i=0;i<BET_dcv->maxplayers;i++)
+	{
+		DCV_VARS->funds[i]=10000000;// hardcoded max funds to 10000 satoshis
+		for(int j=0;j<CARDS777_MAXROUNDS;j++)
+		{
+			DCV_VARS->bet_actions[i][j]=0;
+			DCV_VARS->betamount[i][j]=0;
+		}
+	}
+	srand(time(0));
+	DCV_VARS->dealer=rand()%BET_dcv->maxplayers;
+	dealerInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(dealerInfo,"method","dealer");
+	cJSON_AddNumberToObject(dealerInfo,"playerid",DCV_VARS->dealer);
 
+	lws_write(wsi,cJSON_Print(dealerInfo),strlen(cJSON_Print(dealerInfo)),0);
+
+	return 0;
+}
 
