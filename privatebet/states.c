@@ -1050,44 +1050,6 @@ int32_t BET_player_round_betting_response(cJSON *argjson,struct privatebet_info 
 /***************************************************************
 Here contains the functions which are specific to REST calls
 ****************************************************************/
-int32_t BET_p2p_initiate_statemachine(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
-{
-	cJSON *dealerInfo=NULL;
-	int32_t retval=1,bytes;
-	char *rendered=NULL;
-	vars->turni=0;
-	vars->round=0;
-	vars->pot=0;
-	vars->last_turn=0;
-	vars->last_raise=0;
-	for(int i=0;i<bet->maxplayers;i++)
-	{
-		vars->funds[i]=10000000;// hardcoded max funds to 10000 satoshis
-		for(int j=0;j<CARDS777_MAXROUNDS;j++)
-		{
-			vars->bet_actions[i][j]=0;
-			vars->betamount[i][j]=0;
-		}
-	}
-	srand(time(0));
-	vars->dealer=rand()%bet->maxplayers;
-	dealerInfo=cJSON_CreateObject();
-	cJSON_AddStringToObject(dealerInfo,"method","dealer");
-	cJSON_AddNumberToObject(dealerInfo,"playerid",vars->dealer);
-
-	rendered=cJSON_Print(dealerInfo);
-	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
-	if(bytes<0)
-	{
-		retval=-1;
-		printf("\n Failed to send data");
-		goto end;
-	}
-	
-	end:
-		return retval;
-}
-
 int32_t BET_rest_initiate_statemachine(struct lws *wsi, cJSON *argjson)
 {
 	cJSON *dealerInfo=NULL;
