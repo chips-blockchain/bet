@@ -478,6 +478,17 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 		printf("%s:%d\n",__FUNCTION__,__LINE__);
 		retval=BET_rest_player_process_init_b(wsi,argjson);
 	}
+	else if(strcmp(jstr(argjson,"method"),"player_ready") == 0)
+	{
+		printf("%s:%d::%s\n",__FUNCTION__,__LINE__,jstr(argjson,"method"));
+		/*
+		if(BET_p2p_check_player_ready(argjson,bet,vars))
+		{
+			retval=BET_p2p_initiate_statemachine(argjson,bet,vars);
+			  
+		}
+		*/
+	}
 	else
 	{		
 		retval=BET_rest_dcv_default(wsi,argjson);
@@ -506,7 +517,6 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 						break;
 				argjson=cJSON_CreateObject();
 				argjson=cJSON_Parse(lws_buf);
-				printf("\n%s:%d::%s",__FUNCTION__,__LINE__,lws_buf);
 				memset(lws_buf,0x00,sizeof(lws_buf));
 				lws_buf_length=0;
 				while( BET_process_rest_method(wsi,argjson) != 0 )
