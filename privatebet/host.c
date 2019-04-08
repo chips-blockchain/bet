@@ -505,6 +505,20 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 		}
 		
 	}
+	else if(strcmp(jstr(argjson,"method"),"dealer_bvv") == 0)
+	{
+			retval=BET_rest_bvv_dealer_info(wsi,argjson);
+	}
+	else if(strcmp(jstr(argjson,"method"),"dealer_player") == 0)
+	{
+			retval=BET_rest_player_dealer_info(wsi,argjson);
+	}
+	else if(strcmp(jstr(argjson,"method"), "dealer_ready") == 0)
+	{
+		printf("\n%s:%d:: Dealer Ready\n",__FUNCTION__,__LINE__);
+		//retval=BET_p2p_dcv_turn(argjson,bet,vars);
+		
+	}
 	else
 	{		
 		retval=BET_rest_dcv_default(wsi,argjson);
@@ -2150,7 +2164,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		{
 			retval=BET_p2p_dcv_turn(argjson,bet,vars);
 		
-}
+		}
 		else if(strcmp(method,"playerCardInfo") == 0)
 		{
 				retval = BET_receive_card(argjson,bet,vars);

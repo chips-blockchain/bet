@@ -1080,3 +1080,81 @@ int32_t BET_rest_initiate_statemachine(struct lws *wsi, cJSON *argjson)
 	return 0;
 }
 
+
+int32_t BET_rest_bvv_dealer_info(struct lws *wsi, cJSON *argjson)
+{
+	int retval=1,bytes;
+	cJSON *dealerReady=NULL;
+	char *rendered=NULL;
+	
+	BVV_VARS->dealer=jint(argjson,"playerid");
+	BVV_VARS->turni=BVV_VARS->dealer;
+	BVV_VARS->pot=0;
+	BVV_VARS->player_funds=10000000; // hardcoded to 10000 satoshis
+	for(int i=0;i<BET_bvv->maxplayers;i++)
+	{
+		for(int j=0;j<CARDS777_MAXROUNDS;j++)
+		{
+			BVV_VARS->bet_actions[i][j]=0;
+		}
+	}
+	for(int i=0;i<BET_bvv->maxplayers;i++)
+	{
+		for(int j=0;j<CARDS777_MAXROUNDS;j++)
+		{
+			BVV_VARS->betamount[i][j]=0;
+		}
+	}
+	/*
+	if(BVV_VARS->dealer == BET_bvv->myplayerid)
+	{
+		printf("\n%s:%d::I AM THE DEALER: %d\n",__FUNCTION__,__LINE__,BET_bvv->myplayerid);
+		dealerReady=cJSON_CreateObject();
+		cJSON_AddStringToObject(dealerReady,"method","dealer_ready");
+		lws_write(wsi,cJSON_Print(dealerReady),strlen(cJSON_Print(dealerReady)),0);
+	}
+	*/
+	return 0;
+}
+
+int32_t BET_rest_player_dealer_info(struct lws *wsi, cJSON *argjson)
+{
+	int retval=1,bytes;
+	cJSON *dealerReady=NULL;
+	char *rendered=NULL;
+	int32_t playerID;
+	
+	playerID=jint(argjson,"playerID");
+	Player_VARS[playerID]=calloc(1,sizeof(struct privatebet_vars));
+	
+	Player_VARS[playerID]->dealer=jint(argjson,"playerid");
+	Player_VARS[playerID]->turni=Player_VARS[playerID]->dealer;
+	Player_VARS[playerID]->pot=0;
+	Player_VARS[playerID]->player_funds=10000000; // hardcoded to 10000 satoshis
+	for(int i=0;i<BET_player[playerID]->maxplayers;i++)
+	{
+		for(int j=0;j<CARDS777_MAXROUNDS;j++)
+		{
+			Player_VARS[playerID]->bet_actions[i][j]=0;
+		}
+	}
+	for(int i=0;i<BET_player[playerID]->maxplayers;i++)
+	{
+		for(int j=0;j<CARDS777_MAXROUNDS;j++)
+		{
+			Player_VARS[playerID]->betamount[i][j]=0;
+		}
+	}
+	
+	if(Player_VARS[playerID]->dealer == BET_player[playerID]->myplayerid)
+	{
+		printf("\n%s:%d::I AM THE DEALER: %d\n",__FUNCTION__,__LINE__,BET_player[playerID]->myplayerid);
+		dealerReady=cJSON_CreateObject();
+		cJSON_AddStringToObject(dealerReady,"method","dealer_ready");
+		lws_write(wsi,cJSON_Print(dealerReady),strlen(cJSON_Print(dealerReady)),0);
+	}
+	
+	return 0;
+}
+
+
