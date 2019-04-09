@@ -2800,3 +2800,161 @@ int32_t BET_rest_player_give_share(struct lws *wsi,cJSON *argjson)
 }
 
 
+
+
+bits256 BET_rest_decode_card(int32_t this_playerID,int32_t cardid)
+{
+	int32_t retval,numplayers,numcards,M,playerid,flag=0;
+	bits256 recover,decoded,refval,tmp,xoverz,hash,fe,basepoint;
+	uint8_t **shares;
+    uint8_t decipher[sizeof(bits256) + 1024],*ptr; int32_t recvlen;
+	char str[65];
+	char hexstr [ 65 ];
+	numplayers=BET_player[this_playerID]->maxplayers;
+	numcards=BET_player[this_playerID]->range;
+	shares=calloc(numplayers,sizeof(uint8_t*));
+    for(int i=0;i<numplayers;i++)
+        shares[i]=calloc(sizeof(bits256),sizeof(uint8_t));
+    
+  	M=(numplayers/2)+1;
+	for(int i=0;i<M;i++) 
+	{
+		memcpy(shares[i],all_playershares[this_playerID][cardid][i].bytes,sizeof(bits256));
+	}
+	gfshare_calc_sharenrs(sharenrs,numplayers,all_players_info[this_playerID].deckid.bytes,sizeof(all_players_info[this_playerID].deckid)); // same for all players for this round
+
+	gfshare_recoverdata(shares,sharenrs, M,recover.bytes,sizeof(bits256),M);
+
+
+
+	gfshare_recoverdata(shares,sharenrs, M,recover.bytes,sizeof(bits256),M);
+	refval = fmul_donna(all_players_info[this_playerID].bvvblindcards[BET_player[this_playerID]->myplayerid][cardid],crecip_donna(recover));
+
+	//printf("\nDCV blinded card:%s",bits256_str(str,refval));
+	
+	
+	for(int i=0;i<BET_player[this_playerID]->range;i++)
+	{
+		for(int j=0;j<BET_player[this_playerID]->range;j++)
+		{
+			bits256 temp=xoverz_donna(curve25519(all_players_info[this_playerID].player_key.priv,curve25519(all_players_info[this_playerID].cardprivkeys[i],all_players_info[this_playerID].cardprods[BET_player[this_playerID]->myplayerid][j])));
+			vcalc_sha256(0,all_v_hash[this_playerID][i][j].bytes,temp.bytes,sizeof(temp));
+		}
+	}
+
+	
+	basepoint=curve25519_basepoint9();
+	for (int i=0; i<BET_player[this_playerID]->range; i++)
+    {
+        for (int j=0; j<BET_player[this_playerID]->range; j++)
+        {
+        	if ( bits256_cmp(all_v_hash[this_playerID][i][j],all_g_hash[this_playerID][BET_player[this_playerID]->myplayerid][cardid]) == 0 )
+			{
+				//printf("\nThere is a match\n");
+				#if 1
+				for(int m=0;m<BET_player[this_playerID]->range;m++)
+				{
+					for(int n=0;n<BET_player[this_playerID]->range;n++)	
+					{
+						tmp = curve25519(all_players_info[this_playerID].player_key.priv,curve25519(all_players_info[this_playerID].cardprivkeys[m],all_players_info[this_playerID].cardprods[BET_player[this_playerID]->myplayerid][n]));
+			            xoverz = xoverz_donna(tmp);
+			            vcalc_sha256(0,hash.bytes,xoverz.bytes,sizeof(xoverz));
+
+						
+			            fe = crecip_donna(curve25519_fieldelement(hash));
+
+						decoded = curve25519(fmul_donna(refval,fe),basepoint);
+						for(int k=0;k<BET_player[this_playerID]->range;k++)
+						{
+				            if ( bits256_cmp(decoded,all_players_info[this_playerID].cardprods[BET_player[this_playerID]->myplayerid][k]) == 0 )
+				            {
+				               // printf("\nplayer.%d decoded card %s value %d\n",bet->myplayerid,bits256_str(str,decoded),player_info.cardprivkeys[m].bytes[30]);
+								//printf("\n");
+								all_player_cards[this_playerID][no_of_player_cards]=bits256_str(str,decoded);
+								all_no_of_player_cards[this_playerID]+=1;
+				        		tmp=all_players_info[this_playerID].cardprivkeys[m];
+								flag=1;
+								goto end;
+				            }
+						}
+					}
+				}
+				#endif
+        	}
+        }
+    }
+	
+	end:
+		if(!flag)	
+			printf("\nDecoding Failed\n");
+			
+	return tmp;
+}
+
+int32_t BET_rest_player_receive_share(struct lws *wsi,cJSON *argjson)
+{
+	int32_t retval=1,bytes,cardid,playerid,errs,unpermi,card_type,this_playerID;
+	cJSON *turn_status=NULL,*playerCardInfo=NULL;
+	char *rendered=NULL,str[65];
+	bits256 share,decoded256;
+	
+	share=jbits256(argjson,"share");
+	cardid=jint(argjson,"cardid");
+	playerid=jint(argjson,"playerid");
+	card_type=jint(argjson,"card_type");
+	this_playerID=jint(argjson,"gui_playerID");
+
+	//printf("\n%s:%d:no_of_shares:%d,maxplayers:%d",__FUNCTION__,__LINE__,no_of_shares,bet->maxplayers);
+	if(all_sharesflag[this_playerID][cardid][playerid] ==0 )
+	{
+			all_playershares[this_playerID][cardid][playerid]=share;
+			all_sharesflag[this_playerID][cardid][playerid]=1;
+			all_no_of_shares[this_playerID]+=1;
+			//printf("\n%s:%d:no_of_shares:%d,maxplayers:%d",__FUNCTION__,__LINE__,no_of_shares,bet->maxplayers);
+	}
+	
+	
+	if(all_no_of_shares[this_playerID] == BET_player[this_playerID]->maxplayers)
+	{
+		all_no_of_shares[this_playerID]=0;
+		/*
+		for(int i=0;i<bet->maxplayers;i++)
+		{
+			printf("\n%s",bits256_str(str,playershares[cardid][i]));
+		}*/
+		decoded256 = BET_rest_decode_card(this_playerID,cardid);
+		if ( bits256_nonz(decoded256) == 0 )
+			errs++;
+		else
+		{
+	        unpermi=-1;
+            for(int k=0;k<BET_player[this_playerID]->range;k++)
+			{
+                if(all_players_info[this_playerID].permis[k]==decoded256.bytes[30])
+				{
+                    unpermi=k;
+                    break;
+                }
+            }
+		}
+
+		if(unpermi != -1)
+		{
+			all_player_card_values[this_playerID][number_cards_drawn++]=decoded256.bytes[30];
+			playerCardInfo=cJSON_CreateObject();
+			cJSON_AddStringToObject(playerCardInfo,"method","playerCardInfo");
+			cJSON_AddNumberToObject(playerCardInfo,"playerid",BET_player[this_playerID]->myplayerid);
+			cJSON_AddNumberToObject(playerCardInfo,"cardid",cardid);
+			cJSON_AddNumberToObject(playerCardInfo,"card_type",card_type);
+			cJSON_AddNumberToObject(playerCardInfo,"decoded_card",decoded256.bytes[30]);
+
+			printf("\n%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(playerCardInfo));
+			lws_write(wsi,cJSON_Print(playerCardInfo),strlen(cJSON_Print(playerCardInfo)),0);			
+		}
+
+	}
+	end:
+		return retval;
+}
+
+
