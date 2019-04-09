@@ -2699,9 +2699,11 @@ int32_t BET_rest_player_get_own_share(struct lws *wsi,cJSON *argjson,int32_t thi
 	}
 	else
 	{
+		
 		memcpy(share.bytes,ptr,recvlen);
 		all_playershares[this_playerID][cardid][BET_player[this_playerID]->myplayerid]=share;
 		all_sharesflag[this_playerID][cardid][BET_player[this_playerID]->myplayerid]=1;
+		printf("The share is :%s\n",bits256_str(str,share));
 		
 	}
 	end:
