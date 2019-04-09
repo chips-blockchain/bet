@@ -2716,7 +2716,7 @@ int32_t BET_rest_player_turn(struct lws *wsi, cJSON *argjson)
 	if(playerid == BET_player[this_playerID]->myplayerid)
 	{
 		all_no_of_shares[this_playerID]=1;
-		retval=BET_rest_player_get_own_share(wsi,argjson,bet,vars);
+		retval=BET_rest_player_get_own_share(wsi,argjson,this_playerID);
 		if(retval == -1)
 		{
 			printf("Failing to get own share: Decryption Error");
