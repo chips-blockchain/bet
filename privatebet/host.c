@@ -630,7 +630,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	}
 	else if(strcmp(jstr(argjson,"method"),"requestShare") == 0)
 	{
-		printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+		
 		retval=BET_rest_player_give_share(wsi,argjson);
 	}
 	else if(strcmp(jstr(argjson,"method"),"share_info") == 0)

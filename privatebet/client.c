@@ -2753,6 +2753,8 @@ int32_t BET_rest_player_give_share(struct lws *wsi,cJSON *argjson)
 	uint8_t decipher[sizeof(bits256) + 1024],*ptr;
 	bits256 share;
 
+	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+	
 	this_playerID=jint(argjson,"playerID");
 	
 	playerid=jint(argjson,"playerid");
