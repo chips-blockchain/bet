@@ -2727,11 +2727,9 @@ int32_t BET_rest_player_turn(struct lws *wsi, cJSON *argjson)
 			printf("Failing to get own share: Decryption Error");
 			goto end;
 		}
-		printf("\nBET_player[this_playerID]->numplayers=%d\n",BET_player[this_playerID]->numplayers);
-		printf("\nBET_player[this_playerID]->range=%d\n",BET_player[this_playerID]->range);
 		for(int i=0;i<BET_player[this_playerID]->numplayers;i++)
 		{
-			if((!all_sharesflag[jint(argjson,"cardid")][i]) && (i != BET_player[this_playerID]->myplayerid))
+			if((!all_sharesflag[this_playerID][jint(argjson,"cardid")][i]) && (i != BET_player[this_playerID]->myplayerid))
 			{
 				retval=BET_rest_player_ask_share(wsi,jint(argjson,"cardid"),jint(argjson,"playerid"),jint(argjson,"card_type"));	
 			}
