@@ -516,8 +516,8 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	}
 	else if(strcmp(jstr(argjson,"method"),"dealer_player") == 0)
 	{
-			printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-			retval=BET_rest_player_dealer_info(wsi,argjson);
+			retval=BET_rest_player_dealer_info(wsi,argjson,0);
+			retval=BET_rest_player_dealer_info(wsi,argjson,1);
 	}
 	else if(strcmp(jstr(argjson,"method"), "dealer_ready") == 0)
 	{

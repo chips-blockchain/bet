@@ -1117,16 +1117,12 @@ int32_t BET_rest_bvv_dealer_info(struct lws *wsi, cJSON *argjson)
 	return 0;
 }
 
-int32_t BET_rest_player_dealer_info(struct lws *wsi, cJSON *argjson)
+int32_t BET_rest_player_dealer_info(struct lws *wsi, cJSON *argjson,int32_t playerID)
 {
 	int retval=1,bytes;
 	cJSON *dealerReady=NULL;
 	char *rendered=NULL;
-	int32_t playerID;
 
-	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-	
-	playerID=jint(argjson,"playerID");
 	printf("\nplayerID=%d",playerID);
 	Player_VARS[playerID]=calloc(1,sizeof(struct privatebet_vars));
 	
@@ -1149,7 +1145,6 @@ int32_t BET_rest_player_dealer_info(struct lws *wsi, cJSON *argjson)
 		}
 	}
 	printf("\nPlayer_VARS[playerID]->dealer = %d, BET_player[playerID]->myplayerid =%d",Player_VARS[playerID]->dealer,BET_player[playerID]->myplayerid);
-	printf("playerID=%d\n",playerID);
 	if(Player_VARS[playerID]->dealer == BET_player[playerID]->myplayerid)
 	{
 		printf("\n%s:%d::I AM THE DEALER: %d\n",__FUNCTION__,__LINE__,BET_player[playerID]->myplayerid);
