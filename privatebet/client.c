@@ -2742,3 +2742,52 @@ int32_t BET_rest_player_turn(struct lws *wsi, cJSON *argjson)
 }
 
 
+
+int32_t BET_rest_player_give_share(struct lws *wsi,cJSON *argjson)
+{
+	int32_t retval=1,bytes,playerid,cardid,recvlen,card_type,this_playerID;
+	cJSON *share_info=NULL;		
+	char *rendered=NULL;
+	struct enc_share temp;
+	char str[65],enc_str[177];
+	uint8_t decipher[sizeof(bits256) + 1024],*ptr;
+	bits256 share;
+
+	this_playerID=jint(argjson,"playerID");
+	
+	playerid=jint(argjson,"playerid");
+	cardid=jint(argjson,"cardid");
+	card_type=jint(argjson,"card_type");
+
+	if(playerid==BET_player[this_playerID]->myplayerid)
+		goto end;
+	
+	temp=all_g_shares[this_playerID][playerid*BET_player[this_playerID]->numplayers*BET_player[this_playerID]->range + (cardid*BET_player[this_playerID]->numplayers + BET_player[this_playerID]->myplayerid)];
+
+    recvlen = sizeof(temp);
+
+	if ( (ptr= BET_decrypt(decipher,sizeof(decipher),all_players_info[this_playerID].bvvpubkey,all_players_info[this_playerID].player_key.priv,temp.bytes,&recvlen)) == 0 )
+	{
+		retval=-1;
+		printf("decrypt error \n");
+		goto end;
+	}	
+    else
+	{
+		memcpy(share.bytes,ptr,recvlen);
+		share_info=cJSON_CreateObject();
+		cJSON_AddStringToObject(share_info,"method","share_info");
+		cJSON_AddNumberToObject(share_info,"playerid",BET_player[this_playerID]->myplayerid);
+		cJSON_AddNumberToObject(share_info,"cardid",cardid);
+		cJSON_AddNumberToObject(share_info,"card_type",card_type);
+		jaddbits256(share_info,"share",share);
+
+		lws_write(wsi,cJSON_Print(share_info),strlen(cJSON_Print(share_info)),0);
+		
+		
+	}
+	end:
+		return retval;
+}
+
+
