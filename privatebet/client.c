@@ -2759,7 +2759,8 @@ int32_t BET_rest_player_give_share(struct lws *wsi,cJSON *argjson)
 	cardid=jint(argjson,"cardid");
 	card_type=jint(argjson,"card_type");
 
-	printf("\nplayerid=%d,BET_player[this_playerID]->myplayerid=%d\n",playerid,BET_player[this_playerID]->myplayerid);
+	printf("\n%s:%d::playerid=%d,BET_player[this_playerID]->myplayerid=%d,playerID=%d\n",__FUNCTION__,__LINE__,
+								playerid,BET_player[this_playerID]->myplayerid,this_playerID);
 	
 	if(playerid==BET_player[this_playerID]->myplayerid)
 		goto end;
