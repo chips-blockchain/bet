@@ -47,8 +47,8 @@ extern struct privatebet_vars *Player_VARS[CARDS777_MAXPLAYERS];
 extern int32_t all_sharesflag[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 
 
-extern int32_t all_player_card_matrix[CARDS777_MAXPLAYERS][7]; // where 7 is hand_size
-extern int32_t all_player_card_values[CARDS777_MAXPLAYERS][7]; // where 7 is hand_size
+extern int32_t all_player_card_matrix[CARDS777_MAXPLAYERS][hand_size]; // where 7 is hand_size
+extern int32_t all_player_card_values[CARDS777_MAXPLAYERS][hand_size]; // where 7 is hand_size
 extern int32_t all_number_cards_drawn[CARDS777_MAXPLAYERS];
 extern int32_t all_no_of_shares[CARDS777_MAXPLAYERS];
 extern int32_t all_player_cards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
