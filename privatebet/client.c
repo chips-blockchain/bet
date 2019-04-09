@@ -2694,7 +2694,7 @@ int32_t BET_rest_player_get_own_share(struct lws *wsi,cJSON *argjson,int32_t thi
 	if ( (ptr= BET_decrypt(decipher,sizeof(decipher),all_players_info[this_playerID].bvvpubkey,all_players_info[this_playerID].player_key.priv,temp.bytes,&recvlen)) == 0 )
 	{
 		retval=-1;
-		printf("decrypt error ");
+		printf("decrypt error \n");
 		goto end;
 	}
 	else
