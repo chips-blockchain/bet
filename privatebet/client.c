@@ -2670,6 +2670,7 @@ int32_t BET_rest_player_ask_share(struct lws *wsi,int32_t cardid,int32_t playeri
 	cJSON_AddNumberToObject(requestInfo,"cardid",cardid);
 	cJSON_AddNumberToObject(requestInfo,"card_type",card_type);
 	cJSON_AddNumberToObject(requestInfo,"toPlayer",toPlayer);
+	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(requestInfo));
 	lws_write(wsi,cJSON_Print(requestInfo),strlen(cJSON_Print(requestInfo)),0);
 
 	return retval;
