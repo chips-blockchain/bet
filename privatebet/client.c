@@ -2656,7 +2656,7 @@ int32_t BET_rest_player_join_res(cJSON *argjson)
 }
 
 
-int32_t BET_rest_player_ask_share(struct lws *wsi,int32_t cardid,int32_t playerid,int32_t card_type,int32_t toPlayer)
+int32_t BET_rest_player_ask_share(struct lws *wsi,int32_t cardid,int32_t playerid,int32_t card_type,int32_t toPlayer,int32_t fromPlayer)
 {
 	cJSON *requestInfo=NULL;
 	char *rendered=NULL;
@@ -2670,6 +2670,7 @@ int32_t BET_rest_player_ask_share(struct lws *wsi,int32_t cardid,int32_t playeri
 	cJSON_AddNumberToObject(requestInfo,"cardid",cardid);
 	cJSON_AddNumberToObject(requestInfo,"card_type",card_type);
 	cJSON_AddNumberToObject(requestInfo,"toPlayer",toPlayer);
+	cJSON_AddNumberToObject(requestInfo,"fromPlayer",fromPlayer);
 	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(requestInfo));
 	lws_write(wsi,cJSON_Print(requestInfo),strlen(cJSON_Print(requestInfo)),0);
 
@@ -2733,7 +2734,7 @@ int32_t BET_rest_player_turn(struct lws *wsi, cJSON *argjson)
 		{
 			if((!all_sharesflag[this_playerID][jint(argjson,"cardid")][i]) && (i != BET_player[this_playerID]->myplayerid))
 			{
-				retval=BET_rest_player_ask_share(wsi,jint(argjson,"cardid"),jint(argjson,"playerid"),jint(argjson,"card_type"),i);	
+				retval=BET_rest_player_ask_share(wsi,jint(argjson,"cardid"),jint(argjson,"playerid"),jint(argjson,"card_type"),i,BET_player[this_playerID]->myplayerid);	
 			}
 		}
 	
@@ -2786,6 +2787,8 @@ int32_t BET_rest_player_give_share(struct lws *wsi,cJSON *argjson)
 		cJSON_AddNumberToObject(share_info,"playerid",BET_player[this_playerID]->myplayerid);
 		cJSON_AddNumberToObject(share_info,"cardid",cardid);
 		cJSON_AddNumberToObject(share_info,"card_type",card_type);
+		cJSON_AddNumberToObject(share_info,"toPlayer",jint(argjson,"fromPlayer"));
+		cJSON_AddNumberToObject(share_info,"fromPlayer",jint(argjson,"toPlayer"));
 		jaddbits256(share_info,"share",share);
 
 		lws_write(wsi,cJSON_Print(share_info),strlen(cJSON_Print(share_info)),0);
