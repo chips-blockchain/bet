@@ -2656,7 +2656,7 @@ int32_t BET_rest_player_join_res(cJSON *argjson)
 }
 
 
-int32_t BET_rest_player_ask_share(struct lws *wsi,int32_t cardid,int32_t playerid,int32_t card_type)
+int32_t BET_rest_player_ask_share(struct lws *wsi,int32_t cardid,int32_t playerid,int32_t card_type,int32_t toPlayer)
 {
 	cJSON *requestInfo=NULL;
 	char *rendered=NULL;
@@ -2669,7 +2669,7 @@ int32_t BET_rest_player_ask_share(struct lws *wsi,int32_t cardid,int32_t playeri
 	cJSON_AddNumberToObject(requestInfo,"playerid",playerid);
 	cJSON_AddNumberToObject(requestInfo,"cardid",cardid);
 	cJSON_AddNumberToObject(requestInfo,"card_type",card_type);
-
+	cJSON_AddNumberToObject(requestInfo,"toPlayer",toPlayer);
 	lws_write(wsi,cJSON_Print(requestInfo),strlen(cJSON_Print(requestInfo)),0);
 
 	return retval;
@@ -2732,7 +2732,7 @@ int32_t BET_rest_player_turn(struct lws *wsi, cJSON *argjson)
 		{
 			if((!all_sharesflag[this_playerID][jint(argjson,"cardid")][i]) && (i != BET_player[this_playerID]->myplayerid))
 			{
-				retval=BET_rest_player_ask_share(wsi,jint(argjson,"cardid"),jint(argjson,"playerid"),jint(argjson,"card_type"));	
+				retval=BET_rest_player_ask_share(wsi,jint(argjson,"cardid"),jint(argjson,"playerid"),jint(argjson,"card_type"),i);	
 			}
 		}
 	
