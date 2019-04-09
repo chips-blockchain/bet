@@ -1,6 +1,23 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+
+#define hand_size 7
+#define no_of_hole_cards 2
+#define no_of_flop_cards 3
+#define no_of_turn_card 1
+#define no_of_river_card 1
+#define no_of_community_cards 5
+
+#define NSUITS 4
+#define NFACES 13
+
+#define small_blind_amount 1000000
+#define big_blind_amount 2000000
+
+
+
+
 #define CARDS777_MAXCARDS 52 //52    //
 #define CARDS777_MAXPLAYERS 10 //9   //
 #define CARDS777_MAXROUNDS 4 //9   //
@@ -51,20 +68,6 @@ extern uint8_t sharenrs[256];
 extern char *LN_idstr,Host_ipaddr[64],Host_peerid[67],Host_channel[64];
 extern int32_t Num_hostrhashes,Chips_paid;
 extern bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
-
-#define hand_size 7
-#define no_of_hole_cards 2
-#define no_of_flop_cards 3
-#define no_of_turn_card 1
-#define no_of_river_card 1
-#define no_of_community_cards 5
-
-#define NSUITS 4
-#define NFACES 13
-
-#define small_blind_amount 1000000
-#define big_blind_amount 2000000
-
 
 #endif
 
