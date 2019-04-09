@@ -1086,7 +1086,7 @@ int32_t BET_rest_bvv_dealer_info(struct lws *wsi, cJSON *argjson)
 	int retval=1,bytes;
 	cJSON *dealerReady=NULL;
 	char *rendered=NULL;
-	
+	BVV_VARS=calloc(1,sizeof(struct privatebet_vars));
 	BVV_VARS->dealer=jint(argjson,"playerid");
 	BVV_VARS->turni=BVV_VARS->dealer;
 	BVV_VARS->pot=0;
@@ -1117,6 +1117,7 @@ int32_t BET_rest_bvv_dealer_info(struct lws *wsi, cJSON *argjson)
 	return 0;
 }
 
+
 int32_t BET_rest_player_dealer_info(struct lws *wsi, cJSON *argjson,int32_t playerID)
 {
 	int retval=1,bytes;
@@ -1135,15 +1136,31 @@ int32_t BET_rest_player_dealer_info(struct lws *wsi, cJSON *argjson,int32_t play
 		for(int j=0;j<CARDS777_MAXROUNDS;j++)
 		{
 			Player_VARS[playerID]->bet_actions[i][j]=0;
-		}
-	}
-	for(int i=0;i<BET_player[playerID]->maxplayers;i++)
-	{
-		for(int j=0;j<CARDS777_MAXROUNDS;j++)
-		{
 			Player_VARS[playerID]->betamount[i][j]=0;
 		}
 	}
+
+	
+	all_no_of_shares[playerID]=0;
+	all_no_of_player_cards[playerID]=0;
+	for(int i=0;i<BET_player[playerID]->range;i++)
+	{
+		for(int j=0;j<BET_player[playerID]->numplayers;j++)
+		{
+			all_sharesflag[playerID][i][j]=0;
+		}
+	}
+	all_number_cards_drawn[playerID];	
+	for(int i=0;i<hand_size;i++)
+	{
+		all_player_card_matrix[playerID][i]=0;
+		all_player_card_values[playerID][i]=-1;
+	}
+	
+
+
+
+	
 	printf("\nPlayer_VARS[playerID]->dealer = %d, BET_player[playerID]->myplayerid =%d",Player_VARS[playerID]->dealer,BET_player[playerID]->myplayerid);
 	if(Player_VARS[playerID]->dealer == BET_player[playerID]->myplayerid)
 	{

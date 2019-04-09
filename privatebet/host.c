@@ -623,6 +623,11 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 			retval=BET_rest_dcv_turn(wsi,argjson);
 		
 	}
+	else if(strcmp(jstr(argjson,"method"),"turn") == 0)
+	{
+			
+		retval=BET_rest_player_turn(wsi,argjson);
+	}
 	else
 	{		
 		retval=BET_rest_dcv_default(wsi,argjson);

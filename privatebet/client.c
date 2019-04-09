@@ -34,6 +34,10 @@ int32_t player_card_values[hand_size];
 int32_t number_cards_drawn=0;
 
 int32_t sharesflag[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
+
+
+
+
 struct deck_player_info player_info;
 struct deck_bvv_info bvv_info;
 int32_t no_of_shares=0;
@@ -41,8 +45,21 @@ int32_t player_cards[CARDS777_MAXCARDS];
 int32_t no_of_player_cards=0;
 
 int32_t player_id=0;
+
 bits256 all_v_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 bits256 all_g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
+int32_t all_sharesflag[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
+
+int32_t all_player_card_matrix[CARDS777_MAXPLAYERS][hand_size];
+int32_t all_player_card_values[CARDS777_MAXPLAYERS][hand_size];
+int32_t all_number_cards_drawn[CARDS777_MAXPLAYERS];
+int32_t all_no_of_shares[CARDS777_MAXPLAYERS];
+int32_t all_player_cards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
+int32_t all_no_of_player_cards[CARDS777_MAXPLAYERS];
+bits256 all_playershares[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
+
+
+
 struct enc_share *all_g_shares[CARDS777_MAXPLAYERS];
 
 
@@ -2636,6 +2653,87 @@ int32_t BET_rest_player_join_res(cJSON *argjson)
 	int32_t playerID;
 	//Do nothing
 	return 0;
+}
+
+
+int32_t BET_rest_player_ask_share(struct lws *wsi,int32_t cardid,int32_t playerid,int32_t card_type)
+{
+	cJSON *requestInfo=NULL;
+	char *rendered=NULL;
+	int32_t bytes,retval=1;
+
+	requestInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(requestInfo,"method","requestShare");
+	cJSON_AddNumberToObject(requestInfo,"playerid",playerid);
+	cJSON_AddNumberToObject(requestInfo,"cardid",cardid);
+	cJSON_AddNumberToObject(requestInfo,"card_type",card_type);
+
+	lws_write(wsi,cJSON_Print(requestInfo),strlen(cJSON_Print(requestInfo)),0);
+
+	return retval;
+}
+
+
+int32_t BET_rest_player_get_own_share(struct lws *wsi,cJSON *argjson,int32_t this_playerID)
+{
+	struct enc_share temp;
+	int32_t cardid,retval=1,playerid,recvlen;
+	uint8_t decipher[sizeof(bits256) + 1024],*ptr;
+	bits256 share;
+	char enc_share[177],str[65];
+	playerid=jint(argjson,"playerid");
+	cardid=jint(argjson,"cardid");
+	
+	
+	temp=all_g_shares[this_playerID][BET_player[this_playerID]->myplayerid*BET_player[this_playerID]->numplayers*BET_player[this_playerID]->range + (cardid*BET_player[this_playerID]->numplayers + playerid)];
+	recvlen = sizeof(temp);
+
+	if ( (ptr= BET_decrypt(decipher,sizeof(decipher),all_players_info[this_playerID].bvvpubkey,all_players_info[this_playerID].player_key.priv,temp.bytes,&recvlen)) == 0 )
+	{
+		retval=-1;
+		printf("decrypt error ");
+		goto end;
+	}
+	else
+	{
+		memcpy(share.bytes,ptr,recvlen);
+		all_playershares[this_playerID][cardid][BET_player[this_playerID]->myplayerid]=share;
+		all_sharesflag[this_playerID][cardid][BET_player[this_playerID]->myplayerid]=1;
+		
+	}
+	end:
+		return retval;
+
+}
+
+
+int32_t BET_rest_player_turn(struct lws *wsi, cJSON *argjson)
+{
+	int32_t retval=1,playerid,this_playerID;
+
+	playerid=jint(argjson,"playerid");
+	this_playerID=jint(argjson,"playerID");
+	if(playerid == BET_player[this_playerID]->myplayerid)
+	{
+		all_no_of_shares[this_playerID]=1;
+		retval=BET_rest_player_get_own_share(wsi,argjson,bet,vars);
+		if(retval == -1)
+		{
+			printf("Failing to get own share: Decryption Error");
+			goto end;
+		}
+
+		for(int i=0;i<BET_player[this_playerID]->numplayers;i++)
+		{
+			if((!all_sharesflag[jint(argjson,"cardid")][i]) && (i != BET_player[this_playerID]->myplayerid))
+			{
+				retval=BET_rest_player_ask_share(wsi,jint(argjson,"cardid"),jint(argjson,"playerid"),jint(argjson,"card_type"));	
+			}
+		}
+	
+	}
+	end:	
+		return retval;
 }
 
 

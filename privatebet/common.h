@@ -27,6 +27,18 @@ extern struct privatebet_vars *BVV_VARS;
 extern struct privatebet_info *BET_player[CARDS777_MAXPLAYERS];
 extern struct privatebet_vars *Player_VARS[CARDS777_MAXPLAYERS];
 
+extern int32_t all_sharesflag[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
+
+
+extern int32_t all_player_card_matrix[CARDS777_MAXPLAYERS][hand_size];
+extern int32_t all_player_card_values[CARDS777_MAXPLAYERS][hand_size];
+extern int32_t all_number_cards_drawn[CARDS777_MAXPLAYERS];
+extern int32_t all_no_of_shares[CARDS777_MAXPLAYERS];
+extern int32_t all_player_cards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
+extern int32_t all_no_of_player_cards[CARDS777_MAXPLAYERS];
+extern bits256 all_playershares[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
+
+
 
 
 extern int32_t permis_d[CARDS777_MAXCARDS],permis_b[CARDS777_MAXCARDS];
