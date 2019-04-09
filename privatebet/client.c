@@ -2718,6 +2718,7 @@ int32_t BET_rest_player_turn(struct lws *wsi, cJSON *argjson)
 
 	playerid=jint(argjson,"playerid");
 	this_playerID=jint(argjson,"playerID");
+	printf("BET_player[0]->myplayerid=%d,BET_player[1]->myplayerid=%d\n",BET_player[0]->myplayerid,BET_player[1]->myplayerid);
 	if(playerid == BET_player[this_playerID]->myplayerid)
 	{
 		all_no_of_shares[this_playerID]=1;
