@@ -2432,7 +2432,7 @@ int32_t BET_rest_player_init(struct lws *wsi, cJSON *argjson)
     char str[65];
 	int32_t playerID;
 
-	playerID=jint(argjson,"playerID");
+	playerID=jint(argjson,"gui_playerID");
 	init_p=cJSON_CreateObject();
 
 	cJSON_AddStringToObject(init_p,"method","init_p");
@@ -2718,7 +2718,7 @@ int32_t BET_rest_player_turn(struct lws *wsi, cJSON *argjson)
 	int32_t retval=1,playerid,this_playerID;
 
 	playerid=jint(argjson,"playerid");
-	this_playerID=jint(argjson,"playerID");
+	this_playerID=jint(argjson,"gui_playerID");
 	printf("BET_player[0]->myplayerid=%d,BET_player[1]->myplayerid=%d\n",BET_player[0]->myplayerid,BET_player[1]->myplayerid);
 	if(playerid == BET_player[this_playerID]->myplayerid)
 	{
@@ -2756,7 +2756,7 @@ int32_t BET_rest_player_give_share(struct lws *wsi,cJSON *argjson)
 
 	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 	
-	this_playerID=jint(argjson,"playerID");
+	this_playerID=jint(argjson,"gui_playerID");
 	
 	playerid=jint(argjson,"playerid");
 	cardid=jint(argjson,"cardid");
