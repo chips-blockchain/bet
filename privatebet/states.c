@@ -1127,6 +1127,7 @@ int32_t BET_rest_player_dealer_info(struct lws *wsi, cJSON *argjson)
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 	
 	playerID=jint(argjson,"playerID");
+	printf("\nplayerID=%d",playerID);
 	Player_VARS[playerID]=calloc(1,sizeof(struct privatebet_vars));
 	
 	Player_VARS[playerID]->dealer=jint(argjson,"playerid");
