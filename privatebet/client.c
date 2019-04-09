@@ -2662,6 +2662,8 @@ int32_t BET_rest_player_ask_share(struct lws *wsi,int32_t cardid,int32_t playeri
 	char *rendered=NULL;
 	int32_t bytes,retval=1;
 
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	
 	requestInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(requestInfo,"method","requestShare");
 	cJSON_AddNumberToObject(requestInfo,"playerid",playerid);
@@ -2683,7 +2685,8 @@ int32_t BET_rest_player_get_own_share(struct lws *wsi,cJSON *argjson,int32_t thi
 	char enc_share[177],str[65];
 	playerid=jint(argjson,"playerid");
 	cardid=jint(argjson,"cardid");
-	
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	
 	temp=all_g_shares[this_playerID][BET_player[this_playerID]->myplayerid*BET_player[this_playerID]->numplayers*BET_player[this_playerID]->range + (cardid*BET_player[this_playerID]->numplayers + playerid)];
 	recvlen = sizeof(temp);
