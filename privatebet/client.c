@@ -2033,7 +2033,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		}
 		else if(strcmp(method,"requestShare") == 0)
 		{
-		
+			printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 			retval=BET_p2p_client_give_share(argjson,bet,vars);
 		}
 		else if(strcmp(method,"share_info") == 0)
