@@ -388,6 +388,105 @@ int32_t BET_rest_check_player_ready(struct lws *wsi, cJSON *argjson)
 	return flag;
 }
 
+int32_t BET_rest_send_turn_info(struct lws *wsi,int32_t playerid,int32_t cardid,int32_t card_type)
+{
+	cJSON *turninfo=NULL;
+	int retval=1,bytes;
+	char *rendered=NULL;
+	
+	turninfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(turninfo,"method","turn");
+	cJSON_AddNumberToObject(turninfo,"playerid",playerid);
+	cJSON_AddNumberToObject(turninfo,"cardid",cardid);
+	cJSON_AddNumberToObject(turninfo,"card_type",card_type);
+
+	lws_write(wsi,cJSON_Print(turninfo),strlen(cJSON_Print(turninfo)),0);
+
+	return retval;
+}
+
+
+
+int32_t BET_rest_dcv_turn(struct lws *wsi, cJSON *argjson)
+{
+	int32_t retval=1,bytes;
+	cJSON *turninfo=NULL;
+	char *rendered=NULL;
+
+	if(hole_cards_drawn == 0)
+	{
+		for(int i=0;i<no_of_hole_cards;i++)
+		{
+			for(int j=0;j<BET_dcv->maxplayers;j++)
+			{
+				if(card_matrix[j][i] == 0)
+				{
+					retval=BET_rest_send_turn_info(wsi,j,(i*BET_dcv->maxplayers)+j,hole_card);
+					goto end;
+		
+				}
+			}
+		}	
+	}
+	else if(flop_cards_drawn==0)
+	{
+		for(int i=no_of_hole_cards;i<no_of_hole_cards+no_of_flop_cards;i++)
+		{
+			for(int j=0;j<BET_dcv->maxplayers;j++)
+			{
+				if(card_matrix[j][i] == 0)
+				{
+					if((i-(no_of_hole_cards)) == 0)
+					{
+						retval=BET_rest_send_turn_info(wsi,j,(no_of_hole_cards*BET_dcv->maxplayers)+(i-no_of_hole_cards)+1,flop_card_1);	
+					}
+					else if((i-(no_of_hole_cards)) == 1)
+					{
+						retval=BET_rest_send_turn_info(wsi,j,(no_of_hole_cards*BET_dcv->maxplayers)+(i-no_of_hole_cards)+1,flop_card_2);	
+					}
+					else if((i-(no_of_hole_cards)) == 2)
+					{
+						retval=BET_rest_send_turn_info(wsi,j,(no_of_hole_cards*BET_dcv->maxplayers)+(i-no_of_hole_cards)+1,flop_card_3);	
+					}
+					goto end;
+					
+				}
+			}
+		}
+	}
+	else if(turn_card_drawn==0)
+	{
+		for(int i=no_of_hole_cards+no_of_flop_cards;i<no_of_hole_cards+no_of_flop_cards+no_of_turn_card;i++)
+		{
+			for(int j=0;j<BET_dcv->maxplayers;j++)
+			{
+				if(card_matrix[j][i] == 0)
+				{
+					retval=BET_rest_send_turn_info(wsi,j,(no_of_hole_cards*BET_dcv->maxplayers)+(i-no_of_hole_cards)+2,turn_card);
+					goto end;
+				}
+			}
+		}
+	}
+	else if(river_card_drawn==0)
+	{
+		for(int i=no_of_hole_cards+no_of_flop_cards+no_of_turn_card;i<no_of_hole_cards+no_of_flop_cards+no_of_turn_card+no_of_river_card;i++)
+		{
+			for(int j=0;j<BET_dcv->maxplayers;j++)
+			{
+				if(card_matrix[j][i] == 0)
+				{
+					retval=BET_rest_send_turn_info(wsi,j,(no_of_hole_cards*BET_dcv->maxplayers)+(i-no_of_hole_cards)+3,river_card);
+					goto end;
+				}
+			}
+		}
+	}
+	else
+		retval=2;
+	end:	
+		return retval;
+}
 
 int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 {
@@ -521,8 +620,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	}
 	else if(strcmp(jstr(argjson,"method"), "dealer_ready") == 0)
 	{
-		printf("\n%s:%d:: Dealer Ready\n",__FUNCTION__,__LINE__);
-		//retval=BET_p2p_dcv_turn(argjson,bet,vars);
+			retval=BET_rest_dcv_turn(wsi,argjson);
 		
 	}
 	else
