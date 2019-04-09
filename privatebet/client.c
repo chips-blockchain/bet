@@ -2457,14 +2457,14 @@ int32_t BET_rest_player_process_init_d(struct lws *wsi, cJSON *argjson,int32_t p
 	char hexstr [ 65 ];
 
 	printf("%s:%d::playerID:%d\n",__FUNCTION__,__LINE__,playerID);
-	player_info.deckid=jbits256(argjson,"deckid");
+	all_players_info[playerID].deckid=jbits256(argjson,"deckid");
 	cjsoncardprods=cJSON_GetObjectItem(argjson,"cardprods");
 	
 	for(int i=0;i<BET_player[playerID]->numplayers;i++)
 	{
 		for(int j=0;j<BET_player[playerID]->range;j++)
 		{
-			player_info.cardprods[i][j]=jbits256i(cjsoncardprods,i*BET_player[playerID]->range+j);
+			all_players_info[playerID].cardprods[i][j]=jbits256i(cjsoncardprods,i*BET_player[playerID]->range+j);
 		}
 	}
 
