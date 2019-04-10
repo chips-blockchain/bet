@@ -1174,3 +1174,267 @@ int32_t BET_rest_player_dealer_info(struct lws *wsi, cJSON *argjson,int32_t play
 }
 
 
+int32_t BET_rest_DCV_next_turn(struct lws *wsi)
+{
+	int32_t flag=0,maxamount=0,retval=-1,players_left=0;
+
+	for(int i=0;i<BET_dcv->maxplayers;i++)
+	{
+		if((DCV_VARS->bet_actions[i][DCV_VARS->round]==fold)) /*|| (vars->bet_actions[i][vars->round]==allin)*/
+			players_left++;
+	}
+	players_left=BET_dcv->maxplayers-players_left;
+	if(players_left<2)
+		goto end;
+	
+	for(int i=0;i<BET_dcv->maxplayers;i++)
+	{
+		if(maxamount<DCV_VARS->betamount[i][DCV_VARS->round])
+			maxamount=DCV_VARS->betamount[i][DCV_VARS->round];
+	}
+	
+	for(int i=((DCV_VARS->turni+1)%BET_dcv->maxplayers);(i != DCV_VARS->turni);i=((i+1)%BET_dcv->maxplayers))
+	{
+		if((DCV_VARS->bet_actions[i][DCV_VARS->round] != fold)&&(DCV_VARS->bet_actions[i][DCV_VARS->round] != allin))
+		{
+
+			if((DCV_VARS->bet_actions[i][DCV_VARS->round] == 0) || (DCV_VARS->bet_actions[i][DCV_VARS->round] == small_blind) || 
+				(DCV_VARS->bet_actions[i][DCV_VARS->round] == big_blind) ||	(((DCV_VARS->bet_actions[i][DCV_VARS->round] == check) || (DCV_VARS->bet_actions[i][DCV_VARS->round] == call) 
+										|| (DCV_VARS->bet_actions[i][DCV_VARS->round] == raise)) && (maxamount !=DCV_VARS->betamount[i][DCV_VARS->round])) )
+			{
+				retval=i;
+				break;
+								
+			}
+
+			
+		}
+
+	}
+	end:
+		return retval;
+		
+}
+
+
+int32_t BET_rest_DCV_small_blind(struct lws *wsi)
+{
+	cJSON *smallBlindInfo=NULL;
+	int32_t amount,retval=1,bytes;
+
+
+	DCV_VARS->last_turn=DCV_VARS->dealer;
+	DCV_VARS->turni=(DCV_VARS->dealer+1)%BET_dcv->maxplayers;
+
+	smallBlindInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(smallBlindInfo,"method","betting");
+	cJSON_AddStringToObject(smallBlindInfo,"action","small_blind");
+	cJSON_AddNumberToObject(smallBlindInfo,"playerid",DCV_VARS->turni);
+	cJSON_AddNumberToObject(smallBlindInfo,"round",DCV_VARS->round);
+	cJSON_AddNumberToObject(smallBlindInfo,"pot",DCV_VARS->pot);
+
+	lws_write(wsi,cJSON_Print(smallBlindInfo),strlen(cJSON_Print(smallBlindInfo)),0);
+	
+	end:
+		return retval;
+}
+
+int32_t BET_rest_evaluate_hand(struct lws *wsi)
+{
+	int retval=1,max_score=0,no_of_winners=0,winning_amount=0,bytes;
+	unsigned char h[7];
+	unsigned long scores[CARDS777_MAXPLAYERS];
+	int p[CARDS777_MAXPLAYERS];
+	int winners[CARDS777_MAXPLAYERS],players_left=0,only_winner=-1;
+	cJSON *resetInfo=NULL,*gameInfo=NULL;
+	char *rendered=NULL;
+	
+	for(int i=0;i<BET_dcv->maxplayers;i++)
+	{
+			p[i]=DCV_VARS->bet_actions[i][(DCV_VARS->round-1)];
+			
+			if((DCV_VARS->bet_actions[i][DCV_VARS->round]==fold)|| (DCV_VARS->bet_actions[i][DCV_VARS->round]==allin)) 
+				players_left++;
+			else
+				only_winner=i;
+	}
+	players_left=BET_dcv->maxplayers-players_left;
+	if(players_left<2)
+	{
+		if(only_winner != -1)
+		{
+			//retval=BET_DCV_invoice_pay(bet,vars,only_winner,vars->pot);
+			printf("\nWinning player is :%d, winning amount:%d",only_winner,DCV_VARS->pot);
+			goto end;
+		}
+	}
+		
+	printf("\nEach player got the below cards:\n");
+	for(int i=0;i<BET_dcv->maxplayers;i++)
+	{
+		if(p[i]==fold)
+			scores[i]=0;
+		else
+		{
+			printf("\n For Player id: %d, cards: ",i);
+			for(int j=0;j<hand_size;j++)
+			{
+				int temp=card_values[i][j];
+				printf("%s-->%s \t",suit[temp/13],face[temp%13]);
+				h[j]=(unsigned char)card_values[i][j];
+			
+			}
+				scores[i]=SevenCardDrawScore(h);
+			}
+	}
+	for(int i=0;i<BET_dcv->maxplayers;i++)
+	{
+		if(max_score<scores[i])
+			max_score=scores[i];
+	}
+	for(int i=0;i<BET_dcv->maxplayers;i++)
+	{
+		if(scores[i]==max_score)
+		{
+			winners[i]=1;
+			no_of_winners++;
+		}
+		else
+			winners[i]=0;
+	}
+	
+	printf("\nWinning Amount:%d",(DCV_VARS->pot/no_of_winners));
+	printf("\nWinning Players Are:");
+	for(int i=0;i<BET_dcv->maxplayers;i++)
+	{
+		if(winners[i]==1)
+		{
+			//retval=BET_DCV_invoice_pay(bet,vars,i,(vars->pot/no_of_winners));
+			printf("%d\t",i);
+		}
+	}
+	printf("\n");
+
+	end:	
+		if(retval)
+		{
+			/*
+			resetInfo=cJSON_CreateObject();
+			cJSON_AddStringToObject(resetInfo,"method","reset");
+			rendered=cJSON_Print(resetInfo);
+			bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+			if(bytes<0)
+				retval=-1;
+			BET_DCV_reset(bet,vars);
+			*/
+		}
+		return retval;
+}
+
+
+int32_t BET_rest_DCV_round_betting(struct lws *wsi)
+{
+	cJSON *roundBetting=NULL,*possibilities=NULL,*actions=NULL;
+	int flag=0,maxamount=0,bytes,retval=1,players_left=0;
+	char *rendered=NULL;
+
+	if((retval=BET_rest_DCV_next_turn(wsi)) == -1)
+	{
+		for(int i=0;i<BET_dcv->maxplayers;i++)
+		{
+			if((DCV_VARS->bet_actions[i][DCV_VARS->round]==fold)|| (DCV_VARS->bet_actions[i][DCV_VARS->round]==allin)) 
+				players_left++;
+		}	
+		players_left=BET_dcv->maxplayers-players_left;
+
+		DCV_VARS->round+=1;
+		DCV_VARS->turni=DCV_VARS->dealer;
+		DCV_VARS->last_raise=0;
+		//printf("\nRound:%d is completed",vars->round);
+
+		if((DCV_VARS->round>=CARDS777_MAXROUNDS) || (players_left<2))
+		{
+			retval=BET_rest_evaluate_hand(wsi);
+			goto end;
+		}
+		retval=BET_rest_dcv_turn(wsi);
+		goto end;
+	}
+	DCV_VARS->last_turn=DCV_VARS->turni;
+	DCV_VARS->turni=BET_rest_DCV_next_turn(wsi);
+
+	//vars->turni=(vars->turni+1)%bet->maxplayers;
+	
+	roundBetting=cJSON_CreateObject();
+	cJSON_AddStringToObject(roundBetting,"method","betting");
+	cJSON_AddStringToObject(roundBetting,"action","round_betting");
+	cJSON_AddNumberToObject(roundBetting,"playerid",DCV_VARS->turni);
+	cJSON_AddNumberToObject(roundBetting,"round",DCV_VARS->round);
+	cJSON_AddNumberToObject(roundBetting,"pot",DCV_VARS->pot);
+	/* */
+	cJSON_AddItemToObject(roundBetting,"actions",actions=cJSON_CreateArray());
+	for(int i=0;i<=DCV_VARS->round;i++)
+	{
+		for(int j=0;j<BET_dcv->maxplayers;j++)
+		{
+			if(DCV_VARS->bet_actions[j][i]>0)
+				cJSON_AddItemToArray(actions,cJSON_CreateNumber(DCV_VARS->bet_actions[j][i]));
+		}
+	}
+	
+	cJSON_AddItemToObject(roundBetting,"possibilities",possibilities=cJSON_CreateArray());
+
+	
+	for(int i=0;i<BET_dcv->maxplayers;i++)
+	{	
+		if(maxamount<DCV_VARS->betamount[i][DCV_VARS->round])
+		{
+			maxamount=DCV_VARS->betamount[i][DCV_VARS->round];
+		}
+	}
+
+	if(maxamount>DCV_VARS->betamount[DCV_VARS->turni][DCV_VARS->round])
+	{
+		if(maxamount>=DCV_VARS->funds[DCV_VARS->turni])
+		{
+			for(int i=allin;i<=fold;i++)
+					cJSON_AddItemToArray(possibilities,cJSON_CreateNumber(i));
+			
+		}
+		else
+		{
+			for(int i=raise;i<=fold;i++)
+				cJSON_AddItemToArray(possibilities,cJSON_CreateNumber(i));
+		}
+		
+		//raise or fold or call
+	}
+	else if(maxamount == DCV_VARS->betamount[DCV_VARS->turni][DCV_VARS->round])
+	{
+		if(maxamount>=DCV_VARS->funds[DCV_VARS->turni])
+		{	cJSON_AddItemToArray(possibilities,cJSON_CreateNumber(check));
+			for(int i=allin;i<=fold;i++)
+					cJSON_AddItemToArray(possibilities,cJSON_CreateNumber(i));
+			
+		}
+		else
+		{
+			for(int i=check;i<=fold;i++)
+			{
+				if(i != call)
+					cJSON_AddItemToArray(possibilities,cJSON_CreateNumber(i));
+			}
+		}
+		//raise or fold or call or check
+	}
+
+	cJSON_AddNumberToObject(roundBetting,"min_amount",(maxamount-DCV_VARS->betamount[DCV_VARS->turni][DCV_VARS->round]));
+
+	lws_write(wsi,cJSON_Print(roundBetting),strlen(cJSON_Print(roundBetting)),0);
+	
+	end:
+		return retval;
+	
+}
+
+

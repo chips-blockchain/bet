@@ -407,7 +407,7 @@ int32_t BET_rest_send_turn_info(struct lws *wsi,int32_t playerid,int32_t cardid,
 
 
 
-int32_t BET_rest_dcv_turn(struct lws *wsi, cJSON *argjson)
+int32_t BET_rest_dcv_turn(struct lws *wsi)
 {
 	int32_t retval=1,bytes;
 	cJSON *turninfo=NULL;
@@ -487,6 +487,148 @@ int32_t BET_rest_dcv_turn(struct lws *wsi, cJSON *argjson)
 	end:	
 		return retval;
 }
+
+int32_t BET_rest_receive_card(struct lws *wsi, cJSON *playerCardInfo)
+{
+	int retval=1,playerid,cardid,card_type,flag;
+	
+	playerid=jint(playerCardInfo,"playerid");
+	cardid=jint(playerCardInfo,"cardid");
+	card_type=jint(playerCardInfo,"card_type");
+
+	eval_game_p[no_of_cards]=playerid;
+	eval_game_c[no_of_cards]=cardid;
+	no_of_cards++;
+
+	if(card_type == hole_card)
+	{
+		card_matrix[(cardid%BET_dcv->maxplayers)][(cardid/BET_dcv->maxplayers)]=1;
+		card_values[(cardid%BET_dcv->maxplayers)][(cardid/BET_dcv->maxplayers)]=jint(playerCardInfo,"decoded_card");	
+	}
+	else if(card_type == flop_card_1)
+	{
+		card_matrix[playerid][no_of_hole_cards]=1;
+		card_values[playerid][no_of_hole_cards]=jint(playerCardInfo,"decoded_card");
+	}
+	else if(card_type == flop_card_2)
+	{
+		card_matrix[playerid][no_of_hole_cards+1]=1;
+		card_values[playerid][no_of_hole_cards+1]=jint(playerCardInfo,"decoded_card");
+	}
+	else if(card_type == flop_card_3)
+	{
+		card_matrix[playerid][no_of_hole_cards+2]=1;
+		card_values[playerid][no_of_hole_cards+2]=jint(playerCardInfo,"decoded_card");
+	}
+	else if(card_type == turn_card)
+	{
+		card_matrix[playerid][no_of_hole_cards+no_of_flop_cards]=1;
+		card_values[playerid][no_of_hole_cards+no_of_flop_cards]=jint(playerCardInfo,"decoded_card");
+	}
+	else if(card_type == river_card)
+	{
+		card_matrix[playerid][no_of_hole_cards+no_of_flop_cards+no_of_turn_card]=1;
+		card_values[playerid][no_of_hole_cards+no_of_flop_cards+no_of_turn_card]=jint(playerCardInfo,"decoded_card");
+	}
+	/*
+	printf("\nCard Matrix:\n");
+	for(int i=0;i<hand_size;i++)
+	{
+		for(int j=0;j<bet->maxplayers;j++)
+		{
+			printf("%d\t",card_matrix[j][i]);
+		}
+		printf("\n");
+	}
+	*/
+	if(hole_cards_drawn == 0)
+	{
+		flag=1;
+		for(int i=0;((i<no_of_hole_cards) && (flag));i++)
+		{
+			for(int j=0;((j<BET_dcv->maxplayers) &&(flag));j++)
+			{
+				if(card_matrix[j][i] == 0)
+				{
+					flag=0;
+				}
+			}
+		}
+		if(flag)
+			hole_cards_drawn=1;
+				
+	}
+	else if(flop_cards_drawn == 0)
+	{
+		flag=1;
+		for(int i=no_of_hole_cards;((i<no_of_hole_cards+no_of_flop_cards) && (flag));i++)
+		{
+			for(int j=0;((j<BET_dcv->maxplayers) &&(flag));j++)
+			{
+				if(card_matrix[j][i] == 0)
+				{
+					flag=0;
+				}
+			}
+		}
+		if(flag)
+			flop_cards_drawn=1;
+		
+	}
+	else if(turn_card_drawn == 0)
+	{
+		for(int i=no_of_hole_cards+no_of_flop_cards;((i<no_of_hole_cards+no_of_flop_cards+no_of_turn_card) && (flag));i++)
+		{
+			for(int j=0;((j<BET_dcv->maxplayers) &&(flag));j++)
+			{
+				if(card_matrix[j][i] == 0)
+				{
+					flag=0;
+				}
+			}
+		}
+		if(flag)
+			turn_card_drawn=1;
+		
+	}
+	else if(river_card_drawn == 0)
+	{
+		for(int i=no_of_hole_cards+no_of_flop_cards+no_of_turn_card;((i<no_of_hole_cards+no_of_flop_cards+no_of_turn_card+no_of_river_card) && (flag));i++)
+		{
+			for(int j=0;((j<BET_dcv->maxplayers) &&(flag));j++)
+			{
+				if(card_matrix[j][i] == 0)
+				{
+					flag=0;
+				}
+			}
+		}
+		if(flag)
+			river_card_drawn=1;
+		
+	}
+
+		if(flag)
+		{
+			if(DCV_VARS->round == 0)
+			{
+				retval=BET_rest_DCV_small_blind(wsi);
+				
+			}
+			else
+			{
+				retval=BET_rest_DCV_round_betting(wsi);
+			}
+		}
+		else
+		{
+			retval=BET_rest_dcv_turn(wsi);
+		}
+		
+		return retval;
+	
+}
+
 
 int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 {
@@ -620,7 +762,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	}
 	else if(strcmp(jstr(argjson,"method"), "dealer_ready") == 0)
 	{
-			retval=BET_rest_dcv_turn(wsi,argjson);
+			retval=BET_rest_dcv_turn(wsi);
 		
 	}
 	else if(strcmp(jstr(argjson,"method"),"turn") == 0)
@@ -637,6 +779,10 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	{
 		printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 		BET_rest_player_receive_share(wsi,argjson);
+	}
+	else if(strcmp(method,"playerCardInfo") == 0)
+	{
+			retval = BET_rest_receive_card(wsi,argjson);
 	}
 	else
 	{		
