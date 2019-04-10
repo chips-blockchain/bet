@@ -780,7 +780,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 		printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 		BET_rest_player_receive_share(wsi,argjson);
 	}
-	else if(strcmp(method,"playerCardInfo") == 0)
+	else if(strcmp(jstr(argjson,"method"),"playerCardInfo") == 0)
 	{
 			retval = BET_rest_receive_card(wsi,argjson);
 	}
