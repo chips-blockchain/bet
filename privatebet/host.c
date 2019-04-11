@@ -586,6 +586,7 @@ int32_t BET_rest_receive_card(struct lws *wsi, cJSON *playerCardInfo)
 		{
 			for(int j=0;((j<BET_dcv->maxplayers) &&(flag));j++)
 			{
+				printf("%d:%d\n",j,i);
 				if(card_matrix[j][i] == 0)
 				{
 					flag=0;
