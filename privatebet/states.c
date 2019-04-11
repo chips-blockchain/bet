@@ -1447,7 +1447,7 @@ int32_t BET_rest_DCV_small_blind_bet(struct lws *wsi,cJSON *argjson)
 	playerid=jint(argjson,"playerid");
 	round=jint(argjson,"round");
 	
-	
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	DCV_VARS->small_blind=jint(argjson,"amount");
 	DCV_VARS->bet_actions[playerid][round]=small_blind;
 	DCV_VARS->betamount[playerid][round]=DCV_VARS->small_blind;
@@ -1486,15 +1486,15 @@ int32_t BET_rest_DCV_big_blind_bet(struct lws *wsi,cJSON *argjson)
 		return retval;
 }
 
-int32_t BET_rest_player_small_blind_bet(struct lws *wsi,cJSON *argjson)
+int32_t BET_rest_player_small_blind_bet(struct lws *wsi,cJSON *argjson,int32_t this_playerID)
 {
 	cJSON *small_blind_info=NULL;
 	int32_t amount,retval=1,bytes,playerid,round;
 	char *rendered=NULL;
+	/*
 	int32_t this_playerID;
-	
 	this_playerID=jint(argjson,"gui_playerID");
-
+	*/
 	playerid=jint(argjson,"playerid");
 	round=jint(argjson,"round");
 
@@ -1510,14 +1510,15 @@ int32_t BET_rest_player_small_blind_bet(struct lws *wsi,cJSON *argjson)
 }
 
 
-int32_t BET_rest_player_big_blind_bet(struct lws *wsi,cJSON *argjson)
+int32_t BET_rest_player_big_blind_bet(struct lws *wsi,cJSON *argjson,int32_t this_playerID)
 {
 	int retval=1,bytes,amount,playerid,round;
 	char *rendered=NULL;
 	cJSON *display=NULL;
+	/*
 	int32_t this_playerID;
-
 	this_playerID=jint(argjson,"gui_playerID");
+	*/
 	playerid=jint(argjson,"playerid");
 	round=jint(argjson,"round");
 	
@@ -1752,25 +1753,31 @@ int32_t BET_rest_betting_statemachine(struct lws *wsi,cJSON *argjson)
 			{
 				if(BET_player[this_playerID]->myplayerid == -2)
 				{
-					BET_rest_relay(wsi,argjson);
+					printf("%s:%d\n",__FUNCTION__,__LINE__);
+					//BET_rest_relay(wsi,argjson);
+					retval=BET_rest_player_small_blind_bet(wsi,argjson,0);
+					retval=BET_rest_player_small_blind_bet(wsi,argjson,1);
 					retval=BET_rest_DCV_small_blind_bet(wsi,argjson);
 				}
 				else
 				{
-					
-					BET_rest_player_small_blind_bet(wsi,argjson);
+					printf("%s:%d It shouldn't come here\n",__FUNCTION__,__LINE__);
+					//BET_rest_player_small_blind_bet(wsi,argjson);
 				}
 			}
 			else if(strcmp(action,"big_blind_bet") == 0)
 			{
 				if(BET_player[this_playerID]->myplayerid == -2)
 				{
-					BET_rest_relay(wsi,argjson);
+					//BET_rest_relay(wsi,argjson);
+					retval=BET_rest_player_big_blind_bet(wsi,argjson,0);
+					retval=BET_rest_player_big_blind_bet(wsi,argjson,1);
 					retval=BET_rest_DCV_big_blind_bet(wsi,argjson);
 				}
 				else
 				{
-					retval=BET_rest_player_big_blind_bet(wsi,argjson);
+					printf("%s:%d It shouldn't come here\n",__FUNCTION__,__LINE__);
+					//retval=BET_rest_player_big_blind_bet(wsi,argjson);
 				}
 				
 			}

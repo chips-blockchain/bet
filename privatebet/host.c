@@ -724,7 +724,7 @@ int32_t BET_rest_evaluate_hand(struct lws *wsi)
 int32_t BET_rest_relay(struct lws *wsi, cJSON *argjson)
 {
 	int32_t retval=1,bytes;
-
+	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 	lws_write(wsi,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
 	
 	return 0;
