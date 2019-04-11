@@ -1684,16 +1684,16 @@ int32_t BET_rest_DCV_round_betting_response(struct lws *wsi,cJSON *argjson)
 
 
 
-int32_t BET_rest_player_round_betting_response(struct lws *wsi,cJSON *argjson)
+int32_t BET_rest_player_round_betting_response(struct lws *wsi,cJSON *argjson,int32_t this_playerID)
 {
 	int retval=1,playerid,round,bet_amount=0,maxamount=0,flag1=0,flag2=0;
 	char *action =NULL;
 	int32_t this_playerID=jint(argjson,"gui_playerID");
-	
 	playerid=jint(argjson,"playerid");
+	/*
 	round=jint(argjson,"round");
 	bet_amount=jint(argjson,"bet_amount");
-	
+	*/
 	Player_VARS[this_playerID]->betamount[playerid][round]+=bet_amount;
 	Player_VARS[this_playerID]->pot+=bet_amount;
 	if((action=jstr(argjson,"action")) != NULL)
@@ -1804,10 +1804,20 @@ int32_t BET_rest_betting_statemachine(struct lws *wsi,cJSON *argjson)
 			else if((strcmp(action,"check") == 0) || (strcmp(action,"call") == 0) || (strcmp(action,"raise") == 0)
 									|| (strcmp(action,"fold") == 0) || (strcmp(action,"allin") == 0))																					
 			{
+				for(int i=0;i<BET_dcv->maxplayers;i++)
+				{
+					if(i != jint(argjson,"gui_playerID"));
+					retval=BET_rest_player_round_betting_response(wsi,argjson,i);
+				}
+				retval=BET_rest_DCV_round_betting_response(wsi,argjson);
+
+				
+				/*
 				if(BET_player[this_playerID]->myplayerid == -2)
 					retval=BET_rest_DCV_round_betting_response(wsi,argjson);
 				else
 					retval=BET_rest_player_round_betting_response(wsi,argjson);
+				*/	
 			}
 		}
 		end:
