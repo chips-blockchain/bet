@@ -1391,26 +1391,22 @@ int32_t BET_rest_small_blind(struct lws *wsi,cJSON *argjson)
 	int32_t this_playerID;
 
 	this_playerID=jint(argjson,"gui_playerID");
+	small_blind_info=cJSON_CreateObject();
+	cJSON_AddStringToObject(small_blind_info,"method","betting");
+	amount=small_blind_amount;
+	Player_VARS[this_playerID]->player_funds-=amount;
+	//retval=BET_player_invoice_pay(argjson,bet,vars,amount);
 	
+	if(retval<0)
+		goto end;
+	
+	cJSON_AddStringToObject(small_blind_info,"action","small_blind_bet");
+	cJSON_AddNumberToObject(small_blind_info,"amount",amount);
+	Player_VARS[this_playerID]->betamount[BET_player[this_playerID]->myplayerid][Player_VARS[this_playerID]->round]=Player_VARS[this_playerID]->betamount[BET_player[this_playerID]->myplayerid][Player_VARS[this_playerID]->round]+amount;
+	cJSON_AddNumberToObject(small_blind_info,"playerid",jint(argjson,"playerid"));
+	cJSON_AddNumberToObject(small_blind_info,"round",jint(argjson,"round"));
 
-
-		small_blind_info=cJSON_CreateObject();
-		cJSON_AddStringToObject(small_blind_info,"method","betting");
-		amount=small_blind_amount;
-		Player_VARS[this_playerID]
-		Player_VARS[this_playerID]->player_funds-=amount;
-    	//retval=BET_player_invoice_pay(argjson,bet,vars,amount);
-		
-		if(retval<0)
-			goto end;
-		
-		cJSON_AddStringToObject(small_blind_info,"action","small_blind_bet");
-		cJSON_AddNumberToObject(small_blind_info,"amount",amount);
-		Player_VARS[this_playerID]->betamount[BET_player[this_playerID]->myplayerid][Player_VARS[this_playerID]->round]=Player_VARS[this_playerID]->betamount[BET_player[this_playerID]->myplayerid][Player_VARS[this_playerID]->round]+amount;
-		cJSON_AddNumberToObject(small_blind_info,"playerid",jint(argjson,"playerid"));
-		cJSON_AddNumberToObject(small_blind_info,"round",jint(argjson,"round"));
-
-		lws_write(wsi,cJSON_Print(small_blind_info),strlen(cJSON_Print(small_blind_info)),0);				
+	lws_write(wsi,cJSON_Print(small_blind_info),strlen(cJSON_Print(small_blind_info)),0);				
 	end:
 		return retval;
 }
@@ -1426,7 +1422,7 @@ int32_t BET_rest_DCV_big_blind(struct lws *wsi,cJSON *argjson)
 	
 	
 	DCV_VARS->last_turn=DCV_VARS->turni;
-	DCV_VARS->turni=(DCV_VARS->turni+1)%DCV_VARS->maxplayers;
+	DCV_VARS->turni=(DCV_VARS->turni+1)%BET_dcv->maxplayers;
 	big_blind_info=cJSON_CreateObject();
 	cJSON_AddStringToObject(big_blind_info,"method","betting");
 	cJSON_AddStringToObject(big_blind_info,"action","big_blind");
@@ -1792,7 +1788,7 @@ int32_t BET_rest_betting_statemachine(struct lws *wsi,cJSON *argjson)
 				if(BET_player[this_playerID]->myplayerid == -2)
 					retval=BET_rest_DCV_round_betting_response(wsi,argjson);
 				else
-					retval=BET_player_round_betting_response(wsi,argjson);
+					retval=BET_rest_player_round_betting_response(wsi,argjson);
 			}
 		}
 		end:
