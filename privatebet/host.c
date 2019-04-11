@@ -393,7 +393,9 @@ int32_t BET_rest_send_turn_info(struct lws *wsi,int32_t playerid,int32_t cardid,
 	cJSON *turninfo=NULL;
 	int retval=1,bytes;
 	char *rendered=NULL;
-	
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	turninfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(turninfo,"method","turn");
 	cJSON_AddNumberToObject(turninfo,"playerid",playerid);
@@ -456,6 +458,7 @@ int32_t BET_rest_dcv_turn(struct lws *wsi)
 	}
 	else if(turn_card_drawn==0)
 	{
+		printf("%s:%d\n",__FUNCTION__,__LINE__);
 		for(int i=no_of_hole_cards+no_of_flop_cards;i<no_of_hole_cards+no_of_flop_cards+no_of_turn_card;i++)
 		{
 			for(int j=0;j<BET_dcv->maxplayers;j++)
@@ -495,7 +498,7 @@ int32_t BET_rest_receive_card(struct lws *wsi, cJSON *playerCardInfo)
 	playerid=jint(playerCardInfo,"playerid");
 	cardid=jint(playerCardInfo,"cardid");
 	card_type=jint(playerCardInfo,"card_type");
-
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	eval_game_p[no_of_cards]=playerid;
 	eval_game_c[no_of_cards]=cardid;
 	no_of_cards++;
@@ -522,6 +525,7 @@ int32_t BET_rest_receive_card(struct lws *wsi, cJSON *playerCardInfo)
 	}
 	else if(card_type == turn_card)
 	{
+		printf("%s:%d\n",__FUNCTION__,__LINE__);
 		card_matrix[playerid][no_of_hole_cards+no_of_flop_cards]=1;
 		card_values[playerid][no_of_hole_cards+no_of_flop_cards]=jint(playerCardInfo,"decoded_card");
 	}
@@ -577,6 +581,7 @@ int32_t BET_rest_receive_card(struct lws *wsi, cJSON *playerCardInfo)
 	}
 	else if(turn_card_drawn == 0)
 	{
+		printf("%s:%d\n",__FUNCTION__,__LINE__);
 		for(int i=no_of_hole_cards+no_of_flop_cards;((i<no_of_hole_cards+no_of_flop_cards+no_of_turn_card) && (flag));i++)
 		{
 			for(int j=0;((j<BET_dcv->maxplayers) &&(flag));j++)
