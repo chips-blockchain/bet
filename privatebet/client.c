@@ -2940,7 +2940,7 @@ int32_t BET_rest_player_receive_share(struct lws *wsi,cJSON *argjson)
 
 		if(unpermi != -1)
 		{
-			all_player_card_values[this_playerID][number_cards_drawn++]=decoded256.bytes[30];
+			all_player_card_values[this_playerID][all_number_cards_drawn[this_playerID]++]=decoded256.bytes[30];
 			playerCardInfo=cJSON_CreateObject();
 			cJSON_AddStringToObject(playerCardInfo,"method","playerCardInfo");
 			cJSON_AddNumberToObject(playerCardInfo,"playerid",BET_player[this_playerID]->myplayerid);
