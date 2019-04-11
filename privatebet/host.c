@@ -582,10 +582,10 @@ int32_t BET_rest_receive_card(struct lws *wsi, cJSON *playerCardInfo)
 	else if(turn_card_drawn == 0)
 	{
 		flag=1;
-		printf("%s:%d::BET_dcv->maxplayers:%d\n",__FUNCTION__,__LINE__,BET_dcv->maxplayers);
+		printf("%s:%d::BET_dcv->maxplayers:%d\n",__FUNCTION__,__LINE__,2);//BET_dcv->maxplayers 2
 		for(int i=no_of_hole_cards+no_of_flop_cards;((i<no_of_hole_cards+no_of_flop_cards+no_of_turn_card) && (flag));i++)
 		{
-			for(int j=0;((j<BET_dcv->maxplayers) &&(flag));j++)
+			for(int j=0;((j<2) &&(flag));j++)
 			{
 				printf("%d:%d\n",j,i);
 				if(card_matrix[j][i] == 0)
