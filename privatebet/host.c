@@ -477,11 +477,11 @@ int32_t BET_rest_dcv_turn(struct lws *wsi)
 	{
 		for(int i=no_of_hole_cards+no_of_flop_cards+no_of_turn_card;i<no_of_hole_cards+no_of_flop_cards+no_of_turn_card+no_of_river_card;i++)
 		{
-			for(int j=0;j<BET_dcv->maxplayers;j++)
+			for(int j=0;j<BET_dcv->numplayers;j++)
 			{
 				if(card_matrix[j][i] == 0)
 				{
-					retval=BET_rest_send_turn_info(wsi,j,(no_of_hole_cards*BET_dcv->maxplayers)+(i-no_of_hole_cards)+3,river_card);
+					retval=BET_rest_send_turn_info(wsi,j,(no_of_hole_cards*BET_dcv->numplayers)+(i-no_of_hole_cards)+3,river_card);
 					goto end;
 				}
 			}
@@ -607,7 +607,7 @@ int32_t BET_rest_receive_card(struct lws *wsi, cJSON *playerCardInfo)
 		flag=1;
 		for(int i=no_of_hole_cards+no_of_flop_cards+no_of_turn_card;((i<no_of_hole_cards+no_of_flop_cards+no_of_turn_card+no_of_river_card) && (flag));i++)
 		{
-			for(int j=0;((j<BET_dcv->maxplayers) &&(flag));j++)
+			for(int j=0;((j<BET_dcv->numplayers) &&(flag));j++)
 			{
 				if(card_matrix[j][i] == 0)
 				{
