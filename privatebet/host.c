@@ -721,6 +721,14 @@ int32_t BET_rest_evaluate_hand(struct lws *wsi)
 		return retval;
 }
 
+int32_t BET_rest_relay(struct lws *wsi, cJSON *argjson)
+{
+	int32_t retval=1,bytes;
+
+	lws_write(wsi,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+	
+	return 0;
+}
 
 int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 {
@@ -875,6 +883,10 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	else if(strcmp(jstr(argjson,"method"),"playerCardInfo") == 0)
 	{
 			retval = BET_rest_receive_card(wsi,argjson);
+	}
+	else if(strcmp(jstr(argjson,"method"),"betting") == 0)
+	{
+		retval=BET_rest_betting_statemachine(wsi,argjson);
 	}
 	else
 	{		

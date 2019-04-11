@@ -2958,3 +2958,54 @@ int32_t BET_rest_player_receive_share(struct lws *wsi,cJSON *argjson)
 }
 
 
+void rest_display_cards(cJSON *argjson,int32_t this_playerID)
+{
+	
+	char* suit[NSUITS]= {"hearts","spades","clubs","diamonds"};
+	char* face[NFACES]= {"ace","two","three","four","five","six","seven","eight","nine",
+						 "ten","jack","queen","king"
+						};
+	char action_str[8][100]={"","small_blind","big_blind","check","raise","call","allin","fold"};
+	cJSON *actions=NULL;
+	int flag;
+
+	printf("\n******************** Player Cards ********************");
+	printf("\nHole Cards:\n");
+	for(int32_t i=0;((i<no_of_hole_cards)&&(i<number_cards_drawn));i++)
+	{
+		
+		printf("%s-->%s \t",suit[player_card_values[i]/13],face[player_card_values[i]%13]);
+	}
+	
+	flag=1;
+	for(int32_t i=no_of_hole_cards;((i<hand_size)&&(i<number_cards_drawn));i++)
+	{
+		if(flag)
+		{
+			printf("\nCommunity Cards:\n");
+			flag=0;
+		}	
+		printf("%s-->%s \t",suit[player_card_values[i]/13],face[player_card_values[i]%13]);
+	}
+		
+	printf("\n******************** Betting done so far ********************");
+	printf("\nsmall_blind:%d, big_blind:%d",small_blind_amount,big_blind_amount);
+	printf("\npot size:%d",jint(argjson,"pot"));
+	actions=cJSON_GetObjectItem(argjson,"actions");
+	int count=0;
+	flag=1;
+	for(int i=0;((i<=jint(argjson,"round"))&&(flag));i++)
+	{
+		printf("\nRound:%d",i);
+		for(int j=0;((j<BET_player[this_playerID]->maxplayers)&&(flag));j++)
+		{
+			if(jinti(actions,((i*BET_player[this_playerID]->maxplayers)+j))>0)
+				printf("\nplayed id:%d, action: %s",j,action_str[jinti(actions,((i*BET_player[this_playerID]->maxplayers)+j))]);
+			count++;	
+			if(count==cJSON_GetArraySize(actions))
+					flag=0;
+		}
+		printf("\n");
+	}
+}
+
