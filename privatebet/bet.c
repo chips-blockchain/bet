@@ -339,7 +339,7 @@ int main(int argc, char **argv)
 	cJSON *infojson,*argjson,*reqjson,*deckjson; 
 	uint64_t randvals; bits256 privkey,pubkey,pubkeys[64],privkeys[64]; 
 	uint8_t pubkey33[33],taddr=0,pubtype=60; uint32_t i,n,range,numplayers; int32_t testmode=0,pubsock=-1,subsock=-1,pullsock=-1,pushsock=-1; long fsize; 
-	struct privatebet_info *BET_dcv,*BET_bvv,*BET_player;
+	struct privatebet_info *BET_dcv1,*BET_bvv,*BET_player;
 	pthread_t dcv_t,bvv_t,player_t;
 
     #if 1
@@ -368,21 +368,21 @@ int main(int argc, char **argv)
 		*/	
 		#endif				  
 
-		BET_dcv=calloc(1,sizeof(struct privatebet_info));
-	    BET_dcv->pubsock = pubsock;//BET_nanosock(1,bindaddr,NN_PUB);
-	    BET_dcv->pullsock = pullsock;//BET_nanosock(1,bindaddr1,NN_PULL);
-	    BET_dcv->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
-	    BET_dcv->maxchips = CARDS777_MAXCHIPS;
-	    BET_dcv->chipsize = CARDS777_CHIPSIZE;
-		BET_dcv->numplayers=0;
-		BET_dcv->myplayerid=-2;
-		BET_dcv->cardid=-1;
-		BET_dcv->turni=-1;
-		BET_dcv->no_of_turns=0;
-	    BET_betinfo_set(BET_dcv,"demo",range,0,Maxplayers);
-	    if ( OS_thread_create(&dcv_t,NULL,(void *)BET_ws_dcvloop,(void *)BET_dcv) != 0 )
+		BET_dcv1=calloc(1,sizeof(struct privatebet_info));
+	    BET_dcv1->pubsock = pubsock;//BET_nanosock(1,bindaddr,NN_PUB);
+	    BET_dcv1->pullsock = pullsock;//BET_nanosock(1,bindaddr1,NN_PULL);
+	    BET_dcv1->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
+	    BET_dcv1->maxchips = CARDS777_MAXCHIPS;
+	    BET_dcv1->chipsize = CARDS777_CHIPSIZE;
+		BET_dcv1->numplayers=0;
+		BET_dcv1->myplayerid=-2;
+		BET_dcv1->cardid=-1;
+		BET_dcv1->turni=-1;
+		BET_dcv1->no_of_turns=0;
+	    BET_betinfo_set(BET_dcv1,"demo",range,0,Maxplayers);
+	    if ( OS_thread_create(&dcv_t,NULL,(void *)BET_ws_dcvloop,(void *)BET_dcv1) != 0 )
 	    {
-	        printf("error launching BET_hostloop for pub.%d pull.%d\n",BET_dcv->pubsock,BET_dcv->pullsock);
+	        printf("error launching BET_hostloop for pub.%d pull.%d\n",BET_dcv1->pubsock,BET_dcv1->pullsock);
 	        exit(-1);
 	    }
        	if(pthread_join(dcv_t,NULL))

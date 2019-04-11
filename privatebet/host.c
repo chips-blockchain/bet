@@ -80,7 +80,7 @@ int32_t BET_rest_dcv_init(struct lws *wsi, cJSON *argjson)
 	cJSON *dcvInfo=NULL,*dcvKeyInfo=NULL;
 	int32_t Maxplayers=2;
 	
-	DCV_VARS = calloc(1,sizeof(*DCV_VARS));
+	DCV_VARS = calloc(1,sizeof(struct privatebet_vars));
 	
 	BET_dcv=calloc(1,sizeof(struct privatebet_info));
 	//BET_dcv->pubsock = pubsock;//BET_nanosock(1,bindaddr,NN_PUB);
