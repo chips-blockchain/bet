@@ -2971,21 +2971,21 @@ void rest_display_cards(cJSON *argjson,int32_t this_playerID)
 
 	printf("\n******************** Player Cards ********************");
 	printf("\nHole Cards:\n");
-	for(int32_t i=0;((i<no_of_hole_cards)&&(i<number_cards_drawn));i++)
+	for(int32_t i=0;((i<no_of_hole_cards)&&(i<all_number_cards_drawn[this_playerID]));i++)
 	{
 		
-		printf("%s-->%s \t",suit[player_card_values[i]/13],face[player_card_values[i]%13]);
+		printf("%s-->%s \t",suit[all_player_card_values[this_playerID][i]/13],face[all_player_card_values[this_playerID][i]%13]);
 	}
 	
 	flag=1;
-	for(int32_t i=no_of_hole_cards;((i<hand_size)&&(i<number_cards_drawn));i++)
+	for(int32_t i=no_of_hole_cards;((i<hand_size)&&(i<all_number_cards_drawn[this_playerID]));i++)
 	{
 		if(flag)
 		{
 			printf("\nCommunity Cards:\n");
 			flag=0;
 		}	
-		printf("%s-->%s \t",suit[player_card_values[i]/13],face[player_card_values[i]%13]);
+		printf("%s-->%s \t",suit[all_player_card_values[this_playerID][i]/13],face[all_player_card_values[this_playerID][i]%13]);
 	}
 		
 	printf("\n******************** Betting done so far ********************");
