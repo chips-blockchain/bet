@@ -650,8 +650,9 @@ int32_t BET_rest_evaluate_hand(struct lws *wsi)
 	int winners[CARDS777_MAXPLAYERS],players_left=0,only_winner=-1;
 	cJSON *resetInfo=NULL,*gameInfo=NULL;
 	char *rendered=NULL;
+	int32_t dcv_maxplayers=2;
 	printf("\n****************************%s:%d::********************\n",__FUNCTION__,__LINE__);
-	for(int i=0;i<BET_dcv->maxplayers;i++)
+	for(int i=0;i<dcv_maxplayers;i++)
 	{
 			p[i]=DCV_VARS->bet_actions[i][(DCV_VARS->round-1)];
 			
@@ -660,7 +661,7 @@ int32_t BET_rest_evaluate_hand(struct lws *wsi)
 			else
 				only_winner=i;
 	}
-	players_left=BET_dcv->maxplayers-players_left;
+	players_left=dcv_maxplayers-players_left;
 	if(players_left<2)
 	{
 		if(only_winner != -1)
@@ -672,7 +673,7 @@ int32_t BET_rest_evaluate_hand(struct lws *wsi)
 	}
 		
 	printf("\nEach player got the below cards:\n");
-	for(int i=0;i<BET_dcv->maxplayers;i++)
+	for(int i=0;i<dcv_maxplayers;i++)
 	{
 		if(p[i]==fold)
 			scores[i]=0;
@@ -689,12 +690,12 @@ int32_t BET_rest_evaluate_hand(struct lws *wsi)
 				scores[i]=SevenCardDrawScore(h);
 			}
 	}
-	for(int i=0;i<BET_dcv->maxplayers;i++)
+	for(int i=0;i<dcv_maxplayers;i++)
 	{
 		if(max_score<scores[i])
 			max_score=scores[i];
 	}
-	for(int i=0;i<BET_dcv->maxplayers;i++)
+	for(int i=0;i<dcv_maxplayers;i++)
 	{
 		if(scores[i]==max_score)
 		{
@@ -707,7 +708,7 @@ int32_t BET_rest_evaluate_hand(struct lws *wsi)
 	
 	printf("\nWinning Amount:%d",(DCV_VARS->pot/no_of_winners));
 	printf("\nWinning Players Are:");
-	for(int i=0;i<BET_dcv->maxplayers;i++)
+	for(int i=0;i<dcv_maxplayers;i++)
 	{
 		if(winners[i]==1)
 		{
