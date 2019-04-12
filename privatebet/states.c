@@ -1624,7 +1624,7 @@ int32_t BET_rest_DCV_round_betting_response(struct lws *wsi,cJSON *argjson)
 {
 	int retval=1,playerid,round,bet_amount=0,players_left=0;
 	char *action =NULL;
-
+	int32_t dcv_maxplayers=2;
 
 	
 	playerid=jint(argjson,"playerid");
@@ -1662,15 +1662,15 @@ int32_t BET_rest_DCV_round_betting_response(struct lws *wsi,cJSON *argjson)
 			
 		}
 		// The below logic is to check if the number of active players < 2
-		for(int i=0;i<BET_dcv->maxplayers;i++)
+		for(int i=0;i<dcv_maxplayers;i++)
 		{
 			if((DCV_VARS->bet_actions[i][round]==fold)) /*|| (vars->bet_actions[i][round]==allin)*/
 				players_left++;
 		}
-		players_left=BET_dcv->maxplayers-players_left;
+		players_left=dcv_maxplayers-players_left;
 		if(players_left<2)
 		{
-			for(int i=0;i<BET_dcv->maxplayers;i++)
+			for(int i=0;i<dcv_maxplayers;i++)
 			{
 				for(int j=DCV_VARS->round;j<CARDS777_MAXROUNDS;j++)
 				{
@@ -1806,7 +1806,7 @@ int32_t BET_rest_betting_statemachine(struct lws *wsi,cJSON *argjson)
 			else if((strcmp(action,"check") == 0) || (strcmp(action,"call") == 0) || (strcmp(action,"raise") == 0)
 									|| (strcmp(action,"fold") == 0) || (strcmp(action,"allin") == 0))																					
 			{
-				for(int i=0;i<BET_dcv->maxplayers;i++)
+				for(int i=0;i<2/*BET_dcv->maxplayers*/;i++)
 				{
 					if(i != jint(argjson,"gui_playerID"));
 					retval=BET_rest_player_round_betting_response(wsi,argjson,i);
