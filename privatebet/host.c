@@ -423,7 +423,7 @@ int32_t BET_rest_dcv_turn(struct lws *wsi)
 			{
 				if(card_matrix[j][i] == 0)
 				{
-					retval=BET_rest_send_turn_info(wsi,j,(i*BET_dcv->maxplayers)+j,hole_card);
+					retval=BET_rest_send_turn_info(wsi,j,(i*(BET_dcv->maxplayers))+j,hole_card);
 					goto end;
 		
 				}
@@ -440,15 +440,15 @@ int32_t BET_rest_dcv_turn(struct lws *wsi)
 				{
 					if((i-(no_of_hole_cards)) == 0)
 					{
-						retval=BET_rest_send_turn_info(wsi,j,(no_of_hole_cards*BET_dcv->maxplayers)+(i-no_of_hole_cards)+1,flop_card_1);	
+						retval=BET_rest_send_turn_info(wsi,j,(no_of_hole_cards*(BET_dcv->maxplayers))+(i-no_of_hole_cards)+1,flop_card_1);	
 					}
 					else if((i-(no_of_hole_cards)) == 1)
 					{
-						retval=BET_rest_send_turn_info(wsi,j,(no_of_hole_cards*BET_dcv->maxplayers)+(i-no_of_hole_cards)+1,flop_card_2);	
+						retval=BET_rest_send_turn_info(wsi,j,(no_of_hole_cards*(BET_dcv->maxplayers))+(i-no_of_hole_cards)+1,flop_card_2);	
 					}
 					else if((i-(no_of_hole_cards)) == 2)
 					{
-						retval=BET_rest_send_turn_info(wsi,j,(no_of_hole_cards*BET_dcv->maxplayers)+(i-no_of_hole_cards)+1,flop_card_3);	
+						retval=BET_rest_send_turn_info(wsi,j,(no_of_hole_cards*(BET_dcv->maxplayers))+(i-no_of_hole_cards)+1,flop_card_3);	
 					}
 					goto end;
 					
@@ -650,7 +650,7 @@ int32_t BET_rest_evaluate_hand(struct lws *wsi)
 	int winners[CARDS777_MAXPLAYERS],players_left=0,only_winner=-1;
 	cJSON *resetInfo=NULL,*gameInfo=NULL;
 	char *rendered=NULL;
-	
+	printf("\n****************************%s:%d::********************",__FUNCTION__,__LINE__);
 	for(int i=0;i<BET_dcv->maxplayers;i++)
 	{
 			p[i]=DCV_VARS->bet_actions[i][(DCV_VARS->round-1)];

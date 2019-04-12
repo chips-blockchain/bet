@@ -1224,7 +1224,7 @@ int32_t BET_rest_DCV_small_blind(struct lws *wsi)
 
 
 	DCV_VARS->last_turn=DCV_VARS->dealer;
-	DCV_VARS->turni=(DCV_VARS->dealer+1)%BET_dcv->maxplayers;
+	DCV_VARS->turni=(DCV_VARS->dealer+1)%(BET_dcv->maxplayers);
 
 	smallBlindInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(smallBlindInfo,"method","betting");
@@ -1422,7 +1422,7 @@ int32_t BET_rest_DCV_big_blind(struct lws *wsi,cJSON *argjson)
 	
 	
 	DCV_VARS->last_turn=DCV_VARS->turni;
-	DCV_VARS->turni=(DCV_VARS->turni+1)%BET_dcv->maxplayers;
+	DCV_VARS->turni=(DCV_VARS->turni+1)%(BET_dcv->maxplayers);
 	big_blind_info=cJSON_CreateObject();
 	cJSON_AddStringToObject(big_blind_info,"method","betting");
 	cJSON_AddStringToObject(big_blind_info,"action","big_blind");
