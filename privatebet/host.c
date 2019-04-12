@@ -500,7 +500,7 @@ int32_t BET_rest_receive_card(struct lws *wsi, cJSON *playerCardInfo)
 	playerid=jint(playerCardInfo,"playerid");
 	cardid=jint(playerCardInfo,"cardid");
 	card_type=jint(playerCardInfo,"card_type");
-	printf("%s:%d::BET_dcv->maxplayers=%d\n",__FUNCTION__,__LINE__,BET_dcv->maxplayers);
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	eval_game_p[no_of_cards]=playerid;
 	eval_game_c[no_of_cards]=cardid;
 	no_of_cards++;
@@ -650,7 +650,7 @@ int32_t BET_rest_evaluate_hand(struct lws *wsi)
 	int winners[CARDS777_MAXPLAYERS],players_left=0,only_winner=-1;
 	cJSON *resetInfo=NULL,*gameInfo=NULL;
 	char *rendered=NULL;
-	printf("\n****************************%s:%d::********************",__FUNCTION__,__LINE__);
+	printf("\n****************************%s:%d::********************\n",__FUNCTION__,__LINE__);
 	for(int i=0;i<BET_dcv->maxplayers;i++)
 	{
 			p[i]=DCV_VARS->bet_actions[i][(DCV_VARS->round-1)];

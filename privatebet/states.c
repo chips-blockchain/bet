@@ -1178,6 +1178,7 @@ int32_t BET_rest_DCV_next_turn(struct lws *wsi)
 {
 	int32_t flag=0,maxamount=0,retval=-1,players_left=0;
 	int32_t dcv_maxplayers=2;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	for(int i=0;i<dcv_maxplayers;i++)
 	{
 		if((DCV_VARS->bet_actions[i][DCV_VARS->round]==fold)) /*|| (vars->bet_actions[i][vars->round]==allin)*/
@@ -1246,6 +1247,7 @@ int32_t BET_rest_DCV_round_betting(struct lws *wsi)
 	int flag=0,maxamount=0,bytes,retval=1,players_left=0;
 	char *rendered=NULL;
 	int32_t dcv_maxplayers=2;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	if((retval=BET_rest_DCV_next_turn(wsi)) == -1)
 	{
 		for(int i=0;i<dcv_maxplayers;i++)
