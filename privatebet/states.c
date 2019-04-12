@@ -1177,23 +1177,23 @@ int32_t BET_rest_player_dealer_info(struct lws *wsi, cJSON *argjson,int32_t play
 int32_t BET_rest_DCV_next_turn(struct lws *wsi)
 {
 	int32_t flag=0,maxamount=0,retval=-1,players_left=0;
-
-	for(int i=0;i<BET_dcv->maxplayers;i++)
+	int32_t dcv_maxplayers=2;
+	for(int i=0;i<dcv_maxplayers;i++)
 	{
 		if((DCV_VARS->bet_actions[i][DCV_VARS->round]==fold)) /*|| (vars->bet_actions[i][vars->round]==allin)*/
 			players_left++;
 	}
-	players_left=BET_dcv->maxplayers-players_left;
+	players_left=dcv_maxplayers-players_left;
 	if(players_left<2)
 		goto end;
 	
-	for(int i=0;i<BET_dcv->maxplayers;i++)
+	for(int i=0;i<dcv_maxplayers;i++)
 	{
 		if(maxamount<DCV_VARS->betamount[i][DCV_VARS->round])
 			maxamount=DCV_VARS->betamount[i][DCV_VARS->round];
 	}
 	
-	for(int i=((DCV_VARS->turni+1)%BET_dcv->maxplayers);(i != DCV_VARS->turni);i=((i+1)%BET_dcv->maxplayers))
+	for(int i=((DCV_VARS->turni+1)%dcv_maxplayers);(i != DCV_VARS->turni);i=((i+1)%dcv_maxplayers))
 	{
 		if((DCV_VARS->bet_actions[i][DCV_VARS->round] != fold)&&(DCV_VARS->bet_actions[i][DCV_VARS->round] != allin))
 		{
@@ -1245,15 +1245,15 @@ int32_t BET_rest_DCV_round_betting(struct lws *wsi)
 	cJSON *roundBetting=NULL,*possibilities=NULL,*actions=NULL;
 	int flag=0,maxamount=0,bytes,retval=1,players_left=0;
 	char *rendered=NULL;
-
+	int32_t dcv_maxplayers=2;
 	if((retval=BET_rest_DCV_next_turn(wsi)) == -1)
 	{
-		for(int i=0;i<BET_dcv->maxplayers;i++)
+		for(int i=0;i<dcv_maxplayers;i++)
 		{
 			if((DCV_VARS->bet_actions[i][DCV_VARS->round]==fold)|| (DCV_VARS->bet_actions[i][DCV_VARS->round]==allin)) 
 				players_left++;
 		}	
-		players_left=BET_dcv->maxplayers-players_left;
+		players_left=dcv_maxplayers-players_left;
 
 		DCV_VARS->round+=1;
 		DCV_VARS->turni=DCV_VARS->dealer;
@@ -1283,7 +1283,7 @@ int32_t BET_rest_DCV_round_betting(struct lws *wsi)
 	cJSON_AddItemToObject(roundBetting,"actions",actions=cJSON_CreateArray());
 	for(int i=0;i<=DCV_VARS->round;i++)
 	{
-		for(int j=0;j<BET_dcv->maxplayers;j++)
+		for(int j=0;j<dcv_maxplayers;j++)
 		{
 			if(DCV_VARS->bet_actions[j][i]>0)
 				cJSON_AddItemToArray(actions,cJSON_CreateNumber(DCV_VARS->bet_actions[j][i]));
@@ -1293,7 +1293,7 @@ int32_t BET_rest_DCV_round_betting(struct lws *wsi)
 	cJSON_AddItemToObject(roundBetting,"possibilities",possibilities=cJSON_CreateArray());
 
 	
-	for(int i=0;i<BET_dcv->maxplayers;i++)
+	for(int i=0;i<dcv_maxplayers;i++)
 	{	
 		if(maxamount<DCV_VARS->betamount[i][DCV_VARS->round])
 		{

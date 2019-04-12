@@ -162,3 +162,4 @@ void BET_tablestatus_send(struct privatebet_info *bet,struct privatebet_vars *va
     tablejson = BET_betinfo_json(bet,vars);
     BET_message_send("BET_tablestatus_send",bet->pubsock>=0?bet->pubsock:bet->pushsock,tablejson,1,bet);
 }
+
