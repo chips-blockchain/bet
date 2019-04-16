@@ -25,7 +25,6 @@
 #include "states.h"
 #include "../log/macrologger.h"
 #include "poker.h"
-#include "../picohttpparser/picohttpparser.h"
 
 #include <pthread.h>
 #include <sys/socket.h>

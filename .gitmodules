@@ -1,3 +1,0 @@
-[submodule "picohttpparser"]
-	path = picohttpparser
-	url = https://github.com/sg777/picohttpparser.git
