@@ -2444,6 +2444,7 @@ int32_t BET_rest_player_init(struct lws *wsi, cJSON *argjson)
 	{
 		cJSON_AddItemToArray(cjsonplayercards,cJSON_CreateString(bits256_str(str,all_players_info[playerID].cardpubkeys[i])));
 	}
+	printf("\nsent:::%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(init_p));
 	lws_write(wsi,cJSON_Print(init_p),strlen(cJSON_Print(init_p)),0);
 	
 	return 0;
