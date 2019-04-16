@@ -2402,8 +2402,9 @@ int32_t BET_rest_player_join(struct lws *wsi, cJSON *argjson)
 	cJSON *joinInfo=NULL;
 	struct pair256 key;
 	int32_t Maxplayers=2,numplayers=2,range=52;
-	
-	BET_player[player_id]=calloc(1,sizeof(struct privatebet_info));
+	for(int32_t i=0;i<Maxplayers;i++)
+		BET_player[i]=calloc(1,sizeof(struct privatebet_info));	
+	//BET_player[player_id]=calloc(1,sizeof(struct privatebet_info));
 	BET_player[player_id]->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
 	BET_player[player_id]->maxchips = CARDS777_MAXCHIPS;
 	BET_player[player_id]->chipsize = CARDS777_CHIPSIZE;
