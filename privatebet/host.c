@@ -849,8 +849,8 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	else if(strcmp(jstr(argjson,"method"),"init_b_player") == 0)
 	{
 		printf("%s:%d\n",__FUNCTION__,__LINE__);
-		retval=BET_rest_player_process_init_b(wsi,argjson,0);
-		retval=BET_rest_player_process_init_b(wsi,argjson,1);
+		retval=BET_rest_player_process_init_b(wsi,argjson,jint(argjson,"gui_playerID"));
+		//retval=BET_rest_player_process_init_b(wsi,argjson,1);
 	}
 	else if(strcmp(jstr(argjson,"method"),"player_ready") == 0)
 	{
