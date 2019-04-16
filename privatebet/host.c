@@ -747,7 +747,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 {
 
 	int retval=-1;
-
+	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 	if(strcmp(jstr(argjson,"method"),"game") == 0)	
 	{
 		retval=BET_rest_game(wsi,argjson);
@@ -806,7 +806,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	}
 	else if(strcmp(jstr(argjson,"method"),"join_req") == 0)
 	{
-		printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+		//printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 		if(BET_dcv->numplayers<BET_dcv->maxplayers)
 		{
 			retval=BET_rest_client_join_req(wsi,argjson);
