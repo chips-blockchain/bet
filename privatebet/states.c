@@ -1235,6 +1235,8 @@ int32_t BET_rest_DCV_small_blind(struct lws *wsi)
 	cJSON_AddNumberToObject(smallBlindInfo,"round",DCV_VARS->round);
 	cJSON_AddNumberToObject(smallBlindInfo,"pot",DCV_VARS->pot);
 
+
+	printf("\nsent:%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(smallBlindInfo));
 	lws_write(wsi,cJSON_Print(smallBlindInfo),strlen(cJSON_Print(smallBlindInfo)),0);
 	
 	end:
@@ -1408,6 +1410,8 @@ int32_t BET_rest_small_blind(struct lws *wsi,cJSON *argjson)
 	Player_VARS[this_playerID]->betamount[BET_player[this_playerID]->myplayerid][Player_VARS[this_playerID]->round]=Player_VARS[this_playerID]->betamount[BET_player[this_playerID]->myplayerid][Player_VARS[this_playerID]->round]+amount;
 	cJSON_AddNumberToObject(small_blind_info,"playerid",jint(argjson,"playerid"));
 	cJSON_AddNumberToObject(small_blind_info,"round",jint(argjson,"round"));
+	
+	printf("\nsent:%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(small_blind_info));
 
 	lws_write(wsi,cJSON_Print(small_blind_info),strlen(cJSON_Print(small_blind_info)),0);				
 	end:
