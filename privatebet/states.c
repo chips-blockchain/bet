@@ -1755,46 +1755,58 @@ int32_t BET_rest_betting_statemachine(struct lws *wsi,cJSON *argjson)
 			else if(strcmp(action,"small_blind_bet") == 0)
 			{
 				
-				retval=BET_rest_player_small_blind_bet(wsi,argjson,0);
-				retval=BET_rest_player_small_blind_bet(wsi,argjson,1);
+				//retval=BET_rest_player_small_blind_bet(wsi,argjson,0);
+				//retval=BET_rest_player_small_blind_bet(wsi,argjson,1);
+				//retval=BET_rest_DCV_small_blind_bet(wsi,argjson);
+				BET_rest_relay(wsi,argjson);
 				retval=BET_rest_DCV_small_blind_bet(wsi,argjson);
 				/*
 				if(BET_player[this_playerID]->myplayerid == -2)
 				{
 					printf("%s:%d\n",__FUNCTION__,__LINE__);
-					//BET_rest_relay(wsi,argjson);
-					retval=BET_rest_player_small_blind_bet(wsi,argjson,0);
-					retval=BET_rest_player_small_blind_bet(wsi,argjson,1);
+					BET_rest_relay(wsi,argjson);
+					//retval=BET_rest_player_small_blind_bet(wsi,argjson,0);
+					//retval=BET_rest_player_small_blind_bet(wsi,argjson,1);
 					retval=BET_rest_DCV_small_blind_bet(wsi,argjson);
 				}
 				else
 				{
 					printf("%s:%d It shouldn't come here\n",__FUNCTION__,__LINE__);
-					//BET_rest_player_small_blind_bet(wsi,argjson);
+					retval=BET_rest_player_small_blind_bet(wsi,argjson,jint(argjson,"gui_playerID"));
 				}
 				*/
+			}
+			else if(strcmp(action,"small_blind_bet_player") == 0)
+			{
+				retval=BET_rest_player_small_blind_bet(wsi,argjson,jint(argjson,"gui_playerID"));
 			}
 			else if(strcmp(action,"big_blind_bet") == 0)
 			{
 				
-				retval=BET_rest_player_big_blind_bet(wsi,argjson,0);
-				retval=BET_rest_player_big_blind_bet(wsi,argjson,1);
+				//retval=BET_rest_player_big_blind_bet(wsi,argjson,0);
+				//retval=BET_rest_player_big_blind_bet(wsi,argjson,1);
+				//retval=BET_rest_DCV_big_blind_bet(wsi,argjson);
+				BET_rest_relay(wsi,argjson);
 				retval=BET_rest_DCV_big_blind_bet(wsi,argjson);
 				/*
 				if(BET_player[this_playerID]->myplayerid == -2)
 				{
-					//BET_rest_relay(wsi,argjson);
-					retval=BET_rest_player_big_blind_bet(wsi,argjson,0);
-					retval=BET_rest_player_big_blind_bet(wsi,argjson,1);
+					BET_rest_relay(wsi,argjson);
+					//retval=BET_rest_player_big_blind_bet(wsi,argjson,0);
+					//retval=BET_rest_player_big_blind_bet(wsi,argjson,1);
 					retval=BET_rest_DCV_big_blind_bet(wsi,argjson);
 				}
 				else
 				{
 					printf("%s:%d It shouldn't come here\n",__FUNCTION__,__LINE__);
-					//retval=BET_rest_player_big_blind_bet(wsi,argjson);
+					retval=BET_rest_player_big_blind_bet(wsi,argjson,jint(argjson,"gui_playerID"));
 				}
 				*/
 				
+			}
+			else if(strcmp(action,"big_blind_bet_player") == 0)
+			{
+				retval=BET_rest_player_big_blind_bet(wsi,argjson,jint(argjson,"gui_playerID"));
 			}
 			else if(strcmp(action,"round_betting") == 0)
 			{
