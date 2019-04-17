@@ -1823,11 +1823,14 @@ int32_t BET_rest_betting_statemachine(struct lws *wsi,cJSON *argjson)
 			else if((strcmp(action,"check") == 0) || (strcmp(action,"call") == 0) || (strcmp(action,"raise") == 0)
 									|| (strcmp(action,"fold") == 0) || (strcmp(action,"allin") == 0))																					
 			{
+				#if 0
 				for(int i=0;i<2/*BET_dcv->maxplayers*/;i++)
 				{
 					if(i != jint(argjson,"gui_playerID"));
 					retval=BET_rest_player_round_betting_response(wsi,argjson,i);
 				}
+				#endif
+				BET_rest_relay(wsi,argjson);
 				retval=BET_rest_DCV_round_betting_response(wsi,argjson);
 
 				
@@ -1837,6 +1840,11 @@ int32_t BET_rest_betting_statemachine(struct lws *wsi,cJSON *argjson)
 				else
 					retval=BET_rest_player_round_betting_response(wsi,argjson);
 				*/	
+			}
+			else if((strcmp(action,"check_player") == 0) || (strcmp(action,"call_player") == 0) || (strcmp(action,"raise_player") == 0)
+									|| (strcmp(action,"fold_player") == 0) || (strcmp(action,"allin_player") == 0))																					
+			{
+				retval=BET_rest_player_round_betting_response(wsi,argjson,jint(argjson,"gui_playerID"));
 			}
 		}
 		end:
