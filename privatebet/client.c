@@ -2737,10 +2737,108 @@ int32_t BET_rest_player_process_init_b(struct lws *wsi, cJSON *argjson,int32_t p
 	return retval;
 }
 
+int32_t BET_rest_fundChannel(char *channel_id)
+{
+	int argc,maxsize=10000,retval=1,channel_state;
+	char **argv=NULL,*buf=NULL,channel_id[100];
+	cJSON *fundChannelInfo=NULL;
+	argc=5;
+	argv=(char**)malloc(argc*sizeof(char*));
+	buf=malloc(maxsize);
+	for(int i=0;i<argc;i++)
+	{
+	        argv[i]=(char*)malloc(100*sizeof(char));
+	}
+	argc=4;
+	strcpy(argv[0],"./bet");
+	strcpy(argv[1],"fundchannel");
+	strcpy(argv[2],channel_id);
+	strcpy(argv[3],"500000");
+	argv[4]=NULL;
+
+	ln_bet(argc,argv,buf);
+	fundChannelInfo=cJSON_Parse(buf);
+
+	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(fundChannelInfo));
+
+	if(jint(fundChannelInfo,"code") != 0 )
+	{
+		retval=-1;
+		LOG_ERROR("Message:%s",jstr(fundChannelInfo,"message"));
+		goto end;
+	}
+
+	int state;
+	while((state=LN_get_channel_status(channel_id)) != 3)
+	{
+		if(state == 2)
+		 {
+				  printf("\nCHANNELD_AWAITING_LOCKIN");
+		 }
+		  else
+	  	 {
+	  		retval=-1;
+			printf("\n%s:%d:Channel establishment with DCV is not happening, please check the connectivity with the DCV node\n",__FUNCTION__,__LINE__);
+			goto end;
+	  	 }
+			
+		sleep(10);
+	}
+end:
+	return retval;
+}
+
+int32_t BET_rest_connect(char *uri)
+{
+	int argc,maxsize=10000,retval=1,channel_state;
+	char **argv=NULL,*buf=NULL,channel_id[100];
+	cJSON *connectInfo=NULL;
+	strcpy(channel_id,uri, "@"));
+	
+	channel_state=LN_get_channel_status(channel_id);
+	if((channel_state != 2)&&(channel_state !=3)) // 3 means channel is already established with the peer
+	{					
+		argc=3;
+        argv=(char**)malloc(argc*sizeof(char*));
+        buf=malloc(maxsize);
+        for(int i=0;i<argc;i++)
+        {
+         argv[i]=(char*)malloc(100*sizeof(char));
+        }
+		strcpy(argv[0],"./bet");
+		strcpy(argv[1],"connect");
+		strcpy(argv[2],uri);
+		argv[3]=NULL;
+		ln_bet(argc,argv,buf);
+		connectInfo=cJSON_Parse(buf);
+		
+		printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(connectInfo));
+		
+		if(jint(connectInfo,"code") != 0)
+		{
+			retval=-1;
+			printf("\n%s:%d:Message:%s",__FUNCTION__,__LINE__,jstr(connectInfo,"method"));
+			goto end;
+		}
+	}
+	end:
+	return retval;
+	
+}
 int32_t BET_rest_player_join_res(cJSON *argjson)
 {
 	int32_t playerID;
-	//Do nothing
+	char channel_id[100];
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	if(0 == bits256_cmp(all_players_info[jint(argjson,"gui_playerID")].player_key.prod,jbits256(argjson,"pubkey")))
+	{
+		printf("%s:%d\n",__FUNCTION__,__LINE__);
+		if(BET_rest_connect(jstr(argjson,"uri")))
+		{
+			strcpy(channel_id,strtok(jstr(argjson,"uri"), "@"));
+			BET_rest_fundChannel(channel_id);
+		}
+	}
 	return 0;
 }
 

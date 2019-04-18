@@ -241,16 +241,23 @@ int32_t BET_rest_dcv_default(struct lws *wsi, cJSON *argjson)
 int32_t BET_rest_client_join_req(struct lws *wsi, cJSON *argjson)
 {
 	cJSON *playerInfo=NULL;
+	char *uri=NULL;
 
 	BET_dcv->numplayers=++players_joined;
 	dcv_info.peerpubkeys[players_joined-1]=jbits256(argjson,"pubkey");
-
-
+	strcpy(dcv_info.uri[players_joined-1],jstr(argjson,"uri"));
+	
+	
+	
 	playerInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(playerInfo,"method","join_res");
 	cJSON_AddNumberToObject(playerInfo,"peerid",BET_dcv->numplayers-1); //players numbering starts from 0(zero)
 	jaddbits256(playerInfo,"pubkey",jbits256(argjson,"pubkey"));
 
+	BET_rest_uri(&uri);
+	cJSON_AddStringToObject(playerInfo,"uri",uri);
+
+	
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(playerInfo));
 
 	lws_write(wsi,cJSON_Print(playerInfo),strlen(cJSON_Print(playerInfo)),0);
@@ -745,6 +752,101 @@ int32_t BET_rest_relay(struct lws *wsi, cJSON *argjson)
 	return 0;
 }
 
+int32_t BET_rest_dcv_LN_check()
+{
+	char channel_id[100],channel_state;
+	int argc,retval=1;
+	char **argv,*buf=NULL,uri[100];
+	cJSON *peerInfo=NULL,*fundChannelInfo=NULL;
+	argc=6;
+	argv=(char**)malloc(argc*sizeof(char*));
+	for(int i=0;i<argc;i++)
+		argv[i]=(char*)malloc(100);
+	buf=(char*)malloc(10000);
+	strcpy(uri,dcv_info.bvv_uri);
+	strcpy(channel_id,strtok(uri, "@"));
+	channel_state=LN_get_channel_status(channel_id);
+	if((channel_state != 2) && (channel_state != 3))
+	{
+		argc=6;
+		for(int i=0;i<argc;i++)
+			memset(argv[i],0x00,sizeof(argv[i]));
+		strcpy(argv[0],"./bet");
+		strcpy(argv[1],"connect");
+		strcpy(argv[2],dcv_info.bvv_uri);
+		argv[3]=NULL;
+		argc=3;
+		memset(buf,0x00,sizeof(buf));
+		ln_bet(argc,argv,buf);
+
+		argc=6;
+		for(int i=0;i<argc;i++)
+			memset(argv[i],0x00,sizeof(argv[i]));
+		strcpy(argv[0],"./bet");
+		strcpy(argv[1],"fundchannel");
+		strcpy(argv[2],channel_id);
+		strcpy(argv[3],"500000");
+		argv[4]=NULL;
+		argc=4;
+
+		
+		memset(buf,0x00,sizeof(buf));
+		ln_bet(argc,argv,buf);
+
+		fundChannelInfo=cJSON_CreateObject();
+		fundChannelInfo=cJSON_Parse(buf);
+
+		if(jint(fundChannelInfo,"code") == -1)
+		{
+			retval=-1;
+			printf("\n%s:%d: Message: %s",__FUNCTION__,__LINE__,jstr(fundChannelInfo,"message"));
+			goto end;
+		}
+	}
+
+	while((channel_state=LN_get_channel_status(channel_id)) != 3)
+	{
+		if(channel_state == 2)
+		{
+			printf("\nCHANNELD AWAITING LOCKIN");
+			sleep(5);
+		}
+		else
+		{
+			retval=-1;
+			printf("\n%s:%d: DCV is failed to establish the channel with BVV",__FUNCTION__,__LINE__);
+			goto end;
+		}
+	}	
+	printf("\nDCV-->BVV channel ready");
+
+	for(int i=0;i<BET_dcv->maxplayers;i++)
+	{
+		strcpy(uri,dcv_info.uri[i]);
+		strcpy(channel_id,strtok(uri, "@"));
+
+		while((channel_state=LN_get_channel_status(channel_id)) != 3)
+		{
+			if(channel_state == 2)
+			{
+				printf("\nCHANNELD AWAITING LOCKIN");
+				sleep(5);
+			}
+			else
+			{
+				retval=-1;
+				printf("\n%s:%d: Player: %d is failed to establish the channel with DCV",__FUNCTION__,__LINE__,i);
+				goto end;
+			}
+		}
+		
+		printf("\nPlayer %d --> DCV channel ready",i);	
+	}
+	end:
+		return retval;
+}
+
+
 int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 {
 
@@ -814,6 +916,11 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 			retval=BET_rest_client_join_req(wsi,argjson);
 		    if(BET_dcv->numplayers==BET_dcv->maxplayers)
 			{
+				retval=BET_rest_dcv_LN_check();
+
+				if(retval<0)
+					goto end;
+				
 				printf("Table is filled\n");
 				BET_rest_broadcast_table_info(wsi);
 				BET_rest_check_BVV_Ready(wsi);
@@ -908,6 +1015,8 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 		retval=BET_rest_dcv_default(wsi,argjson);
 
 	}
+
+	end:
 		return 0;
 }
 
