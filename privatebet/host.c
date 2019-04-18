@@ -847,6 +847,31 @@ int32_t BET_rest_dcv_LN_check()
 }
 
 
+int32_t BET_rest_bvv_join(struct lws *wsi, cJSON *argjson)
+{
+	cJSON *bvvJoinInfo=NULL;
+	char uri[100],channel_id[100];
+	strcpy(uri,jstr(argjson,"uri"));
+	strcpy(dcv_info.bvv_uri,uri);
+	if((LN_get_channel_status(strtok(jstr(argjson,"uri"), "@")) != 3)) // 3 means channel is already established with the peer
+	{
+		if(BET_rest_connect(uri))
+		{
+			strcpy(channel_id,strtok(jstr(argjson,"uri"), "@"));
+			BET_rest_fundChannel(channel_id);
+		}
+	}
+	
+	#if 0
+	bvvJoinInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(bvvJoinInfo,"method","bvv_join");
+	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(bvvJoinInfo));
+	lws_write(wsi,cJSON_Print(bvvJoinInfo),strlen(cJSON_Print(bvvJoinInfo)),0);
+	#endif
+	return 0;
+}
+
+
 int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 {
 
