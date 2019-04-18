@@ -2365,7 +2365,7 @@ int32_t BET_rest_listfunds()
 }
 
 
-int32_t BET_rest_uri(char *uri)
+int32_t BET_rest_uri(char **uri)
 {
 	cJSON *channelInfo,*addresses,*address,*bvvResponseInfo=NULL;
 	int argc,bytes,retval=1,maxsize=10000;
@@ -2389,13 +2389,13 @@ int32_t BET_rest_uri(char *uri)
 		printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(channelInfo,"message"));
 		goto end;
 	}
-
-	uri=(char*)malloc(sizeof(char)*100);
-	strcpy(uri,jstr(channelInfo,"id"));
-	strcat(uri,"@");
+	
+	*uri=(char*)malloc(sizeof(char)*100);
+	strcpy(*uri,jstr(channelInfo,"id"));
+	strcat(*uri,"@");
 	addresses=cJSON_GetObjectItem(channelInfo,"address");
 	address=cJSON_GetArrayItem(addresses,0);
-	strcat(uri,jstr(address,"address"));
+	strcat(*uri,jstr(address,"address"));
 
    end:
 		return retval;
@@ -2426,7 +2426,8 @@ int32_t BET_rest_bvv_init(struct lws *wsi, cJSON *argjson)
     for(int i=0;i<BET_bvv->range;i++) {
 		permis_b[i]=bvv_info.permis[i];
 	}
-	BET_rest_uri(uri);
+	
+	BET_rest_uri(&uri);
 	bvvJoinInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(bvvJoinInfo,"method","bvv_join");
 	cJSON_AddStringToObject(bvvJoinInfo,"uri",uri);
