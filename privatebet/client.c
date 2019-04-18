@@ -2740,7 +2740,7 @@ int32_t BET_rest_player_process_init_b(struct lws *wsi, cJSON *argjson,int32_t p
 int32_t BET_rest_fundChannel(char *channel_id)
 {
 	int argc,maxsize=10000,retval=1,channel_state;
-	char **argv=NULL,*buf=NULL,channel_id[100];
+	char **argv=NULL,*buf=NULL;
 	cJSON *fundChannelInfo=NULL;
 	argc=5;
 	argv=(char**)malloc(argc*sizeof(char*));
@@ -2793,7 +2793,8 @@ int32_t BET_rest_connect(char *uri)
 	int argc,maxsize=10000,retval=1,channel_state;
 	char **argv=NULL,*buf=NULL,channel_id[100];
 	cJSON *connectInfo=NULL;
-	strcpy(channel_id,uri, "@"));
+
+	strcpy(channel_id,strtok(uri, "@"));
 	
 	channel_state=LN_get_channel_status(channel_id);
 	if((channel_state != 2)&&(channel_state !=3)) // 3 means channel is already established with the peer
