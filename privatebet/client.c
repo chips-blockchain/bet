@@ -2325,6 +2325,43 @@ void BET_p2p_clientloop(void * _ptr)
 /*
 The below API's are relate to BVV and Player functionalities
 */
+int32_t BET_rest_listfunds()
+{
+	cJSON *listFunds=NULL,*outputs=NULL;
+	int argc,bytes,retval=1,maxsize=10000;
+	char **argv,*buf,*uri;
+	int32_t value=0;
+	argc=3;
+	argv=(char**)malloc(argc*sizeof(char*));
+	for(int i=0;i<argc;i++)
+		argv[i]=(char*)malloc(100*sizeof(char));
+	
+	buf=(char*)malloc(maxsize*sizeof(char));
+
+	strcpy(argv[0],"./bet");
+	strcpy(argv[1],"listfunds");
+	argv[2]=NULL;
+	ln_bet(argc-1,argv,buf);
+	listFunds=cJSON_Parse(buf);
+
+	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(listFunds));
+
+	if(jint(listFunds,"code") != 0)
+	{
+		retval=-1;
+		printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(listFunds,"message"));
+		goto end;
+	}
+
+	outputs=cJSON_GetObjectItem(listFunds,"outputs");
+	for(int32_t i=0;i<cJSON_GetArraySize(outputs);i++)
+	{
+		value+=jint(cJSON_GetArraySize(outputs),"value");
+	}
+	printf("%s::%d::value=%d\n",__FUNCTION__,__LINE__,value);
+	end:
+		return 0;
+}
 int32_t BET_rest_bvv_init(struct lws *wsi, cJSON *argjson)
 {
 	int32_t numplayers=2,range=52;
@@ -2348,6 +2385,8 @@ int32_t BET_rest_bvv_init(struct lws *wsi, cJSON *argjson)
 		permis_b[i]=bvv_info.permis[i];
 	}
 
+	BET_rest_listfunds();
+	
 	bvvJoinInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(bvvJoinInfo,"method","bvv_join");
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(bvvJoinInfo));
