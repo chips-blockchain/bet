@@ -2356,7 +2356,8 @@ int32_t BET_rest_listfunds()
 	outputs=cJSON_GetObjectItem(listFunds,"outputs");
 	for(int32_t i=0;i<cJSON_GetArraySize(outputs);i++)
 	{
-		value+=jint(cJSON_GetArraySize(outputs),"value");
+		value+=jint(cJSON_GetArrayItem(outputs,i),"value");
+		
 	}
 	printf("%s::%d::value=%d\n",__FUNCTION__,__LINE__,value);
 	end:
