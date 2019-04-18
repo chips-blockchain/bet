@@ -1,4 +1,4 @@
-# bet
+# Pangea-Bet
 The aim of this project is to provide the necessary bet API's which are sufficient to play poker from the command line. The initial draft of the game written by jl777 is [here](./docs/BET_Initial_Draft.md).
 
 Bet is the implementation of the Pangea protocol which nees LN and CHIPS. The installation of [LN](https://github.com/sg777/lightning) and [CHIPS](https://github.com/sg777/chips3) must be done before proceeding to play with bet.
