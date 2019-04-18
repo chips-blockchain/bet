@@ -78,6 +78,7 @@ int32_t BET_rest_dcv_init(struct lws *wsi, cJSON *argjson)
 	int32_t range=52;
 	cJSON *dcvInfo=NULL,*dcvKeyInfo=NULL;
 	int32_t Maxplayers=2;
+	char *uri=NULL;
 	
 	DCV_VARS = calloc(1,sizeof(struct privatebet_vars));
 	
@@ -108,9 +109,11 @@ int32_t BET_rest_dcv_init(struct lws *wsi, cJSON *argjson)
 	jaddbits256(dcvKeyInfo,"deckid",dcv_info.deckid);
 	jaddbits256(dcvKeyInfo,"pubkey",dcv_info.dcv_key.prod);
 
+	BET_rest_uri(&uri);
 	dcvInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(dcvInfo,"dcv",cJSON_Print(dcvKeyInfo));
-
+	cJSON_AddStringToObject(dcvInfo,"uri",uri);
+	cJSON_AddNumberToObject(dcvInfo,"balance",BET_rest_listfunds());
 	lws_write(wsi,cJSON_Print(dcvInfo),strlen(cJSON_Print(dcvInfo)),0);
 	return 0;
 }

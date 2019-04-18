@@ -2482,6 +2482,7 @@ int32_t BET_rest_player_join(struct lws *wsi, cJSON *argjson)
 	bits256 playerprivs[CARDS777_MAXCARDS],playercards[CARDS777_MAXCARDS];
 	int32_t permis[CARDS777_MAXCARDS];
 	cJSON *joinInfo=NULL;
+	char *uri=NULL;
 	struct pair256 key;
 	int32_t Maxplayers=2,numplayers=2,range=52;
 	for(int32_t i=0;i<Maxplayers;i++)
@@ -2504,7 +2505,9 @@ int32_t BET_rest_player_join(struct lws *wsi, cJSON *argjson)
     cJSON_AddStringToObject(joinInfo,"method","join_req");
 	jaddnum(joinInfo,"player_id",player_id);
 	jaddbits256(joinInfo,"pubkey",key.prod);
-
+	BET_rest_uri(&uri);
+	cJSON_AddStringToObject(joinInfo,"uri",uri);
+	cJSON_AddNumberToObject(joinInfo,"balance",BET_rest_listfunds());
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(joinInfo));
 	lws_write(wsi,cJSON_Print(joinInfo),strlen(cJSON_Print(joinInfo)),0);
 	player_id++;	
