@@ -2361,13 +2361,54 @@ int32_t BET_rest_listfunds()
 	}
 	printf("%s::%d::value=%d\n",__FUNCTION__,__LINE__,value);
 	end:
-		return 0;
+		return value;
 }
+
+
+int32_t BET_rest_uri(char *uri)
+{
+	cJSON *channelInfo,*addresses,*address,*bvvResponseInfo=NULL;
+	int argc,bytes,retval=1,maxsize=10000;
+	char **argv,*buf;
+	argc=3;
+	argv=(char**)malloc(argc*sizeof(char*));
+	for(int i=0;i<argc;i++)
+		argv[i]=(char*)malloc(100*sizeof(char));
+	
+	buf=(char*)malloc(maxsize*sizeof(char));
+
+	strcpy(argv[0],"./bet");
+	strcpy(argv[1],"getinfo");
+	argv[2]=NULL;
+	ln_bet(argc-1,argv,buf);
+	channelInfo=cJSON_Parse(buf);
+	cJSON_Print(channelInfo);
+	if(jint(channelInfo,"code") != 0)
+	{
+		retval=-1;
+		printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(channelInfo,"message"));
+		goto end;
+	}
+
+	uri=(char*)malloc(sizeof(char)*100);
+	strcpy(uri,jstr(channelInfo,"id"));
+	strcat(uri,"@");
+	addresses=cJSON_GetObjectItem(channelInfo,"address");
+	address=cJSON_GetArrayItem(addresses,0);
+	strcat(uri,jstr(address,"address"));
+
+   end:
+		return retval;
+	
+}
+
+
 int32_t BET_rest_bvv_init(struct lws *wsi, cJSON *argjson)
 {
 	int32_t numplayers=2,range=52;
 	cJSON *bvvJoinInfo=NULL;
     int32_t Maxplayers=2;
+	char *uri=NULL;
 	BET_bvv=calloc(1,sizeof(struct privatebet_info));
     //BET_bvv->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
     //BET_bvv->pushsock = pushsock/*BET_nanosock(0,bindaddr1,NN_PUSH)*/;
@@ -2385,11 +2426,11 @@ int32_t BET_rest_bvv_init(struct lws *wsi, cJSON *argjson)
     for(int i=0;i<BET_bvv->range;i++) {
 		permis_b[i]=bvv_info.permis[i];
 	}
-
-	BET_rest_listfunds();
-	
+	BET_rest_uri(uri);
 	bvvJoinInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(bvvJoinInfo,"method","bvv_join");
+	cJSON_AddStringToObject(bvvJoinInfo,"uri",uri);
+	cJSON_AddNumberToObject(bvvJoinInfo,"balance",BET_rest_listfunds());
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(bvvJoinInfo));
 	lws_write(wsi,cJSON_Print(bvvJoinInfo),strlen(cJSON_Print(bvvJoinInfo)),0);
 	
