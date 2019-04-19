@@ -3243,6 +3243,10 @@ int32_t BET_rest_player_invoice(struct lws *wsi,cJSON *argjson)
 			{
 				retval=BET_rest_small_blind_update(wsi,paymentParams);
 			}
+			else if(strcmp(jstr(paymentParams,"action"),"big_blind")==0)
+			{
+				retval=BET_rest_big_blind_update(wsi,paymentParams);
+			}
 		}
 	}
 	end:
