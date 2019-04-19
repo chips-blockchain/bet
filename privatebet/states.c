@@ -1622,6 +1622,8 @@ int32_t BET_rest_player_round_betting_update(struct lws *wsi,cJSON *argjson,int 
 	Player_VARS[this_playerID]->bet_actions[playerid][round]=jinti(possibilities,(option-1));
 
 	cJSON_AddStringToObject(action_response,"action",action_str[jinti(possibilities,(option-1))]);
+
+	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,action_str[jinti(possibilities,(option-1))]);
 	
 	if((jinti(possibilities,(option-1))== raise) || (jinti(possibilities,(option-1))== call) || (jinti(possibilities,(option-1))== allin))
 	{
@@ -1664,6 +1666,8 @@ int32_t BET_rest_player_round_betting(struct lws *wsi,cJSON *argjson)
 		printf("\nEnter your option, to chose one::");
 		scanf("%d",&option);	
 	}while((option<1)||(option>cJSON_GetArraySize(possibilities)));
+
+	
 	
 	if(jinti(possibilities,(option-1))== raise)
 	{
