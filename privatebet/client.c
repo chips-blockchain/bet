@@ -3247,6 +3247,10 @@ int32_t BET_rest_player_invoice(struct lws *wsi,cJSON *argjson)
 			{
 				retval=BET_rest_big_blind_update(wsi,paymentParams);
 			}
+			else if(strcmp(jstr(paymentParams,"action"),"round_betting")==0)
+			{
+				retval=BET_rest_player_round_betting_update(wsi,paymentParams,jint(argjson,"option"));
+			}
 		}
 	}
 	end:
