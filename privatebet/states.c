@@ -1676,17 +1676,24 @@ int32_t BET_rest_player_round_betting(struct lws *wsi,cJSON *argjson)
 						
 		}while((raise_amount<min_amount)||(raise_amount<big_blind_amount)||(raise_amount<(Player_VARS[this_playerID]->last_raise+min_amount) || (raise_amount>Player_VARS[this_playerID]->player_funds)));
 		bet_amount=raise_amount;
+			BET_rest_player_create_invoice_request_round(wsi,argjson,bet_amount,option);
 	}
 	else if(jinti(possibilities,(option-1)) == call)
 	{
 		bet_amount=min_amount;
+			BET_rest_player_create_invoice_request_round(wsi,argjson,bet_amount,option);
 	}
 	else if(jinti(possibilities,(option-1)) == allin)
 	{
 		bet_amount=Player_VARS[this_playerID]->player_funds;
+			BET_rest_player_create_invoice_request_round(wsi,argjson,bet_amount,option);
+	}
+	else if((jinti(possibilities,(option-1))== check) || (jinti(possibilities,(option-1))== fold))
+	{
+		printf("%s:%d\n",__FUNCTION__,__LINE__);
+		BET_rest_player_round_betting_update(wsi,argjson,option);
 	}
 
-	BET_rest_player_create_invoice_request_round(wsi,argjson,bet_amount,option);
 	end:
 		return retval;
 	
