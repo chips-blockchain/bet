@@ -3226,6 +3226,9 @@ int32_t BET_rest_player_invoice(struct lws *wsi,cJSON *argjson)
 	cJSON *invoiceInfo=NULL,*paymentInfo=NULL,*payResponse=NULL,*paymentParams=NULL;
     char *invoice=NULL;
 	int32_t playerID,bytes,retval;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	
 	playerID=jint(argjson,"playerID");
 	invoice=jstr(argjson,"invoice");
 	invoiceInfo=cJSON_Parse(invoice);
@@ -3235,6 +3238,7 @@ int32_t BET_rest_player_invoice(struct lws *wsi,cJSON *argjson)
 		if(retval)
 		{
 			paymentParams=cJSON_CreateObject();
+			paymentParams=cJSON_GetObjectItem(argjson,"payment_params");
 			if(strcmp(jstr(paymentParams,"action"),"small_blind")==0)
 			{
 				retval=BET_rest_small_blind_update(wsi,paymentParams);
