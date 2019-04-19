@@ -507,3 +507,33 @@ void BET_player_paymentloop(void * _ptr)
  
 }
 
+
+/*
+Below are the payment related REST API's
+*/
+
+
+
+
+int32_t BET_rest_player_create_invoice_request(struct lws *wsi,cJSON *argjson,int32_t amount)
+{
+	int32_t retval=1,bytes;
+	cJSON *betInfo=NULL;
+	
+
+	betInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(betInfo,"method","invoiceRequest");
+	cJSON_AddNumberToObject(betInfo,"round",jint(argjson,"round"));
+	cJSON_AddNumberToObject(betInfo,"playerID",BET_player[jint(argjson,"gui_playerID")]->myplayerid);
+	cJSON_AddNumberToObject(betInfo,"betAmount",amount);
+	cJSON_AddItemToObject(betInfo,"payment_params",argjson);
+	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(betInfo));
+	lws_write(wsi,cJSON_Print(betInfo),strlen(cJSON_Print(betInfo)),0);
+	
+	end:
+		return retval;
+	
+}
+
+
+

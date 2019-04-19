@@ -3185,3 +3185,63 @@ void rest_display_cards(cJSON *argjson,int32_t this_playerID)
 	}
 }
 
+int32_t BET_rest_pay(char *bolt11)
+{
+	cJSON *payResponse=NULL;
+   	int argc,maxsize=10000,retval=1;
+	char **argv=NULL,*buf=NULL;
+	argv=(char**)malloc(4*sizeof(char*));
+	buf=malloc(maxsize);
+	argc=3;
+	for(int i=0;i<4;i++)
+	{
+		argv[i]=(char*)malloc(sizeof(char)*1000);
+	}
+	
+	strcpy(argv[0],"./bet");
+	strcpy(argv[1],"pay");
+	strcpy(argv[2],bolt11);
+	argv[3]=NULL;
+	ln_bet(argc,argv,buf);
+	payResponse=cJSON_CreateObject();
+	payResponse=cJSON_Parse(buf);
+		
+	if(jint(payResponse,"code") != 0)
+	{
+		retval=-1;
+		printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(payResponse,"message"));
+		goto end;
+	}
+	
+	if(strcmp(jstr(payResponse,"status"),"complete")==0)
+		printf("\nPayment Success");
+	else
+		retval=-1;
+	end:
+		return retval;
+}
+
+int32_t BET_rest_player_invoice(struct lws *wsi,cJSON *argjson)
+{
+	cJSON *invoiceInfo=NULL,*paymentInfo=NULL,*payResponse=NULL,*paymentParams=NULL;
+    char *invoice=NULL;
+	int32_t playerID,bytes,retval;
+	playerID=jint(argjson,"playerID");
+	invoice=jstr(argjson,"invoice");
+	invoiceInfo=cJSON_Parse(invoice);
+	if(playerID==BET_player[jint(argjson,"gui_playerID")]->myplayerid)
+	{
+		retval=BET_rest_pay(jstr(invoiceInfo,"bolt11"));
+		if(retval)
+		{
+			paymentParams=cJSON_CreateObject();
+			if(strcmp(jstr(paymentParams,"action"),"small_blind")==0)
+			{
+				retval=BET_rest_small_blind_update(wsi,paymentParams);
+			}
+		}
+	}
+	end:
+		return retval;
+}
+
