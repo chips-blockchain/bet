@@ -1297,6 +1297,26 @@ int32_t BET_rest_DCV_round_betting(struct lws *wsi)
 	
 	cJSON_AddItemToObject(roundBetting,"possibilities",possibilities=cJSON_CreateArray());
 
+
+	printf("\nBET Actions\n");
+	for(int i=0;i<dcv_maxplayers;i++)
+	{
+		printf("\n");
+		for(int j=0;j<CARDS777_MAXROUNDS;j++)
+		{
+			printf("%d\t",DCV_VARS->bet_actions[i][j]);
+		}
+	}
+
+	printf("\nBET Amounts\n");
+	for(int i=0;i<dcv_maxplayers;i++)
+	{
+		printf("\n");
+		for(int j=0;j<CARDS777_MAXROUNDS;j++)
+		{
+			printf("%d\t",DCV_VARS->betamount[i][j]);
+		}
+	}
 	
 	for(int i=0;i<dcv_maxplayers;i++)
 	{	
