@@ -1630,10 +1630,10 @@ int32_t BET_rest_player_big_blind_bet(struct lws *wsi,cJSON *argjson,int32_t thi
 
 
 
-int32_t BET_rest_player_round_betting_update(struct lws *wsi,cJSON *argjson,int option)
+int32_t BET_rest_player_round_betting_update(struct lws *wsi,cJSON *argjson,int option,int32_t bet_amount)
 {
 	cJSON *roundBetting=NULL,*possibilities=NULL,*action_response=NULL;
-	int maxamount=0,bytes,retval=1,playerid,round,min_amount,raise_amount=0,bet_amount=0;
+	int maxamount=0,bytes,retval=1,playerid,round,min_amount,raise_amount=0; //bet_amount=0;
 	char *rendered=NULL;
 	int32_t this_playerID;
 	
@@ -1643,7 +1643,7 @@ int32_t BET_rest_player_round_betting_update(struct lws *wsi,cJSON *argjson,int 
 	playerid=jint(argjson,"playerid");
 	round=jint(argjson,"round");
 	min_amount=jint(argjson,"min_amount");
-	bet_amount=jint(argjson,"amount");
+	//bet_amount=jint(argjson,"amount");
 	action_response=cJSON_CreateObject();
 	cJSON_AddStringToObject(action_response,"method","betting");
 
