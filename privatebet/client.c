@@ -3249,6 +3249,7 @@ int32_t BET_rest_player_invoice(struct lws *wsi,cJSON *argjson)
 			}
 			else if(strcmp(jstr(paymentParams,"action"),"round_betting")==0)
 			{
+				printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 				retval=BET_rest_player_round_betting_update(wsi,paymentParams,jint(argjson,"option"));
 			}
 		}
