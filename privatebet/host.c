@@ -913,6 +913,7 @@ int32_t BET_rest_create_invoice(struct lws *wsi,cJSON *argjson)
 		cJSON_AddStringToObject(invoiceInfo,"method","invoice");
 		cJSON_AddNumberToObject(invoiceInfo,"playerID",jint(argjson,"playerID"));
 		cJSON_AddNumberToObject(invoiceInfo,"round",jint(argjson,"round"));
+		cJSON_AddNumberToObject(invoiceInfo,"betAmount",jint(argjson,"betAmount"));
 		cJSON_AddStringToObject(invoiceInfo,"label",argv[3]);
 		cJSON_AddStringToObject(invoiceInfo,"invoice",buf);
 		cJSON_AddItemToObject(invoiceInfo,"payment_params",cJSON_GetObjectItem(argjson,"payment_params"));

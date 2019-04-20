@@ -1443,6 +1443,7 @@ int32_t BET_rest_small_blind_update(struct lws *wsi,cJSON *argjson,int32_t amoun
 	int32_t this_playerID;
 
 	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+	printf("amount=%d\n",amount);
 		
 	this_playerID=jint(argjson,"gui_playerID");
 	//amount=jint(argjson,"amount");
