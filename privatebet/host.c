@@ -722,6 +722,8 @@ int32_t BET_rest_evaluate_hand(struct lws *wsi)
 		if(winners[i]==1)
 		{
 			//retval=BET_DCV_invoice_pay(bet,vars,i,(vars->pot/no_of_winners));
+			BET_rest_DCV_create_invoice_request(wsi,(DCV_VARS->pot/no_of_winners),i);
+	
 			printf("%d\t",i);
 		}
 	}
@@ -935,6 +937,73 @@ int32_t BET_rest_create_invoice(struct lws *wsi,cJSON *argjson)
 }
 
 
+
+
+int32_t BET_rest_DCV_create_invoice(struct lws *wsi,cJSON *argjson)
+{
+	int argc,bytes,retval=1;
+	char **argv,*buf=NULL,*rendered;
+	char hexstr [65];
+	int32_t maxsize = 1000000;
+	cJSON *invoiceInfo=NULL,*invoice=NULL;
+	argc=6;
+	argv =(char**)malloc(argc*sizeof(char*));
+	buf=(char*)malloc(maxsize*sizeof(char));
+	for(int i=0;i<argc;i++)
+	{
+			argv[i]=(char*)malloc(sizeof(char)*1000);
+	}
+	strcpy(argv[0],"./bet");
+	strcpy(argv[1],"invoice");
+	sprintf(argv[2],"%d",jint(argjson,"winningAmount"));
+	sprintf(argv[3],"%d_%d",jint(argjson,"playerID"),jint(argjson,"winningAmount"));
+	sprintf(argv[4],"Invoice details playerID:%d,winning Amount:%d",jint(argjson,"playerID"),jint(argjson,"winningAmount"));
+	argv[5]=NULL;
+	argc=5;
+
+	ln_bet(argc,argv,buf);
+	invoice=cJSON_CreateObject();
+	invoice=cJSON_Parse(buf);
+	if(jint(invoice,"code") != 0)
+	{
+		retval=-1;
+		printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(invoice,"message"));
+		goto end;
+	}
+	else
+	{
+		invoiceInfo=cJSON_CreateObject();
+		cJSON_AddStringToObject(invoiceInfo,"method","winningClaim");
+		cJSON_AddNumberToObject(invoiceInfo,"playerID",jint(argjson,"playerID"));
+		cJSON_AddNumberToObject(invoiceInfo,"winningAmount",jint(argjson,"winningAmount"));
+		cJSON_AddStringToObject(invoiceInfo,"label",argv[3]);
+		cJSON_AddStringToObject(invoiceInfo,"invoice",buf);
+	
+		printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(invoiceInfo));
+		lws_write(wsi,cJSON_Print(invoiceInfo),strlen(cJSON_Print(invoiceInfo)),0);
+					
+	}
+	
+	end:
+		return retval;
+}
+
+int32_t BET_rest_DCV_winningClaim(struct lws *wsi,cJSON *argjson)
+{
+	int32_t retval=1;
+	char *invoice=NULL;
+	cJSON *invoiceInfo=NULL;
+	
+	invoice=jstr(argjson,"invoice");
+	invoiceInfo=cJSON_Parse(invoice);
+
+	retval=BET_rest_pay(jstr(invoiceInfo,"bolt11"));
+	if(retval)
+		printf("\n%d Satoshis paid to the player:%d\n",jint(argjson,"winningAmount"),jint(argjson,"playerID"));
+	
+	return retval;
+}
+
 int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 {
 
@@ -1105,6 +1174,15 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	else if(strcmp(jstr(argjson,"method"),"invoice") == 0)
 	{
 			retval=BET_rest_player_invoice(wsi,argjson);
+	}
+	else if(strcmp(jstr(argjson,"method"),"winningInvoiceRequest") == 0)
+	{
+			retval=BET_rest_DCV_create_invoice(wsi,argjson);
+	}
+	else if(strcmp(jstr(argjson,"method"),"winningClaim") == 0)
+	{
+			retval=BET_rest_DCV_winningClaim(wsi,argjson);
+			
 	}
 	else
 	{		

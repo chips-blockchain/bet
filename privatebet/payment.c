@@ -555,5 +555,20 @@ int32_t BET_rest_player_create_invoice_request(struct lws *wsi,cJSON *argjson,in
 	
 }
 
+int32_t BET_rest_DCV_create_invoice_request(struct lws *wsi,int32_t amount,int32_t playerID)
+{
+	int32_t retval=1;
+	
+	cJSON *invoiceRequestInfo=NULL;
+
+	invoiceRequestInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(invoiceRequestInfo,"method","winningInvoiceRequest");
+	cJSON_AddNumberToObject(invoiceRequestInfo,"playerID",playerID);
+	cJSON_AddNumberToObject(invoiceRequestInfo,"winningAmount",amount);
+
+	lws_write(wsi,cJSON_Print(invoiceRequestInfo),strlen(cJSON_Print(invoiceRequestInfo)),0);
+	
+	return retval;
+}
 
 
