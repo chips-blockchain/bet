@@ -1645,10 +1645,12 @@ int32_t BET_rest_player_round_betting_update(struct lws *wsi,cJSON *argjson,int 
 	bet_amount=jint(argjson,"amount");
 	action_response=cJSON_CreateObject();
 	cJSON_AddStringToObject(action_response,"method","betting");
+
 	cJSON_AddNumberToObject(action_response,"playerid",jint(argjson,"playerid"));
 	cJSON_AddNumberToObject(action_response,"round",jint(argjson,"round"));
-	
-	
+
+	possibilities=cJSON_CreateObject();
+	possibilities=cJSON_GetObjectItem(argjson,"possibilities");
 	
 	Player_VARS[this_playerID]->bet_actions[playerid][round]=jinti(possibilities,(option-1));
 
@@ -1663,7 +1665,8 @@ int32_t BET_rest_player_round_betting_update(struct lws *wsi,cJSON *argjson,int 
 		
 		cJSON_AddNumberToObject(action_response,"bet_amount",bet_amount);
 	}
-	
+
+	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(action_response));
 	lws_write(wsi,cJSON_Print(action_response),strlen(cJSON_Print(action_response)),0);
 
 	end:
