@@ -1529,9 +1529,12 @@ int32_t BET_rest_DCV_small_blind_bet(struct lws *wsi,cJSON *argjson)
 
 	playerid=jint(argjson,"playerid");
 	round=jint(argjson,"round");
+
+	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+		
+	DCV_VARS->small_blind=jint(argjson,"betAmount");
+
 	
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	DCV_VARS->small_blind=jint(argjson,"amount");
 	DCV_VARS->bet_actions[playerid][round]=small_blind;
 	DCV_VARS->betamount[playerid][round]=DCV_VARS->small_blind;
 	DCV_VARS->pot+=DCV_VARS->small_blind;
@@ -1557,7 +1560,10 @@ int32_t BET_rest_DCV_big_blind_bet(struct lws *wsi,cJSON *argjson)
 	playerid=jint(argjson,"playerid");
 	round=jint(argjson,"round");
 
-	DCV_VARS->big_blind=jint(argjson,"amount");
+	
+	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+	
+	DCV_VARS->big_blind=jint(argjson,"betAmount");
 	DCV_VARS->bet_actions[playerid][round]=big_blind;
 	DCV_VARS->betamount[playerid][round]=DCV_VARS->big_blind;
 	DCV_VARS->pot+=DCV_VARS->big_blind;
