@@ -1371,14 +1371,17 @@ int32_t BET_rest_DCV_round_betting(struct lws *wsi)
 }
 
 
-int32_t BET_rest_big_blind_update(struct lws *wsi,cJSON *argjson)
+int32_t BET_rest_big_blind_update(struct lws *wsi,cJSON *argjson,int32_t amount)
 {
 	cJSON *big_blind_info=NULL;
-	int32_t amount,retval=1,bytes;
+	//int32_t amount;
+	int32_t retval=1,bytes;
 	int32_t this_playerID;
 	
 	this_playerID=jint(argjson,"gui_playerID");
-	amount=jint(argjson,"amount");
+
+	//amount=jint(argjson,"amount");
+	
 	Player_VARS[this_playerID]->player_funds-=amount;
 	Player_VARS[this_playerID]->betamount[BET_player[this_playerID]->myplayerid][Player_VARS[this_playerID]->round]=Player_VARS[this_playerID]->betamount[BET_player[this_playerID]->myplayerid][Player_VARS[this_playerID]->round]+amount;
 
@@ -1432,16 +1435,17 @@ int32_t BET_rest_big_blind(struct lws *wsi,cJSON *argjson)
 
 
 
-int32_t BET_rest_small_blind_update(struct lws *wsi,cJSON *argjson)
+int32_t BET_rest_small_blind_update(struct lws *wsi,cJSON *argjson,int32_t amount)
 {
 	cJSON *small_blind_info=NULL;
-	int32_t amount,retval=1,bytes;
+	//int32_t amount;
+	int32_t retval=1,bytes;
 	int32_t this_playerID;
 
 	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 		
 	this_playerID=jint(argjson,"gui_playerID");
-	amount=jint(argjson,"amount");
+	//amount=jint(argjson,"amount");
 
 	Player_VARS[this_playerID]->player_funds-=amount;
 	Player_VARS[this_playerID]->betamount[BET_player[this_playerID]->myplayerid][Player_VARS[this_playerID]->round]=Player_VARS[this_playerID]->betamount[BET_player[this_playerID]->myplayerid][Player_VARS[this_playerID]->round]+amount;
@@ -1532,7 +1536,7 @@ int32_t BET_rest_DCV_small_blind_bet(struct lws *wsi,cJSON *argjson)
 
 	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 		
-	DCV_VARS->small_blind=jint(argjson,"betAmount");
+	DCV_VARS->small_blind=jint(argjson,"amount");
 
 	
 	DCV_VARS->bet_actions[playerid][round]=small_blind;
@@ -1563,7 +1567,7 @@ int32_t BET_rest_DCV_big_blind_bet(struct lws *wsi,cJSON *argjson)
 	
 	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 	
-	DCV_VARS->big_blind=jint(argjson,"betAmount");
+	DCV_VARS->big_blind=jint(argjson,"amount");
 	DCV_VARS->bet_actions[playerid][round]=big_blind;
 	DCV_VARS->betamount[playerid][round]=DCV_VARS->big_blind;
 	DCV_VARS->pot+=DCV_VARS->big_blind;

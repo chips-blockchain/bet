@@ -3241,11 +3241,11 @@ int32_t BET_rest_player_invoice(struct lws *wsi,cJSON *argjson)
 			paymentParams=cJSON_GetObjectItem(argjson,"payment_params");
 			if(strcmp(jstr(paymentParams,"action"),"small_blind")==0)
 			{
-				retval=BET_rest_small_blind_update(wsi,paymentParams);
+				retval=BET_rest_small_blind_update(wsi,paymentParams,jint(argjson,"betAmount"));
 			}
 			else if(strcmp(jstr(paymentParams,"action"),"big_blind")==0)
 			{
-				retval=BET_rest_big_blind_update(wsi,paymentParams);
+				retval=BET_rest_big_blind_update(wsi,paymentParams,jint(argjson,"betAmount"));
 			}
 			else if(strcmp(jstr(paymentParams,"action"),"round_betting")==0)
 			{
