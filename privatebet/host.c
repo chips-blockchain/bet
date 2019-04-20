@@ -918,7 +918,7 @@ int32_t BET_rest_create_invoice(struct lws *wsi,cJSON *argjson)
 		printf("%s:%d\n",__FUNCTION__,__LINE__);
 		if(strcmp(jstr(cJSON_GetObjectItem(argjson,"payment_params"),"action"),"round_betting")==0)
 		{
-			cJSON_AddStringToObject(invoiceInfo,"option",jint(argjson,"option"));
+			cJSON_AddNumberToObject(invoiceInfo,"option",jint(argjson,"option"));
 		}
 		
 		cJSON_AddStringToObject(invoiceInfo,"label",argv[3]);
