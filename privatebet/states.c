@@ -1731,7 +1731,7 @@ int32_t BET_rest_player_round_betting(struct lws *wsi,cJSON *argjson)
 	else if((jinti(possibilities,(option-1))== check) || (jinti(possibilities,(option-1))== fold))
 	{
 		printf("%s:%d\n",__FUNCTION__,__LINE__);
-		BET_rest_player_round_betting_update(wsi,argjson,option);
+		BET_rest_player_round_betting_update(wsi,argjson,option,0);
 	}
 	
 	end:
