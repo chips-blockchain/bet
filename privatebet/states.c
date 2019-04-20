@@ -1311,11 +1311,12 @@ int32_t BET_rest_DCV_round_betting(struct lws *wsi)
 	printf("\nBET Amounts\n");
 	for(int i=0;i<dcv_maxplayers;i++)
 	{
-		printf("\n");
+		
 		for(int j=0;j<CARDS777_MAXROUNDS;j++)
 		{
 			printf("%d\t",DCV_VARS->betamount[i][j]);
 		}
+		printf("\n");
 	}
 	
 	for(int i=0;i<dcv_maxplayers;i++)
@@ -1726,13 +1727,13 @@ int32_t BET_rest_player_round_betting(struct lws *wsi,cJSON *argjson)
 		bet_amount=Player_VARS[this_playerID]->player_funds;
 			BET_rest_player_create_invoice_request_round(wsi,argjson,bet_amount,option);
 	}
-	/*
+	
 	else if((jinti(possibilities,(option-1))== check) || (jinti(possibilities,(option-1))== fold))
 	{
 		printf("%s:%d\n",__FUNCTION__,__LINE__);
 		BET_rest_player_round_betting_update(wsi,argjson,option);
 	}
-	*/
+	
 	end:
 		return retval;
 	
