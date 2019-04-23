@@ -1271,7 +1271,7 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
 	}
 
 	
-
+	printf("\nThe g_hash:%s\n",bits256_str(str,g_hash[bet->myplayerid][cardid]));
 	basepoint=curve25519_basepoint9();
 	for (int i=0; i<bet->range; i++)
     {
