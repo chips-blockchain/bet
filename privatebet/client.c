@@ -1792,7 +1792,7 @@ int32_t BET_p2p_client_init(cJSON *argjson,struct privatebet_info *bet,struct pr
 	{
 		cJSON_AddItemToArray(cjsonplayercards,cJSON_CreateString(bits256_str(str,player_info.cardpubkeys[i])));
 	}
-			
+	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(init_p));		
     rendered=cJSON_Print(init_p);
     bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
     if(bytes<0)
