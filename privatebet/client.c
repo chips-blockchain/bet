@@ -2814,10 +2814,11 @@ int32_t BET_rest_connect(char *uri)
 	return retval;
 	
 }
-int32_t BET_rest_player_join_res(cJSON *argjson)
+int32_t BET_rest_player_join_res(struct lws *wsi,cJSON *argjson)
 {
 	int32_t playerID;
 	char channel_id[100];
+	cJSON *initInfo=NULL,*initCardInfo=NULL,*holeCardInfo=NULL;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	if(0 == bits256_cmp(all_players_info[jint(argjson,"gui_playerID")].player_key.prod,jbits256(argjson,"pubkey")))
 	{
@@ -2827,6 +2828,19 @@ int32_t BET_rest_player_join_res(cJSON *argjson)
 			strcpy(channel_id,strtok(jstr(argjson,"uri"), "@"));
 			BET_rest_fundChannel(channel_id);
 		}
+
+		initCardInfo=cJSON_CreateObject();
+		cJSON_AddNumberToObject(initCardInfo,"dealer",0);
+		holeCardInfo=cJSON_CreateArray();
+		cJSON_AddItemToArray(holeCardInfo,NULL);
+		cJSON_AddItemToArray(holeCardInfo,NULL);
+		cJSON_AddItemToObject(initCardInfo,"holecards",holeCardInfo);
+
+		initInfo=cJSON_CreateObject();
+		cJSON_AddStringToObject(initInfo,"method","deal");
+		cJSON_AddItemToObject(initInfo,"deal",initCardInfo);
+		printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(initInfo));
+		lws_write(wsi,cJSON_Print(initInfo),strlen(cJSON_Print(initInfo)),0);
 	}
 	return 0;
 }
