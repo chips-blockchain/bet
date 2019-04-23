@@ -195,6 +195,7 @@ int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 	cJSON_AddItemToArray(seatsInfo,seatInfo);
         
 	tableInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(tableInfo,"method","seats");
 	cJSON_AddItemToObject(tableInfo,"seats",seatsInfo);
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(tableInfo));
 	lws_write(wsi,cJSON_Print(tableInfo),strlen(cJSON_Print(tableInfo)),0);
@@ -218,6 +219,7 @@ int32_t BET_rest_game(struct lws *wsi, cJSON *argjson)
 	cJSON_AddStringToObject(gameDetails,"gametype","NL Hold'em<br>Blinds: 3/6");
 
 	gameInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(gameInfo,"method","game");
 	cJSON_AddItemToObject(gameInfo,"game",gameDetails);
 
 	lws_write(wsi,cJSON_Print(gameInfo),strlen(cJSON_Print(gameInfo)),0);
