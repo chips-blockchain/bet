@@ -1473,7 +1473,7 @@ int32_t BET_p2p_bet_round(cJSON *argjson,struct privatebet_info *bet,struct priv
 
 int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int32_t retval=1,bytes,cardid,playerid,errs,unpermi;
+	int32_t retval=1,bytes,cardid,playerid,errs,unpermi=-1;
 	cJSON *turn_status=NULL,*playerCardInfo=NULL;
 	char *rendered=NULL,str[65];
 	bits256 share,decoded256;
