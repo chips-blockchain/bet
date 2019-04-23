@@ -1327,7 +1327,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 					printf("\nMehtod: %s Failed to send data",method);
 					goto end;
 				}
-				//sleep(5);
+				sleep(5);
 				//printf("\nSending again");
 			}
 		}
