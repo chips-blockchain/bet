@@ -1266,7 +1266,7 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
 		{
 			bits256 temp=xoverz_donna(curve25519(player_info.player_key.priv,curve25519(player_info.cardprivkeys[i],player_info.cardprods[bet->myplayerid][j])));
 			vcalc_sha256(0,v_hash[i][j].bytes,temp.bytes,sizeof(temp));
-			printf("%d:%d::%s\n",i,j,bits256_str(str,v_hash[i][j]));
+			printf("%s\t",i,j,bits256_str(str,v_hash[i][j]));
 		}
 	}
 
