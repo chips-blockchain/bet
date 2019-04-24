@@ -2832,8 +2832,8 @@ int32_t BET_rest_player_join_res(struct lws *wsi,cJSON *argjson)
 		initCardInfo=cJSON_CreateObject();
 		cJSON_AddNumberToObject(initCardInfo,"dealer",0);
 		holeCardInfo=cJSON_CreateArray();
-		cJSON_AddItemToArray(holeCardInfo,NULL);
-		cJSON_AddItemToArray(holeCardInfo,NULL);
+		cJSON_AddItemToArray(holeCardInfo,cJSON_CreateNull());
+		cJSON_AddItemToArray(holeCardInfo,cJSON_CreateNull());
 		cJSON_AddItemToObject(initCardInfo,"holecards",holeCardInfo);
 
 		initInfo=cJSON_CreateObject();
