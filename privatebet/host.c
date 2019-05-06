@@ -111,6 +111,7 @@ int32_t BET_rest_dcv_init(struct lws *wsi, cJSON *argjson)
 
 	BET_rest_uri(&uri);
 	dcvInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(dcvInfo,"method","dcv");
 	cJSON_AddStringToObject(dcvInfo,"dcv",cJSON_Print(dcvKeyInfo));
 	cJSON_AddStringToObject(dcvInfo,"uri",uri);
 	cJSON_AddNumberToObject(dcvInfo,"balance",BET_rest_listfunds());
