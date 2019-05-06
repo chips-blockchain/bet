@@ -3166,27 +3166,29 @@ void rest_push_cards(struct lws *wsi,cJSON *argjson,int32_t this_playerID)
 
 	initInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(initInfo,"method","deal");
-	cJSON_AddItemToObject(initInfo,"deal",initCardInfo);
 	
 	initCardInfo=cJSON_CreateObject();
 	cJSON_AddNumberToObject(initCardInfo,"dealer",0);
 	
 	
 	holeCardInfo=cJSON_CreateArray();
-	cJSON_AddItemToObject(initCardInfo,"holecards",holeCardInfo);
-
 	for(int32_t i=0;((i<no_of_hole_cards)&&(i<all_number_cards_drawn[this_playerID]));i++)
 	{
 		cJSON_AddItemToArray(holeCardInfo,cJSON_CreateString(cards[all_player_card_values[this_playerID][i]]));
 	}
+	
+	cJSON_AddItemToObject(initCardInfo,"holecards",holeCardInfo);
 
 	boardCardInfo=cJSON_CreateArray();
-	cJSON_AddItemToObject(initCardInfo,"boardcards",boardCardInfo);
-	
 	for(int32_t i=no_of_hole_cards;((i<hand_size)&&(i<all_number_cards_drawn[this_playerID]));i++)
 	{
 		cJSON_AddItemToArray(boardCardInfo,cJSON_CreateString(cards[all_player_card_values[this_playerID][i]]));
 	}
+	
+	cJSON_AddItemToObject(initCardInfo,"boardcards",boardCardInfo);
+
+	
+	cJSON_AddItemToObject(initInfo,"deal",initCardInfo);
 	lws_write(wsi,cJSON_Print(initInfo),strlen(cJSON_Print(initInfo)),0);
 	/*		
 	printf("\n******************** Betting done so far ********************");
