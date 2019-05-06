@@ -1530,10 +1530,9 @@ int32_t BET_p2p_bet_round(cJSON *argjson,struct privatebet_info *bet,struct priv
 void display_cards(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	
-	char* suit[NSUITS]= {"hearts","spades","clubs","diamonds"};
-	char* face[NFACES]= {"ace","two","three","four","five","six","seven","eight","nine",
-						 "ten","jack","queen","king"
-						};
+	char* suit[NSUITS]= {"clubs","diamonds","hearts","spades"};
+	char* face[NFACES]= {"two","three","four","five","six","seven","eight","nine",
+						 "ten","jack","queen","king","ace"};
 	char action_str[8][100]={"","small_blind","big_blind","check","raise","call","allin","fold"};
 	cJSON *actions=NULL;
 	int flag;
@@ -3216,11 +3215,10 @@ void rest_push_cards(struct lws *wsi,cJSON *argjson,int32_t this_playerID)
 
 void rest_display_cards(cJSON *argjson,int32_t this_playerID)
 {
-	
-	char* suit[NSUITS]= {"hearts","spades","clubs","diamonds"};
-	char* face[NFACES]= {"ace","two","three","four","five","six","seven","eight","nine",
-						 "ten","jack","queen","king"
-						};
+	char* suit[NSUITS]= {"clubs","diamonds","hearts","spades"};
+	char* face[NFACES]= {"two","three","four","five","six","seven","eight","nine",
+						 "ten","jack","queen","king","ace"};
+		
 	char action_str[8][100]={"","small_blind","big_blind","check","raise","call","allin","fold"};
 	cJSON *actions=NULL;
 	int flag;
