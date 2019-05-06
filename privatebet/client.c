@@ -3185,7 +3185,7 @@ void rest_push_cards(struct lws *wsi,cJSON *argjson,int32_t this_playerID)
 		cJSON_AddItemToArray(boardCardInfo,cJSON_CreateString(cards[all_player_card_values[this_playerID][i]]));
 	}
 	
-	cJSON_AddItemToObject(initCardInfo,"boardcards",boardCardInfo);
+	cJSON_AddItemToObject(initCardInfo,"board",boardCardInfo);
 
 	
 	cJSON_AddItemToObject(initInfo,"deal",initCardInfo);
