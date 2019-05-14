@@ -59,11 +59,10 @@ int32_t eval_game_p[CARDS777_MAXPLAYERS],eval_game_c[CARDS777_MAXPLAYERS];
 
 
 int32_t invoiceID;
-char* suit[NSUITS]= {"hearts","spades","clubs","diamonds"};
-char* face[NFACES]= {"ace","two","three","four","five","six","seven","eight","nine",
-                     "ten","jack","queen","king"
-                    };
 
+char* suit[NSUITS]= {"clubs","diamonds","hearts","spades"};
+char* face[NFACES]= {"two","three","four","five","six","seven","eight","nine",
+					 "ten","jack","queen","king","ace"};
 
 struct privatebet_info *BET_dcv;
 struct privatebet_vars *DCV_VARS;
