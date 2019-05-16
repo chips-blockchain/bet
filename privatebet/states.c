@@ -1688,6 +1688,7 @@ int32_t BET_rest_player_round_betting(struct lws *wsi,cJSON *argjson)
 	min_amount=jint(argjson,"min_amount");
 
 	possibilities=cJSON_GetObjectItem(argjson,"possibilities");
+/*	
 	printf("\nHere is the possibilities");
 	for(int i=0;i<cJSON_GetArraySize(possibilities);i++)
 	{
@@ -1703,9 +1704,11 @@ int32_t BET_rest_player_round_betting(struct lws *wsi,cJSON *argjson)
 	}while((option<1)||(option>cJSON_GetArraySize(possibilities)));
 
 	
-	
+*/	
+	option=1;
 	if(jinti(possibilities,(option-1))== raise)
 	{
+	/*
 		do
 		{
 			if(min_amount<big_blind_amount)
@@ -1714,7 +1717,8 @@ int32_t BET_rest_player_round_betting(struct lws *wsi,cJSON *argjson)
 			scanf("%d",&raise_amount);
 						
 		}while((raise_amount<min_amount)||(raise_amount<big_blind_amount)||(raise_amount<(Player_VARS[this_playerID]->last_raise+min_amount) || (raise_amount>Player_VARS[this_playerID]->player_funds)));
-		bet_amount=raise_amount;
+	*/	
+		bet_amount=jint(argjson,"bet_amount");
 			BET_rest_player_create_invoice_request_round(wsi,argjson,bet_amount,option);
 	}
 	else if(jinti(possibilities,(option-1)) == call)
