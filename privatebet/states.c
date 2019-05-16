@@ -1931,8 +1931,6 @@ int32_t BET_rest_player_round_betting_response(struct lws *wsi,cJSON *argjson,in
 	end:
 		return retval;
 }
-
-
 int32_t BET_rest_betting_statemachine(struct lws *wsi,cJSON *argjson)
 {
 	char *action=NULL;
@@ -1945,6 +1943,7 @@ int32_t BET_rest_betting_statemachine(struct lws *wsi,cJSON *argjson)
 			{
 				if(jint(argjson,"playerid") == BET_player[this_playerID]->myplayerid)
 				{
+					rest_push_cards(wsi,argjson,this_playerID);
 					rest_display_cards(argjson,this_playerID);
 					retval=BET_rest_small_blind(wsi,argjson);	
 				}
@@ -1953,6 +1952,7 @@ int32_t BET_rest_betting_statemachine(struct lws *wsi,cJSON *argjson)
 			{
 				if(jint(argjson,"playerid") == BET_player[this_playerID]->myplayerid)
 				{
+					rest_push_cards(wsi,argjson,this_playerID);
 					rest_display_cards(argjson,this_playerID);
 					retval=BET_rest_big_blind(wsi,argjson); 
 				}
@@ -2019,6 +2019,7 @@ int32_t BET_rest_betting_statemachine(struct lws *wsi,cJSON *argjson)
 				{
 					rest_push_cards(wsi,argjson,this_playerID);
 					rest_display_cards(argjson,this_playerID);
+					
 					retval=BET_rest_player_round_betting(wsi,argjson);
 				}
 			}
