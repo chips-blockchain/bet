@@ -353,7 +353,7 @@ int main(int argc, char **argv)
 	range=52;
 	numplayers=2;
     Maxplayers=2;
-	if((argc>=2)&&(strcmp(argv[1],"dcv")==0))
+	if(argc>=0)//if((argc>=2)&&(strcmp(argv[1],"dcv")==0))
 	{
 		
 		#if 1
