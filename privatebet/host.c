@@ -1193,6 +1193,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	}
 	else if(strcmp(jstr(argjson,"method"),"replay") == 0)
 	{
+			rest_push_cards(wsi,NULL,jint(argjson,"playerid"));
 			lws_write(wsi,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
 				
 	}
