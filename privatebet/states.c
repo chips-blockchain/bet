@@ -1278,7 +1278,7 @@ int32_t BET_rest_DCV_round_betting(struct lws *wsi)
 
 	//vars->turni=(vars->turni+1)%bet->maxplayers;
 
-	rest_push_cards(wsi,NULL,DCV_VARS->turni);
+	//rest_push_cards(wsi,NULL,DCV_VARS->turni);
 	
 	roundBetting=cJSON_CreateObject();
 	cJSON_AddStringToObject(roundBetting,"method","betting");
@@ -2023,7 +2023,7 @@ int32_t BET_rest_betting_statemachine(struct lws *wsi,cJSON *argjson)
 			{
 				if(BET_player[this_playerID]->myplayerid == jint(argjson,"playerid"))
 				{
-					rest_push_cards(wsi,argjson,this_playerID);
+					//rest_push_cards(wsi,argjson,this_playerID);
 					rest_display_cards(argjson,this_playerID);
 					
 					retval=BET_rest_player_round_betting(wsi,argjson);
