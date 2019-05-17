@@ -342,7 +342,8 @@ int main(int argc, char **argv)
 	pthread_t dcv_t,bvv_t,player_t;
 
     #if 1
-	strcpy(hostip,argv[2]);
+	if(argc>=2)
+		strcpy(hostip,argv[2]);
     OS_init();
 	libgfshare_init();
 	OS_randombytes((uint8_t *)&range,sizeof(range));
