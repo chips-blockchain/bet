@@ -1277,6 +1277,8 @@ int32_t BET_rest_DCV_round_betting(struct lws *wsi)
 	DCV_VARS->turni=BET_rest_DCV_next_turn(wsi);
 
 	//vars->turni=(vars->turni+1)%bet->maxplayers;
+
+	rest_push_cards(wsi,NULL,DCV_VARS->turni);
 	
 	roundBetting=cJSON_CreateObject();
 	cJSON_AddStringToObject(roundBetting,"method","betting");
