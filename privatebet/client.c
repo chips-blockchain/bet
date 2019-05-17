@@ -3188,6 +3188,7 @@ void rest_push_cards(struct lws *wsi,cJSON *argjson,int32_t this_playerID)
 
 	
 	cJSON_AddItemToObject(initInfo,"deal",initCardInfo);
+	printf("\n%s::%d::%s",__FUNCTION__,__LINE__,cJSON_Print(initInfo));
 	lws_write(wsi,cJSON_Print(initInfo),strlen(cJSON_Print(initInfo)),0);
 	/*		
 	printf("\n******************** Betting done so far ********************");
