@@ -177,7 +177,7 @@ int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 	seatInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(seatInfo,"name","player1");
 	cJSON_AddNumberToObject(seatInfo,"seat",0);
-	cJSON_AddNumberToObject(seatInfo,"stack",563.67);
+	cJSON_AddNumberToObject(seatInfo,"stack",0);
 	cJSON_AddNumberToObject(seatInfo,"empty",0);
 	cJSON_AddNumberToObject(seatInfo,"playing",1);
 
@@ -188,7 +188,7 @@ int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 	seatInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(seatInfo,"name","player2");
 	cJSON_AddNumberToObject(seatInfo,"seat",1);
-	cJSON_AddNumberToObject(seatInfo,"stack",563.67);
+	cJSON_AddNumberToObject(seatInfo,"stack",0);
 	cJSON_AddNumberToObject(seatInfo,"empty",0);
 	cJSON_AddNumberToObject(seatInfo,"playing",1);
 
