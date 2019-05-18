@@ -45,6 +45,7 @@ int32_t player_cards[CARDS777_MAXCARDS];
 int32_t no_of_player_cards=0;
 
 int32_t player_id=0;
+int32_t player_joined=0;
 
 bits256 all_v_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 bits256 all_g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
@@ -2484,6 +2485,12 @@ int32_t BET_rest_player_join(struct lws *wsi, cJSON *argjson)
 	char *uri=NULL;
 	struct pair256 key;
 	int32_t Maxplayers=2,numplayers=2,range=52;
+
+	if(player_joined)
+		return 0; //this logic is to avoid the double clicks
+	else
+		player_joined=1;
+	
 	for(int32_t i=0;i<Maxplayers;i++)
 		BET_player[i]=calloc(1,sizeof(struct privatebet_info));	
 	
