@@ -61,6 +61,28 @@ $ cd bet
 $ make
 ```
 
+## Usage of this repo
+
+The usage of this repo varies from branch to branch. Each branch has a different gaming logic and their intended gameplays are different.
+
+The branches are listes as follow.
+* master
+* dev
+* highest_card_wins
+* poker
+* rest_dev
+
+### highest_card_wins
+This branch is used to play the highest card player wins game via CLI, two players can play the game. The player whoever gets the highest card wins the game.
+
+### poker
+This branch is used to player poker via CLI
+
+### rest_dev
+This branch is used to player poker via GUI, the GUI code should be taken from `poker` branch of `[pangea-poker-frontend](https://github.com/sg777/pangea-poker-frontend)` repo.
+
+For the GUI developers the backend message formats are defined [here](./docs/messageFormats.md)
+
 ## Communicating over IP Adress
 DCV nodes binds to the sockets created over the ports 7797 and 7798. The BVV and Player nodes connect to the binding address via subscribe and push sockets. Here DCV and BVV are the trusted notarized nodes in the network, DCV plays the central role in coordinating the game.
 
