@@ -65,12 +65,12 @@ The corresponding send, receive methods over these websockets are mentioned belo
 
 ## Method: game
 Once the homepage loads, as per the current game logic, DCV clicks on `game` which sends the below JSON message to the backend.
-```
-* {"method":"game"}
+```json
+ {"method":"game"}
 ```
 Once the DCV backend receives the JSON method `game` it provides the below response.
 
-```
+```json
 Note here number of seats is Hardcoded to 2,`tocall` is optional here which I'm not using anywhere in the front end logic.
 {
 	"method":	"game",
@@ -82,4 +82,10 @@ Note here number of seats is Hardcoded to 2,`tocall` is optional here which I'm 
 	}
 }
 
+```
+## Method : seats
+
+Once the DCV rceives the game information, it request the information about the seats on the table. DCV sents the below JSON message to the backend to get the seat information
+```json
+{"method":"seats"}
 ```
