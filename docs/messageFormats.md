@@ -12,6 +12,7 @@ Detailed instructions on how to setup the bet node is mentioned [here](../README
 
 In order to have the funds, one needs to create a CHIPS address in LN-Wallet and then needs to fund as shown below.
 ```
+
 * $cd
 * $cd lightning/cli/
 * $./lightning-cli newaddr
@@ -25,11 +26,53 @@ In order to have the funds, one needs to create a CHIPS address in LN-Wallet and
 		{ "peer_id" : "023aba3ac8e237fd4199c996163e6fe4c54c29f349e913d0a97e48d70863b23dc0", "short_channel_id" : "3481632:1:0", "channel_sat" : 494997, "channel_total_sat" : 500000, "funding_txid" : "803ca551a788da76fc7c5f1e9b6b9c87a76653887a4c316d01b9e676b6fc62b7" }, 
 		{ "peer_id" : "02c015ab6ea37b95cc6939bb89da6473b0de87250ecd4c3b0d64ddf4c62c5679e8", "short_channel_id" : "3481636:1:0", "channel_sat" : 92300, "channel_total_sat" : 500000, "funding_txid" : "d0db104b8cf6eb9d59e2c16ffd79193fb2f94f31d075b97eab050d33f5eabf69" }, 
 		{ "peer_id" : "03658a91403eb125345d7a87f4f91448297c312ccf250314fb9d541d9cf720497d", "short_channel_id" : "3481639:1:0", "channel_sat" : 52700, "channel_total_sat" : 500000, "funding_txid" : "4ecca8551a49155055d03fe535993e40ae2dca6d1c36810e6f9e8e87fbe03322" } ] }
-
+		
 ```
+
 
 In order to play the game the players and delaers should browse to `http://<ip_addr>/pangea-poker-frontend/client/`, where `<ip_addr>` is the IP address of the dealer(`DCV`) node where `poker` branch of `pangea-poker-frontend` running in the backend.
 
 ![Home page](./images/poker_home_page.png)
 
+Every entity is the game runs it's own bet code in the backend, to this IP address of this bet running node a websocket connection is made via front end logic. At this moment all the IP values of the playing entities are hardcoded in the file `pangeapoker.js` like as shown below:
+```
+* pangea.wsURI = 'ws://159.69.23.30:9000' \\ This is the dealer node IP
+* pangea.wsURI_bvv = 'ws://159.69.23.31:9001' \\ This is the blinder node IP
+* pangea.wsURI_player1 = 'ws://159.69.23.28:9002' \\ This is player1 backend bet node IP
+* pangea.wsURI_player2 = 'ws://159.69.23.29:9003' \\ This is player2 backend bet node IP
+```
+The corresponding send, receive methods over these websockets are mentioned below:
+```
+* For DCV
+	* pangea.onMessage			
+	* pangea.sendMessage
+* For BVV
+	* pangea.onMessage_bvv			
+	* pangea.sendMessage_bvv
+* For Player1
+	* pangea.onMessage_player1			
+	* pangea.sendMessage_player1
+* For Player2
+	* pangea.onMessage_player2			
+	* pangea.sendMessage_player2
+```
 
+Once the homepage loads, as per the current game logic, DCV clicks on `game` which sends the below JSON message to the backend.
+```
+* {"method":"game"}
+```
+Once the DCV backend receives the JSON method `game` it provides the below response.
+
+```
+Note here number of seats is Hardcoded to 2,`tocall` is optional here which I'm not using anywhere in the front end logic.
+{
+	"method":	"game",
+	"game":	{
+		"tocall":	0,
+		"seats":	2,
+		"pot":	[0],
+		"gametype":	"NL Hold'em<br>Blinds: 3/6"
+	}
+}
+
+```
