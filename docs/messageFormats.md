@@ -8,7 +8,7 @@ As we know, Pangea is a protocol which defines how the deck needs to be presente
 
 How the playing nodes need to be set up in the backend is very important in order for the player to start playing. First thing is every player who wants to play using Pangea they need to set up the bet node.
 
-Detailed instructions on how to setup the bet node is mentioned [here](../README.md#Steps-to-compile). Once the node is setup in order to play, the player must need funds, here `CHIPS` is cryptocurrency which is used for betting and playing nodes are connected via `CHIPS-LN`.
+Detailed instructions on how to setup the bet node is mentioned [__here__](../README.md#Steps-to-compile). Once the node is setup in order to play, the player must need funds, here `CHIPS` is cryptocurrency which is used for betting and playing nodes are connected via `CHIPS-LN`.
 
 ## Fundng LN Node
 
@@ -68,4 +68,4 @@ The messages that gets exchanged during game play are listed below.
 * [__game__](./method_game.md)
 * [__seats__](./method_seats.md)
 
-__NOTE__: I'm using [this](https://github.com/sg777/pangea-poker-frontend) front-end repo to communicate wih my backend bet node. Since I'm not the actual front-end dev of the GUI repo, many fields the original author mentioned is not used by me. So in next pages whereever if I didn't use anyfield I'm calling it as __optional__.
+__NOTE__: I'm using [__pangea-poker-frontend__](https://github.com/sg777/pangea-poker-frontend) as the front-end repo to communicate with the backend bet node. Since I'm not the actual front-end dev of this GUI repo, many fields the original author has mentioned is not used by me. So in the next pages in the message formats whichever fields I didn't used I called them as __optional__.
