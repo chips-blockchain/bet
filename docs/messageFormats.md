@@ -68,4 +68,4 @@ The messages that gets exchanged during game play are listed below.
 * [__game__](./method_game.md)
 * [__seats__](./method_seats.md)
 
-__NOTE__: I'm using [this](https://github.com/sg777/pangea-poker-frontend) front-end repo to communicate wih my backend bet node. Since I'm not the actual front-end dev of the GUI repo, many fields the original author mentioned is not used by me. So in next pages whereever if I didn't use anyfield I'm calling it as optional.
+__NOTE__: I'm using [this](https://github.com/sg777/pangea-poker-frontend) front-end repo to communicate wih my backend bet node. Since I'm not the actual front-end dev of the GUI repo, many fields the original author mentioned is not used by me. So in next pages whereever if I didn't use anyfield I'm calling it as __optional__.
