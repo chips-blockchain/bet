@@ -31,4 +31,4 @@ max table size of **9**.
 * __empty__: I didn't used this field abywhere in the frontend GUI, can be considered optional.
 * __playing__: This field is used to make the seat available for playing, so tha any players can chose the seat with with value **1** and join the table.
 
-In the GUI you can see the two seats which appear after the receiving of the seats information by DCV as shown in ![below](./images/after_seats.png)
+In the GUI you can see the two seats which appear after the receiving of the seats information by DCV as shown below ![after_seats](./images/after_seats.png)
