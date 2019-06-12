@@ -24,4 +24,4 @@ The significance of each field is mentioned as follow:
 
 ![image](./images/after_seats.png)
 
-[next](./method_seats.md)
+[__prev__](./messageFormats.md)  [__next__](./method_seats.md)
