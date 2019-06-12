@@ -23,3 +23,5 @@ The significance of each field is mentioned as follow:
 * __gametype__: This is a string which gets updates in the top right corner of the GUI as shown below. Ideally this value is constant, here we are dealing with Texas Hold'em poker the value is **NL Hold'em<br>Blinds: 3/6**
 
 ![image](./images/after_seats.png)
+
+[next](./method_seats.md)
