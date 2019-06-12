@@ -10,6 +10,8 @@ How the playing nodes need to be set up in the backend is very important in orde
 
 Detailed instructions on how to setup the bet node is mentioned [here](../README.md#Steps-to-compile). Once the node is setup in order to play, the player must need funds, here `CHIPS` is cryptocurrency which is used for betting and playing nodes are connected via `CHIPS-LN`.
 
+## Fundng LN Node
+
 In order to have the funds, one needs to create a CHIPS address in LN-Wallet and then needs to fund as shown below.
 ```
 
@@ -29,10 +31,12 @@ In order to have the funds, one needs to create a CHIPS address in LN-Wallet and
 		
 ```
 
-
+# Home Page
 In order to play the game the players and delaers should browse to `http://<ip_addr>/pangea-poker-frontend/client/`, where `<ip_addr>` is the IP address of the dealer(`DCV`) node where `poker` branch of `pangea-poker-frontend` running in the backend.
 
 ![Home page](./images/poker_home_page.png)
+
+## Hardcoded IP addresses
 
 Every entity is the game runs it's own bet code in the backend, to this IP address of this bet running node a websocket connection is made via front end logic. At this moment all the IP values of the playing entities are hardcoded in the file `pangeapoker.js` like as shown below:
 ```
@@ -41,6 +45,8 @@ Every entity is the game runs it's own bet code in the backend, to this IP addre
 * pangea.wsURI_player1 = 'ws://159.69.23.28:9002' \\ This is player1 backend bet node IP
 * pangea.wsURI_player2 = 'ws://159.69.23.29:9003' \\ This is player2 backend bet node IP
 ```
+## Send, recieve methods over websockets
+
 The corresponding send, receive methods over these websockets are mentioned below:
 ```
 * For DCV
@@ -57,6 +63,7 @@ The corresponding send, receive methods over these websockets are mentioned belo
 	* pangea.sendMessage_player2
 ```
 
+## Method: game
 Once the homepage loads, as per the current game logic, DCV clicks on `game` which sends the below JSON message to the backend.
 ```
 * {"method":"game"}
