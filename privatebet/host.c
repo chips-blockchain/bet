@@ -1017,6 +1017,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	}
 	else if(strcmp(jstr(argjson,"method"),"seats") == 0)
 	{
+		printf("\n%s:%d::maxplayers:%d",__FUNCTION__,__LINE__,BET_dcv_global->maxplayers);
 		retval=BET_rest_seats(wsi,argjson);
 	}
 	else if(strcmp(jstr(argjson,"method"),"chat") == 0)
