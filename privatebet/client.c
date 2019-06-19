@@ -1234,6 +1234,10 @@ int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct pri
 		{
 			BET_BVV_reset(bet,vars);
 		}
+		else if(strcmp(method,"seats") == 0)
+		{
+			printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+		}
         else
             retval=-1;
     }
@@ -2280,6 +2284,10 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		else if(strcmp(method,"reset") == 0)
 		{
 			retval=BET_player_reset(bet,vars);
+		}
+		else if(strcmp(method,"seats") == 0)
+		{
+			printf("\n%s::%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 		}
 	}	
 	return retval;

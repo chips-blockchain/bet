@@ -1010,6 +1010,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 {
 
 	int retval=-1;
+	char *rendered=NULL;
 	printf("Received %s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 	if(strcmp(jstr(argjson,"method"),"game") == 0)	
 	{
@@ -1019,6 +1020,9 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	{
 		printf("\n%s:%d::maxplayers:%d",__FUNCTION__,__LINE__,BET_dcv_global->maxplayers);
 		retval=BET_rest_seats(wsi,argjson);
+		rendered=cJSON_Print(argjson);
+	  	nn_send(BET_dcv_global->pubsock,rendered,strlen(rendered),0);
+		
 	}
 	else if(strcmp(jstr(argjson,"method"),"chat") == 0)
 	{
