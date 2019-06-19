@@ -54,7 +54,7 @@
 #include <string.h>
 
 
-struct privatebet_info *BET_dcv_global=NULL,
+struct privatebet_info *BET_dcv_global=NULL;
 
 
 bits256 Myprivkey,Mypubkey;
