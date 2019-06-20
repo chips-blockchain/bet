@@ -446,13 +446,16 @@ int main(int argc, char **argv)
 		        printf("error launching BET_clientloop for sub.%d push.%d\n",BET_bvv_global->subsock,BET_bvv_global->pushsock);
 		        exit(-1);
 		    }
-			/*
+			
 			if ( OS_thread_create(&bvv_backend,NULL,(void *)BET_ws_dcvloop,(void *)BET_bvv_global) != 0 )
 			{
 				printf("error launching BET_hostloop for pub.%d pull.%d\n",BET_bvv_global->pubsock,BET_bvv_global->pullsock);
 				exit(-1);
 			}
-			*/
+			if(pthread_join(bvv_backend,NULL))
+			{
+				printf("\nError in joining the main thread for bvvv");
+			}
 			if(pthread_join(bvv_t,NULL))
 			{
 				printf("\nError in joining the main thread for bvvv");

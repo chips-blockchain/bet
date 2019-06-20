@@ -2966,7 +2966,22 @@ void BET_ws_dcvloop(void *_ptr)
 	printf("\n%s::%d",__FUNCTION__,__LINE__);
 	lws_set_log_level(logs, NULL);
 	lwsl_user("LWS minimal ws broker | visit http://localhost:7681\n");
-    #if 1
+
+	 // for DCV
+    memset(&dcv_info, 0, sizeof dcv_info); /* otherwise uninitialized garbage */
+    dcv_info.port = 9000;
+    dcv_info.mounts = &mount;
+    dcv_info.protocols = protocols;
+    dcv_info.options =
+        LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
+
+    dcv_context = lws_create_context(&dcv_info);
+    if (!dcv_context) {
+        lwsl_err("lws init failed\n");
+        return 1;
+    }   
+   
+	#if 0
     // for DCV
     memset(&dcv_info, 0, sizeof dcv_info); /* otherwise uninitialized garbage */
     dcv_info.port = 9000;
@@ -3024,19 +3039,15 @@ void BET_ws_dcvloop(void *_ptr)
 
 	while (n >= 0 && !interrupted)
 	{
-		//n = lws_service(context, 1000);
-		//n = lws_service(context_1, 1000);
         n = lws_service(dcv_context, 1000);
-        n = lws_service(bvv_context, 1000);
-        n = lws_service(player1_context, 1000);
-        n = lws_service(player2_context, 1000);
+        //n = lws_service(bvv_context, 1000);
+        //n = lws_service(player1_context, 1000);
+        //n = lws_service(player2_context, 1000);
 	}
-	//lws_context_destroy(context);
-	//lws_context_destroy(context_1);
     lws_context_destroy(dcv_context);
-    lws_context_destroy(bvv_context);
-    lws_context_destroy(player1_context);
-    lws_context_destroy(player2_context);
+    //lws_context_destroy(bvv_context);
+    //lws_context_destroy(player1_context);
+    //lws_context_destroy(player2_context);
 
 		
 }
