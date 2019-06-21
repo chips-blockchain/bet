@@ -501,19 +501,21 @@ int main(int argc, char **argv)
 				printf("\nerror in launching BET_p2p_clientloop_test");
 				exit(-1);
 			}
-			if(pthread_join(player_t,NULL))
-			{
-			printf("\nError in joining the main thread for player");
-			}
-
 			
 			if ( OS_thread_create(&player_backend,NULL,(void *)BET_ws_dcvloop,(void *)BET_player_global) != 0 )
 			{
 				printf("error launching BET_hostloop for pub.%d pull.%d\n",BET_player_global->pubsock,BET_player_global->pullsock);
 				exit(-1);
 			}
+
 			
 			if(pthread_join(player_t,NULL))
+			{
+			printf("\nError in joining the main thread for player");
+			}
+
+			
+			if(pthread_join(player_backend,NULL))
 			{
 				printf("\nError in joining the main thread for player %d",i);
 			}
