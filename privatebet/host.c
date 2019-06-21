@@ -1248,7 +1248,7 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 				}
 				if(pthread_join(player_t,NULL))
 				{
-				printf("\nError in joining the main thread for player %d",i);
+				printf("\nError in joining the main thread for player");
 				}
                 break;
         }
