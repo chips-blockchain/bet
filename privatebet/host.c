@@ -42,6 +42,7 @@
 #include "protocol_lws_minimal.c"
 
 
+struct lws *wsi_global_tmp=NULL;
 
 
 
@@ -3056,6 +3057,12 @@ void BET_ws_dcvloop(void *_ptr)
     //lws_context_destroy(player2_context);
 
 		
+}
+
+
+struct lws* BET_wsi_global()
+{
+	return wsi_global_tmp;
 }
 
 
