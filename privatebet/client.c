@@ -2197,7 +2197,7 @@ int32_t BET_player_reset(struct privatebet_info *bet,struct privatebet_vars *var
 	
 	return(BET_p2p_client_join(NULL,bet,vars));
 }
-
+#if 0
 char lws_buf[65536];
 int32_t lws_buf_length=0;
 int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
@@ -2295,7 +2295,7 @@ void BET_test_function()
 	}
     lws_context_destroy(dcv_context);
 }
-
+#endif
 int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars) // update game state based on host broadcast
 {
 	
