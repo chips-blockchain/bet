@@ -41,7 +41,7 @@
 #define LWS_PLUGIN_STATIC
 #include "protocol_lws_minimal.c"
 
-struct lws *wsi_global=NULL;
+
 
 
 struct privatebet_rawpeerln Rawpeersln[CARDS777_MAXPLAYERS+1],oldRawpeersln[CARDS777_MAXPLAYERS+1];
