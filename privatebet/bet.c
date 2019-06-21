@@ -55,7 +55,7 @@
 
 
 struct privatebet_info *BET_dcv_global=NULL, *BET_bvv_global=NULL,*BET_player_global=NULL;
-struct lws *wsi_global=NULL;
+//struct lws *wsi_global=NULL;
 
 
 
