@@ -41,6 +41,8 @@
 #define LWS_PLUGIN_STATIC
 #include "protocol_lws_minimal.c"
 
+struct lws *wsi_global=NULL;
+
 
 struct privatebet_rawpeerln Rawpeersln[CARDS777_MAXPLAYERS+1],oldRawpeersln[CARDS777_MAXPLAYERS+1];
 struct privatebet_peerln Peersln[CARDS777_MAXPLAYERS+1];
@@ -1224,7 +1226,8 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
         strncpy(buf,in,len);
 		
         cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
-        switch(reason)
+		wsi_global=wsi;
+		switch(reason)
         {
             case LWS_CALLBACK_RECEIVE:
 				memcpy(lws_buf+lws_buf_length,in,len);
@@ -1236,19 +1239,9 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 				memset(lws_buf,0x00,sizeof(lws_buf));
 				lws_buf_length=0;
 				
-				if (OS_thread_create(&player_t,NULL,(void *)BET_p2p_clientloop_test,(void *)wsi) != 0 )
-					{
-						printf("\nerror in launching BET_p2p_clientloop_test");
-						exit(-1);
-					}
-				
 				while( BET_process_rest_method(wsi,argjson) != 0 )
 				{
 					printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
-				}
-				if(pthread_join(player_t,NULL))
-				{
-				printf("\nError in joining the main thread for player");
 				}
                 break;
         }
