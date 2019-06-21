@@ -1234,6 +1234,13 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 				argjson=cJSON_Parse(lws_buf);
 				memset(lws_buf,0x00,sizeof(lws_buf));
 				lws_buf_length=0;
+				
+				if (OS_thread_create(&player_t,NULL,(void *)BET_p2p_clientloop_test,(void *)wsi) != 0 )
+					{
+						printf("\nerror in launching BET_p2p_clientloop_test");
+						exit(-1);
+					}
+				
 				while( BET_process_rest_method(wsi,argjson) != 0 )
 				{
 					printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);

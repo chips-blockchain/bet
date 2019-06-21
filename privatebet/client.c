@@ -2294,6 +2294,45 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 }
 
 
+void BET_p2p_clientloop_test(void * _ptr)
+{
+	struct lws *wsi=_ptr;
+	uint32_t lasttime = 0; int32_t nonz,recvlen,lastChips_paid; uint16_t port=7798; char connectaddr[64],hostip[64]; void *ptr; cJSON *msgjson,*reqjson; struct privatebet_vars *VARS; 
+	 VARS = calloc(1,sizeof(*VARS));
+	 uint8_t flag=1;
+	
+	 while ( flag )
+	 {
+		 
+		 if ( BET_player_global->subsock >= 0 && BET_player_global->pushsock >= 0 )
+		 {
+				 recvlen= nn_recv (BET_player_global->subsock, &ptr, NN_MSG, 0);
+				 if (( (msgjson= cJSON_Parse(ptr)) != 0 ) && (recvlen>0))
+				 {
+				 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(msgjson));
+					if(strcmp(jstr(msgjson,"method"),"seats") == 0)
+					{	
+						lws_write(wsi,cJSON_Print(msgjson),strlen(cJSON_Print(msgjson)),0);
+					}
+					/*
+					 if ( BET_p2p_clientupdate(msgjson,BET_player_global,VARS) < 0 )
+					 {
+						 printf("\nFAILURE\n");
+						 // do something here, possibly this could be because unknown commnad or because of encountering a special case which state machine fails to handle
+					 }
+					 */
+					
+					 free_json(msgjson);
+				 }
+				 
+		 }
+		 
+	 }
+	
+}
+
+
+
 void BET_p2p_clientloop(void * _ptr)
 {
     uint32_t lasttime = 0; int32_t nonz,recvlen,lastChips_paid; uint16_t port=7798; char connectaddr[64],hostip[64]; void *ptr; cJSON *msgjson,*reqjson; struct privatebet_vars *VARS; struct privatebet_info *bet = _ptr;

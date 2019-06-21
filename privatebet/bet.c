@@ -493,12 +493,7 @@ int main(int argc, char **argv)
 			BET_player_global->numplayers=numplayers;
 		    BET_betinfo_set(BET_player_global,"demo",range,0,Maxplayers);
 
-			if (OS_thread_create(&player_t,NULL,(void *)BET_p2p_clientloop,(void *)BET_player_global) != 0 )
-		    {
-		        printf("error launching BET_clientloop for sub.%d push.%d\n",BET_player_global->subsock,BET_player_global->pushsock);
-		        exit(-1);
-		    }
-
+	
 			
 			if ( OS_thread_create(&player_backend,NULL,(void *)BET_ws_dcvloop,(void *)BET_player_global) != 0 )
 			{
