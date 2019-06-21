@@ -2198,6 +2198,104 @@ int32_t BET_player_reset(struct privatebet_info *bet,struct privatebet_vars *var
 	return(BET_p2p_client_join(NULL,bet,vars));
 }
 
+char lws_buf[65536];
+int32_t lws_buf_length=0;
+int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
+                        void *user, void *in, size_t len)
+{
+        int ret_val,ret_len;
+        char *buf=NULL;
+		pthread_t player_t;
+        buf=(char*)malloc(len);
+        strncpy(buf,in,len);
+		
+        cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
+		printf("\n%s:%d",__FUNCTION__,__LINE__);
+		wsi_global_tmp=wsi;
+		switch(reason)
+        {
+            case LWS_CALLBACK_RECEIVE:
+				memcpy(lws_buf+lws_buf_length,in,len);
+				lws_buf_length+=len;
+				if (!lws_is_final_fragment(wsi))
+						break;
+				argjson=cJSON_CreateObject();
+				argjson=cJSON_Parse(lws_buf);
+				memset(lws_buf,0x00,sizeof(lws_buf));
+				lws_buf_length=0;
+				printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+				while( BET_process_rest_method(wsi,argjson) != 0 )
+				{
+					printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
+				}
+                break;
+        }
+        return 0;
+}
+
+
+
+static struct lws_protocols protocols1[] = {
+	{ "http", lws_callback_http_dummy1, 0, 0 },
+	LWS_PLUGIN_PROTOCOL_MINIMAL,
+	{ NULL, NULL, 0, 0 } /* terminator */
+};
+
+static int interrupted1;
+
+
+static const struct lws_http_mount mount1 = {
+	/* .mount_next */		NULL,		/* linked-list "next" */
+	/* .mountpoint */		"/",		/* mountpoint URL */
+	/* .origin */			"./mount-origin", /* serve from dir */
+	/* .def */			"index.html",	/* default filename */
+	/* .protocol */			NULL,
+	/* .cgienv */			NULL,
+	/* .extra_mimetypes */		NULL,
+	/* .interpret */		NULL,
+	/* .cgi_timeout */		0,
+	/* .cache_max_age */		0,
+	/* .auth_mask */		0,
+	/* .cache_reusable */		0,
+	/* .cache_revalidate */		0,
+	/* .cache_intermediaries */	0,
+	/* .origin_protocol */		LWSMPRO_FILE,	/* files in a dir */
+	/* .mountpoint_len */		1,		/* char count */
+	/* .basic_auth_login_file */	NULL,
+};
+
+void BET_test_function()
+{
+	struct lws_context_creation_info info,info_1,dcv_info,bvv_info,player1_info,player2_info;
+	struct lws_context *context,*context_1,*dcv_context,*bvv_context,*player1_context,*player2_context;
+	const char *p;
+	int n = 0, logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE;
+
+	printf("\n%s::%d",__FUNCTION__,__LINE__);
+	lws_set_log_level(logs, NULL);
+	lwsl_user("LWS minimal ws broker | visit http://localhost:7681\n");
+	memset(&dcv_info, 0, sizeof dcv_info); /* otherwise uninitialized garbage */
+    dcv_info.port = 9000;
+    dcv_info.mounts = &mount1;
+    dcv_info.protocols = protocols1;
+    dcv_info.options =
+    LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
+
+    dcv_context = lws_create_context(&dcv_info);
+    if (!dcv_context) {
+        lwsl_err("lws init failed\n");
+        return 1;
+    }   
+   while (n >= 0 && !interrupted1)
+	{
+        n = lws_service(dcv_context, 1000);
+        //n = lws_service(bvv_context, 1000);
+        //n = lws_service(player1_context, 1000);
+        //n = lws_service(player2_context, 1000);
+	}
+    lws_context_destroy(dcv_context);
+}
+
 int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars) // update game state based on host broadcast
 {
 	
@@ -2288,7 +2386,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		else if(strcmp(method,"seats") == 0)
 		{
 			printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-			//lws_write(BET_wsi_global(),cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+			lws_write(BET_wsi_global(),cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
 		}
 	}	
 	return retval;
