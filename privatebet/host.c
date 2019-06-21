@@ -1246,6 +1246,10 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 				{
 					printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
 				}
+				if(pthread_join(player_t,NULL))
+				{
+				printf("\nError in joining the main thread for player %d",i);
+				}
                 break;
         }
         return 0;
