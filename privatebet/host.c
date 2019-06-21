@@ -41,6 +41,7 @@
 #define LWS_PLUGIN_STATIC
 #include "protocol_lws_minimal.c"
 
+struct lws *wsi_global=NULL;
 
 
 
