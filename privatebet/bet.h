@@ -448,12 +448,7 @@ extern struct privatebet_info *BET_dcv_global;
 extern struct privatebet_info *BET_bvv_global;
 extern struct privatebet_info *BET_player_global;
 
-#ifndef P_H
-#define P_H
-
-struct lws *wsi_global=NULL;
-
-#endif
+extern struct lws *wsi_global=NULL;
 
 
 
