@@ -1219,6 +1219,7 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 {
         int ret_val,ret_len;
         char *buf=NULL;
+		pthread_t player_t;
         buf=(char*)malloc(len);
         strncpy(buf,in,len);
 		
