@@ -1232,8 +1232,9 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 		test_json=cJSON_CreateObject();
 		cJSON_AddStringToObject(test_json,"method","test");
 		lws_write(wsi,cJSON_Print(test_json),strlen(cJSON_Print(test_json)),0);
-		printf("\n%s::%d",__FUNCTION__,__LINE__);
+		printf("\n%s::%d::reason:%d\n",__FUNCTION__,__LINE__,reason);
 		wsi_global_tmp=wsi;
+		
 		switch(reason)
         {
             case LWS_CALLBACK_RECEIVE:
@@ -1251,6 +1252,9 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 					printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
 				}
                 break;
+			case LWS_CALLBACK_ESTABLISHED:
+				printf("\n%s:%d::LWS_CALLBACK_ESTABLISHED\n",__FUNCTION__,__LINE__);
+				break;
         }
         return 0;
 }
