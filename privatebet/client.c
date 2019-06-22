@@ -29,6 +29,11 @@
 #include "states.h"
 #include "../log/macrologger.h"
 
+
+#define LWS_PLUGIN_STATIC
+#include "protocol_lws_minimal.c"
+
+
 int32_t player_card_matrix[hand_size];
 int32_t player_card_values[hand_size];
 int32_t number_cards_drawn=0;
