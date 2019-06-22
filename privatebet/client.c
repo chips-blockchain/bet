@@ -29,6 +29,11 @@
 #include "states.h"
 #include "../log/macrologger.h"
 
+
+#define LWS_PLUGIN_STATIC
+#include "protocol_lws_minimal.c"
+
+
 int32_t player_card_matrix[hand_size];
 int32_t player_card_values[hand_size];
 int32_t number_cards_drawn=0;
@@ -2198,8 +2203,8 @@ int32_t BET_player_reset(struct privatebet_info *bet,struct privatebet_vars *var
 	return(BET_p2p_client_join(NULL,bet,vars));
 }
 #if 1
-char lws_buf[65536];
-int32_t lws_buf_length=0;
+char lws_buf_1[65536];
+int32_t lws_buf_length_1=0;
 
 int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
                         void *user, void *in, size_t len)
@@ -2215,19 +2220,18 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
 		test_json=cJSON_CreateObject();
 		cJSON_AddStringToObject(test_json,"method","test");
 		printf("\n%s::%d::reason:%d\n",__FUNCTION__,__LINE__,reason);
-		wsi_global_tmp=wsi;
 		
 		switch(reason)
         {
             case LWS_CALLBACK_RECEIVE:
-				memcpy(lws_buf+lws_buf_length,in,len);
-				lws_buf_length+=len;
+				memcpy(lws_buf_1+lws_buf_length_1,in,len);
+				lws_buf_length_1+=len;
 				if (!lws_is_final_fragment(wsi))
 						break;
 				argjson=cJSON_CreateObject();
-				argjson=cJSON_Parse(lws_buf);
-				memset(lws_buf,0x00,sizeof(lws_buf));
-				lws_buf_length=0;
+				argjson=cJSON_Parse(lws_buf_1);
+				memset(lws_buf_1,0x00,sizeof(lws_buf_1));
+				lws_buf_length_1=0;
 				printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 				while( BET_process_rest_method(wsi,argjson) != 0 )
 				{
