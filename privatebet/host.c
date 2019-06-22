@@ -1231,7 +1231,6 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 		cJSON *test_json=NULL;
 		test_json=cJSON_CreateObject();
 		cJSON_AddStringToObject(test_json,"method","test");
-		lws_write(wsi,cJSON_Print(test_json),strlen(cJSON_Print(test_json)),0);
 		printf("\n%s::%d::reason:%d\n",__FUNCTION__,__LINE__,reason);
 		wsi_global_tmp=wsi;
 		
@@ -1253,6 +1252,7 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 				}
                 break;
 			case LWS_CALLBACK_ESTABLISHED:
+				lws_write(wsi,cJSON_Print(test_json),strlen(cJSON_Print(test_json)),0);
 				printf("\n%s:%d::LWS_CALLBACK_ESTABLISHED\n",__FUNCTION__,__LINE__);
 				break;
         }
