@@ -2197,9 +2197,10 @@ int32_t BET_player_reset(struct privatebet_info *bet,struct privatebet_vars *var
 	
 	return(BET_p2p_client_join(NULL,bet,vars));
 }
-#if 0
+#if 1
 char lws_buf[65536];
 int32_t lws_buf_length=0;
+
 int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
                         void *user, void *in, size_t len)
 {
@@ -2210,8 +2211,12 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
         strncpy(buf,in,len);
 		
         cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
-		printf("\n%s:%d",__FUNCTION__,__LINE__);
+		cJSON *test_json=NULL;
+		test_json=cJSON_CreateObject();
+		cJSON_AddStringToObject(test_json,"method","test");
+		printf("\n%s::%d::reason:%d\n",__FUNCTION__,__LINE__,reason);
 		wsi_global_tmp=wsi;
+		
 		switch(reason)
         {
             case LWS_CALLBACK_RECEIVE:
@@ -2229,6 +2234,10 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
 					printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
 				}
                 break;
+			case LWS_CALLBACK_ESTABLISHED:
+				lws_write(wsi,cJSON_Print(test_json),strlen(cJSON_Print(test_json)),0);
+				printf("\n%s:%d::LWS_CALLBACK_ESTABLISHED\n",__FUNCTION__,__LINE__);
+				break;
         }
         return 0;
 }
@@ -2242,6 +2251,7 @@ static struct lws_protocols protocols1[] = {
 };
 
 static int interrupted1;
+
 
 
 static const struct lws_http_mount mount1 = {
@@ -2386,7 +2396,8 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		else if(strcmp(method,"seats") == 0)
 		{
 			printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-			lws_write(BET_wsi_global(),cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+			//lws_write(BET_wsi_global(),cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+			BET_test_function();
 		}
 	}	
 	return retval;
