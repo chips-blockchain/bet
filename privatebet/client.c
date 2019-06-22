@@ -2220,7 +2220,6 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
 		test_json=cJSON_CreateObject();
 		cJSON_AddStringToObject(test_json,"method","test");
 		printf("\n%s::%d::reason:%d\n",__FUNCTION__,__LINE__,reason);
-		wsi_global_tmp=wsi;
 		
 		switch(reason)
         {
