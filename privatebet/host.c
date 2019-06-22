@@ -1218,6 +1218,12 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 
 char lws_buf[65536];
 int32_t lws_buf_length=0;
+
+void some_test_function(cJSON* test_json)
+{
+	printf("%s::%d\n",__FUNCTION__,__LINE__);
+	lws_write(wsi_global_tmp,cJSON_Print(test_json),strlen(cJSON_Print(test_json)),0);
+}
 int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
                         void *user, void *in, size_t len)
 {
@@ -1252,6 +1258,7 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 				}
                 break;
 			case LWS_CALLBACK_ESTABLISHED:
+				some_test_function(test_json);
 				lws_write(wsi,cJSON_Print(test_json),strlen(cJSON_Print(test_json)),0);
 				printf("\n%s:%d::LWS_CALLBACK_ESTABLISHED\n",__FUNCTION__,__LINE__);
 				break;
