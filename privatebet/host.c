@@ -1228,6 +1228,10 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
         strncpy(buf,in,len);
 		
         cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
+		cJSON *test_json=NULL;
+		test_json=cJSON_CreateObject();
+		cJSON_AddStringToObject(test_json,"method","test");
+		lws_write(wsi,cJSON_Print(test_json),strlen(cJSON_Print(test_json)),0);
 		printf("\n%s::%d",__FUNCTION__,__LINE__);
 		wsi_global_tmp=wsi;
 		switch(reason)
