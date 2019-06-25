@@ -33,6 +33,8 @@
 #define LWS_PLUGIN_STATIC
 #include "protocol_lws_minimal.c"
 
+struct lws *wsi_global_client=NULL;
+
 
 int32_t player_card_matrix[hand_size];
 int32_t player_card_values[hand_size];
@@ -2220,7 +2222,7 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
 		test_json=cJSON_CreateObject();
 		cJSON_AddStringToObject(test_json,"method","test");
 		printf("\n%s::%d::reason:%d\n",__FUNCTION__,__LINE__,reason);
-		
+		wsi_global_client=wsi;
 		switch(reason)
         {
             case LWS_CALLBACK_RECEIVE:
@@ -2278,7 +2280,7 @@ static const struct lws_http_mount mount1 = {
 	/* .basic_auth_login_file */	NULL,
 };
 
-void BET_test_function()
+void BET_test_function(void* _ptr)
 {
 	struct lws_context_creation_info info,info_1,dcv_info,bvv_info,player1_info,player2_info;
 	struct lws_context *context,*context_1,*dcv_context,*bvv_context,*player1_context,*player2_context;
@@ -2400,7 +2402,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		else if(strcmp(method,"seats") == 0)
 		{
 			printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-			lws_write(BET_wsi_global(),cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+			lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
 			//BET_test_function();
 		}
 	}	
