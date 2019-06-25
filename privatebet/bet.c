@@ -502,7 +502,7 @@ int main(int argc, char **argv)
 				exit(-1);
 			}
 			
-			if ( OS_thread_create(&player_backend,NULL,(void *)BET_ws_dcvloop,(void *)BET_player_global) != 0 )
+			if ( OS_thread_create(&player_backend,NULL,(void *)BET_test_function,(void *)BET_player_global) != 0 )
 			{
 				printf("error launching BET_hostloop for pub.%d pull.%d\n",BET_player_global->pubsock,BET_player_global->pullsock);
 				exit(-1);
