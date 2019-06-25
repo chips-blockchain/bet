@@ -177,7 +177,7 @@ int32_t BET_rest_chat(struct lws *wsi, cJSON *argjson)
 int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 {
 	cJSON *tableInfo=NULL,*seatInfo=NULL,*seatsInfo=NULL;
-
+	char *rendered=NULL;
 	seatInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(seatInfo,"name","player1");
 	cJSON_AddNumberToObject(seatInfo,"seat",0);
@@ -203,6 +203,11 @@ int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 	cJSON_AddItemToObject(tableInfo,"seats",seatsInfo);
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(tableInfo));
 	lws_write(wsi,cJSON_Print(tableInfo),strlen(cJSON_Print(tableInfo)),0);
+
+	
+	rendered=cJSON_Print(argjson);
+	nn_send(BET_dcv_global->pubsock,rendered,strlen(rendered),0);
+
 	return 0;
 	
 }
@@ -1024,8 +1029,8 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	{
 		printf("\n%s:%d::maxplayers:%d",__FUNCTION__,__LINE__,BET_dcv_global->maxplayers);
 		retval=BET_rest_seats(wsi,argjson);
-		rendered=cJSON_Print(argjson);
-	  	nn_send(BET_dcv_global->pubsock,rendered,strlen(rendered),0);
+		//rendered=cJSON_Print(argjson);
+	  	//nn_send(BET_dcv_global->pubsock,rendered,strlen(rendered),0);
 		
 	}
 	else if(strcmp(jstr(argjson,"method"),"chat") == 0)
