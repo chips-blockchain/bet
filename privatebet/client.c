@@ -2400,8 +2400,8 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		else if(strcmp(method,"seats") == 0)
 		{
 			printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-			//lws_write(BET_wsi_global(),cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
-			BET_test_function();
+			lws_write(BET_wsi_global(),cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+			//BET_test_function();
 		}
 	}	
 	return retval;
