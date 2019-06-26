@@ -42,7 +42,6 @@
 #include "protocol_lws_minimal.c"
 
 
-struct lws *wsi_global_tmp=NULL;
 
 
 
@@ -1224,11 +1223,6 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 char lws_buf[65536];
 int32_t lws_buf_length=0;
 
-void some_test_function(cJSON* test_json)
-{
-	printf("%s::%d\n",__FUNCTION__,__LINE__);
-	lws_write(wsi_global_tmp,cJSON_Print(test_json),strlen(cJSON_Print(test_json)),0);
-}
 int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
                         void *user, void *in, size_t len)
 {
@@ -1239,12 +1233,8 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
         strncpy(buf,in,len);
 		
         cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
-		cJSON *test_json=NULL;
-		test_json=cJSON_CreateObject();
-		cJSON_AddStringToObject(test_json,"method","test");
 		printf("\n%s::%d::reason:%d\n",__FUNCTION__,__LINE__,reason);
-		wsi_global_tmp=wsi;
-		
+
 		switch(reason)
         {
             case LWS_CALLBACK_RECEIVE:
@@ -1263,8 +1253,6 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 				}
                 break;
 			case LWS_CALLBACK_ESTABLISHED:
-				some_test_function(test_json);
-				lws_write(wsi,cJSON_Print(test_json),strlen(cJSON_Print(test_json)),0);
 				printf("\n%s:%d::LWS_CALLBACK_ESTABLISHED\n",__FUNCTION__,__LINE__);
 				break;
         }
@@ -3081,10 +3069,6 @@ void BET_ws_dcvloop(void *_ptr)
 }
 
 
-struct lws* BET_wsi_global()
-{
-	return wsi_global_tmp;
-}
 
 
 
