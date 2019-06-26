@@ -2642,8 +2642,10 @@ int32_t BET_rest_player_join(struct lws *wsi, cJSON *argjson)
 	int32_t permis[CARDS777_MAXCARDS];
 	cJSON *joinInfo=NULL;
 	char *uri=NULL;
+	char *rendered=NULL;
 	struct pair256 key;
 	int32_t Maxplayers=2,numplayers=2,range=52;
+	int32_t bytes=0;
 
 	if(player_joined)
 		return 0; //this logic is to avoid the double clicks
@@ -2676,6 +2678,14 @@ int32_t BET_rest_player_join(struct lws *wsi, cJSON *argjson)
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(joinInfo));
 	lws_write(wsi,cJSON_Print(joinInfo),strlen(cJSON_Print(joinInfo)),0);
 	player_id++;	
+
+	rendered=cJSON_Print(joinInfo);
+    bytes=nn_send(BET_player_global->pushsock,rendered,strlen(rendered),0);
+	
+	if(bytes<0)
+		printf("\n%s:%d::Failed to push the data to DCV\n",__FUNCTION__,__LINE__);
+	
+	
 	return 0;
 }
 
