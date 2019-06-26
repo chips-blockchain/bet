@@ -28,8 +28,6 @@ void BET_DCV_reset(struct privatebet_info *bet,struct privatebet_vars *vars);
 
 void BET_ws_dcvloop(void * _ptr);
 
-struct lws* BET_wsi_global();
-
 /*
 REST API's starts from here
 */
