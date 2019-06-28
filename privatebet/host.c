@@ -331,12 +331,19 @@ int32_t BET_rest_check_BVV_Ready(struct lws *wsi)
 int32_t BET_rest_dcv_start_init(struct lws *wsi, cJSON *argjson)
 {
 	cJSON *init=NULL;
-
+	char *rendered=NULL;
+	int32_t bytes;
 	
 	init=cJSON_CreateObject();
 	cJSON_AddStringToObject(init,"method","init");
 
 	lws_write(wsi,cJSON_Print(init),strlen(cJSON_Print(init)),0);
+
+	rendered=cJSON_Print(init);
+	bytes=nn_send(BET_dcv_global->pushsock,rendered,strlen(rendered),0);
+
+	if(bytes<0)
+		printf("\n%s::%d::Failed to send data",__FUNCTION__,__LINE__);
 
 	return 0;
 }
