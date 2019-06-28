@@ -277,6 +277,8 @@ int32_t BET_rest_client_join_req(struct lws *wsi, cJSON *argjson)
 
 	lws_write(wsi,cJSON_Print(playerInfo),strlen(cJSON_Print(playerInfo)),0);
 
+
+		
 	rendered=cJSON_Print(playerInfo);
 	bytes=nn_send(BET_dcv_global->pubsock,rendered,strlen(rendered),0);
 	if(bytes < 0)
