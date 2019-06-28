@@ -408,10 +408,6 @@ int main(int argc, char **argv)
 	        exit(-1);
 	    }
 			
-		if(pthread_join(dcv_backend,NULL))
-		{
-			printf("\nError in joining the main thread for bvvv");
-		}
 			
 		
 	    if ( OS_thread_create(&dcv_t,NULL,(void *)BET_ws_dcvloop,(void *)BET_dcv_global) != 0 )
@@ -419,6 +415,13 @@ int main(int argc, char **argv)
 	        printf("error launching BET_hostloop for pub.%d pull.%d\n",BET_dcv_global->pubsock,BET_dcv_global->pullsock);
 	        exit(-1);
 	    }
+
+		
+		if(pthread_join(dcv_backend,NULL))
+		{
+			printf("\nError in joining the main thread for bvvv");
+		}
+
        	if(pthread_join(dcv_t,NULL))
 		{
 			printf("\nError in joining the main thread for dcv");
