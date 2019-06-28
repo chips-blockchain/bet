@@ -41,6 +41,7 @@
 #define LWS_PLUGIN_STATIC
 #include "protocol_lws_minimal.c"
 
+struct lws *wsi_global_host=NULL;
 
 
 
@@ -1234,7 +1235,7 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 		
         cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
 		printf("\n%s::%d::reason:%d\n",__FUNCTION__,__LINE__,reason);
-
+		wsi_global_host = wsi;
 		switch(reason)
         {
             case LWS_CALLBACK_RECEIVE:
@@ -2812,6 +2813,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
     {
 		if(strcmp(method,"join_req") == 0)
 		{
+			/*
 			if(bet->numplayers<bet->maxplayers)
 			{
 				retval=BET_p2p_client_join_req(argjson,bet,vars);
@@ -2827,6 +2829,9 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 					BET_check_BVV_Ready(bet);
 				}
 			}
+			*/
+			printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+			lws_write(wsi_global_host,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
 		}
 		else if(strcmp(method,"bvv_ready") == 0)
 		{
