@@ -401,6 +401,19 @@ int main(int argc, char **argv)
 		BET_dcv_global->turni=-1;
 		BET_dcv_global->no_of_turns=0;
 	    BET_betinfo_set(BET_dcv_global,"demo",range,0,Maxplayers);
+
+		if ( OS_thread_create(&dcv_backend,NULL,(void *) BET_p2p_hostloop,(void *)BET_dcv_global) != 0 )
+	    {
+	        printf("error launching BET_clientloop BET_hostloop");
+	        exit(-1);
+	    }
+			
+		if(pthread_join(dcv_backend,NULL))
+		{
+			printf("\nError in joining the main thread for bvvv");
+		}
+			
+		
 	    if ( OS_thread_create(&dcv_t,NULL,(void *)BET_ws_dcvloop,(void *)BET_dcv_global) != 0 )
 	    {
 	        printf("error launching BET_hostloop for pub.%d pull.%d\n",BET_dcv_global->pubsock,BET_dcv_global->pullsock);
