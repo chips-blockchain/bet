@@ -2452,12 +2452,14 @@ void BET_p2p_clientloop(void * _ptr)
     uint8_t flag=1;
 
 	msgjson=cJSON_CreateObject();
+	/*
 	cJSON_AddStringToObject(msgjson,"method","join");
 	if ( BET_p2p_clientupdate(msgjson,bet,VARS) < 0 )
 	{
         flag=0;
 		printf("\n%s:%d:Player joining the table failed",__FUNCTION__,__LINE__);
 	}
+	*/
     while ( flag )
     {
         
