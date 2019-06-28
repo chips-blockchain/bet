@@ -253,7 +253,11 @@ int32_t BET_rest_client_join_req(struct lws *wsi, cJSON *argjson)
 {
 	cJSON *playerInfo=NULL;
 	char *uri=NULL;
+	char *rendered=NULL;
 
+	int32_t bytes;
+
+	
 	BET_dcv->numplayers=++players_joined;
 	dcv_info.peerpubkeys[players_joined-1]=jbits256(argjson,"pubkey");
 	strcpy(dcv_info.uri[players_joined-1],jstr(argjson,"uri"));
@@ -273,6 +277,13 @@ int32_t BET_rest_client_join_req(struct lws *wsi, cJSON *argjson)
 
 	lws_write(wsi,cJSON_Print(playerInfo),strlen(cJSON_Print(playerInfo)),0);
 
+	rendered=cJSON_Print(playerInfo);
+	bytes=nn_send(BET_dcv_global->pubsock,rendered,strlen(rendered),0);
+	if(bytes < 0)
+	{
+		printf("\n%s:%d::sending failed\n",__FUNCTION__,__LINE__);
+	}
+	
 	return 0;
 }
 
@@ -2831,7 +2842,8 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 			}
 			*/
 			printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-			lws_write(wsi_global_host,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+			//lws_write(wsi_global_host,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+			BET_process_rest_method(wsi_global_host,argjson);
 		}
 		else if(strcmp(method,"bvv_ready") == 0)
 		{
