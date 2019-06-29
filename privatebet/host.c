@@ -340,7 +340,7 @@ int32_t BET_rest_dcv_start_init(struct lws *wsi, cJSON *argjson)
 	lws_write(wsi,cJSON_Print(init),strlen(cJSON_Print(init)),0);
 
 	rendered=cJSON_Print(init);
-	bytes=nn_send(BET_dcv_global->pushsock,rendered,strlen(rendered),0);
+	bytes=nn_send(BET_dcv_global->pubsock,rendered,strlen(rendered),0);
 
 	if(bytes<0)
 		printf("\n%s::%d::Failed to send data",__FUNCTION__,__LINE__);
@@ -1254,7 +1254,6 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
         strncpy(buf,in,len);
 		
         cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
-		printf("\n%s::%d::reason:%d\n",__FUNCTION__,__LINE__,reason);
 		wsi_global_host = wsi;
 		switch(reason)
         {
@@ -1267,14 +1266,12 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 				argjson=cJSON_Parse(lws_buf);
 				memset(lws_buf,0x00,sizeof(lws_buf));
 				lws_buf_length=0;
-				printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 				while( BET_process_rest_method(wsi,argjson) != 0 )
 				{
 					printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
 				}
                 break;
 			case LWS_CALLBACK_ESTABLISHED:
-				printf("\n%s:%d::LWS_CALLBACK_ESTABLISHED\n",__FUNCTION__,__LINE__);
 				break;
         }
         return 0;
