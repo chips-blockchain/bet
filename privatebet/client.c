@@ -2220,6 +2220,7 @@ int32_t BET_p2p_rest_clientupdate(struct lws *wsi,cJSON *argjson) // update game
     	if ( strcmp(method,"player_join") == 0 )
 		{
 			retval=BET_p2p_client_join(argjson,BET_player_global,vars);
+			printf("\nretvalue=%d",retval);
 
 		}
 		else if ( strcmp(method,"join_res") == 0 )
@@ -2336,7 +2337,7 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
 				argjson=cJSON_Parse(lws_buf_1);
 				memset(lws_buf_1,0x00,sizeof(lws_buf_1));
 				lws_buf_length_1=0;
-				while( BET_p2p_rest_clientupdate(wsi,argjson) != 0 )
+				if( BET_p2p_rest_clientupdate(wsi,argjson) != 1 )
 				{
 					printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
 				}
