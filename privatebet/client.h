@@ -58,3 +58,7 @@ void BET_test_function();
 int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars); // update game state based on host broadcast
 
 
+void BET_p2p_bvvloop_test(void *_ptr);
+int32_t BET_p2p_bvvcommand_test(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
+
+
