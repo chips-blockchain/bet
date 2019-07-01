@@ -459,13 +459,13 @@ int main(int argc, char **argv)
 		BET_bvv_global->numplayers=numplayers;
 		BET_bvv_global->myplayerid=-1;
 		BET_betinfo_set(BET_bvv_global,"demo",range,0,Maxplayers);
-		    if ( OS_thread_create(&bvv_t,NULL,(void *)BET_p2p_bvvloop,(void *)BET_bvv_global) != 0 )
+		    if ( OS_thread_create(&bvv_t,NULL,(void *)BET_p2p_bvvloop_test,(void *)BET_bvv_global) != 0 )
 		    {
 		        printf("error launching BET_clientloop for sub.%d push.%d\n",BET_bvv_global->subsock,BET_bvv_global->pushsock);
 		        exit(-1);
 		    }
 			
-			if ( OS_thread_create(&bvv_backend,NULL,(void *)BET_ws_dcvloop,(void *)BET_bvv_global) != 0 )
+			if ( OS_thread_create(&bvv_backend,NULL,(void *)BET_test_function_bvv,(void *)BET_bvv_global) != 0 )
 			{
 				printf("error launching BET_hostloop for pub.%d pull.%d\n",BET_bvv_global->pubsock,BET_bvv_global->pullsock);
 				exit(-1);
