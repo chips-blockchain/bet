@@ -2204,6 +2204,111 @@ int32_t BET_player_reset(struct privatebet_info *bet,struct privatebet_vars *var
 	
 	return(BET_p2p_client_join(NULL,bet,vars));
 }
+
+
+int32_t BET_p2p_rest_clientupdate(struct lws *wsi,cJSON *argjson) // update game state based on host broadcast
+{
+	
+    static uint8_t *decoded; static int32_t decodedlen,retval=1;
+    char *method; int32_t senderid; bits256 *MofN;
+	char hexstr[65];
+	struct privatebet_vars *vars=NULL;
+    if ( (method= jstr(argjson,"method")) != 0 )
+    {
+	 	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));     
+    	if ( strcmp(method,"player_join") == 0 )
+		{
+			retval=BET_p2p_client_join(argjson,BET_player_global,vars);
+
+		}
+		else if ( strcmp(method,"join_res") == 0 )
+		{
+			//retval=BET_p2p_client_join_res(argjson,bet,vars);
+			printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+			BET_rest_player_join_res(wsi_global_client,argjson);
+			
+		}
+		else if ( strcmp(method,"TableInfo") == 0 )
+		{
+			BET_p2p_table_info(argjson,bet,vars);
+			
+		}
+		else if ( strcmp(method,"init") == 0 )
+		{
+			
+            //retval=BET_p2p_client_init(argjson,bet,vars);
+   			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+			BET_rest_player_init(wsi_global_client,argjson);
+			
+		}
+		else if(strcmp(method,"init_d") == 0)
+		{
+			retval=BET_p2p_client_dcv_init(argjson,bet,vars);
+		}
+		else if(strcmp(method,"init_b") == 0)
+		{
+			retval=BET_p2p_client_bvv_init(argjson,bet,vars);
+		}
+		else if(strcmp(method,"turn") == 0)
+		{
+			
+			retval=BET_p2p_client_turn(argjson,bet,vars);
+		}
+		else if(strcmp(method,"ask_share") == 0)
+		{
+			retval=BET_p2p_client_give_share(argjson,bet,vars);
+		}
+		else if(strcmp(method,"requestShare") == 0)
+		{
+		
+			retval=BET_p2p_client_give_share(argjson,bet,vars);
+		}
+		else if(strcmp(method,"share_info") == 0)
+		{
+			retval=BET_p2p_client_receive_share(argjson,bet,vars);
+		}
+		else if(strcmp(method,"bet") == 0)
+		{
+			retval=BET_p2p_bet_round(argjson,bet,vars);
+		}
+		else if(strcmp(method,"invoice") == 0)
+		{
+			retval=BET_p2p_invoice(argjson,bet,vars);
+		}
+		else if(strcmp(method,"winner") == 0)
+		{
+			retval=BET_p2p_winner(argjson,bet,vars);
+		}
+		else if(strcmp(method,"betting") == 0)
+		{
+			retval=BET_p2p_betting_statemachine(argjson,bet,vars);
+		}
+		else if(strcmp(method,"display_current_state") == 0)
+		{
+			retval=BET_p2p_display_current_state(argjson,bet,vars);
+		}
+		else if(strcmp(method,"dealer") == 0)
+		{
+			retval=BET_p2p_dealer_info(argjson,bet,vars);
+		}
+		else if(strcmp(method,"invoiceRequest_player") == 0)
+		{
+			retval=BET_player_create_invoice(argjson,bet,vars,bits256_str(hexstr,player_info.deckid));
+		}
+		else if(strcmp(method,"reset") == 0)
+		{
+			retval=BET_player_reset(bet,vars);
+		}
+		else if(strcmp(method,"seats") == 0)
+		{
+			printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+			lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+		}
+	}	
+	return retval;
+}
+
+
 #if 1
 char lws_buf_1[65536];
 int32_t lws_buf_length_1=0;
@@ -2230,7 +2335,7 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
 				argjson=cJSON_Parse(lws_buf_1);
 				memset(lws_buf_1,0x00,sizeof(lws_buf_1));
 				lws_buf_length_1=0;
-				while( BET_process_rest_method(wsi,argjson) != 0 )
+				while( BET_p2p_rest_clientupdate(wsi,argjson) != 0 )
 				{
 					printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
 				}
@@ -2306,6 +2411,7 @@ void BET_test_function(void* _ptr)
     lws_context_destroy(dcv_context);
 }
 #endif
+
 int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars) // update game state based on host broadcast
 {
 	
@@ -2402,7 +2508,108 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		{
 			printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 			lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
-			//BET_test_function();
+		}
+	}	
+	return retval;
+}
+
+
+int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars) // update game state based on host broadcast
+{
+	
+    static uint8_t *decoded; static int32_t decodedlen,retval=1;
+    char *method; int32_t senderid; bits256 *MofN;
+	char hexstr[65];
+    if ( (method= jstr(argjson,"method")) != 0 )
+    {
+	      
+    	if ( strcmp(method,"join") == 0 )
+		{
+			retval=BET_p2p_client_join(argjson,bet,vars);
+
+		}
+		else if ( strcmp(method,"join_res") == 0 )
+		{
+			//retval=BET_p2p_client_join_res(argjson,bet,vars);
+			printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+			BET_rest_player_join_res(wsi_global_client,argjson);
+			
+		}
+		else if ( strcmp(method,"TableInfo") == 0 )
+		{
+			BET_p2p_table_info(argjson,bet,vars);
+			
+		}
+		else if ( strcmp(method,"init") == 0 )
+		{
+			
+            //retval=BET_p2p_client_init(argjson,bet,vars);
+   			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+			BET_rest_player_init(wsi_global_client,argjson);
+			
+		}
+		else if(strcmp(method,"init_d") == 0)
+		{
+			retval=BET_p2p_client_dcv_init(argjson,bet,vars);
+		}
+		else if(strcmp(method,"init_b") == 0)
+		{
+			retval=BET_p2p_client_bvv_init(argjson,bet,vars);
+		}
+		else if(strcmp(method,"turn") == 0)
+		{
+			
+			retval=BET_p2p_client_turn(argjson,bet,vars);
+		}
+		else if(strcmp(method,"ask_share") == 0)
+		{
+			retval=BET_p2p_client_give_share(argjson,bet,vars);
+		}
+		else if(strcmp(method,"requestShare") == 0)
+		{
+		
+			retval=BET_p2p_client_give_share(argjson,bet,vars);
+		}
+		else if(strcmp(method,"share_info") == 0)
+		{
+			retval=BET_p2p_client_receive_share(argjson,bet,vars);
+		}
+		else if(strcmp(method,"bet") == 0)
+		{
+			retval=BET_p2p_bet_round(argjson,bet,vars);
+		}
+		else if(strcmp(method,"invoice") == 0)
+		{
+			retval=BET_p2p_invoice(argjson,bet,vars);
+		}
+		else if(strcmp(method,"winner") == 0)
+		{
+			retval=BET_p2p_winner(argjson,bet,vars);
+		}
+		else if(strcmp(method,"betting") == 0)
+		{
+			retval=BET_p2p_betting_statemachine(argjson,bet,vars);
+		}
+		else if(strcmp(method,"display_current_state") == 0)
+		{
+			retval=BET_p2p_display_current_state(argjson,bet,vars);
+		}
+		else if(strcmp(method,"dealer") == 0)
+		{
+			retval=BET_p2p_dealer_info(argjson,bet,vars);
+		}
+		else if(strcmp(method,"invoiceRequest_player") == 0)
+		{
+			retval=BET_player_create_invoice(argjson,bet,vars,bits256_str(hexstr,player_info.deckid));
+		}
+		else if(strcmp(method,"reset") == 0)
+		{
+			retval=BET_player_reset(bet,vars);
+		}
+		else if(strcmp(method,"seats") == 0)
+		{
+			printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+			lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
 		}
 	}	
 	return retval;
@@ -2411,38 +2618,31 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 
 void BET_p2p_clientloop_test(void * _ptr)
 {
-	struct lws *wsi=_ptr;
-	uint32_t lasttime = 0; int32_t nonz,recvlen,lastChips_paid; uint16_t port=7798; char connectaddr[64],hostip[64]; void *ptr; cJSON *msgjson,*reqjson; struct privatebet_vars *VARS; 
-	 VARS = calloc(1,sizeof(*VARS));
-	 uint8_t flag=1;
-	
-	 while ( flag )
-	 {
-		 
-		 if ( BET_player_global->subsock >= 0 && BET_player_global->pushsock >= 0 )
-		 {
-				 recvlen= nn_recv (BET_player_global->subsock, &ptr, NN_MSG, 0);
-				 if (( (msgjson= cJSON_Parse(ptr)) != 0 ) && (recvlen>0))
-				 {
-				 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(msgjson));
-					if(strcmp(jstr(msgjson,"method"),"seats") == 0)
-					{	
-						lws_write(wsi,cJSON_Print(msgjson),strlen(cJSON_Print(msgjson)),0);
-					}
-					/*
-					 if ( BET_p2p_clientupdate(msgjson,BET_player_global,VARS) < 0 )
-					 {
-						 printf("\nFAILURE\n");
-						 // do something here, possibly this could be because unknown commnad or because of encountering a special case which state machine fails to handle
-					 }
-					 */
-					
-					 free_json(msgjson);
-				 }
-				 
-		 }
-		 
-	 }
+    uint32_t lasttime = 0; int32_t nonz,recvlen,lastChips_paid; uint16_t port=7798; char connectaddr[64],hostip[64]; void *ptr; cJSON *msgjson,*reqjson; struct privatebet_vars *VARS; struct privatebet_info *bet = _ptr;
+    VARS = calloc(1,sizeof(*VARS));
+    uint8_t flag=1;
+
+	msgjson=cJSON_CreateObject();
+    while ( flag )
+    {
+        
+        if ( bet->subsock >= 0 && bet->pushsock >= 0 )
+        {
+	        	recvlen= nn_recv (bet->subsock, &ptr, NN_MSG, 0);
+                if (( (msgjson= cJSON_Parse(ptr)) != 0 ) && (recvlen>0))
+                {
+                    if ( BET_p2p_clientupdate_test(msgjson,bet,VARS) < 0 )
+                    {
+                    	printf("\nFAILURE\n");
+                    	// do something here, possibly this could be because unknown commnad or because of encountering a special case which state machine fails to handle
+                    }           
+                   
+                    free_json(msgjson);
+                }
+                
+        }
+        
+    }
 	
 }
 
