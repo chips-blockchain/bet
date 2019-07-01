@@ -55,5 +55,6 @@ int32_t BET_rest_bvv(struct lws *wsi, cJSON *argjson);
 int32_t BET_rest_player(struct lws *wsi, cJSON *argjson);
 
 void BET_test_function();
+int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars); // update game state based on host broadcast
 
 
