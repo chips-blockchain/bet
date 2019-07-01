@@ -2218,7 +2218,6 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
         strncpy(buf,in,len);
 		
         cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
-		printf("\n%s::%d::reason:%d\n",__FUNCTION__,__LINE__,reason);
 		wsi_global_client=wsi;
 		switch(reason)
         {
@@ -2231,7 +2230,6 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
 				argjson=cJSON_Parse(lws_buf_1);
 				memset(lws_buf_1,0x00,sizeof(lws_buf_1));
 				lws_buf_length_1=0;
-				printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 				while( BET_process_rest_method(wsi,argjson) != 0 )
 				{
 					printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
