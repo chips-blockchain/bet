@@ -2213,6 +2213,7 @@ int32_t BET_p2p_rest_clientupdate(struct lws *wsi,cJSON *argjson) // update game
     char *method; int32_t senderid; bits256 *MofN;
 	char hexstr[65];
 	struct privatebet_vars *vars=NULL;
+	struct privatebet_info *bet=NULL;
     if ( (method= jstr(argjson,"method")) != 0 )
     {
 	 	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));     
