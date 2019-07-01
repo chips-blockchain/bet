@@ -1212,7 +1212,7 @@ void BET_BVV_reset(struct privatebet_info *bet,struct privatebet_vars *vars)
 }
 
 
-int32_t BET_p2p_bvvcommand_test(struct lws *wsi, cJSON *argjson`)
+int32_t BET_p2p_bvvcommand_test(struct lws *wsi, cJSON *argjson)
 {
     char *method; int32_t senderid,retval=1;
 	struct privatebet_info *bet=NULL;
