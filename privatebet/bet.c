@@ -512,7 +512,7 @@ int main(int argc, char **argv)
 		    BET_betinfo_set(BET_player_global,"demo",range,0,Maxplayers);
 
 			
-			if (OS_thread_create(&player_t,NULL,(void *)BET_p2p_clientloop,(void *)BET_player_global) != 0 )
+			if (OS_thread_create(&player_t,NULL,(void *)BET_p2p_clientloop_test,(void *)BET_player_global) != 0 )
 			{
 				printf("\nerror in launching BET_p2p_clientloop_test");
 				exit(-1);
