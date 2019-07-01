@@ -1212,9 +1212,11 @@ void BET_BVV_reset(struct privatebet_info *bet,struct privatebet_vars *vars)
 }
 
 
-int32_t BET_p2p_bvvcommand_test(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+int32_t BET_p2p_bvvcommand_test(struct lws *wsi, cJSON *argjson)
 {
     char *method; int32_t senderid,retval=1;
+	struct privatebet_info *bet=NULL;
+	struct privatebet_vars *vars=NULL;
     if ( (method= jstr(argjson,"method")) != 0 )
     {
     	
@@ -1290,7 +1292,7 @@ void BET_p2p_bvvloop_test(void *_ptr)
           
             if ( (argjson= cJSON_Parse(ptr)) != 0 )
             {
-                if ( BET_p2p_bvvcommand_test(argjson,bet,VARS) != 0 ) // usually just relay to players
+                if ( BET_p2p_bvvcommand(argjson,bet,VARS) != 0 ) // usually just relay to players
                 {
                 	// do soemthing incase any command or logic failures
                 }
