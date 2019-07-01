@@ -59,6 +59,7 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 
 
 void BET_p2p_bvvloop_test(void *_ptr);
-int32_t BET_p2p_bvvcommand_test(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
+int32_t BET_p2p_bvvcommand_test(struct lws *wsi, cJSON *argjson);
+
 
 
