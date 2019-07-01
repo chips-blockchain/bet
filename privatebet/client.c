@@ -35,6 +35,8 @@
 
 struct lws *wsi_global_client=NULL;
 
+struct lws *wsi_global_bvv=NULL;
+
 
 int32_t player_card_matrix[hand_size];
 int32_t player_card_values[hand_size];
@@ -1208,6 +1210,100 @@ void BET_BVV_reset(struct privatebet_info *bet,struct privatebet_vars *vars)
 	
 	}
 }
+
+
+int32_t BET_p2p_bvvcommand_test(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+    char *method; int32_t senderid,retval=1;
+    if ( (method= jstr(argjson,"method")) != 0 )
+    {
+    	
+		if ( strcmp(method,"TableInfo") == 0 )
+		{
+			BET_p2p_table_info(argjson,BET_bvv_global,vars);
+			
+		}
+   		else if(strcmp(method,"init_d") == 0)
+		{
+			 BET_p2p_bvv_init(argjson,BET_bvv_global,vars);
+		}
+		else if(strcmp(method,"bvv_join") == 0)
+		{
+			BET_p2p_bvv_join_init(argjson,BET_bvv_global,vars);
+		}
+		else if(strcmp(method,"check_bvv_ready") == 0)
+		{
+			BET_p2P_check_bvv_ready(argjson,BET_bvv_global,vars);
+		}
+		else if(strcmp(method,"dealer") == 0)
+		{
+			retval=BET_p2p_dealer_info(argjson,BET_bvv_global,vars);
+		}
+		else if(strcmp(method,"reset") == 0)
+		{
+			BET_BVV_reset(bet,vars);
+		}
+		else if(strcmp(method,"seats") == 0)
+		{
+			printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+		}
+        else
+            retval=-1;
+    }
+    return retval;
+}
+
+
+
+
+
+
+void BET_p2p_bvvloop_test(void *_ptr)
+{
+    uint32_t lasttime = 0; uint8_t r; int32_t nonz,recvlen,sendlen; cJSON *argjson,*timeoutjson; void *ptr; double lastmilli = 0.; struct privatebet_info *bet = _ptr; struct privatebet_vars *VARS;
+    VARS = calloc(1,sizeof(*VARS));
+
+	cJSON *bvvJoinInfo=NULL;
+	
+	BET_permutation(bvv_info.permis,bet->range);
+    for(int i=0;i<bet->range;i++)
+	{
+		permis_b[i]=bvv_info.permis[i];
+	
+	}
+	
+	bvvJoinInfo=cJSON_CreateObject();
+	/*
+	cJSON_AddStringToObject(bvvJoinInfo,"method","bvv_join");
+	if ( BET_p2p_bvvcommand(bvvJoinInfo,bet,VARS) < 0 )
+	{
+        printf("\n%s:%d:BVV joining the table failed",__FUNCTION__,__LINE__);
+	}
+   */
+
+	
+	
+	while ( bet->pushsock>= 0 && bet->subsock>= 0 )
+    {
+        if ( (recvlen= nn_recv(bet->subsock,&ptr,NN_MSG,0)) > 0 )
+        {
+          
+            if ( (argjson= cJSON_Parse(ptr)) != 0 )
+            {
+                if ( BET_p2p_bvvcommand_test(argjson,bet,VARS) != 0 ) // usually just relay to players
+                {
+                	// do soemthing incase any command or logic failures
+                }
+                free_json(argjson);
+            }
+            nn_freemsg(ptr);
+        }
+          
+    }
+}
+
+
+
 
 int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
@@ -2413,6 +2509,111 @@ void BET_test_function(void* _ptr)
     lws_context_destroy(dcv_context);
 }
 #endif
+
+
+#if 1
+char lws_buf_bvv[65536];
+int32_t lws_buf_length_bvv=0;
+
+int lws_callback_http_dummy_bvv(struct lws *wsi, enum lws_callback_reasons reason,
+                        void *user, void *in, size_t len)
+{
+        int ret_val,ret_len;
+        char *buf=NULL;
+		pthread_t player_t;
+        buf=(char*)malloc(len);
+        strncpy(buf,in,len);
+		
+        cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
+		wsi_global_bvv=wsi;
+		switch(reason)
+        {
+            case LWS_CALLBACK_RECEIVE:
+				memcpy(lws_buf_bvv+lws_buf_length_bvv,in,len);
+				lws_buf_length_bvv+=len;
+				if (!lws_is_final_fragment(wsi))
+						break;
+				argjson=cJSON_CreateObject();
+				argjson=cJSON_Parse(lws_buf_bvv);
+				memset(lws_buf_bvv,0x00,sizeof(lws_buf_bvv));
+				lws_buf_length_bvv=0;
+				if( BET_p2p_bvvcommand_test(wsi,argjson) != 1 )
+				{
+					printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
+				}
+                break;
+			case LWS_CALLBACK_ESTABLISHED:
+				printf("\n%s:%d::LWS_CALLBACK_ESTABLISHED\n",__FUNCTION__,__LINE__);
+				break;
+        }
+        return 0;
+}
+
+
+
+static struct lws_protocols protocols_bvv[] = {
+	{ "http", lws_callback_http_dummy_bvv, 0, 0 },
+	LWS_PLUGIN_PROTOCOL_MINIMAL,
+	{ NULL, NULL, 0, 0 } /* terminator */
+};
+
+static int interrupted_bvv;
+
+
+
+static const struct lws_http_mount mount_bvv = {
+	/* .mount_next */		NULL,		/* linked-list "next" */
+	/* .mountpoint */		"/",		/* mountpoint URL */
+	/* .origin */			"./mount-origin", /* serve from dir */
+	/* .def */			"index.html",	/* default filename */
+	/* .protocol */			NULL,
+	/* .cgienv */			NULL,
+	/* .extra_mimetypes */		NULL,
+	/* .interpret */		NULL,
+	/* .cgi_timeout */		0,
+	/* .cache_max_age */		0,
+	/* .auth_mask */		0,
+	/* .cache_reusable */		0,
+	/* .cache_revalidate */		0,
+	/* .cache_intermediaries */	0,
+	/* .origin_protocol */		LWSMPRO_FILE,	/* files in a dir */
+	/* .mountpoint_len */		1,		/* char count */
+	/* .basic_auth_login_file */	NULL,
+};
+
+void BET_test_function_bvv(void* _ptr)
+{
+	struct lws_context_creation_info info,info_1,dcv_info,bvv_info,player1_info,player2_info;
+	struct lws_context *context,*context_1,*dcv_context,*bvv_context,*player1_context,*player2_context;
+	const char *p;
+	int n = 0, logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE;
+
+	printf("\n%s::%d",__FUNCTION__,__LINE__);
+	lws_set_log_level(logs, NULL);
+	lwsl_user("LWS minimal ws broker | visit http://localhost:7681\n");
+	memset(&dcv_info, 0, sizeof dcv_info); /* otherwise uninitialized garbage */
+    dcv_info.port = 9000;
+    dcv_info.mounts = &mount_bvv;
+    dcv_info.protocols = protocols_bvv;
+    dcv_info.options =
+    LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
+
+    dcv_context = lws_create_context(&dcv_info);
+    if (!dcv_context) {
+        lwsl_err("lws init failed\n");
+        return 1;
+    }   
+   while (n >= 0 && !interrupted_bvv)
+	{
+        n = lws_service(dcv_context, 1000);
+        //n = lws_service(bvv_context, 1000);
+        //n = lws_service(player1_context, 1000);
+        //n = lws_service(player2_context, 1000);
+	}
+    lws_context_destroy(dcv_context);
+}
+#endif
+
 
 int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars) // update game state based on host broadcast
 {
