@@ -1219,7 +1219,7 @@ int32_t BET_p2p_bvvcommand_test(struct lws *wsi, cJSON *argjson)
 	struct privatebet_vars *vars=NULL;
     if ( (method= jstr(argjson,"method")) != 0 )
     {
-    	
+    	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,method);
 		if ( strcmp(method,"TableInfo") == 0 )
 		{
 			BET_p2p_table_info(argjson,BET_bvv_global,vars);
@@ -2539,6 +2539,7 @@ int lws_callback_http_dummy_bvv(struct lws *wsi, enum lws_callback_reasons reaso
 				argjson=cJSON_Parse(lws_buf_bvv);
 				memset(lws_buf_bvv,0x00,sizeof(lws_buf_bvv));
 				lws_buf_length_bvv=0;
+				printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 				if( BET_p2p_bvvcommand_test(wsi,argjson) != 1 )
 				{
 					printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
