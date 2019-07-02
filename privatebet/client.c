@@ -2097,7 +2097,8 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
 	if(0 == bits256_cmp(player_info.player_key.prod,jbits256(argjson,"pubkey")))
 	{
-		bet->myplayerid=jint(argjson,"peerid");
+		BET_player_global->myplayerid=jint(argjson,"peerid");
+		//bet->myplayerid=jint(argjson,"peerid");
 		printf("\nPlayer ID:%d",bet->myplayerid);
 		strcpy(uri,jstr(argjson,"uri"));
 		strcpy(channel_id,strtok(jstr(argjson,"uri"), "@"));
@@ -2317,7 +2318,7 @@ int32_t BET_p2p_rest_clientupdate(struct lws *wsi,cJSON *argjson) // update game
 	 	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));     
     	if ( strcmp(method,"player_join") == 0 )
 		{
-			BET_player_global->myplayerid=jint(argjson,"gui_playerID");
+			//BET_player_global->myplayerid=jint(argjson,"gui_playerID");
 			retval=BET_p2p_client_join(argjson,BET_player_global,vars);
 			printf("\nretvalue=%d",retval);
 
