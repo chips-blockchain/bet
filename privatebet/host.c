@@ -2828,6 +2828,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 	char *rendered=NULL;
     if ( (method= jstr(argjson,"method")) != 0 )
     {
+    	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 		if(strcmp(method,"join_req") == 0)
 		{
 			
