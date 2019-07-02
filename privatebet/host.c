@@ -2860,6 +2860,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 			retval=BET_p2p_host_init(argjson,bet,vars);
 			if(dcv_info.numplayers==dcv_info.maxplayers)
 			{
+				printf("%s::%d::dcv_info.numplayers::%d\n",__FUNCTION__,__LINE__,dcv_info.numplayers);
 				retval=BET_p2p_host_deck_init_info(argjson,bet,vars);
 			}
 		}
