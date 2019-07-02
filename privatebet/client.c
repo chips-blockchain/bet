@@ -2317,6 +2317,7 @@ int32_t BET_p2p_rest_clientupdate(struct lws *wsi,cJSON *argjson) // update game
 	 	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));     
     	if ( strcmp(method,"player_join") == 0 )
 		{
+			BET_player_global->myplayerid=jint(argjson,"gui_playerID");
 			retval=BET_p2p_client_join(argjson,BET_player_global,vars);
 			printf("\nretvalue=%d",retval);
 
@@ -2731,14 +2732,14 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 	      
     	if ( strcmp(method,"join") == 0 )
 		{
+			
 			retval=BET_p2p_client_join(argjson,bet,vars);
 
 		}
 		else if ( strcmp(method,"join_res") == 0 )
 		{
-			//retval=BET_p2p_client_join_res(argjson,bet,vars);
-			printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-			BET_rest_player_join_res(wsi_global_client,argjson);
+			retval=BET_p2p_client_join_res(argjson,bet,vars);
+			//BET_rest_player_join_res(wsi_global_client,argjson);
 			
 		}
 		else if ( strcmp(method,"TableInfo") == 0 )
