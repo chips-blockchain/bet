@@ -2095,6 +2095,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 	int argc,maxsize=10000,retval=1,channel_state;
 	char **argv=NULL,*buf=NULL,channel_id[100];
 	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
+	cJSON *initCardInfo=NULL,*holeCardInfo=NULL,*initInfo=NULL;
 	if(0 == bits256_cmp(player_info.player_key.prod,jbits256(argjson,"pubkey")))
 	{
 		BET_player_global->myplayerid=jint(argjson,"peerid");
@@ -2171,6 +2172,19 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 				
 			sleep(10);
 		}
+
+		initCardInfo=cJSON_CreateObject();
+		cJSON_AddNumberToObject(initCardInfo,"dealer",0);
+		holeCardInfo=cJSON_CreateArray();
+		cJSON_AddItemToArray(holeCardInfo,cJSON_CreateNull());
+		cJSON_AddItemToArray(holeCardInfo,cJSON_CreateNull());
+		cJSON_AddItemToObject(initCardInfo,"holecards",holeCardInfo);
+
+		initInfo=cJSON_CreateObject();
+		cJSON_AddStringToObject(initInfo,"method","deal");
+		cJSON_AddItemToObject(initInfo,"deal",initCardInfo);
+		printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(initInfo));
+		lws_write(wsi_global_client,cJSON_Print(initInfo),strlen(cJSON_Print(initInfo)),0);
 		
 	}
 	end:
@@ -2740,7 +2754,7 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 		else if ( strcmp(method,"join_res") == 0 )
 		{
 			retval=BET_p2p_client_join_res(argjson,bet,vars);
-			//BET_rest_player_join_res(wsi_global_client,argjson);
+			BET_rest_player_join_res(wsi_global_client,argjson);
 			
 		}
 		else if ( strcmp(method,"TableInfo") == 0 )
