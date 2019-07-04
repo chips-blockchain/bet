@@ -206,7 +206,7 @@ int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 
 	
 	rendered=cJSON_Print(tableInfo);
-	nn_send(BET_dcv_global->pubsock,rendered,strlen(rendered),0);
+	nn_send(BET_dcv->pubsock,rendered,strlen(rendered),0);
 
 	return 0;
 	
@@ -280,7 +280,7 @@ int32_t BET_rest_client_join_req(struct lws *wsi, cJSON *argjson)
 
 		
 	rendered=cJSON_Print(playerInfo);
-	bytes=nn_send(BET_dcv_global->pubsock,rendered,strlen(rendered),0);
+	bytes=nn_send(BET_dcv->pubsock,rendered,strlen(rendered),0);
 	if(bytes < 0)
 	{
 		printf("\n%s:%d::sending failed\n",__FUNCTION__,__LINE__);
@@ -340,7 +340,7 @@ int32_t BET_rest_dcv_start_init(struct lws *wsi, cJSON *argjson)
 	lws_write(wsi,cJSON_Print(init),strlen(cJSON_Print(init)),0);
 
 	rendered=cJSON_Print(init);
-	bytes=nn_send(BET_dcv_global->pubsock,rendered,strlen(rendered),0);
+	bytes=nn_send(BET_dcv->pubsock,rendered,strlen(rendered),0);
 
 	if(bytes<0)
 		printf("\n%s::%d::Failed to send data",__FUNCTION__,__LINE__);
@@ -1047,7 +1047,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	}
 	else if(strcmp(jstr(argjson,"method"),"seats") == 0)
 	{
-		printf("\n%s:%d::maxplayers:%d",__FUNCTION__,__LINE__,BET_dcv_global->maxplayers);
+		printf("\n%s:%d::maxplayers:%d",__FUNCTION__,__LINE__,BET_dcv->maxplayers);
 		retval=BET_rest_seats(wsi,argjson);
 		//rendered=cJSON_Print(argjson);
 	  	//nn_send(BET_dcv_global->pubsock,rendered,strlen(rendered),0);
