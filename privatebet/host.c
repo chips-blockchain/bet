@@ -2692,7 +2692,7 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 	}	
 	printf("\nDCV-->BVV channel ready");
 
-	for(int i=0;i<bet->maxplayers;i++)
+	for(int i=0;i<BET_dcv->maxplayers;i++)
 	{
 		strcpy(uri,dcv_info.uri[i]);
 		strcpy(channel_id,strtok(uri, "@"));
