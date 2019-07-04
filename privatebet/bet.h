@@ -448,6 +448,9 @@ extern struct privatebet_info *BET_dcv_global;
 extern struct privatebet_info *BET_bvv_global;
 extern struct privatebet_info *BET_player_global;
 
+extern struct privatebet_vars *DCV_VARS_global;
+extern struct privatebet_vars *BVV_VARS_global;
+extern struct privatebet_vars *Player_VARS_global;
 
 
 

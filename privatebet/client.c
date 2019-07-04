@@ -1222,7 +1222,7 @@ int32_t BET_p2p_bvvcommand_test(struct lws *wsi, cJSON *argjson)
     	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,method);
 		if ( strcmp(method,"TableInfo") == 0 )
 		{
-			BET_p2p_table_info(argjson,BET_bvv_global,vars);
+			BET_p2p_table_info(argjson,BET_bvv,vars);
 			
 		}
    		else if(strcmp(method,"init_d") == 0)

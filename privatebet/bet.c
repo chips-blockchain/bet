@@ -345,7 +345,7 @@ int main(int argc, char **argv)
 	cJSON *infojson,*argjson,*reqjson,*deckjson; 
 	uint64_t randvals; bits256 privkey,pubkey,pubkeys[64],privkeys[64]; 
 	uint8_t pubkey33[33],taddr=0,pubtype=60; uint32_t i,n,range,numplayers; int32_t testmode=0,pubsock=-1,subsock=-1,pullsock=-1,pushsock=-1; long fsize; 
-	struct privatebet_info *BET_dcv1,*BET_bvv,*BET_player;
+	//struct privatebet_info *BET_dcv1,*BET_bvv,*BET_player;
 	pthread_t dcv_t,bvv_t,player_t,dcv_backend,bvv_backend,player_backend;
 
     #if 1
@@ -471,7 +471,8 @@ int main(int argc, char **argv)
 		    pushsock = BET_nanosock(0,bindaddr1,NN_PUSH);
 
 		#endif
-		#if 0
+		#if 1
+            BVV_VARS = calloc(1,sizeof(*BVV_VARS));
 			BET_bvv=calloc(1,sizeof(struct privatebet_info));
 		    BET_bvv->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
 		    BET_bvv->pushsock = pushsock/*BET_nanosock(0,bindaddr1,NN_PUSH)*/;
@@ -482,6 +483,7 @@ int main(int argc, char **argv)
 			BET_bvv->myplayerid=-1;
 		    BET_betinfo_set(BET_bvv,"demo",range,0,Maxplayers);
 		#endif
+		#if 0
 		BET_bvv_global=calloc(1,sizeof(struct privatebet_info));
 		BET_bvv_global->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
 		BET_bvv_global->pushsock = pushsock/*BET_nanosock(0,bindaddr1,NN_PUSH)*/;
@@ -491,15 +493,16 @@ int main(int argc, char **argv)
 		BET_bvv_global->numplayers=numplayers;
 		BET_bvv_global->myplayerid=-1;
 		BET_betinfo_set(BET_bvv_global,"demo",range,0,Maxplayers);
-		    if ( OS_thread_create(&bvv_t,NULL,(void *)BET_p2p_bvvloop_test,(void *)BET_bvv_global) != 0 )
+		#endif
+		    if ( OS_thread_create(&bvv_t,NULL,(void *)BET_p2p_bvvloop_test,(void *)BET_bvv) != 0 )
 		    {
-		        printf("error launching BET_clientloop for sub.%d push.%d\n",BET_bvv_global->subsock,BET_bvv_global->pushsock);
+		        printf("error launching BET_clientloop for sub.%d push.%d\n",BET_bvv->subsock,BET_bvv->pushsock);
 		        exit(-1);
 		    }
 			
-			if ( OS_thread_create(&bvv_backend,NULL,(void *)BET_test_function_bvv,(void *)BET_bvv_global) != 0 )
+			if ( OS_thread_create(&bvv_backend,NULL,(void *)BET_test_function_bvv,(void *)BET_bvv) != 0 )
 			{
-				printf("error launching BET_hostloop for pub.%d pull.%d\n",BET_bvv_global->pubsock,BET_bvv_global->pullsock);
+				printf("error launching BET_hostloop for pub.%d pull.%d\n",BET_bvv->pubsock,BET_bvv->pullsock);
 				exit(-1);
 			}
 			if(pthread_join(bvv_backend,NULL))
@@ -531,8 +534,10 @@ int main(int argc, char **argv)
 		    BET_player->chipsize = CARDS777_CHIPSIZE;
 			BET_player->numplayers=numplayers;
 		    BET_betinfo_set(BET_player,"demo",range,0,Maxplayers);
-		#endif	
-			BET_player_global=calloc(numplayers,sizeof(struct privatebet_info*));
+		#endif
+            #if 1	
+			Player_VARS_global=calloc(1,sizeof(*BVV_VARS));
+			
 			BET_player_global=calloc(1,sizeof(struct privatebet_info));
 			BET_player_global->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
 		    BET_player_global->pushsock = pushsock/*BET_nanosock(0,bindaddr1,NN_PUSH)*/;
@@ -542,7 +547,8 @@ int main(int argc, char **argv)
 			BET_player_global->numplayers=numplayers;
 		    BET_betinfo_set(BET_player_global,"demo",range,0,Maxplayers);
 
-			
+		#endif
+		
 			if (OS_thread_create(&player_t,NULL,(void *)BET_p2p_clientloop_test,(void *)BET_player_global) != 0 )
 			{
 				printf("\nerror in launching BET_p2p_clientloop_test");
