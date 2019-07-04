@@ -45,6 +45,7 @@
 #include "table.h"
 #include "network.h"
 #include "../log/macrologger.h"
+#include "common.h"
 
 #include <unistd.h>
 #include <stdio.h>
@@ -55,6 +56,7 @@
 
 
 struct privatebet_info *BET_dcv_global=NULL, *BET_bvv_global=NULL,*BET_player_global=NULL;
+struct privatebet_vars *DCV_VARS_global=NULL, *BVV_VARS_global=NULL, *Player_VARS_global=NULL ;
 
 
 
@@ -388,7 +390,9 @@ int main(int argc, char **argv)
 		BET_dcv1->no_of_turns=0;
 	    BET_betinfo_set(BET_dcv1,"demo",range,0,Maxplayers);
 	    */
-	    
+
+		BET_dcv=calloc(1,sizeof(struct privatebet_info));
+		
 		BET_dcv_global=calloc(1,sizeof(struct privatebet_info));
 	    BET_dcv_global->pubsock = pubsock;//BET_nanosock(1,bindaddr,NN_PUB);
 	    BET_dcv_global->pullsock = pullsock;//BET_nanosock(1,bindaddr1,NN_PULL);
@@ -449,7 +453,6 @@ int main(int argc, char **argv)
 			BET_bvv->myplayerid=-1;
 		    BET_betinfo_set(BET_bvv,"demo",range,0,Maxplayers);
 		#endif
-			
 		BET_bvv_global=calloc(1,sizeof(struct privatebet_info));
 		BET_bvv_global->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
 		BET_bvv_global->pushsock = pushsock/*BET_nanosock(0,bindaddr1,NN_PUSH)*/;
@@ -500,7 +503,6 @@ int main(int argc, char **argv)
 			BET_player->numplayers=numplayers;
 		    BET_betinfo_set(BET_player,"demo",range,0,Maxplayers);
 		#endif	
-			
 			BET_player_global=calloc(numplayers,sizeof(struct privatebet_info*));
 			BET_player_global=calloc(1,sizeof(struct privatebet_info));
 			BET_player_global->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
