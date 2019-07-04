@@ -2837,11 +2837,12 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 			if(bet->numplayers<bet->maxplayers)
 			{
 				retval=BET_p2p_client_join_req(argjson,bet,vars);
+				printf("\n%s::%d::bet->numplayers::%d::bet->maxplayers::%d",__FUNCTION__,__LINE__,bet->numplayers,bet->maxplayers);
 				if(retval<0)
 					goto end;
                 if(bet->numplayers==bet->maxplayers)
 				{
-					printf("Table is filled");
+					printf("Table is filled\n");
 					retval=BET_LN_check(bet);
 					if(retval<0)
 						goto end;

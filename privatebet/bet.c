@@ -502,7 +502,7 @@ int main(int argc, char **argv)
 			
 			if ( OS_thread_create(&bvv_backend,NULL,(void *)BET_test_function_bvv,(void *)BET_bvv) != 0 )
 			{
-				printf("error launching BET_hostloop for pub.%d pull.%d\n",BET_bvv->pubsock,BET_bvv->pullsock);
+				printf("error launching BET_hostloop for pub.%d pull.%d\n",BET_bvv->subsock,BET_bvv->pushsock);
 				exit(-1);
 			}
 			if(pthread_join(bvv_backend,NULL))
@@ -557,7 +557,7 @@ int main(int argc, char **argv)
 			
 			if ( OS_thread_create(&player_backend,NULL,(void *)BET_test_function,(void *)BET_player_global) != 0 )
 			{
-				printf("error launching BET_hostloop for pub.%d pull.%d\n",BET_player_global->pubsock,BET_player_global->pullsock);
+				printf("error launching BET_hostloop for pub.%d pull.%d\n",BET_player_global->subsock,BET_player_global->pushsock);
 				exit(-1);
 			}
 
