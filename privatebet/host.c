@@ -2844,10 +2844,13 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 				{
 					printf("Table is filled\n");
 					retval=BET_LN_check(bet);
+					printf("\n%s::%d retval=%d\n",__FUNCTION__,__LINE__,retval);
 					if(retval<0)
 						goto end;
 					BET_broadcast_table_info(bet);
+					printf("\n%s::%d\n",__FUNCTION__,__LINE__);
 					BET_check_BVV_Ready(bet);
+					printf("\n%s::%d\n",__FUNCTION__,__LINE__);
 				}
 			}
 			
