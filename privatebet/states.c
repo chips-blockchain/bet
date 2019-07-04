@@ -638,6 +638,7 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 			{
 				if(jint(argjson,"playerid") == bet->myplayerid)
 				{
+					rest_push_cards(wsi_global_client,argjson,bet->myplayerid);
 					display_cards(argjson,bet,vars);
 					retval=BET_p2p_small_blind(argjson,bet,vars);	
 				}
