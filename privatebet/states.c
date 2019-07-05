@@ -680,7 +680,9 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 				if(bet->myplayerid == jint(argjson,"playerid"))
 				{
 					display_cards(argjson,bet,vars);
-					retval=BET_player_round_betting(argjson,bet,vars);
+					printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+					lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+					//retval=BET_player_round_betting(argjson,bet,vars);
 				}
 			}
 			else if((strcmp(action,"check") == 0) || (strcmp(action,"call") == 0) || (strcmp(action,"raise") == 0)
@@ -995,11 +997,11 @@ int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,stru
 	}
 
 	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(action_response));
-	lws_write(wsi_global_client,cJSON_Print(action_response),strlen(cJSON_Print(action_response)),0);
+	//lws_write(wsi_global_client,cJSON_Print(action_response),strlen(cJSON_Print(action_response)),0);
 	
 	
-	//rendered=cJSON_Print(action_response);
-	//bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+	rendered=cJSON_Print(action_response);
+	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 
 	if(bytes<0)
 	{
