@@ -69,6 +69,9 @@ extern char *LN_idstr,Host_ipaddr[64],Host_peerid[67],Host_channel[64];
 extern int32_t Num_hostrhashes,Chips_paid;
 extern bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 
+extern struct lws *wsi_global_client;
+
+
 #endif
 
 
