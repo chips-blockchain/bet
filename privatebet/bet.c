@@ -536,7 +536,7 @@ int main(int argc, char **argv)
 		    BET_betinfo_set(BET_player,"demo",range,0,Maxplayers);
 		#endif
             #if 1	
-			Player_VARS_global=calloc(1,sizeof(*BVV_VARS));
+			Player_VARS_global=calloc(1,sizeof(*Player_VARS_global));
 			
 			BET_player_global=calloc(1,sizeof(struct privatebet_info));
 			BET_player_global->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
