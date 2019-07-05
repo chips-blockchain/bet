@@ -442,9 +442,11 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	}
 
 	cJSON_AddNumberToObject(roundBetting,"min_amount",(maxamount-vars->betamount[vars->turni][vars->round]));
+
+	lws_wr
 	
-	rendered=cJSON_Print(roundBetting);
-	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+	//rendered=cJSON_Print(roundBetting);
+	//bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,rendered);
 	if(bytes<0)
@@ -993,9 +995,13 @@ int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,stru
 		cJSON_AddNumberToObject(action_response,"bet_amount",vars->player_funds);
 		vars->player_funds=0;
 	}
-	rendered=cJSON_Print(action_response);
 
-	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(action_response));
+	lws_write(wsi_global_client,cJSON_Print(action_response),strlen(cJSON_Print(action_response)),0);
+	
+	
+	//rendered=cJSON_Print(action_response);
+	//bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 
 	if(bytes<0)
 	{
@@ -1966,26 +1972,8 @@ int32_t BET_rest_betting_statemachine(struct lws *wsi,cJSON *argjson)
 			else if(strcmp(action,"small_blind_bet") == 0)
 			{
 				
-				//retval=BET_rest_player_small_blind_bet(wsi,argjson,0);
-				//retval=BET_rest_player_small_blind_bet(wsi,argjson,1);
-				//retval=BET_rest_DCV_small_blind_bet(wsi,argjson);
 				BET_rest_relay(wsi,argjson);
 				retval=BET_rest_DCV_small_blind_bet(wsi,argjson);
-				/*
-				if(BET_player[this_playerID]->myplayerid == -2)
-				{
-					printf("%s:%d\n",__FUNCTION__,__LINE__);
-					BET_rest_relay(wsi,argjson);
-					//retval=BET_rest_player_small_blind_bet(wsi,argjson,0);
-					//retval=BET_rest_player_small_blind_bet(wsi,argjson,1);
-					retval=BET_rest_DCV_small_blind_bet(wsi,argjson);
-				}
-				else
-				{
-					printf("%s:%d It shouldn't come here\n",__FUNCTION__,__LINE__);
-					retval=BET_rest_player_small_blind_bet(wsi,argjson,jint(argjson,"gui_playerID"));
-				}
-				*/
 			}
 			else if(strcmp(action,"small_blind_bet_player") == 0)
 			{
@@ -1994,25 +1982,8 @@ int32_t BET_rest_betting_statemachine(struct lws *wsi,cJSON *argjson)
 			else if(strcmp(action,"big_blind_bet") == 0)
 			{
 				
-				//retval=BET_rest_player_big_blind_bet(wsi,argjson,0);
-				//retval=BET_rest_player_big_blind_bet(wsi,argjson,1);
-				//retval=BET_rest_DCV_big_blind_bet(wsi,argjson);
 				BET_rest_relay(wsi,argjson);
 				retval=BET_rest_DCV_big_blind_bet(wsi,argjson);
-				/*
-				if(BET_player[this_playerID]->myplayerid == -2)
-				{
-					BET_rest_relay(wsi,argjson);
-					//retval=BET_rest_player_big_blind_bet(wsi,argjson,0);
-					//retval=BET_rest_player_big_blind_bet(wsi,argjson,1);
-					retval=BET_rest_DCV_big_blind_bet(wsi,argjson);
-				}
-				else
-				{
-					printf("%s:%d It shouldn't come here\n",__FUNCTION__,__LINE__);
-					retval=BET_rest_player_big_blind_bet(wsi,argjson,jint(argjson,"gui_playerID"));
-				}
-				*/
 				
 			}
 			else if(strcmp(action,"big_blind_bet_player") == 0)
@@ -2023,33 +1994,16 @@ int32_t BET_rest_betting_statemachine(struct lws *wsi,cJSON *argjson)
 			{
 				if(BET_player[this_playerID]->myplayerid == jint(argjson,"playerid"))
 				{
-					//rest_push_cards(wsi,argjson,this_playerID);
 					rest_display_cards(argjson,this_playerID);
-					
 					retval=BET_rest_player_round_betting(wsi,argjson);
 				}
 			}
 			else if((strcmp(action,"check") == 0) || (strcmp(action,"call") == 0) || (strcmp(action,"raise") == 0)
 									|| (strcmp(action,"fold") == 0) || (strcmp(action,"allin") == 0))																					
 			{
-				#if 0
-				for(int i=0;i<2/*BET_dcv->maxplayers*/;i++)
-				{
-					if(i != jint(argjson,"gui_playerID"));
-					retval=BET_rest_player_round_betting_response(wsi,argjson,i);
-				}
-				#endif
 				BET_rest_relay(wsi,argjson);
 				retval=BET_rest_DCV_round_betting_response(wsi,argjson);
-
-				
-				/*
-				if(BET_player[this_playerID]->myplayerid == -2)
-					retval=BET_rest_DCV_round_betting_response(wsi,argjson);
-				else
-					retval=BET_rest_player_round_betting_response(wsi,argjson);
-				*/	
-			}
+		}
 			else if((strcmp(action,"check_player") == 0) || (strcmp(action,"call_player") == 0) || (strcmp(action,"raise_player") == 0)
 									|| (strcmp(action,"fold_player") == 0) || (strcmp(action,"allin_player") == 0))																					
 			{

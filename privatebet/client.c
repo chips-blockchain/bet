@@ -1292,7 +1292,7 @@ void BET_p2p_bvvloop_test(void *_ptr)
           
             if ( (argjson= cJSON_Parse(ptr)) != 0 )
             {
-                if ( BET_p2p_bvvcommand(argjson,bet,VARS) != 0 ) // usually just relay to players
+                if ( BET_p2p_bvvcommand(argjson,bet,BVV_VARS) != 0 ) // usually just relay to players
                 {
                 	// do soemthing incase any command or logic failures
                 }
@@ -2378,13 +2378,11 @@ int32_t BET_p2p_rest_clientupdate(struct lws *wsi,cJSON *argjson) // update game
 		{
 			//BET_player_global->myplayerid=jint(argjson,"gui_playerID");
 			retval=BET_p2p_client_join(argjson,BET_player_global,vars);
-			printf("\nretvalue=%d",retval);
 
 		}
 		else if ( strcmp(method,"join_res") == 0 )
 		{
 			//retval=BET_p2p_client_join_res(argjson,bet,vars);
-			printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 			BET_rest_player_join_res(wsi_global_client,argjson);
 			
 		}
@@ -2397,7 +2395,6 @@ int32_t BET_p2p_rest_clientupdate(struct lws *wsi,cJSON *argjson) // update game
 		{
 			
             //retval=BET_p2p_client_init(argjson,bet,vars);
-   			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 			BET_rest_player_init(wsi_global_client,argjson);
 			
 		}
@@ -2441,6 +2438,7 @@ int32_t BET_p2p_rest_clientupdate(struct lws *wsi,cJSON *argjson) // update game
 		}
 		else if(strcmp(method,"betting") == 0)
 		{
+			retval=BET_rest_betting_statemachine(wsi_global_client,argjson);
 			retval=BET_p2p_betting_statemachine(argjson,bet,vars);
 		}
 		else if(strcmp(method,"display_current_state") == 0)
@@ -2854,6 +2852,7 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 		}
 		else if(strcmp(method,"betting") == 0)
 		{
+			//retval=BET_rest_betting_statemachine(wsi_global_client,argjson);
 			retval=BET_p2p_betting_statemachine(argjson,bet,vars);
 		}
 		else if(strcmp(method,"display_current_state") == 0)
@@ -2897,7 +2896,7 @@ void BET_p2p_clientloop_test(void * _ptr)
 	        	recvlen= nn_recv (bet->subsock, &ptr, NN_MSG, 0);
                 if (( (msgjson= cJSON_Parse(ptr)) != 0 ) && (recvlen>0))
                 {
-                    if ( BET_p2p_clientupdate_test(msgjson,bet,VARS) < 0 )
+                    if ( BET_p2p_clientupdate_test(msgjson,bet,Player_VARS_global) < 0 )
                     {
                     	printf("\nFAILURE\n");
                     	// do something here, possibly this could be because unknown commnad or because of encountering a special case which state machine fails to handle

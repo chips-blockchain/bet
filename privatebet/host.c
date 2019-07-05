@@ -2987,7 +2987,7 @@ void BET_p2p_hostloop(void *_ptr)
         {
             if ( (argjson= cJSON_Parse(ptr)) != 0 )
             {
-                if ( BET_p2p_hostcommand(argjson,bet,VARS) != 0 ) // usually just relay to players
+                if ( BET_p2p_hostcommand(argjson,bet,DCV_VARS) != 0 ) // usually just relay to players
                 {
                 	// Do something
                 }
