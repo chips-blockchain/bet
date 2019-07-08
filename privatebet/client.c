@@ -2438,8 +2438,9 @@ int32_t BET_p2p_rest_clientupdate(struct lws *wsi,cJSON *argjson) // update game
 		}
 		else if(strcmp(method,"betting") == 0)
 		{
-			retval=BET_rest_betting_statemachine(wsi_global_client,argjson);
-			retval=BET_p2p_betting_statemachine(argjson,bet,vars);
+			//retval=BET_rest_betting_statemachine(wsi_global_client,argjson);
+			//retval=BET_player_round_betting(argjson,BET_player_global,Player_VARS_global);
+			retval=BET_player_round_betting_test(argjson,BET_player_global,Player_VARS_global);
 		}
 		else if(strcmp(method,"display_current_state") == 0)
 		{

@@ -33,6 +33,9 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
 int32_t BET_player_round_betting_response(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
 
+int32_t BET_player_round_betting_test(cJSON * argjson,struct privatebet_info * bet,struct privatebet_vars * vars);
+
+
 
 
 
