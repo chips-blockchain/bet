@@ -2566,7 +2566,7 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 	{
 		for(int j=0;j<hand_size;j++)
 		{
-			cJSON_AddItemToArray(cardMatrixInfo,cJSON_CreateNumber(card_values[i][j]))
+			cJSON_AddItemToArray(cardMatrixInfo,cJSON_CreateNumber(card_values[i][j]));
 						
 		}
 	}
