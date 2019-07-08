@@ -2481,6 +2481,130 @@ void BET_DCV_reset(struct privatebet_info *bet,struct privatebet_vars *vars)
 	bet->no_of_turns=0;
 		
 }
+
+int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	int retval=1,max_score=0,no_of_winners=0,winning_amount=0,bytes;
+	unsigned char h[7];
+	unsigned long scores[CARDS777_MAXPLAYERS];
+	int p[CARDS777_MAXPLAYERS];
+	int winners[CARDS777_MAXPLAYERS],players_left=0,only_winner=-1;
+	cJSON *resetInfo=NULL,*gameInfo=NULL;
+	char *rendered=NULL;
+	
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+			p[i]=vars->bet_actions[i][(vars->round-1)];
+			
+			if((vars->bet_actions[i][vars->round]==fold)|| (vars->bet_actions[i][vars->round]==allin)) 
+				players_left++;
+			else
+				only_winner=i;
+	}
+	players_left=bet->maxplayers-players_left;
+	if(players_left<2)
+	{
+		if(only_winner != -1)
+		{
+			retval=BET_DCV_invoice_pay(bet,vars,only_winner,vars->pot);
+			printf("\nWinning player is :%d, winning amount:%d",only_winner,vars->pot);
+			goto end;
+		}
+	}
+		
+	printf("\nEach player got the below cards:\n");
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		if(p[i]==fold)
+			scores[i]=0;
+		else
+		{
+			printf("\n For Player id: %d, cards: ",i);
+			for(int j=0;j<hand_size;j++)
+			{
+				int temp=card_values[i][j];
+				printf("%s-->%s \t",suit[temp/13],face[temp%13]);
+				h[j]=(unsigned char)card_values[i][j];
+			
+			}
+				scores[i]=SevenCardDrawScore(h);
+			}
+	}
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		if(max_score<scores[i])
+			max_score=scores[i];
+	}
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		if(scores[i]==max_score)
+		{
+			winners[i]=1;
+			no_of_winners++;
+		}
+		else
+			winners[i]=0;
+	}
+	
+	printf("\nWinning Amount:%d",(vars->pot/no_of_winners));
+	printf("\nWinning Players Are:");
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		if(winners[i]==1)
+		{
+			retval=BET_DCV_invoice_pay(bet,vars,i,(vars->pot/no_of_winners));
+			printf("%d\t",i);
+		}
+	}
+	printf("\n");
+
+	cJSON *finalInfo=cJSON_CreateObject();
+	cJSON *cardMatrixInfo=cJSON_CreateArray();
+	cJSON_AddStringToObject(finalInfo,"method","finalInfo");
+
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		for(int j=0;j<hand_size;j++)
+		{
+			cJSON_AddItemToArray(cardMatrixInfo,cJSON_CreateNumber(card_values[i][j]))
+						
+		}
+	}
+	cJSON_AddItemToObject(finalInfo,"card_values",cardMatrixInfo);
+
+	cJSON_AddNumberToObject(finalInfo,"win_amount",vars->pot/no_of_winners);
+
+	cJSON *winnersInfo=cJSON_CreateArray();
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		if(winners[i]==1)
+		{
+			cJSON_AddItemToArray(winnersInfo,cJSON_CreateNumber(i));
+		}
+	}
+	cJSON_AddItemToObject(finalInfo,"winners",winnersInfo);
+
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(finalInfo));
+	bytes=nn_send(bet->pubsock,cJSON_Print(finalInfo),strlen(cJSON_Print(finalInfo)),0);
+
+	if(bytes<0)
+		printf("%s::%d::Failed to send data\n",__FUNCTION__,__LINE__);
+	
+	end:	
+		if(retval)
+		{
+			resetInfo=cJSON_CreateObject();
+			cJSON_AddStringToObject(resetInfo,"method","reset");
+			rendered=cJSON_Print(resetInfo);
+			bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+			if(bytes<0)
+				retval=-1;
+			BET_DCV_reset(bet,vars);
+		}
+		return retval;
+}
+
+
 int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int retval=1,max_score=0,no_of_winners=0,winning_amount=0,bytes;
