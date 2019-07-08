@@ -38,3 +38,5 @@ int32_t BET_rest_game(struct lws *wsi, cJSON *argjson);
 int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson);
 
 
+int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars);
+
