@@ -2588,8 +2588,10 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 	bytes=nn_send(bet->pubsock,cJSON_Print(finalInfo),strlen(cJSON_Print(finalInfo)),0);
 
 	if(bytes<0)
+	{
+		retval=-1;
 		printf("%s::%d::Failed to send data\n",__FUNCTION__,__LINE__);
-	
+	}
 	end:	
 		if(retval)
 		{
@@ -2599,7 +2601,7 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 			bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 			if(bytes<0)
 				retval=-1;
-			BET_DCV_reset(bet,vars);
+			//BET_DCV_reset(bet,vars);
 		}
 		return retval;
 }
