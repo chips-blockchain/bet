@@ -443,10 +443,11 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 
 	cJSON_AddNumberToObject(roundBetting,"min_amount",(maxamount-vars->betamount[vars->turni][vars->round]));
 
+	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(roundBetting));
 	rendered=cJSON_Print(roundBetting);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 
-	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,rendered);
+
 	if(bytes<0)
 	{
 		retval =-1;
@@ -936,6 +937,7 @@ int32_t BET_player_round_betting_test(cJSON *argjson,struct privatebet_info *bet
 	cJSON_AddNumberToObject(action_response,"round",jint(argjson,"round"));
 	possibilities=cJSON_GetObjectItem(argjson,"possibilities");
 
+	printf("%s::%d\n",__FUNCTION__,__LINE__);
 	
 	option=1;
 	vars->bet_actions[playerid][round]=jinti(possibilities,(option-1));
