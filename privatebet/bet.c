@@ -231,6 +231,7 @@ char* gethostip()
 	 hostip= inet_ntoa(*((struct in_addr*)host_entry->h_addr_list[0])); 
 	 return hostip;
 }
+#if 0
 int do_bet(double betValue)
 {
 	int argc,maxArguments=10,maxSize=1000;
@@ -322,6 +323,7 @@ int do_bet(double betValue)
 	}
 	return 1;	
 }
+#endif
 int main(int argc, char **argv)
 {
     uint16_t tmp,rpcport = 7797,port = 7797+1;
