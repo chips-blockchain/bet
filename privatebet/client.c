@@ -2877,6 +2877,10 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 			printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 			lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
 		}
+		else if(strcmp(method,"finalInfo") == 0)
+		{
+			retval=BET_rest_finalInfo(argjson);
+		}
 	}	
 	return retval;
 }
@@ -3460,6 +3464,42 @@ int32_t BET_rest_connect(char *uri)
 	return retval;
 	
 }
+
+bits256 pedersen_commitments(uint32_t amount,bits256 *blind)
+{
+	struct pair256 key;
+	char hexstr[65];
+	bits320 bp,x,z;
+	bits256 commit;
+    
+    key.priv=curve25519_keypair(&key.prod);
+	blind=key.priv;
+	printf("\nPrivate Key:%s",bits256_str(hexstr,key.priv));
+	printf("\nPublic key:%s",bits256_str(hexstr,key.prod));
+
+	bp = fexpand(curve25519_basepoint9());
+    cmult(&x,&z,bits256_from_compact(amount),bp);
+	commit=fcontract(fmul(x,crecip(z)));
+
+   printf("\nCommit is :%s",bits256_str(hexstr,commit));
+
+   return commit;
+    
+}
+
+void test_pedersen_commitments()
+{
+	bits256 commit[3],blind[3];
+	uint32_t amount[3];
+	char hexstr[65];
+	amount[0]=100;amount[1]=200;amount[2]=300;
+	for(int i=0;i<3;i++)
+	{
+		commit[i]=pedersen_commitments(amount[i],&blind[i]);
+		printf("%s::%d::%s::%s",__FUNCTION__,__LINE__,bits256_str(hexstr,commit[i]),bits256_str(hexstr,blind[i]));
+	}
+}
+
 int32_t BET_rest_player_join_res(struct lws *wsi,cJSON *argjson)
 {
 	int32_t playerID;
