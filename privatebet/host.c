@@ -1210,11 +1210,11 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	}
 	else if(strcmp(jstr(argjson,"method"),"player_reset") == 0)
 	{
-		printf("%s::%d::player reset::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+		BET_rest_player_reset(wsi,argjson);
 	}
 	else if(strcmp(jstr(argjson,"method"),"bvv_reset") == 0)
 	{
-		printf("%s::%d::bvv reset::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+		BET_rest_BVV_reset();
 	}
 	else
 	{

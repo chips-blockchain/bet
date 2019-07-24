@@ -1191,6 +1191,19 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 		return retval;
 }
 
+
+void BET_rest_BVV_reset()
+{
+	printf("%s::%d\n",__FUNCTION__,__LINE__);
+	BET_permutation(bvv_info.permis,BET_bvv->range);
+    for(int i=0;i<BET_bvv->range;i++)
+	{
+		permis_b[i]=bvv_info.permis[i];
+	
+	}
+}
+
+
 void BET_BVV_reset(struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	
@@ -2161,6 +2174,46 @@ void BET_p2p_table_info(cJSON *argjson,struct privatebet_info *bet,struct privat
 	printf("\nTable Info:%s",cJSON_Print(argjson));	
 }
 
+int32_t BET_rest_player_reset(struct lws *wsi,cJSON * argjson)
+{
+	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
+	int32_t this_PlayerID=jint(argjson,"gui_playerID");
+	all_no_of_shares[this_PlayerID]=0;
+	all_no_of_player_cards[this_PlayerID]=0;
+
+	for(int i=0;i<BET_player[this_PlayerID]->range;i++)
+	{
+		for(int j=0;j<BET_player[this_PlayerID]->numplayers;j++)
+		{
+			all_sharesflag[this_PlayerID][i][j]=0;
+		}
+	}
+	all_number_cards_drawn[this_PlayerID]=0;
+
+	for(int i=0;i<hand_size;i++)
+	{
+		all_player_card_matrix[this_PlayerID][i]=0;
+		all_player_card_values[this_PlayerID][i]=-1;
+	}
+
+	
+		
+	
+	Player_VARS[this_PlayerID]->pot=0;
+	Player_VARS[this_PlayerID]->player_funds=10000000; // hardcoded to 10000 satoshis
+	for(int i=0;i<BET_player[this_PlayerID]->maxplayers;i++)
+	{
+		for(int j=0;j<CARDS777_MAXROUNDS;j++)
+		{
+			Player_VARS[this_PlayerID]->bet_actions[i][j]=0;
+			Player_VARS[this_PlayerID]->betamount[i][j]=0;
+		}
+	}
+	player_joined=0;
+	return(BET_rest_player_join(wsi,argjson));
+}
+
+
 int32_t BET_player_reset(struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
@@ -2487,7 +2540,10 @@ int32_t BET_rest_player_join(struct lws *wsi, cJSON *argjson)
 	int32_t Maxplayers=2,numplayers=2,range=52;
 
 	if(player_joined)
+	{
+		printf("%s::%d::player is already joined\n",__FUNCTION__,__LINE__);
 		return 0; //this logic is to avoid the double clicks
+	}
 	else
 		player_joined=1;
 	
