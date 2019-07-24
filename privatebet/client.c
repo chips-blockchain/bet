@@ -1195,6 +1195,7 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 void BET_rest_BVV_reset()
 {
 	printf("%s::%d\n",__FUNCTION__,__LINE__);
+	memset(&bvv_info,0, sizeof bvv_info);
 	BET_permutation(bvv_info.permis,BET_bvv->range);
     for(int i=0;i<BET_bvv->range;i++)
 	{
@@ -2210,6 +2211,10 @@ int32_t BET_rest_player_reset(struct lws *wsi,cJSON * argjson)
 		}
 	}
 	player_joined=0;
+	
+	memset(&all_players_info, 0, sizeof all_players_info);
+	memset(BET_player, 0, sizeof *BET_player);//(CARDS777_MAXPLAYERS *sizeof (struct privatebet_info))	
+	
 	return(BET_rest_player_join(wsi,argjson));
 }
 
@@ -2243,7 +2248,7 @@ int32_t BET_player_reset(struct privatebet_info *bet,struct privatebet_vars *var
 			vars->betamount[i][j]=0;
 		}
 	}
-	
+
 	return(BET_p2p_client_join(NULL,bet,vars));
 }
 
