@@ -661,13 +661,13 @@ void BET_rest_DCV_reset(struct lws *wsi)
 	hole_cards_drawn=0;community_cards_drawn=0;flop_cards_drawn=0;turn_card_drawn=0;river_card_drawn=0;
 	invoiceID=0;	
 
-	
-	for(int i=0;i<BET_dcv->maxplayers;i++)
+	printf("%s::%d::BET_dcv->numplayers:%d\n",__FUNCTION__,__LINE__,BET_dcv->numplayers);
+	for(int i=0;i<BET_dcv->numplayers;i++)
 			player_ready[i]=0;	
 		
 	for(int i=0;i<hand_size;i++)
 	{
-		for(int j=0;j<BET_dcv->maxplayers;j++)
+		for(int j=0;j<BET_dcv->numplayers;j++)
 		{
 			all_player_card_matrix[j][i]=0;
 			all_player_card_values[j][i]=-1;
