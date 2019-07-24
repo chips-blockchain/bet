@@ -2215,7 +2215,8 @@ int32_t BET_rest_player_reset(struct lws *wsi,cJSON * argjson)
 	memset(&all_players_info, 0, sizeof all_players_info);
 	memset(BET_player, 0, sizeof *BET_player);//(CARDS777_MAXPLAYERS *sizeof (struct privatebet_info))	
 	
-	return(BET_rest_player_join(wsi,argjson));
+	//return(BET_rest_player_join(wsi,argjson));
+	return 1;
 }
 
 
