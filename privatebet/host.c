@@ -664,23 +664,18 @@ void BET_rest_DCV_reset(struct lws *wsi)
 	
 	for(int i=0;i<BET_dcv->maxplayers;i++)
 			player_ready[i]=0;	
-
-	for(int k=0;k<BET_dcv->maxplayers;k++)
+		
+	for(int i=0;i<hand_size;i++)
 	{
-		
-		for(int i=0;i<hand_size;i++)
+		for(int j=0;j<BET_dcv->maxplayers;j++)
 		{
-			for(int j=0;j<BET_dcv->maxplayers;j++)
-			{
-				all_player_card_matrix[k][j][i]=0;
-				all_player_card_values[k][j][i]=-1;
-				//card_matrix[j][i]=0;
-				//card_values[j][i]=-1;
-			}
+			all_player_card_matrix[j][i]=0;
+			all_player_card_values[j][i]=-1;
+			//card_matrix[j][i]=0;
+			//card_values[j][i]=-1;
 		}
-				
 	}
-		
+				
 	BET_rest_dcv_init(wsi,NULL);
 }
 
