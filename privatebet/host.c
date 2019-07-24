@@ -652,6 +652,62 @@ int32_t BET_rest_receive_card(struct lws *wsi, cJSON *playerCardInfo)
 	
 }
 
+
+void BET_rest_DCV_reset()
+{
+	
+	players_joined=0;
+	turn=0;no_of_cards=0;no_of_rounds=0;no_of_bets=0;
+	hole_cards_drawn=0;community_cards_drawn=0;flop_cards_drawn=0;turn_card_drawn=0;river_card_drawn=0;
+	invoiceID=0;	
+		
+	for(int i=0;i<BET_dcv->maxplayers;i++)
+		player_ready[i]=0;	
+	
+	for(int i=0;i<hand_size;i++)
+	{
+		for(int j=0;j<BET_dcv->maxplayers;j++)
+		{
+			card_matrix[j][i]=0;
+			card_values[j][i]=-1;
+		}
+	}
+
+	
+	dcv_info.numplayers=0;
+	dcv_info.maxplayers=BET_dcv->maxplayers;
+	BET_permutation(dcv_info.permis,BET_dcv->range);
+    dcv_info.deckid=rand256(0);
+	dcv_info.dcv_key.priv=curve25519_keypair(&dcv_info.dcv_key.prod);
+	for(int i=0;i<BET_dcv->range;i++)
+	{
+		permis_d[i]=dcv_info.permis[i];
+	
+	}
+	
+	DCV_VARS->turni=0;
+	DCV_VARS->round=0;
+	DCV_VARS->pot=0;
+	DCV_VARS->last_turn=0;
+	DCV_VARS->last_raise=0;
+	for(int i=0;i<BET_dcv->maxplayers;i++)
+	{
+		DCV_VARS->funds[i]=10000000;// hardcoded max funds to 10000 satoshis
+		for(int j=0;j<CARDS777_MAXROUNDS;j++)
+		{
+			DCV_VARS->bet_actions[i][j]=0;
+			DCV_VARS->betamount[i][j]=0;
+		}
+	}
+	
+	BET_dcv->numplayers=0;
+	BET_dcv->cardid=-1;
+	BET_dcv->turni=-1;
+	BET_dcv->no_of_turns=0;
+		
+}
+
+
 int32_t BET_rest_evaluate_hand(struct lws *wsi)
 {
 	int retval=1,max_score=0,no_of_winners=0,winning_amount=0,bytes;
@@ -734,15 +790,13 @@ int32_t BET_rest_evaluate_hand(struct lws *wsi)
 	end:	
 		if(retval)
 		{
-			/*
+			
 			resetInfo=cJSON_CreateObject();
 			cJSON_AddStringToObject(resetInfo,"method","reset");
 			rendered=cJSON_Print(resetInfo);
-			bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
-			if(bytes<0)
-				retval=-1;
-			BET_DCV_reset(bet,vars);
-			*/
+			lws_write(wsi,cJSON_Print(resetInfo),strlen(cJSON_Print(resetInfo)),0);
+			BET_rest_DCV_reset();
+			
 		}
 		return retval;
 }
@@ -1197,8 +1251,17 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 			lws_write(wsi,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
 				
 	}
+	else if(strcmp(jstr(argjson,"method"),"player_reset") == 0)
+	{
+		printf("%s::%d::player reset::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+	}
+	else if(strcmp(jstr(argjson,"method"),"bvv_reset") == 0)
+	{
+		printf("%s::%d::bvv reset::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+	}
 	else
-	{		
+	{
+		
 		retval=BET_rest_dcv_default(wsi,argjson);
 
 	}
