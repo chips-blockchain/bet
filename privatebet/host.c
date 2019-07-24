@@ -669,10 +669,8 @@ void BET_rest_DCV_reset(struct lws *wsi)
 	{
 		for(int j=0;j<BET_dcv->numplayers;j++)
 		{
-			all_player_card_matrix[j][i]=0;
-			all_player_card_values[j][i]=-1;
-			//card_matrix[j][i]=0;
-			//card_values[j][i]=-1;
+			card_matrix[j][i]=0;
+			card_values[j][i]=-1;
 		}
 	}
 				
@@ -1169,6 +1167,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	}
 	else if(strcmp(jstr(argjson,"method"), "dealer_ready") == 0)
 	{
+			printf("%s::%d\n",__FUNCTION__,__LINE__);
 			retval=BET_rest_dcv_turn(wsi);
 		
 	}
