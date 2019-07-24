@@ -752,7 +752,7 @@ int32_t BET_rest_evaluate_hand(struct lws *wsi)
 			cJSON_AddStringToObject(resetInfo,"method","reset");
 			rendered=cJSON_Print(resetInfo);
 			lws_write(wsi,cJSON_Print(resetInfo),strlen(cJSON_Print(resetInfo)),0);
-			BET_rest_DCV_reset();
+			BET_rest_DCV_reset(wsi);
 			
 		}
 		return retval;
