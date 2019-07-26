@@ -652,6 +652,32 @@ int32_t BET_rest_receive_card(struct lws *wsi, cJSON *playerCardInfo)
 	
 }
 
+
+void BET_rest_DCV_reset(struct lws *wsi)
+{
+	
+	players_joined=0;
+	turn=0;no_of_cards=0;no_of_rounds=0;no_of_bets=0;
+	hole_cards_drawn=0;community_cards_drawn=0;flop_cards_drawn=0;turn_card_drawn=0;river_card_drawn=0;
+	invoiceID=0;	
+
+	printf("%s::%d::BET_dcv->numplayers:%d\n",__FUNCTION__,__LINE__,dcv_info.numplayers);
+	for(int i=0;i<dcv_info.numplayers;i++)
+			player_ready[i]=0;	
+		
+	for(int i=0;i<hand_size;i++)
+	{
+		for(int j=0;j<dcv_info.numplayers;j++)
+		{
+			card_matrix[j][i]=0;
+			card_values[j][i]=-1;
+		}
+	}
+				
+	//BET_rest_dcv_init(wsi,NULL);
+}
+
+
 int32_t BET_rest_evaluate_hand(struct lws *wsi)
 {
 	int retval=1,max_score=0,no_of_winners=0,winning_amount=0,bytes;
@@ -734,15 +760,13 @@ int32_t BET_rest_evaluate_hand(struct lws *wsi)
 	end:	
 		if(retval)
 		{
-			/*
+			
 			resetInfo=cJSON_CreateObject();
 			cJSON_AddStringToObject(resetInfo,"method","reset");
 			rendered=cJSON_Print(resetInfo);
-			bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
-			if(bytes<0)
-				retval=-1;
-			BET_DCV_reset(bet,vars);
-			*/
+			lws_write(wsi,cJSON_Print(resetInfo),strlen(cJSON_Print(resetInfo)),0);
+			BET_rest_DCV_reset(wsi);
+			
 		}
 		return retval;
 }
@@ -1143,6 +1167,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	}
 	else if(strcmp(jstr(argjson,"method"), "dealer_ready") == 0)
 	{
+			printf("%s::%d\n",__FUNCTION__,__LINE__);
 			retval=BET_rest_dcv_turn(wsi);
 		
 	}
@@ -1197,8 +1222,17 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 			lws_write(wsi,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
 				
 	}
+	else if(strcmp(jstr(argjson,"method"),"player_reset") == 0)
+	{
+		BET_rest_player_reset(wsi,argjson);
+	}
+	else if(strcmp(jstr(argjson,"method"),"bvv_reset") == 0)
+	{
+		BET_rest_BVV_reset();
+	}
 	else
-	{		
+	{
+		
 		retval=BET_rest_dcv_default(wsi,argjson);
 
 	}
