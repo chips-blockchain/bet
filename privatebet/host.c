@@ -917,7 +917,7 @@ int32_t BET_rest_create_invoice(struct lws *wsi,cJSON *argjson)
 	int argc,bytes,retval=1;
 	char **argv,*buf=NULL,*rendered;
 	char hexstr [65];
-	int32_t maxsize = 100000;
+	int32_t maxsize = 10000;
 	cJSON *invoiceInfo=NULL,*invoice=NULL;
 	argc=6;
 	argv =(char**)malloc(argc*sizeof(char*));
@@ -997,7 +997,7 @@ int32_t BET_rest_DCV_create_invoice(struct lws *wsi,cJSON *argjson)
 	int argc,bytes,retval=1;
 	char **argv,*buf=NULL,*rendered;
 	char hexstr [65];
-	int32_t maxsize = 100000;
+	int32_t maxsize = 10000;
 	cJSON *invoiceInfo=NULL,*invoice=NULL;
 	argc=6;
 	argv =(char**)malloc(argc*sizeof(char*));
