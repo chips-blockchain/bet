@@ -870,14 +870,25 @@ int32_t BET_rest_dcv_LN_check()
 		
 		printf("\nPlayer %d --> DCV channel ready",i);	
 	}
+
 	end:
-		return retval;
+	if(buf)
+		free(buf);
+	for(int i=0;i<6;i++)
+	{
+		if(argv[i])
+			free(argv[i]);
+	}
+	if(argv)
+		free(argv);
+		
+
+	return retval;
 }
 
 
 int32_t BET_rest_bvv_join(struct lws *wsi, cJSON *argjson)
 {
-	cJSON *bvvJoinInfo=NULL;
 	char uri[100],channel_id[100];
 	strcpy(uri,jstr(argjson,"uri"));
 	strcpy(dcv_info.bvv_uri,uri);
@@ -906,7 +917,7 @@ int32_t BET_rest_create_invoice(struct lws *wsi,cJSON *argjson)
 	int argc,bytes,retval=1;
 	char **argv,*buf=NULL,*rendered;
 	char hexstr [65];
-	int32_t maxsize = 1000000;
+	int32_t maxsize = 100000;
 	cJSON *invoiceInfo=NULL,*invoice=NULL;
 	argc=6;
 	argv =(char**)malloc(argc*sizeof(char*));
@@ -959,7 +970,23 @@ int32_t BET_rest_create_invoice(struct lws *wsi,cJSON *argjson)
 	}
 	
 	end:
-		return retval;
+		
+	if(buf)
+		free(buf);
+	for(int i=0;i<6;i++)
+	{
+		if(argv[i])
+			free(argv[i]);
+	}
+	if(argv)
+		free(argv);
+
+	if(invoice)
+		cJSON_freenode(invoice);
+	if(invoiceInfo)
+		cJSON_freenode(invoiceInfo);
+	
+	return retval;
 }
 
 
@@ -970,7 +997,7 @@ int32_t BET_rest_DCV_create_invoice(struct lws *wsi,cJSON *argjson)
 	int argc,bytes,retval=1;
 	char **argv,*buf=NULL,*rendered;
 	char hexstr [65];
-	int32_t maxsize = 1000000;
+	int32_t maxsize = 100000;
 	cJSON *invoiceInfo=NULL,*invoice=NULL;
 	argc=6;
 	argv =(char**)malloc(argc*sizeof(char*));
@@ -1011,6 +1038,21 @@ int32_t BET_rest_DCV_create_invoice(struct lws *wsi,cJSON *argjson)
 	}
 	
 	end:
+		if(buf)
+			free(buf);
+		for(int i=0;i<6;i++)
+		{
+			if(argv[i])
+				free(argv[i]);
+		}
+		if(argv)
+			free(argv);
+		
+		if(invoice)
+			cJSON_freenode(invoice);
+		if(invoiceInfo)
+			cJSON_freenode(invoiceInfo);
+		
 		return retval;
 }
 
@@ -1269,6 +1311,8 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 				}
                 break;
         }
+		if(buf)
+			free(buf);
         return 0;
 }
 
