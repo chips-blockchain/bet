@@ -2471,6 +2471,7 @@ cJSON* make_command(int argc, char **argv)
      {
      	strcat(data,line);
 	 }
+	printf("data=%s\n",data); 
  	argjson=cJSON_CreateObject();
 	argjson=cJSON_Parse(data);
 
@@ -2480,7 +2481,7 @@ cJSON* make_command(int argc, char **argv)
 
 int32_t BET_rest_uri(char **uri)
 {
-	cJSON *channelInfo,*addresses,*address,*bvvResponseInfo=NULL;
+	cJSON *channelInfo=NULL,*addresses,*address,*bvvResponseInfo=NULL;
 	int argc,bytes,retval=1,maxsize=10000;
 	char **argv=NULL,*buf=NULL;
 	argc=3;
@@ -2493,7 +2494,7 @@ int32_t BET_rest_uri(char **uri)
 	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"getinfo");
 	argv[2]=NULL;
-
+	channelInfo=cJSON_CreateObject();
 	channelInfo=make_command(argc-1,argv);
 	/*
 	ln_bet(argc-1,argv,buf);
