@@ -52,6 +52,7 @@ int32_t BET_rest_bvv(struct lws *wsi, cJSON *argjson);
 int32_t BET_rest_player(struct lws *wsi, cJSON *argjson);
 int32_t BET_rest_player_reset(struct lws *wsi,cJSON * argjson);
 void BET_rest_BVV_reset();
+bits256 BET_get_deckid(int32_t playerID);
 
 
 

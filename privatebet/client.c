@@ -2754,6 +2754,10 @@ int32_t BET_rest_player_init(struct lws *wsi, cJSON *argjson)
 	return 0;
 }
 
+bits256 BET_get_deckid(int32_t playerID)
+{
+	return all_players_info[playerID].deckid;
+}
 
 int32_t BET_rest_player_process_init_d(struct lws *wsi, cJSON *argjson,int32_t playerID)
 {

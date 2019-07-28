@@ -1009,7 +1009,7 @@ int32_t BET_rest_DCV_create_invoice(struct lws *wsi,cJSON *argjson)
 	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"invoice");
 	sprintf(argv[2],"%d",jint(argjson,"winningAmount"));
-	sprintf(argv[3],"%d_%d_%s",jint(argjson,"playerID"),jint(argjson,"winningAmount"),bits256_str(hexstr,all_players_info[jint(argjson,"playerID")].deckid));
+	sprintf(argv[3],"%d_%d_%s",jint(argjson,"playerID"),jint(argjson,"winningAmount"),bits256_str(hexstr,BET_get_deckid(jint(argjson,"playerID"))));
 	sprintf(argv[4],"\"Invoice details playerID:%d,winning Amount:%d\"",jint(argjson,"playerID"),jint(argjson,"winningAmount"));
 	argv[5]=NULL;
 	argc=5;
