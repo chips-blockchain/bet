@@ -805,7 +805,9 @@ int32_t BET_rest_dcv_LN_check()
 		argv[3]=NULL;
 		argc=3;
 		memset(buf,0x00,sizeof(buf));
-		ln_bet(argc,argv,buf);
+
+		//ln_bet(argc,argv,buf);
+		make_command(argc,argv);
 
 		argc=6;
 		for(int i=0;i<argc;i++)
@@ -819,10 +821,11 @@ int32_t BET_rest_dcv_LN_check()
 
 		
 		memset(buf,0x00,sizeof(buf));
-		ln_bet(argc,argv,buf);
+		//ln_bet(argc,argv,buf);
+		
 
 		fundChannelInfo=cJSON_CreateObject();
-		fundChannelInfo=cJSON_Parse(buf);
+		fundChannelInfo=make_command(argc,argv);
 
 		if(jint(fundChannelInfo,"code") == -1)
 		{
