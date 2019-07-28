@@ -2037,7 +2037,7 @@ int32_t LN_get_channel_status(char *id)
 			if(argv[i])
 				free(argv[i]);
 		}
-		free(buf);
+		free(argv);
 	}
 	return channel_state;
 }
@@ -2150,8 +2150,12 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 	struct pair256 key;
 	char *rendered=NULL,*uri=NULL;
 	char hexstr [ 65 ];
+	int argc,maxsize=10000;
+	char **argv=NULL,*buf=NULL;
+
 	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
-    if(bet->pushsock>=0)
+
+	if(bet->pushsock>=0)
 	{
 		key = deckgen_player(player_info.cardprivkeys,player_info.cardpubkeys,player_info.permis,bet->range);
 		printf("\nPublic Key:%s",bits256_str(hexstr,key.prod));
@@ -2160,8 +2164,6 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
         cJSON_AddStringToObject(joininfo,"method","join_req");
         jaddbits256(joininfo,"pubkey",key.prod);    
 
-		int argc,maxsize=10000;
-		char **argv=NULL,*buf=NULL;
 		argv=(char**)malloc(4*sizeof(char*));
 		buf=malloc(maxsize);
 		memset(buf,0x00,sizeof(buf));
@@ -2202,17 +2204,19 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 			printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
 			goto end;
 		}
-
-		if(buf)
-			free(buf);
-		for(int i=0;i<argc;i++)
-			free(argv[i]);
-		if(argv)
-			free(argv);
-				
         
     }
 	end:
+		
+		if(buf)
+			free(buf);
+		if(argv)
+		{
+			for(int i=0;i<argc;i++)
+				free(argv[i]);
+
+			free(argv);
+		}
     	return retval;	
 }
 
