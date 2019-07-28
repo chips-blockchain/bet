@@ -987,11 +987,6 @@ int32_t BET_rest_create_invoice(struct lws *wsi,cJSON *argjson)
 		free(argv);
 	}
 
-	if(invoice)
-		free_json(invoice);
-	if(invoiceInfo)
-		free_json(invoiceInfo);
-	
 	return retval;
 }
 
@@ -1057,10 +1052,6 @@ int32_t BET_rest_DCV_create_invoice(struct lws *wsi,cJSON *argjson)
 			free(argv);
 		}
 		
-		if(invoice)
-			free_json(invoice);
-		if(invoiceInfo)
-			free_json(invoiceInfo);
 		
 		return retval;
 }
