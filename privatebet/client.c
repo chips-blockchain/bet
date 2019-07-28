@@ -2468,7 +2468,7 @@ cJSON* make_command(int argc, char **argv)
 		   exit(1);
 	 }
 
-	 while(fgets(line, sizeof(line), fp) != NULL)
+	 while(fgets(line, sizeof(line)-1, fp) != NULL)
      {
      	strcat(data,line);
 	 }
