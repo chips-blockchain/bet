@@ -2507,7 +2507,8 @@ int32_t BET_rest_uri(char **uri)
 		goto end;
 	}
 	
-	*uri=(char*)malloc(sizeof(char)*100);
+	*uri=(char*)malloc(sizeof(char)*200);
+	memset(*uri,0x00,sizeof(*uri));
 	strcpy(*uri,jstr(channelInfo,"id"));
 	strcat(*uri,"@");
 	addresses=cJSON_GetObjectItem(channelInfo,"address");
