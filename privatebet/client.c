@@ -94,7 +94,7 @@ cJSON* make_command(int argc, char **argv)
 	char command[1000];
 	cJSON *argjson=NULL;
 	FILE *fp=NULL;
-	char data[10000],line[200];
+	char data[10000],line[200],temp[10000];
     memset(command,0x00,sizeof(command));
 	memset(data,0x00,sizeof(data));
 	memset(line,0x00,sizeof(line));
@@ -116,9 +116,22 @@ cJSON* make_command(int argc, char **argv)
      	strcat(data,line);
 		memset(line,0x00,sizeof(line));
 	 }
-	printf("data=%s\n",data); 
- 	argjson=cJSON_CreateObject();
-	argjson=cJSON_Parse(data);
+	argjson=cJSON_CreateObject();
+	if(strncmp("error", data, strlen("error")) == 0) 
+	{
+		memset(temp,0x00,sizeof(temp));
+		strncpy(temp,data+strlen("error"),(strlen(data)-strlen("error")));
+		printf("data=%s\n",temp); 
+		argjson=cJSON_Parse(temp);
+				
+				
+	}
+	else
+	{
+		printf("data=%s\n",data); 
+		argjson=cJSON_Parse(data);
+		cJSON_AddNumberToObject(argjson,"code",0);
+	}
 
      pclose(fp);
      return argjson;
