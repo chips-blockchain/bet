@@ -2452,16 +2452,14 @@ cJSON* make_command(int argc, char **argv)
 {
 	char command[1000];
 	cJSON *argjson=NULL;
+	FILE *fp=NULL;
+	char data[10000],line[200];
+
 	for(int i=0;i<argc;i++)
 	{
 		strcat(command,argv[i]);
 		strcat(command," ");
 	}	
-
-	
-	FILE *fp=NULL;
-	char data[10000],line[200];
-
 	 /* Open the command for reading. */
 	 fp = popen(command, "r");
 	 if (fp == NULL) 
@@ -2469,17 +2467,12 @@ cJSON* make_command(int argc, char **argv)
 		   printf("Failed to run command\n" );
 		   exit(1);
 	 }
-	 //fread(data,100,1,fp);
-	//printf("\ndata=%s",data);
-	
 	 while(fgets(line, sizeof(line)-1, fp) != NULL)
      {
      	strcat(data,line);
 	 }
  	argjson=cJSON_CreateObject();
-	printf("\ndata=%s",data);
 	argjson=cJSON_Parse(data);
-	printf("\n%s",cJSON_Print(argjson));
 
      pclose(fp);
      return argjson;
@@ -2506,7 +2499,7 @@ int32_t BET_rest_uri(char **uri)
 	ln_bet(argc-1,argv,buf);
 	channelInfo=cJSON_Parse(buf);
 	*/
-	cJSON_Print(channelInfo);
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(channelInfo));
 	if(jint(channelInfo,"code") != 0)
 	{
 		retval=-1;
