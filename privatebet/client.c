@@ -1992,6 +1992,16 @@ int32_t LN_get_channel_status(char *id)
 		}
 	
 	}
+	if(buf)
+		free(buf);
+	for(int i=0;i<4;i++)
+	{
+		if(argv[i])
+			free(argv[i]);
+	}
+	if(argv)
+		free(argv);
+
 	return channel_state;
 }
 int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
@@ -2418,11 +2428,57 @@ int32_t BET_rest_listfunds()
 		value+=jint(cJSON_GetArrayItem(outputs,i),"value");
 		
 	}
-	printf("%s::%d::value=%d\n",__FUNCTION__,__LINE__,value);
+
+    printf("%s::%d::value=%d\n",__FUNCTION__,__LINE__,value);
 	end:
+		
+		if(buf)
+			free(buf);
+		for(int i=0;i<3;i++)
+		{
+			if(argv[i])
+				free(argv[i]);
+		}
+		if(argv)
+			free(argv);
+
 		return value;
 }
 
+cJSON* make_command(int argc, char **argv)
+{
+	char command[1000];
+	cJSON *argjson=NULL;
+	for(int i=0;i<argc;i++)
+	{
+		strcat(command,argv[i]);
+		strcat(command," ");
+	}	
+
+	
+	FILE *fp;
+	char data[10000];
+
+	 /* Open the command for reading. */
+	 fp = popen(command, "r");
+	 if (fp == NULL) 
+	 {
+		   printf("Failed to run command\n" );
+		   exit(1);
+	 }
+	 
+	 if(fgets(data, sizeof(data), fp) != NULL)
+ 	 {
+ 	 	argjson=cJSON_CreateObject();
+		printf("\ndata=%s",data);
+		argjson=cJSON_Parse(data);
+		printf("\n%s",cJSON_Print(argjson));
+ 	 	
+ 	 }
+
+     pclose(fp);
+     return argjson;
+}
 
 int32_t BET_rest_uri(char **uri)
 {
@@ -2439,8 +2495,12 @@ int32_t BET_rest_uri(char **uri)
 	strcpy(argv[0],"./bet");
 	strcpy(argv[1],"getinfo");
 	argv[2]=NULL;
+
+	channelInfo=make_command(argc-1,argv);
+	/*
 	ln_bet(argc-1,argv,buf);
 	channelInfo=cJSON_Parse(buf);
+	*/
 	cJSON_Print(channelInfo);
 	if(jint(channelInfo,"code") != 0)
 	{
@@ -2457,7 +2517,20 @@ int32_t BET_rest_uri(char **uri)
 	strcat(*uri,jstr(address,"address"));
 
    end:
-		return retval;
+
+	if(uri)
+		free(uri);
+	if(buf)
+		free(buf);
+	for(int i=0;i<3;i++)
+	{
+		if(argv[i])
+			free(argv[i]);
+	}
+	if(argv)
+		free(argv);
+
+	return retval;
 	
 }
 
@@ -2721,6 +2794,9 @@ int32_t BET_rest_bvv_compute_init_b(struct lws *wsi, cJSON *argjson)
 	temp_buf[strlen(cJSON_Print(bvv_init_info))+LWS_PRE]='\0';
 	lws_write(wsi,temp_buf+LWS_PRE,strlen(cJSON_Print(bvv_init_info)),0);
 
+	if(temp_buf)
+		free(temp_buf);
+	
 	return 0;
 	
 }
@@ -2841,6 +2917,16 @@ int32_t BET_rest_fundChannel(char *channel_id)
 		sleep(10);
 	}
 end:
+	if(buf)
+		free(buf);
+	for(int i=0;i<5;i++)
+	{
+		if(argv[i])
+			free(argv[i]);
+	}
+	if(argv)
+		free(argv);
+	
 	return retval;
 }
 
@@ -2879,6 +2965,16 @@ int32_t BET_rest_connect(char *uri)
 		}
 	}
 	end:
+	if(buf)
+		free(buf);
+	for(int i=0;i<3;i++)
+	{
+		if(argv[i])
+			free(argv[i]);
+	}
+	if(argv)
+		free(argv);
+		
 	return retval;
 	
 }
@@ -3366,6 +3462,16 @@ int32_t BET_rest_pay(char *bolt11)
 	else
 		retval=-1;
 	end:
+	if(buf)
+		free(buf);
+	for(int i=0;i<4;i++)
+	{
+		if(argv[i])
+			free(argv[i]);
+	}
+	if(argv)
+		free(argv);
+		
 		return retval;
 }
 
