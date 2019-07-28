@@ -101,6 +101,7 @@ cJSON* make_command(int argc, char **argv)
 		strcat(command,argv[i]);
 		strcat(command," ");
 	}	
+	printf("command=%s\n",command);
 	 /* Open the command for reading. */
 	 fp = popen(command, "r");
 	 if (fp == NULL) 
