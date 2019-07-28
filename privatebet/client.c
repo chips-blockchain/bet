@@ -2489,7 +2489,7 @@ int32_t BET_rest_uri(char **uri)
 {
 	cJSON *channelInfo,*addresses,*address,*bvvResponseInfo=NULL;
 	int argc,bytes,retval=1,maxsize=10000;
-	char **argv,*buf;
+	char **argv=NULL,*buf=NULL;
 	argc=3;
 	argv=(char**)malloc(argc*sizeof(char*));
 	for(int i=0;i<argc;i++)
@@ -2523,8 +2523,6 @@ int32_t BET_rest_uri(char **uri)
 
    end:
 
-	if(uri)
-		free(uri);
 	if(buf)
 		free(buf);
 	for(int i=0;i<3;i++)
