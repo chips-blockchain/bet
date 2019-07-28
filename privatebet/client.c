@@ -2492,7 +2492,7 @@ int32_t BET_rest_uri(char **uri)
 	
 	buf=(char*)malloc(maxsize*sizeof(char));
 
-	strcpy(argv[0],"./bet");
+	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"getinfo");
 	argv[2]=NULL;
 
