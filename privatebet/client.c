@@ -95,13 +95,13 @@ cJSON* make_command(int argc, char **argv)
 	cJSON *argjson=NULL;
 	FILE *fp=NULL;
 	char data[10000],line[200];
-
+    memset(command,0x00,sizeof(command));
 	for(int i=0;i<argc;i++)
 	{
 		strcat(command,argv[i]);
 		strcat(command," ");
 	}	
-	printf("command=%s\n",command);
+	printf("\ncommand=%s\n\n",command);
 	 /* Open the command for reading. */
 	 fp = popen(command, "r");
 	 if (fp == NULL) 
