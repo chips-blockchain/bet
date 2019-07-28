@@ -96,6 +96,8 @@ cJSON* make_command(int argc, char **argv)
 	FILE *fp=NULL;
 	char data[10000],line[200];
     memset(command,0x00,sizeof(command));
+	memset(data,0x00,sizeof(data));
+	memset(line,0x00,sizeof(line));
 	for(int i=0;i<argc;i++)
 	{
 		strcat(command,argv[i]);
@@ -112,6 +114,7 @@ cJSON* make_command(int argc, char **argv)
 	 while(fgets(line, sizeof(line)-1, fp) != NULL)
      {
      	strcat(data,line);
+		memset(line,0x00,sizeof(line));
 	 }
 	printf("data=%s\n",data); 
  	argjson=cJSON_CreateObject();
