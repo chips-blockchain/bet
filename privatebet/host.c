@@ -946,6 +946,7 @@ int32_t BET_rest_create_invoice(struct lws *wsi,cJSON *argjson)
 	invoice=make_command(argc,argv);
 	//ln_bet(argc,argv,buf);
 	//invoice=cJSON_Parse(buf);
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(invoice));
 	if(jint(invoice,"code") != 0)
 	{
 		retval=-1;
