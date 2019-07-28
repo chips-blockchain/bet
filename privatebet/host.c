@@ -799,7 +799,7 @@ int32_t BET_rest_dcv_LN_check()
 		argc=6;
 		for(int i=0;i<argc;i++)
 			memset(argv[i],0x00,sizeof(argv[i]));
-		strcpy(argv[0],"./bet");
+		strcpy(argv[0],"lightning-cli");
 		strcpy(argv[1],"connect");
 		strcpy(argv[2],dcv_info.bvv_uri);
 		argv[3]=NULL;
@@ -812,7 +812,7 @@ int32_t BET_rest_dcv_LN_check()
 		argc=6;
 		for(int i=0;i<argc;i++)
 			memset(argv[i],0x00,sizeof(argv[i]));
-		strcpy(argv[0],"./bet");
+		strcpy(argv[0],"lightning-cli");
 		strcpy(argv[1],"fundchannel");
 		strcpy(argv[2],channel_id);
 		strcpy(argv[3],"500000");
@@ -877,14 +877,16 @@ int32_t BET_rest_dcv_LN_check()
 	end:
 	if(buf)
 		free(buf);
-	for(int i=0;i<6;i++)
-	{
-		if(argv[i])
-			free(argv[i]);
-	}
 	if(argv)
+	{
+		for(int i=0;i<6;i++)
+		{
+			if(argv[i])
+				free(argv[i]);
+		}
 		free(argv);
-		
+				
+	}
 
 	return retval;
 }
@@ -932,7 +934,7 @@ int32_t BET_rest_create_invoice(struct lws *wsi,cJSON *argjson)
 	}
 	dcv_info.betamount+=jint(argjson,"betAmount");
 
-	strcpy(argv[0],"./bet");
+	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"invoice");
 	sprintf(argv[2],"%d",jint(argjson,"betAmount"));
 	sprintf(argv[3],"%s_%d_%d_%d_%d",bits256_str(hexstr,dcv_info.deckid),invoiceID,jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
@@ -940,9 +942,10 @@ int32_t BET_rest_create_invoice(struct lws *wsi,cJSON *argjson)
 	argv[5]=NULL;
 	argc=5;
 
-	ln_bet(argc,argv,buf);
 	invoice=cJSON_CreateObject();
-	invoice=cJSON_Parse(buf);
+	invoice=make_command(argc,argv);
+	//ln_bet(argc,argv,buf);
+	//invoice=cJSON_Parse(buf);
 	if(jint(invoice,"code") != 0)
 	{
 		retval=-1;
@@ -976,13 +979,15 @@ int32_t BET_rest_create_invoice(struct lws *wsi,cJSON *argjson)
 		
 	if(buf)
 		free(buf);
-	for(int i=0;i<6;i++)
-	{
-		if(argv[i])
-			free(argv[i]);
-	}
 	if(argv)
+	{
+		for(int i=0;i<6;i++)
+		{
+			if(argv[i])
+				free(argv[i]);
+		}
 		free(argv);
+	}
 
 	if(invoice)
 		free_json(invoice);
@@ -1009,7 +1014,7 @@ int32_t BET_rest_DCV_create_invoice(struct lws *wsi,cJSON *argjson)
 	{
 			argv[i]=(char*)malloc(sizeof(char)*1000);
 	}
-	strcpy(argv[0],"./bet");
+	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"invoice");
 	sprintf(argv[2],"%d",jint(argjson,"winningAmount"));
 	sprintf(argv[3],"%d_%d",jint(argjson,"playerID"),jint(argjson,"winningAmount"));
@@ -1017,9 +1022,13 @@ int32_t BET_rest_DCV_create_invoice(struct lws *wsi,cJSON *argjson)
 	argv[5]=NULL;
 	argc=5;
 
-	ln_bet(argc,argv,buf);
+	
 	invoice=cJSON_CreateObject();
+	invoice=make_command(argc,argv);
+	/*
+	ln_bet(argc,argv,buf);
 	invoice=cJSON_Parse(buf);
+	*/
 	if(jint(invoice,"code") != 0)
 	{
 		retval=-1;
@@ -1043,13 +1052,15 @@ int32_t BET_rest_DCV_create_invoice(struct lws *wsi,cJSON *argjson)
 	end:
 		if(buf)
 			free(buf);
-		for(int i=0;i<6;i++)
-		{
-			if(argv[i])
-				free(argv[i]);
-		}
 		if(argv)
+		{
+			for(int i=0;i<6;i++)
+			{
+				if(argv[i])
+					free(argv[i]);
+			}
 			free(argv);
+		}
 		
 		if(invoice)
 			free_json(invoice);

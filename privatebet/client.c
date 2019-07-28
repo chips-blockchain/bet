@@ -2453,12 +2453,17 @@ int32_t BET_rest_listfunds()
 	
 	buf=(char*)malloc(maxsize*sizeof(char));
 
-	strcpy(argv[0],"./bet");
+	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"listfunds");
 	argv[2]=NULL;
+
+	listFunds=cJSON_CreateObject();
+	listFunds=make_command(argc-1,argv);
+
+	/*
 	ln_bet(argc-1,argv,buf);
 	listFunds=cJSON_Parse(buf);
-
+	*/
 	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(listFunds));
 
 	if(jint(listFunds,"code") != 0)
@@ -2480,13 +2485,15 @@ int32_t BET_rest_listfunds()
 		
 		if(buf)
 			free(buf);
-		for(int i=0;i<3;i++)
-		{
-			if(argv[i])
-				free(argv[i]);
-		}
 		if(argv)
+		{
+			for(int i=0;i<3;i++)
+			{
+				if(argv[i])
+					free(argv[i]);
+			}
 			free(argv);
+		}
 
 		return value;
 }
@@ -2892,7 +2899,7 @@ int32_t BET_rest_fundChannel(char *channel_id)
 	        argv[i]=(char*)malloc(100*sizeof(char));
 	}
 	argc=4;
-	strcpy(argv[0],"./bet");
+	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"fundchannel");
 	strcpy(argv[2],channel_id);
 	strcpy(argv[3],"500000");
@@ -3464,14 +3471,18 @@ int32_t BET_rest_pay(char *bolt11)
 		argv[i]=(char*)malloc(sizeof(char)*1000);
 	}
 	
-	strcpy(argv[0],"./bet");
+	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"pay");
 	strcpy(argv[2],bolt11);
 	argv[3]=NULL;
-	ln_bet(argc,argv,buf);
+
 	payResponse=cJSON_CreateObject();
+	payResponse=make_command(argc,argv);
+	
+	/*		
+	ln_bet(argc,argv,buf);
 	payResponse=cJSON_Parse(buf);
-		
+	*/	
 	if(jint(payResponse,"code") != 0)
 	{
 		retval=-1;
@@ -3484,16 +3495,18 @@ int32_t BET_rest_pay(char *bolt11)
 	else
 		retval=-1;
 	end:
-	if(buf)
-		free(buf);
-	for(int i=0;i<4;i++)
-	{
-		if(argv[i])
-			free(argv[i]);
-	}
-	if(argv)
-		free(argv);
-		
+		if(buf)
+			free(buf);
+		if(argv)
+		{
+			for(int i=0;i<4;i++)
+			{
+				if(argv[i])
+					free(argv[i]);
+			}
+			free(argv);				
+		}
+			
 		return retval;
 }
 
