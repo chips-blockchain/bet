@@ -3536,7 +3536,7 @@ int32_t BET_rest_pay(char *bolt11)
 
 	payResponse=cJSON_CreateObject();
 	payResponse=make_command(argc,argv);
-	
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(payResponse));
 	/*		
 	ln_bet(argc,argv,buf);
 	payResponse=cJSON_Parse(buf);
