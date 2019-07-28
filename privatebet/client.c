@@ -2029,18 +2029,19 @@ int32_t LN_get_channel_status(char *id)
 		}
 	
 	}
-	if(buf)
-		free(buf);
-	if(argv)
-	{
-		for(int i=0;i<4;i++)
+	end:
+		if(buf)
+			free(buf);
+		if(argv)
 		{
-			if(argv[i])
-				free(argv[i]);
+			for(int i=0;i<4;i++)
+			{
+				if(argv[i])
+					free(argv[i]);
+			}
+			free(argv);
 		}
-		free(argv);
-	}
-	return channel_state;
+		return channel_state;
 }
 int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
@@ -2894,9 +2895,13 @@ int32_t BET_rest_fundChannel(char *channel_id)
 	strcpy(argv[3],"500000");
 	argv[4]=NULL;
 
+	fundChannelInfo=cJSON_CreateObject();
+	fundChannelInfo=make_command(argc,argv);
+
+	/*
 	ln_bet(argc,argv,buf);
 	fundChannelInfo=cJSON_Parse(buf);
-
+   */
 	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(fundChannelInfo));
 
 	if(jint(fundChannelInfo,"code") != 0 )
@@ -2925,13 +2930,15 @@ int32_t BET_rest_fundChannel(char *channel_id)
 end:
 	if(buf)
 		free(buf);
-	for(int i=0;i<5;i++)
-	{
-		if(argv[i])
-			free(argv[i]);
-	}
 	if(argv)
-		free(argv);
+	{
+		for(int i=0;i<5;i++)
+		{
+			if(argv[i])
+				free(argv[i]);
+		}
+		free(argv);				
+	}
 	
 	return retval;
 }
