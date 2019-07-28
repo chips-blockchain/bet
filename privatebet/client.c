@@ -2457,7 +2457,7 @@ cJSON* make_command(int argc, char **argv)
 
 	
 	FILE *fp;
-	char data[10000];
+	char data[10000],line[200];
 
 	 /* Open the command for reading. */
 	 fp = popen(command, "r");
@@ -2466,15 +2466,15 @@ cJSON* make_command(int argc, char **argv)
 		   printf("Failed to run command\n" );
 		   exit(1);
 	 }
-	 
-	 if(fgets(data, sizeof(data), fp) != NULL)
- 	 {
- 	 	argjson=cJSON_CreateObject();
-		printf("\ndata=%s",data);
-		argjson=cJSON_Parse(data);
-		printf("\n%s",cJSON_Print(argjson));
- 	 	
- 	 }
+
+	 while(fgets(line, sizeof(line), fp) != NULL)
+     {
+     	strcat(data,line);
+	 }
+ 	argjson=cJSON_CreateObject();
+	printf("\ndata=%s",data);
+	argjson=cJSON_Parse(data);
+	printf("\n%s",cJSON_Print(argjson));
 
      pclose(fp);
      return argjson;
