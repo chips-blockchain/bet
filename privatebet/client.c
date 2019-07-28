@@ -2003,7 +2003,7 @@ int32_t LN_get_channel_status(char *id)
     {
      argv[i]=(char*)malloc(100*sizeof(char));
     }
-	strcpy(argv[0],"./bet");
+	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"peer-channel-state");
 	strcpy(argv[2],id);
 	argv[3]=NULL;
@@ -2953,7 +2953,7 @@ int32_t BET_rest_connect(char *uri)
         {
          argv[i]=(char*)malloc(100*sizeof(char));
         }
-		strcpy(argv[0],"./bet");
+		strcpy(argv[0],"lightning-cli");
 		strcpy(argv[1],"connect");
 		strcpy(argv[2],uri);
 		argv[3]=NULL;
