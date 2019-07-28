@@ -137,6 +137,51 @@ cJSON* make_command(int argc, char **argv)
      return argjson;
 }
 
+void make_command_temp(int argc, char **argv,cJSON *argjson)
+{
+	char command[1000];
+	FILE *fp=NULL;
+	char data[10000],line[200],temp[10000];
+    memset(command,0x00,sizeof(command));
+	memset(data,0x00,sizeof(data));
+	memset(line,0x00,sizeof(line));
+	for(int i=0;i<argc;i++)
+	{
+		strcat(command,argv[i]);
+		strcat(command," ");
+	}	
+	printf("\ncommand=%s\n\n",command);
+	 /* Open the command for reading. */
+	 fp = popen(command, "r");
+	 if (fp == NULL) 
+	 {
+		   printf("Failed to run command\n" );
+		   exit(1);
+	 }
+	 while(fgets(line, sizeof(line)-1, fp) != NULL)
+     {
+     	strcat(data,line);
+		memset(line,0x00,sizeof(line));
+	 }
+	if(strncmp("error", data, strlen("error")) == 0) 
+	{
+		memset(temp,0x00,sizeof(temp));
+		strncpy(temp,data+strlen("error"),(strlen(data)-strlen("error")));
+		argjson=cJSON_Parse(temp);
+		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));		
+				
+	}
+	else
+	{
+		argjson=cJSON_Parse(data);
+		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+		cJSON_AddNumberToObject(argjson,"code",0);
+		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+	}
+
+     pclose(fp);
+}
+
 int32_t BET_client_onechip(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars,int32_t senderid)
 {
     printf("client onechop.(%s)\n",jprint(argjson,0));
