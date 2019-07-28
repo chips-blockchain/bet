@@ -1021,7 +1021,7 @@ int32_t BET_rest_DCV_create_invoice(struct lws *wsi,cJSON *argjson)
 
 	
 	invoice=cJSON_CreateObject();
-	invoice=make_command(argc,argv);
+	make_command_temp(argc,argv,&invoice);
 	/*
 	ln_bet(argc,argv,buf);
 	invoice=cJSON_Parse(buf);
