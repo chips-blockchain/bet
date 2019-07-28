@@ -920,13 +920,12 @@ int32_t BET_rest_bvv_join(struct lws *wsi, cJSON *argjson)
 int32_t BET_rest_create_invoice(struct lws *wsi,cJSON *argjson)
 {
 	int argc,bytes,retval=1;
-	char **argv,*buf=NULL,*rendered;
+	char **argv,*rendered;
 	char hexstr [65];
 	int32_t maxsize = 10000;
 	cJSON *invoiceInfo=NULL,*invoice=NULL;
 	argc=6;
 	argv =(char**)malloc(argc*sizeof(char*));
-	buf=(char*)malloc(maxsize*sizeof(char));
 	invoiceID++;
 	for(int i=0;i<argc;i++)
 	{
@@ -969,7 +968,7 @@ int32_t BET_rest_create_invoice(struct lws *wsi,cJSON *argjson)
 		}
 		
 		cJSON_AddStringToObject(invoiceInfo,"label",argv[3]);
-		cJSON_AddStringToObject(invoiceInfo,"invoice",buf);
+		cJSON_AddStringToObject(invoiceInfo,"invoice",cJSON_Print(invoice));
 		cJSON_AddItemToObject(invoiceInfo,"payment_params",cJSON_GetObjectItem(argjson,"payment_params"));
 		printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(invoiceInfo));
 		lws_write(wsi,cJSON_Print(invoiceInfo),strlen(cJSON_Print(invoiceInfo)),0);
@@ -978,8 +977,6 @@ int32_t BET_rest_create_invoice(struct lws *wsi,cJSON *argjson)
 	
 	end:
 		
-	if(buf)
-		free(buf);
 	if(argv)
 	{
 		for(int i=0;i<6;i++)
@@ -1004,13 +1001,12 @@ int32_t BET_rest_create_invoice(struct lws *wsi,cJSON *argjson)
 int32_t BET_rest_DCV_create_invoice(struct lws *wsi,cJSON *argjson)
 {
 	int argc,bytes,retval=1;
-	char **argv,*buf=NULL,*rendered;
+	char **argv=NULL,*rendered=NULL;
 	char hexstr [65];
 	int32_t maxsize = 10000;
 	cJSON *invoiceInfo=NULL,*invoice=NULL;
 	argc=6;
 	argv =(char**)malloc(argc*sizeof(char*));
-	buf=(char*)malloc(maxsize*sizeof(char));
 	for(int i=0;i<argc;i++)
 	{
 			argv[i]=(char*)malloc(sizeof(char)*1000);
@@ -1043,7 +1039,7 @@ int32_t BET_rest_DCV_create_invoice(struct lws *wsi,cJSON *argjson)
 		cJSON_AddNumberToObject(invoiceInfo,"playerID",jint(argjson,"playerID"));
 		cJSON_AddNumberToObject(invoiceInfo,"winningAmount",jint(argjson,"winningAmount"));
 		cJSON_AddStringToObject(invoiceInfo,"label",argv[3]);
-		cJSON_AddStringToObject(invoiceInfo,"invoice",buf);
+		cJSON_AddStringToObject(invoiceInfo,"invoice",cJSON_Print(invoice));
 	
 		printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(invoiceInfo));
 		lws_write(wsi,cJSON_Print(invoiceInfo),strlen(cJSON_Print(invoiceInfo)),0);
@@ -1051,8 +1047,6 @@ int32_t BET_rest_DCV_create_invoice(struct lws *wsi,cJSON *argjson)
 	}
 	
 	end:
-		if(buf)
-			free(buf);
 		if(argv)
 		{
 			for(int i=0;i<6;i++)
