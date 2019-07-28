@@ -12,6 +12,8 @@
  * Removal or modification of this copyright notice is prohibited.            *
  *                                                                            *
  ******************************************************************************/
+#define _POSIX_C_SOURCE 200809L                /* For pclose, popen, strdup */
+
 #include <sqlite3.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -2457,7 +2459,7 @@ cJSON* make_command(int argc, char **argv)
 	}	
 
 	
-	FILE *fp;
+	FILE *fp=NULL;
 	char data[10000],line[200];
 
 	 /* Open the command for reading. */
@@ -2467,7 +2469,9 @@ cJSON* make_command(int argc, char **argv)
 		   printf("Failed to run command\n" );
 		   exit(1);
 	 }
-
+	 //fread(data,100,1,fp);
+	//printf("\ndata=%s",data);
+	
 	 while(fgets(line, sizeof(line)-1, fp) != NULL)
      {
      	strcat(data,line);
