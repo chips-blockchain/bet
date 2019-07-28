@@ -938,7 +938,7 @@ int32_t BET_rest_create_invoice(struct lws *wsi,cJSON *argjson)
 	strcpy(argv[1],"invoice");
 	sprintf(argv[2],"%d",jint(argjson,"betAmount"));
 	sprintf(argv[3],"%s_%d_%d_%d_%d",bits256_str(hexstr,dcv_info.deckid),invoiceID,jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
-	sprintf(argv[4],"Invoice details playerID:%d,round:%d,betting Amount:%d",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
+	sprintf(argv[4],"\"Invoice details playerID:%d,round:%d,betting Amount:%d\"",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
 	argv[5]=NULL;
 	argc=5;
 
@@ -1018,7 +1018,7 @@ int32_t BET_rest_DCV_create_invoice(struct lws *wsi,cJSON *argjson)
 	strcpy(argv[1],"invoice");
 	sprintf(argv[2],"%d",jint(argjson,"winningAmount"));
 	sprintf(argv[3],"%d_%d",jint(argjson,"playerID"),jint(argjson,"winningAmount"));
-	sprintf(argv[4],"Invoice details playerID:%d,winning Amount:%d",jint(argjson,"playerID"),jint(argjson,"winningAmount"));
+	sprintf(argv[4],"\"Invoice details playerID:%d,winning Amount:%d\"",jint(argjson,"playerID"),jint(argjson,"winningAmount"));
 	argv[5]=NULL;
 	argc=5;
 
