@@ -14,6 +14,7 @@
  ******************************************************************************/
 #include <sqlite3.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "../includes/cJSON.h"
 #include "../includes/ppapi/c/pp_stdint.h"
