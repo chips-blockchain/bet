@@ -2579,8 +2579,8 @@ int32_t BET_rest_bvv_init(struct lws *wsi, cJSON *argjson)
 		permis_b[i]=bvv_info.permis[i];
 	}
 	
-	*uri=(char*)malloc(sizeof(char)*200);
-	memset(*uri,0x00,sizeof(*uri));
+	uri=(char*)malloc(sizeof(char)*200);
+	memset(uri,0x00,sizeof(uri));
 	BET_rest_uri(&uri);
 
 	
@@ -2676,8 +2676,8 @@ int32_t BET_rest_player_join(struct lws *wsi, cJSON *argjson)
 	jaddbits256(joinInfo,"pubkey",key.prod);
 
 	
-	*uri=(char*)malloc(sizeof(char)*200);
-	memset(*uri,0x00,sizeof(*uri));
+	uri=(char*)malloc(sizeof(char)*200);
+	memset(uri,0x00,sizeof(uri));
 	BET_rest_uri(&uri);
 	printf("%s::%d::uri::%s\n",__FUNCTION__,__LINE__,uri);
 	
