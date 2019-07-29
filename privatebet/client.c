@@ -2984,8 +2984,9 @@ int32_t BET_rest_connect(char *uri)
 	int argc,maxsize=10000,retval=1,channel_state;
 	char **argv=NULL,channel_id[100];
 	cJSON *connectInfo=NULL;
-
-	strcpy(channel_id,strtok(uri, "@"));
+	char temp[200];
+	strncpy(temp,uri,strlen(uri));
+	strcpy(channel_id,strtok(temp, "@"));
 	
 	channel_state=LN_get_channel_status(channel_id);
 	if((channel_state != 2)&&(channel_state !=3)) // 3 means channel is already established with the peer
