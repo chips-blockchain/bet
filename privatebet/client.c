@@ -2982,7 +2982,7 @@ end:
 int32_t BET_rest_connect(char *uri)
 {
 	int argc,maxsize=10000,retval=1,channel_state;
-	char **argv=NULL,*buf=NULL,channel_id[100];
+	char **argv=NULL,channel_id[100];
 	cJSON *connectInfo=NULL;
 
 	strcpy(channel_id,strtok(uri, "@"));
@@ -2992,7 +2992,6 @@ int32_t BET_rest_connect(char *uri)
 	{					
 		argc=3;
         argv=(char**)malloc(argc*sizeof(char*));
-        buf=malloc(maxsize);
         for(int i=0;i<argc;i++)
         {
          argv[i]=(char*)malloc(100*sizeof(char));
@@ -3000,8 +2999,7 @@ int32_t BET_rest_connect(char *uri)
 		strcpy(argv[0],"lightning-cli");
 		strcpy(argv[1],"connect");
 		strcpy(argv[2],uri);
-		argv[3]=NULL;
-
+	
 		connectInfo=cJSON_CreateObject();
 		make_command(argc,argv,&connectInfo);
 		/*
@@ -3018,8 +3016,6 @@ int32_t BET_rest_connect(char *uri)
 		}
 	}
 	end:
-	if(buf)
-		free(buf);
 	if(argv)
 	{
 		for(int i=0;i<3;i++)
