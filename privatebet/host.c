@@ -108,8 +108,8 @@ int32_t BET_rest_dcv_init(struct lws *wsi, cJSON *argjson)
 	jaddbits256(dcvKeyInfo,"deckid",dcv_info.deckid);
 	jaddbits256(dcvKeyInfo,"pubkey",dcv_info.dcv_key.prod);
 	
-	*uri=(char*)malloc(sizeof(char)*200);
-	memset(*uri,0x00,sizeof(*uri));
+	uri=(char*)malloc(sizeof(char)*200);
+	memset(uri,0x00,sizeof(uri));
 	BET_rest_uri(&uri);
 	printf("%s::%d::uri:%s\n",__FUNCTION__,__LINE__,uri);
 	
@@ -266,8 +266,8 @@ int32_t BET_rest_client_join_req(struct lws *wsi, cJSON *argjson)
 	jaddbits256(playerInfo,"pubkey",jbits256(argjson,"pubkey"));
 
 	
-	*uri=(char*)malloc(sizeof(char)*200);
-	memset(*uri,0x00,sizeof(*uri));
+	uri=(char*)malloc(sizeof(char)*200);
+	memset(uri,0x00,sizeof(uri));
 	BET_rest_uri(&uri);
 	printf("%s::%d::uri::%s\n",__FUNCTION__,__LINE__,uri);
 	
