@@ -2508,13 +2508,12 @@ int32_t BET_rest_uri(char **uri)
 {
 	cJSON *channelInfo=NULL,*addresses,*address,*bvvResponseInfo=NULL;
 	int argc,bytes,retval=1,maxsize=10000;
-	char **argv=NULL,*buf=NULL;
+	char **argv=NULL;
 	argc=3;
 	argv=(char**)malloc(argc*sizeof(char*));
 	for(int i=0;i<argc;i++)
 		argv[i]=(char*)malloc(100*sizeof(char));
 	
-	buf=(char*)malloc(maxsize*sizeof(char));
 
 	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"getinfo");
@@ -2533,8 +2532,6 @@ int32_t BET_rest_uri(char **uri)
 		goto end;
 	}
 	
-	*uri=(char*)malloc(sizeof(char)*200);
-	memset(*uri,0x00,sizeof(*uri));
 	strcpy(*uri,jstr(channelInfo,"id"));
 	strcat(*uri,"@");
 	addresses=cJSON_GetObjectItem(channelInfo,"address");
@@ -2543,16 +2540,16 @@ int32_t BET_rest_uri(char **uri)
 
    end:
 
-	if(buf)
-		free(buf);
-	for(int i=0;i<3;i++)
-	{
-		if(argv[i])
-			free(argv[i]);
-	}
 	if(argv)
+	{
+		
+		for(int i=0;i<3;i++)
+		{
+			if(argv[i])
+				free(argv[i]);
+		}
 		free(argv);
-
+	}
 	return retval;
 	
 }
@@ -2669,12 +2666,22 @@ int32_t BET_rest_player_join(struct lws *wsi, cJSON *argjson)
     cJSON_AddStringToObject(joinInfo,"method","join_req");
 	jaddnum(joinInfo,"player_id",player_id);
 	jaddbits256(joinInfo,"pubkey",key.prod);
+
+	
+	*uri=(char*)malloc(sizeof(char)*200);
+	memset(*uri,0x00,sizeof(*uri));
 	BET_rest_uri(&uri);
+	printf("%s::%d::uri::%s\n",__FUNCTION__,__LINE__,uri);
 	cJSON_AddStringToObject(joinInfo,"uri",uri);
 	cJSON_AddNumberToObject(joinInfo,"balance",BET_rest_listfunds());
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(joinInfo));
 	lws_write(wsi,cJSON_Print(joinInfo),strlen(cJSON_Print(joinInfo)),0);
-	player_id++;	
+	player_id++;
+
+	end:
+	if(uri)
+		free(uri);
+		
 	return 0;
 }
 
