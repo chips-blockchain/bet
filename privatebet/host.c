@@ -107,14 +107,23 @@ int32_t BET_rest_dcv_init(struct lws *wsi, cJSON *argjson)
 	dcvKeyInfo=cJSON_CreateObject();
 	jaddbits256(dcvKeyInfo,"deckid",dcv_info.deckid);
 	jaddbits256(dcvKeyInfo,"pubkey",dcv_info.dcv_key.prod);
-
+	
+	*uri=(char*)malloc(sizeof(char)*200);
+	memset(*uri,0x00,sizeof(*uri));
 	BET_rest_uri(&uri);
+	printf("%s::%d::uri:%s\n",__FUNCTION__,__LINE__,uri);
+	
 	dcvInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(dcvInfo,"method","dcv");
 	cJSON_AddStringToObject(dcvInfo,"dcv",cJSON_Print(dcvKeyInfo));
 	cJSON_AddStringToObject(dcvInfo,"uri",uri);
 	cJSON_AddNumberToObject(dcvInfo,"balance",BET_rest_listfunds());
 	lws_write(wsi,cJSON_Print(dcvInfo),strlen(cJSON_Print(dcvInfo)),0);
+
+	end:
+	if(uri)
+		free(uri);
+		
 	return 0;
 }
 
@@ -256,14 +265,21 @@ int32_t BET_rest_client_join_req(struct lws *wsi, cJSON *argjson)
 	cJSON_AddNumberToObject(playerInfo,"peerid",BET_dcv->numplayers-1); //players numbering starts from 0(zero)
 	jaddbits256(playerInfo,"pubkey",jbits256(argjson,"pubkey"));
 
+	
+	*uri=(char*)malloc(sizeof(char)*200);
+	memset(*uri,0x00,sizeof(*uri));
 	BET_rest_uri(&uri);
+	printf("%s::%d::uri::%s\n",__FUNCTION__,__LINE__,uri);
+	
 	cJSON_AddStringToObject(playerInfo,"uri",uri);
 
 	
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(playerInfo));
 
 	lws_write(wsi,cJSON_Print(playerInfo),strlen(cJSON_Print(playerInfo)),0);
-
+	end:
+	if(uri)
+		free(uri);
 	return 0;
 }
 

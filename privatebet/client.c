@@ -2579,13 +2579,21 @@ int32_t BET_rest_bvv_init(struct lws *wsi, cJSON *argjson)
 		permis_b[i]=bvv_info.permis[i];
 	}
 	
+	*uri=(char*)malloc(sizeof(char)*200);
+	memset(*uri,0x00,sizeof(*uri));
 	BET_rest_uri(&uri);
+
+	
 	bvvJoinInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(bvvJoinInfo,"method","bvv_join");
 	cJSON_AddStringToObject(bvvJoinInfo,"uri",uri);
 	cJSON_AddNumberToObject(bvvJoinInfo,"balance",BET_rest_listfunds());
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(bvvJoinInfo));
 	lws_write(wsi,cJSON_Print(bvvJoinInfo),strlen(cJSON_Print(bvvJoinInfo)),0);
+
+	end:
+	if(uri)
+		free(uri);
 	
 	return 0;
 }
@@ -2672,6 +2680,7 @@ int32_t BET_rest_player_join(struct lws *wsi, cJSON *argjson)
 	memset(*uri,0x00,sizeof(*uri));
 	BET_rest_uri(&uri);
 	printf("%s::%d::uri::%s\n",__FUNCTION__,__LINE__,uri);
+	
 	cJSON_AddStringToObject(joinInfo,"uri",uri);
 	cJSON_AddNumberToObject(joinInfo,"balance",BET_rest_listfunds());
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(joinInfo));
