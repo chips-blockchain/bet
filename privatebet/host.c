@@ -786,6 +786,7 @@ int32_t BET_rest_dcv_LN_check()
 	int argc,retval=1;
 	char **argv,*buf=NULL,uri[100];
 	cJSON *peerInfo=NULL,*fundChannelInfo=NULL;
+	cJSON *temp=NULL;
 	argc=6;
 	argv=(char**)malloc(argc*sizeof(char*));
 	for(int i=0;i<argc;i++)
@@ -807,7 +808,8 @@ int32_t BET_rest_dcv_LN_check()
 		memset(buf,0x00,sizeof(buf));
 
 		//ln_bet(argc,argv,buf);
-		make_command(argc,argv);
+		temp=cJSON_CreateObject();
+		make_command(argc,argv,&temp);
 
 		argc=6;
 		for(int i=0;i<argc;i++)
@@ -825,7 +827,7 @@ int32_t BET_rest_dcv_LN_check()
 		
 
 		fundChannelInfo=cJSON_CreateObject();
-		fundChannelInfo=make_command(argc,argv);
+		make_command(argc,argv,&fundChannelInfo);
 
 		if(jint(fundChannelInfo,"code") == -1)
 		{
@@ -942,7 +944,7 @@ int32_t BET_rest_create_invoice(struct lws *wsi,cJSON *argjson)
 	argc=5;
 
 	invoice=cJSON_CreateObject();
-	make_command_temp(argc,argv,&invoice);
+	make_command(argc,argv,&invoice);
 	//ln_bet(argc,argv,buf);
 	//invoice=cJSON_Parse(buf);
 	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(invoice));
@@ -1016,7 +1018,7 @@ int32_t BET_rest_DCV_create_invoice(struct lws *wsi,cJSON *argjson)
 
 	
 	invoice=cJSON_CreateObject();
-	make_command_temp(argc,argv,&invoice);
+	make_command(argc,argv,&invoice);
 	/*
 	ln_bet(argc,argv,buf);
 	invoice=cJSON_Parse(buf);

@@ -88,56 +88,7 @@ struct privatebet_info *BET_player[CARDS777_MAXPLAYERS];
 struct privatebet_vars *Player_VARS[CARDS777_MAXPLAYERS];
 struct deck_player_info all_players_info[CARDS777_MAXPLAYERS];
 
-
-cJSON* make_command(int argc, char **argv)
-{
-	char command[1000];
-	cJSON *argjson=NULL;
-	FILE *fp=NULL;
-	char data[10000],line[200],temp[10000];
-    memset(command,0x00,sizeof(command));
-	memset(data,0x00,sizeof(data));
-	memset(line,0x00,sizeof(line));
-	for(int i=0;i<argc;i++)
-	{
-		strcat(command,argv[i]);
-		strcat(command," ");
-	}	
-	printf("\ncommand=%s\n\n",command);
-	 /* Open the command for reading. */
-	 fp = popen(command, "r");
-	 if (fp == NULL) 
-	 {
-		   printf("Failed to run command\n" );
-		   exit(1);
-	 }
-	 while(fgets(line, sizeof(line)-1, fp) != NULL)
-     {
-     	strcat(data,line);
-		memset(line,0x00,sizeof(line));
-	 }
-	argjson=cJSON_CreateObject();
-	if(strncmp("error", data, strlen("error")) == 0) 
-	{
-		memset(temp,0x00,sizeof(temp));
-		strncpy(temp,data+strlen("error"),(strlen(data)-strlen("error")));
-		argjson=cJSON_Parse(temp);
-		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));		
-				
-	}
-	else
-	{
-		argjson=cJSON_Parse(data);
-		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-		cJSON_AddNumberToObject(argjson,"code",0);
-		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-	}
-
-     pclose(fp);
-     return argjson;
-}
-
-void make_command_temp(int argc, char **argv,cJSON **argjson)
+void make_command(int argc, char **argv,cJSON **argjson)
 {
 	char command[1000];
 	FILE *fp=NULL;
@@ -2072,7 +2023,7 @@ int32_t LN_get_channel_status(char *id)
 	argc=3;
 
 	channelStateInfo=cJSON_CreateObject();
-    channelStateInfo=make_command(argc,argv);
+    make_command(argc,argv,&channelStateInfo);
 	/*
 	ln_bet(argc,argv,buf);
 	channelStateInfo=cJSON_Parse(buf);
@@ -2516,7 +2467,7 @@ int32_t BET_rest_listfunds()
 	argv[2]=NULL;
 
 	listFunds=cJSON_CreateObject();
-	listFunds=make_command(argc-1,argv);
+	make_command(argc-1,argv,&listFunds);
 
 	/*
 	ln_bet(argc-1,argv,buf);
@@ -2572,7 +2523,7 @@ int32_t BET_rest_uri(char **uri)
 	strcpy(argv[1],"getinfo");
 	argv[2]=NULL;
 	channelInfo=cJSON_CreateObject();
-	channelInfo=make_command(argc-1,argv);
+	make_command(argc-1,argv,&channelInfo);
 	/*
 	ln_bet(argc-1,argv,buf);
 	channelInfo=cJSON_Parse(buf);
@@ -2968,7 +2919,7 @@ int32_t BET_rest_fundChannel(char *channel_id)
 	argv[4]=NULL;
 
 	fundChannelInfo=cJSON_CreateObject();
-	fundChannelInfo=make_command(argc,argv);
+	make_command(argc,argv,&fundChannelInfo);
 
 	/*
 	ln_bet(argc,argv,buf);
@@ -3039,7 +2990,7 @@ int32_t BET_rest_connect(char *uri)
 		argv[3]=NULL;
 
 		connectInfo=cJSON_CreateObject();
-		connectInfo=make_command(argc,argv);
+		make_command(argc,argv,&connectInfo);
 		/*
 		ln_bet(argc,argv,buf);
 		connectInfo=cJSON_Parse(buf);
@@ -3539,7 +3490,7 @@ int32_t BET_rest_pay(char *bolt11)
 	argv[3]=NULL;
 
 	payResponse=cJSON_CreateObject();
-	payResponse=make_command(argc,argv);
+	make_command(argc,argv,&payResponse);
 	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(payResponse));
 	/*		
 	ln_bet(argc,argv,buf);
