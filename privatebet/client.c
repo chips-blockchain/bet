@@ -119,15 +119,12 @@ void make_command(int argc, char **argv,cJSON **argjson)
 		memset(temp,0x00,sizeof(temp));
 		strncpy(temp,data+strlen("error"),(strlen(data)-strlen("error")));
 		*argjson=cJSON_Parse(temp);
-		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(*argjson));		
 				
 	}
 	else
 	{
 		*argjson=cJSON_Parse(data);
-		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(*argjson));
 		cJSON_AddNumberToObject(*argjson,"code",0);
-		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(*argjson));
 	}
 
      pclose(fp);
