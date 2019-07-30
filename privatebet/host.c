@@ -774,7 +774,7 @@ int32_t BET_rest_evaluate_hand(struct lws *wsi)
 	printf("\n");
 
 	end:	
-		if(retval)
+	/*	if(retval)
 		{
 			
 			resetInfo=cJSON_CreateObject();
@@ -784,6 +784,7 @@ int32_t BET_rest_evaluate_hand(struct lws *wsi)
 			BET_rest_DCV_reset(wsi);
 			
 		}
+	*/	
 		return retval;
 }
 
@@ -1077,15 +1078,23 @@ int32_t BET_rest_DCV_create_invoice(struct lws *wsi,cJSON *argjson)
 int32_t BET_rest_DCV_winningClaim(struct lws *wsi,cJSON *argjson)
 {
 	int32_t retval=1;
-	char *invoice=NULL;
-	cJSON *invoiceInfo=NULL;
+	char *invoice=NULL,*rendered=NULL;
+	cJSON *invoiceInfo=NULL,*resetInfo=NULL;
 	
 	invoice=jstr(argjson,"invoice");
 	invoiceInfo=cJSON_Parse(invoice);
 
 	retval=BET_rest_pay(jstr(invoiceInfo,"bolt11"));
 	if(retval)
+	{
 		printf("\n%d Satoshis paid to the player:%d\n",jint(argjson,"winningAmount"),jint(argjson,"playerID"));
+		
+		resetInfo=cJSON_CreateObject();
+		cJSON_AddStringToObject(resetInfo,"method","reset");
+		rendered=cJSON_Print(resetInfo);
+		lws_write(wsi,cJSON_Print(resetInfo),strlen(cJSON_Print(resetInfo)),0);
+		BET_rest_DCV_reset(wsi);
+	}
 	
 	return retval;
 }
