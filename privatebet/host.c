@@ -64,8 +64,8 @@ char* suit[NSUITS]= {"clubs","diamonds","hearts","spades"};
 char* face[NFACES]= {"two","three","four","five","six","seven","eight","nine",
 					 "ten","jack","queen","king","ace"};
 
-struct privatebet_info *BET_dcv;
-struct privatebet_vars *DCV_VARS;
+struct privatebet_info *BET_dcv=NULL;
+struct privatebet_vars *DCV_VARS=NULL;
 
 
 /*
@@ -78,10 +78,18 @@ int32_t BET_rest_dcv_init(struct lws *wsi, cJSON *argjson)
 	cJSON *dcvInfo=NULL,*dcvKeyInfo=NULL;
 	int32_t Maxplayers=2;
 	char *uri=NULL;
+
+	if(BET_dcv == NULL)
+		BET_dcv=(struct privatebet_info*)malloc(sizeof(struct privatebet_info)); //   calloc(1,sizeof(struct privatebet_info));
+	else
+		memset(BET_dcv,0x00,sizeof(struct privatebet_info));
+
+	if(DCV_VARS == NULL)
+		DCV_VARS=(struct privatebet_vars*)malloc(sizeof(struct privatebet_vars));//	DCV_VARS = calloc(1,sizeof(struct privatebet_vars));
+	else
+		memset(DCV_VARS,0x00,sizeof(struct privatebet_vars));
 	
-	DCV_VARS = calloc(1,sizeof(struct privatebet_vars));
-	
-	BET_dcv=calloc(1,sizeof(struct privatebet_info));
+	//BET_dcv=calloc(1,sizeof(struct privatebet_info));
 	//BET_dcv->pubsock = pubsock;//BET_nanosock(1,bindaddr,NN_PUB);
 	//BET_dcv->pullsock = pullsock;//BET_nanosock(1,bindaddr1,NN_PULL);
 	BET_dcv->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
