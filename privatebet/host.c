@@ -1318,6 +1318,11 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
         int ret_val,ret_len;
         char *buf=NULL;
         buf=(char*)malloc(len);
+		if(buf == NULL)
+		{
+			printf("%s::%d::Failed to allocate memory\n",__FUNCTION__,__LINE__);
+			goto end;
+		}
         strncpy(buf,in,len);
 		
         cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
@@ -1338,6 +1343,11 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 				}
                 break;
         }
+		end:
+		if(buf)
+		{
+			free(buf);
+		}
         return 0;
 }
 
