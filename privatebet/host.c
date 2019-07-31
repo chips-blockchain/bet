@@ -690,7 +690,7 @@ void BET_rest_DCV_reset(struct lws *wsi)
 		}
 	}
 				
-	//BET_rest_dcv_init(wsi,NULL);
+	BET_rest_dcv_init(wsi,NULL);
 }
 
 
