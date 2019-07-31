@@ -1338,8 +1338,6 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 				}
                 break;
         }
-		if(buf)
-			free(buf);
         return 0;
 }
 
