@@ -63,6 +63,10 @@ int32_t BET_p2p_bvvcommand_test(struct lws *wsi, cJSON *argjson);
 
 void BET_test_function_bvv(void* _ptr);
 
+int32_t BET_rest_player_reset(struct lws *wsi,cJSON * argjson);
+void BET_rest_BVV_reset();
+bits256 BET_get_deckid(int32_t playerID);
+
 
 
 
