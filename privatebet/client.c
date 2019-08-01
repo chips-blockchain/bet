@@ -12,8 +12,11 @@
  * Removal or modification of this copyright notice is prohibited.            *
  *                                                                            *
  ******************************************************************************/
+#define _POSIX_C_SOURCE 200809L                /* For pclose, popen, strdup */
+
 #include <sqlite3.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "../includes/cJSON.h"
 #include "../includes/ppapi/c/pp_stdint.h"
@@ -94,6 +97,47 @@ struct privatebet_info *BET_player[CARDS777_MAXPLAYERS];
 struct privatebet_vars *Player_VARS[CARDS777_MAXPLAYERS];
 struct deck_player_info all_players_info[CARDS777_MAXPLAYERS];
 
+void make_command(int argc, char **argv,cJSON **argjson)
+{
+	char command[1000];
+	FILE *fp=NULL;
+	char data[10000],line[200],temp[10000];
+    memset(command,0x00,sizeof(command));
+	memset(data,0x00,sizeof(data));
+	memset(line,0x00,sizeof(line));
+	for(int i=0;i<argc;i++)
+	{
+		strcat(command,argv[i]);
+		strcat(command," ");
+	}	
+	printf("\ncommand=%s\n\n",command);
+	 /* Open the command for reading. */
+	 fp = popen(command, "r");
+	 if (fp == NULL) 
+	 {
+		   printf("Failed to run command\n" );
+		   exit(1);
+	 }
+	 while(fgets(line, sizeof(line)-1, fp) != NULL)
+     {
+     	strcat(data,line);
+		memset(line,0x00,sizeof(line));
+	 }
+	if(strncmp("error", data, strlen("error")) == 0) 
+	{
+		memset(temp,0x00,sizeof(temp));
+		strncpy(temp,data+strlen("error"),(strlen(data)-strlen("error")));
+		*argjson=cJSON_Parse(temp);
+				
+	}
+	else
+	{
+		*argjson=cJSON_Parse(data);
+		cJSON_AddNumberToObject(*argjson,"code",0);
+	}
+
+     pclose(fp);
+}
 
 int32_t BET_client_onechip(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars,int32_t senderid)
 {
@@ -3210,7 +3254,13 @@ int32_t BET_rest_player_join(struct lws *wsi, cJSON *argjson)
     cJSON_AddStringToObject(joinInfo,"method","join_req");
 	jaddnum(joinInfo,"player_id",player_id);
 	jaddbits256(joinInfo,"pubkey",key.prod);
+
+	
+	uri=(char*)malloc(sizeof(char)*200);
+	memset(uri,0x00,sizeof(uri));
 	BET_rest_uri(&uri);
+	printf("%s::%d::uri::%s\n",__FUNCTION__,__LINE__,uri);
+	
 	cJSON_AddStringToObject(joinInfo,"uri",uri);
 	cJSON_AddNumberToObject(joinInfo,"balance",BET_rest_listfunds());
 	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(joinInfo));
@@ -3223,7 +3273,9 @@ int32_t BET_rest_player_join(struct lws *wsi, cJSON *argjson)
 	if(bytes<0)
 		printf("\n%s:%d::Failed to push the data to DCV\n",__FUNCTION__,__LINE__);
 	
-	
+	end:
+	if(uri)
+		free(uri);
 	return 0;
 }
 
