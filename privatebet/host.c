@@ -842,6 +842,7 @@ int32_t BET_rest_dcv_LN_check()
 	int argc,retval=1;
 	char **argv,*buf=NULL,uri[100];
 	cJSON *peerInfo=NULL,*fundChannelInfo=NULL;
+	cJSON *temp=NULL;
 	argc=6;
 	argv=(char**)malloc(argc*sizeof(char*));
 	for(int i=0;i<argc;i++)
