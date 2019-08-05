@@ -1383,7 +1383,7 @@ int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct pri
 		}
 		else if(strcmp(method,"bvv_join") == 0)
 		{
-			BET_p2p_bvv_join_init(argjson,bet,vars);
+			//BET_p2p_bvv_join_init(argjson,bet,vars);
 		}
 		else if(strcmp(method,"check_bvv_ready") == 0)
 		{
@@ -1400,6 +1400,7 @@ int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct pri
 		else if(strcmp(method,"seats") == 0)
 		{
 			printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+			BET_p2p_bvv_join_init(argjson,bet,vars);
 		}
         else
             retval=-1;
