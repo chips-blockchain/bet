@@ -46,6 +46,9 @@ $ cd ~
 $ git clone https://github.com/sg777/lightning.git
 $ cd lightning
 $ make
+$ cd src
+$ cp lightning-cli /usr/bin
+$ ldconfig
 
 # Running Lightning Daemon
 
@@ -71,6 +74,7 @@ The branches are listes as follow.
 * highest_card_wins
 * poker
 * rest_dev
+* poker_test
 
 ### highest_card_wins
 This branch is used to play the highest card player wins game via CLI, two players can play the game. The player whoever gets the highest card wins the game.
@@ -82,6 +86,10 @@ This branch is used to player poker via CLI
 This branch is used to player poker via GUI, the GUI code should be taken from `poker` branch of `[pangea-poker-frontend](https://github.com/sg777/pangea-poker-frontend)` repo.
 
 For the GUI developers the backend message formats are defined [here](./docs/messageFormats.md)
+
+### poker_test
+This branch is used to player poker via GUI, the GUI code should be taken from `poker_test` branch of `[pangea-poker-frontend](https://github.com/sg777/pangea-poker-frontend)` repo.
+
 
 ## Communicating over IP Adress
 DCV nodes binds to the sockets created over the ports 7797 and 7798. The BVV and Player nodes connect to the binding address via subscribe and push sockets. Here DCV and BVV are the trusted notarized nodes in the network, DCV plays the central role in coordinating the game.
