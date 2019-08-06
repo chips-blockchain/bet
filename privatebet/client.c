@@ -2158,11 +2158,10 @@ int32_t BET_p2p_client_init(cJSON *argjson,struct privatebet_info *bet,struct pr
 int32_t LN_get_channel_status(char *id)
 {
 	int argc,maxsize=10000,channel_state=0;
-	char **argv=NULL,*buf=NULL;
+	char **argv=NULL;
 	cJSON *channelStateInfo=NULL,*channelStates=NULL,*channelState=NULL;
 	argc=4;
     argv=(char**)malloc(argc*sizeof(char*));
-    buf=malloc(maxsize);
     for(int i=0;i<argc;i++)
     {
      argv[i]=(char*)malloc(100*sizeof(char));
@@ -2193,8 +2192,6 @@ int32_t LN_get_channel_status(char *id)
 	
 	}
 	end:
-		if(buf)
-			free(buf);
 		if(argv)
 		{
 			for(int i=0;i<4;i++)
@@ -2480,7 +2477,8 @@ int32_t BET_player_reset(struct privatebet_info *bet,struct privatebet_vars *var
 		}
 	}
 	
-	return(BET_p2p_client_join(NULL,bet,vars));
+	//return(BET_p2p_client_join(NULL,bet,vars));
+	return 1;
 }
 
 
