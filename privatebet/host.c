@@ -2295,7 +2295,7 @@ int32_t BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct pri
 		cJSON_AddNumberToObject(invoiceInfo,"round",jint(argjson,"round"));
 		cJSON_AddStringToObject(invoiceInfo,"label",argv[3]);
 		cJSON_AddStringToObject(invoiceInfo,"invoice",cJSON_Print(invoice));
-		
+		printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(invoiceInfo));
 		rendered=cJSON_Print(invoiceInfo);
 		bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 		

@@ -1598,7 +1598,7 @@ int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 {
 	cJSON *invoiceInfo=NULL,*paymentInfo=NULL,*payResponse=NULL;
     char *invoice=NULL;
-	int argc,maxsize=10000,retval=1;
+	int argc,retval=1;
 	char **argv=NULL;
 	int32_t playerID,bytes;
 	char *rendered=NULL;
