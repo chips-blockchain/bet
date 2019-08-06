@@ -1169,7 +1169,6 @@ int32_t BET_p2p_connect(char *uri)
 	argv[3]=NULL;
 	connectInfo=cJSON_CreateObject();
 	make_command(argc-1,argv,&connectInfo);
-	strncpy(response,cJSON_Print(connectInfo),strlen(cJSON_Print(connectInfo)));
 	//ln_bet(argc-1,argv,response);
 	end:
 	if(argv)
@@ -1201,7 +1200,6 @@ cJSON* BET_p2p_fundchannel(char *channel_id,char *satohis)
 
 	fundChannelInfo=cJSON_CreateObject();
 	make_command(argc-1,argv,&fundChannelInfo);
-	strncpy(response,cJSON_Print(fundChannelInfo),strlen(cJSON_Print(fundChannelInfo)));
 
 	//ln_bet(argc-1,argv,response);
 	end:
@@ -2196,7 +2194,7 @@ int32_t BET_p2p_client_init(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 int32_t LN_get_channel_status(char *id)
 {
-	int argc,maxsize=10000,channel_state=0;
+	int argc,channel_state=0;
 	char **argv=NULL;
 	cJSON *channelStateInfo=NULL,*channelStates=NULL,*channelState=NULL;
 	argc=4;
