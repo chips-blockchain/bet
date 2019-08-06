@@ -1914,8 +1914,8 @@ int32_t BET_p2p_host_init(cJSON *argjson,struct privatebet_info *bet,struct priv
 
 int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int argc,maxsize=10000,retval=1,state;
-	char **argv,uri[100],*buf;
+	int argc,retval=1,state;
+	char **argv=NULL,uri[100];
 	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
 	strcpy(uri,jstr(argjson,"uri"));
 	strcpy(dcv_info.bvv_uri,uri);
