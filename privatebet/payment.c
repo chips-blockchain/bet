@@ -317,7 +317,7 @@ int32_t BET_DCV_pay(cJSON *argjson,struct privatebet_info *bet,struct privatebet
 	invoice=jstr(argjson,"invoice");
 	invoiceInfo=cJSON_Parse(invoice);
 
-	strcpy(argv[0],"./bet");
+	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"pay");
 	sprintf(argv[2],"%s",jstr(invoiceInfo,"bolt11"));
 	argv[3]=NULL;
