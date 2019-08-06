@@ -305,11 +305,10 @@ int32_t BET_DCV_pay(cJSON *argjson,struct privatebet_info *bet,struct privatebet
 {
 	
 	cJSON *invoiceInfo=NULL,*paymentInfo=NULL,*payResponse=NULL;
-	int argc,maxsize=10000,retval=1,bytes;
-	char **argv=NULL,*buf=NULL,*rendered=NULL,*invoice=NULL;
+	int argc,retval=1,bytes;
+	char **argv=NULL,*rendered=NULL,*invoice=NULL;
 
 	argv=(char**)malloc(4*sizeof(char*));
-	buf=malloc(maxsize);
 	argc=3;
 	for(int i=0;i<4;i++)
 	{
@@ -322,10 +321,13 @@ int32_t BET_DCV_pay(cJSON *argjson,struct privatebet_info *bet,struct privatebet
 	strcpy(argv[1],"pay");
 	sprintf(argv[2],"%s",jstr(invoiceInfo,"bolt11"));
 	argv[3]=NULL;
-	ln_bet(argc,argv,buf);
+	
 	payResponse=cJSON_CreateObject();
-	payResponse=cJSON_Parse(buf);
-		
+	make_command(argc,argv,&payResponse);
+
+	printf("\n%s::%d::payment response\n",__FUNCTION__,__LINE__);
+	printf("%s\n",cJSON_Print(payResponse));
+	
 	if(jint(payResponse,"code") != 0)
 	{
 		retval=-1;
@@ -337,7 +339,17 @@ int32_t BET_DCV_pay(cJSON *argjson,struct privatebet_info *bet,struct privatebet
 		printf("\nPayment Success");
 	*/	
 	end:
-		return retval;
+	if(argv)
+	{
+		for(int i=0;i<4;i++)
+		{
+			if(argv[i])
+				free(argv[i]);
+		}
+		free(argv);
+	}
+
+	return retval;
 	
 }
 
