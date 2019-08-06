@@ -3000,6 +3000,7 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 		}
 		else if(strcmp(method,"finalInfo") == 0)
 		{
+			lws_write(wsi_global_client,cJSON_Print(argjson),strlen(argjson),0);
 			//retval=BET_rest_finalInfo(argjson);
 		}
 	}	
