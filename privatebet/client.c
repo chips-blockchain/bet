@@ -1106,7 +1106,7 @@ int32_t BET_p2p_bvv_join_init(cJSON *argjson,struct privatebet_info *bet,struct 
 	argv[2]=NULL;
 
 	channelInfo=cJSON_CreateObject();
-	make_command(argc,argv,&channelInfo);
+	make_command(argc-1,argv,&channelInfo);
 	
 	//ln_bet(argc-1,argv,buf);
 	//channelInfo=cJSON_Parse(buf);
