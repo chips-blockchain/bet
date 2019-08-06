@@ -840,14 +840,13 @@ int32_t BET_rest_dcv_LN_check()
 {
 	char channel_id[100],channel_state;
 	int argc,retval=1;
-	char **argv,*buf=NULL,uri[100];
+	char **argv=NULL,uri[100];
 	cJSON *peerInfo=NULL,*fundChannelInfo=NULL;
 	cJSON *temp=NULL;
 	argc=6;
 	argv=(char**)malloc(argc*sizeof(char*));
 	for(int i=0;i<argc;i++)
 		argv[i]=(char*)malloc(100);
-	buf=(char*)malloc(10000);
 	strcpy(uri,dcv_info.bvv_uri);
 	strcpy(channel_id,strtok(uri, "@"));
 	channel_state=LN_get_channel_status(channel_id);
@@ -861,8 +860,7 @@ int32_t BET_rest_dcv_LN_check()
 		strcpy(argv[2],dcv_info.bvv_uri);
 		argv[3]=NULL;
 		argc=3;
-		memset(buf,0x00,sizeof(buf));
-
+	
 		//ln_bet(argc,argv,buf);
 		temp=cJSON_CreateObject();
 		make_command(argc,argv,&temp);
@@ -878,7 +876,6 @@ int32_t BET_rest_dcv_LN_check()
 		argc=4;
 
 		
-		memset(buf,0x00,sizeof(buf));
 		//ln_bet(argc,argv,buf);
 		
 
@@ -933,8 +930,6 @@ int32_t BET_rest_dcv_LN_check()
 	}
 
 	end:
-	if(buf)
-		free(buf);
 	if(argv)
 	{
 		for(int i=0;i<6;i++)
@@ -1929,18 +1924,19 @@ int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct priva
 						
 			argc=5;
             argv=(char**)malloc(argc*sizeof(char*));
-            buf=malloc(maxsize);
             for(int i=0;i<argc;i++)
             {
              argv[i]=(char*)malloc(100*sizeof(char));
 	        }
 			argc=3;
-			strcpy(argv[0],"./bet");
+			strcpy(argv[0],"lightning-cli");
 			strcpy(argv[1],"connect");
 			strcpy(argv[2],uri);
 			argv[3]=NULL;
-			ln_bet(argc,argv,buf);
-			connectInfo=cJSON_Parse(buf);
+			connectInfo=cJSON_CreateObject();
+			make_command(argc,argv,&connectInfo);
+			//ln_bet(argc,argv,buf);
+			//connectInfo=cJSON_Parse(buf);
 			cJSON_Print(connectInfo);
 			if(jint(connectInfo,"code") != 0)
 			{
@@ -1950,21 +1946,20 @@ int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct priva
 			}
 		
 			argc=5;
-			argv=(char**)malloc(argc*sizeof(char*));
-			buf=malloc(maxsize);
 			for(int i=0;i<argc;i++)
 			{
-			        argv[i]=(char*)malloc(100*sizeof(char));
+				memset(argv[i],0x00,sizeof(argv[i]));
 			}
-			strcpy(argv[0],"./bet");
+			strcpy(argv[0],"lightning-cli");
 			strcpy(argv[1],"fundchannel");
 			strcpy(argv[2],jstr(connectInfo,"id"));
-			printf("\n id:%s",argv[2]);
 			strcpy(argv[3],"500000");
 			argv[4]=NULL;
-			argc=4;	
-			ln_bet(argc,argv,buf);
-			fundChannelInfo=cJSON_Parse(buf);
+			argc=4;
+			fundChannelInfo=cJSON_CreateObject();
+			make_command(argc,argv,&fundChannelInfo);
+			//ln_bet(argc,argv,buf);
+			//fundChannelInfo=cJSON_Parse(buf);
 			cJSON_Print(fundChannelInfo);
 			if(jint(fundChannelInfo,"code") != 0)
 			{
@@ -1992,6 +1987,15 @@ int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct priva
 		}
 		
 	end:
+		if(argv)
+		{
+			for(int i=0;i<5;i++)
+			{
+				if(argv[i])
+					free(argv[i]);
+			}
+			free(argv);
+		}
 		return retval;
 }
 
@@ -2015,8 +2019,8 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
 	cJSON *playerinfo=NULL,*getInfo=NULL,*addresses=NULL,*address=NULL;
     uint32_t bytes,retval=1;
 	char *rendered=NULL,*uri=NULL;
-	int argc,maxsize=10000;
-	char **argv=NULL,*buf=NULL;
+	int argc;
+	char **argv=NULL;
 
 
 	
@@ -2025,17 +2029,18 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
 	strcpy(dcv_info.uri[players_joined-1],jstr(argjson,"uri"));
 	
 	argv=(char**)malloc(4*sizeof(char*));
-	buf=malloc(maxsize);
 	argc=3;
 	for(int i=0;i<argc;i++)
 		argv[i]=(char*)malloc(100*sizeof(char));		
 	
-	strcpy(argv[0],"./bet");
+	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"getinfo");
 	argv[2]=NULL;
-	
-	ln_bet(argc-1,argv,buf);
-	getInfo=cJSON_Parse(buf);
+	getInfo=cJSON_CreateObject();
+	make_command(argc-1,argv,&getInfo);
+		
+	//ln_bet(argc-1,argv,buf);
+	//getInfo=cJSON_Parse(buf);
 	uri=(char*)malloc(100*sizeof(char));
 	
 	addresses=cJSON_GetObjectItem(getInfo,"address");
@@ -2062,6 +2067,17 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
 		goto end;
 	}
 	end:
+		if(uri)
+			free(uri);
+		if(argv)
+		{
+			for(int i=0;i<argc;i++)
+			{
+				if(argv[i])
+					free(argv[i]);
+			}
+			free(argv);
+		}
 		return retval;
  }
 
@@ -2239,13 +2255,11 @@ int32_t BET_check_BVV_Ready(struct privatebet_info *bet)
 int32_t BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int argc,bytes,retval=1;
-	char **argv,*buf=NULL,*rendered;
+	char **argv=NULL,*rendered=NULL;
 	char hexstr [65];
-	int32_t maxsize = 1000000;
 	cJSON *invoiceInfo=NULL,*invoice=NULL;
 	argc=6;
 	argv =(char**)malloc(argc*sizeof(char*));
-	buf=(char*)malloc(maxsize*sizeof(char));
 	invoiceID++;
 	for(int i=0;i<argc;i++)
 	{
@@ -2253,17 +2267,20 @@ int32_t BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct pri
 	}
 	dcv_info.betamount+=jint(argjson,"betAmount");
 
-	strcpy(argv[0],"./bet");
+	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"invoice");
 	sprintf(argv[2],"%d",jint(argjson,"betAmount"));
 	sprintf(argv[3],"%s_%d_%d_%d_%d",bits256_str(hexstr,dcv_info.deckid),invoiceID,jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
 	sprintf(argv[4],"Invoice details playerID:%d,round:%d,betting Amount:%d",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
 	argv[5]=NULL;
 	argc=5;
-
-	ln_bet(argc,argv,buf);
+	
 	invoice=cJSON_CreateObject();
-	invoice=cJSON_Parse(buf);
+	make_command(argc,argv,&invoice);
+	
+	//ln_bet(argc,argv,buf);
+	//invoice=cJSON_CreateObject();
+	//invoice=cJSON_Parse(buf);
 	if(jint(invoice,"code") != 0)
 	{
 		retval=-1;
@@ -2277,7 +2294,7 @@ int32_t BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct pri
 		cJSON_AddNumberToObject(invoiceInfo,"playerID",jint(argjson,"playerID"));
 		cJSON_AddNumberToObject(invoiceInfo,"round",jint(argjson,"round"));
 		cJSON_AddStringToObject(invoiceInfo,"label",argv[3]);
-		cJSON_AddStringToObject(invoiceInfo,"invoice",buf);
+		cJSON_AddStringToObject(invoiceInfo,"invoice",cJSON_Print(invoice));
 		
 		rendered=cJSON_Print(invoiceInfo);
 		bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
@@ -2292,6 +2309,15 @@ int32_t BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct pri
 	}
 	
 	end:
+		if(argv)
+		{
+			for(int i=0;i<6;i++)
+			{
+				if(argv[i])
+					free(argv[i]);
+			}
+			free(argv);
+		}
 		return retval;
 }
 
@@ -2302,25 +2328,25 @@ int32_t BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privat
 	cJSON *invoicesInfo=NULL,*invoiceInfo=NULL,*invoice=NULL,*winnerInfo=NULL;
 	char *label=NULL;
 	int32_t argc,bytes;
-	int32_t maxsize = 1000000;
-	char **argv=NULL,*buf=NULL,*rendered=NULL;
+	char **argv=NULL,*rendered=NULL;
 
 	argc=4;
 	argv=(char**)malloc(sizeof(char*)*argc);
 	for(int32_t i=0;i<=argc;i++)
 		argv[i]=(char*)malloc(100*sizeof(char));
-	buf=(char*)malloc(maxsize*sizeof(char));
-
+	
 	
 	label=jstr(payInfo,"label");
-	strcpy(argv[0],".\bet");
+	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"listinvoices");
 	strcpy(argv[2],label);
 	argv[3]=NULL;
-	
-	ln_bet(argc-1,argv,buf);
+
 	invoicesInfo=cJSON_CreateObject();
-	invoicesInfo=cJSON_Parse(buf);
+	make_command(argc-1,argv,&invoicesInfo);
+	
+	//ln_bet(argc-1,argv,buf);
+	//invoicesInfo=cJSON_Parse(buf);
 
 	if(jint(invoicesInfo,"code") != 0 )
 	{
@@ -2343,7 +2369,6 @@ int32_t BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privat
 			dcv_info.paidamount+=jint(invoice,"msatoshi_received");
 			printf("\nAmount paid: %d",jint(invoice,"msatoshi_received"));
 		}
-		printf("\n%s:%d:%d",__FUNCTION__,no_of_bets,no_of_cards);
 		no_of_bets++;
 		if(no_of_cards == no_of_bets)
 		{	
@@ -2375,6 +2400,15 @@ int32_t BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privat
 	}
 	
 	end:
+		if(argv)
+		{
+			for(int i=0;i<argc;i++)
+			{
+				if(argv[i])
+					free(argv[i]);
+			}
+			free(argv);
+		}
 		return retval;
 		
 }
@@ -2805,10 +2839,10 @@ int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 
 void BET_establish_ln_channels(struct privatebet_info *bet)
 {
-	int argc,maxsize=1000;
-	char **argv=NULL,*buf=NULL;
+	int argc;
+	char **argv=NULL;
+	cJSON *connectInfo=NULL;
 	
-	buf=(char*)malloc(maxsize*sizeof(char));
 	argc=4;
 	argv=(char**)malloc(argc*sizeof(char*));
 	for(int i=0;i<argc;i++)
@@ -2819,54 +2853,74 @@ void BET_establish_ln_channels(struct privatebet_info *bet)
 	argc=3;
 	for(int i=0;i<bet->maxplayers;i++)
 	{
-		strcpy(argv[0],".\bet");
+		strcpy(argv[0],"lightning-cli");
 		strcpy(argv[1],"connect");
 		strcpy(argv[2],dcv_info.uri[i]);
-		ln_bet(argc,argv,buf);
-		printf("\n%s:%d:Conncet Response:%s",__FUNCTION__,__LINE__,buf);
+
+		connectInfo=cJSON_CreateObject();
+		make_command(argc,argv,&connectInfo);
+		//ln_bet(argc,argv,buf);
+		printf("\n%s:%d:Conncet Response:%s",__FUNCTION__,__LINE__,cJSON_Print(connectInfo));
+	}
+	end:
+	if(argv)
+	{
+		for(int i=0;i<4;i++)
+		{
+			if(argv[i])
+				free(argv[i]);
+		}
+		free(argv);
 	}
 }
 
 int BET_LN_check_if_peer_exists(char *channel_id)
 {
-	int argc,retval=1;
-	char **argv,*buf=NULL;
+	int argc,retval=0;
+	char **argv=NULL;
 	cJSON *peerInfo=NULL;
 	
 	argc=4;	
 	argv=(char**)malloc(argc*sizeof(char*));
 	for(int i=0;i<argc;i++)
 		argv[i]=(char*)malloc(100);
-	buf=(char*)malloc(10000);
 
-	strcpy(argv[0],"./bet");
+	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"check-if-peer-exists");
 	strcpy(argv[2],channel_id);
 	argv[3]=NULL;
 	argc=3;
 
-	ln_bet(argc,argv,buf);
-	
 	peerInfo=cJSON_CreateObject();
-	peerInfo=cJSON_Parse(buf);
+	make_command(argc,argv,&peerInfo);
+	//	ln_bet(argc,argv,buf);
+	//	peerInfo=cJSON_Parse(buf);
 
 	if(strcmp(jstr(peerInfo,"peer-exists"),"true")==0)
-		return 1;
-	else 
-		return 0;
+		retval=1;
+	end:
+		if(argv)
+		{
+			for(int i=0;i<4;i++)
+			{
+				if(argv[i])
+					free(argv[i]);
+			}
+			free(argv);
+		}
+		return retval;
 		
 }
 int32_t BET_LN_check(struct privatebet_info *bet)
 {
 	char channel_id[100],channel_state;
 	int argc,retval=1;
-	char **argv,*buf=NULL,uri[100];
-	cJSON *peerInfo=NULL,*fundChannelInfo=NULL;
+	char **argv=NULL,uri[100];
+	cJSON *peerInfo=NULL,*fundChannelInfo=NULL,*connectInfo=NULL;
 	argc=6;
 	argv=(char**)malloc(argc*sizeof(char*));
 	for(int i=0;i<argc;i++)
 		argv[i]=(char*)malloc(100);
-	buf=(char*)malloc(10000);
 	strcpy(uri,dcv_info.bvv_uri);
 	strcpy(channel_id,strtok(uri, "@"));
 	channel_state=LN_get_channel_status(channel_id);
@@ -2875,30 +2929,36 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 		argc=6;
 		for(int i=0;i<argc;i++)
 			memset(argv[i],0x00,sizeof(argv[i]));
-		strcpy(argv[0],"./bet");
+		strcpy(argv[0],"lightning-cli");
 		strcpy(argv[1],"connect");
 		strcpy(argv[2],dcv_info.bvv_uri);
 		argv[3]=NULL;
 		argc=3;
-		memset(buf,0x00,sizeof(buf));
-		ln_bet(argc,argv,buf);
+
+		connectInfo=cJSON_CreateObject();
+		make_command(argc,argv,&connectInfo);
+		
+		//memset(buf,0x00,sizeof(buf));
+		//ln_bet(argc,argv,buf);
 
 		argc=6;
 		for(int i=0;i<argc;i++)
 			memset(argv[i],0x00,sizeof(argv[i]));
-		strcpy(argv[0],"./bet");
+		strcpy(argv[0],"lightning-cli");
 		strcpy(argv[1],"fundchannel");
 		strcpy(argv[2],channel_id);
 		strcpy(argv[3],"500000");
 		argv[4]=NULL;
 		argc=4;
 
-		
-		memset(buf,0x00,sizeof(buf));
-		ln_bet(argc,argv,buf);
-
 		fundChannelInfo=cJSON_CreateObject();
-		fundChannelInfo=cJSON_Parse(buf);
+		make_command(argc,argv,&fundChannelInfo);
+		
+		//memset(buf,0x00,sizeof(buf));
+		//ln_bet(argc,argv,buf);
+
+		//fundChannelInfo=cJSON_CreateObject();
+		//fundChannelInfo=cJSON_Parse(buf);
 
 		if(jint(fundChannelInfo,"code") == -1)
 		{
@@ -2947,37 +3007,58 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 		printf("\nPlayer %d --> DCV channel ready",i);	
 	}
 	end:
+		if(argv)
+		{
+			for(int i=0;i<6;i++)
+			{
+				if(argv[i])
+					free(argv[i]);
+			}
+			free(argv);
+		}
 		return retval;
 }
 
 void BET_p2p_LN_close(struct privatebet_info *bet)
 {
-	int argc,maxsize=10000;
-	char **argv,*buf;
+	int argc;
+	char **argv=NULL;
+	cJSON *closeInfo=NULL;
 	argc=4;
 	argv=(char**)malloc(argc*sizeof(char*));
 	for(int i=0;i<argc;i++)
 		argv[i]=(char*)malloc(100*sizeof(char));
-	buf=(char*)malloc(maxsize);
-	strcpy(argv[0],"./bet");
+	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"close");
 	argv[3]=NULL;
 	argc=3;
+	closeInfo=cJSON_CreateObject();
 	for(int i=0;i<bet->maxplayers;i++)
 	{
+		memset(argv[2],0x00,sizeof(argv[2]));
 		strcpy(argv[2],strtok(dcv_info.uri[i],"@"));
-		ln_bet(argc,argv,buf);
-		printf("\n%s:%d: %s\n",__FUNCTION__,__LINE__,buf);
+		make_command(argc,argv,&closeInfo);
+		//ln_bet(argc,argv,buf);
+		printf("\n%s:%d: %s\n",__FUNCTION__,__LINE__,cJSON_Print(closeInfo));
 	}
+
+	end:
+		if(argv)
+		{
+			for(int i=0;i<4;i++)
+			{
+				if(argv[i])
+					free(argv[i]);
+			}
+			free(argv);
+		}
 	
 }
 int32_t BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int argc,maxsize=100000,retval=1;
-	char **argv=NULL,*buf=NULL,hexstr[65],channel_id[100],*invoice=NULL;
+	int argc,retval=1;
+	char **argv=NULL,hexstr[65],channel_id[100],*invoice=NULL;
 	cJSON *payResponse=NULL,*invoiceInfo=NULL,*fundChannelInfo=NULL;
-
-	buf=(char*)malloc(maxsize*sizeof(char));
 
 	
 	argc=5;
@@ -2987,16 +3068,17 @@ int32_t BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct priva
 	strcpy(channel_id,strtok(dcv_info.uri[jint(argjson,"playerid")], "@"));
 	if(LN_get_channel_status(channel_id)!=3)
 	{
-		strcpy(argv[0],".\bet");
+		strcpy(argv[0],"lightning-cli");
 		strcpy(argv[1],"fundchannel");
 		strcpy(argv[2],channel_id);
 		strcpy(argv[3],"500000");
 		argv[4]=NULL;
 		argc=4;
-		ln_bet(argc,argv,buf);
-
+		
 		fundChannelInfo=cJSON_CreateObject();
-		fundChannelInfo=cJSON_Parse(buf);
+		make_command(argc,argv,&fundChannelInfo);
+		//ln_bet(argc,argv,buf);
+		//fundChannelInfo=cJSON_Parse(buf);
 
 		if(jint(fundChannelInfo,"code") != 0)
 		{
@@ -3005,7 +3087,7 @@ int32_t BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct priva
 			goto end;
 		}
 
-		printf("\nFund channel response:%s\n",buf);
+		printf("\nFund channel response:%s\n",cJSON_Print(fundChannelInfo));
 		int state;
 		while((state=LN_get_channel_status(channel_id)) != 3)
 		 {
@@ -3029,15 +3111,16 @@ int32_t BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct priva
 		memset(argv[i],0,sizeof(argv[i]));
 	
 	argc=3;
-	strcpy(argv[0],"./bet");
+	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"pay");
 	sprintf(argv[2],"%s",jstr(invoiceInfo,"bolt11"));
 	argv[3]=NULL;
 
-	memset(buf,0,sizeof(buf));
-	ln_bet(argc,argv,buf);
+	
 	payResponse=cJSON_CreateObject();
-	payResponse=cJSON_Parse(buf);
+	make_command(argc,argv,&payResponse);
+	//ln_bet(argc,argv,buf);
+	//payResponse=cJSON_Parse(buf);
 
 	if(jint(payResponse,"code") != 0)
 	{
@@ -3053,6 +3136,15 @@ int32_t BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct priva
 	}
 			
 	end:
+		if(argv)
+		{
+			for(int i=0;i<5;i++)
+			{
+				if(argv[i])
+					free(argv[i]);
+			}
+			free(argv);
+		}
 		return retval;
 }
 

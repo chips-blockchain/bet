@@ -395,45 +395,54 @@ Here contains the functions which are specific to players and BVV
 
 int32_t BET_player_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars,char* deckid)
 {
-	int argc,bytes,maxsize=10000,retval=1;
-	char **argv,*buf,hexstr [65],*rendered=NULL;
-	cJSON *invoiceInfo=NULL;
+	int argc,bytes,retval=1;
+	char **argv=NULL,hexstr [65],*rendered=NULL;
+	cJSON *invoiceInfo=NULL,*invoice=NULL;
 	if(jint(argjson,"playerid")==bet->myplayerid)
 	{
 		argv =(char**)malloc(6*sizeof(char*));
-		buf=(char*)malloc(maxsize*sizeof(char));
 		for(int i=0;i<5;i++)
 		{
 				argv[i]=(char*)malloc(sizeof(char)*1000);
 		}
 		
-		strcpy(argv[0],"./bet");
+		strcpy(argv[0],"lightning-cli");
 		strcpy(argv[1],"invoice");
 		sprintf(argv[2],"%d",jint(argjson,"betAmount"));
 		sprintf(argv[3],"%s_%d",deckid,jint(argjson,"betAmount"));
 		sprintf(argv[4],"Winning claim");
 		argv[5]=NULL;
 		argc=5;
-		if(buf)
+
+		invoice=cJSON_CreateObject();
+		make_command(argc,argv,&invoice);
+		//ln_bet(argc,argv,buf);
+		invoiceInfo=cJSON_CreateObject();
+		cJSON_AddStringToObject(invoiceInfo,"method","invoice");
+		cJSON_AddNumberToObject(invoiceInfo,"playerid",bet->myplayerid);
+		cJSON_AddStringToObject(invoiceInfo,"label",argv[3]);
+		cJSON_AddStringToObject(invoiceInfo,"invoice",cJSON_Print(invoice));
+
+		rendered=cJSON_Print(invoiceInfo);
+		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+		if(bytes<0)
 		{
-			ln_bet(argc,argv,buf);
-			invoiceInfo=cJSON_CreateObject();
-			cJSON_AddStringToObject(invoiceInfo,"method","invoice");
-			cJSON_AddNumberToObject(invoiceInfo,"playerid",bet->myplayerid);
-			cJSON_AddStringToObject(invoiceInfo,"label",argv[3]);
-			cJSON_AddStringToObject(invoiceInfo,"invoice",buf);
-	
-			rendered=cJSON_Print(invoiceInfo);
-			bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
-			if(bytes<0)
-			{
-				retval=-1;
-				printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
-				goto end;
-			}
+			retval=-1;
+			printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
+			goto end;
 		}
 	}
 	end:
+		
+		if(argv)
+		{
+			for(int i=0;i<5;i++)
+			{
+				if(argv[i])
+					free(argv[i]);
+			}
+			free(argv);
+		}
 		return retval;
 		
 }
