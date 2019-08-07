@@ -1602,6 +1602,9 @@ int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 	char **argv=NULL;
 	int32_t playerID,bytes;
 	char *rendered=NULL;
+
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+	
 	argv=(char**)malloc(4*sizeof(char*));
 	argc=3;
 	for(int i=0;i<4;i++)
