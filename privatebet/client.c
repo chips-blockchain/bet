@@ -1598,10 +1598,13 @@ int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 {
 	cJSON *invoiceInfo=NULL,*paymentInfo=NULL,*payResponse=NULL;
     char *invoice=NULL;
-	int argc,maxsize=10000,retval=1;
+	int argc,retval=1;
 	char **argv=NULL;
 	int32_t playerID,bytes;
 	char *rendered=NULL;
+
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+	
 	argv=(char**)malloc(4*sizeof(char*));
 	argc=3;
 	for(int i=0;i<4;i++)
@@ -1621,7 +1624,7 @@ int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 		payResponse=cJSON_CreateObject();
 		make_command(argc,argv,&payResponse);
 		//payResponse=cJSON_Parse(buf);
-			
+		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(payResponse));	
 		if(jint(payResponse,"code") != 0)
 		{
 			retval=-1;
@@ -2977,6 +2980,7 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 		else if ( strcmp(method,"init") == 0 )
 		{
 			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+			BET_p2p_host_blinds_info(wsi_global_client);
             retval=BET_p2p_client_init(argjson,bet,vars);
    			//printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 			//BET_rest_player_init(wsi_global_client,argjson);
@@ -3048,7 +3052,8 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 		}
 		else if(strcmp(method,"finalInfo") == 0)
 		{
-			lws_write(wsi_global_client,cJSON_Print(argjson),strlen(argjson),0);
+			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+			lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
 			//retval=BET_rest_finalInfo(argjson);
 		}
 	}	

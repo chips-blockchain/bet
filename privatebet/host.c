@@ -1999,6 +1999,16 @@ int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct priva
 		return retval;
 }
 
+void BET_p2p_host_blinds_info(struct lws *wsi)
+{
+	cJSON *blindsInfo=NULL;
+	blindsInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(blindsInfo,"method","blindsInfo");
+	cJSON_AddNumberToObject(blindsInfo,"small_blind",small_blind_amount);
+	cJSON_AddNumberToObject(blindsInfo,"big_blind",big_blind_amount);
+	lws_write(wsi,cJSON_Print(blindsInfo),strlen(cJSON_Print(blindsInfo)),0);
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(blindsInfo));
+}
 int32_t BET_p2p_host_start_init(struct privatebet_info *bet)
 {
 	int32_t bytes,retval=-1;
@@ -2271,7 +2281,7 @@ int32_t BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct pri
 	strcpy(argv[1],"invoice");
 	sprintf(argv[2],"%d",jint(argjson,"betAmount"));
 	sprintf(argv[3],"%s_%d_%d_%d_%d",bits256_str(hexstr,dcv_info.deckid),invoiceID,jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
-	sprintf(argv[4],"Invoice details playerID:%d,round:%d,betting Amount:%d",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
+	sprintf(argv[4],"\"Invoice_details_playerID:%d,round:%d,betting Amount:%d\"",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
 	argv[5]=NULL;
 	argc=5;
 	
@@ -2295,7 +2305,7 @@ int32_t BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct pri
 		cJSON_AddNumberToObject(invoiceInfo,"round",jint(argjson,"round"));
 		cJSON_AddStringToObject(invoiceInfo,"label",argv[3]);
 		cJSON_AddStringToObject(invoiceInfo,"invoice",cJSON_Print(invoice));
-		
+		printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(invoiceInfo));
 		rendered=cJSON_Print(invoiceInfo);
 		bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 		
@@ -2629,6 +2639,12 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 	int winners[CARDS777_MAXPLAYERS],players_left=0,only_winner=-1;
 	cJSON *resetInfo=NULL,*gameInfo=NULL;
 	char *rendered=NULL;
+
+	
+	char* cards[52] = {"2C", "3C", "4C", "5C", "6C", "7C", "8C", "9C", "10C", "JC", "QC", "KC", "AC", 
+					   "2D", "3D", "4D", "5D", "6D", "7D", "8D", "9D", "10D", "JD", "QD", "KD", "AD", 
+					   "2H", "3H", "4H", "5H", "6H", "7H", "8H", "9H", "10H", "JH", "QH", "KH", "AH", 
+					   "2S", "3S", "4S", "5S", "6S", "7S", "8S", "9S", "10S", "JS", "QS", "KS", "AS"};
 	
 	for(int i=0;i<bet->maxplayers;i++)
 	{
@@ -2692,6 +2708,8 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 		{
 			retval=BET_DCV_invoice_pay(bet,vars,i,(vars->pot/no_of_winners));
 			printf("%d\t",i);
+			if(retval == -1)
+				goto end;
 		}
 	}
 	printf("\n");
@@ -2699,17 +2717,41 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 	cJSON *finalInfo=cJSON_CreateObject();
 	cJSON *cardMatrixInfo=cJSON_CreateArray();
 	cJSON_AddStringToObject(finalInfo,"method","finalInfo");
+	cJSON *allHoleCardInfo=cJSON_CreateArray();
+	cJSON *boardCardInfo=cJSON_CreateArray();
+	cJSON *holeCardInfo=NULL;
+	cJSON *showInfo=NULL;
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		holeCardInfo=cJSON_CreateArray();
+		for(int j=0;j<no_of_hole_cards;j++)
+		{
+				cJSON_AddItemToArray(holeCardInfo,cJSON_CreateString(cards[card_values[i][j]]));
+		}
+		cJSON_AddItemToArray(allHoleCardInfo,holeCardInfo);
+	}
 
+	for(int j=no_of_hole_cards;j<hand_size;j++)
+	{
+		cJSON_AddItemToArray(boardCardInfo,cJSON_CreateString(cards[card_values[0][j]]));
+	}
+
+	showInfo=cJSON_CreateObject();
+	cJSON_AddItemToObject(showInfo,"allHoleCardsInfo",allHoleCardInfo);
+	cJSON_AddItemToObject(showInfo,"boardCardInfo",boardCardInfo);
+
+	/*
+	
 	for(int i=0;i<bet->maxplayers;i++)
 	{
 		for(int j=0;j<hand_size;j++)
 		{
 			cJSON_AddItemToArray(cardMatrixInfo,cJSON_CreateNumber(card_values[i][j]));
-						
 		}
 	}
 	cJSON_AddItemToObject(finalInfo,"card_values",cardMatrixInfo);
-
+    */
+    cJSON_AddItemToObject(finalInfo,"showInfo",showInfo);
 	cJSON_AddNumberToObject(finalInfo,"win_amount",vars->pot/no_of_winners);
 
 	cJSON *winnersInfo=cJSON_CreateArray();
@@ -2722,18 +2764,21 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 	}
 	cJSON_AddItemToObject(finalInfo,"winners",winnersInfo);
 
-	lws_write(wsi_global_host,cJSON_Print(finalInfo),strlen(cJSON_Print(finalInfo)),0);
 
 	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(finalInfo));
-	bytes=nn_send(bet->pubsock,cJSON_Print(finalInfo),strlen(cJSON_Print(finalInfo)),0);
+	rendered=cJSON_Print(finalInfo);
+	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 	
 	if(bytes<0)
 	{
 		retval=-1;
 		printf("%s::%d::Failed to send data\n",__FUNCTION__,__LINE__);
+		goto end;
 	}
+	sleep(5);
+	lws_write(wsi_global_host,cJSON_Print(finalInfo),strlen(cJSON_Print(finalInfo)),0);
 	end:	
-		if(retval)
+		if(retval != -1)
 		{
 			resetInfo=cJSON_CreateObject();
 			cJSON_AddStringToObject(resetInfo,"method","reset");
@@ -3184,6 +3229,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		else if(strcmp(method,"bvv_ready") == 0)
 		{
 			retval=BET_p2p_host_start_init(bet);
+			BET_p2p_host_blinds_info(wsi_global_host);
 		}
 		else if(strcmp(method,"init_p") == 0)
 		{

@@ -40,3 +40,6 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson);
 
 int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars);
 
+void BET_p2p_host_blinds_info(struct lws *wsi);
+
+

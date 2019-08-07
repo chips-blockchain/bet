@@ -286,11 +286,13 @@ int32_t BET_DCV_invoice_pay(struct privatebet_info *bet,struct privatebet_vars *
 {
 	pthread_t pay_t;
 	int32_t retval=1;
-
+	  printf("%s::%d\n",__FUNCTION__,__LINE__);	
 	  retval=BET_DCV_create_invoice_request(bet,playerid,amount);
    	  if (OS_thread_create(&pay_t,NULL,(void *)BET_DCV_paymentloop,(void *)bet) != 0 )
 	  {
-		  exit(-1);
+		  //exit(-1);
+		  retval=-1;
+		  printf("%s::%d::Invoice payment is failed\n",__FUNCTION__,__LINE__);
 	  }   
 	  if(pthread_join(pay_t,NULL))
 	  {
@@ -308,6 +310,8 @@ int32_t BET_DCV_pay(cJSON *argjson,struct privatebet_info *bet,struct privatebet
 	int argc,retval=1,bytes;
 	char **argv=NULL,*rendered=NULL,*invoice=NULL;
 
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+	
 	argv=(char**)malloc(4*sizeof(char*));
 	argc=3;
 	for(int i=0;i<4;i++)
@@ -410,7 +414,7 @@ int32_t BET_player_create_invoice(cJSON *argjson,struct privatebet_info *bet,str
 		strcpy(argv[1],"invoice");
 		sprintf(argv[2],"%d",jint(argjson,"betAmount"));
 		sprintf(argv[3],"%s_%d",deckid,jint(argjson,"betAmount"));
-		sprintf(argv[4],"Winning claim");
+		sprintf(argv[4],"\"Winning claim\"");
 		argv[5]=NULL;
 		argc=5;
 
@@ -459,6 +463,8 @@ int32_t BET_player_create_invoice_request(cJSON *argjson,struct privatebet_info 
 	cJSON_AddNumberToObject(betInfo,"playerID",bet->myplayerid);
 	cJSON_AddNumberToObject(betInfo,"betAmount",amount);
 
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(betInfo));
+	
 	rendered=cJSON_Print(betInfo);
 
 	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
@@ -480,10 +486,13 @@ int32_t BET_player_invoice_pay(cJSON *argjson,struct privatebet_info *bet,struct
 	pthread_t pay_t;
 	int32_t retval=1;
 
+	  printf("%s::%d\n",__FUNCTION__,__LINE__);	
 	  retval=BET_player_create_invoice_request(argjson,bet,amount);
    	  if (OS_thread_create(&pay_t,NULL,(void *)BET_player_paymentloop,(void *)bet) != 0 )
 	  {
-		  exit(-1);
+		  printf("%s::%d\n",__FUNCTION__,__LINE__);
+		  retval=-1;
+		  //exit(-1);
 	  }   
 	  if(pthread_join(pay_t,NULL))
 	  {
