@@ -2734,16 +2734,19 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 	}
 	cJSON_AddItemToObject(finalInfo,"winners",winnersInfo);
 
-	//lws_write(wsi_global_host,cJSON_Print(finalInfo),strlen(cJSON_Print(finalInfo)),0);
 
 	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(finalInfo));
-	bytes=nn_send(bet->pubsock,cJSON_Print(finalInfo),strlen(cJSON_Print(finalInfo)),0);
+	rendered=cJSON_Print(finalInfo);
+	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 	
 	if(bytes<0)
 	{
 		retval=-1;
 		printf("%s::%d::Failed to send data\n",__FUNCTION__,__LINE__);
+		goto end;
 	}
+	
+	lws_write(wsi_global_host,cJSON_Print(finalInfo),strlen(cJSON_Print(finalInfo)),0);
 	end:	
 		if(retval != -1)
 		{
