@@ -2718,7 +2718,7 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 	cJSON *cardMatrixInfo=cJSON_CreateArray();
 	cJSON_AddStringToObject(finalInfo,"method","finalInfo");
 	cJSON *allHoleCardInfo=cJSON_CreateArray();
-	cJSON *boardCardInfo=cJSON_CreateObject();
+	cJSON *boardCardInfo=cJSON_CreateArray();
 	cJSON *holeCardInfo=NULL;
 	cJSON *showInfo=NULL;
 	for(int i=0;i<bet->maxplayers;i++)
@@ -2775,7 +2775,7 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 		printf("%s::%d::Failed to send data\n",__FUNCTION__,__LINE__);
 		goto end;
 	}
-	
+	sleep(5);
 	lws_write(wsi_global_host,cJSON_Print(finalInfo),strlen(cJSON_Print(finalInfo)),0);
 	end:	
 		if(retval != -1)
