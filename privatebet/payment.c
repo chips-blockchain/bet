@@ -410,7 +410,7 @@ int32_t BET_player_create_invoice(cJSON *argjson,struct privatebet_info *bet,str
 		strcpy(argv[1],"invoice");
 		sprintf(argv[2],"%d",jint(argjson,"betAmount"));
 		sprintf(argv[3],"%s_%d",deckid,jint(argjson,"betAmount"));
-		sprintf(argv[4],"Winning claim");
+		sprintf(argv[4],"\"Winning claim\"");
 		argv[5]=NULL;
 		argc=5;
 
