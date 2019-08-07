@@ -1624,7 +1624,7 @@ int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 		payResponse=cJSON_CreateObject();
 		make_command(argc,argv,&payResponse);
 		//payResponse=cJSON_Parse(buf);
-			
+		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(payResponse));	
 		if(jint(payResponse,"code") != 0)
 		{
 			retval=-1;
