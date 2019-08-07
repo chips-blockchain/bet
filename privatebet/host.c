@@ -2639,6 +2639,12 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 	int winners[CARDS777_MAXPLAYERS],players_left=0,only_winner=-1;
 	cJSON *resetInfo=NULL,*gameInfo=NULL;
 	char *rendered=NULL;
+
+	
+	char* cards[52] = {"2C", "3C", "4C", "5C", "6C", "7C", "8C", "9C", "10C", "JC", "QC", "KC", "AC", 
+					   "2D", "3D", "4D", "5D", "6D", "7D", "8D", "9D", "10D", "JD", "QD", "KD", "AD", 
+					   "2H", "3H", "4H", "5H", "6H", "7H", "8H", "9H", "10H", "JH", "QH", "KH", "AH", 
+					   "2S", "3S", "4S", "5S", "6S", "7S", "8S", "9S", "10S", "JS", "QS", "KS", "AS"};
 	
 	for(int i=0;i<bet->maxplayers;i++)
 	{
@@ -2711,17 +2717,41 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 	cJSON *finalInfo=cJSON_CreateObject();
 	cJSON *cardMatrixInfo=cJSON_CreateArray();
 	cJSON_AddStringToObject(finalInfo,"method","finalInfo");
+	cJSON *allHoleCardInfo=cJSON_CreateArray();
+	cJSON *boardCardInfo=cJSON_CreateObject();
+	cJSON *holeCardInfo=NULL;
+	cJSON *showInfo=NULL;
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		holeCardInfo=cJSON_CreateArray();
+		for(int j=0;j<no_of_hole_cards;j++)
+		{
+				cJSON_AddItemToArray(holeCardInfo,cJSON_CreateString(cards[card_values[i][j]]));
+		}
+		cJSON_AddItemToArray(allHoleCardInfo,holeCardInfo);
+	}
 
+	for(int j=no_of_hole_cards;j<hand_size;j++)
+	{
+		cJSON_AddItemToArray(boardCardInfo,cJSON_CreateString(cards[card_values[0][j]]))
+	}
+
+	showInfo=cJSON_CreateObject();
+	cJSON_AddItemToObject(showInfo,"allHoleCardsInfo",allHoleCardInfo);
+	cJSON_AddItemToObject(showInfo,"boardCardInfo",boardCardInfo);
+
+	/*
+	
 	for(int i=0;i<bet->maxplayers;i++)
 	{
 		for(int j=0;j<hand_size;j++)
 		{
 			cJSON_AddItemToArray(cardMatrixInfo,cJSON_CreateNumber(card_values[i][j]));
-						
 		}
 	}
 	cJSON_AddItemToObject(finalInfo,"card_values",cardMatrixInfo);
-
+    */
+    cJSON_AddItemToObject(finalInfo,"showInfo",showInfo);
 	cJSON_AddNumberToObject(finalInfo,"win_amount",vars->pot/no_of_winners);
 
 	cJSON *winnersInfo=cJSON_CreateArray();
