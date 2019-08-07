@@ -286,7 +286,7 @@ int32_t BET_DCV_invoice_pay(struct privatebet_info *bet,struct privatebet_vars *
 {
 	pthread_t pay_t;
 	int32_t retval=1;
-
+	  printf("%s::%d\n",__FUNCTION__,__LINE__);	
 	  retval=BET_DCV_create_invoice_request(bet,playerid,amount);
    	  if (OS_thread_create(&pay_t,NULL,(void *)BET_DCV_paymentloop,(void *)bet) != 0 )
 	  {
@@ -310,6 +310,8 @@ int32_t BET_DCV_pay(cJSON *argjson,struct privatebet_info *bet,struct privatebet
 	int argc,retval=1,bytes;
 	char **argv=NULL,*rendered=NULL,*invoice=NULL;
 
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+	
 	argv=(char**)malloc(4*sizeof(char*));
 	argc=3;
 	for(int i=0;i<4;i++)
