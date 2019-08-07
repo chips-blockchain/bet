@@ -490,8 +490,9 @@ int32_t BET_player_invoice_pay(cJSON *argjson,struct privatebet_info *bet,struct
 	  retval=BET_player_create_invoice_request(argjson,bet,amount);
    	  if (OS_thread_create(&pay_t,NULL,(void *)BET_player_paymentloop,(void *)bet) != 0 )
 	  {
-		  printf("%s::%d\n",__FUNCTION__,__LINE__); 	  	  	
-		  exit(-1);
+		  printf("%s::%d\n",__FUNCTION__,__LINE__);
+		  retval=-1;
+		  //exit(-1);
 	  }   
 	  if(pthread_join(pay_t,NULL))
 	  {
