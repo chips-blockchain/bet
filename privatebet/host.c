@@ -2656,12 +2656,9 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 		{
 			retval=BET_DCV_invoice_pay(bet,vars,only_winner,vars->pot);
 			printf("\nWinning player is :%d, winning amount:%d",only_winner,vars->pot);
-			if(retval ==-1)
-				goto end;
+			goto end;
 		}
 	}
-	else
-		goto end;
 		
 	printf("\nEach player got the below cards:\n");
 	for(int i=0;i<bet->maxplayers;i++)
@@ -2705,6 +2702,8 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 		{
 			retval=BET_DCV_invoice_pay(bet,vars,i,(vars->pot/no_of_winners));
 			printf("%d\t",i);
+			if(retval == -1)
+				goto end;
 		}
 	}
 	printf("\n");
@@ -2746,7 +2745,7 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 		printf("%s::%d::Failed to send data\n",__FUNCTION__,__LINE__);
 	}
 	end:	
-		if(retval)
+		if(retval != -1)
 		{
 			resetInfo=cJSON_CreateObject();
 			cJSON_AddStringToObject(resetInfo,"method","reset");
