@@ -2656,9 +2656,12 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 		{
 			retval=BET_DCV_invoice_pay(bet,vars,only_winner,vars->pot);
 			printf("\nWinning player is :%d, winning amount:%d",only_winner,vars->pot);
-			goto end;
+			if(retval ==-1)
+				goto end;
 		}
 	}
+	else
+		goto end;
 		
 	printf("\nEach player got the below cards:\n");
 	for(int i=0;i<bet->maxplayers;i++)

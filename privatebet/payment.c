@@ -290,7 +290,9 @@ int32_t BET_DCV_invoice_pay(struct privatebet_info *bet,struct privatebet_vars *
 	  retval=BET_DCV_create_invoice_request(bet,playerid,amount);
    	  if (OS_thread_create(&pay_t,NULL,(void *)BET_DCV_paymentloop,(void *)bet) != 0 )
 	  {
-		  exit(-1);
+		  //exit(-1);
+		  retval=-1;
+		  printf("%s::%d::Invoice payment is failed\n",__FUNCTION__,__LINE__);
 	  }   
 	  if(pthread_join(pay_t,NULL))
 	  {
