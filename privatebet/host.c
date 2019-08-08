@@ -1948,7 +1948,6 @@ int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct priva
 			argc=5;
 			for(int i=0;i<argc;i++)
 			{
-				printf("%s::%d")
 				memset(argv[i],0x00,buf_size);
 			}
 			strcpy(argv[0],"lightning-cli");
