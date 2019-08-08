@@ -2053,8 +2053,8 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
 
 	
     bet->numplayers=++players_joined;
-	dcv_info.peerpubkeys[players_joined-1]=jbits256(argjson,"pubkey");
-	strcpy(dcv_info.uri[players_joined-1],jstr(argjson,"uri"));
+	dcv_info.peerpubkeys[jint(argjson,"gui_PlayerID")]=jbits256(argjson,"pubkey");
+	strcpy(dcv_info.uri[jint(argjson,"gui_PlayerID")],jstr(argjson,"uri"));
 	
 	argv=(char**)malloc(4*sizeof(char*));
 	argc=3;
@@ -2080,7 +2080,9 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
 
 	playerinfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(playerinfo,"method","join_res");
-	cJSON_AddNumberToObject(playerinfo,"peerid",bet->numplayers-1); //players numbering starts from 0(zero)
+	//cJSON_AddNumberToObject(playerinfo,"peerid",bet->numplayers-1); //players numbering starts from 0(zero)
+	
+	cJSON_AddNumberToObject(playerinfo,"peerid",jint(argjson,"gui_PlayerID"));
 	jaddbits256(playerinfo,"pubkey",jbits256(argjson,"pubkey"));
 	cJSON_AddStringToObject(playerinfo,"uri",uri);
 	
