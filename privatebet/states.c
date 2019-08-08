@@ -604,7 +604,7 @@ int32_t BET_DCV_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 	char *rendered=NULL;
 
 	vars->last_turn=vars->dealer;
-	vars->turni=(vars->dealer)%bet->maxplayers;//vars->dealer+1 is removed since dealer is the one who does small_blind
+	vars->turni=(vars->dealer+1)%bet->maxplayers;//vars->dealer+1 is removed since dealer is the one who does small_blind
 
 	smallBlindInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(smallBlindInfo,"method","betting");
@@ -681,7 +681,6 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 				if(bet->myplayerid == jint(argjson,"playerid"))
 				{
 					display_cards(argjson,bet,vars);
-					printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 					lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
 					//retval=BET_player_round_betting(argjson,bet,vars);
 				}
