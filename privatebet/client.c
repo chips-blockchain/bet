@@ -2253,7 +2253,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 	if(0 == bits256_cmp(player_info.player_key.prod,jbits256(argjson,"pubkey")))
 	{
 		BET_player_global->myplayerid=jint(argjson,"peerid");
-		//bet->myplayerid=jint(argjson,"peerid");
+		bet->myplayerid=jint(argjson,"peerid");
 		printf("\nPlayer ID:%d",bet->myplayerid);
 		strcpy(uri,jstr(argjson,"uri"));
 		strcpy(channel_id,strtok(jstr(argjson,"uri"), "@"));
