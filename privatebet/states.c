@@ -604,7 +604,7 @@ int32_t BET_DCV_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 	char *rendered=NULL;
 
 	vars->last_turn=vars->dealer;
-	vars->turni=(vars->dealer)%bet->maxplayers;//vars->dealer+1 is removed since dealer is the one who does small_blind
+	vars->turni=(vars->dealer+1)%bet->maxplayers;//vars->dealer+1 is removed since dealer is the one who does small_blind
 
 	smallBlindInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(smallBlindInfo,"method","betting");
@@ -865,7 +865,6 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 		cJSON_AddNumberToObject(small_blind_info,"playerid",jint(argjson,"playerid"));
 		cJSON_AddNumberToObject(small_blind_info,"round",jint(argjson,"round"));
 
-		BET_push_client_blindInfo(small_blind_info);
 		
 		rendered=cJSON_Print(small_blind_info);
 		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
@@ -875,6 +874,7 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 				printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
 				goto end;
 		}
+		BET_push_client_blindInfo(small_blind_info);
 				
 	end:
 		return retval;
