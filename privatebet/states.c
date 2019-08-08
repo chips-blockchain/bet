@@ -246,6 +246,7 @@ int32_t BET_p2p_initiate_statemachine(cJSON *argjson,struct privatebet_info *bet
 	cJSON *dealerInfo=NULL;
 	int32_t retval=1,bytes;
 	char *rendered=NULL;
+	cJSON *temp=NULL;
 	vars->turni=0;
 	vars->round=0;
 	vars->pot=0;
@@ -266,6 +267,10 @@ int32_t BET_p2p_initiate_statemachine(cJSON *argjson,struct privatebet_info *bet
 	cJSON_AddStringToObject(dealerInfo,"method","dealer");
 	cJSON_AddNumberToObject(dealerInfo,"playerid",vars->dealer);
 
+	temp=cJSON_CreateObject();
+	temp=cJSON_Parse(cJSON_Print(dealerInfo));
+	lws_write(wsi_global_host,cJSON_Print(temp),strlen(cJSON_Print(temp)),0);
+	
 	rendered=cJSON_Print(dealerInfo);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 	if(bytes<0)
@@ -829,7 +834,7 @@ int32_t BET_p2p_dealer_info(cJSON *argjson,struct privatebet_info *bet,struct pr
 			goto end;
 		}
 	}
-	
+	BET_push_client(argjson);
 	end:
 		return retval;
 }
