@@ -909,7 +909,6 @@ int32_t BET_p2p_big_blind(cJSON *argjson,struct privatebet_info *bet,struct priv
 		cJSON_AddNumberToObject(big_blind_info,"playerid",jint(argjson,"playerid"));
 		cJSON_AddNumberToObject(big_blind_info,"round",jint(argjson,"round"));
 
-		BET_push_client_blindInfo(big_blind_info);
 		
 		rendered=cJSON_Print(big_blind_info);
 		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
@@ -919,6 +918,8 @@ int32_t BET_p2p_big_blind(cJSON *argjson,struct privatebet_info *bet,struct priv
 				printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
 				goto end;
 		}
+		BET_push_client_blindInfo(big_blind_info);
+		
 	end:
 		return retval;
 }
