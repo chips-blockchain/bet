@@ -838,7 +838,7 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 	cJSON *small_blind_info=NULL;
 	int32_t amount,retval=1,bytes;
 	char *rendered=NULL;
-
+	cJSON *temp=NULL;
 	pthread_t pay_t;
 
 
@@ -864,6 +864,9 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 		cJSON_AddNumberToObject(small_blind_info,"playerid",jint(argjson,"playerid"));
 		cJSON_AddNumberToObject(small_blind_info,"round",jint(argjson,"round"));
 
+		temp=cJSON_CreateObject();
+		temp=cJSON_Parse(cJSON_Print(small_blind_info));
+			
 		
 		rendered=cJSON_Print(small_blind_info);
 		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
@@ -873,7 +876,7 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 				printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
 				goto end;
 		}
-		//BET_push_client_blindInfo(small_blind_info);
+		BET_push_client_blindInfo(temp);
 				
 	end:
 		return retval;
@@ -882,7 +885,7 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 int32_t BET_p2p_big_blind(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	cJSON *big_blind_info=NULL;
+	cJSON *big_blind_info=NULL,*temp=NULL;
 	int32_t amount,retval=1,bytes;
 	char *rendered=NULL;
 
@@ -908,7 +911,8 @@ int32_t BET_p2p_big_blind(cJSON *argjson,struct privatebet_info *bet,struct priv
 		cJSON_AddNumberToObject(big_blind_info,"playerid",jint(argjson,"playerid"));
 		cJSON_AddNumberToObject(big_blind_info,"round",jint(argjson,"round"));
 
-		
+		temp=cJSON_CreateObject();
+		temp=cJSON_Parse(cJSON_Print(big_blind_info));
 		rendered=cJSON_Print(big_blind_info);
 		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 		if(bytes<0)
@@ -917,7 +921,7 @@ int32_t BET_p2p_big_blind(cJSON *argjson,struct privatebet_info *bet,struct priv
 				printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
 				goto end;
 		}
-		//BET_push_client_blindInfo(big_blind_info);
+		BET_push_client_blindInfo(temp);
 		
 	end:
 		return retval;
