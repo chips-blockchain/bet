@@ -269,7 +269,7 @@ int32_t BET_p2p_initiate_statemachine(cJSON *argjson,struct privatebet_info *bet
 
 	temp=cJSON_CreateObject();
 	temp=cJSON_Parse(cJSON_Print(dealerInfo));
-	lws_write(wsi_global_host,cJSON_Print(temp),strlen(cJSON_Print(temp)),0);
+
 	
 	rendered=cJSON_Print(dealerInfo);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
@@ -279,6 +279,8 @@ int32_t BET_p2p_initiate_statemachine(cJSON *argjson,struct privatebet_info *bet
 		printf("\n Failed to send data");
 		goto end;
 	}
+
+	BET_push_host(temp);
 	
 	end:
 		return retval;

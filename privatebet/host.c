@@ -1412,6 +1412,13 @@ void sigint_handler(int sig)
 
 #endif
 
+void BET_push_host(cJSON *argjson)
+{
+	if(argjson)
+		lws_write(wsi_global_host,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+}
+
+
 struct privatebet_peerln *BET_peerln_find(char *peerid)
 {
     int32_t i;
