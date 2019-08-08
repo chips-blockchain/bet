@@ -2325,10 +2325,10 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 				printf("\n%s:%d:Channel establishment with DCV is not happening, please check the connectivity with the DCV node\n",__FUNCTION__,__LINE__);
 				goto end;
 		  	 }
-			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,state);	
+			printf("%s::%d::%d\n",__FUNCTION__,__LINE__,state);	
 			sleep(10);
 		}
-		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,state);
+		printf("%s::%d::%d\n",__FUNCTION__,__LINE__,state);
 
 		initCardInfo=cJSON_CreateObject();
 		cJSON_AddNumberToObject(initCardInfo,"dealer",0);
@@ -3637,10 +3637,10 @@ int32_t BET_rest_fundChannel(char *channel_id)
 			printf("\n%s:%d:Channel establishment with DCV is not happening, please check the connectivity with the DCV node\n",__FUNCTION__,__LINE__);
 			goto end;
 	  	 }
-		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,state);	
+		printf("%s::%d::%d\n",__FUNCTION__,__LINE__,state);	
 		sleep(10);
 	}
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,state);
+	printf("%s::%d::%d\n",__FUNCTION__,__LINE__,state);
 end:
 	if(buf)
 		free(buf);
