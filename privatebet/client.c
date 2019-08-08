@@ -2949,7 +2949,11 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 	return retval;
 }
 
-
+void BET_push_client_blindInfo(cJSON *blindInfo)
+{
+	if(blindInfo)
+		lws_write(wsi_global_client,cJSON_Print(blindInfo),strlen(cJSON_Print(blindInfo)),0);
+}
 int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars) // update game state based on host broadcast
 {
 	

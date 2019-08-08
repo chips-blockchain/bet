@@ -67,6 +67,7 @@ int32_t BET_rest_player_reset(struct lws *wsi,cJSON * argjson);
 void BET_rest_BVV_reset();
 bits256 BET_get_deckid(int32_t playerID);
 
+void BET_push_client_blindInfo(cJSON *blindInfo);
 
 
 
