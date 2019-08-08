@@ -2949,6 +2949,12 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 	return retval;
 }
 
+void BET_push_client(cJSON *argjson)
+{
+	if(argjson)
+		lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+}
+
 void BET_push_client_blindInfo(cJSON *blindInfo)
 {
 	if(blindInfo)
