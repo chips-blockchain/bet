@@ -3338,7 +3338,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 void BET_p2p_hostloop(void *_ptr)
 {
-    uint32_t lasttime = 0; uint8_t r; int32_t nonz,recvlen,sendlen; cJSON *argjson=NULL,*timeoutjson; void *ptr; double lastmilli = 0.; struct privatebet_info *bet = _ptr; struct privatebet_vars *VARS;
+    uint32_t lasttime = 0; uint8_t r; int32_t nonz,recvlen,sendlen; cJSON *argjson=NULL,*timeoutjson; void *ptr=NULL; double lastmilli = 0.; struct privatebet_info *bet = _ptr; struct privatebet_vars *VARS;
     VARS = calloc(1,sizeof(*VARS));
     argjson=cJSON_CreateObject();
 	dcv_info.numplayers=0;
@@ -3377,7 +3377,8 @@ void BET_p2p_hostloop(void *_ptr)
                 }
                 
             }
-            nn_freemsg(ptr);
+			if(ptr)
+            	nn_freemsg(ptr);
         }
           
     }
