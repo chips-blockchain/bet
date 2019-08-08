@@ -1943,7 +1943,6 @@ int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct priva
 			strcpy(argv[0],"lightning-cli");
 			strcpy(argv[1],"connect");
 			strcpy(argv[2],uri);
-			argv[3]=NULL;
 			connectInfo=cJSON_CreateObject();
 			make_command(argc,argv,&connectInfo);
 			//ln_bet(argc,argv,buf);
@@ -1965,7 +1964,6 @@ int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct priva
 			strcpy(argv[1],"fundchannel");
 			strcpy(argv[2],jstr(connectInfo,"id"));
 			strcpy(argv[3],"500000");
-			argv[4]=NULL;
 			argc=4;
 			fundChannelInfo=cJSON_CreateObject();
 			make_command(argc,argv,&fundChannelInfo);
