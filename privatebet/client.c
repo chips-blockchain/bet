@@ -1331,7 +1331,7 @@ int32_t BET_p2p_bvvcommand_test(struct lws *wsi, cJSON *argjson)
 		}
 		else if(strcmp(method,"dealer") == 0)
 		{
-			retval=BET_p2p_dealer_info(argjson,BET_bvv,vars);
+			//retval=BET_p2p_dealer_info(argjson,BET_bvv,vars);
 		}
 		else if(strcmp(method,"reset") == 0)
 		{
