@@ -1924,9 +1924,20 @@ int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct priva
 						
 			argc=5;
             argv=(char**)malloc(argc*sizeof(char*));
+			if(argv ==NULL)
+			{
+				printf("%s::%d::Memory allocation failed\n",__FUNCTION__,__LINE__);
+				goto end;
+			}	
+			memset(argv,0x00,(argc*sizeof(char*)));
             for(int i=0;i<argc;i++)
             {
-             argv[i]=(char*)malloc(buf_size*sizeof(char));
+	             argv[i]=(char*)malloc(buf_size*sizeof(char));
+				 if(argv[i] == NULL)
+			 	 {
+			 	 	printf("%s::%d::Memory allocation failed\n",__FUNCTION__,__LINE__);
+					goto end;
+			 	 }
 	        }
 			argc=3;
 			strcpy(argv[0],"lightning-cli");
