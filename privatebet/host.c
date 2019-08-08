@@ -1989,10 +1989,10 @@ int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct priva
 				else
 				       printf("\n%s:%d:channel-state:%d\n",__FUNCTION__,__LINE__,state);
 
-				printf("%s::%d::%s\n",__FUNCTION__,__LINE__,state);   
+				printf("%s::%d::%d\n",__FUNCTION__,__LINE__,state);   
 				sleep(10);
 			}
-			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,state);
+			printf("%s::%d::%d\n",__FUNCTION__,__LINE__,state);
 			printf("\nDCV-->BVV LN Channel established");
 			
 		}
@@ -3158,10 +3158,10 @@ int32_t BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct priva
 			 else
 				 printf("\n%s:%d:channel-state:%d\n",__FUNCTION__,__LINE__,state);
 
-			 printf("%s::%d::%s\n",__FUNCTION__,__LINE__,state);	
+			 printf("%s::%d::%d\n",__FUNCTION__,__LINE__,state);	
 			 sleep(10);
 		  }
-		     printf("%s::%d::%s\n",__FUNCTION__,__LINE__,state);	
+		     printf("%s::%d::%d\n",__FUNCTION__,__LINE__,state);	
 	}
 	invoice=jstr(argjson,"invoice");
 	invoiceInfo=cJSON_Parse(invoice);
