@@ -246,6 +246,7 @@ int32_t BET_p2p_initiate_statemachine(cJSON *argjson,struct privatebet_info *bet
 	cJSON *dealerInfo=NULL;
 	int32_t retval=1,bytes;
 	char *rendered=NULL;
+	cJSON *temp=NULL;
 	vars->turni=0;
 	vars->round=0;
 	vars->pot=0;
@@ -266,6 +267,10 @@ int32_t BET_p2p_initiate_statemachine(cJSON *argjson,struct privatebet_info *bet
 	cJSON_AddStringToObject(dealerInfo,"method","dealer");
 	cJSON_AddNumberToObject(dealerInfo,"playerid",vars->dealer);
 
+	temp=cJSON_CreateObject();
+	temp=cJSON_Parse(cJSON_Print(dealerInfo));
+
+	
 	rendered=cJSON_Print(dealerInfo);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 	if(bytes<0)
@@ -274,6 +279,8 @@ int32_t BET_p2p_initiate_statemachine(cJSON *argjson,struct privatebet_info *bet
 		printf("\n Failed to send data");
 		goto end;
 	}
+
+	BET_push_host(temp);
 	
 	end:
 		return retval;
@@ -604,7 +611,7 @@ int32_t BET_DCV_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 	char *rendered=NULL;
 
 	vars->last_turn=vars->dealer;
-	vars->turni=(vars->dealer+1)%bet->maxplayers;
+	vars->turni=(vars->dealer+1)%bet->maxplayers;//vars->dealer+1 is removed since dealer is the one who does small_blind
 
 	smallBlindInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(smallBlindInfo,"method","betting");
@@ -681,8 +688,9 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 				if(bet->myplayerid == jint(argjson,"playerid"))
 				{
 					display_cards(argjson,bet,vars);
-					printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-					lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+					printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+					BET_push_client(argjson);
+					//lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
 					//retval=BET_player_round_betting(argjson,bet,vars);
 				}
 			}
@@ -828,7 +836,7 @@ int32_t BET_p2p_dealer_info(cJSON *argjson,struct privatebet_info *bet,struct pr
 			goto end;
 		}
 	}
-	
+	BET_push_client(argjson);
 	end:
 		return retval;
 }
@@ -839,7 +847,7 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 	cJSON *small_blind_info=NULL;
 	int32_t amount,retval=1,bytes;
 	char *rendered=NULL;
-
+	cJSON *temp=NULL;
 	pthread_t pay_t;
 
 
@@ -865,7 +873,9 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 		cJSON_AddNumberToObject(small_blind_info,"playerid",jint(argjson,"playerid"));
 		cJSON_AddNumberToObject(small_blind_info,"round",jint(argjson,"round"));
 
-		BET_push_client_blindInfo(small_blind_info);
+		temp=cJSON_CreateObject();
+		temp=cJSON_Parse(cJSON_Print(small_blind_info));
+			
 		
 		rendered=cJSON_Print(small_blind_info);
 		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
@@ -875,6 +885,7 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 				printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
 				goto end;
 		}
+		BET_push_client_blindInfo(temp);
 				
 	end:
 		return retval;
@@ -883,7 +894,7 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 int32_t BET_p2p_big_blind(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	cJSON *big_blind_info=NULL;
+	cJSON *big_blind_info=NULL,*temp=NULL;
 	int32_t amount,retval=1,bytes;
 	char *rendered=NULL;
 
@@ -909,8 +920,8 @@ int32_t BET_p2p_big_blind(cJSON *argjson,struct privatebet_info *bet,struct priv
 		cJSON_AddNumberToObject(big_blind_info,"playerid",jint(argjson,"playerid"));
 		cJSON_AddNumberToObject(big_blind_info,"round",jint(argjson,"round"));
 
-		BET_push_client_blindInfo(big_blind_info);
-		
+		temp=cJSON_CreateObject();
+		temp=cJSON_Parse(cJSON_Print(big_blind_info));
 		rendered=cJSON_Print(big_blind_info);
 		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 		if(bytes<0)
@@ -919,6 +930,8 @@ int32_t BET_p2p_big_blind(cJSON *argjson,struct privatebet_info *bet,struct priv
 				printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
 				goto end;
 		}
+		BET_push_client_blindInfo(temp);
+		
 	end:
 		return retval;
 }

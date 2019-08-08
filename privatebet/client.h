@@ -68,6 +68,8 @@ void BET_rest_BVV_reset();
 bits256 BET_get_deckid(int32_t playerID);
 
 void BET_push_client_blindInfo(cJSON *blindInfo);
+void BET_push_client(cJSON *argjson);
+
 
 
 

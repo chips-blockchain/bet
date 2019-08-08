@@ -1412,6 +1412,13 @@ void sigint_handler(int sig)
 
 #endif
 
+void BET_push_host(cJSON *argjson)
+{
+	if(argjson)
+		lws_write(wsi_global_host,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+}
+
+
 struct privatebet_peerln *BET_peerln_find(char *peerid)
 {
     int32_t i;
@@ -2017,8 +2024,8 @@ void BET_p2p_host_blinds_info(struct lws *wsi)
 	cJSON_AddStringToObject(blindsInfo,"method","blindsInfo");
 	cJSON_AddNumberToObject(blindsInfo,"small_blind",small_blind_amount);
 	cJSON_AddNumberToObject(blindsInfo,"big_blind",big_blind_amount);
-	lws_write(wsi,cJSON_Print(blindsInfo),strlen(cJSON_Print(blindsInfo)),0);
 	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(blindsInfo));
+	lws_write(wsi,cJSON_Print(blindsInfo),strlen(cJSON_Print(blindsInfo)),0);
 }
 int32_t BET_p2p_host_start_init(struct privatebet_info *bet)
 {
@@ -3338,9 +3345,9 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 void BET_p2p_hostloop(void *_ptr)
 {
-    uint32_t lasttime = 0; uint8_t r; int32_t nonz,recvlen,sendlen; cJSON *argjson,*timeoutjson; void *ptr; double lastmilli = 0.; struct privatebet_info *bet = _ptr; struct privatebet_vars *VARS;
+    uint32_t lasttime = 0; uint8_t r; int32_t nonz,recvlen,sendlen; cJSON *argjson=NULL,*timeoutjson; void *ptr=NULL; double lastmilli = 0.; struct privatebet_info *bet = _ptr; struct privatebet_vars *VARS;
     VARS = calloc(1,sizeof(*VARS));
-    
+    argjson=cJSON_CreateObject();
 	dcv_info.numplayers=0;
 	dcv_info.maxplayers=bet->maxplayers;
 	BET_permutation(dcv_info.permis,bet->range);
@@ -3375,9 +3382,10 @@ void BET_p2p_hostloop(void *_ptr)
                 {
                 	// Do something
                 }
-                free_json(argjson);
+                
             }
-            nn_freemsg(ptr);
+			if(ptr)
+            	nn_freemsg(ptr);
         }
           
     }
