@@ -2988,7 +2988,6 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 		strcpy(argv[0],"lightning-cli");
 		strcpy(argv[1],"connect");
 		strcpy(argv[2],dcv_info.bvv_uri);
-		argv[3]=NULL;
 		argc=3;
 
 		connectInfo=cJSON_CreateObject();
@@ -3004,7 +3003,6 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 		strcpy(argv[1],"fundchannel");
 		strcpy(argv[2],channel_id);
 		strcpy(argv[3],"500000");
-		argv[4]=NULL;
 		argc=4;
 
 		fundChannelInfo=cJSON_CreateObject();
@@ -3037,6 +3035,7 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 			printf("\n%s:%d: DCV is failed to establish the channel with BVV",__FUNCTION__,__LINE__);
 			goto end;
 		}
+		printf("%s::%d::%d\n",__FUNCTION__,__LINE__,channel_state);
 	}	
 	printf("\nDCV-->BVV channel ready");
 
@@ -3058,6 +3057,7 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 				printf("\n%s:%d: Player: %d is failed to establish the channel with DCV",__FUNCTION__,__LINE__,i);
 				goto end;
 			}
+			printf("%s::%d::%d\n",__FUNCTION__,__LINE__,channel_state);
 		}
 		
 		printf("\nPlayer %d --> DCV channel ready",i);	
