@@ -2246,7 +2246,7 @@ int32_t LN_get_channel_status(char *id)
 int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	char uri[100];
-	int argc,retval=1,channel_state;
+	int argc,retval=1,channel_state,buf_size=100;
 	char **argv=NULL,channel_id[100];
 	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
 	cJSON *initCardInfo=NULL,*holeCardInfo=NULL,*initInfo=NULL;
@@ -2265,13 +2265,12 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
             argv=(char**)malloc(argc*sizeof(char*));
             for(int i=0;i<argc;i++)
             {
-             argv[i]=(char*)malloc(100*sizeof(char));
+             argv[i]=(char*)malloc(buf_size*sizeof(char));
 	        }
 			argc=3;
 			strcpy(argv[0],"lightning-cli");
 			strcpy(argv[1],"connect");
 			strcpy(argv[2],uri);
-			argv[3]=NULL;
 			connectInfo=cJSON_CreateObject();
 			make_command(argc,argv,&connectInfo);
 			
@@ -2289,7 +2288,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			argc=5;
 			for(int i=0;i<argc;i++)
 			{
-				 memset(argv[i],0x00,sizeof(argv[i]));
+				 memset(argv[i],0x00,buf_size);
 			}
 			argc=4;
 			strcpy(argv[0],"lightning-cli");
@@ -2297,7 +2296,6 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			strcpy(argv[2],jstr(connectInfo,"id"));
 			printf("\n id:%s",argv[2]);
 			strcpy(argv[3],"500000");
-			argv[4]=NULL;
 
 			fundChannelInfo=cJSON_CreateObject();
 			make_command(argc,argv,&fundChannelInfo);
