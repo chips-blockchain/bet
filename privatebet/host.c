@@ -1914,7 +1914,7 @@ int32_t BET_p2p_host_init(cJSON *argjson,struct privatebet_info *bet,struct priv
 
 int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int argc,retval=1,state;
+	int argc,retval=1,state,buf_size=100;
 	char **argv=NULL,uri[100];
 	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
 	strcpy(uri,jstr(argjson,"uri"));
@@ -1926,7 +1926,7 @@ int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct priva
             argv=(char**)malloc(argc*sizeof(char*));
             for(int i=0;i<argc;i++)
             {
-             argv[i]=(char*)malloc(100*sizeof(char));
+             argv[i]=(char*)malloc(buf_size*sizeof(char));
 	        }
 			argc=3;
 			strcpy(argv[0],"lightning-cli");
@@ -1948,7 +1948,8 @@ int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct priva
 			argc=5;
 			for(int i=0;i<argc;i++)
 			{
-				memset(argv[i],0x00,sizeof(argv[i]));
+				printf("%s::%d")
+				memset(argv[i],0x00,buf_size);
 			}
 			strcpy(argv[0],"lightning-cli");
 			strcpy(argv[1],"fundchannel");
