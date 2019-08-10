@@ -501,7 +501,7 @@ int32_t BET_player_invoice_pay(cJSON *argjson,struct privatebet_info *bet,struct
 		  printf("\nError in joining the main thread for player %d",bet->myplayerid);
 		  retval=-1;
 	  }
-
+	printf("%s::%d::retval=%d\n",__FUNCTION__,__LINE__,retval);
 	return retval;
 }
 
