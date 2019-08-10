@@ -488,7 +488,7 @@ int32_t BET_player_invoice_pay(cJSON *argjson,struct privatebet_info *bet,struct
 
 	  printf("%s::%d\n",__FUNCTION__,__LINE__);	
 	  retval=BET_player_create_invoice_request(argjson,bet,amount);
-   	  if (OS_thread_create(&pay_t,NULL,(void *)BET_player_paymentloop,(void *)bet) != 0 )
+   	  if (OS_thread_create(&pay_t,NULL,(int *)BET_player_paymentloop,(void *)bet) != 0 )
 	  {
 		  printf("%s::%d::%d\n",__FUNCTION__,__LINE__,retval);
 		  //retval=-1;
@@ -502,7 +502,7 @@ int32_t BET_player_invoice_pay(cJSON *argjson,struct privatebet_info *bet,struct
 	return retval;
 }
 
-void BET_player_paymentloop(void * _ptr)
+int32_t BET_player_paymentloop(void * _ptr)
 {	
 	int32_t recvlen,retval=1;
     uint8_t flag=1;
@@ -533,6 +533,8 @@ void BET_player_paymentloop(void * _ptr)
         }
         
     }   
+
+	return retval;
  
 }
 
