@@ -638,6 +638,8 @@ Here contains the functions which are common across all the nodes
 int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	char *action=NULL;
+	char *rendered=NULL;
+	int32_t bytes;
 	int retval=1;
 		if((action=jstr(argjson,"action")) != 0)
 		{
@@ -702,9 +704,17 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 									|| (strcmp(action,"fold") == 0) || (strcmp(action,"allin") == 0))																					
 			{
 				if(bet->myplayerid == -2)
+				{
+					printf("%s::%d::bet->myplayerid::%d\n",__FUNCTION__,__LINE__,bet->myplayerid);
+					rendered=cJSON_Print(argjson);
+					bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 					retval=BET_DCV_round_betting_response(argjson,bet,vars);
+				}	
 				else
+				{	
+					printf("%s::%d::bet->myplayerid::%d\n",__FUNCTION__,__LINE__,bet->myplayerid);
 					retval=BET_player_round_betting_response(argjson,bet,vars);
+				}	
 			}
 		}
 		end:
