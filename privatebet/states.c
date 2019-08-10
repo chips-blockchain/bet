@@ -693,6 +693,10 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 					//lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
 					//retval=BET_player_round_betting(argjson,bet,vars);
 				}
+				else
+				{
+					printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+				}
 			}
 			else if((strcmp(action,"check") == 0) || (strcmp(action,"call") == 0) || (strcmp(action,"raise") == 0)
 									|| (strcmp(action,"fold") == 0) || (strcmp(action,"allin") == 0))																					
