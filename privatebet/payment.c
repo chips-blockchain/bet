@@ -510,6 +510,7 @@ int32_t BET_player_paymentloop(void * _ptr)
 	cJSON *msgjson=NULL;
 	char *method=NULL;
 	struct privatebet_info *bet = _ptr;
+	msgjson=cJSON_CreateObject();
 	while ( flag )
     {
         
@@ -523,7 +524,9 @@ int32_t BET_player_paymentloop(void * _ptr)
     			   		if(strcmp(method,"invoice") == 0)
 			   			{
 			   				retval=BET_p2p_invoice(msgjson,bet,NULL);
+							printf("%s::%d::%d\n",__FUNCTION__,__LINE__,retval);
 							flag=0;
+							break;
 			   			}
 						else
 						{
@@ -531,7 +534,7 @@ int32_t BET_player_paymentloop(void * _ptr)
 						}
                    }
                    
-                    free_json(msgjson);
+                    //free_json(msgjson);
                 }
                 
         }

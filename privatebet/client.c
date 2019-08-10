@@ -1633,7 +1633,7 @@ int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 		}
 		
 		if(strcmp(jstr(payResponse,"status"),"complete")==0)
-			printf("\nPayment Success");
+			printf("Payment Success\n");
 		else
 			retval=-1;
 	}
