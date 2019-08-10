@@ -697,6 +697,7 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 				}
 				else
 				{
+					display_cards(argjson,bet,vars);
 					printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 				}
 			}
