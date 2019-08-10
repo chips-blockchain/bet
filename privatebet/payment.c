@@ -525,6 +525,10 @@ int32_t BET_player_paymentloop(void * _ptr)
 			   				retval=BET_p2p_invoice(msgjson,bet,NULL);
 							flag=0;
 			   			}
+						else
+						{
+							printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(msgjson));
+						}
                    }
                    
                     free_json(msgjson);
