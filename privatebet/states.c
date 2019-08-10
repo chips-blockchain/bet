@@ -1161,7 +1161,8 @@ int32_t BET_player_round_betting_response(cJSON *argjson,struct privatebet_info 
 			vars->bet_actions[playerid][round]=allin;
 		}
 	}
-
+	if(bet->myplayerid != playerid)
+	    BET_push_client(argjson);
 	end:
 		return retval;
 }
