@@ -994,7 +994,10 @@ int32_t BET_player_round_betting_test(cJSON *argjson,struct privatebet_info *bet
 
 		retval=BET_player_invoice_pay(argjson,bet,vars,min_amount);
 		if(retval<0)
+		{
+			printf("%s::%d::%d\n",__FUNCTION__,__LINE__,retval);
 			goto end;
+		}	
 		
 		cJSON_AddNumberToObject(action_response,"bet_amount",min_amount);
 	}
