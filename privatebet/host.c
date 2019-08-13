@@ -2351,6 +2351,79 @@ int32_t BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct pri
 		return retval;
 }
 
+
+
+int32_t BET_create_betting_invoice(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	int argc,bytes,retval=1;
+	char **argv=NULL,*rendered=NULL;
+	char hexstr [65];
+	cJSON *invoiceInfo=NULL,*invoice=NULL;
+	argc=6;
+	argv =(char**)malloc(argc*sizeof(char*));
+	invoiceID++;
+	for(int i=0;i<argc;i++)
+	{
+			argv[i]=(char*)malloc(sizeof(char)*1000);
+	}
+	dcv_info.betamount+=jint(argjson,"betAmount");
+
+	strcpy(argv[0],"lightning-cli");
+	strcpy(argv[1],"invoice");
+	sprintf(argv[2],"%d",jint(argjson,"betAmount"));
+	sprintf(argv[3],"%s_%d_%d_%d_%d",bits256_str(hexstr,dcv_info.deckid),invoiceID,jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
+	sprintf(argv[4],"\"Invoice_details_playerID:%d,round:%d,betting Amount:%d\"",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
+	argv[5]=NULL;
+	argc=5;
+	
+	invoice=cJSON_CreateObject();
+	make_command(argc,argv,&invoice);
+	
+	//ln_bet(argc,argv,buf);
+	//invoice=cJSON_CreateObject();
+	//invoice=cJSON_Parse(buf);
+	if(jint(invoice,"code") != 0)
+	{
+		retval=-1;
+		printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(invoice,"message"));
+		goto end;
+	}
+	else
+	{
+		invoiceInfo=cJSON_CreateObject();
+		cJSON_AddStringToObject(invoiceInfo,"method","bettingInvoice");
+		cJSON_AddNumberToObject(invoiceInfo,"playerID",jint(argjson,"playerID"));
+		cJSON_AddNumberToObject(invoiceInfo,"round",jint(argjson,"round"));
+		cJSON_AddStringToObject(invoiceInfo,"label",argv[3]);
+		cJSON_AddStringToObject(invoiceInfo,"invoice",cJSON_Print(invoice));
+		cJSON_AddItemToObject(invoiceInfo,"actionResponse",cJSON_GetObjectItem(argjson,"actionResponse"));
+		
+		printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(invoiceInfo));
+		rendered=cJSON_Print(invoiceInfo);
+		bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+		
+		if(bytes<0)
+		{
+			retval=-1;
+			printf("\n%s :%d Failed to send data",__FUNCTION__,__LINE__);
+			goto end;
+		}
+					
+	}
+	
+	end:
+		if(argv)
+		{
+			for(int i=0;i<6;i++)
+			{
+				if(argv[i])
+					free(argv[i]);
+			}
+			free(argv);
+		}
+		return retval;
+}
+
 	
 int32_t BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
@@ -3296,6 +3369,10 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		else if(strcmp(method,"invoiceRequest") == 0)
 		{
 			retval=BET_create_invoice(argjson,bet,vars);
+		}
+		else if(strcmp(method,"bettingInvoiceRequest") == 0)
+		{
+			retval=BET_create_betting_invoice(argjson,bet,vars);
 		}
 		else if(strcmp(method,"pay") == 0)
 		{

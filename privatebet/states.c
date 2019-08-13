@@ -698,7 +698,6 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 				else
 				{
 					display_cards(argjson,bet,vars);
-					printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 				}
 			}
 			else if((strcmp(action,"check") == 0) || (strcmp(action,"call") == 0) || (strcmp(action,"raise") == 0)
@@ -982,47 +981,55 @@ int32_t BET_player_round_betting_test(cJSON *argjson,struct privatebet_info *bet
 		vars->player_funds-=raise_amount;
 		vars->betamount[playerid][round]+=raise_amount;
 
-		retval=BET_player_invoice_pay(argjson,bet,vars,raise_amount);
+		cJSON_AddNumberToObject(action_response,"bet_amount",raise_amount);
+		retval=BET_player_create_betting_invoice_request(argjson,action_response,bet,raise_amount);
+		//retval=BET_player_invoice_pay(argjson,bet,vars,raise_amount);
 		if(retval<0)
 			goto end;
 		
-		cJSON_AddNumberToObject(action_response,"bet_amount",raise_amount);
+		
 	}
 	else if(jinti(possibilities,(option-1)) == call)
 	{
 		vars->betamount[playerid][round]+=min_amount;
 		vars->player_funds-=min_amount;
-
-		retval=BET_player_invoice_pay(argjson,bet,vars,min_amount);
+		cJSON_AddNumberToObject(action_response,"bet_amount",min_amount);
+				
+		retval=BET_player_create_betting_invoice_request(argjson,action_response,bet,min_amount);
+		//retval=BET_player_invoice_pay(argjson,bet,vars,min_amount);
 		printf("%s::%d::%d\n",__FUNCTION__,__LINE__,retval);
 		if(retval<0)
 		{
 			goto end;
 		}	
 		
-		cJSON_AddNumberToObject(action_response,"bet_amount",min_amount);
+
 	}
 	else if(jinti(possibilities,(option-1)) == allin)
 	{
 		vars->betamount[playerid][round]+=vars->player_funds;
+		cJSON_AddNumberToObject(action_response,"bet_amount",vars->player_funds);
+		vars->player_funds=0;
 
-		retval=BET_player_invoice_pay(argjson,bet,vars,vars->player_funds);
+				
+		retval=BET_player_create_betting_invoice_request(argjson,action_response,bet,vars->player_funds);
+		//retval=BET_player_invoice_pay(argjson,bet,vars,vars->player_funds);
 		if(retval<0)
 			goto end;	
 		
-		cJSON_AddNumberToObject(action_response,"bet_amount",vars->player_funds);
-		vars->player_funds=0;
 	}
-
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(action_response));
-	rendered=cJSON_Print(action_response);
-	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
-
-	if(bytes<0)
+	else
 	{
-		retval = -1;
-		printf("\nFailed to send data");
-		goto end;
+		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(action_response));
+		rendered=cJSON_Print(action_response);
+		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+
+		if(bytes<0)
+		{
+			retval = -1;
+			printf("\nFailed to send data");
+			goto end;
+		}
 	}
 	end:
 		return retval;

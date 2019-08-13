@@ -481,6 +481,38 @@ int32_t BET_player_create_invoice_request(cJSON *argjson,struct privatebet_info 
 	
 }
 
+int32_t BET_player_create_betting_invoice_request(cJSON *argjson,cJSON *actionResponse,struct privatebet_info *bet,int32_t amount)
+{
+	int32_t retval=1,bytes;
+	cJSON *betInfo=NULL;
+	char *rendered=NULL;
+
+	betInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(betInfo,"method","bettingInvoiceRequest");
+	cJSON_AddNumberToObject(betInfo,"round",jint(argjson,"round"));
+	cJSON_AddNumberToObject(betInfo,"playerID",bet->myplayerid);
+	cJSON_AddNumberToObject(betInfo,"betAmount",amount);
+	cJSON_AddItemToObject(betInfo,"actionResponse",actionResponse);
+
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(betInfo));
+	
+	rendered=cJSON_Print(betInfo);
+
+	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+
+	if(bytes<0)
+	{
+			retval=-1;
+			printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
+			goto end;
+	}
+
+	end:
+		return retval;
+	
+}
+
+
 int32_t BET_player_invoice_pay(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars,int amount)
 {
 	pthread_t pay_t;
@@ -523,7 +555,7 @@ int32_t BET_player_paymentloop(void * _ptr)
     			   {
     			   		if(strcmp(method,"invoice") == 0)
 			   			{
-			   				printf("%s::%d\n",__FUNCTION__,__LINE__);
+			   							printf("%s::%d\n",__FUNCTION__,__LINE__);
 			   				retval=BET_p2p_invoice(msgjson,bet,NULL);
 							printf("%s::%d::%d\n",__FUNCTION__,__LINE__,retval);
 							flag=0;
