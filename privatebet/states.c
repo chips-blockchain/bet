@@ -995,7 +995,7 @@ int32_t BET_player_round_betting_test(cJSON *argjson,struct privatebet_info *bet
 		vars->player_funds-=min_amount;
 		cJSON_AddNumberToObject(action_response,"bet_amount",min_amount);
 				
-		retval=BET_player_create_betting_invoice_request(argjson,action_response,bet,raise_amount);
+		retval=BET_player_create_betting_invoice_request(argjson,action_response,bet,min_amount);
 		//retval=BET_player_invoice_pay(argjson,bet,vars,min_amount);
 		printf("%s::%d::%d\n",__FUNCTION__,__LINE__,retval);
 		if(retval<0)
@@ -1012,7 +1012,7 @@ int32_t BET_player_round_betting_test(cJSON *argjson,struct privatebet_info *bet
 		vars->player_funds=0;
 
 				
-		retval=BET_player_create_betting_invoice_request(argjson,action_response,bet,raise_amount);
+		retval=BET_player_create_betting_invoice_request(argjson,action_response,bet,vars->player_funds);
 		//retval=BET_player_invoice_pay(argjson,bet,vars,vars->player_funds);
 		if(retval<0)
 			goto end;	
