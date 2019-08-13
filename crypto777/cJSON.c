@@ -79,7 +79,10 @@ static void *cJSON_mallocnode()
 static void cJSON_freeptrs(char **ptrs,int32_t num,char **space)
 {
     if ( ptrs != space )
-        cJSON_free(ptrs);
+    {
+    	if(ptrs)
+        	cJSON_free(ptrs);
+    }	
 }
 
 static void cJSON_freestr(char *str)
