@@ -523,6 +523,7 @@ int32_t BET_player_paymentloop(void * _ptr)
     			   {
     			   		if(strcmp(method,"invoice") == 0)
 			   			{
+			   				printf("%s::%d\n",__FUNCTION__,__LINE__);
 			   				retval=BET_p2p_invoice(msgjson,bet,NULL);
 							printf("%s::%d::%d\n",__FUNCTION__,__LINE__,retval);
 							flag=0;

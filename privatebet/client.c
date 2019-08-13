@@ -3028,6 +3028,7 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 		}
 		else if(strcmp(method,"invoice") == 0)
 		{
+			printf("%s::%d\n",__FUNCTION__,__LINE__);
 			retval=BET_p2p_invoice(argjson,bet,vars);
 		}
 		else if(strcmp(method,"winner") == 0)
