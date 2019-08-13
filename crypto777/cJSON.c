@@ -84,12 +84,14 @@ static void cJSON_freeptrs(char **ptrs,int32_t num,char **space)
 
 static void cJSON_freestr(char *str)
 {
-    cJSON_free(str);
+	if(str)
+    	cJSON_free(str);
 }
 
 static void cJSON_freenode(cJSON *item)
 {
-    cJSON_free(item);
+	if(item)
+    	cJSON_free(item);
 }
 
 static char* cJSON_strdup(const char* str)
