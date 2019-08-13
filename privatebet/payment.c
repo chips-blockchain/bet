@@ -481,11 +481,12 @@ int32_t BET_player_create_invoice_request(cJSON *argjson,struct privatebet_info 
 	
 }
 
+int thread_var=1;
 int32_t BET_player_invoice_pay(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars,int amount)
 {
 	pthread_t pay_t;
 	int32_t retval=1;
-
+	thread_var=1;
 	  printf("%s::%d\n",__FUNCTION__,__LINE__);	
 	  retval=BET_player_create_invoice_request(argjson,bet,amount);
    	  if (OS_thread_create(&pay_t,NULL,(int *)BET_player_paymentloop,(void *)bet) != 0 )
@@ -493,7 +494,12 @@ int32_t BET_player_invoice_pay(cJSON *argjson,struct privatebet_info *bet,struct
 		  printf("%s::%d::%d\n",__FUNCTION__,__LINE__,retval);
 		  //retval=-1;
 		  //exit(-1);
-	  }   
+	  }
+	  while(thread_var)
+	 {
+	 	printf("\nwaiting for the child thread to finish");
+		fflush(stdout);
+	 }
 	  if(pthread_join(pay_t,NULL))
 	  {
 		  printf("\nError in joining the main thread for player %d",bet->myplayerid);
@@ -523,7 +529,7 @@ int32_t BET_player_paymentloop(void * _ptr)
     			   {
     			   		if(strcmp(method,"invoice") == 0)
 			   			{
-			   				printf("%s::%d\n",__FUNCTION__,__LINE__);
+			   							printf("%s::%d\n",__FUNCTION__,__LINE__);
 			   				retval=BET_p2p_invoice(msgjson,bet,NULL);
 							printf("%s::%d::%d\n",__FUNCTION__,__LINE__,retval);
 							flag=0;
@@ -541,7 +547,7 @@ int32_t BET_player_paymentloop(void * _ptr)
         }
         
     }   
-
+    thread_var=0;
 	return retval;
  
 }
