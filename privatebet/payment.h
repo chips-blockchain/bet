@@ -21,3 +21,5 @@ int32_t BET_player_create_invoice_request(cJSON *argjson,struct privatebet_info 
 int32_t BET_player_invoice_pay(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars,int amount);
 int32_t BET_player_paymentloop(void * _ptr);
 
+int32_t BET_player_create_betting_invoice_request(cJSON *argjson,cJSON *actionResponse,struct privatebet_info *bet,int32_t amount);
+

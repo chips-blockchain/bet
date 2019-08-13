@@ -1651,6 +1651,77 @@ int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privat
 		return retval;
 }
 
+
+int32_t BET_p2p_betting_invoice(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
+{
+	cJSON *invoiceInfo=NULL,*paymentInfo=NULL,*payResponse=NULL;
+    char *invoice=NULL;
+	int argc,retval=1;
+	char **argv=NULL;
+	int32_t playerID,bytes;
+	char *rendered=NULL;
+	cJSON *actionResponse=NULL;
+	actionResponse=cJSON_CreateObject();
+
+	actionResponse=cJSON_GetObjectItem(argjson,"actionResponse");
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+	
+	argv=(char**)malloc(4*sizeof(char*));
+	argc=3;
+	for(int i=0;i<4;i++)
+	{
+		argv[i]=(char*)malloc(sizeof(char)*1000);
+	}
+	playerID=jint(argjson,"playerID");
+	invoice=jstr(argjson,"invoice");
+	invoiceInfo=cJSON_Parse(invoice);
+	if(playerID==bet->myplayerid)
+	{
+		strcpy(argv[0],"lightning-cli");
+		strcpy(argv[1],"pay");
+		sprintf(argv[2],"%s",jstr(invoiceInfo,"bolt11"));
+		argv[3]=NULL;
+		//ln_bet(argc,argv,buf);
+		payResponse=cJSON_CreateObject();
+		make_command(argc,argv,&payResponse);
+		//payResponse=cJSON_Parse(buf);
+		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(payResponse));	
+		if(jint(payResponse,"code") != 0)
+		{
+			retval=-1;
+			printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(payResponse,"message"));
+			goto end;
+		}
+		
+		if(strcmp(jstr(payResponse,"status"),"complete")==0)
+			printf("Payment Success\n");
+		else
+			retval=-1;
+
+		rendered=cJSON_Print(actionResponse);
+		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+		if(bytes<0)
+		{
+			retval=-1;
+			printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
+			goto end;
+		}
+	}
+	end:
+	if(argv)
+	{
+		for(int i=0;i<4;i++)
+		{
+			if(argv[i])
+				free(argv[i]);
+		}
+		free(argv);
+	}
+		
+		return retval;
+}
+
+
 int32_t BET_p2p_winner(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int argc,bytes,retval=1;
@@ -3027,6 +3098,11 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 			retval=BET_p2p_bet_round(argjson,bet,vars);
 		}
 		else if(strcmp(method,"invoice") == 0)
+		{
+			printf("%s::%d\n",__FUNCTION__,__LINE__);
+			retval=BET_p2p_invoice(argjson,bet,vars);
+		}
+		else if(strcmp(method,"bettingInvoice") == 0)
 		{
 			printf("%s::%d\n",__FUNCTION__,__LINE__);
 			retval=BET_p2p_invoice(argjson,bet,vars);
