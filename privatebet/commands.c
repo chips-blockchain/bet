@@ -423,12 +423,12 @@ void BET_check_sync()
 	{
 		if((chips_bh-ln_bh)>threshold_diff)
 		{
-			printf("ln is %d blocks behind chips network",(chips_bh-ln_bh));
+			printf("ln is %d blocks behind chips network\n",(chips_bh-ln_bh));
+			sleep(1);
 		}
 		else
 			flag=0;
 		
-		sleep(1);
 		chips_bh=BET_get_chips_blockheight();
 		ln_bh=BET_get_ln_blockheight();
 		
