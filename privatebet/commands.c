@@ -424,7 +424,7 @@ void BET_check_sync()
 		if((chips_bh-ln_bh)>threshold_diff)
 		{
 			printf("ln is %d blocks behind chips network\n",(chips_bh-ln_bh));
-			sleep(1);
+			fflush(stdout);
 		}
 		else
 		{
