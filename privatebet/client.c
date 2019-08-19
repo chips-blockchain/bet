@@ -110,7 +110,6 @@ void make_command(int argc, char **argv,cJSON **argjson)
 		strcat(command,argv[i]);
 		strcat(command," ");
 	}	
-	printf("\ncommand=%s\n\n",command);
 	 /* Open the command for reading. */
 	 fp = popen(command, "r");
 	 if (fp == NULL) 

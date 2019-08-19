@@ -367,7 +367,6 @@ int32_t BET_get_chips_blockheight()
 	strcpy(argv[1],"getblockcount");
 	blockHeightInfo=cJSON_CreateObject();
 	make_command(argc,argv,&blockHeightInfo);
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(blockHeightInfo));
 	
 	end:
 		if(argv)
@@ -398,7 +397,6 @@ int32_t BET_get_ln_blockheight()
 	strcpy(argv[1],"dev-blockheight");
 	blockHeightInfo=cJSON_CreateObject();
 	make_command(argc,argv,&blockHeightInfo);
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(blockHeightInfo));
 	end:
 		if(argv)
 		{
