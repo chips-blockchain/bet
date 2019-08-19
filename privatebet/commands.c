@@ -427,7 +427,11 @@ void BET_check_sync()
 			sleep(1);
 		}
 		else
+		{
 			flag=0;
+			printf("ln is in sync with chips\n");
+	
+		}
 		
 		chips_bh=BET_get_chips_blockheight();
 		ln_bh=BET_get_ln_blockheight();
