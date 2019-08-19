@@ -81,7 +81,7 @@ bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 struct enc_share *g_shares=NULL;
 
-char *rootAddress="RVMYRqUqJEuq394KfAgyd13s6ttfcCpLaW";
+char *rootAddress="RSdMRYeeouw3hepxNgUzHn34qFhn1tsubb";
 /*
 char *LN_idstr,Host_ipaddr[64],Host_peerid[67],BET_ORACLEURL[64] = "127.0.0.1:7797";
 uint16_t LN_port;
@@ -364,6 +364,7 @@ int main(int argc, char **argv)
 	numplayers=2;
     Maxplayers=2;
 	/*if(argc>=0)*/
+	BET_check_sync();
 	if((argc>=2)&&(strcmp(argv[1],"dcv")==0))
 	{
 		

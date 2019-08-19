@@ -350,3 +350,90 @@ void BET_cmdloop(bits256 privkey,char *smartaddr,uint8_t *pubkey33,bits256 pubke
         sleep(10);
     }
 }*/
+
+
+int32_t BET_get_chips_blockheight()
+{
+	char **argv=NULL;
+	int argc;
+	cJSON *blockHeightInfo=NULL;
+	argc=2;
+	argv=(char**)malloc(argc*sizeof(char*));
+	for(int i=0;i<argc;i++)
+	{
+		argv[i]=(char*)malloc(100*sizeof(char));
+	}
+	strcpy(argv[0],"chips-cli");
+	strcpy(argv[1],"getblockcount");
+	blockHeightInfo=cJSON_CreateObject();
+	make_command(argc,argv,&blockHeightInfo);
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(blockHeightInfo));
+	
+	end:
+		if(argv)
+		{
+			for(int i=0;i<argc;i++)
+			{
+				if(argv[i])
+					free(argv[i]);
+					
+			}
+			free(argv);
+		}
+	return atoi(cJSON_Print(blockHeightInfo));
+}
+
+int32_t BET_get_ln_blockheight()
+{
+	char **argv=NULL;
+	int argc;
+	cJSON *blockHeightInfo=NULL;
+	argc=2;
+	argv=(char**)malloc(argc*sizeof(char*));
+	for(int i=0;i<argc;i++)
+	{
+		argv[i]=(char*)malloc(100*sizeof(char));
+	}
+	strcpy(argv[0],"lightning-cli");
+	strcpy(argv[1],"dev-blockheight");
+	blockHeightInfo=cJSON_CreateObject();
+	make_command(argc,argv,&blockHeightInfo);
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(blockHeightInfo));
+	end:
+		if(argv)
+		{
+			for(int i=0;i<argc;i++)
+			{
+				if(argv[i])
+					free(argv[i]);
+					
+			}
+			free(argv);
+		}
+	return jint(blockHeightInfo,"blockheight");
+}
+
+
+void BET_check_sync()
+{
+	int32_t chips_bh,ln_bh,flag=1;
+	int32_t threshold_diff=1000;
+	chips_bh=BET_get_chips_blockheight();
+	ln_bh=BET_get_ln_blockheight();
+	
+	while(flag)
+	{
+		if((chips_bh-ln_bh)>threshold_diff)
+		{
+			printf("ln is %d blocks behind chips network",(chips_bh-ln_bh));
+		}
+		else
+			flag=0;
+		
+		sleep(1);
+		chips_bh=BET_get_chips_blockheight();
+		ln_bh=BET_get_ln_blockheight();
+		
+	}
+}
+
