@@ -1188,7 +1188,7 @@ int32_t BET_player_round_betting_response(cJSON *argjson,struct privatebet_info 
 	bet_amount=jint(argjson,"bet_amount");
 	
 	cJSON_DetachItemFromObject(argjson,"bet_amount");
-	cJSON_AddNumberToObject(argjson,"bet_amount",cJSON_CreateNumber(bet_amount+min_amount));
+	cJSON_AddNumberToObject(argjson,"bet_amount",bet_amount+min_amount);
 
 	vars->betamount[playerid][round]+=bet_amount;
 	vars->pot+=bet_amount;
