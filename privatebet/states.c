@@ -993,7 +993,7 @@ int32_t BET_p2p_big_blind(cJSON *argjson,struct privatebet_info *bet,struct priv
 int32_t BET_player_round_betting_test(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	cJSON *roundBetting=NULL,*possibilities=NULL,*action_response=NULL;
-	int maxamount=0,bytes,retval=1,playerid,round,min_amount,option,raise_amount=0;
+	int maxamount=0,bytes,retval=1,playerid,round,min_amount,option,raise_amount=0,invoice_amount=0;
 	char *rendered=NULL;
 	
 	playerid=jint(argjson,"playerid");
@@ -1016,11 +1016,13 @@ int32_t BET_player_round_betting_test(cJSON *argjson,struct privatebet_info *bet
 	if(jinti(possibilities,(option-1))== raise)
 	{
 		raise_amount=jint(argjson,"bet_amount");
+		invoice_amount=raise_amount-vars->betamount[playerid][round];
+		vars->betamount[playerid][round]=raise_amount;
 		vars->player_funds-=raise_amount;
-		vars->betamount[playerid][round]+=raise_amount;
+		//vars->betamount[playerid][round]+=raise_amount;
 
-		cJSON_AddNumberToObject(action_response,"bet_amount",raise_amount);
-		retval=BET_player_create_betting_invoice_request(argjson,action_response,bet,raise_amount);
+		cJSON_AddNumberToObject(action_response,"bet_amount",invoice_amount);
+		retval=BET_player_create_betting_invoice_request(argjson,action_response,bet,invoice_amount);
 		//retval=BET_player_invoice_pay(argjson,bet,vars,raise_amount);
 		if(retval<0)
 			goto end;
