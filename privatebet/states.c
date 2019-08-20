@@ -354,7 +354,7 @@ int32_t BET_DCV_next_turn(cJSON *argjson,struct privatebet_info *bet,struct priv
 }
 int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	cJSON *roundBetting=NULL,*possibilities=NULL,*actions=NULL;
+	cJSON *roundBetting=NULL,*possibilities=NULL,*actions=NULL,*roundActions=NULL;
 	int flag=0,maxamount=0,bytes,retval=1,players_left=0;
 	char *rendered=NULL;
 
@@ -395,18 +395,20 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	cJSON_AddItemToObject(roundBetting,"actions",actions=cJSON_CreateArray());
 	for(int i=0;i<=vars->round;i++)
 	{
+		cJSON_AddItemToArray(actions,roundActions=cJSON_CreateArray());
 		for(int j=0;j<bet->maxplayers;j++)
 		{
 			if(vars->bet_actions[j][i]>0)
-				cJSON_AddItemToArray(actions,cJSON_CreateNumber(vars->bet_actions[j][i]));
+				cJSON_AddItemToArray(roundActions,cJSON_CreateNumber(vars->bet_actions[j][i]));
 		}
 	}
 	
 	cJSON_AddItemToObject(roundBetting,"possibilities",possibilities=cJSON_CreateArray());
 
-	
+	printf("\n%s::%d::betamounts\n",__FUNCTION__,__LINE__);
 	for(int i=0;i<bet->maxplayers;i++)
 	{	
+		printf("%d\t",vars->betamount[i][vars->round]);
 		if(maxamount<vars->betamount[i][vars->round])
 		{
 			maxamount=vars->betamount[i][vars->round];
