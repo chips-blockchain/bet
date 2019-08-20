@@ -1023,7 +1023,7 @@ int32_t BET_player_round_betting_test(cJSON *argjson,struct privatebet_info *bet
 		vars->player_funds-=raise_amount;
 		//vars->betamount[playerid][round]+=raise_amount;
 
-		cJSON_AddNumberToObject(action_response,"bet_amount",invoice_amount);
+		cJSON_AddNumberToObject(action_response,"bet_amount",raise_amount);
 		retval=BET_player_create_betting_invoice_request(argjson,action_response,bet,invoice_amount);
 		//retval=BET_player_invoice_pay(argjson,bet,vars,raise_amount);
 		if(retval<0)
