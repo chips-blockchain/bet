@@ -404,8 +404,7 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	
 	cJSON_AddItemToObject(roundBetting,"possibilities",possibilities=cJSON_CreateArray());
 
-	if(vars->last_turn == vars->turni)
-
+	printf("%s::%d::%d::%d\n",__FUNCTION__,__LINE__,vars->betamount[vars->last_turn][vars->round],vars->betamount[vars->turni][vars->round]);
 	if(vars->betamount[vars->last_turn][vars->round] == vars->betamount[vars->turni][vars->round])
 	{
 		// check, allin, fold
