@@ -413,12 +413,13 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	{
 		// raise, call, allin, fold
 		toCall=vars->betamount[vars->last_turn][vars->round]-vars->betamount[vars->turni][vars->round];
-		if(vars->last_raise<big_blind_amount)
-			toRaise=big_blind_amount;
-		else
-			toRaise=vars->last_raise;
 	}
 
+	
+	if(vars->last_raise<big_blind_amount)
+		toRaise=big_blind_amount;
+	else
+		toRaise=vars->last_raise;
 	
 	cJSON_AddNumberToObject(roundBetting,"toCall",toCall);
 	cJSON_AddNumberToObject(roundBetting,"toRaise",toRaise);
