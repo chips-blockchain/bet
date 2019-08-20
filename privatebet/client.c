@@ -3134,6 +3134,7 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 		else if(strcmp(method,"seats") == 0)
 		{
 			printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+			cJSON_AddNumberToObject(argjson,"playerFunds",BET_rest_listfunds());
 			lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
 		}
 		else if(strcmp(method,"finalInfo") == 0)
