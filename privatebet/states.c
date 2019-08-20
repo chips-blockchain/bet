@@ -354,8 +354,8 @@ int32_t BET_DCV_next_turn(cJSON *argjson,struct privatebet_info *bet,struct priv
 }
 int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	cJSON *roundBetting=NULL,*possibilities=NULL,*actions=NULL;
-	int flag=0,maxamount=0,bytes,retval=1,players_left=0;
+	cJSON *roundBetting=NULL,*possibilities=NULL,*actions=NULL,*roundActions=NULL;
+	int flag=0,maxamount=0,bytes,retval=1,players_left=0,toCall=0,minRaise=0;
 	char *rendered=NULL;
 
 	if((retval=BET_DCV_next_turn(argjson,bet,vars)) == -1)
@@ -404,6 +404,27 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	
 	cJSON_AddItemToObject(roundBetting,"possibilities",possibilities=cJSON_CreateArray());
 
+	printf("%s::%d::%d::%d\n",__FUNCTION__,__LINE__,vars->betamount[vars->last_turn][vars->round],vars->betamount[vars->turni][vars->round]);
+	if(vars->betamount[vars->last_turn][vars->round] == vars->betamount[vars->turni][vars->round])
+	{
+		// check, allin, fold
+	}
+	else
+	{
+		// raise, call, allin, fold
+		toCall=vars->betamount[vars->last_turn][vars->round]-vars->betamount[vars->turni][vars->round];
+	}
+
+	
+	if(vars->last_raise<big_blind_amount)
+		minRaise=big_blind_amount;
+	else
+		minRaise=vars->last_raise*2;
+	
+	cJSON_AddNumberToObject(roundBetting,"toCall",toCall);
+	cJSON_AddNumberToObject(roundBetting,"minRaise",minRaise);
+	
+	printf("%s::%d::toCall::%d::minRaise::%d\n",__FUNCTION__,__LINE__,toCall,minRaise);
 	
 	for(int i=0;i<bet->maxplayers;i++)
 	{	
@@ -413,6 +434,8 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 		}
 	}
 
+	printf("\n");
+	
 	if(maxamount>vars->betamount[vars->turni][vars->round])
 	{
 		if(maxamount>=vars->funds[vars->turni])
@@ -492,6 +515,7 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 		else if(strcmp(action,"raise") == 0)
 		{
 			vars->bet_actions[playerid][round]=raise;
+			vars->last_raise=bet_amount;
 		}
 		else if(strcmp(action,"allin") == 0)
 		{
