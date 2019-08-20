@@ -355,7 +355,7 @@ int32_t BET_DCV_next_turn(cJSON *argjson,struct privatebet_info *bet,struct priv
 int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	cJSON *roundBetting=NULL,*possibilities=NULL,*actions=NULL,*roundActions=NULL;
-	int flag=0,maxamount=0,bytes,retval=1,players_left=0,toCall=0,toRaise=0;
+	int flag=0,maxamount=0,bytes,retval=1,players_left=0,toCall=0,minRaise=0;
 	char *rendered=NULL;
 
 	if((retval=BET_DCV_next_turn(argjson,bet,vars)) == -1)
@@ -422,9 +422,9 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 		toRaise=vars->last_raise*2;
 	
 	cJSON_AddNumberToObject(roundBetting,"toCall",toCall);
-	cJSON_AddNumberToObject(roundBetting,"toRaise",toRaise);
+	cJSON_AddNumberToObject(roundBetting,"minRaise",minRaise);
 	
-	printf("%s::%d::toCall::%d::toRaise::%d\n",__FUNCTION__,__LINE__,toCall,toRaise);
+	printf("%s::%d::toCall::%d::minRaise::%d\n",__FUNCTION__,__LINE__,toCall,minRaise);
 	
 	for(int i=0;i<bet->maxplayers;i++)
 	{	
