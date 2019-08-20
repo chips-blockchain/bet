@@ -354,8 +354,8 @@ int32_t BET_DCV_next_turn(cJSON *argjson,struct privatebet_info *bet,struct priv
 }
 int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	cJSON *roundBetting=NULL,*possibilities=NULL,*actions=NULL,*roundActions=NULL;
-	int flag=0,maxamount=0,bytes,retval=1,players_left=0,toCall=0,minRaise=0;
+	cJSON *roundBetting=NULL,*possibilities=NULL,*actions=NULL,*roundActions=NULL,*betAmounts=NULL;
+	int flag=0,maxamount=0,bytes,retval=1,players_left=0,toCall=0,minRaise=0,totalBet=0;
 	char *rendered=NULL;
 
 	if((retval=BET_DCV_next_turn(argjson,bet,vars)) == -1)
@@ -392,6 +392,17 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	cJSON_AddNumberToObject(roundBetting,"round",vars->round);
 	cJSON_AddNumberToObject(roundBetting,"pot",vars->pot);
 	/* */
+	cJSON_AddItemToObject(roundBetting,"betAmounts",betAmounts=cJSON_CreateArray());
+	for(int j=0;j<bet->maxplayers;j++)
+	{
+		totalBet=0;
+		for(int i=0;i<vars->round;i++)
+		{
+			totalBet+=vars->betamount[j][i];
+		}
+		cJSON_AddItemToArray(betAmounts,cJSON_CreateNumber(totalBet));
+	}
+	
 	cJSON_AddItemToObject(roundBetting,"actions",actions=cJSON_CreateArray());
 	for(int i=0;i<=vars->round;i++)
 	{
