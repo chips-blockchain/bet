@@ -1023,7 +1023,7 @@ int32_t BET_player_round_betting_test(cJSON *argjson,struct privatebet_info *bet
 		vars->player_funds-=raise_amount;
 		//vars->betamount[playerid][round]+=raise_amount;
 
-		cJSON_AddNumberToObject(action_response,"bet_amount",raise_amount);
+		cJSON_AddNumberToObject(action_response,"bet_amount",invoice_amount);
 		retval=BET_player_create_betting_invoice_request(argjson,action_response,bet,invoice_amount);
 		//retval=BET_player_invoice_pay(argjson,bet,vars,raise_amount);
 		if(retval<0)
@@ -1179,12 +1179,16 @@ int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,stru
 
 int32_t BET_player_round_betting_response(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int retval=1,playerid,round,bet_amount=0,maxamount=0,flag1=0,flag2=0;
+	int retval=1,playerid,round,bet_amount=0,maxamount=0,flag1=0,flag2=0,min_amount=0;
 	char *action =NULL;
 
 	playerid=jint(argjson,"playerid");
 	round=jint(argjson,"round");
+	min_amount=jint(argjson,"min_amount");
 	bet_amount=jint(argjson,"bet_amount");
+	
+	cJSON_DetachItemFromObject(argjson,"bet_amount");
+	cJSON_AddNumberToObject(argjson,"bet_amount",cJSON_CreateNumber(bet_amount+min_amount));
 
 	vars->betamount[playerid][round]+=bet_amount;
 	vars->pot+=bet_amount;
