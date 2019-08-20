@@ -417,9 +417,9 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 
 	
 	if(vars->last_raise<big_blind_amount)
-		toRaise=big_blind_amount;
+		minRaise=big_blind_amount;
 	else
-		toRaise=vars->last_raise*2;
+		minRaise=vars->last_raise*2;
 	
 	cJSON_AddNumberToObject(roundBetting,"toCall",toCall);
 	cJSON_AddNumberToObject(roundBetting,"minRaise",minRaise);
