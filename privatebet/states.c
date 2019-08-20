@@ -355,7 +355,7 @@ int32_t BET_DCV_next_turn(cJSON *argjson,struct privatebet_info *bet,struct priv
 int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	cJSON *roundBetting=NULL,*possibilities=NULL,*actions=NULL,*roundActions=NULL,*betAmounts=NULL;
-	int flag=0,maxamount=0,bytes,retval=1,players_left=0,toCall=0,minRaise=0,totalBet=0;
+	int flag=0,maxamount=0,bytes,retval=1,players_left=0,toCall=0,toRaise=0,totalBet=0;
 	char *rendered=NULL;
 
 	if((retval=BET_DCV_next_turn(argjson,bet,vars)) == -1)
@@ -423,19 +423,22 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	else
 	{
 		// raise, call, allin, fold
-		toCall=vars->betamount[vars->last_turn][vars->round]-vars->betamount[vars->turni][vars->round];
+		toCall=vars->betamount[vars->last_turn][vars->round];
 	}
 
 	
 	if(vars->last_raise<big_blind_amount)
-		minRaise=big_blind_amount;
+		toRaise=big_blind_amount;
 	else
-		minRaise=vars->last_raise*2;
+		toRaise=vars->last_raise;
+
+	toRaise+=toCall;
+	
 	
 	cJSON_AddNumberToObject(roundBetting,"toCall",toCall);
-	cJSON_AddNumberToObject(roundBetting,"minRaise",minRaise);
+	cJSON_AddNumberToObject(roundBetting,"toRaise",toRaise);
 	
-	printf("%s::%d::toCall::%d::minRaise::%d\n",__FUNCTION__,__LINE__,toCall,minRaise);
+	printf("%s::%d::toCall::%d::minRaise::%d\n",__FUNCTION__,__LINE__,toCall,toRaise);
 	
 	for(int i=0;i<bet->maxplayers;i++)
 	{	
