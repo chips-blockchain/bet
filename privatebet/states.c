@@ -396,7 +396,7 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	for(int j=0;j<bet->maxplayers;j++)
 	{
 		totalBet=0;
-		for(int i=0;i<vars->round;i++)
+		for(int i=0;i<=vars->round;i++)
 		{
 			totalBet+=vars->betamount[j][i];
 		}
