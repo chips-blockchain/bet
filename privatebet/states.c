@@ -505,12 +505,13 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 
 int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int retval=1,playerid,round,bet_amount=0,players_left=0;
+	int retval=1,playerid,round,bet_amount=0,players_left=0,min_amount=0;
 	char *action =NULL;
 
 	playerid=jint(argjson,"playerid");
 	round=jint(argjson,"round");
 	bet_amount=jint(argjson,"bet_amount");
+	min_amount=jint(argjson,"min_amount");
 
 	vars->betamount[playerid][round]+=bet_amount;
 	vars->pot+=bet_amount;
@@ -529,7 +530,7 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 		else if(strcmp(action,"raise") == 0)
 		{
 			vars->bet_actions[playerid][round]=raise;
-			vars->last_raise=bet_amount;
+			vars->last_raise=bet_amount-min_amount;
 		}
 		else if(strcmp(action,"allin") == 0)
 		{
@@ -1004,6 +1005,7 @@ int32_t BET_player_round_betting_test(cJSON *argjson,struct privatebet_info *bet
 	cJSON_AddStringToObject(action_response,"method","betting");
 	cJSON_AddNumberToObject(action_response,"playerid",jint(argjson,"playerid"));
 	cJSON_AddNumberToObject(action_response,"round",jint(argjson,"round"));
+	cJSON_AddNumberToObject(action_response,"min_amount",min_amount);
 	possibilities=cJSON_GetObjectItem(argjson,"possibilities");
 
 	printf("%s::%d\n",__FUNCTION__,__LINE__);
