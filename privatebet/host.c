@@ -2020,12 +2020,14 @@ int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct priva
 void BET_p2p_host_blinds_info(struct lws *wsi)
 {
 	cJSON *blindsInfo=NULL;
+	char *rendered=NULL;
 	blindsInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(blindsInfo,"method","blindsInfo");
 	cJSON_AddNumberToObject(blindsInfo,"small_blind",small_blind_amount);
 	cJSON_AddNumberToObject(blindsInfo,"big_blind",big_blind_amount);
 	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(blindsInfo));
-	lws_write(wsi,cJSON_Print(blindsInfo),strlen(cJSON_Print(blindsInfo)),0);
+	rendered=cJSON_Print(blindsInfo);
+	lws_write(wsi,rendered,strlen(rendered),0);
 }
 int32_t BET_p2p_host_start_init(struct privatebet_info *bet)
 {
