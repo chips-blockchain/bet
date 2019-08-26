@@ -3037,6 +3037,7 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
     static uint8_t *decoded; static int32_t decodedlen,retval=1;
     char *method; int32_t senderid; bits256 *MofN;
 	char hexstr[65];
+	char *rendered=NULL;
     if ( (method= jstr(argjson,"method")) != 0 )
     {
 	      
@@ -3135,7 +3136,8 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 		{
 			printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 			cJSON_AddNumberToObject(argjson,"playerFunds",BET_rest_listfunds());
-			lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+			rendered=cJSON_Print(argjson);
+			lws_write(wsi_global_client,rendered,strlen(rendered),0);
 		}
 		else if(strcmp(method,"finalInfo") == 0)
 		{
