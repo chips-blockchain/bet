@@ -233,7 +233,7 @@ int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 int32_t BET_rest_game(struct lws *wsi, cJSON *argjson)
 {
 	cJSON *gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
-	
+	char *rendered=NULL;
 	gameDetails=cJSON_CreateObject();
 	cJSON_AddNumberToObject(gameDetails,"tocall",0);
 	cJSON_AddNumberToObject(gameDetails,"seats",2);
@@ -247,8 +247,8 @@ int32_t BET_rest_game(struct lws *wsi, cJSON *argjson)
 	gameInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(gameInfo,"method","game");
 	cJSON_AddItemToObject(gameInfo,"game",gameDetails);
-
-	lws_write(wsi,cJSON_Print(gameInfo),strlen(cJSON_Print(gameInfo)),0);
+	rendered=cJSON_Print(gameInfo);
+	lws_write(wsi,rendered,strlen(rendered),0);
 	return 0;
 		
 }
