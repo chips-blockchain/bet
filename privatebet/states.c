@@ -436,7 +436,7 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	
 	
 	cJSON_AddNumberToObject(roundBetting,"toCall",toCall);
-	cJSON_AddNumberToObject(roundBetting,"toRaise",toRaise);
+	cJSON_AddNumberToObject(roundBetting,"minRaiseTo",toRaise);
 	
 	printf("%s::%d::toCall::%d::minRaise::%d\n",__FUNCTION__,__LINE__,toCall,toRaise);
 	
