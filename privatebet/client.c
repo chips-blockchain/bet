@@ -3182,14 +3182,15 @@ void BET_p2p_clientloop_test(void * _ptr)
                     {
                     	printf("\nFAILURE\n");
                     	// do something here, possibly this could be because unknown commnad or because of encountering a special case which state machine fails to handle
+                    	flag=0;
                     }           
                    
                     
                 }
                 
         }
-        if(msgjson)
-			memset(msgjson,0x00,sizeof(msgjson));
+        if(ptr)
+            	nn_freemsg(ptr);
     }
 	if(msgjson)
 		free_json(msgjson);
