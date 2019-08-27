@@ -106,7 +106,6 @@ void make_command(int argc, char **argv,cJSON **argjson)
 	int32_t length=0;
 	
     memset(command,0x00,sizeof(command));
-	memset(data,0x00,sizeof(data));
 	memset(line,0x00,sizeof(line));
 	for(int i=0;i<argc;i++)
 	{
