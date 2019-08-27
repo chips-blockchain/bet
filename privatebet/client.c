@@ -122,7 +122,7 @@ void make_command(int argc, char **argv,cJSON **argjson)
 	 fseek(fp, 0L, SEEK_END);
 	 length=ftell(fp);
 	 rewind(fp);
-	 
+	 printf("command::%s\nlength::%d\n",command,length);
 	 data=(char*)malloc(length*sizeof(char));
 	 if(data == NULL)
  	 {	
