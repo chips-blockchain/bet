@@ -101,7 +101,7 @@ void make_command(int argc, char **argv,cJSON **argjson)
 {
 	char command[1000];
 	FILE *fp=NULL;
-	char data[1000],line[200],temp[1000];
+	char data[2048],line[200],temp[2048];
 	//char *data=NULL,line[200],temp[200];
 	int32_t length=0;
 	
@@ -113,6 +113,7 @@ void make_command(int argc, char **argv,cJSON **argjson)
 		strcat(command,argv[i]);
 		strcat(command," ");
 	}	
+	printf("command::%s\n",command);
 	 /* Open the command for reading. */
 	 fp = popen(command, "r");
 	 if (fp == NULL) 
