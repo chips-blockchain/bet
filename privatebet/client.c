@@ -3173,7 +3173,8 @@ void BET_p2p_clientloop_test(void * _ptr)
         while ( bet->subsock >= 0 && bet->pushsock >= 0 )
         {
 	        	recvlen= nn_recv (bet->subsock, &ptr, NN_MSG, 0);
-				
+				if(!ptr)
+					continue;
 				if (((msgjson= cJSON_Parse(ptr)) != 0) && (recvlen>0))
                 {
                     if ( BET_p2p_clientupdate_test(msgjson,bet,Player_VARS_global) < 0 )
