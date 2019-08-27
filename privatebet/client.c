@@ -97,14 +97,12 @@ struct privatebet_info *BET_player[CARDS777_MAXPLAYERS];
 struct privatebet_vars *Player_VARS[CARDS777_MAXPLAYERS];
 struct deck_player_info all_players_info[CARDS777_MAXPLAYERS];
 
+
 void make_command(int argc, char **argv,cJSON **argjson)
 {
 	char command[1000];
 	FILE *fp=NULL;
-	char data[2048],line[200],temp[2048];
-	//char *data=NULL,line[200],temp[200];
-	int32_t length=0;
-	
+	char data[10000],line[200],temp[10000];
     memset(command,0x00,sizeof(command));
 	memset(data,0x00,sizeof(data));
 	memset(line,0x00,sizeof(line));
@@ -113,22 +111,18 @@ void make_command(int argc, char **argv,cJSON **argjson)
 		strcat(command,argv[i]);
 		strcat(command," ");
 	}	
-	printf("command::%s\n",command);
 	 /* Open the command for reading. */
 	 fp = popen(command, "r");
 	 if (fp == NULL) 
 	 {
 		   printf("Failed to run command\n" );
-		   exit(0);
+		   exit(1);
 	 }
-	 while(fgets(line, sizeof(line), fp) != NULL)
+	 while(fgets(line, sizeof(line)-1, fp) != NULL)
      {
-     	
-		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,line);
-     	strncat(data,line,sizeof(line));
+     	strcat(data,line);
 		memset(line,0x00,sizeof(line));
 	 }
-	 printf("%s::%d::%s\n",__FUNCTION__,__LINE__,data);
 	if(strncmp("error", data, strlen("error")) == 0) 
 	{
 		memset(temp,0x00,sizeof(temp));
@@ -140,8 +134,8 @@ void make_command(int argc, char **argv,cJSON **argjson)
 	{
 		*argjson=cJSON_Parse(data);
 		cJSON_AddNumberToObject(*argjson,"code",0);
-
 	}
+
      pclose(fp);
 }
 
