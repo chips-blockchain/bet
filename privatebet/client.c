@@ -121,9 +121,9 @@ void make_command(int argc, char **argv,cJSON **argjson)
 		   printf("Failed to run command\n" );
 		   goto end;
 	 }
-	 while(fgets(line, sizeof(line)-1, fp) != NULL)
+	 while(fgets(line, sizeof(line), fp) != NULL)
      {
-     	strcat(data,line);
+     	strncat(data,line,sizeof(line));
 		memset(line,0x00,sizeof(line));
 	 }
 	if(strncmp("error", data, strlen("error")) == 0) 
