@@ -3295,6 +3295,8 @@ int32_t BET_rest_listfunds()
 			free(argv);
 		}
 
+		free_json(listFunds);
+		
 		return value;
 }
 
