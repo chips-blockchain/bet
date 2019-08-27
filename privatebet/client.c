@@ -126,6 +126,7 @@ void make_command(int argc, char **argv,cJSON **argjson)
      	strncat(data,line,sizeof(line));
 		memset(line,0x00,sizeof(line));
 	 }
+	 printf("%s::%d::%s\n",__FUNCTION__,__LINE__,data);
 	if(strncmp("error", data, strlen("error")) == 0) 
 	{
 		memset(temp,0x00,sizeof(temp));
