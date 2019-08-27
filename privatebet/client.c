@@ -102,11 +102,10 @@ void make_command(int argc, char **argv,cJSON **argjson)
 {
 	char command[1000];
 	FILE *fp=NULL;
-	char data[10000],line[200],temp[10000];
+	char data[10000],temp[10000];
 	char *buf=NULL;
     memset(command,0x00,sizeof(command));
 	memset(data,0x00,sizeof(data));
-	memset(line,0x00,sizeof(line));
 	for(int i=0;i<argc;i++)
 	{
 		strcat(command,argv[i]);
@@ -137,7 +136,8 @@ void make_command(int argc, char **argv,cJSON **argjson)
 		*argjson=cJSON_Parse(data);
 		cJSON_AddNumberToObject(*argjson,"code",0);
 	}
-
+	 if(buf)
+	 	free(buf);
      pclose(fp);
 }
 
