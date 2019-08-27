@@ -419,6 +419,8 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	if(vars->betamount[vars->last_turn][vars->round] == vars->betamount[vars->turni][vars->round])
 	{
 		// check, allin, fold
+		if(vars->bet_actions[vars->last_turn][vars->round]==big_blind)
+			toCall=vars->betamount[vars->last_turn][vars->round];	
 	}
 	else
 	{
