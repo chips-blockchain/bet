@@ -1138,7 +1138,7 @@ int32_t BET_p2p_bvv_join_init(cJSON *argjson,struct privatebet_info *bet,struct 
 	bvvResponseInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(bvvResponseInfo,"method","bvv_join");
 	cJSON_AddStringToObject(bvvResponseInfo,"uri",uri);
-
+	printf("%s::%d::uri::%s\n",__FUNCTION__,__LINE__,uri);
 	rendered=cJSON_Print(bvvResponseInfo);
     bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 
