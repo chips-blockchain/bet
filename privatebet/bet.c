@@ -379,21 +379,7 @@ int main(int argc, char **argv)
 			
 		#endif				  
 		
-		/*
-		BET_dcv1=calloc(1,sizeof(struct privatebet_info));
-	    BET_dcv1->pubsock = pubsock;//BET_nanosock(1,bindaddr,NN_PUB);
-	    BET_dcv1->pullsock = pullsock;//BET_nanosock(1,bindaddr1,NN_PULL);
-	    BET_dcv1->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
-	    BET_dcv1->maxchips = CARDS777_MAXCHIPS;
-	    BET_dcv1->chipsize = CARDS777_CHIPSIZE;
-		BET_dcv1->numplayers=0;
-		BET_dcv1->myplayerid=-2;
-		BET_dcv1->cardid=-1;
-		BET_dcv1->turni=-1;
-		BET_dcv1->no_of_turns=0;
-	    BET_betinfo_set(BET_dcv1,"demo",range,0,Maxplayers);
-	    */
-
+	
 		BET_dcv=calloc(1,sizeof(struct privatebet_info));
 		DCV_VARS = calloc(1,sizeof(struct privatebet_vars));
 
@@ -424,34 +410,6 @@ int main(int argc, char **argv)
 	        exit(-1);
 	    }
 		
-		#if 0
-		BET_dcv_global=calloc(1,sizeof(struct privatebet_info));
-	    BET_dcv_global->pubsock = pubsock;//BET_nanosock(1,bindaddr,NN_PUB);
-	    BET_dcv_global->pullsock = pullsock;//BET_nanosock(1,bindaddr1,NN_PULL);
-	    BET_dcv_global->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
-	    BET_dcv_global->maxchips = CARDS777_MAXCHIPS;
-	    BET_dcv_global->chipsize = CARDS777_CHIPSIZE;
-		BET_dcv_global->numplayers=0;
-		BET_dcv_global->myplayerid=-2;
-		BET_dcv_global->cardid=-1;
-		BET_dcv_global->turni=-1;
-		BET_dcv_global->no_of_turns=0;
-	    BET_betinfo_set(BET_dcv_global,"demo",range,0,Maxplayers);
-
-		if ( OS_thread_create(&dcv_backend,NULL,(void *) BET_p2p_hostloop,(void *)BET_dcv_global) != 0 )
-	    {
-	        printf("error launching BET_clientloop BET_hostloop");
-	        exit(-1);
-	    }
-			
-			
-		
-	    if ( OS_thread_create(&dcv_t,NULL,(void *)BET_ws_dcvloop,(void *)BET_dcv_global) != 0 )
-	    {
-	        printf("error launching BET_hostloop for pub.%d pull.%d\n",BET_dcv_global->pubsock,BET_dcv_global->pullsock);
-	        exit(-1);
-	    }
-		#endif
 		
 		if(pthread_join(dcv_backend,NULL))
 		{
@@ -486,17 +444,7 @@ int main(int argc, char **argv)
 			BET_bvv->myplayerid=-1;
 		    BET_betinfo_set(BET_bvv,"demo",range,0,Maxplayers);
 		#endif
-		#if 0
-		BET_bvv_global=calloc(1,sizeof(struct privatebet_info));
-		BET_bvv_global->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
-		BET_bvv_global->pushsock = pushsock/*BET_nanosock(0,bindaddr1,NN_PUSH)*/;
-		BET_bvv_global->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
-		BET_bvv_global->maxchips = CARDS777_MAXCHIPS;
-		BET_bvv_global->chipsize = CARDS777_CHIPSIZE;
-		BET_bvv_global->numplayers=numplayers;
-		BET_bvv_global->myplayerid=-1;
-		BET_betinfo_set(BET_bvv_global,"demo",range,0,Maxplayers);
-		#endif
+
 		    if ( OS_thread_create(&bvv_t,NULL,(void *)BET_p2p_bvvloop_test,(void *)BET_bvv) != 0 )
 		    {
 		        printf("error launching BET_clientloop for sub.%d push.%d\n",BET_bvv->subsock,BET_bvv->pushsock);
@@ -526,17 +474,6 @@ int main(int argc, char **argv)
 
 			BET_transportname(0,bindaddr1,hostip,port+1);
 			pushsock = BET_nanosock(0,bindaddr1,NN_PUSH);
-		#endif
-			#if 0
-			BET_player=calloc(numplayers,sizeof(struct privatebet_info*));
-			BET_player=calloc(1,sizeof(struct privatebet_info));
-			BET_player->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
-		    BET_player->pushsock = pushsock/*BET_nanosock(0,bindaddr1,NN_PUSH)*/;
-		    BET_player->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
-		    BET_player->maxchips = CARDS777_MAXCHIPS;
-		    BET_player->chipsize = CARDS777_CHIPSIZE;
-			BET_player->numplayers=numplayers;
-		    BET_betinfo_set(BET_player,"demo",range,0,Maxplayers);
 		#endif
             #if 1	
 			Player_VARS_global=calloc(1,sizeof(*Player_VARS_global));
