@@ -101,7 +101,10 @@ void make_command(int argc, char **argv,cJSON **argjson)
 {
 	char command[1000];
 	FILE *fp=NULL;
-	char data[10000],line[200],temp[10000];
+	//char data[10000],line[200],temp[10000];
+	char *data=NULL,line[200],temp[200];
+	int32_t length=0;
+	
     memset(command,0x00,sizeof(command));
 	memset(data,0x00,sizeof(data));
 	memset(line,0x00,sizeof(line));
@@ -117,6 +120,16 @@ void make_command(int argc, char **argv,cJSON **argjson)
 		   printf("Failed to run command\n" );
 		   exit(1);
 	 }
+	 fseek(fp, 0L, SEEK_END);
+	 length=ftell(fp);
+	 rewind(fp);
+	 
+	 data=(char*)malloc(length*sizeof(char));
+	 if(data == NULL)
+ 	 {	
+		printf("%s::%d::malloc failed\n",__FUNCTION__,__LINE__);
+		goto end;
+ 	 }
 	 while(fgets(line, sizeof(line)-1, fp) != NULL)
      {
      	strcat(data,line);
@@ -133,8 +146,11 @@ void make_command(int argc, char **argv,cJSON **argjson)
 	{
 		*argjson=cJSON_Parse(data);
 		cJSON_AddNumberToObject(*argjson,"code",0);
-	}
 
+	}
+	end:
+	if(data)
+		free(data);	
      pclose(fp);
 }
 
