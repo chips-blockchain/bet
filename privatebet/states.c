@@ -419,8 +419,8 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	if(vars->betamount[vars->last_turn][vars->round] == vars->betamount[vars->turni][vars->round])
 	{
 		// check, allin, fold
-		if(vars->bet_actions[vars->last_turn][vars->round]==big_blind)
-			toCall=vars->betamount[vars->last_turn][vars->round];
+		if(vars->bet_actions[vars->turni][vars->round]==big_blind)
+			toCall=vars->betamount[vars->turni][vars->round];
 
 		printf("%s::%d::last_action::%d::toCall:%d\n",__FUNCTION__,__LINE__,vars->bet_actions[vars->last_turn][vars->round],toCall);
 	}
