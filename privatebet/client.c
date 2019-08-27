@@ -3172,7 +3172,7 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 
 void BET_p2p_clientloop_test(void * _ptr)
 {
-    uint32_t lasttime = 0; int32_t nonz,recvlen,lastChips_paid; uint16_t port=7798; char connectaddr[64],hostip[64]; void *ptr=NULL; 
+    uint32_t lasttime = 0; int32_t nonz,recvlen=0,lastChips_paid; uint16_t port=7798; char connectaddr[64],hostip[64]; void *ptr=NULL; 
 	cJSON *msgjson=NULL,*reqjson; struct privatebet_vars *VARS; struct privatebet_info *bet = _ptr;
     VARS = calloc(1,sizeof(*VARS));
     uint8_t flag=1;
@@ -3182,8 +3182,6 @@ void BET_p2p_clientloop_test(void * _ptr)
         while ( bet->subsock >= 0 && bet->pushsock >= 0 )
         {
 	        	recvlen= nn_recv (bet->subsock, &ptr, NN_MSG, 0);
-				if(!ptr)
-					continue;
 				if (((msgjson= cJSON_Parse(ptr)) != 0) && (recvlen>0))
                 {
                     if ( BET_p2p_clientupdate_test(msgjson,bet,Player_VARS_global) < 0 )
@@ -3199,6 +3197,7 @@ void BET_p2p_clientloop_test(void * _ptr)
 						ptr=NULL;
 						if(msgjson)
 							memset(msgjson,0x00,sizeof(msgjson));
+						recvlen=0;
 					}	
                     
                 }
