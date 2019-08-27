@@ -117,7 +117,7 @@ void make_command(int argc, char **argv,cJSON **argjson)
 	 if (fp == NULL) 
 	 {
 		   printf("Failed to run command\n" );
-		   exit(1);
+		   goto end;
 	 }
 	 fseek(fp, 0L, SEEK_END);
 	 length=ftell(fp);
@@ -1133,6 +1133,8 @@ int32_t BET_p2p_bvv_join_init(cJSON *argjson,struct privatebet_info *bet,struct 
 	}
 
 	uri=(char*)malloc(sizeof(char)*100);
+	if(uri)
+		goto end;
 	strcpy(uri,jstr(channelInfo,"id"));
 	strcat(uri,"@");
 	addresses=cJSON_GetObjectItem(channelInfo,"address");
