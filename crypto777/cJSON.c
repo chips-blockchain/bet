@@ -322,7 +322,6 @@ static const char *skip(const char *in) {while (in && *in && (unsigned char)*in<
 /* Parse an object - create a new root, and populate. */
 cJSON *cJSON_ParseWithOpts(const char *value,const char **return_parse_end,int32_t require_null_terminated)
 {
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,value);
 	const char *end=0;
 	cJSON *c=cJSON_New_Item();
 	ep=0;
