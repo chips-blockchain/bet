@@ -3177,7 +3177,8 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 
 void BET_p2p_clientloop_test(void * _ptr)
 {
-    uint32_t lasttime = 0; int32_t nonz,recvlen,lastChips_paid; uint16_t port=7798; char connectaddr[64],hostip[64]; void *ptr=NULL; cJSON *msgjson,*reqjson; struct privatebet_vars *VARS; struct privatebet_info *bet = _ptr;
+    uint32_t lasttime = 0; int32_t nonz,recvlen,lastChips_paid; uint16_t port=7798; char connectaddr[64],hostip[64]; void *ptr=NULL; 
+	cJSON *msgjson=NULL,*reqjson; struct privatebet_vars *VARS; struct privatebet_info *bet = _ptr;
     VARS = calloc(1,sizeof(*VARS));
     uint8_t flag=1;
 
@@ -3197,13 +3198,14 @@ void BET_p2p_clientloop_test(void * _ptr)
                     	// do something here, possibly this could be because unknown commnad or because of encountering a special case which state machine fails to handle
                     }           
                    
-                    free_json(msgjson);
+                    
                 }
                 
         }
         
     }
-	
+	if(msgjson)
+		free_json(msgjson);
 }
 
 
