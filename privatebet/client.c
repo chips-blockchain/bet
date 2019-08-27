@@ -123,6 +123,8 @@ void make_command(int argc, char **argv,cJSON **argjson)
 	 }
 	 while(fgets(line, sizeof(line), fp) != NULL)
      {
+     	
+		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,line);
      	strncat(data,line,sizeof(line));
 		memset(line,0x00,sizeof(line));
 	 }
