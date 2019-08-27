@@ -1427,6 +1427,7 @@ int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct pri
 		}
 		else if(strcmp(method,"bvv_join") == 0)
 		{
+			printf("%s::%d::bvv_join\n",__FUNCTION__,__LINE__);
 			BET_p2p_bvv_join_init(argjson,bet,vars);
 		}
 		else if(strcmp(method,"check_bvv_ready") == 0)
