@@ -1127,8 +1127,11 @@ int32_t BET_p2p_bvv_join_init(cJSON *argjson,struct privatebet_info *bet,struct 
 	}
 
 	uri=(char*)malloc(sizeof(char)*100);
-	if(uri)
+	if(!uri)
+	{
+		printf("%s::%d::malloc failed\n");
 		goto end;
+	}	
 	strcpy(uri,jstr(channelInfo,"id"));
 	strcat(uri,"@");
 	addresses=cJSON_GetObjectItem(channelInfo,"address");
