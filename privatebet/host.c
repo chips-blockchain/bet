@@ -3063,8 +3063,8 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 	argv=(char**)malloc(argc*sizeof(char*));
 	for(int i=0;i<argc;i++)
 		argv[i]=(char*)malloc(100);
-	strcpy(uri,dcv_info.bvv_uri);
-	strcpy(channel_id,strtok(uri, "@"));
+	strncpy(uri,dcv_info.bvv_uri,sizeof(uri));
+	strncpy(channel_id,strtok(uri, "@"),sizeof(channel_id));
 	channel_state=LN_get_channel_status(channel_id);
 	if((channel_state != 2) && (channel_state != 3))
 	{
