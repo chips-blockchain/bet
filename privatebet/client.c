@@ -3197,6 +3197,8 @@ void BET_p2p_clientloop_test(void * _ptr)
 					{
 						nn_freemsg(ptr);
 						ptr=NULL;
+						if(msgjson)
+							memset(msgjson,0x00,sizeof(msgjson));
 					}	
                     
                 }
