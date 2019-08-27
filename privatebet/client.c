@@ -103,6 +103,7 @@ void make_command(int argc, char **argv,cJSON **argjson)
 	char command[1000];
 	FILE *fp=NULL;
 	char data[10000],line[200],temp[10000];
+	char *buf=NULL;
     memset(command,0x00,sizeof(command));
 	memset(data,0x00,sizeof(data));
 	memset(line,0x00,sizeof(line));
@@ -118,10 +119,11 @@ void make_command(int argc, char **argv,cJSON **argjson)
 		   printf("Failed to run command\n" );
 		   exit(1);
 	 }
-	 while(fgets(line, sizeof(line)-1, fp) != NULL)
+	 buf=(char*)malloc(200);
+	 while(fgets(buf, 200, fp) != NULL)
      {
-     	strcat(data,line);
-		memset(line,0x00,sizeof(line));
+     	strcat(data,buf);
+		memset(buf,0x00,200);
 	 }
 	if(strncmp("error", data, strlen("error")) == 0) 
 	{
@@ -2287,10 +2289,7 @@ int32_t LN_get_channel_status(char *id)
 
 	channelStateInfo=cJSON_CreateObject();
     make_command(argc,argv,&channelStateInfo);
-	/*
-	ln_bet(argc,argv,buf);
-	channelStateInfo=cJSON_Parse(buf);
-    */
+
 	channelStates=cJSON_CreateObject();
 	channelStates=cJSON_GetObjectItem(channelStateInfo,"channel-states");
 	channelState=cJSON_CreateObject();
