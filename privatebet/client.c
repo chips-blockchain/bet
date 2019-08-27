@@ -119,7 +119,7 @@ void make_command(int argc, char **argv,cJSON **argjson)
 	 if (fp == NULL) 
 	 {
 		   printf("Failed to run command\n" );
-		   goto end;
+		   exit(0);
 	 }
 	 while(fgets(line, sizeof(line), fp) != NULL)
      {
@@ -140,7 +140,6 @@ void make_command(int argc, char **argv,cJSON **argjson)
 		cJSON_AddNumberToObject(*argjson,"code",0);
 
 	}
-	end:
      pclose(fp);
 }
 
