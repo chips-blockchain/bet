@@ -3022,14 +3022,22 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 
 void BET_push_client(cJSON *argjson)
 {
+	char *rendered=NULL;
 	if(argjson)
-		lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+	{
+		rendered=cJSON_Print(argjson);
+		lws_write(wsi_global_client,(unsigned char*)rendered,strlen(rendered),0);
+	}
 }
 
 void BET_push_client_blindInfo(cJSON *blindInfo)
 {
+	char *rendered=NULL;
 	if(blindInfo)
-		lws_write(wsi_global_client,cJSON_Print(blindInfo),strlen(cJSON_Print(blindInfo)),0);
+	{
+		rendered=cJSON_Print(blindInfo);
+		lws_write(wsi_global_client,(unsigned char*)rendered,strlen(rendered),0);
+	}
 }
 int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars) // update game state based on host broadcast
 {
