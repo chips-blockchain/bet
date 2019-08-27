@@ -100,9 +100,9 @@ struct deck_player_info all_players_info[CARDS777_MAXPLAYERS];
 
 void make_command(int argc, char **argv,cJSON **argjson)
 {
-	char command[1000];
+	char command[1024];
 	FILE *fp=NULL;
-	char data[10000],temp[10000];
+	char data[2048],temp[2048];
 	char *buf=NULL;
     memset(command,0x00,sizeof(command));
 	memset(data,0x00,sizeof(data));
@@ -119,6 +119,11 @@ void make_command(int argc, char **argv,cJSON **argjson)
 		   exit(1);
 	 }
 	 buf=(char*)malloc(200);
+	 if(!buf)
+ 	 {
+ 	 	printf("%s::%d::Memory allocation failed\n");
+		goto end;
+ 	 }
 	 while(fgets(buf, 200, fp) != NULL)
      {
      	strcat(data,buf);
@@ -136,6 +141,7 @@ void make_command(int argc, char **argv,cJSON **argjson)
 		*argjson=cJSON_Parse(data);
 		cJSON_AddNumberToObject(*argjson,"code",0);
 	}
+    end:
 	 if(buf)
 	 	free(buf);
      pclose(fp);
