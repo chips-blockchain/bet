@@ -3035,6 +3035,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 void BET_push_client(cJSON *argjson)
 {
 	char *rendered=NULL;
+	printf("%s::%d\n",__FUNCTION__,__LINE__);
 	if(argjson)
 	{
 		rendered=cJSON_Print(argjson);
