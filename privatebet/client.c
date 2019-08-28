@@ -2456,8 +2456,7 @@ cJSON* BET_rest_client_join(cJSON *argjson)
 }
 int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	bits256 playerprivs[CARDS777_MAXCARDS],playercards[CARDS777_MAXCARDS];
-	int32_t permis[CARDS777_MAXCARDS],bytes,retval=1;
+	int32_t permis[CARDS777_MAXCARDS],bytes,retval=-1;
 	cJSON *joininfo=NULL,*channelInfo=NULL,*addresses=NULL,*address=NULL;
 	struct pair256 key;
 	char *rendered=NULL,*uri=NULL;
@@ -2476,10 +2475,14 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
         jaddbits256(joininfo,"pubkey",key.prod);    
 
 		argv=(char**)malloc(4*sizeof(char*));
+		if(!argv)
+			goto end;
 		argc=3;
 		for(int i=0;i<argc;i++)
 		{
-			argv[i]=(char*)malloc(100*sizeof(char));		
+			argv[i]=(char*)malloc(100*sizeof(char));
+			if(argv[i])
+				goto end;
 		}
 		
 		strcpy(argv[0],"lightning-cli");
@@ -2487,11 +2490,9 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 		argv[2]=NULL;
 		argc=2;
 		channelInfo=cJSON_CreateObject();
+
 		make_command(argc,argv,&channelInfo);
 
-		//ln_bet(argc,argv,buf);
-		//channelInfo=cJSON_Parse(buf);
-		cJSON_Print(channelInfo);
 		if(jint(channelInfo,"code") != 0 )
 		{
 			retval=-1;
@@ -2501,10 +2502,18 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 
 		uri=(char*)malloc(sizeof(char)*100);
+		if(!uri)
+			goto end;
+		
 		strcpy(uri,jstr(channelInfo,"id"));
 		strcat(uri,"@");
+		
+		addresses=cJSON_CreateObject();
 		addresses=cJSON_GetObjectItem(channelInfo,"address");
+
+		address=cJSON_CreateObject();
 		address=cJSON_GetArrayItem(addresses,0);
+		
 		strcat(uri,jstr(address,"address"));
 		cJSON_AddStringToObject(joininfo,"uri",uri);
 		cJSON_AddNumberToObject(joininfo,"gui_playerID",jint(argjson,"gui_playerID"));
@@ -2513,14 +2522,14 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
         bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 		if(bytes<0)
 		{
-			retval=-1;
 			printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
 			goto end;
 		}
-        
+        retval=1;
     }
 	end:
-		
+		if(uri)
+			free(uri);
 		if(argv)
 		{
 			for(int i=0;i<argc;i++)
@@ -2528,6 +2537,13 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 			free(argv);
 		}
+		free_json(joininfo);
+		free_json(channelInfo);
+		free_json(addresses);
+		free_json(address);
+		
+		if(retval == -1)
+			printf("%s::%d::Error\n",__FUNCTION__,__LINE__);
     	return retval;	
 }
 
@@ -3055,10 +3071,11 @@ void BET_push_client_blindInfo(cJSON *blindInfo)
 int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars) // update game state based on host broadcast
 {
 	
-    static uint8_t *decoded; static int32_t decodedlen,retval=1;
-    char *method; int32_t senderid; bits256 *MofN;
+    int32_t retval=1;
+    char *method=NULL; 
 	char hexstr[65];
 	char *rendered=NULL;
+	
     if ( (method= jstr(argjson,"method")) != 0 )
     {
 	      
@@ -3173,9 +3190,9 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 
 void BET_p2p_clientloop_test(void * _ptr)
 {
-    uint32_t lasttime = 0; int32_t nonz,recvlen=0,lastChips_paid; uint16_t port=7798; char connectaddr[64],hostip[64]; void *ptr=NULL; 
-	cJSON *msgjson=NULL,*reqjson; struct privatebet_vars *VARS; struct privatebet_info *bet = _ptr;
-    VARS = calloc(1,sizeof(*VARS));
+	int32_t recvlen=0; 
+	void *ptr=NULL; 
+	cJSON *msgjson=NULL; struct privatebet_info *bet = _ptr;
     uint8_t flag=1;
 
 	msgjson=cJSON_CreateObject();
@@ -3200,56 +3217,6 @@ void BET_p2p_clientloop_test(void * _ptr)
 		   
 	 }
 
-	#if 0
-        while ( bet->subsock >= 0 && bet->pushsock >= 0 )
-        {
-	        	recvlen= nn_recv (bet->subsock, &ptr, NN_MSG, 0);
-				
-				if(recvlen<0)
-				{
-					//  Some error occured
-					//printf("%s::%d::return value::%d\r",__FUNCTION__,__LINE__,recvlen);
-					//fflush(stdout);
-				}
-				else
-				{
-					printf("%s::%d::return value::%d\n",__FUNCTION__,__LINE__,recvlen);
-					msgjson=cJSON_Parse(ptr);
-					if ( BET_p2p_clientupdate_test(msgjson,bet,Player_VARS_global) < 0 )
-                    {
-                    	printf("\nFAILURE\n");
-                    	// do something here, possibly this could be because unknown commnad or because of encountering a special case which state machine fails to handle
-                    }
-					nn_freemsg(ptr);
-					ptr=NULL;
-					
-				}
-			
-				#if 0
-				if ((recvlen>0)&&((msgjson= cJSON_Parse(ptr)) != 0))
-                {
-                    if ( BET_p2p_clientupdate_test(msgjson,bet,Player_VARS_global) < 0 )
-                    {
-                    	printf("\nFAILURE\n");
-                    	// do something here, possibly this could be because unknown commnad or because of encountering a special case which state machine fails to handle
-                    }           
-
-
-					
-					if(ptr)
-					{
-						nn_freemsg(ptr);
-						ptr=NULL;
-						if(msgjson)
-							memset(msgjson,0x00,sizeof(msgjson));
-						recvlen=0;
-					}	
-                    
-                }
-
-				#endif					
-        }
-    #endif	
 }
 
 
