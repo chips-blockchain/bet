@@ -3186,8 +3186,8 @@ void BET_p2p_clientloop_test(void * _ptr)
 				if(recvlen<0)
 				{
 					//  Some error occured
-					printf("%s::%d::return value::%d\r",__FUNCTION__,__LINE__,recvlen);
-					fflush(stdout);
+					//printf("%s::%d::return value::%d\r",__FUNCTION__,__LINE__,recvlen);
+					//fflush(stdout);
 				}
 				else
 				{
