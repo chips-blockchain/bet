@@ -3222,7 +3222,7 @@ void BET_p2p_clientloop_test(void * _ptr)
 					ptr=NULL;
 					
 				}
-	#endif			
+			
 				#if 0
 				if ((recvlen>0)&&((msgjson= cJSON_Parse(ptr)) != 0))
                 {
@@ -3247,7 +3247,7 @@ void BET_p2p_clientloop_test(void * _ptr)
 
 				#endif					
         }
-    
+    #endif	
 }
 
 
