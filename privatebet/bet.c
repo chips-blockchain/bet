@@ -347,7 +347,6 @@ int main(int argc, char **argv)
 	cJSON *infojson,*argjson,*reqjson,*deckjson; 
 	uint64_t randvals; bits256 privkey,pubkey,pubkeys[64],privkeys[64]; 
 	uint8_t pubkey33[33],taddr=0,pubtype=60; uint32_t i,n,range,numplayers; int32_t testmode=0,pubsock=-1,subsock=-1,pullsock=-1,pushsock=-1; long fsize; 
-	//struct privatebet_info *BET_dcv1,*BET_bvv,*BET_player;
 	pthread_t dcv_t,bvv_t,player_t,dcv_backend,bvv_backend,player_backend;
 	//test_pedersen_commitments();
     #if 1

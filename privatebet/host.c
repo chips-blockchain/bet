@@ -2027,13 +2027,13 @@ void BET_p2p_host_blinds_info(struct lws *wsi)
 	cJSON_AddStringToObject(blindsInfo,"method","blindsInfo");
 	cJSON_AddNumberToObject(blindsInfo,"small_blind",small_blind_amount);
 	cJSON_AddNumberToObject(blindsInfo,"big_blind",big_blind_amount);
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(blindsInfo));
+	printf("%s::%d::lws::%s\n",__FUNCTION__,__LINE__,jstr(blindsInfo,"method"));
 	rendered=cJSON_Print(blindsInfo);
 	lws_write(wsi,rendered,strlen(rendered),0);
 }
 int32_t BET_p2p_host_start_init(struct privatebet_info *bet)
 {
-	int32_t bytes,retval=-1;
+	int32_t bytes,retval=1;
 	cJSON *init=NULL;
 	char *rendered=NULL;
 	
@@ -2042,7 +2042,8 @@ int32_t BET_p2p_host_start_init(struct privatebet_info *bet)
 
 	rendered=cJSON_Print(init);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
-
+	if(bytes<0)
+		retval=-1;
 
 	return retval;
 }
@@ -2071,8 +2072,6 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
 	getInfo=cJSON_CreateObject();
 	make_command(argc-1,argv,&getInfo);
 		
-	//ln_bet(argc-1,argv,buf);
-	//getInfo=cJSON_Parse(buf);
 	uri=(char*)malloc(100*sizeof(char));
 	
 	addresses=cJSON_GetObjectItem(getInfo,"address");
@@ -2084,7 +2083,6 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
 
 	playerinfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(playerinfo,"method","join_res");
-	//cJSON_AddNumberToObject(playerinfo,"peerid",bet->numplayers-1); //players numbering starts from 0(zero)
 	
 	cJSON_AddNumberToObject(playerinfo,"peerid",jint(argjson,"gui_playerID"));
 	jaddbits256(playerinfo,"pubkey",jbits256(argjson,"pubkey"));
@@ -3299,21 +3297,19 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 	char *rendered=NULL;
     if ( (method= jstr(argjson,"method")) != 0 )
     {
-    	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+    	printf("%s::%d\n",__FUNCTION__,__LINE__);
 		if(strcmp(method,"join_req") == 0)
 		{
 			
 			if(bet->numplayers<bet->maxplayers)
 			{
 				retval=BET_p2p_client_join_req(argjson,bet,vars);
-				printf("\n%s::%d::bet->numplayers::%d::bet->maxplayers::%d",__FUNCTION__,__LINE__,bet->numplayers,bet->maxplayers);
 				if(retval<0)
 					goto end;
                 if(bet->numplayers==bet->maxplayers)
 				{
 					printf("Table is filled\n");
 					retval=BET_LN_check(bet);
-					printf("\n%s::%d retval=%d \n",__FUNCTION__,__LINE__,retval);
 					if(retval<0)
 						goto end;
 					//BET_broadcast_table_info(bet);
