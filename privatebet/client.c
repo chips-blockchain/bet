@@ -3182,7 +3182,26 @@ void BET_p2p_clientloop_test(void * _ptr)
         while ( bet->subsock >= 0 && bet->pushsock >= 0 )
         {
 	        	recvlen= nn_recv (bet->subsock, &ptr, NN_MSG, 0);
-				printf("%s::%d::return value::%d\n",__FUNCTION__,__LINE__,recvlen);
+				
+				if(recvlen<0)
+				{
+					//  Some error occured
+					printf("%s::%d::return value::%d\r",__FUNCTION__,__LINE__,recvlen);
+					fflush(stdout);
+				}
+				else
+				{
+					printf("%s::%d::return value::%d\n",__FUNCTION__,__LINE__,recvlen);
+					msgjson=cJSON_Parse(ptr);
+					if ( BET_p2p_clientupdate_test(msgjson,bet,Player_VARS_global) < 0 )
+                    {
+                    	printf("\nFAILURE\n");
+                    	// do something here, possibly this could be because unknown commnad or because of encountering a special case which state machine fails to handle
+                    }
+					nn_freemsg(ptr);
+					
+				}
+				#if 0
 				if ((recvlen>0)&&((msgjson= cJSON_Parse(ptr)) != 0))
                 {
                     if ( BET_p2p_clientupdate_test(msgjson,bet,Player_VARS_global) < 0 )
@@ -3191,7 +3210,8 @@ void BET_p2p_clientloop_test(void * _ptr)
                     	// do something here, possibly this could be because unknown commnad or because of encountering a special case which state machine fails to handle
                     }           
 
-                    
+
+					
 					if(ptr)
 					{
 						nn_freemsg(ptr);
@@ -3202,7 +3222,8 @@ void BET_p2p_clientloop_test(void * _ptr)
 					}	
                     
                 }
-									
+
+				#endif					
         }
     
 }
