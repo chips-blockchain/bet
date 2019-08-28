@@ -3178,7 +3178,27 @@ void BET_p2p_clientloop_test(void * _ptr)
     uint8_t flag=1;
 
 	msgjson=cJSON_CreateObject();
-    
+
+	
+	while ( bet->subsock>= 0 && bet->pushsock>= 0 )
+	 {
+		 if ( (recvlen= nn_recv(bet->subsock,&ptr,NN_MSG,0)) > 0 )
+		 {
+			 if ( (msgjson= cJSON_Parse(ptr)) != 0 )
+			 {
+				 if ( BET_p2p_clientupdate_test(msgjson,bet,Player_VARS_global) != 0 ) 
+				 {
+					 // Do something
+				 }
+				 
+			 }
+			 if(ptr)
+				 nn_freemsg(ptr);
+		 }
+		   
+	 }
+
+	#if 0
         while ( bet->subsock >= 0 && bet->pushsock >= 0 )
         {
 	        	recvlen= nn_recv (bet->subsock, &ptr, NN_MSG, 0);
@@ -3199,8 +3219,10 @@ void BET_p2p_clientloop_test(void * _ptr)
                     	// do something here, possibly this could be because unknown commnad or because of encountering a special case which state machine fails to handle
                     }
 					nn_freemsg(ptr);
+					ptr=NULL;
 					
 				}
+	#endif			
 				#if 0
 				if ((recvlen>0)&&((msgjson= cJSON_Parse(ptr)) != 0))
                 {
