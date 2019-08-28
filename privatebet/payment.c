@@ -400,7 +400,7 @@ Here contains the functions which are specific to players and BVV
 int32_t BET_player_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars,char* deckid)
 {
 	int argc,bytes,retval=1;
-	char **argv=NULL,hexstr [65],*rendered=NULL;
+	char **argv=NULL,*rendered=NULL;
 	cJSON *invoiceInfo=NULL,*invoice=NULL;
 	if(jint(argjson,"playerid")==bet->myplayerid)
 	{
@@ -420,7 +420,7 @@ int32_t BET_player_create_invoice(cJSON *argjson,struct privatebet_info *bet,str
 
 		invoice=cJSON_CreateObject();
 		make_command(argc,argv,&invoice);
-		//ln_bet(argc,argv,buf);
+
 		invoiceInfo=cJSON_CreateObject();
 		cJSON_AddStringToObject(invoiceInfo,"method","invoice");
 		cJSON_AddNumberToObject(invoiceInfo,"playerid",bet->myplayerid);
