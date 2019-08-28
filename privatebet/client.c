@@ -2436,7 +2436,11 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		}
 		free(argv);
 	}
-		
+	free_json(connectInfo);
+	free_json(fundChannelInfo);
+	free_json(initCardInfo);
+	free_json(holeCardInfo);
+	free_json(initInfo);
 	return retval;
 }
 cJSON* BET_rest_client_join(cJSON *argjson)
@@ -2746,12 +2750,9 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
                         void *user, void *in, size_t len)
 {
         int ret_val,ret_len;
-        char *buf=NULL;
-		pthread_t player_t;
-        buf=(char*)malloc(len);
-        strncpy(buf,in,len);
-		
-        cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
+      	pthread_t player_t;
+        
+        cJSON *argjson=NULL;
 		wsi_global_client=wsi;
 		switch(reason)
         {
