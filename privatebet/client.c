@@ -2436,11 +2436,6 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		}
 		free(argv);
 	}
-	free_json(connectInfo);
-	free_json(fundChannelInfo);
-	free_json(initCardInfo);
-	free_json(holeCardInfo);
-	free_json(initInfo);
 	return retval;
 }
 cJSON* BET_rest_client_join(cJSON *argjson)
@@ -2479,14 +2474,10 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
         jaddbits256(joininfo,"pubkey",key.prod);    
 
 		argv=(char**)malloc(4*sizeof(char*));
-		if(!argv)
-			goto end;
 		argc=3;
 		for(int i=0;i<argc;i++)
 		{
 			argv[i]=(char*)malloc(100*sizeof(char));
-			if(argv[i])
-				goto end;
 		}
 		
 		strcpy(argv[0],"lightning-cli");
@@ -2506,8 +2497,6 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 
 		uri=(char*)malloc(sizeof(char)*100);
-		if(!uri)
-			goto end;
 		
 		strcpy(uri,jstr(channelInfo,"id"));
 		strcat(uri,"@");
@@ -2541,10 +2530,6 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 			free(argv);
 		}
-		free_json(joininfo);
-		free_json(channelInfo);
-		free_json(addresses);
-		free_json(address);
 		
 		if(retval == -1)
 			printf("%s::%d::Error\n",__FUNCTION__,__LINE__);
