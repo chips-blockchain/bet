@@ -1923,6 +1923,12 @@ int32_t BET_p2p_host_init(cJSON *argjson,struct privatebet_info *bet,struct priv
 	
 	retval=sg777_deckgen_vendor(peerid,dcv_info.cardprods[peerid],dcv_info.dcvblindcards[peerid],bet->range,cardpubvalues,dcv_info.deckid);
 	dcv_info.numplayers=dcv_info.numplayers+1;
+
+	if((peerid+1)<bet->maxplayers)
+	{
+		retval=BET_p2p_host_start_init(bet,peerid+1);
+	}
+	
 	return retval;
 }
 
@@ -2036,7 +2042,7 @@ void BET_p2p_host_blinds_info(struct lws *wsi)
 	rendered=cJSON_Print(blindsInfo);
 	lws_write(wsi,rendered,strlen(rendered),0);
 }
-int32_t BET_p2p_host_start_init(struct privatebet_info *bet)
+int32_t BET_p2p_host_start_init(struct privatebet_info *bet,int32_t peerid)
 {
 	int32_t bytes,retval=1;
 	cJSON *init=NULL;
@@ -2044,6 +2050,7 @@ int32_t BET_p2p_host_start_init(struct privatebet_info *bet)
 	
 	init=cJSON_CreateObject();
 	cJSON_AddStringToObject(init,"method","init");
+	cJSON_AddNumberToObject(init,"peerid",peerid);
 
 	rendered=cJSON_Print(init);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
@@ -3325,7 +3332,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		}
 		else if(strcmp(method,"bvv_ready") == 0)
 		{
-			retval=BET_p2p_host_start_init(bet);
+			retval=BET_p2p_host_start_init(bet,0);
 			BET_p2p_host_blinds_info(wsi_global_host);
 		}
 		else if(strcmp(method,"init_p") == 0)

@@ -11,7 +11,7 @@ void BET_hostloop(void *_ptr);
 void* BET_hostdcv(void * _ptr);
 int32_t BET_p2p_host_deck_init_info(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
 int32_t BET_p2p_host_init(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
-int32_t BET_p2p_host_start_init(struct privatebet_info *bet);
+int32_t BET_p2p_host_start_init(struct privatebet_info *bet,int32_t peerid);
 int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
 int32_t BET_p2p_dcv_turn(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
 int32_t BET_p2p_highest_card(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
