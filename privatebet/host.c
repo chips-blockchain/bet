@@ -1868,6 +1868,7 @@ int32_t BET_p2p_host_deck_init_info(cJSON *argjson,struct privatebet_info *bet,s
 			cJSON_AddItemToArray(cjsoncardprods,cJSON_CreateString(bits256_str(str,dcv_info.cardprods[i][j])));
 		}
 	  }
+	  /*
 	  cJSON_AddItemToObject(deck_init_info,"dcvblindcards",cjsondcvblindcards=cJSON_CreateArray());
 	  for(int i=0;i<dcv_info.numplayers;i++)
 	  {
@@ -1876,7 +1877,7 @@ int32_t BET_p2p_host_deck_init_info(cJSON *argjson,struct privatebet_info *bet,s
 			cJSON_AddItemToArray(cjsondcvblindcards,cJSON_CreateString(bits256_str(str,dcv_info.dcvblindcards[i][j])));
 		}
 	  }
-
+	  */	
 	  cJSON_AddItemToObject(deck_init_info,"g_hash",cjsong_hash=cJSON_CreateArray());
 	  for(int i=0;i<dcv_info.numplayers;i++)
 	  {
@@ -1885,12 +1886,13 @@ int32_t BET_p2p_host_deck_init_info(cJSON *argjson,struct privatebet_info *bet,s
 			cJSON_AddItemToArray(cjsong_hash,cJSON_CreateString(bits256_str(str,g_hash[i][j])));
 		}
 	  }
+	  /*
 	  cJSON_AddItemToObject(deck_init_info,"peerpubkeys",cjsonpeerpubkeys=cJSON_CreateArray());
 	  for(int i=0;i<dcv_info.numplayers;i++)
       {
       	cJSON_AddItemToArray(cjsonpeerpubkeys,cJSON_CreateString(bits256_str(str,dcv_info.peerpubkeys[i])));
 	  }
-
+	  */	
 	  
 	  printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_PrintUnformatted(deck_init_info));	
 	  /*
