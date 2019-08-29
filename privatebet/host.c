@@ -195,6 +195,14 @@ int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 {
 	cJSON *tableInfo=NULL,*seatInfo=NULL,*seatsInfo=NULL;
 	char *rendered=NULL;
+
+	tableInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(tableInfo,"method","seats");
+	cJSON_AddItemToObject(tableInfo,"seats",seatsInfo);
+
+	cJSON_AddItemToObject(tableInfo,"seats",seatsInfo=cJSON_CreateArray());
+
+
 	seatInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(seatInfo,"name","player1");
 	cJSON_AddNumberToObject(seatInfo,"seat",0);
@@ -202,11 +210,11 @@ int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 	cJSON_AddNumberToObject(seatInfo,"empty",0);
 	cJSON_AddNumberToObject(seatInfo,"playing",1);
 
-	seatsInfo=cJSON_CreateArray();
 	cJSON_AddItemToArray(seatsInfo,seatInfo);
 
+	if(seatInfo)
+		memset(seatInfo,0x00,sizeof(seatInfo));
 	
-	seatInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(seatInfo,"name","player2");
 	cJSON_AddNumberToObject(seatInfo,"seat",1);
 	cJSON_AddNumberToObject(seatInfo,"stack",0);
@@ -215,11 +223,9 @@ int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 
 	cJSON_AddItemToArray(seatsInfo,seatInfo);
         
-	tableInfo=cJSON_CreateObject();
-	cJSON_AddStringToObject(tableInfo,"method","seats");
-	cJSON_AddItemToObject(tableInfo,"seats",seatsInfo);
-
+		
 	rendered=cJSON_Print(tableInfo);
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,rendered);
 	lws_write(wsi,rendered,strlen(rendered),0);
 
 	
