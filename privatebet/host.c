@@ -1853,7 +1853,7 @@ void* BET_hostdcv(void * _ptr)
 
 int32_t BET_p2p_host_deck_init_info(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-      cJSON *deck_init_info,*cjsoncardprods,*cjsondcvblindcards,*cjsong_hash,*cjsonpeerpubkeys;
+      cJSON *deck_init_info=NULL,*cjsoncardprods=NULL,*cjsondcvblindcards=NULL,*cjsong_hash=NULL,*cjsonpeerpubkeys=NULL;
 	  char str[65],*rendered;
 	  int32_t bytes,retval=1;
 	  
@@ -1868,7 +1868,7 @@ int32_t BET_p2p_host_deck_init_info(cJSON *argjson,struct privatebet_info *bet,s
 			cJSON_AddItemToArray(cjsoncardprods,cJSON_CreateString(bits256_str(str,dcv_info.cardprods[i][j])));
 		}
 	  }
-	  /*
+	  
 	  cJSON_AddItemToObject(deck_init_info,"dcvblindcards",cjsondcvblindcards=cJSON_CreateArray());
 	  for(int i=0;i<dcv_info.numplayers;i++)
 	  {
@@ -1877,7 +1877,7 @@ int32_t BET_p2p_host_deck_init_info(cJSON *argjson,struct privatebet_info *bet,s
 			cJSON_AddItemToArray(cjsondcvblindcards,cJSON_CreateString(bits256_str(str,dcv_info.dcvblindcards[i][j])));
 		}
 	  }
-	  */	
+	  	
 	  cJSON_AddItemToObject(deck_init_info,"g_hash",cjsong_hash=cJSON_CreateArray());
 	  for(int i=0;i<dcv_info.numplayers;i++)
 	  {
@@ -1886,20 +1886,19 @@ int32_t BET_p2p_host_deck_init_info(cJSON *argjson,struct privatebet_info *bet,s
 			cJSON_AddItemToArray(cjsong_hash,cJSON_CreateString(bits256_str(str,g_hash[i][j])));
 		}
 	  }
-	  /*
+	  
 	  cJSON_AddItemToObject(deck_init_info,"peerpubkeys",cjsonpeerpubkeys=cJSON_CreateArray());
 	  for(int i=0;i<dcv_info.numplayers;i++)
       {
       	cJSON_AddItemToArray(cjsonpeerpubkeys,cJSON_CreateString(bits256_str(str,dcv_info.peerpubkeys[i])));
 	  }
-	  */	
+	  	
 	  
-	  printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_PrintUnformatted(deck_init_info));	
-	  /*
-	  rendered=cJSON_Print();
-	  rendered=cJSON_PrintUnformatted(deck_init_info);
+	  printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(deck_init_info));	
+	  
+	  rendered=cJSON_Print(deck_init_info);
 	  bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
-	  */	
+	  	
 	  if(bytes<0)
 	  	retval=-1;
 
