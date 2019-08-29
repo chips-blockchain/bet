@@ -1892,11 +1892,12 @@ int32_t BET_p2p_host_deck_init_info(cJSON *argjson,struct privatebet_info *bet,s
 	  }
 
 	  
-	  rendered=cJSON_Print(deck_init_info);
+	  printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_PrintUnformatted(deck_init_info));	
+	  /*
+	  rendered=cJSON_Print();
+	  rendered=cJSON_PrintUnformatted(deck_init_info);
 	  bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
-
-	  printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(deck_init_info));	
-	  
+	  */	
 	  if(bytes<0)
 	  	retval=-1;
 
