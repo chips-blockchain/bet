@@ -218,7 +218,6 @@ int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 	tableInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(tableInfo,"method","seats");
 	cJSON_AddItemToObject(tableInfo,"seats",seatsInfo);
-	printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(tableInfo));
 
 	rendered=cJSON_Print(tableInfo);
 	lws_write(wsi,rendered,strlen(rendered),0);
