@@ -3091,9 +3091,7 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 		connectInfo=cJSON_CreateObject();
 		make_command(argc,argv,&connectInfo);
 		
-		//memset(buf,0x00,sizeof(buf));
-		//ln_bet(argc,argv,buf);
-
+	
 		argc=6;
 		for(int i=0;i<argc;i++)
 			memset(argv[i],0x00,sizeof(argv[i]));
@@ -3149,7 +3147,7 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 			{
 				retval=-1;
 				printf("\n%s:%d: Player: %d is failed to establish the channel with DCV",__FUNCTION__,__LINE__,i);
-				goto end;
+				break;
 			}
 		}
 		
