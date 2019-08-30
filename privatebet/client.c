@@ -2307,7 +2307,8 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		{
 			if(state == 2)
 			 {
-					  printf("\nCHANNELD_AWAITING_LOCKIN");
+					  printf("CHANNELD_AWAITING_LOCKIN\r");
+					  fflush(stdout);
 			 }
 			  else
 		  	 {
@@ -2315,8 +2316,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 				printf("\n%s:%d:Channel establishment with DCV is not happening, please check the connectivity with the DCV node\n",__FUNCTION__,__LINE__);
 				goto end;
 		  	 }
-			printf("%s::%d::%d\n",__FUNCTION__,__LINE__,state);	
-			sleep(10);
+			sleep(2);
 		}
 		printf("%s::%d::%d\n",__FUNCTION__,__LINE__,state);
 

@@ -3106,11 +3106,6 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 		fundChannelInfo=cJSON_CreateObject();
 		make_command(argc,argv,&fundChannelInfo);
 		
-		//memset(buf,0x00,sizeof(buf));
-		//ln_bet(argc,argv,buf);
-
-		//fundChannelInfo=cJSON_CreateObject();
-		//fundChannelInfo=cJSON_Parse(buf);
 
 		if(jint(fundChannelInfo,"code") == -1)
 		{
@@ -3124,8 +3119,9 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 	{
 		if(channel_state == 2)
 		{
-			printf("\nCHANNELD AWAITING LOCKIN");
-			sleep(5);
+			printf("CHANNELD AWAITING LOCKIN\r");
+			fflush(stdout);
+			sleep(2);
 		}
 		else
 		{
@@ -3133,9 +3129,8 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 			printf("\n%s:%d: DCV is failed to establish the channel with BVV",__FUNCTION__,__LINE__);
 			goto end;
 		}
-		printf("%s::%d::%d\n",__FUNCTION__,__LINE__,channel_state);
 	}	
-	printf("\nDCV-->BVV channel ready");
+	printf("DCV-->BVV channel ready\n");
 
 	for(int i=0;i<BET_dcv->maxplayers;i++)
 	{
@@ -3146,8 +3141,9 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 		{
 			if(channel_state == 2)
 			{
-				printf("\nCHANNELD AWAITING LOCKIN");
-				sleep(5);
+				printf("CHANNELD AWAITING LOCKIN\r");
+				flush(stdout);
+				sleep(2);
 			}
 			else
 			{
@@ -3155,10 +3151,9 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 				printf("\n%s:%d: Player: %d is failed to establish the channel with DCV",__FUNCTION__,__LINE__,i);
 				goto end;
 			}
-			printf("%s::%d::%d\n",__FUNCTION__,__LINE__,channel_state);
 		}
 		
-		printf("\nPlayer %d --> DCV channel ready",i);	
+		printf("Player %d --> DCV channel ready\n",i);	
 	}
 	end:
 		if(argv)
