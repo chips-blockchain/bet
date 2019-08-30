@@ -1248,8 +1248,7 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 			BET_p2p_connect(jstri(uriInfo,i));
 			fundChannelInfo=cJSON_CreateObject();
 			fundChannelInfo=BET_p2p_fundchannel(channel_id,"50000");
-			//cJSON_Parse(buf);
-
+	
 			if(jint(fundChannelInfo,"code") == -1)
 			{
 				retval=-1;
@@ -1266,14 +1265,15 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 		{
 			if(channel_state == 2)
 			{
-				printf("\nCHANNELD AWAITING LOCKIN");
-				sleep(5);
+				printf("CHANNELD AWAITING LOCKIN\r");
+				fflush(stdout);
+				sleep(2);
 			}
 			else
 			{
 				retval=-1;
 				printf("\n%s:%d: BVV is failed to establish the channel with Player: %d",__FUNCTION__,__LINE__,i);
-				goto end;
+				break;
 			}
 		}
 		
