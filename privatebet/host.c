@@ -3140,7 +3140,7 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 			if(channel_state == 2)
 			{
 				printf("CHANNELD AWAITING LOCKIN\r");
-				flush(stdout);
+				fflush(stdout);
 				sleep(2);
 			}
 			else
