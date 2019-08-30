@@ -329,8 +329,6 @@ int32_t BET_DCV_pay(cJSON *argjson,struct privatebet_info *bet,struct privatebet
 	payResponse=cJSON_CreateObject();
 	make_command(argc,argv,&payResponse);
 
-	printf("\n%s::%d::payment response\n",__FUNCTION__,__LINE__);
-	printf("%s\n",cJSON_Print(payResponse));
 	
 	if(jint(payResponse,"code") != 0)
 	{
@@ -338,10 +336,10 @@ int32_t BET_DCV_pay(cJSON *argjson,struct privatebet_info *bet,struct privatebet
 		printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(payResponse,"message"));
 		goto end;
 	}
-	/*	
+		
 	if(strcmp(jstr(payResponse,"status"),"complete")==0)
 		printf("\nPayment Success");
-	*/	
+		
 	end:
 	if(argv)
 	{
