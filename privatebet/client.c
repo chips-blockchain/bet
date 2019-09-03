@@ -1314,6 +1314,9 @@ void BET_BVV_reset(struct privatebet_info *bet,struct privatebet_vars *vars)
 		permis_b[i]=bvv_info.permis[i];
 	
 	}
+	memset(bvv_info,0x00,sizeof(bvv_info));
+	if(g_shares)
+		free(g_shares);
 }
 
 
