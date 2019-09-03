@@ -1307,14 +1307,14 @@ void BET_rest_BVV_reset()
 
 void BET_BVV_reset(struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	
+
+	memset(bvv_info,0x00,sizeof(deck_bvv_info));
 	BET_permutation(bvv_info.permis,bet->range);
     for(int i=0;i<bet->range;i++)
 	{
 		permis_b[i]=bvv_info.permis[i];
 	
 	}
-	memset(bvv_info,0x00,sizeof(bvv_info));
 	if(g_shares)
 		free(g_shares);
 }
