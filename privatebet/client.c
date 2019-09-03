@@ -1116,8 +1116,6 @@ int32_t BET_p2p_bvv_join_init(cJSON *argjson,struct privatebet_info *bet,struct 
 	channelInfo=cJSON_CreateObject();
 	make_command(argc-1,argv,&channelInfo);
 	
-	//ln_bet(argc-1,argv,buf);
-	//channelInfo=cJSON_Parse(buf);
 	cJSON_Print(channelInfo);
 	if(jint(channelInfo,"code") != 0)
 	{
@@ -1351,7 +1349,7 @@ int32_t BET_p2p_bvvcommand_test(struct lws *wsi, cJSON *argjson)
 		else if(strcmp(method,"reset") == 0)
 		{
 			BET_BVV_reset(bet,vars);
-			BET_p2p_bvv_join_init(argjson,BET_bvv,vars);
+			
 		}
 		else if(strcmp(method,"seats") == 0)
 		{
@@ -1448,6 +1446,7 @@ int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct pri
 		else if(strcmp(method,"reset") == 0)
 		{
 			BET_BVV_reset(bet,vars);
+			BET_p2p_bvv_join_init(argjson,BET_bvv,vars);
 		}
 		else if(strcmp(method,"seats") == 0)
 		{
