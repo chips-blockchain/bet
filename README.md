@@ -23,6 +23,16 @@ $ ninja
 $ ninja test
 $ ninja install
 
+# Install libwebsockets
+
+$ cd ~
+$ git clone https://github.com/sg777/libwebsockets.git
+$ mkdir build
+$ cmake ..
+$ make
+$ sudo make install
+$ ldconfig
+
 # Installing CHIPS
 
 $ cd ~
