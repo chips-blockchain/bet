@@ -1388,10 +1388,11 @@ void BET_p2p_bvvloop_test(void *_ptr)
 	}
    
 
-	
+
 	
 	while ( bet->pushsock>= 0 && bet->subsock>= 0 )
     {
+    	mutex_lock();
         if ( (recvlen= nn_recv(bet->subsock,&ptr,NN_MSG,0)) > 0 )
         {
           
@@ -1405,7 +1406,7 @@ void BET_p2p_bvvloop_test(void *_ptr)
             }
             nn_freemsg(ptr);
         }
-          
+        mutex_unlock();  
     }
 }
 

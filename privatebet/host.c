@@ -1989,8 +1989,7 @@ int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct priva
 			argc=4;
 			fundChannelInfo=cJSON_CreateObject();
 			make_command(argc,argv,&fundChannelInfo);
-			//ln_bet(argc,argv,buf);
-			//fundChannelInfo=cJSON_Parse(buf);
+
 			cJSON_Print(fundChannelInfo);
 			if(jint(fundChannelInfo,"code") != 0)
 			{
@@ -2002,7 +2001,8 @@ int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct priva
 			{
 				if(state == 2)
 				{
-				      printf("\nCHANNELD_AWAITING_LOCKIN");
+				      printf("CHANNELD_AWAITING_LOCKIN\r");
+					  fflush(stdout);
 				}
 				else if(state == 8)
 				{
@@ -2011,11 +2011,9 @@ int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct priva
 				else
 				       printf("\n%s:%d:channel-state:%d\n",__FUNCTION__,__LINE__,state);
 
-				printf("%s::%d::%d\n",__FUNCTION__,__LINE__,state);   
-				sleep(10);
+				sleep(2);
 			}
-			printf("%s::%d::%d\n",__FUNCTION__,__LINE__,state);
-			printf("\nDCV-->BVV LN Channel established");
+			printf("DCV-->BVV LN Channel established\n");
 			
 		}
 		
