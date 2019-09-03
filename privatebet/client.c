@@ -1351,6 +1351,7 @@ int32_t BET_p2p_bvvcommand_test(struct lws *wsi, cJSON *argjson)
 		else if(strcmp(method,"reset") == 0)
 		{
 			BET_BVV_reset(bet,vars);
+			BET_p2p_bvv_join_init(argjson,BET_bvv,vars);
 		}
 		else if(strcmp(method,"seats") == 0)
 		{
