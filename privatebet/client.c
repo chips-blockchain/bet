@@ -2495,6 +2495,7 @@ int32_t BET_rest_player_reset(struct lws *wsi,cJSON * argjson)
 
 int32_t BET_player_reset(struct privatebet_info *bet,struct privatebet_vars *vars)
 {
+	cJSON *resetInfo=NULL;
 	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
 	no_of_shares=0;
 	no_of_player_cards=0;
@@ -2524,6 +2525,9 @@ int32_t BET_player_reset(struct privatebet_info *bet,struct privatebet_vars *var
 	}
 	
 	//return(BET_p2p_client_join(NULL,bet,vars));
+	resetInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(resetInfo,"method","reset");
+	BET_push_client(resetInfo);
 	return 1;
 }
 

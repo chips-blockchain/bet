@@ -2685,6 +2685,7 @@ int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struc
 }
 void BET_DCV_reset(struct privatebet_info *bet,struct privatebet_vars *vars)
 {
+	cJSON *resetInfo=NULL;
 	
 	players_joined=0;
 	turn=0;no_of_cards=0;no_of_rounds=0;no_of_bets=0;
@@ -2734,7 +2735,10 @@ void BET_DCV_reset(struct privatebet_info *bet,struct privatebet_vars *vars)
 	bet->cardid=-1;
 	bet->turni=-1;
 	bet->no_of_turns=0;
-		
+
+	resetInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(resetInfo,"method","reset");
+	BET_push_host(resetInfo);
 }
 
 int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
