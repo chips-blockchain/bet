@@ -3141,10 +3141,10 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 				fflush(stdout);
 				sleep(2);
 			}
-			else
+			else if((channel_state!=2)&&(channel_state!=3))
 			{
 				retval=-1;
-				printf("\n%s:%d: Player: %d is failed to establish the channel with DCV",__FUNCTION__,__LINE__,i);
+				printf("\n%s:%d: Player: %d is failed to establish the channel with DCV, channel_state=%d\n",__FUNCTION__,__LINE__,i,channel_state);
 				break;
 			}
 		}
