@@ -61,7 +61,9 @@ static void (*cJSON_free)(void *ptr) = free;//LP_free;
 
 static void *cJSON_mallocstr(int32_t len)
 {
-    return(cJSON_malloc(len));
+	printf("%s::%d::size:%d\n",__FUNCTION__,__LINE__,len);
+    //return(cJSON_malloc(len));
+    return (void *)malloc(len);
 }
 
 static char **cJSON_mallocptrs(int32_t num,char **space,int32_t max)
