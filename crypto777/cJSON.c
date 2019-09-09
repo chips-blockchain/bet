@@ -68,9 +68,14 @@ static void *cJSON_mallocstr(int32_t len)
 
 static char **cJSON_mallocptrs(int32_t num,char **space,int32_t max)
 {
+	printf("%s::%d::size:%d\n",__FUNCTION__,__LINE__,len);
     if ( num < max )
         return(space);
-    else return(cJSON_malloc(num * sizeof(char *)));
+    else
+	{
+		//return(cJSON_malloc(num * sizeof(char *)));
+		return (void*)malloc(num*sizeof(char*));
+	}
 }
 
 static void *cJSON_mallocnode()
