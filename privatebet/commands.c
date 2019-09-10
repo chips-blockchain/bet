@@ -368,8 +368,8 @@ int32_t BET_get_chips_blockheight()
 
 	//blockHeightInfo=cJSON_CreateObject();
 	
-	blockHeightInfo=(cJSON*)malloc(sizeof(cJSON));
-	blockHeightInfo->type=cJSON_Object;
+	//blockHeightInfo=(cJSON*)malloc(sizeof(cJSON));
+	//blockHeightInfo->type=cJSON_Object;
 	
 	
 	make_command(argc,argv,&blockHeightInfo);
