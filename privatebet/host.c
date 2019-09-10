@@ -3429,7 +3429,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 void BET_p2p_hostloop(void *_ptr)
 {
 	int32_t recvlen; cJSON *argjson=NULL; 
-	void *ptr=NULL; 
+	void *ptr; 
 	struct privatebet_info *bet = _ptr;
    	dcv_info.numplayers=0;
 	dcv_info.maxplayers=bet->maxplayers;
