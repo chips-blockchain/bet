@@ -3467,7 +3467,7 @@ void BET_p2p_hostloop(void *_ptr)
                 }
                 free_json(argjson);
             }
-            nn_freemsg(ptr);
+            //nn_freemsg(ptr);
         }
           
     }
