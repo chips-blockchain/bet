@@ -355,7 +355,7 @@ void BET_cmdloop(bits256 privkey,char *smartaddr,uint8_t *pubkey33,bits256 pubke
 int32_t BET_get_chips_blockheight()
 {
 	char **argv=NULL;
-	int argc;
+	int argc,height;
 	cJSON *blockHeightInfo=NULL;
 	argc=2;
 	argv=(char**)malloc(argc*sizeof(char*));
@@ -367,7 +367,8 @@ int32_t BET_get_chips_blockheight()
 	strcpy(argv[1],"getblockcount");
 	blockHeightInfo=cJSON_CreateObject();
 	make_command(argc,argv,&blockHeightInfo);
-	
+
+	height=atoi(cJSON_Print(blockHeightInfo));
 	end:
 		if(argv)
 		{
@@ -379,7 +380,8 @@ int32_t BET_get_chips_blockheight()
 			}
 			free(argv);
 		}
-	return atoi(cJSON_Print(blockHeightInfo));
+	cJSON_Delete(blockHeightInfo);
+	return height;
 }
 
 int32_t BET_get_ln_blockheight()
