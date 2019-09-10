@@ -61,20 +61,18 @@ static void (*cJSON_free)(void *ptr) = free;//LP_free;
 
 static void *cJSON_mallocstr(int32_t len)
 {
-	printf("%s::%d::size:%d\n",__FUNCTION__,__LINE__,len);
-    //return(cJSON_malloc(len));
-    return (void *)malloc(len);
+	return(cJSON_malloc(len));
+    
 }
 
 static char **cJSON_mallocptrs(int32_t num,char **space,int32_t max)
 {
-	printf("%s::%d::num::%d::max::%d::size:%d\n",__FUNCTION__,__LINE__,num,max,(num*sizeof(char*)));
-    if ( num < max )
+	if ( num < max )
         return(space);
     else
 	{
-		//return(cJSON_malloc(num * sizeof(char *)));
-		return (void*)malloc(num*sizeof(char*));
+		return(cJSON_malloc(num * sizeof(char *)));
+		
 	}
 }
 
