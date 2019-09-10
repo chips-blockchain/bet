@@ -399,7 +399,7 @@ int32_t BET_get_chips_blockheight()
 int32_t BET_get_ln_blockheight()
 {
 	char **argv=NULL;
-	int argc;
+	int argc,block_height;
 	cJSON *blockHeightInfo=NULL;
 	argc=2;
 	argv=(char**)malloc(argc*sizeof(char*));
@@ -410,9 +410,11 @@ int32_t BET_get_ln_blockheight()
 	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"dev-blockheight");
 
-	blockHeightInfo=cJSON_CreateObject();
+	//blockHeightInfo=cJSON_CreateObject();
 
 	make_command(argc,argv,&blockHeightInfo);
+	block_height=jint(blockHeightInfo,"blockheight");
+	
 	end:
 		if(argv)
 		{
@@ -424,7 +426,11 @@ int32_t BET_get_ln_blockheight()
 			}
 			free(argv);
 		}
-	return jint(blockHeightInfo,"blockheight");
+
+	if(blockHeightInfo)
+		free(blockHeightInfo);
+	
+	return block_height; 
 }
 
 
