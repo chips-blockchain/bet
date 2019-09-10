@@ -138,7 +138,7 @@ void make_command(int argc, char **argv,cJSON **argjson)
 	}
 	else
 	{
-		printf("%s::%d::data::%s\n"__FUNCTION__,__LINE__,data);
+		printf("%s::%d::data::%s\n",__FUNCTION__,__LINE__,data);
 		*argjson=cJSON_Parse(data);
 		cJSON_AddNumberToObject(*argjson,"code",0);
 	}
