@@ -365,7 +365,13 @@ int32_t BET_get_chips_blockheight()
 	}
 	strcpy(argv[0],"chips-cli");
 	strcpy(argv[1],"getblockcount");
-	blockHeightInfo=cJSON_CreateObject();
+
+	//blockHeightInfo=cJSON_CreateObject();
+	
+	blockHeightInfo=(cJSON*)malloc(sizeof(cJSON));
+	blockHeightInfo->type=cJSON_Object;
+	
+	
 	make_command(argc,argv,&blockHeightInfo);
 
 	rendered=cJSON_Print(blockHeightInfo);
@@ -381,9 +387,12 @@ int32_t BET_get_chips_blockheight()
 			}
 			free(argv);
 		}
+
 	if(rendered)
 		free(rendered);
-	cJSON_Delete(blockHeightInfo);
+	if(blockHeightInfo)
+		free(blockHeightInfo);
+	
 	return height;
 }
 
@@ -400,7 +409,9 @@ int32_t BET_get_ln_blockheight()
 	}
 	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"dev-blockheight");
+
 	blockHeightInfo=cJSON_CreateObject();
+
 	make_command(argc,argv,&blockHeightInfo);
 	end:
 		if(argv)
