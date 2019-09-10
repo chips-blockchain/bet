@@ -2208,12 +2208,12 @@ int32_t LN_get_channel_status(char *id)
 	argv[3]=NULL;
 	argc=3;
 
-	channelStateInfo=cJSON_CreateObject();
+	//channelStateInfo=cJSON_CreateObject();
     make_command(argc,argv,&channelStateInfo);
 
-	channelStates=cJSON_CreateObject();
+	//channelStates=cJSON_CreateObject();
 	channelStates=cJSON_GetObjectItem(channelStateInfo,"channel-states");
-	channelState=cJSON_CreateObject();
+	//channelState=cJSON_CreateObject();
 	for(int i=0;i<cJSON_GetArraySize(channelStates);i++)
 	{
 		channelState=cJSON_GetArrayItem(channelStates,i);
@@ -2234,6 +2234,8 @@ int32_t LN_get_channel_status(char *id)
 			}
 			free(argv);
 		}
+		if(channelStateInfo)
+			cJSON_Delete(channelStateInfo);
 		return channel_state;
 }
 int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
