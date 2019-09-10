@@ -3426,7 +3426,56 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
     	return retval;
 }
 
+void BET_p2p_hostloop(void *_ptr)
+{
+	int32_t recvlen; cJSON *argjson=NULL; 
+	void *ptr=NULL; 
+	struct privatebet_info *bet = _ptr;
+   	dcv_info.numplayers=0;
+	dcv_info.maxplayers=bet->maxplayers;
+	BET_permutation(dcv_info.permis,bet->range);
+    dcv_info.deckid=rand256(0);
+	dcv_info.dcv_key.priv=curve25519_keypair(&dcv_info.dcv_key.prod);
 
+	for(int i=0;i<bet->maxplayers;i++)
+		player_ready[i]=0;	
+	
+	invoiceID=0;	
+	for(int i=0;i<hand_size;i++)
+	{
+		for(int j=0;j<bet->maxplayers;j++)
+		{
+			card_matrix[j][i]=0;
+			card_values[j][i]=-1;
+		}
+	}
+	
+	for(int i=0;i<bet->range;i++)
+	{
+		permis_d[i]=dcv_info.permis[i];
+	
+	}
+    while ( bet->pullsock >= 0 && bet->pubsock >= 0 )
+    {
+        if ( (recvlen= nn_recv(bet->pullsock,&ptr,NN_MSG,0)) > 0 )
+        {
+            if ( (argjson= cJSON_Parse(ptr)) != 0 )
+            {
+                if ( BET_p2p_hostcommand(argjson,bet,DCV_VARS) != 0 ) // usually just relay to players
+                {
+                	// Do something
+                }
+                free_json(argjson);
+            }
+            nn_freemsg(ptr);
+        }
+          
+    }
+}
+
+
+
+#if 0
 void BET_p2p_hostloop(void *_ptr)
 {
 	int32_t recvlen; cJSON *argjson=NULL; 
@@ -3475,9 +3524,8 @@ void BET_p2p_hostloop(void *_ptr)
           
     }
 }
-/*
-BET API loop
-*/
+#endif
+
 
 void BET_ws_dcvloop(void *_ptr)
 {
