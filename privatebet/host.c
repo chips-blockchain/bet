@@ -3425,7 +3425,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 	end:
     	return retval;
 }
-
+#if 0
 void BET_p2p_hostloop(void *_ptr)
 {
 	int32_t recvlen; cJSON *argjson=NULL; 
@@ -3473,15 +3473,17 @@ void BET_p2p_hostloop(void *_ptr)
     }
 }
 
+#endif
 
-
-#if 0
+#if 1
 void BET_p2p_hostloop(void *_ptr)
 {
 	int32_t recvlen; cJSON *argjson=NULL; 
 	void *ptr=NULL; 
 	struct privatebet_info *bet = _ptr;
-    argjson=cJSON_CreateObject();
+
+	//argjson=cJSON_CreateObject();
+
 	dcv_info.numplayers=0;
 	dcv_info.maxplayers=bet->maxplayers;
 	BET_permutation(dcv_info.permis,bet->range);
