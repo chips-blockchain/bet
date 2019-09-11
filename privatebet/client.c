@@ -3086,15 +3086,13 @@ void BET_p2p_clientloop_test(void * _ptr)
 	        	recvlen= nn_recv (bet->subsock, &ptr, NN_MSG, 0);
                 if (( (msgjson= cJSON_Parse(ptr)) != 0 ) && (recvlen>0))
                 {
-                    if ( BET_p2p_clientupdate(msgjson,bet,Player_VARS_global) < 0 )
+                    if ( BET_p2p_clientupdate_test(msgjson,bet,Player_VARS_global) < 0 )
                     {
                     	printf("\nFAILURE\n");
                     	// do something here, possibly this could be because unknown commnad or because of encountering a special case which state machine fails to handle
                     }           
                     
-					if(ptr)
-						nn_freemsg(ptr);
-                    //free_json(msgjson);
+					free_json(msgjson);
                 }
                 
         }
