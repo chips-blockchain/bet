@@ -1354,11 +1354,8 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
                         void *user, void *in, size_t len)
 {
         int ret_val,ret_len;
-        char *buf=NULL;
-		pthread_t player_t;
-        buf=(char*)malloc(len);
-        strncpy(buf,in,len);
-		
+        pthread_t player_t;
+        
         cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
 		wsi_global_host = wsi;
 		switch(reason)
@@ -1368,14 +1365,13 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 				lws_buf_length+=len;
 				if (!lws_is_final_fragment(wsi))
 						break;
-				argjson=cJSON_CreateObject();
 				argjson=cJSON_Parse(lws_buf);
-				memset(lws_buf,0x00,sizeof(lws_buf));
-				lws_buf_length=0;
-				while( BET_process_rest_method(wsi,argjson) != 0 )
+				if( BET_process_rest_method(wsi,argjson) != 0 )
 				{
 					printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
 				}
+				memset(lws_buf,0x00,sizeof(lws_buf));
+				lws_buf_length=0;
                 break;
 			case LWS_CALLBACK_ESTABLISHED:
 				break;
@@ -3538,7 +3534,7 @@ void BET_ws_dcvloop(void *_ptr)
 
 	printf("\n%s::%d",__FUNCTION__,__LINE__);
 	lws_set_log_level(logs, NULL);
-	lwsl_user("LWS minimal ws broker | visit http://localhost:7681\n");
+	lwsl_user("LWS minimal ws broker | visit http://localhost:1234\n");
 
 	 // for DCV
     memset(&dcv_info, 0, sizeof dcv_info); /* otherwise uninitialized garbage */

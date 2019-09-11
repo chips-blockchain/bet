@@ -2650,14 +2650,14 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
 				lws_buf_length_1+=len;
 				if (!lws_is_final_fragment(wsi))
 						break;
-				argjson=cJSON_CreateObject();
 				argjson=cJSON_Parse(lws_buf_1);
-				memset(lws_buf_1,0x00,sizeof(lws_buf_1));
-				lws_buf_length_1=0;
 				if( BET_p2p_rest_clientupdate(wsi,argjson) != 1 )
 				{
 					printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
 				}
+				memset(lws_buf_1,0x00,sizeof(lws_buf_1));
+				lws_buf_length_1=0;
+		
                 break;
 			case LWS_CALLBACK_ESTABLISHED:
 				printf("\n%s:%d::LWS_CALLBACK_ESTABLISHED\n",__FUNCTION__,__LINE__);
@@ -2740,11 +2740,8 @@ int lws_callback_http_dummy_bvv(struct lws *wsi, enum lws_callback_reasons reaso
                         void *user, void *in, size_t len)
 {
         int ret_val,ret_len;
-        char *buf=NULL;
-		pthread_t player_t;
-        buf=(char*)malloc(len);
-        strncpy(buf,in,len);
-		
+      	pthread_t player_t;
+        
         cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
 		wsi_global_bvv=wsi;
 		switch(reason)
@@ -2754,16 +2751,15 @@ int lws_callback_http_dummy_bvv(struct lws *wsi, enum lws_callback_reasons reaso
 				lws_buf_length_bvv+=len;
 				if (!lws_is_final_fragment(wsi))
 						break;
-				argjson=cJSON_CreateObject();
 				argjson=cJSON_Parse(lws_buf_bvv);
-				memset(lws_buf_bvv,0x00,sizeof(lws_buf_bvv));
-				lws_buf_length_bvv=0;
 				printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 				if( BET_p2p_bvvcommand_test(wsi,argjson) != 1 )
 				{
 					printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
 				}
-                break;
+				memset(lws_buf_bvv,0x00,sizeof(lws_buf_bvv));
+				lws_buf_length_bvv=0;
+		        break;
 			case LWS_CALLBACK_ESTABLISHED:
 				printf("\n%s:%d::LWS_CALLBACK_ESTABLISHED\n",__FUNCTION__,__LINE__);
 				break;
