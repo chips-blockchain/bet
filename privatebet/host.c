@@ -3517,8 +3517,10 @@ void BET_p2p_hostloop(void *_ptr)
                 }
                 
             }
+			/*
 			if(ptr)
             	nn_freemsg(ptr);
+            	*/
         }
           
     }
