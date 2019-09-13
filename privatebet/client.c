@@ -2220,7 +2220,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 				if(bet->myplayerid!=jint(argjson,"toWhom"))
 					goto end;
 				
-			printf("%s::%d::acutal ask share\n",__FUNCTION,__LINE__);	
+			printf("%s::%d::acutal ask share\n",__FUNCTION__,__LINE__);	
 			retval=BET_p2p_client_give_share(argjson,bet,vars);
 		}
 		else if(strcmp(method,"requestShare") == 0)
