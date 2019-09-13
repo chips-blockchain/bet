@@ -2210,7 +2210,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		}
 		else if(strcmp(method,"turn") == 0)
 		{
-			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));  
+			//printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));  
 			retval=BET_p2p_client_turn(argjson,bet,vars);
 		}
 		else if(strcmp(method,"ask_share") == 0)
@@ -2221,12 +2221,12 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 				if(bet->myplayerid!=jint(argjson,"toWhom"))
 					goto end;
 				
-			printf("%s::%d::acutal ask share\n",__FUNCTION__,__LINE__);	
+			//printf("%s::%d::acutal ask share\n",__FUNCTION__,__LINE__);	
 			retval=BET_p2p_client_give_share(argjson,bet,vars);
 		}
 		else if(strcmp(method,"requestShare") == 0)
 		{
-			printf("%s::%d::bet->myplayerid::%d::%s\n",__FUNCTION__,__LINE__,bet->myplayerid,cJSON_Print(argjson));  
+			//printf("%s::%d::bet->myplayerid::%d::%s\n",__FUNCTION__,__LINE__,bet->myplayerid,cJSON_Print(argjson));  
 	
 			if(bet->myplayerid==jint(argjson,"playerid"))
 				goto end;
@@ -2234,15 +2234,17 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 			if(bet->myplayerid!=jint(argjson,"toWhom"))
 				goto end;
 					
-			printf("actual giving share\n");
+			//printf("actual giving share\n");
 			retval=BET_p2p_client_give_share(argjson,bet,vars);
 		}
 		else if(strcmp(method,"share_info") == 0)
 		{
 			if(bet->myplayerid==jint(argjson,"toWhom"))
 				retval=BET_p2p_client_receive_share(argjson,bet,vars);
+			/*
 			else
 				printf("%s::%d::IGNORE\n",__FUNCTION__,__LINE__);
+			*/	
 		}
 		else if(strcmp(method,"bet") == 0)
 		{
