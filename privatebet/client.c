@@ -1269,6 +1269,7 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 
 	gfshare_recoverdata(shares,sharenrs, M,recover.bytes,sizeof(bits256),M);
+	printf("\nBVV blinded card:%s",bits256_str(str,recover));
 	refval = fmul_donna(player_info.bvvblindcards[bet->myplayerid][cardid],crecip_donna(recover));
 
 	printf("\nDCV blinded card:%s",bits256_str(str,refval));
