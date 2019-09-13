@@ -70,7 +70,7 @@ DCV nodes binds to the sockets created over the ports 7797 and 7798. The BVV and
 ```
 $ cd
 $ cd bet/privatebet
-$ ./bet dcv ipaddress_of_dcv
+$ ./bet dcv ipaddress_of_dcv number_of_players
 (ipc:///tmp/bet.ipc) bound
 (ipc:///tmp/bet1.ipc) bound
 ```
@@ -78,7 +78,7 @@ $ ./bet dcv ipaddress_of_dcv
 ```
 $ cd
 $ cd bet/privatebet
-$ ./bet bvv ipaddress_of_dcv
+$ ./bet bvv ipaddress_of_dcv number_of_players
 (ipc:///tmp/bet.ipc) bound
 (ipc:///tmp/bet1.ipc) bound
 ```
@@ -86,7 +86,7 @@ $ ./bet bvv ipaddress_of_dcv
 ```
 $ cd
 $ cd bet/privatebet
-$ ./bet player ipaddress_of_dcv
+$ ./bet player ipaddress_of_dcv number_of_players
 (ipc:///tmp/bet.ipc) bound
 (ipc:///tmp/bet1.ipc) bound
 ```
