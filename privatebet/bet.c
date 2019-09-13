@@ -343,8 +343,8 @@ int main(int argc, char **argv)
 	range = (range % 52) + 1;
 	numplayers = (numplayers % (CARDS777_MAXPLAYERS-1)) + 2;
 	range=52;
-	numplayers=2;
-    Maxplayers=2;
+	numplayers=3;
+    Maxplayers=3;
 	if((argc>=2)&&(strcmp(argv[1],"dcv")==0))
 	{
 		
