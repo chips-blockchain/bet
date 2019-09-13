@@ -1561,11 +1561,6 @@ int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,
 	if(no_of_shares == bet->maxplayers)
 	{
 		no_of_shares=0;
-		/*
-		for(int i=0;i<bet->maxplayers;i++)
-		{
-			printf("\n%s",bits256_str(str,playershares[cardid][i]));
-		}*/
 		decoded256 = BET_p2p_decode_card(argjson,bet,vars,cardid);	
 		if ( bits256_nonz(decoded256) == 0 )
 			errs++;
@@ -2145,6 +2140,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
     static uint8_t *decoded; static int32_t decodedlen,retval=1;
     char *method; int32_t senderid; bits256 *MofN;
 	char hexstr[65];
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
     if ( (method= jstr(argjson,"method")) != 0 )
     {
 	      

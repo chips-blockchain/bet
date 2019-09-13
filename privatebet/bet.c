@@ -58,7 +58,7 @@ bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 
 
 int32_t IAMLP;
-int32_t Maxplayers = 10;
+int32_t Maxplayers;
 int32_t permis_d[CARDS777_MAXCARDS],permis_b[CARDS777_MAXCARDS];
 bits256 *allshares=NULL;
 bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
@@ -340,8 +340,8 @@ int main(int argc, char **argv)
 	OS_randombytes((uint8_t *)&range,sizeof(range));
     OS_randombytes((uint8_t *)&numplayers,sizeof(numplayers));
 
-	range = (range % 52) + 1;
-	numplayers = (numplayers % (CARDS777_MAXPLAYERS-1)) + 2;
+	//range = (range % 52) + 1;
+	//numplayers = (numplayers % (CARDS777_MAXPLAYERS-1)) + 2;
 	range=52;
 	numplayers=3;
     Maxplayers=3;
