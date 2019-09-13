@@ -1696,6 +1696,7 @@ int32_t BET_p2p_client_give_share(cJSON *argjson,struct privatebet_info *bet,str
 		cJSON_AddNumberToObject(share_info,"playerid",bet->myplayerid);
 		cJSON_AddNumberToObject(share_info,"cardid",cardid);
 		cJSON_AddNumberToObject(share_info,"card_type",card_type);
+		cJSON_AddNumberToObject(share_info,"toWhom",playerid);
 		jaddbits256(share_info,"share",share);
 		
 		rendered=cJSON_Print(share_info);
@@ -2238,7 +2239,10 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		}
 		else if(strcmp(method,"share_info") == 0)
 		{
-			retval=BET_p2p_client_receive_share(argjson,bet,vars);
+			if(bet->myplayerid!=jint(argjson,"toWhom"))
+				retval=BET_p2p_client_receive_share(argjson,bet,vars);
+			else
+				printf("%s::%d::IGNORE\n",__FUNCTION__,__LINE__);
 		}
 		else if(strcmp(method,"bet") == 0)
 		{
