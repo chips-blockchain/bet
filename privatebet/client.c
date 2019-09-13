@@ -2239,7 +2239,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		}
 		else if(strcmp(method,"share_info") == 0)
 		{
-			if(bet->myplayerid!=jint(argjson,"toWhom"))
+			if(bet->myplayerid==jint(argjson,"toWhom"))
 				retval=BET_p2p_client_receive_share(argjson,bet,vars);
 			else
 				printf("%s::%d::IGNORE\n",__FUNCTION__,__LINE__);
