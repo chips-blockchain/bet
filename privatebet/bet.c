@@ -345,8 +345,9 @@ int main(int argc, char **argv)
 	range=52;
 	numplayers=3;
     Maxplayers=3;
-	if((argc>=2)&&(strcmp(argv[1],"dcv")==0))
+	if((argc==4)&&(strcmp(argv[1],"dcv")==0))
 	{
+		numplayers=Maxplayers=atoi(argv[3]);
 		
 		#if 1
 		/* This code is for sockets*/
@@ -380,8 +381,9 @@ int main(int argc, char **argv)
 			printf("\nError in joining the main thread for dcv");
 		}
 	}
-	else if((argc==3)&&(strcmp(argv[1],"bvv")==0))
+	else if((argc==4)&&(strcmp(argv[1],"bvv")==0))
 	{
+		numplayers=Maxplayers=atoi(argv[3]);
 		#if 1
 			/* This code is for sockets*/
 			BET_transportname(0,bindaddr,hostip,port);
@@ -410,8 +412,9 @@ int main(int argc, char **argv)
 				printf("\nError in joining the main thread for bvvv");
 			}
 	}
-	else if((argc==3)&&(strcmp(argv[1],"player")==0)) 
+	else if((argc==4)&&(strcmp(argv[1],"player")==0)) 
 	{
+		numplayers=Maxplayers=atoi(argv[3]);
 		#if 1
 			/* This code is for sockets*/
 			BET_transportname(0,bindaddr,hostip,port);
@@ -442,9 +445,9 @@ int main(int argc, char **argv)
 	else
 	{
 		printf("\nInvalid Usage");
-		printf("\nFor DCV: ./bet dcv");
-		printf("\nFor BVV: ./bet bvv");
-		printf("\nFor Player: ./bet player player_id");
+		printf("\nFor DCV: ./bet dcv <dcv_ip_address> table_size(i.e number of players)");
+		printf("\nFor BVV: ./bet bvv <dcv_ip_address> table_size(i.e number of players)");
+		printf("\nFor Player: ./bet player <dcv_ip_address> table_size(i.e number of players)");
 	}
 	#endif
     return 0;
