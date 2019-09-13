@@ -1733,6 +1733,7 @@ int32_t BET_p2p_client_turn(cJSON *argjson,struct privatebet_info *bet,struct pr
 	
    	
 	playerid=jint(argjson,"playerid");
+	printf("%s::%d::bet->numplayers::%d :: bet->maxplayers::%d\n",__FUNCTION__,__LINE__,bet->numplayers,bet->maxplayers);
 	
 	if(playerid == bet->myplayerid)
 	{
@@ -2167,7 +2168,6 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		}
 		else if ( strcmp(method,"init") == 0 )
 		{
-			printf("%s::%d::method::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));  
 			if(jint(argjson,"playerID")==bet->myplayerid)
 	            retval=BET_p2p_client_init(argjson,bet,vars);
 			
@@ -2184,7 +2184,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		}
 		else if(strcmp(method,"turn") == 0)
 		{
-			
+			printf("%s::%d::method::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));  
 			retval=BET_p2p_client_turn(argjson,bet,vars);
 		}
 		else if(strcmp(method,"ask_share") == 0)
