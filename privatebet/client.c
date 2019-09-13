@@ -1166,7 +1166,7 @@ int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct pri
 	
     if ( (method= jstr(argjson,"method")) != 0 )
     {
-    	
+    	printf("%s::%d::method::%s\n",__FUNCTION__,__LINE__,method);
 		if ( strcmp(method,"TableInfo") == 0 )
 		{
 			BET_p2p_table_info(argjson,bet,vars);
@@ -1245,7 +1245,7 @@ void BET_p2p_bvvloop(void *_ptr)
 
 bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars,int32_t cardid)
 {
-	int32_t retval,numplayers,numcards,M,playerid,flag=0;
+	int32_t retval=-1,numplayers,numcards,M,playerid,flag=0;
 	bits256 recover,decoded,refval,tmp,xoverz,hash,fe,basepoint;
 	uint8_t **shares;
     uint8_t decipher[sizeof(bits256) + 1024],*ptr; int32_t recvlen;
@@ -1600,6 +1600,11 @@ int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,
 					goto end;
 			}
 			
+		}
+		else
+		{
+			printf("%s::%d::unpermi::%d\n",__FUNCTION__,__LINE__,unpermi);
+			retval=unpermi;
 		}
 
 	}
@@ -2145,7 +2150,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 	//printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
     if ( (method= jstr(argjson,"method")) != 0 )
     {
-	      
+       	printf("%s::%d::method::%s\n",__FUNCTION__,__LINE__,method);  
     	if ( strcmp(method,"join") == 0 )
 		{
 			retval=BET_p2p_client_join(argjson,bet,vars);
@@ -2168,12 +2173,12 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		}
 		else if(strcmp(method,"init_d") == 0)
 		{
-			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+			//printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 			retval=BET_p2p_client_dcv_init(argjson,bet,vars);
 		}
 		else if(strcmp(method,"init_b") == 0)
 		{
-			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+			//printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 			retval=BET_p2p_client_bvv_init(argjson,bet,vars);
 		}
 		else if(strcmp(method,"turn") == 0)
