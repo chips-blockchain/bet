@@ -26,3 +26,6 @@ int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,stru
 void BET_DCV_reset(struct privatebet_info *bet,struct privatebet_vars *vars);
 
 
+int32_t BET_p2p_host_start_init_temp(struct privatebet_info *bet,int playerID);
+
+

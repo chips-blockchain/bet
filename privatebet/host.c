@@ -645,6 +645,24 @@ int32_t BET_p2p_host_start_init(struct privatebet_info *bet)
 
 	return retval;
 }
+
+int32_t BET_p2p_host_start_init_temp(struct privatebet_info *bet,int playerID)
+{
+	int32_t bytes,retval=-1;
+	cJSON *init=NULL;
+	char *rendered=NULL;
+	
+	init=cJSON_CreateObject();
+	cJSON_AddNumberToObject(init,"playerID",playerID);
+	cJSON_AddStringToObject(init,"method","init");
+
+	rendered=cJSON_Print(init);
+	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
+
+
+	return retval;
+}
+
 int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	cJSON *playerinfo=NULL,*getInfo=NULL,*addresses=NULL,*address=NULL;
@@ -1589,7 +1607,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		}
 		else if(strcmp(method,"bvv_ready") == 0)
 		{
-			retval=BET_p2p_host_start_init(bet);
+			retval=BET_p2p_host_start_init_temp(bet,0);
 		}
 		else if(strcmp(method,"init_p") == 0)
 		{
@@ -1597,6 +1615,10 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 			if(dcv_info.numplayers==dcv_info.maxplayers)
 			{
 				retval=BET_p2p_host_deck_init_info(argjson,bet,vars);
+			}
+			else
+			{
+				BET_p2p_host_start_init_temp(bet,dcv_info.numplayers);
 			}
 		}
 		else if(strcmp(method,"bvv_join") == 0)
