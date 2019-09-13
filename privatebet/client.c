@@ -2167,6 +2167,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		}
 		else if ( strcmp(method,"init") == 0 )
 		{
+			printf("%s::%d::method::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));  
 			if(jint(argjson,"playerID")==bet->myplayerid)
 	            retval=BET_p2p_client_init(argjson,bet,vars);
 			
