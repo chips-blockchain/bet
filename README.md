@@ -83,6 +83,7 @@ The branches are listes as follow.
 * dev
 * highest_card_wins
 * poker
+* mp_cli
 * rest_dev
 * poker_test
 
@@ -91,6 +92,9 @@ This branch is used to play the highest card player wins game via CLI, two playe
 
 ### poker
 This branch is used to player poker via CLI
+
+### mp_cli
+In this branch implementation is done to support more than two players, and also made a provision to pass the number of players from the command line
 
 ### rest_dev
 This branch is used to player poker via GUI, the GUI code should be taken from `poker` branch of `[pangea-poker-frontend](https://github.com/sg777/pangea-poker-frontend)` repo.
