@@ -917,8 +917,8 @@ struct pair256 p2p_bvv_init(bits256 *keys,struct pair256 b_key,bits256 *blinding
 		printf("\nBVV card:%s",bits256_str(str,blindedcards[i]));
 	}
 	*/
-    M = (numplayers/2) + 1;
-    
+    //M = (numplayers/2) + 1;
+ 	M=numplayers;
     gfshare_calc_sharenrs(sharenrs,numplayers,deckid.bytes,sizeof(deckid)); // same for all players for this round
 		//printf("\nPlayer id:%d", playerid);
         for (i=0; i<numcards; i++)
