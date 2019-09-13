@@ -1634,6 +1634,30 @@ int32_t BET_p2p_client_ask_share(struct privatebet_info *bet,int32_t cardid,int3
 	return retval;
 }
 
+
+int32_t BET_p2p_client_ask_share_temp(struct privatebet_info *bet,int32_t cardid,int32_t playerid,int32_t card_type,int32_t toWhom)
+{
+	cJSON *requestInfo=NULL;
+	char *rendered=NULL;
+	int32_t bytes,retval=1;
+
+	requestInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(requestInfo,"method","requestShare");
+	cJSON_AddNumberToObject(requestInfo,"playerid",playerid);
+	cJSON_AddNumberToObject(requestInfo,"cardid",cardid);
+	cJSON_AddNumberToObject(requestInfo,"card_type",card_type);
+	cJSON_AddNumberToObject(requestInfo,"toWhom",toWhom);
+
+	rendered=cJSON_Print(requestInfo);
+	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+
+	if(bytes<0)
+		retval=-1;
+
+	return retval;
+}
+
+
 int32_t BET_p2p_client_give_share(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int32_t retval=1,bytes,playerid,cardid,recvlen,card_type;
@@ -1652,6 +1676,7 @@ int32_t BET_p2p_client_give_share(cJSON *argjson,struct privatebet_info *bet,str
 
 	if(playerid==bet->myplayerid)
 		goto end;
+
 	
 	temp=g_shares[playerid*bet->numplayers*bet->range + (cardid*bet->numplayers + bet->myplayerid)];
 
@@ -1749,7 +1774,7 @@ int32_t BET_p2p_client_turn(cJSON *argjson,struct privatebet_info *bet,struct pr
 		{
 			if((!sharesflag[jint(argjson,"cardid")][i]) && (i != bet->myplayerid))
 			{
-				retval=BET_p2p_client_ask_share(bet,jint(argjson,"cardid"),jint(argjson,"playerid"),jint(argjson,"card_type"));	
+				retval=BET_p2p_client_ask_share_temp(bet,jint(argjson,"cardid"),jint(argjson,"playerid"),jint(argjson,"card_type"),i);	
 			}
 		}
 
@@ -2189,6 +2214,13 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		}
 		else if(strcmp(method,"ask_share") == 0)
 		{
+				if(bet->myplayerid!=jint(argjson,"playerid"))
+					goto end;
+
+				if(bet->myplayerid!=jint(argjson,"toWhom"))
+					goto end;
+				
+			printf("%s::%d::acutal ask share\n",__FUNCTION,__LINE__);	
 			retval=BET_p2p_client_give_share(argjson,bet,vars);
 		}
 		else if(strcmp(method,"requestShare") == 0)
@@ -2233,7 +2265,8 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 			retval=BET_player_reset(bet,vars);
 		}
 	}	
-	return retval;
+	end:
+		return retval;
 }
 
 
