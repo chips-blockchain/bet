@@ -1261,7 +1261,7 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
 	for(int i=0;i<M;i++) 
 	{
 		memcpy(shares[i],playershares[cardid][i].bytes,sizeof(bits256));
-		printf("share %d::%s\n",i,bits256_str(str,playershares[cardid][i]));
+		//printf("share %d::%s\n",i,bits256_str(str,playershares[cardid][i]));
 	}
 	gfshare_calc_sharenrs(sharenrs,numplayers,player_info.deckid.bytes,sizeof(player_info.deckid)); // same for all players for this round
 
@@ -1270,10 +1270,10 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
 
 
 	gfshare_recoverdata(shares,sharenrs, M,recover.bytes,sizeof(bits256),M);
-	printf("\nBVV blinded card:%s",bits256_str(str,recover));
+	//printf("\nBVV blinded card:%s",bits256_str(str,recover));
 	refval = fmul_donna(player_info.bvvblindcards[bet->myplayerid][cardid],crecip_donna(recover));
 
-	printf("\nDCV blinded card:%s",bits256_str(str,refval));
+	//printf("\nDCV blinded card:%s",bits256_str(str,refval));
 	
 	
 	for(int i=0;i<bet->range;i++)
@@ -1759,7 +1759,7 @@ int32_t BET_p2p_client_turn(cJSON *argjson,struct privatebet_info *bet,struct pr
 	
    	
 	playerid=jint(argjson,"playerid");
-	printf("%s::%d::bet->numplayers::%d :: bet->maxplayers::%d\n",__FUNCTION__,__LINE__,bet->numplayers,bet->maxplayers);
+	//printf("%s::%d::bet->numplayers::%d :: bet->maxplayers::%d\n",__FUNCTION__,__LINE__,bet->numplayers,bet->maxplayers);
 	
 	if(playerid == bet->myplayerid)
 	{
