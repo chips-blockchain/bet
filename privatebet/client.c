@@ -100,6 +100,19 @@ struct privatebet_vars *Player_VARS[CARDS777_MAXPLAYERS];
 struct deck_player_info all_players_info[CARDS777_MAXPLAYERS];
 
 
+void player_lws_write(cJSON *data)
+{
+	if(!dataToWrite)
+		dataToWrite=cJSON_CreateObject();
+
+	memset(dataToWrite,0,sizeof(struct cJSON));
+	dataToWrite=data;
+	data_exists=1;
+	lws_callback_on_writable(wsi_global_client);
+	
+}
+
+
 void make_command(int argc, char **argv,cJSON **argjson)
 {
 	char command[1024];
@@ -2643,7 +2656,6 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
       	pthread_t player_t;
         
         cJSON *argjson=NULL;
-		wsi_global_client=wsi;
 		switch(reason)
         {
             case LWS_CALLBACK_RECEIVE:
@@ -2661,12 +2673,14 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
 		
                 break;
 			case LWS_CALLBACK_ESTABLISHED:
+				wsi_global_client=wsi;
 				printf("%s:%d::LWS_CALLBACK_ESTABLISHED\n",__FUNCTION__,__LINE__);
 				break;
 			case LWS_CALLBACK_SERVER_WRITEABLE:
 				printf("%s::%d::LWS_CALLBACK_SERVER_WRITEABLE\n",__FUNCTION__,__LINE__);
 				if(data_exists)
 				{
+					printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(dataToWrite));
 					lws_write(wsi,cJSON_Print(dataToWrite),strlen(cJSON_Print(dataToWrite)),0);
 					data_exists=0;
 				}	
@@ -3785,7 +3799,6 @@ void test_pedersen_commitments()
 	}
 }
 
-
 int32_t BET_rest_player_join_res(struct lws *wsi,cJSON *argjson)
 {
 	int32_t playerID;
@@ -3811,6 +3824,7 @@ int32_t BET_rest_player_join_res(struct lws *wsi,cJSON *argjson)
 		initInfo=cJSON_CreateObject();
 		cJSON_AddStringToObject(initInfo,"method","deal");
 		cJSON_AddItemToObject(initInfo,"deal",initCardInfo);
+		/*
 		printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(initInfo));
 		if(!dataToWrite)
 			dataToWrite=cJSON_CreateObject();
@@ -3819,6 +3833,8 @@ int32_t BET_rest_player_join_res(struct lws *wsi,cJSON *argjson)
 		data_exists=1;
 		lws_callback_on_writable(wsi_global_client);
 		//lws_write(wsi,cJSON_Print(initInfo),strlen(cJSON_Print(initInfo)),0);
+		*/
+		player_lws_write(initInfo);
 	}
 	return 0;
 }
