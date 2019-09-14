@@ -2664,6 +2664,9 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
 				break;
 			case LWS_CALLBACK_SERVER_WRITEABLE:
 				printf("%s::%d::LWS_CALLBACK_SERVER_WRITEABLE\n",__FUNCTION__,__LINE__);
+				break;
+			default:
+				printf("%s::%d::reason::%d\n",__FUNCTION__,__LINE__,reason);
         }
         return 0;
 }
