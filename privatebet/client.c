@@ -47,6 +47,8 @@ int32_t number_cards_drawn=0;
 
 int32_t sharesflag[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 
+cJSON *dataToWrite=NULL;
+int32_t data_exists=0;
 
 
 
@@ -2546,7 +2548,6 @@ int32_t BET_p2p_rest_clientupdate(struct lws *wsi,cJSON *argjson) // update game
 		if ( strcmp(method,"player_join") == 0 )
 		{
 			retval=BET_p2p_client_join(argjson,BET_player_global,vars);
-			lws_callback_on_writable(wsi_global_client);
 		}
 		else if ( strcmp(method,"join_res") == 0 )
 		{
@@ -2664,6 +2665,11 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
 				break;
 			case LWS_CALLBACK_SERVER_WRITEABLE:
 				printf("%s::%d::LWS_CALLBACK_SERVER_WRITEABLE\n",__FUNCTION__,__LINE__);
+				if(data_exists)
+				{
+					lws_write(wsi,cJSON_Print(dataToWrite),strlen(cJSON_Print(dataToWrite)),0);
+					data_exists=0;
+				}	
 				break;
 			default:
 				printf("%s::%d::reason::%d\n",__FUNCTION__,__LINE__,reason);
@@ -3779,6 +3785,7 @@ void test_pedersen_commitments()
 	}
 }
 
+
 int32_t BET_rest_player_join_res(struct lws *wsi,cJSON *argjson)
 {
 	int32_t playerID;
@@ -3805,7 +3812,13 @@ int32_t BET_rest_player_join_res(struct lws *wsi,cJSON *argjson)
 		cJSON_AddStringToObject(initInfo,"method","deal");
 		cJSON_AddItemToObject(initInfo,"deal",initCardInfo);
 		printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(initInfo));
-		lws_write(wsi,cJSON_Print(initInfo),strlen(cJSON_Print(initInfo)),0);
+		if(!data)
+			data=cJSON_CreateObject();
+
+		dataToWrite=initInfo;
+		data_exists=1;
+		lws_callback_on_writable(wsi_global_client);
+		//lws_write(wsi,cJSON_Print(initInfo),strlen(cJSON_Print(initInfo)),0);
 	}
 	return 0;
 }
