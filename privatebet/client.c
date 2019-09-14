@@ -2546,7 +2546,7 @@ int32_t BET_p2p_rest_clientupdate(struct lws *wsi,cJSON *argjson) // update game
 		if ( strcmp(method,"player_join") == 0 )
 		{
 			retval=BET_p2p_client_join(argjson,BET_player_global,vars);
-
+			lws_callback_on_writable(wsi_global_client);
 		}
 		else if ( strcmp(method,"join_res") == 0 )
 		{
@@ -2660,8 +2660,10 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
 		
                 break;
 			case LWS_CALLBACK_ESTABLISHED:
-				printf("\n%s:%d::LWS_CALLBACK_ESTABLISHED\n",__FUNCTION__,__LINE__);
+				printf("%s:%d::LWS_CALLBACK_ESTABLISHED\n",__FUNCTION__,__LINE__);
 				break;
+			case LWS_CALLBACK_SERVER_WRITEABLE:
+				printf("%s::%d::LWS_CALLBACK_SERVER_WRITEABLE\n",__FUNCTION__,__LINE__);
         }
         return 0;
 }
@@ -2700,14 +2702,14 @@ static const struct lws_http_mount mount1 = {
 
 void BET_test_function(void* _ptr)
 {
-	struct lws_context_creation_info info,info_1,dcv_info,bvv_info,player1_info,player2_info;
-	struct lws_context *context,*context_1,*dcv_context,*bvv_context,*player1_context,*player2_context;
-	const char *p;
+	struct lws_context_creation_info dcv_info;
+	struct lws_context *dcv_context;
 	int n = 0, logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE;
 
 	printf("\n%s::%d",__FUNCTION__,__LINE__);
 	lws_set_log_level(logs, NULL);
 	lwsl_user("LWS minimal ws broker | visit http://localhost:7681\n");
+
 	memset(&dcv_info, 0, sizeof dcv_info); /* otherwise uninitialized garbage */
     dcv_info.port = 9000;
     dcv_info.mounts = &mount1;
@@ -2722,10 +2724,7 @@ void BET_test_function(void* _ptr)
     }   
    while (n >= 0 && !interrupted1)
 	{
-        n = lws_service(dcv_context, 1000);
-        //n = lws_service(bvv_context, 1000);
-        //n = lws_service(player1_context, 1000);
-        //n = lws_service(player2_context, 1000);
+        n = lws_service(dcv_context, 0);
 	}
     lws_context_destroy(dcv_context);
 }
