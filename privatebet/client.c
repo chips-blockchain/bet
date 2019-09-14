@@ -3812,8 +3812,8 @@ int32_t BET_rest_player_join_res(struct lws *wsi,cJSON *argjson)
 		cJSON_AddStringToObject(initInfo,"method","deal");
 		cJSON_AddItemToObject(initInfo,"deal",initCardInfo);
 		printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(initInfo));
-		if(!data)
-			data=cJSON_CreateObject();
+		if(!dataToWrite)
+			dataToWrite=cJSON_CreateObject();
 
 		dataToWrite=initInfo;
 		data_exists=1;
