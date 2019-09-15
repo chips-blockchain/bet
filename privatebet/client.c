@@ -2656,7 +2656,6 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
 {
         int ret_val,ret_len;
       	pthread_t player_t;
-		wsi_global_client=wsi;        
         cJSON *argjson=NULL;
 		switch(reason)
         {
@@ -2675,6 +2674,7 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
 		
                 break;
 			case LWS_CALLBACK_ESTABLISHED:
+				wsi_global_client=wsi;		  
 				printf("%s:%d::LWS_CALLBACK_ESTABLISHED\n",__FUNCTION__,__LINE__);
 				break;
 			case LWS_CALLBACK_SERVER_WRITEABLE:
