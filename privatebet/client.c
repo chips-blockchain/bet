@@ -2345,7 +2345,9 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		cJSON_AddStringToObject(initInfo,"method","deal");
 		cJSON_AddItemToObject(initInfo,"deal",initCardInfo);
 		printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(initInfo));
-		lws_write(wsi_global_client,cJSON_Print(initInfo),strlen(cJSON_Print(initInfo)),0);
+
+		player_lws_write(initInfo);
+		//lws_write(wsi_global_client,cJSON_Print(initInfo),strlen(cJSON_Print(initInfo)),0);
 		
 	}
 	end:
@@ -2995,11 +2997,12 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 		}
 		else if ( strcmp(method,"join_res") == 0 )
 		{
-			//retval=BET_p2p_client_join_res(argjson,bet,vars);
-			
 			lws_callback_on_writable(wsi_global_client);
 			printf("%s::%d\n",__FUNCTION__,__LINE__);
-			retval=BET_rest_player_join_res(wsi_global_client,argjson);
+			
+			retval=BET_p2p_client_join_res(argjson,bet,vars);
+			
+			//retval=BET_rest_player_join_res(wsi_global_client,argjson);
 			
 		}
 		else if ( strcmp(method,"TableInfo") == 0 )
