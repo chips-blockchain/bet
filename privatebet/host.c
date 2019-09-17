@@ -2028,6 +2028,8 @@ int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct priva
 void BET_p2p_host_blinds_info(struct lws *wsi)
 {
 	cJSON *blindsInfo=NULL;
+	char *rendered=NULL;
+	
 	blindsInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(blindsInfo,"method","blindsInfo");
 	cJSON_AddNumberToObject(blindsInfo,"small_blind",small_blind_amount);
