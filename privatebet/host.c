@@ -44,7 +44,8 @@
 struct lws *wsi_global_host=NULL;
 
 
-
+cJSON *dcvDataToWrite=NULL;
+int32_t dcvDataExists=0;
 
 struct privatebet_rawpeerln Rawpeersln[CARDS777_MAXPLAYERS+1],oldRawpeersln[CARDS777_MAXPLAYERS+1];
 struct privatebet_peerln Peersln[CARDS777_MAXPLAYERS+1];
@@ -75,6 +76,19 @@ struct privatebet_vars *DCV_VARS;
 /*
 Below are the API's which are written to support REST
 */
+
+void dcv_lws_write(cJSON *data)
+{
+	if(!dcvDataToWrite)
+		dcvDataToWrite=cJSON_CreateObject();
+
+	memset(dcvDataToWrite,0,sizeof(struct cJSON));
+	dcvDataToWrite=data;
+	dcvDataExists=1;
+	lws_callback_on_writable(wsi_global_host);
+	
+}
+
 
 int32_t BET_rest_dcv_init(struct lws *wsi, cJSON *argjson)
 {
@@ -1373,6 +1387,16 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 				wsi_global_host = wsi;
 				printf("%s::%d\n,__FUNCTION__,__LINE__,LWS_CALLBACK_ESTABLISHED");
 				break;
+			case LWS_CALLBACK_SERVER_WRITEABLE:
+				printf("%s::%d::LWS_CALLBACK_SERVER_WRITEABLE\n",__FUNCTION__,__LINE__);
+				if(dcvDataExists)
+				{
+					printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(dcvDataToWrite));
+					lws_write(wsi,cJSON_Print(dcvDataToWrite),strlen(cJSON_Print(dcvDataToWrite)),0);
+					dcvDataExists=0;
+				}	
+				break;
+				
 	    }
 	    return 0;
 }
@@ -1416,7 +1440,10 @@ void sigint_handler(int sig)
 void BET_push_host(cJSON *argjson)
 {
 	if(argjson)
-		lws_write(wsi_global_host,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+	{
+		//lws_write(wsi_global_host,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+		dcv_lws_write(argjson);
+	}	
 }
 
 
@@ -3509,8 +3536,8 @@ void BET_p2p_hostloop(void *_ptr)
 
 void BET_ws_dcvloop(void *_ptr)
 {
-	struct lws_context_creation_info info,info_1,dcv_info,bvv_info,player1_info,player2_info;
-	struct lws_context *context,*context_1,*dcv_context,*bvv_context,*player1_context,*player2_context;
+	struct lws_context_creation_info dcv_info,bvv_info;
+	struct lws_context *dcv_context;
 	const char *p;
 	int n = 0, logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE;
 
