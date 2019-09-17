@@ -3154,6 +3154,7 @@ int32_t BET_LN_check(struct privatebet_info *bet)
 		
 		printf("Player %d --> DCV channel ready\n",i);	
 	}
+	retval=1;
 	end:
 		if(argv)
 		{
@@ -3319,7 +3320,10 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 					printf("Table is filled\n");
 					retval=BET_LN_check(bet);
 					if(retval<0)
+					{
+						printf("%s::%d::something wrong with BET_LN_check\n",__FUNCTION__,__LINE__);
 						goto end;
+					}
 					//BET_broadcast_table_info(bet);
 					BET_check_BVV_Ready(bet);
 				}
