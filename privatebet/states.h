@@ -34,6 +34,11 @@ int32_t BET_player_round_betting(cJSON *argjson,struct privatebet_info *bet,stru
 int32_t BET_player_round_betting_response(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
 
 int32_t BET_player_round_betting_test(cJSON * argjson,struct privatebet_info * bet,struct privatebet_vars * vars);
+int32_t BET_rest_small_blind_update(struct lws *wsi,cJSON *argjson,int32_t amount);
+int32_t BET_rest_big_blind_update(struct lws *wsi,cJSON *argjson,int32_t amount);
+int32_t BET_rest_player_round_betting_update(struct lws *wsi,cJSON *argjson,int option,int32_t bet_amount);
+
+
 
 
 

@@ -69,6 +69,11 @@ bits256 BET_get_deckid(int32_t playerID);
 
 void BET_push_client_blindInfo(cJSON *blindInfo);
 void BET_push_client(cJSON *argjson);
+int32_t BET_rest_player_join_res(cJSON *argjson);
+int32_t BET_rest_player_init(struct lws *wsi, cJSON *argjson);
+int32_t BET_rest_listfunds();
+
+
 
 
 

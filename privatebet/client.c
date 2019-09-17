@@ -136,7 +136,7 @@ void make_command(int argc, char **argv,cJSON **argjson)
 	 buf=(char*)malloc(200);
 	 if(!buf)
  	 {
- 	 	printf("%s::%d::Memory allocation failed\n");
+ 	 	printf("%s::%d::Memory allocation failed\n",__FUNCTION__,__LINE__);
 		goto end;
  	 }
 	 while(fgets(buf, 200, fp) != NULL)
@@ -513,7 +513,7 @@ void BET_clientloop(void *_ptr)
                     printf("%s round.%d turni.%d myid.%d | valid.%d roundready.%d lastround.%d -> myturn? %d\n",bet->game,VARS->round,VARS->turni,bet->myplayerid,VARS->validperms,VARS->roundready,VARS->lastround,VARS->validperms != 0 && VARS->turni == bet->myplayerid && VARS->roundready == VARS->round && VARS->lastround != VARS->round);
                     lasttime = (uint32_t)time(NULL);
                 }
-                usleep(10000);
+                sleep(5);
                 BET_statemachine(bet,VARS);
             }
         }
@@ -1142,7 +1142,7 @@ int32_t BET_p2p_bvv_join_init(cJSON *argjson,struct privatebet_info *bet,struct 
 	uri=(char*)malloc(sizeof(char)*100);
 	if(!uri)
 	{
-		printf("%s::%d::malloc failed\n");
+		printf("%s::%d::malloc failed\n",__FUNCTION__,__LINE__);
 		goto end;
 	}	
 	strcpy(uri,jstr(channelInfo,"id"));
@@ -2742,13 +2742,12 @@ void BET_test_function(void* _ptr)
     dcv_info.port = 9000;
     dcv_info.mounts = &mount1;
     dcv_info.protocols = protocols1;
-    dcv_info.options =
-    LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
+    dcv_info.options = LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
 
     dcv_context = lws_create_context(&dcv_info);
     if (!dcv_context) {
-        lwsl_err("lws init failed\n");
-        return 1;
+        printf("lws init failed\n");
+        
     }   
    while (n >= 0 && !interrupted1)
 	{
@@ -2760,7 +2759,7 @@ void BET_test_function(void* _ptr)
 
 
 #if 1
-char lws_buf_bvv[65536];
+char lws_buf_bvv[2000];
 int32_t lws_buf_length_bvv=0;
 
 int lws_callback_http_dummy_bvv(struct lws *wsi, enum lws_callback_reasons reason,
@@ -2825,8 +2824,8 @@ static const struct lws_http_mount mount_bvv = {
 
 void BET_test_function_bvv(void* _ptr)
 {
-	struct lws_context_creation_info info,info_1,dcv_info,bvv_info,player1_info,player2_info;
-	struct lws_context *context,*context_1,*dcv_context,*bvv_context,*player1_context,*player2_context;
+	struct lws_context_creation_info dcv_info,bvv_info;
+	struct lws_context *dcv_context;
 	const char *p;
 	int n = 0, logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE;
 
@@ -2842,15 +2841,12 @@ void BET_test_function_bvv(void* _ptr)
 
     dcv_context = lws_create_context(&dcv_info);
     if (!dcv_context) {
-        lwsl_err("lws init failed\n");
-        return 1;
+        printf("lws init failed\n");
+        
     }   
    while (n >= 0 && !interrupted_bvv)
 	{
-        n = lws_service(dcv_context, 1000);
-        //n = lws_service(bvv_context, 1000);
-        //n = lws_service(player1_context, 1000);
-        //n = lws_service(player2_context, 1000);
+        n = lws_service(dcv_context,0);
 	}
     lws_context_destroy(dcv_context);
 }
@@ -3697,16 +3693,12 @@ int32_t BET_rest_fundChannel(char *channel_id)
 	fundChannelInfo=cJSON_CreateObject();
 	make_command(argc,argv,&fundChannelInfo);
 
-	/*
-	ln_bet(argc,argv,buf);
-	fundChannelInfo=cJSON_Parse(buf);
-   */
 	printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(fundChannelInfo));
 
 	if(jint(fundChannelInfo,"code") != 0 )
 	{
 		retval=-1;
-		LOG_ERROR("Message:%s",jstr(fundChannelInfo,"message"));
+		printf("Message:%s",jstr(fundChannelInfo,"message"));
 		goto end;
 	}
 
