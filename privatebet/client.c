@@ -2289,7 +2289,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			if(jint(connectInfo,"code") != 0)
 			{
 				retval=-1;
-				printf("\n%s:%d:Message:%s",__FUNCTION__,__LINE__,jstr(connectInfo,"method"));
+				printf("%s:%d:Message:%s\n",__FUNCTION__,__LINE__,jstr(connectInfo,"method"));
 				goto end;
 			}
 			
@@ -2312,7 +2312,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			if(jint(fundChannelInfo,"code") != 0 )
 			{
 				retval=-1;
-				LOG_ERROR("Message:%s",jstr(fundChannelInfo,"message"));
+				printf("%s::%d::Message:%s\n",__FUNCTION__,__LINE__,jstr(fundChannelInfo,"message"));
 				goto end;
 			}
 		}
@@ -2388,11 +2388,10 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 	int argc;
 	char **argv=NULL;
 
-	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
     if(bet->pushsock>=0)
 	{
 		key = deckgen_player(player_info.cardprivkeys,player_info.cardpubkeys,player_info.permis,bet->range);
-		printf("\nPublic Key:%s",bits256_str(hexstr,key.prod));
 		player_info.player_key=key;
         joininfo=cJSON_CreateObject();
         cJSON_AddStringToObject(joininfo,"method","join_req");
