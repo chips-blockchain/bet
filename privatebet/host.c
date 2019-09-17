@@ -2024,6 +2024,7 @@ int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct priva
 		return retval;
 }
 
+
 void BET_p2p_host_blinds_info(struct lws *wsi)
 {
 	cJSON *blindsInfo=NULL;
@@ -2033,10 +2034,9 @@ void BET_p2p_host_blinds_info(struct lws *wsi)
 	cJSON_AddNumberToObject(blindsInfo,"big_blind",big_blind_amount);
 	printf("%s::%d::lws::%s\n",__FUNCTION__,__LINE__,jstr(blindsInfo,"method"));
 
-	player_lws_write(blindsInfo);
 	
-	//rendered=cJSON_Print(blindsInfo);
-	//lws_write(wsi,rendered,strlen(rendered),0);
+	rendered=cJSON_Print(blindsInfo);
+	lws_write(wsi,rendered,strlen(rendered),0);
 }
 int32_t BET_p2p_host_start_init(struct privatebet_info *bet,int32_t peerid)
 {

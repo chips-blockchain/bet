@@ -2978,6 +2978,22 @@ void BET_push_client_blindInfo(cJSON *blindInfo)
 		lws_write(wsi_global_client,(unsigned char*)rendered,strlen(rendered),0);
 	}
 }
+
+void BET_p2p_player_blinds_info()
+{
+	cJSON *blindsInfo=NULL;
+	blindsInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(blindsInfo,"method","blindsInfo");
+	cJSON_AddNumberToObject(blindsInfo,"small_blind",small_blind_amount);
+	cJSON_AddNumberToObject(blindsInfo,"big_blind",big_blind_amount);
+	printf("%s::%d::lws::%s\n",__FUNCTION__,__LINE__,jstr(blindsInfo,"method"));
+
+	player_lws_write(blindsInfo);
+	
+	//rendered=cJSON_Print(blindsInfo);
+	//lws_write(wsi,rendered,strlen(rendered),0);
+}
+
 int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars) // update game state based on host broadcast
 {
 	
@@ -3013,7 +3029,8 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 			if(jint(argjson,"peerid")==bet->myplayerid)
 			{
 				printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-				BET_p2p_host_blinds_info(wsi_global_client);
+				//BET_p2p_host_blinds_info(wsi_global_client);
+				BET_p2p_player_blinds_info();
 				retval=BET_p2p_client_init(argjson,bet,vars);
 			}
    		}
