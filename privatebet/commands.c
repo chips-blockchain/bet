@@ -16,6 +16,7 @@
 #include "common.h"
 #include "commands.h"
 #include "oracle.h"
+#include "client.h"
 //char *LN_idstr;
 char BET_ORACLEURL[64] = "127.0.0.1:7797";
 int32_t /*IAMHOST,*/IAMORACLE;
