@@ -72,6 +72,7 @@ void BET_push_client(cJSON *argjson);
 int32_t BET_rest_player_join_res(cJSON *argjson);
 int32_t BET_rest_player_init(struct lws *wsi, cJSON *argjson);
 int32_t BET_rest_listfunds();
+void make_command(int argc, char **argv,cJSON **argjson);
 
 
 
