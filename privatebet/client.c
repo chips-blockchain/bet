@@ -1866,7 +1866,8 @@ void display_cards(cJSON *argjson,struct privatebet_info *bet,struct privatebet_
 	
 	cJSON_AddItemToObject(initInfo,"deal",initCardInfo);
 	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(initInfo));
-	lws_write(wsi_global_client,cJSON_Print(initInfo),strlen(cJSON_Print(initInfo)),0);
+	player_lws_write(initInfo);
+	//lws_write(wsi_global_client,cJSON_Print(initInfo),strlen(cJSON_Print(initInfo)),0);
 }
 int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
@@ -2545,7 +2546,8 @@ int32_t BET_player_reset(struct privatebet_info *bet,struct privatebet_vars *var
 	//return(BET_p2p_client_join(NULL,bet,vars));
 	resetInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(resetInfo,"method","reset");
-	BET_push_client(resetInfo);
+	//BET_push_client(resetInfo);
+	player_lws_write(resetInfo);
 	return 1;
 }
 
@@ -2566,7 +2568,7 @@ int32_t BET_p2p_rest_clientupdate(struct lws *wsi,cJSON *argjson) // update game
 		}
 		else if ( strcmp(method,"join_res") == 0 )
 		{
-			BET_rest_player_join_res(wsi_global_client,argjson);
+			BET_rest_player_join_res(argjson);
 			
 		}
 		else if ( strcmp(method,"TableInfo") == 0 )
@@ -2640,7 +2642,8 @@ int32_t BET_p2p_rest_clientupdate(struct lws *wsi,cJSON *argjson) // update game
 		}
 		else if(strcmp(method,"seats") == 0)
 		{
-			lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+			//lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+			player_lws_write(argjson);
 		}
 	}	
 	return retval;
@@ -2871,7 +2874,7 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		{
 			//retval=BET_p2p_client_join_res(argjson,bet,vars);
 			printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-			BET_rest_player_join_res(wsi_global_client,argjson);
+			BET_rest_player_join_res(argjson);
 			
 		}
 		else if ( strcmp(method,"TableInfo") == 0 )
@@ -2948,7 +2951,8 @@ int32_t BET_p2p_clientupdate(cJSON *argjson,struct privatebet_info *bet,struct p
 		else if(strcmp(method,"seats") == 0)
 		{
 			printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-			lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+			//lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+			player_lws_write(argjson);
 		}
 	}	
 	return retval;
@@ -2994,9 +2998,6 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 		}
 		else if ( strcmp(method,"join_res") == 0 )
 		{
-			lws_callback_on_writable(wsi_global_client);
-			printf("%s::%d\n",__FUNCTION__,__LINE__);
-			
 			retval=BET_p2p_client_join_res(argjson,bet,vars);
 			
 			//retval=BET_rest_player_join_res(wsi_global_client,argjson);
@@ -3081,13 +3082,15 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 		else if(strcmp(method,"seats") == 0)
 		{
 			cJSON_AddNumberToObject(argjson,"playerFunds",BET_rest_listfunds());
-			rendered=cJSON_Print(argjson);
-			lws_write(wsi_global_client,rendered,strlen(rendered),0);
+			player_lws_write(argjson);
+			//rendered=cJSON_Print(argjson);
+			//lws_write(wsi_global_client,rendered,strlen(rendered),0);
 		}
 		else if(strcmp(method,"finalInfo") == 0)
 		{
 			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-			lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+			//lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
+			player_lws_write(argjson);			
 		}
 	}	
 	return retval;
@@ -3451,7 +3454,8 @@ int32_t BET_rest_player_init(struct lws *wsi, cJSON *argjson)
 		cJSON_AddItemToArray(cjsonplayercards,cJSON_CreateString(bits256_str(str,all_players_info[playerID].cardpubkeys[i])));
 	}
 	printf("\nsent:::%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(init_p));
-	lws_write(wsi,cJSON_Print(init_p),strlen(cJSON_Print(init_p)),0);
+	//lws_write(wsi,cJSON_Print(init_p),strlen(cJSON_Print(init_p)),0);
+	player_lws_write(init_p);
 	
 	return 0;
 }
@@ -3801,7 +3805,7 @@ void test_pedersen_commitments()
 	}
 }
 
-int32_t BET_rest_player_join_res(struct lws *wsi,cJSON *argjson)
+int32_t BET_rest_player_join_res(cJSON *argjson)
 {
 	int32_t playerID;
 	char channel_id[100];

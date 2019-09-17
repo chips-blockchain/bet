@@ -937,7 +937,8 @@ int32_t BET_p2p_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 				printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
 				goto end;
 		}
-		BET_push_client_blindInfo(temp);
+		//BET_push_client_blindInfo(temp);
+		player_lws_write(temp);
 				
 	end:
 		return retval;
@@ -982,7 +983,8 @@ int32_t BET_p2p_big_blind(cJSON *argjson,struct privatebet_info *bet,struct priv
 				printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
 				goto end;
 		}
-		BET_push_client_blindInfo(temp);
+		//BET_push_client_blindInfo(temp);
+		player_lws_write(temp);
 		
 	end:
 		return retval;
