@@ -2329,7 +2329,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		  	 {
 		  		retval=-1;
 				printf("\n%s:%d:Channel establishment with DCV is not happening, please check the connectivity with the DCV node\n",__FUNCTION__,__LINE__);
-				goto end;
+				//goto end;
 		  	 }
 			sleep(2);
 		}
