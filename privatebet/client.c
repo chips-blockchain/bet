@@ -1587,7 +1587,7 @@ bits256 BET_p2p_decode_card(cJSON *argjson,struct privatebet_info *bet,struct pr
 				            {
 				               // printf("\nplayer.%d decoded card %s value %d\n",bet->myplayerid,bits256_str(str,decoded),player_info.cardprivkeys[m].bytes[30]);
 								//printf("\n");
-								player_cards[no_of_player_cards]=bits256_str(str,decoded);
+								player_cards[no_of_player_cards]=atoi(bits256_str(str,decoded));
 								no_of_player_cards++;
 				        		tmp=player_info.cardprivkeys[m];
 								flag=1;
