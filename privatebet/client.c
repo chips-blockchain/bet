@@ -2762,11 +2762,7 @@ int32_t lws_buf_length_bvv=0;
 int lws_callback_http_dummy_bvv(struct lws *wsi, enum lws_callback_reasons reason,
                         void *user, void *in, size_t len)
 {
-        int ret_val,ret_len;
-      	pthread_t player_t;
-        
-        cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
-		wsi_global_bvv=wsi;
+        cJSON *argjson=NULL;
 		switch(reason)
         {
             case LWS_CALLBACK_RECEIVE:
@@ -2784,6 +2780,7 @@ int lws_callback_http_dummy_bvv(struct lws *wsi, enum lws_callback_reasons reaso
 				lws_buf_length_bvv=0;
 		        break;
 			case LWS_CALLBACK_ESTABLISHED:
+				wsi_global_bvv=wsi;
 				printf("\n%s:%d::LWS_CALLBACK_ESTABLISHED\n",__FUNCTION__,__LINE__);
 				break;
         }

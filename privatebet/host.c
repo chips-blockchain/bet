@@ -1353,14 +1353,10 @@ int32_t lws_buf_length=0;
 int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
                         void *user, void *in, size_t len)
 {
-        int ret_val,ret_len;
-        pthread_t player_t;
-        
-        cJSON *argjson=NULL,*gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
-		wsi_global_host = wsi;
+	    cJSON *argjson=NULL;
 		switch(reason)
-        {
-            case LWS_CALLBACK_RECEIVE:
+	    {
+	        case LWS_CALLBACK_RECEIVE:
 				memcpy(lws_buf+lws_buf_length,in,len);
 				lws_buf_length+=len;
 				if (!lws_is_final_fragment(wsi))
@@ -1372,11 +1368,13 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 				}
 				memset(lws_buf,0x00,sizeof(lws_buf));
 				lws_buf_length=0;
-                break;
+	            break;
 			case LWS_CALLBACK_ESTABLISHED:
+				wsi_global_host = wsi;
+				printf("%s::%d\n,__FUNCTION__,__LINE__,LWS_CALLBACK_ESTABLISHED");
 				break;
-        }
-        return 0;
+	    }
+	    return 0;
 }
 
 
