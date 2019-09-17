@@ -2962,21 +2962,27 @@ void BET_push_client(cJSON *argjson)
 {
 	char *rendered=NULL;
 	printf("%s::%d\n",__FUNCTION__,__LINE__);
+	player_lws_write(argjson);
+	/*
 	if(argjson)
 	{
 		rendered=cJSON_Print(argjson);
 		lws_write(wsi_global_client,(unsigned char*)rendered,strlen(rendered),0);
 	}
+	*/
 }
 
 void BET_push_client_blindInfo(cJSON *blindInfo)
 {
 	char *rendered=NULL;
+	player_lws_write(blindInfo);
+	/*
 	if(blindInfo)
 	{
 		rendered=cJSON_Print(blindInfo);
 		lws_write(wsi_global_client,(unsigned char*)rendered,strlen(rendered),0);
 	}
+	*/
 }
 
 void BET_p2p_player_blinds_info()
