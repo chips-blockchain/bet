@@ -4076,7 +4076,7 @@ bits256 BET_rest_decode_card(int32_t this_playerID,int32_t cardid)
 				            {
 				               // printf("\nplayer.%d decoded card %s value %d\n",bet->myplayerid,bits256_str(str,decoded),player_info.cardprivkeys[m].bytes[30]);
 								//printf("\n");
-								all_player_cards[this_playerID][no_of_player_cards]=bits256_str(str,decoded);
+								all_player_cards[this_playerID][no_of_player_cards]=atoi(bits256_str(str,decoded));
 								all_no_of_player_cards[this_playerID]+=1;
 				        		tmp=all_players_info[this_playerID].cardprivkeys[m];
 								flag=1;
