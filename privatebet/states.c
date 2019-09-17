@@ -733,7 +733,8 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 				if(bet->myplayerid == jint(argjson,"playerid"))
 				{
 					display_cards(argjson,bet,vars);
-					BET_push_client(argjson);
+					//BET_push_client(argjson);
+					player_lws_write(argjson);
 				}
 				else
 				{
