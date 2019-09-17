@@ -3455,7 +3455,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 	end:
     	return retval;
 }
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void BET_p2p_hostloop(void *_ptr)
 {
