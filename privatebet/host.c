@@ -3455,6 +3455,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 	end:
     	return retval;
 }
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER
 
 void BET_p2p_hostloop(void *_ptr)
 {
@@ -3462,8 +3463,8 @@ void BET_p2p_hostloop(void *_ptr)
 	void *ptr=NULL; 
 	struct privatebet_info *bet = _ptr;
 
-	//argjson=cJSON_CreateObject();
-
+   pthread_mutex_lock(&mutex);
+	
 	dcv_info.numplayers=0;
 	dcv_info.maxplayers=bet->maxplayers;
 	BET_permutation(dcv_info.permis,bet->range);
@@ -3498,10 +3499,7 @@ void BET_p2p_hostloop(void *_ptr)
             {
                 if ( BET_p2p_hostcommand(argjson,bet,DCV_VARS) != 0 ) // usually just relay to players
                 {
-                    //printf("RELAY.(%s)\n",jprint(argjson,0));
-                    // BET_message_send("BET_relay",bet->pubsock,argjson,0,bet);
-                    //if ( (sendlen= nn_send(bet->pubsock,ptr,recvlen,0)) != recvlen )
-                    //    printf("sendlen.%d != recvlen.%d for %s\n",sendlen,recvlen,jprint(argjson,0));
+                	//Do Something
                 }
                 free_json(argjson);
             }
@@ -3509,28 +3507,7 @@ void BET_p2p_hostloop(void *_ptr)
         }
           
     }
-	
-	#if 0
-    while ( bet->pullsock >= 0 && bet->pubsock >= 0 )
-    {
-        if ( (recvlen= nn_recv(bet->pullsock,&ptr,NN_MSG,0)) > 0 )
-        {
-            if ( (argjson= cJSON_Parse(ptr)) != 0 )
-            {
-                if ( BET_p2p_hostcommand(argjson,bet,DCV_VARS) != 0 ) // usually just relay to players
-                {
-                	// Do something
-                }
-                
-            }
-			/*
-			if(ptr)
-            	nn_freemsg(ptr);
-            	*/
-        }
-          
-    }
-	#endif
+	pthread_mutex_unlock(&mutex);
 }
 
 
