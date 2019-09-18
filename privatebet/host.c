@@ -1385,7 +1385,7 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 	            break;
 			case LWS_CALLBACK_ESTABLISHED:
 				wsi_global_host = wsi;
-				printf("%s::%d\n,__FUNCTION__,__LINE__,LWS_CALLBACK_ESTABLISHED");
+				printf("%s::%d::LWS_CALLBACK_ESTABLISHED\n",__FUNCTION__,__LINE__);
 				break;
 			case LWS_CALLBACK_SERVER_WRITEABLE:
 				printf("%s::%d::LWS_CALLBACK_SERVER_WRITEABLE\n",__FUNCTION__,__LINE__);
@@ -1762,7 +1762,7 @@ void BET_hostloop(void *_ptr)
                 printf("%s round.%d turni.%d myid.%d\n",bet->game,VARS->round,VARS->turni,bet->     myplayerid);
                 lasttime = (uint32_t)time(NULL);
             }
-            usleep(10000);
+            sleep(5);
         }
         if ( Gamestarted == 0 )
         {
@@ -2132,7 +2132,7 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
 	if(bytes<0)
 	{
 		retval=-1;
-		printf("\n%s:%d: Failed to send data");
+		printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
 		goto end;
 	}
 	end:
@@ -2499,7 +2499,7 @@ int32_t BET_settle_game(cJSON *payInfo,struct privatebet_info *bet,struct privat
 	else
 	{
 		
-		cJSON_Parse(invoicesInfo);
+		//cJSON_Parse(invoicesInfo);
 		
 		invoiceInfo=cJSON_CreateObject();
 		invoiceInfo=cJSON_GetObjectItem(invoicesInfo,"invoices");
@@ -3533,8 +3533,7 @@ void BET_ws_dcvloop(void *_ptr)
     dcv_context = lws_create_context(&dcv_info);
     if (!dcv_context) {
         lwsl_err("lws init failed\n");
-		printf("%s::%d::lws_context error");
-        return 1;
+		printf("%s::%d::lws_context error",__FUNCTION__,__LINE__);
     }   
    
 	while (n >= 0 && !interrupted)

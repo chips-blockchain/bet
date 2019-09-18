@@ -73,6 +73,25 @@ int32_t BET_rest_player_join_res(cJSON *argjson);
 int32_t BET_rest_player_init(struct lws *wsi, cJSON *argjson);
 int32_t BET_rest_listfunds();
 void make_command(int argc, char **argv,cJSON **argjson);
+int32_t BET_rest_uri(char **uri);
+int32_t BET_rest_connect(char *uri);
+int32_t BET_rest_fundChannel(char *channel_id);
+int32_t BET_rest_pay(char *bolt11);
+int32_t BET_rest_bvv_init(struct lws *wsi, cJSON *argjson);
+int32_t BET_rest_bvv_check_bvv_ready(struct lws *wsi, cJSON *argjson);
+int32_t BET_rest_player_join(struct lws *wsi, cJSON *argjson);
+int32_t BET_rest_bvv_compute_init_b(struct lws *wsi, cJSON *argjson);
+int32_t BET_rest_player_process_init_d(struct lws *wsi, cJSON *argjson,int32_t playerID);
+int32_t BET_rest_player_process_init_b(struct lws *wsi, cJSON *argjson,int32_t playerID);
+int32_t BET_rest_player_turn(struct lws *wsi, cJSON *argjson);
+int32_t BET_rest_player_give_share(struct lws *wsi,cJSON *argjson);
+int32_t BET_rest_player_receive_share(struct lws *wsi,cJSON *argjson);
+int32_t BET_rest_player_invoice(struct lws *wsi,cJSON *argjson);
+void rest_push_cards(struct lws *wsi,cJSON *argjson,int32_t this_playerID);
+
+
+
+
 
 
 
