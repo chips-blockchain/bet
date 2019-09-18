@@ -3573,7 +3573,7 @@ int32_t BET_rest_bvv_compute_init_b(struct lws *wsi, cJSON *argjson)
 	cJSON_AddStringToObject(bvv_init_info,"method","init_b");
 	jaddbits256(bvv_init_info,"bvvpubkey",bvv_info.bvv_key.prod);
 	cJSON_AddItemToObject(bvv_init_info,"bvvblindcards",cjsonbvvblindcards=cJSON_CreateArray());
-	for(int i=0;i<bvv_info.numplayers;i++)
+	for(uint32_t i=0;i<bvv_info.numplayers;i++)
 	{
 		for(int j=0;j<BET_bvv->range;j++)
 		{
