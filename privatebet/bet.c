@@ -232,21 +232,6 @@ void randombytes_buf(void * const buf, const size_t size)
 
 int32_t players_init(int32_t numplayers,int32_t numcards,bits256 deckid);
 void sg777_players_init(int32_t numplayers,int32_t numcards,bits256 deckid);
-char* gethostip()
-{
-	char hostbuffer[256]; 
-	char *hostip; 
-	struct hostent *host_entry; 
-	int hostname; 
-	 hostname = gethostname(hostbuffer, sizeof(hostbuffer)); 
-
-	 // To retrieve host information 
-	 host_entry = gethostbyname(hostbuffer); 
-	 
-	 // To convert an Internet network address into ASCII string 
-	 hostip= inet_ntoa(*((struct in_addr*)host_entry->h_addr_list[0])); 
-	 return hostip;
-}
 int main(int argc, char **argv)
 {
     uint16_t tmp,rpcport = 7797,port = 7797+1;
@@ -269,7 +254,7 @@ int main(int argc, char **argv)
 	range=52;
 	numplayers=2;
     Maxplayers=2;
-	/*if(argc>=0)*/
+
 	BET_check_sync();
 	if((argc>=2)&&(strcmp(argv[1],"dcv")==0))
 	{

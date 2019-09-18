@@ -38,5 +38,6 @@ int64_t BET_peer_chipsavail(char *peerid,int32_t chipsize);
 int32_t BET_get_chips_blockheight();
 int32_t BET_get_ln_blockheight();
 void BET_check_sync();
+void BET_check_sync();
 
 
