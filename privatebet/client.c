@@ -1057,7 +1057,7 @@ int32_t BET_p2p_bvv_init(cJSON *argjson,struct privatebet_info *bet,struct priva
 	cjsonpeerpubkeys=cJSON_GetObjectItem(argjson,"peerpubkeys");
 	cjsondcvblindcards=cJSON_GetObjectItem(argjson,"dcvblindcards");
 	
-	for(int playerID=0;playerID<bvv_info.maxplayers;playerID++) 
+	for(uint32_t playerID=0;playerID<bvv_info.maxplayers;playerID++) 
 	{
 		peerpubkeys[playerID]=jbits256i(cjsonpeerpubkeys,playerID);
 		for(int i=0;i<bet->range;i++) 
@@ -1068,7 +1068,7 @@ int32_t BET_p2p_bvv_init(cJSON *argjson,struct privatebet_info *bet,struct priva
     g_shares=(struct enc_share*)malloc(CARDS777_MAXPLAYERS*CARDS777_MAXPLAYERS*CARDS777_MAXCARDS*sizeof(struct enc_share));
 
 	
-	for (int playerid=0; playerid<bvv_info.maxplayers; playerid++)
+	for (uint32_t playerid=0; playerid<bvv_info.maxplayers; playerid++)
 	{
 		p2p_bvv_init(peerpubkeys,bvv_info.bvv_key,bvvblindingvalues[playerid],bvvblindcards[playerid],
 			dcvblindcards[playerid],bet->range,bvv_info.numplayers,playerid,bvv_info.deckid);
@@ -1080,7 +1080,7 @@ int32_t BET_p2p_bvv_init(cJSON *argjson,struct privatebet_info *bet,struct priva
 	cJSON_AddStringToObject(bvv_init_info,"method","init_b");
 	jaddbits256(bvv_init_info,"bvvpubkey",bvv_info.bvv_key.prod);
 	cJSON_AddItemToObject(bvv_init_info,"bvvblindcards",cjsonbvvblindcards=cJSON_CreateArray());
-	for(int i=0;i<bvv_info.numplayers;i++)
+	for(uint32_t i=0;i<bvv_info.numplayers;i++)
 	{
 		for(int j=0;j<bet->range;j++)
 		{
@@ -1089,11 +1089,11 @@ int32_t BET_p2p_bvv_init(cJSON *argjson,struct privatebet_info *bet,struct priva
 	}
 	cJSON_AddItemToObject(bvv_init_info,"shamirshards",cjsonshamirshards=cJSON_CreateArray());
 	int k=0;
-	for(int playerid=0;playerid<bvv_info.numplayers;playerid++)
+	for(uint32_t playerid=0;playerid<bvv_info.numplayers;playerid++)
 	{
 		for(int i=0;i<bet->range;i++)
 		{
-			for(int j=0;j<bvv_info.numplayers;j++)
+			for(uint32_t j=0;j<bvv_info.numplayers;j++)
 			{
 				cJSON_AddItemToArray(cjsonshamirshards,cJSON_CreateString(enc_share_str(enc_str,g_shares[k++])));
 			}
@@ -3549,7 +3549,7 @@ int32_t BET_rest_bvv_compute_init_b(struct lws *wsi, cJSON *argjson)
 	cjsonpeerpubkeys=cJSON_GetObjectItem(argjson,"peerpubkeys");
 	cjsondcvblindcards=cJSON_GetObjectItem(argjson,"dcvblindcards");
 	
-	for(int playerID=0;playerID<bvv_info.maxplayers;playerID++) 
+	for(uint32_t playerID=0;playerID<bvv_info.maxplayers;playerID++) 
 	{
 		peerpubkeys[playerID]=jbits256i(cjsonpeerpubkeys,playerID);
 		for(int i=0;i<BET_bvv->range;i++) 
