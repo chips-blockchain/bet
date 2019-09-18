@@ -275,7 +275,6 @@ int main(int argc, char **argv)
 		BET_dcv=calloc(1,sizeof(struct privatebet_info));
 		DCV_VARS = calloc(1,sizeof(struct privatebet_vars));
 
-		//BET_dcv_global=calloc(1,sizeof(struct privatebet_info));
 	    BET_dcv->pubsock = pubsock;//BET_nanosock(1,bindaddr,NN_PUB);
 	    BET_dcv->pullsock = pullsock;//BET_nanosock(1,bindaddr1,NN_PULL);
 	    BET_dcv->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
@@ -292,10 +291,7 @@ int main(int argc, char **argv)
 	    {
 	        printf("error launching BET_clientloop BET_hostloop");
 	        exit(-1);
-	    }
-			
-			
-		
+	    }		
 	    if ( OS_thread_create(&dcv_t,NULL,(void *)BET_ws_dcvloop,NULL) != 0 )
 	    {
 	        printf("error launching BET_hostloop for pub.%d pull.%d\n",BET_dcv->pubsock,BET_dcv->pullsock);

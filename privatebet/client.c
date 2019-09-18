@@ -2740,7 +2740,7 @@ void BET_test_function(void* _ptr)
 	struct lws_context *dcv_context;
 	int n = 0, logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE;
 
-	signal(SIGINT,player_sigint_handler);
+	//signal(SIGINT,player_sigint_handler);
 	lws_set_log_level(logs, NULL);
 	
 	memset(&dcv_info, 0, sizeof dcv_info); /* otherwise uninitialized garbage */
