@@ -2729,13 +2729,18 @@ static const struct lws_http_mount mount1 = {
 	/* .basic_auth_login_file */	NULL,
 };
 
+void player_sigint_handler(int sig)
+{
+	interrupted1 = 1;
+}
+
 void BET_test_function(void* _ptr)
 {
 	struct lws_context_creation_info dcv_info;
 	struct lws_context *dcv_context;
 	int n = 0, logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE;
 
-	signal(SIGINT, sigint_handler);
+	signal(SIGINT,player_sigint_handler);
 	lws_set_log_level(logs, NULL);
 	
 	memset(&dcv_info, 0, sizeof dcv_info); /* otherwise uninitialized garbage */
@@ -2749,7 +2754,7 @@ void BET_test_function(void* _ptr)
         printf("lws init failed\n");
         
     }   
-   while (n >= 0 && !interrupted)
+   while (n >= 0 && !interrupted1)
 	{
         n = lws_service(dcv_context, 0);
 	}
