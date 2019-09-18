@@ -44,6 +44,7 @@
 #include "host.h"
 #include "table.h"
 #include "network.h"
+#include "commands.h"
 #include "../log/macrologger.h"
 #include "common.h"
 
