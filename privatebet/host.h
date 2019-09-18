@@ -46,6 +46,7 @@ void dcv_lws_write(cJSON *data);
 int32_t BET_rest_evaluate_hand(struct lws *wsi);
 int32_t BET_rest_dcv_turn(struct lws *wsi);
 int32_t BET_rest_relay(struct lws *wsi, cJSON *argjson);
+void sigint_handler(int sig);
 
 
 
