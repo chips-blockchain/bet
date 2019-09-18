@@ -3561,7 +3561,7 @@ int32_t BET_rest_bvv_compute_init_b(struct lws *wsi, cJSON *argjson)
     g_shares=(struct enc_share*)malloc(BET_bvv->maxplayers*BET_bvv->maxplayers*BET_bvv->range*sizeof(struct enc_share));
 	
 	
-	for (int playerid=0; playerid<bvv_info.maxplayers; playerid++)
+	for (uint32_t playerid=0; playerid<bvv_info.maxplayers; playerid++)
 	{
 		p2p_bvv_init(peerpubkeys,bvv_info.bvv_key,bvvblindingvalues[playerid],bvvblindcards[playerid],
 			dcvblindcards[playerid],BET_bvv->range,bvv_info.numplayers,playerid,bvv_info.deckid);
