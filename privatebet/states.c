@@ -19,6 +19,7 @@
 #include "host.h"
 #include "payment.h"
 #include "client.h"
+#include "states.h"
 
 char action_str[8][100]={"","small_blind","big_blind","check","raise","call","allin","fold"};
 
