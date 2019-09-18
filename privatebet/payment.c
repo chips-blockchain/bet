@@ -17,6 +17,7 @@
 #include "payment.h"
 #include "network.h"
 #include "commands.h"
+#include "client.h"
 bits256 Host_rhashes[256]; 
 //bits256 Mypubkey;
 bits256 Clientrhash;
