@@ -261,51 +261,6 @@ https://crypto.stanford.edu/~pgolle/papers/poker.pdf
 #include "common.h"
 
 
-/*
-#define CARDS777_MAXCARDS 255 //52    //
-#define CARDS777_MAXPLAYERS 10 //9   //
-#define CARDS777_MAXROUNDS 3 //9   //
-#define CARDS777_MAXCHIPS 1000
-#define CARDS777_CHIPSIZE (SATOSHIDEN / CARDS777_MAXCHIPS)
-#define BET_PLAYERTIMEOUT 15
-#define BET_GAMESTART_DELAY 10
-#define BET_RESERVERATE 1.025
-#define LN_FUNDINGERROR "\"Cannot afford funding transaction\""
-
-
-extern bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
-extern bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
-extern int32_t permis_d[CARDS777_MAXCARDS],permis_b[CARDS777_MAXCARDS];
-*/
-/*
-char *LN_idstr,Host_ipaddr[64],Host_peerid[67];BET_ORACLEURL[64] = "127.0.0.1:7797";
-uint16_t LN_port;
-int32_t Gamestart,Gamestarted,Lastturni,Maxrounds = 3,Maxplayers = 10;
-uint8_t BET_logs[256],BET_exps[510];
-bits256 *Debug_privkeys;
-struct BET_shardsinfo *BET_shardsinfos;
-portable_mutex_t LP_gcmutex,LP_peermutex,LP_commandmutex,LP_networkmutex,LP_psockmutex,LP_messagemutex,BET_shardmutex;
-int32_t LP_canbind,IAMLP,IAMHOST,IAMORACLE,LP_STOP_RECEIVED,DOCKERFLAG;
-struct LP_peerinfo  *LP_peerinfos,*LP_mypeer;
-bits256 Mypubkey,Myprivkey,Clientrhash,Hostrhashes[CARDS777_MAXPLAYERS+1];
-char Host_channel[64];
-int32_t permis_d[CARDS777_MAXCARDS],permis_b[CARDS777_MAXCARDS];
-bits256 *allshares=NULL;
-uint8_t sharenrs[256];
-struct rpcrequest_info *LP_garbage_collector;
-//struct enc_share { uint8_t bytes[sizeof(bits256)+crypto_box_NONCEBYTES+crypto_box_ZEROBYTES]; };
-struct enc_share *g_shares=NULL;
-
-bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
-bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
-
-int32_t sharesflag[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
-bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
-bits256 deckid;
-
-bits256 Host_rhashes[256]; int32_t Num_hostrhashes,Chips_paid;
-
-*/
 #define PORT 9000 
 
 enum action_type
