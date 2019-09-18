@@ -1461,7 +1461,7 @@ struct privatebet_peerln *BET_peerln_find(char *peerid)
 
 struct privatebet_peerln *BET_peerln_create(struct privatebet_rawpeerln *raw,int32_t maxplayers,int32_t maxchips,int32_t chipsize)
 {
-    struct privatebet_peerln *p; cJSON *inv; char label[64];
+    struct privatebet_peerln *p; cJSON *inv; char label[100];
     bits256 temp;
     if ( (p= BET_peerln_find(raw->peerid)) == 0 )
     {
