@@ -43,6 +43,10 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 void BET_p2p_host_blinds_info(struct lws *wsi);
 void BET_push_host(cJSON *argjson);
 void dcv_lws_write(cJSON *data);
+int32_t BET_rest_evaluate_hand(struct lws *wsi);
+int32_t BET_rest_dcv_turn(struct lws *wsi);
+int32_t BET_rest_relay(struct lws *wsi, cJSON *argjson);
+
 
 
 

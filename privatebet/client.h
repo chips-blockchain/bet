@@ -89,6 +89,8 @@ int32_t BET_rest_player_receive_share(struct lws *wsi,cJSON *argjson);
 int32_t BET_rest_player_invoice(struct lws *wsi,cJSON *argjson);
 void rest_push_cards(struct lws *wsi,cJSON *argjson,int32_t this_playerID);
 int32_t BET_p2p_invoice(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars);
+void player_lws_write(cJSON *data);
+void rest_display_cards(cJSON *argjson,int32_t this_playerID);
 
 
 
