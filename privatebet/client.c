@@ -17,6 +17,7 @@
 #include <sqlite3.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <signal.h>
 
 #include "../includes/cJSON.h"
 #include "../includes/ppapi/c/pp_stdint.h"
@@ -2734,10 +2735,9 @@ void BET_test_function(void* _ptr)
 	struct lws_context *dcv_context;
 	int n = 0, logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE;
 
-	printf("\n%s::%d",__FUNCTION__,__LINE__);
+	signal(SIGINT, sigint_handler);
 	lws_set_log_level(logs, NULL);
-	lwsl_user("LWS minimal ws broker | visit http://localhost:7681\n");
-
+	
 	memset(&dcv_info, 0, sizeof dcv_info); /* otherwise uninitialized garbage */
     dcv_info.port = 9000;
     dcv_info.mounts = &mount1;
@@ -2749,7 +2749,7 @@ void BET_test_function(void* _ptr)
         printf("lws init failed\n");
         
     }   
-   while (n >= 0 && !interrupted1)
+   while (n >= 0 && !interrupted)
 	{
         n = lws_service(dcv_context, 0);
 	}
