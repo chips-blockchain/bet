@@ -1871,7 +1871,7 @@ void display_cards(cJSON *argjson,struct privatebet_info *bet,struct privatebet_
 }
 int32_t BET_p2p_client_receive_share(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int32_t retval=1,bytes,cardid,playerid,errs,unpermi,card_type;
+	int32_t retval=1,bytes,cardid,playerid,errs=0,unpermi,card_type;
 	cJSON *playerCardInfo=NULL;
 	char *rendered=NULL;
 	bits256 share,decoded256;
@@ -3582,11 +3582,11 @@ int32_t BET_rest_bvv_compute_init_b(struct lws *wsi, cJSON *argjson)
 	}
 	cJSON_AddItemToObject(bvv_init_info,"shamirshards",cjsonshamirshards=cJSON_CreateArray());
 	int k=0;
-	for(int playerid=0;playerid<bvv_info.numplayers;playerid++)
+	for(uint32_t playerid=0;playerid<bvv_info.numplayers;playerid++)
 	{
 		for(int i=0;i<BET_bvv->range;i++)
 		{
-			for(int j=0;j<bvv_info.numplayers;j++)
+			for(uint32_t j=0;j<bvv_info.numplayers;j++)
 			{
 				cJSON_AddItemToArray(cjsonshamirshards,cJSON_CreateString(enc_share_str(enc_str,g_shares[k++])));
 			}
@@ -4099,7 +4099,7 @@ bits256 BET_rest_decode_card(int32_t this_playerID,int32_t cardid)
 
 int32_t BET_rest_player_receive_share(struct lws *wsi,cJSON *argjson)
 {
-	int32_t retval=1,bytes,cardid,playerid,errs,unpermi,card_type,this_playerID;
+	int32_t retval=1,bytes,cardid,playerid,errs=0,unpermi,card_type,this_playerID;
 	cJSON *turn_status=NULL,*playerCardInfo=NULL;
 	char *rendered=NULL,str[65];
 	bits256 share,decoded256;
