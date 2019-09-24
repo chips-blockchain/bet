@@ -104,11 +104,14 @@ struct deck_player_info all_players_info[CARDS777_MAXPLAYERS];
 
 void player_lws_write(cJSON *data)
 {
-	
+	if(data_exists==1)
+	{
+		printf("%s::%d::There is more data\n",__FUNCTION__,__LINE__);
+		while(data_exists==1)
+			sleep(1);
+	}
 	memset(guiData,0,sizeof(guiData));
 	strncpy(guiData,cJSON_Print(data),strlen(cJSON_Print(data)));
-	//printf("%s::%d::%s\n",__FUNCTION__,__LINE__,guiData);
-	//dataToWrite=cJSON_Parse(tmp);
 	data_exists=1;
 	lws_callback_on_writable(wsi_global_client);
 	
