@@ -105,7 +105,7 @@ struct deck_player_info all_players_info[CARDS777_MAXPLAYERS];
 void player_lws_write(cJSON *data)
 {
 	
-	memset(dataToWrite,0,sizeof(struct cJSON));
+	//memset(dataToWrite,0,sizeof(struct cJSON));
 	char *tmp=cJSON_Print(data);
 	guiData=clonestr(tmp);
 	
