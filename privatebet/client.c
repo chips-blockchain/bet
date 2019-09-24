@@ -106,6 +106,9 @@ void player_lws_write(cJSON *data)
 {
 	
 	//memset(dataToWrite,0,sizeof(struct cJSON));
+	if(guiData)
+		free(guiData);
+	
 	char *tmp=cJSON_Print(data);
 	guiData=clonestr(tmp);
 	
@@ -2694,12 +2697,13 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
 						//char *rendered=cJSON_Print(dataToWrite);
 						//printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(dataToWrite));
 						//lws_write(wsi,cJSON_Print(dataToWrite),strlen(cJSON_Print(dataToWrite)),0);
-						lws_write(wsi,guiData,strlen(guiData),0);
-						data_exists=0;
 						if(guiData)
-							free(guiData);
-												
-					
+						{
+							printf("%s::%d::%s\n",__FUNCTION__,__LINE__,guiData);
+							lws_write(wsi,guiData,strlen(guiData),0);
+							data_exists=0;
+							
+						}					
 				}	
 				break;
 			default:
