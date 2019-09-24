@@ -3493,9 +3493,11 @@ void BET_p2p_hostloop(void *_ptr)
 	
     while ( bet->pullsock >= 0 && bet->pubsock >= 0 )
     {
+    	ptr=0;
         if ( (recvlen= nn_recv(bet->pullsock,&ptr,NN_MSG,0)) > 0 )
         {
-            if ( (argjson= cJSON_Parse(ptr)) != 0 )
+        	char *tmp=clonestr(ptr);
+            if ( (argjson= cJSON_Parse(tmp)) != 0 )
             {
                 if ( BET_p2p_hostcommand(argjson,bet,DCV_VARS) != 0 ) // usually just relay to players
                 {
@@ -3503,7 +3505,10 @@ void BET_p2p_hostloop(void *_ptr)
                 }
                 free_json(argjson);
             }
-            nn_freemsg(ptr);
+			if(tmp)
+				free(tmp);
+			if(ptr)
+            	nn_freemsg(ptr);
         }
           
     }
