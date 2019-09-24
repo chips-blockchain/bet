@@ -1152,6 +1152,7 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 
 	int retval=-1;
 	char *rendered=NULL;
+	int32_t bytes=0;
 	printf("Received %s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 	if(strcmp(jstr(argjson,"method"),"game") == 0)	
 	{
@@ -1350,6 +1351,14 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	else if(strcmp(jstr(argjson,"method"),"bvv_reset") == 0)
 	{
 		BET_rest_BVV_reset();
+	}
+	else if(strcmp(jstr(argjson,"method"),"reset") == 0)
+	{
+		rendered=cJSON_Print(argjson);
+		bytes=nn_send(BET_dcv->pubsock,rendered,strlen(rendered),0);
+			if(bytes<0)
+				retval=-1;
+			BET_DCV_reset(BET_dcv,DCV_VARS);
 	}
 	else
 	{		
