@@ -2063,7 +2063,6 @@ void BET_p2p_host_blinds_info(struct lws *wsi)
 	cJSON_AddNumberToObject(blindsInfo,"big_blind",big_blind_amount);
 	printf("%s::%d::lws::%s\n",__FUNCTION__,__LINE__,jstr(blindsInfo,"method"));
 
-	dcv_lws_write
 	rendered=cJSON_Print(blindsInfo);
 	lws_write(wsi,rendered,strlen(rendered),0);
 }
