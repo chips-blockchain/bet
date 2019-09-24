@@ -24,6 +24,7 @@ void BET_p2p_hostloop(void *_ptr);
 int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars);
 int32_t BET_evaluate_hand(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars);
 void BET_DCV_reset(struct privatebet_info *bet,struct privatebet_vars *vars);
+void BET_DCV_force_reset(struct privatebet_info *bet,struct privatebet_vars *vars);
 
 
 void BET_ws_dcvloop(void * _ptr);
