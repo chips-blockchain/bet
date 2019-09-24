@@ -106,8 +106,8 @@ void player_lws_write(cJSON *data)
 {
 	
 	//memset(dataToWrite,0,sizeof(struct cJSON));
-	if(guiData)
-		free(guiData);
+	//if(guiData)
+	//	free(guiData);
 	
 	char *tmp=cJSON_Print(data);
 	guiData=clonestr(tmp);
