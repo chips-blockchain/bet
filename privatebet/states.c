@@ -735,6 +735,10 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 				{
 					display_cards(argjson,bet,vars);
 					//BET_push_client(argjson);
+					while(data_exists==1)
+					{
+						sleep(1);
+					}
 					player_lws_write(argjson);
 				}
 				else
