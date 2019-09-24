@@ -2063,7 +2063,7 @@ void BET_p2p_host_blinds_info(struct lws *wsi)
 	cJSON_AddNumberToObject(blindsInfo,"big_blind",big_blind_amount);
 	printf("%s::%d::lws::%s\n",__FUNCTION__,__LINE__,jstr(blindsInfo,"method"));
 
-	
+	dcv_lws_write
 	rendered=cJSON_Print(blindsInfo);
 	lws_write(wsi,rendered,strlen(rendered),0);
 }
@@ -3360,7 +3360,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		else if(strcmp(method,"bvv_ready") == 0)
 		{
 			retval=BET_p2p_host_start_init(bet,0);
-			BET_p2p_host_blinds_info(wsi_global_host);
+			//BET_p2p_host_blinds_info(wsi_global_host);
 		}
 		else if(strcmp(method,"init_p") == 0)
 		{
