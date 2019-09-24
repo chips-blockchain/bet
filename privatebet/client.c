@@ -1469,6 +1469,7 @@ int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct pri
 		}
 		else if(strcmp(method,"reset") == 0)
 		{
+			printf("%s::%d::method::%s\n",__FUNCTION__,__LINE__,method);
 			BET_BVV_reset(bet,vars);
 			BET_p2p_bvv_join_init(argjson,BET_bvv,vars);
 		}
