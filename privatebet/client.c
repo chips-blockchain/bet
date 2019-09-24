@@ -2745,7 +2745,7 @@ void player_sigint_handler(int sig)
 void BET_test_function(void* _ptr)
 {
 	struct lws_context_creation_info dcv_info;
-	struct lws_context *dcv_context;
+	struct lws_context *dcv_context=NULL;
 	int n = 0, logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE;
 
 	//signal(SIGINT,player_sigint_handler);
@@ -2766,7 +2766,8 @@ void BET_test_function(void* _ptr)
 	{
         n = lws_service(dcv_context, 1000);
 	}
-    lws_context_destroy(dcv_context);
+   if(dcv_context)
+   		lws_context_destroy(dcv_context);
 }
 #endif
 
