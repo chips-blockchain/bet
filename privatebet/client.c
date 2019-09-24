@@ -51,6 +51,7 @@ int32_t sharesflag[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 cJSON *dataToWrite=NULL;
 int32_t data_exists=0;
 
+char *guiData=NULL;
 
 
 struct deck_player_info player_info;
@@ -103,11 +104,12 @@ struct deck_player_info all_players_info[CARDS777_MAXPLAYERS];
 
 void player_lws_write(cJSON *data)
 {
-	if(!dataToWrite)
-		dataToWrite=cJSON_CreateObject();
-
+	
 	memset(dataToWrite,0,sizeof(struct cJSON));
-	dataToWrite=data;
+	char *tmp=cJSON_Print(data);
+	guiData=clonestr(tmp);
+	
+	//dataToWrite=cJSON_Parse(tmp);
 	data_exists=1;
 	lws_callback_on_writable(wsi_global_client);
 	
@@ -2689,20 +2691,15 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
 				printf("%s::%d::LWS_CALLBACK_SERVER_WRITEABLE\n",__FUNCTION__,__LINE__);
 				if(data_exists)
 				{
-					if(dataToWrite)
-					{
-						char *rendered=cJSON_Print(dataToWrite);
+						//char *rendered=cJSON_Print(dataToWrite);
 						//printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(dataToWrite));
 						//lws_write(wsi,cJSON_Print(dataToWrite),strlen(cJSON_Print(dataToWrite)),0);
-						lws_write(wsi,rendered,strlen(rendered),0);
+						lws_write(wsi,guiData,strlen(guiData),0);
 						data_exists=0;
-						memset(dataToWrite,0,sizeof(cJSON));
+						if(guiData)
+							free(guiData);
 												
-					}
-					else
-					{
-						printf("%s::%d::No data to push to GUI\n",__FUNCTION__,__LINE__);
-					}
+					
 				}	
 				break;
 			default:
