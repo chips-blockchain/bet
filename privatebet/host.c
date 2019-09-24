@@ -3542,7 +3542,7 @@ void BET_ws_dcvloop(void *_ptr)
    
 	while (n >= 0 && !interrupted)
 	{
-        n = lws_service(dcv_context, 0);
+        n = lws_service(dcv_context, 1000);
 	}
     lws_context_destroy(dcv_context);
 		

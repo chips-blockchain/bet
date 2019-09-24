@@ -2764,7 +2764,7 @@ void BET_test_function(void* _ptr)
     }   
    while (n >= 0 && !interrupted1)
 	{
-        n = lws_service(dcv_context, 0);
+        n = lws_service(dcv_context, 1000);
 	}
     lws_context_destroy(dcv_context);
 }
@@ -2859,7 +2859,7 @@ void BET_test_function_bvv(void* _ptr)
     }   
    while (n >= 0 && !interrupted_bvv)
 	{
-        n = lws_service(dcv_context,0);
+        n = lws_service(dcv_context,1000);
 	}
     lws_context_destroy(dcv_context);
 }
