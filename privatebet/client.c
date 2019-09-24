@@ -51,7 +51,7 @@ int32_t sharesflag[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 cJSON *dataToWrite=NULL;
 int32_t data_exists=0;
 
-char *guiData=NULL;
+char guiData[1024];
 
 
 struct deck_player_info player_info;
@@ -108,10 +108,9 @@ void player_lws_write(cJSON *data)
 	//memset(dataToWrite,0,sizeof(struct cJSON));
 	//if(guiData)
 	//	free(guiData);
-	
-	char *tmp=cJSON_Print(data);
-	guiData=clonestr(tmp);
-	
+	memset(guiData,0,sizeof(guiData));
+	strncpy(guiData,cJSON_Print(data),strlen(cJSON_Print(data)));
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,guiData);
 	//dataToWrite=cJSON_Parse(tmp);
 	data_exists=1;
 	lws_callback_on_writable(wsi_global_client);
