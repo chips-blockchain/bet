@@ -2689,12 +2689,8 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
 				printf("%s::%d::LWS_CALLBACK_SERVER_WRITEABLE\n",__FUNCTION__,__LINE__);
 				if(data_exists)
 				{
-					//printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(dataToWrite));
-					char *tmp=clonestr(cJSON_Print(dataToWrite));
-					//lws_write(wsi,cJSON_Print(dataToWrite),strlen(cJSON_Print(dataToWrite)),0);
-					lws_write(wsi,tmp,strlen(tmp),0);
-					if(tmp)
-						free(tmp);
+					printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(dataToWrite));
+					lws_write(wsi,cJSON_Print(dataToWrite),strlen(cJSON_Print(dataToWrite)),0);
 					data_exists=0;
 					memset(dataToWrite,0,sizeof(cJSON));
 				}	
