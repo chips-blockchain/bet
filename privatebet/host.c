@@ -2769,9 +2769,9 @@ void BET_DCV_reset(struct privatebet_info *bet,struct privatebet_vars *vars)
 	bet->turni=-1;
 	bet->no_of_turns=0;
 
-	resetInfo=cJSON_CreateObject();
-	cJSON_AddStringToObject(resetInfo,"method","reset");
-	BET_push_host(resetInfo);
+	//resetInfo=cJSON_CreateObject();
+	//cJSON_AddStringToObject(resetInfo,"method","reset");
+	//BET_push_host(resetInfo);
 }
 
 int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
