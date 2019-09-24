@@ -1354,11 +1354,12 @@ int32_t BET_process_rest_method(struct lws *wsi, cJSON *argjson)
 	}
 	else if(strcmp(jstr(argjson,"method"),"reset") == 0)
 	{
+		BET_DCV_reset(BET_dcv,DCV_VARS);
 		rendered=cJSON_Print(argjson);
 		bytes=nn_send(BET_dcv->pubsock,rendered,strlen(rendered),0);
 			if(bytes<0)
 				retval=-1;
-			BET_DCV_reset(BET_dcv,DCV_VARS);
+			
 	}
 	else
 	{		
