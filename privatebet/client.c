@@ -107,6 +107,9 @@ void player_lws_write(cJSON *data)
 	
 	memset(guiData,0,sizeof(guiData));
 	strncpy(guiData,cJSON_Print(data),strlen(cJSON_Print(data)));
+	//printf("%s::%d::%s\n",__FUNCTION__,__LINE__,guiData);
+	//dataToWrite=cJSON_Parse(tmp);
+	data_exists=1;
 	lws_callback_on_writable(wsi_global_client);
 	
 }
