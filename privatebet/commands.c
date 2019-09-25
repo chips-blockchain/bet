@@ -367,16 +367,14 @@ void BET_listunspent()
 	strcpy(argv[1],"listunspent");
 	make_command(argc,argv,&listunspentInfo);
 
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(listunspentInfo));
-	/*
+	
 	for(int i=0;i<cJSON_GetArraySize(listunspentInfo);i++)
 	{
 		cJSON *temp=cJSON_GetArrayItem(listunspentInfo,i);
 		if(strcmp(jstr(temp,"spendable"),"true") == 0)
 			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(temp));
 	}
-	*/
-	
+		
 }
 
 int32_t BET_get_chips_blockheight()
