@@ -368,10 +368,10 @@ void BET_listunspent()
 	make_command(argc,argv,&listunspentInfo);
 
 	
-	for(int i=0;i<cJSON_GetArraySize(listunspentInfo);i++)
+	for(int i=0;i<cJSON_GetArraySize(listunspentInfo)-1;i++)
 	{
 		cJSON *temp=cJSON_GetArrayItem(listunspentInfo,i);
-		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(temp));
+		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,jstr(temp,"spendable"));
 	}
 		
 }
