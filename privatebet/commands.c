@@ -352,6 +352,31 @@ void BET_cmdloop(bits256 privkey,char *smartaddr,uint8_t *pubkey33,bits256 pubke
     }
 }*/
 
+void BET_listunspent()
+{
+	char **argv=NULL,*rendered=NULL;
+	int argc;
+	cJSON *listunspentInfo=NULL;
+	argc=2;
+	argv=(char**)malloc(argc*sizeof(char*));
+	for(int i=0;i<argc;i++)
+	{
+		argv[i]=(char*)malloc(100*sizeof(char));
+	}
+	strcpy(argv[0],"chips-cli");
+	strcpy(argv[1],"listunspent");
+	make_command(argc,argv,&listunspentInfo);
+
+	for(int i=0;i<cJSON_GetArraySize(listunspentInfo);i++)
+	{
+		cJSON *temp=cJSON_GetArrayItem(listunspentInfo,i);
+		if(strcmp(jstr(temp,"spendable"),"true") == 0)
+			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(temp));
+	}
+	
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(listunspentInfo));
+	
+}
 
 int32_t BET_get_chips_blockheight()
 {
@@ -367,12 +392,6 @@ int32_t BET_get_chips_blockheight()
 	strcpy(argv[0],"chips-cli");
 	strcpy(argv[1],"getblockcount");
 
-	//blockHeightInfo=cJSON_CreateObject();
-	
-	//blockHeightInfo=(cJSON*)malloc(sizeof(cJSON));
-	//blockHeightInfo->type=cJSON_Object;
-	
-	
 	make_command(argc,argv,&blockHeightInfo);
 
 	rendered=cJSON_Print(blockHeightInfo);
