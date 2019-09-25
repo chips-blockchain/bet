@@ -122,7 +122,7 @@ void make_command(int argc, char **argv,cJSON **argjson)
 {
 	char command[1024];
 	FILE *fp=NULL;
-	char data[2048],temp[2048];
+	char data[8192],temp[8192];
 	char *buf=NULL;
     memset(command,0x00,sizeof(command));
 	memset(data,0x00,sizeof(data));
