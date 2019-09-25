@@ -371,7 +371,11 @@ void BET_listunspent()
 	for(int i=0;i<cJSON_GetArraySize(listunspentInfo)-1;i++)
 	{
 		cJSON *temp=cJSON_GetArrayItem(listunspentInfo,i);
-		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,jstr(temp,"spendable"));
+		
+		if(strcmp(cJSON_Print(cJSON_GetObjectItem(temp,"spendable")),"true") == 0)
+		{
+			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(temp));
+		}
 	}
 		
 }
