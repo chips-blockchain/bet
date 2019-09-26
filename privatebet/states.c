@@ -23,6 +23,9 @@
 
 char action_str[8][100]={"","small_blind","big_blind","check","raise","call","allin","fold"};
 
+static int dealerPosition,isFirstHand=1;
+
+
 void BET_client_turnisend(struct privatebet_info *bet,struct privatebet_vars *vars,cJSON *actions)
 {
     cJSON *cmdjson;
@@ -262,8 +265,18 @@ int32_t BET_p2p_initiate_statemachine(cJSON *argjson,struct privatebet_info *bet
 			vars->betamount[i][j]=0;
 		}
 	}
-	srand(time(0));
-	vars->dealer=rand()%bet->maxplayers;
+	if(isFirstHand==1)
+	{
+		srand(time(0));
+		dealerPosition=rand()%bet->maxplayers;
+	}
+	else
+	{
+		dealerPosition=(dealerPosition+1)%bet->maxplayers;
+	}
+	vars->dealer=dealerPosition;
+	//srand(time(0));
+	//vars->dealer=rand()%bet->maxplayers;
 	dealerInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(dealerInfo,"method","dealer");
 	cJSON_AddNumberToObject(dealerInfo,"playerid",vars->dealer);
