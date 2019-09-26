@@ -73,6 +73,9 @@ struct privatebet_info *BET_dcv;
 struct privatebet_vars *DCV_VARS;
 
 
+static int dealerPosition,isFirstHand=1;
+
+
 /*
 Below are the API's which are written to support REST
 */
@@ -2131,8 +2134,8 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
 	cJSON_AddNumberToObject(playerinfo,"peerid",jint(argjson,"gui_playerID"));
 	jaddbits256(playerinfo,"pubkey",jbits256(argjson,"pubkey"));
 	cJSON_AddStringToObject(playerinfo,"uri",uri);
+	cJSON_AddNumberToObject(playerinfo,"dealer",dealerPosition);
 	
-
 	rendered=cJSON_Print(playerinfo);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 
@@ -3558,6 +3561,17 @@ void BET_p2p_hostloop(void *_ptr)
 	
 	}
 
+	
+	if(isFirstHand==1)
+	{
+		srand(time(0));
+		dealerPosition=rand()%bet->maxplayers;
+	}
+	else
+	{
+		dealerPosition=(dealerPosition+1)%bet->maxplayers;
+	}
+	
 	
     while ( bet->pullsock >= 0 && bet->pubsock >= 0 )
     {

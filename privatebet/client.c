@@ -2346,7 +2346,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		printf("%s::%d::%d\n",__FUNCTION__,__LINE__,state);
 
 		initCardInfo=cJSON_CreateObject();
-		cJSON_AddNumberToObject(initCardInfo,"dealer",0);
+		cJSON_AddNumberToObject(initCardInfo,"dealer",jint(argjson,"dealer"));
 		holeCardInfo=cJSON_CreateArray();
 		cJSON_AddItemToArray(holeCardInfo,cJSON_CreateNull());
 		cJSON_AddItemToArray(holeCardInfo,cJSON_CreateNull());
