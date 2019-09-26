@@ -397,17 +397,6 @@ struct deck_bvv_info
 	uint32_t numplayers,maxplayers;
 };
 
-
-char multisigaddresses[2][64]={"baf78zg1FEJo4AactZMD16iwmbEAZQVNL3"};
-
-char claimrelationship[5][100]={
-	"baf78zg1FEJo4AactZMD16iwmbEAZQVNL3:159.69.23.30",
-	"baf78zg1FEJo4AactZMD16iwmbEAZQVNL3:159.69.23.31",
-	"baf78zg1FEJo4AactZMD16iwmbEAZQVNL3:159.69.23.28",
-	"baf78zg1FEJo4AactZMD16iwmbEAZQVNL3:159.69.23.29"
-	};
-
-
 extern struct privatebet_info *BET_dcv_global;
 extern struct privatebet_info *BET_bvv_global;
 extern struct privatebet_info *BET_player_global;
