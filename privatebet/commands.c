@@ -484,7 +484,7 @@ void BET_check_sync()
 }
 
 
-void BET_getbalance()
+double BET_getbalance()
 {
 	char **argv=NULL,*rendered=NULL;
 	int argc;

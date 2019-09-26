@@ -40,6 +40,6 @@ int32_t BET_get_ln_blockheight();
 void BET_check_sync();
 void BET_check_sync();
 void BET_listunspent();
-void BET_getbalance();
+double BET_getbalance();
 
 
