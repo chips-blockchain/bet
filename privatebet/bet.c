@@ -257,7 +257,9 @@ int main(int argc, char **argv)
     Maxplayers=2;
 
 	BET_check_sync();
-	BET_listunspent();
+	
+	BET_getbalance();
+	
 	if((argc>=2)&&(strcmp(argv[1],"dcv")==0))
 	{
 		
@@ -356,15 +358,12 @@ int main(int argc, char **argv)
 	}
 	else if((argc==3)&&(strcmp(argv[1],"player")==0)) 
 	{
-		#if 1
-			/* This code is for sockets*/
 			BET_transportname(0,bindaddr,hostip,port);
 			subsock= BET_nanosock(0,bindaddr,NN_SUB);
 
 			BET_transportname(0,bindaddr1,hostip,port+1);
 			pushsock = BET_nanosock(0,bindaddr1,NN_PUSH);
-		#endif
-            #if 1	
+
 			Player_VARS_global=calloc(1,sizeof(*Player_VARS_global));
 			
 			BET_player_global=calloc(1,sizeof(struct privatebet_info));
@@ -376,8 +375,6 @@ int main(int argc, char **argv)
 			BET_player_global->numplayers=numplayers;
 		    BET_betinfo_set(BET_player_global,"demo",range,0,Maxplayers);
 
-		#endif
-		
 			if (OS_thread_create(&player_t,NULL,(void *)BET_p2p_clientloop_test,(void *)BET_player_global) != 0 )
 			{
 				printf("\nerror in launching BET_p2p_clientloop_test");

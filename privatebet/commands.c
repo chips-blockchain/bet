@@ -483,3 +483,41 @@ void BET_check_sync()
 	}
 }
 
+
+void BET_getbalance()
+{
+	char **argv=NULL,*rendered=NULL;
+	int argc;
+	double balance=0;
+	cJSON *getbalanceInfo=NULL;
+	argc=2;
+	argv=(char**)malloc(argc*sizeof(char*));
+	for(int i=0;i<argc;i++)
+	{
+		argv[i]=(char*)malloc(100*sizeof(char));
+	}
+	strcpy(argv[0],"chips-cli");
+	strcpy(argv[1],"getbalance");
+	make_command(argc,argv,&getbalanceInfo);
+	balance=atof(cJSON_Print(getbalanceInfo));
+	printf("Total spendable amount::%f",balance);
+
+	end:
+		if(argv)
+		{
+			for(int i=0;i<argc;i++)
+			{
+				if(argv[i])
+					free(argv[i]);
+					
+			}
+			free(argv);
+		}
+
+	if(getbalanceInfo)
+		free(getbalanceInfo);
+
+	return balance;
+		
+		
+}
