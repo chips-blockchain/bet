@@ -267,7 +267,7 @@ int32_t BET_rest_game(struct lws *wsi, cJSON *argjson)
 	cJSON_AddItemToArray(potInfo,cJSON_CreateNumber(0));
 
 	cJSON_AddItemToObject(gameDetails,"pot",potInfo);
-	sprintf(buf,"Texas Holdem Poker:%s/%s",STRINGIZE(small_blind_amount),STRINGIZE(big_blind_amount));
+	sprintf(buf,"Texas Holdem Poker:%d/%d",small_blind_amount,big_blind_amount);
 		
 	cJSON_AddStringToObject(gameDetails,"gametype",buf);
 
