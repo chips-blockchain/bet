@@ -233,6 +233,10 @@ https://crypto.stanford.edu/~pgolle/papers/poker.pdf
 #include <arpa/inet.h> 
 
 #include "../crypto777/OS_portable.h"
+
+#include <libwebsockets.h>
+
+
 //#include "../../SuperNET/iguana/exchanges/LP_include.h"
 //#include "../../SuperNET/iguana/exchanges/LP_nativeDEX.c"
 
@@ -255,51 +259,32 @@ https://crypto.stanford.edu/~pgolle/papers/poker.pdf
 #include "/usr/local/include/nng/compat/nanomsg/pair.h"
 #endif
 #include "common.h"
-/*
-#define CARDS777_MAXCARDS 255 //52    //
-#define CARDS777_MAXPLAYERS 10 //9   //
-#define CARDS777_MAXROUNDS 3 //9   //
-#define CARDS777_MAXCHIPS 1000
-#define CARDS777_CHIPSIZE (SATOSHIDEN / CARDS777_MAXCHIPS)
-#define BET_PLAYERTIMEOUT 15
-#define BET_GAMESTART_DELAY 10
-#define BET_RESERVERATE 1.025
-#define LN_FUNDINGERROR "\"Cannot afford funding transaction\""
 
 
-extern bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
-extern bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
-extern int32_t permis_d[CARDS777_MAXCARDS],permis_b[CARDS777_MAXCARDS];
-*/
-/*
-char *LN_idstr,Host_ipaddr[64],Host_peerid[67];BET_ORACLEURL[64] = "127.0.0.1:7797";
-uint16_t LN_port;
-int32_t Gamestart,Gamestarted,Lastturni,Maxrounds = 3,Maxplayers = 10;
-uint8_t BET_logs[256],BET_exps[510];
-bits256 *Debug_privkeys;
-struct BET_shardsinfo *BET_shardsinfos;
-portable_mutex_t LP_gcmutex,LP_peermutex,LP_commandmutex,LP_networkmutex,LP_psockmutex,LP_messagemutex,BET_shardmutex;
-int32_t LP_canbind,IAMLP,IAMHOST,IAMORACLE,LP_STOP_RECEIVED,DOCKERFLAG;
-struct LP_peerinfo  *LP_peerinfos,*LP_mypeer;
-bits256 Mypubkey,Myprivkey,Clientrhash,Hostrhashes[CARDS777_MAXPLAYERS+1];
-char Host_channel[64];
-int32_t permis_d[CARDS777_MAXCARDS],permis_b[CARDS777_MAXCARDS];
-bits256 *allshares=NULL;
-uint8_t sharenrs[256];
-struct rpcrequest_info *LP_garbage_collector;
-//struct enc_share { uint8_t bytes[sizeof(bits256)+crypto_box_NONCEBYTES+crypto_box_ZEROBYTES]; };
-struct enc_share *g_shares=NULL;
+#define PORT 9000 
 
-bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
-bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
+enum action_type
+{
+	small_blind=1,
+	big_blind,	
+	check,
+	raise,
+	call,
+	allin,
+	fold
+};
 
-int32_t sharesflag[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
-bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
-bits256 deckid;
+enum card_type
+{
+	burn_card=0,
+	hole_card,
+	flop_card_1,
+	flop_card_2,
+	flop_card_3,
+	turn_card,
+	river_card
+};
 
-bits256 Host_rhashes[256]; int32_t Num_hostrhashes,Chips_paid;
-
-*/
 struct BET_shardsinfo
 {
     UT_hash_handle hh;
@@ -322,6 +307,8 @@ struct privatebet_info
     int32_t pullsock,pubsock,subsock,pushsock;
     uint32_t timestamp;
     char peerids[CARDS777_MAXPLAYERS+1][67];
+	int32_t cardid,turni;
+	int32_t no_of_turns;
 };
 
 struct privatebet_rawpeerln
@@ -345,6 +332,13 @@ struct privatebet_vars
     uint32_t endround[CARDS777_MAXPLAYERS+1],evalcrcs[CARDS777_MAXPLAYERS+1],consensus;
     cJSON *actions[CARDS777_MAXROUNDS][CARDS777_MAXPLAYERS+1];
     int32_t mypermi[CARDS777_MAXCARDS],permi[CARDS777_MAXCARDS],turni,round,validperms,roundready,lastround,numconsensus;
+	int32_t small_blind,big_blind;
+	int32_t betamount[CARDS777_MAXPLAYERS][CARDS777_MAXROUNDS];
+	int32_t bet_actions[CARDS777_MAXPLAYERS][CARDS777_MAXROUNDS];
+	int32_t dealer,last_turn,last_raise;
+	int32_t pot;
+	int32_t player_funds;
+	int32_t funds[CARDS777_MAXPLAYERS];
 };
 
 struct pair256 { bits256 priv,prod; };
@@ -363,12 +357,15 @@ struct enc_share { uint8_t bytes[sizeof(bits256)+crypto_box_NONCEBYTES+crypto_bo
 
 extern struct enc_share *g_shares;
 
+extern struct enc_share *all_g_shares[CARDS777_MAXPLAYERS];
+
+
 struct deck_player_info
 {
 	struct pair256 player_key;
 	bits256 cardpubkeys[CARDS777_MAXCARDS],cardprivkeys[CARDS777_MAXCARDS];
 	int32_t permis[CARDS777_MAXCARDS];
-	bits256 cardprods[CARDS777_MAXPLAYERS][CARDS777_MAXPLAYERS];
+	bits256 cardprods[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 	bits256 bvvblindcards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 	bits256 dcvpubkey,bvvpubkey,deckid;
 	uint32_t numplayers,maxplayers,numcards;
@@ -399,6 +396,15 @@ struct deck_bvv_info
 	bits256 bvvblindcards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 	uint32_t numplayers,maxplayers;
 };
+
+extern struct privatebet_info *BET_dcv_global;
+extern struct privatebet_info *BET_bvv_global;
+extern struct privatebet_info *BET_player_global;
+
+extern struct privatebet_vars *DCV_VARS_global;
+extern struct privatebet_vars *BVV_VARS_global;
+extern struct privatebet_vars *Player_VARS_global;
+
 
 
 

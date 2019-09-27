@@ -61,14 +61,19 @@ static void (*cJSON_free)(void *ptr) = free;//LP_free;
 
 static void *cJSON_mallocstr(int32_t len)
 {
-    return(cJSON_malloc(len));
+	return(cJSON_malloc(len));
+    
 }
 
 static char **cJSON_mallocptrs(int32_t num,char **space,int32_t max)
 {
-    if ( num < max )
+	if ( num < max )
         return(space);
-    else return(cJSON_malloc(num * sizeof(char *)));
+    else
+	{
+		return(cJSON_malloc(num * sizeof(char *)));
+		
+	}
 }
 
 static void *cJSON_mallocnode()
@@ -79,17 +84,22 @@ static void *cJSON_mallocnode()
 static void cJSON_freeptrs(char **ptrs,int32_t num,char **space)
 {
     if ( ptrs != space )
-        cJSON_free(ptrs);
+    {
+    	if(ptrs)
+        	cJSON_free(ptrs);
+    }	
 }
 
 static void cJSON_freestr(char *str)
 {
-    cJSON_free(str);
+	if(str)
+    	cJSON_free(str);
 }
 
 static void cJSON_freenode(cJSON *item)
 {
-    cJSON_free(item);
+	if(item)
+    	cJSON_free(item);
 }
 
 static char* cJSON_strdup(const char* str)
