@@ -2313,8 +2313,8 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			strcpy(argv[0],"lightning-cli");
 			strcpy(argv[1],"fundchannel");
 			strcpy(argv[2],jstr(connectInfo,"id"));
-			scanf("%" STRINGIZE(channel_fund_satoshis) "s", argv[3]);
 			//strcpy(argv[3],"500000");
+			strcpy(argv[3],STRINGIZE(channel_fund_satoshis));
 
 			fundChannelInfo=cJSON_CreateObject();
 			make_command(argc,argv,&fundChannelInfo);
