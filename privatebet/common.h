@@ -2,9 +2,6 @@
 #define COMMON_H
 
 
-#define STRINGIZE_(x) #x
-#define STRINGIZE(x) STRINGIZE_(x)
-
 
 #define hand_size 7
 #define no_of_hole_cards 2

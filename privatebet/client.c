@@ -2268,7 +2268,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 {
 	char uri[100];
 	int argc,retval=1,channel_state,buf_size=100;
-	char **argv=NULL,channel_id[100];
+	char **argv=NULL,channel_id[100],buf[100];
 	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
 	cJSON *initCardInfo=NULL,*holeCardInfo=NULL,*initInfo=NULL;
 	if(0 == bits256_cmp(player_info.player_key.prod,jbits256(argjson,"pubkey")))
@@ -2313,8 +2313,8 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			strcpy(argv[0],"lightning-cli");
 			strcpy(argv[1],"fundchannel");
 			strcpy(argv[2],jstr(connectInfo,"id"));
-			//strcpy(argv[3],"500000");
-			strcpy(argv[3],STRINGIZE(channel_fund_satoshis));
+			sprintf(buf,"%d",channel_fund_satoshis);
+			strcpy(argv[3],buf);
 
 			fundChannelInfo=cJSON_CreateObject();
 			make_command(argc,argv,&fundChannelInfo);
