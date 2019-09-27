@@ -1214,10 +1214,11 @@ int32_t BET_p2p_connect(char *uri)
 	return 1;
 }
 
-cJSON* BET_p2p_fundchannel(char *channel_id,char *satohis)
+cJSON* BET_p2p_fundchannel(char *channel_id)
 {
 	char **argv=NULL;
-	int argc=5;
+	int argc=4;
+	char buf[20];
 	cJSON *fundChannelInfo=NULL;
 	argv=(char**)malloc(argc*sizeof(char*));
 	for(int i=0;i<argc;i++)
@@ -1226,13 +1227,12 @@ cJSON* BET_p2p_fundchannel(char *channel_id,char *satohis)
 	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"fundchannel");
 	strcpy(argv[2],channel_id);
-	strcpy(argv[3],satohis);
-	argv[4]=NULL;
+	sprintf(buf,"%d",channel_fund_satoshis);
+	strcpy(argv[3],buf);
 
 	fundChannelInfo=cJSON_CreateObject();
-	make_command(argc-1,argv,&fundChannelInfo);
+	make_command(argc,argv,&fundChannelInfo);
 
-	//ln_bet(argc-1,argv,response);
 	end:
 	if(argv)
 	{
