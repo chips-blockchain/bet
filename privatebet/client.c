@@ -1266,7 +1266,9 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 			BET_p2p_connect(jstri(uriInfo,i));
 			fundChannelInfo=cJSON_CreateObject();
 			fundChannelInfo=BET_p2p_fundchannel(channel_id);
-	
+
+			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(fundChannelInfo));
+			
 			if(jint(fundChannelInfo,"code") == -1)
 			{
 				retval=-1;
