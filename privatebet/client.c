@@ -2295,10 +2295,26 @@ int32_t BET_find_channel_balance(char *uri)
 	
 	return balance;	
 }
+
+int32_t BET_check_player_stack(char *uri)
+{
+	int balance=0;
+	balance=BET_find_channel_balance(uri);
+	if(balance>=table_stack)
+	{
+		balance=table_stack;
+	}
+	else
+	{
+		balance=-1;
+		printf("%s::%d::Insufficient Funds, Minimum needed::%d mCHIPS but only %d exists on the channel\n",__FUNCTION__,__LINE__,table_stack,balance);
+	}
+	return balance;
+}
 int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	char uri[100];
-	int argc,retval=1,channel_state,buf_size=100;
+	int argc,retval=1,channel_state,buf_size=100,balance;
 	char **argv=NULL,channel_id[100],buf[100];
 	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
 	cJSON *initCardInfo=NULL,*holeCardInfo=NULL,*initInfo=NULL;
@@ -2381,7 +2397,9 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 
 		initCardInfo=cJSON_CreateObject();
 		cJSON_AddNumberToObject(initCardInfo,"dealer",jint(argjson,"dealer"));
-		cJSON_AddNumberToObject(initCardInfo,"balance",BET_find_channel_balance(jstr(argjson,"uri")));
+		balance=BET_check_player_stack(jstr(argjson,"uri"));
+		//Here if the balance is not table_stack it should wait for the refill
+		cJSON_AddNumberToObject(initCardInfo,"balance",balance);
 
 		holeCardInfo=cJSON_CreateArray();
 		cJSON_AddItemToArray(holeCardInfo,cJSON_CreateNull());

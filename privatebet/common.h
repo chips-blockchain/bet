@@ -15,6 +15,7 @@
 
 #define small_blind_amount 1 // 1000000
 #define big_blind_amount 2 // 2000000
+#define table_stack 200
 
 /*
 #define small_blind_amount 1 // 1mCHIPS
@@ -22,7 +23,7 @@
 */
 
 #define mchips_msatoshichips  100000000 // 1mCHIPS
-#define channel_fund_satoshis 5000000  // 0.05CHIPS or 50 mCHIPS
+#define channel_fund_satoshis 25000000  // 0.05CHIPS or 50 mCHIPS
 
 
 
