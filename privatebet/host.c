@@ -256,7 +256,7 @@ int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 
 int32_t BET_rest_game(struct lws *wsi, cJSON *argjson)
 {
-	char *sb_buf,*bb_buf,*buf;
+	char buf[100];
 	cJSON *gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
 	char *rendered=NULL;
 	gameDetails=cJSON_CreateObject();
