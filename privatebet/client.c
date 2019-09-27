@@ -1214,10 +1214,11 @@ int32_t BET_p2p_connect(char *uri)
 	return 1;
 }
 
-cJSON* BET_p2p_fundchannel(char *channel_id,char *satohis)
+cJSON* BET_p2p_fundchannel(char *channel_id)
 {
 	char **argv=NULL;
-	int argc=5;
+	int argc=4;
+	char buf[20];
 	cJSON *fundChannelInfo=NULL;
 	argv=(char**)malloc(argc*sizeof(char*));
 	for(int i=0;i<argc;i++)
@@ -1226,13 +1227,12 @@ cJSON* BET_p2p_fundchannel(char *channel_id,char *satohis)
 	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"fundchannel");
 	strcpy(argv[2],channel_id);
-	strcpy(argv[3],satohis);
-	argv[4]=NULL;
+	sprintf(buf,"%d",channel_fund_satoshis);
+	strcpy(argv[3],buf);
 
 	fundChannelInfo=cJSON_CreateObject();
-	make_command(argc-1,argv,&fundChannelInfo);
+	make_command(argc,argv,&fundChannelInfo);
 
-	//ln_bet(argc-1,argv,response);
 	end:
 	if(argv)
 	{
@@ -1265,12 +1265,12 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 		{
 			BET_p2p_connect(jstri(uriInfo,i));
 			fundChannelInfo=cJSON_CreateObject();
-			fundChannelInfo=BET_p2p_fundchannel(channel_id,"50000");
-	
+			fundChannelInfo=BET_p2p_fundchannel(channel_id);
+
 			if(jint(fundChannelInfo,"code") == -1)
 			{
 				retval=-1;
-				printf("\n%s:%d: Message: %s",__FUNCTION__,__LINE__,jstr(fundChannelInfo,"message"));
+				printf("%s::%d::%s",__FUNCTION__,__LINE__,cJSON_Print(fundChannelInfo));
 				goto end;
 			}
 		}
@@ -1452,16 +1452,16 @@ int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct pri
 		}
    		else if(strcmp(method,"init_d") == 0)
 		{
-			 BET_p2p_bvv_init(argjson,bet,vars);
+			 retval=BET_p2p_bvv_init(argjson,bet,vars);
 		}
 		else if(strcmp(method,"bvv_join") == 0)
 		{
 			printf("%s::%d::bvv_join\n",__FUNCTION__,__LINE__);
-			BET_p2p_bvv_join_init(argjson,bet,vars);
+			retval=BET_p2p_bvv_join_init(argjson,bet,vars);
 		}
 		else if(strcmp(method,"check_bvv_ready") == 0)
 		{
-			BET_p2P_check_bvv_ready(argjson,bet,vars);
+			retval=BET_p2P_check_bvv_ready(argjson,bet,vars);
 		}
 		else if(strcmp(method,"dealer") == 0)
 		{
@@ -1471,12 +1471,12 @@ int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct pri
 		{
 			printf("%s::%d::method::%s\n",__FUNCTION__,__LINE__,method);
 			BET_BVV_reset(bet,vars);
-			BET_p2p_bvv_join_init(argjson,BET_bvv,vars);
+			retval=BET_p2p_bvv_join_init(argjson,BET_bvv,vars);
 		}
 		else if(strcmp(method,"seats") == 0)
 		{
 			printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-			BET_p2p_bvv_join_init(argjson,bet,vars);
+			retval=BET_p2p_bvv_join_init(argjson,bet,vars);
 		}
         else
             retval=-1;
@@ -2264,13 +2264,61 @@ int32_t LN_get_channel_status(char *id)
 			cJSON_Delete(channelStateInfo);
 		return channel_state;
 }
+
+int32_t BET_find_channel_balance(char *uri)
+{
+	int argc=2,buf_size=100;
+	char **argv=NULL;
+	cJSON *listfundsInfo=NULL,*channelsInfo=NULL;
+	int balance=0;
+    argv=(char**)malloc(argc*sizeof(char*));
+    for(int i=0;i<argc;i++)
+    {
+     argv[i]=(char*)malloc(buf_size*sizeof(char));
+    }
+	strcpy(argv[0],"lightning-cli");
+	strcpy(argv[1],"listfunds");
+	
+	listfundsInfo=cJSON_CreateObject();
+	make_command(argc,argv,&listfundsInfo);
+
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,uri);
+	
+	channelsInfo=cJSON_CreateObject();
+	channelsInfo=cJSON_GetObjectItem(listfundsInfo,"channels");
+	for(int i=0;i<cJSON_GetArraySize(channelsInfo);i++)
+	{
+		cJSON *temp=cJSON_GetArrayItem(channelsInfo,i);
+		if(strcmp(jstr(temp,"peer_id"),uri) == 0)
+			balance=jint(temp,"channel_sat")/100000;
+	}
+	
+	return balance;	
+}
+
+int32_t BET_check_player_stack(char *uri)
+{
+	int balance=0;
+	balance=BET_find_channel_balance(uri);
+	if(balance>=table_stack)
+	{
+		balance=table_stack;
+	}
+	else
+	{
+		balance=-1;
+		printf("%s::%d::Insufficient Funds, Minimum needed::%d mCHIPS but only %d exists on the channel\n",__FUNCTION__,__LINE__,table_stack,balance);
+	}
+	return balance;
+}
 int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	char uri[100];
-	int argc,retval=1,channel_state,buf_size=100;
-	char **argv=NULL,channel_id[100];
+	int argc,retval=1,channel_state,buf_size=100,balance;
+	char **argv=NULL,channel_id[100],buf[100];
 	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
 	cJSON *initCardInfo=NULL,*holeCardInfo=NULL,*initInfo=NULL;
+	int channel_balance;
 	if(0 == bits256_cmp(player_info.player_key.prod,jbits256(argjson,"pubkey")))
 	{
 		BET_player_global->myplayerid=jint(argjson,"peerid");
@@ -2308,11 +2356,13 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			{
 				 memset(argv[i],0x00,buf_size);
 			}
+
 			argc=4;
 			strcpy(argv[0],"lightning-cli");
 			strcpy(argv[1],"fundchannel");
 			strcpy(argv[2],jstr(connectInfo,"id"));
-			strcpy(argv[3],"500000");
+			sprintf(buf,"%d",channel_fund_satoshis);
+			strcpy(argv[3],buf);
 
 			fundChannelInfo=cJSON_CreateObject();
 			make_command(argc,argv,&fundChannelInfo);
@@ -2347,14 +2397,20 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 
 		initCardInfo=cJSON_CreateObject();
 		cJSON_AddNumberToObject(initCardInfo,"dealer",jint(argjson,"dealer"));
+		balance=BET_check_player_stack(jstr(argjson,"uri"));
+		//Here if the balance is not table_stack it should wait for the refill
+		cJSON_AddNumberToObject(initCardInfo,"balance",balance);
+
 		holeCardInfo=cJSON_CreateArray();
 		cJSON_AddItemToArray(holeCardInfo,cJSON_CreateNull());
 		cJSON_AddItemToArray(holeCardInfo,cJSON_CreateNull());
 		cJSON_AddItemToObject(initCardInfo,"holecards",holeCardInfo);
 
+		
 		initInfo=cJSON_CreateObject();
 		cJSON_AddStringToObject(initInfo,"method","deal");
 		cJSON_AddItemToObject(initInfo,"deal",initCardInfo);
+
 		printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(initInfo));
 
 		player_lws_write(initInfo);
@@ -2694,9 +2750,6 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
 				printf("%s::%d::LWS_CALLBACK_SERVER_WRITEABLE\n",__FUNCTION__,__LINE__);
 				if(data_exists)
 				{
-						//char *rendered=cJSON_Print(dataToWrite);
-						//printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(dataToWrite));
-						//lws_write(wsi,cJSON_Print(dataToWrite),strlen(cJSON_Print(dataToWrite)),0);
 						if(guiData)
 						{
 							printf("%s::%d::%s\n",__FUNCTION__,__LINE__,guiData);
@@ -2706,9 +2759,7 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
 						}					
 				}	
 				break;
-			default:
-				printf("%s::%d::reason::%d\n",__FUNCTION__,__LINE__,reason);
-        }
+	    }
         return 0;
 }
 

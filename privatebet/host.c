@@ -256,6 +256,7 @@ int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 
 int32_t BET_rest_game(struct lws *wsi, cJSON *argjson)
 {
+	char buf[100];
 	cJSON *gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
 	char *rendered=NULL;
 	gameDetails=cJSON_CreateObject();
@@ -266,7 +267,9 @@ int32_t BET_rest_game(struct lws *wsi, cJSON *argjson)
 	cJSON_AddItemToArray(potInfo,cJSON_CreateNumber(0));
 
 	cJSON_AddItemToObject(gameDetails,"pot",potInfo);
-	cJSON_AddStringToObject(gameDetails,"gametype","Texas Holdem Poker:100/200");
+	sprintf(buf,"Texas Holdem Poker:%d/%d",small_blind_amount,big_blind_amount);
+		
+	cJSON_AddStringToObject(gameDetails,"gametype",buf);
 
 	gameInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(gameInfo,"method","game");
@@ -1969,7 +1972,7 @@ int32_t BET_p2p_host_init(cJSON *argjson,struct privatebet_info *bet,struct priv
 int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int argc,retval=1,state,buf_size=100;
-	char **argv=NULL,uri[100];
+	char **argv=NULL,uri[100],buf[100];
 	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
 	strcpy(uri,jstr(argjson,"uri"));
 	strcpy(dcv_info.bvv_uri,uri);
@@ -1999,9 +2002,8 @@ int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct priva
 			strcpy(argv[2],uri);
 			connectInfo=cJSON_CreateObject();
 			make_command(argc,argv,&connectInfo);
-			//ln_bet(argc,argv,buf);
-			//connectInfo=cJSON_Parse(buf);
 			cJSON_Print(connectInfo);
+
 			if(jint(connectInfo,"code") != 0)
 			{
 				retval=-1;
@@ -2017,7 +2019,8 @@ int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct priva
 			strcpy(argv[0],"lightning-cli");
 			strcpy(argv[1],"fundchannel");
 			strcpy(argv[2],jstr(connectInfo,"id"));
-			strcpy(argv[3],"500000");
+			sprintf(buf,"%d",channel_fund_satoshis);
+			strcpy(argv[3],buf);
 			argc=4;
 			fundChannelInfo=cJSON_CreateObject();
 			make_command(argc,argv,&fundChannelInfo);
@@ -2348,7 +2351,7 @@ int32_t BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct pri
 
 	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"invoice");
-	sprintf(argv[2],"%d",jint(argjson,"betAmount"));
+	sprintf(argv[2],"%d",jint(argjson,"betAmount")*mchips_msatoshichips);
 	sprintf(argv[3],"%s_%d_%d_%d_%d",bits256_str(hexstr,dcv_info.deckid),invoiceID,jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
 	sprintf(argv[4],"\"Invoice_details_playerID:%d,round:%d,betting Amount:%d\"",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
 	argv[5]=NULL;
