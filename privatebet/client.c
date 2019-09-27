@@ -2264,6 +2264,37 @@ int32_t LN_get_channel_status(char *id)
 			cJSON_Delete(channelStateInfo);
 		return channel_state;
 }
+
+int32_t BET_find_channel_balance(char *uri)
+{
+	int argc=2,buf_size=100;
+	char **argv=NULL;
+	cJSON *listfundsInfo=NULL,*channelsInfo=NULL;
+	int balance=0;
+    argv=(char**)malloc(argc*sizeof(char*));
+    for(int i=0;i<argc;i++)
+    {
+     argv[i]=(char*)malloc(buf_size*sizeof(char));
+    }
+	strcpy(argv[0],"lightning-cli");
+	strcpy(argv[1],"listfunds");
+	
+	listfundsInfo=cJSON_CreateObject();
+	make_command(argc,argv,&listfundsInfo);
+
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,uri);
+	
+	channelsInfo=cJSON_CreateObject();
+	channelsInfo=cJSON_GetObjectItem(listfundsInfo,"channels");
+	for(int i=0;i<cJSON_GetArraySize(channelsInfo)-1;i++)
+	{
+		cJSON *temp=cJSON_GetArrayItem(channelsInfo,i);
+		if(strcmp(jstr(temp,"peer_id"),uri) == 0)
+			balance=jint(temp,"channel_sat")/100000;
+	}
+	
+	return balance;	
+}
 int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	char uri[100];
@@ -2271,6 +2302,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 	char **argv=NULL,channel_id[100],buf[100];
 	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
 	cJSON *initCardInfo=NULL,*holeCardInfo=NULL,*initInfo=NULL;
+	int channel_balance;
 	if(0 == bits256_cmp(player_info.player_key.prod,jbits256(argjson,"pubkey")))
 	{
 		BET_player_global->myplayerid=jint(argjson,"peerid");
@@ -2349,14 +2381,18 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 
 		initCardInfo=cJSON_CreateObject();
 		cJSON_AddNumberToObject(initCardInfo,"dealer",jint(argjson,"dealer"));
+		cJSON_AddNumberToObject(initCardInfo,"balance",BET_find_channel_balance(jstr(argjson,"uri")));
+
 		holeCardInfo=cJSON_CreateArray();
 		cJSON_AddItemToArray(holeCardInfo,cJSON_CreateNull());
 		cJSON_AddItemToArray(holeCardInfo,cJSON_CreateNull());
 		cJSON_AddItemToObject(initCardInfo,"holecards",holeCardInfo);
 
+		
 		initInfo=cJSON_CreateObject();
 		cJSON_AddStringToObject(initInfo,"method","deal");
 		cJSON_AddItemToObject(initInfo,"deal",initCardInfo);
+
 		printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(initInfo));
 
 		player_lws_write(initInfo);
