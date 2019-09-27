@@ -2286,7 +2286,7 @@ int32_t BET_find_channel_balance(char *uri)
 	
 	channelsInfo=cJSON_CreateObject();
 	channelsInfo=cJSON_GetObjectItem(listfundsInfo,"channels");
-	for(int i=0;i<cJSON_GetArraySize(channelsInfo)-1;i++)
+	for(int i=0;i<cJSON_GetArraySize(channelsInfo);i++)
 	{
 		cJSON *temp=cJSON_GetArrayItem(channelsInfo,i);
 		if(strcmp(jstr(temp,"peer_id"),uri) == 0)
