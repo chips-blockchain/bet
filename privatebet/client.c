@@ -1267,12 +1267,10 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
 			fundChannelInfo=cJSON_CreateObject();
 			fundChannelInfo=BET_p2p_fundchannel(channel_id);
 
-			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(fundChannelInfo));
-			
 			if(jint(fundChannelInfo,"code") == -1)
 			{
 				retval=-1;
-				printf("\n%s:%d: Message: %s",__FUNCTION__,__LINE__,jstr(fundChannelInfo,"message"));
+				printf("%s::%d::%s",__FUNCTION__,__LINE__,cJSON_Print(fundChannelInfo));
 				goto end;
 			}
 		}
@@ -1454,16 +1452,16 @@ int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct pri
 		}
    		else if(strcmp(method,"init_d") == 0)
 		{
-			 BET_p2p_bvv_init(argjson,bet,vars);
+			 retval=BET_p2p_bvv_init(argjson,bet,vars);
 		}
 		else if(strcmp(method,"bvv_join") == 0)
 		{
 			printf("%s::%d::bvv_join\n",__FUNCTION__,__LINE__);
-			BET_p2p_bvv_join_init(argjson,bet,vars);
+			retval=BET_p2p_bvv_join_init(argjson,bet,vars);
 		}
 		else if(strcmp(method,"check_bvv_ready") == 0)
 		{
-			BET_p2P_check_bvv_ready(argjson,bet,vars);
+			retval=BET_p2P_check_bvv_ready(argjson,bet,vars);
 		}
 		else if(strcmp(method,"dealer") == 0)
 		{
@@ -1473,12 +1471,12 @@ int32_t BET_p2p_bvvcommand(cJSON *argjson,struct privatebet_info *bet,struct pri
 		{
 			printf("%s::%d::method::%s\n",__FUNCTION__,__LINE__,method);
 			BET_BVV_reset(bet,vars);
-			BET_p2p_bvv_join_init(argjson,BET_bvv,vars);
+			retval=BET_p2p_bvv_join_init(argjson,BET_bvv,vars);
 		}
 		else if(strcmp(method,"seats") == 0)
 		{
 			printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-			BET_p2p_bvv_join_init(argjson,bet,vars);
+			retval=BET_p2p_bvv_join_init(argjson,bet,vars);
 		}
         else
             retval=-1;
