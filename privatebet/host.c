@@ -256,6 +256,7 @@ int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 
 int32_t BET_rest_game(struct lws *wsi, cJSON *argjson)
 {
+	char *sb_buf,*bb_buf,*buf;
 	cJSON *gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
 	char *rendered=NULL;
 	gameDetails=cJSON_CreateObject();
@@ -266,7 +267,11 @@ int32_t BET_rest_game(struct lws *wsi, cJSON *argjson)
 	cJSON_AddItemToArray(potInfo,cJSON_CreateNumber(0));
 
 	cJSON_AddItemToObject(gameDetails,"pot",potInfo);
-	cJSON_AddStringToObject(gameDetails,"gametype","Texas Holdem Poker:100/200");
+	scanf("%" STRINGIZE(small_blind_amount) "s", sb_buf);
+	scanf("%" STRINGIZE(big_blind_amount) "s", bb_buf);
+	sprintf(buf,"Texas Holdem Poker:%s/%s",sb_buf,bb_buf);
+		
+	cJSON_AddStringToObject(gameDetails,"gametype",buf);
 
 	gameInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(gameInfo,"method","game");
