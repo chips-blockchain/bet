@@ -2,6 +2,10 @@
 #define COMMON_H
 
 
+#define STRINGIZE_(x) #x
+#define STRINGIZE(x) STRINGIZE_(x)
+
+
 #define hand_size 7
 #define no_of_hole_cards 2
 #define no_of_flop_cards 3
@@ -12,9 +16,16 @@
 #define NSUITS 4
 #define NFACES 13
 
-#define small_blind_amount 1000000
-#define big_blind_amount 2000000
+#define small_blind_amount 1 // 1000000
+#define big_blind_amount 2 // 2000000
 
+/*
+#define small_blind_amount 1 // 1mCHIPS
+#define big_blind_amount 2 // 2mCHIPS
+*/
+
+#define mchips_msatoshichips  100000000 // 1mCHIPS
+#define channel_fund_satoshis 5000000  // 0.05CHIPS or 50 mCHIPS
 
 
 

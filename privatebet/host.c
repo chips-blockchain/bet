@@ -2348,7 +2348,7 @@ int32_t BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct pri
 
 	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"invoice");
-	sprintf(argv[2],"%d",jint(argjson,"betAmount"));
+	sprintf(argv[2],"%d",jint(argjson,"betAmount")*mchips_msatoshichips);
 	sprintf(argv[3],"%s_%d_%d_%d_%d",bits256_str(hexstr,dcv_info.deckid),invoiceID,jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
 	sprintf(argv[4],"\"Invoice_details_playerID:%d,round:%d,betting Amount:%d\"",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
 	argv[5]=NULL;
