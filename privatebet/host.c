@@ -1972,7 +1972,7 @@ int32_t BET_p2p_host_init(cJSON *argjson,struct privatebet_info *bet,struct priv
 int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int argc,retval=1,state,buf_size=100;
-	char **argv=NULL,uri[100];
+	char **argv=NULL,uri[100],buf[100];
 	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
 	strcpy(uri,jstr(argjson,"uri"));
 	strcpy(dcv_info.bvv_uri,uri);
@@ -2002,9 +2002,8 @@ int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct priva
 			strcpy(argv[2],uri);
 			connectInfo=cJSON_CreateObject();
 			make_command(argc,argv,&connectInfo);
-			//ln_bet(argc,argv,buf);
-			//connectInfo=cJSON_Parse(buf);
 			cJSON_Print(connectInfo);
+
 			if(jint(connectInfo,"code") != 0)
 			{
 				retval=-1;
@@ -2020,7 +2019,8 @@ int32_t BET_p2p_bvv_join(cJSON *argjson,struct privatebet_info *bet,struct priva
 			strcpy(argv[0],"lightning-cli");
 			strcpy(argv[1],"fundchannel");
 			strcpy(argv[2],jstr(connectInfo,"id"));
-			strcpy(argv[3],"500000");
+			sprintf(buf,"%d",channel_fund_satoshis);
+			strcpy(argv[3],buf);
 			argc=4;
 			fundChannelInfo=cJSON_CreateObject();
 			make_command(argc,argv,&fundChannelInfo);
