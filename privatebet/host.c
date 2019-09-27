@@ -2767,6 +2767,9 @@ void BET_DCV_reset(struct privatebet_info *bet,struct privatebet_vars *vars)
 			vars->betamount[i][j]=0;
 		}
 	}
+
+	dealerPosition=(dealerPosition+1)%bet->maxplayers;
+	vars->dealer=dealerPosition;
 	
 	bet->numplayers=0;
 	bet->cardid=-1;
@@ -3562,16 +3565,9 @@ void BET_p2p_hostloop(void *_ptr)
 	}
 
 	
-	if(isFirstHand==1)
-	{
-		srand(time(0));
-		dealerPosition=rand()%bet->maxplayers;
-	}
-	else
-	{
-		dealerPosition=(dealerPosition+1)%bet->maxplayers;
-	}
-	
+	srand(time(0));
+	dealerPosition=rand()%bet->maxplayers;
+	DCV_VARS->dealer=dealerPosition;
 	
     while ( bet->pullsock >= 0 && bet->pubsock >= 0 )
     {

@@ -264,7 +264,7 @@ int32_t BET_p2p_initiate_statemachine(cJSON *argjson,struct privatebet_info *bet
 			vars->betamount[i][j]=0;
 		}
 	}
-	vars->dealer=dealerPosition;
+	//vars->dealer=dealerPosition;
 	//srand(time(0));
 	//vars->dealer=rand()%bet->maxplayers;
 	dealerInfo=cJSON_CreateObject();
