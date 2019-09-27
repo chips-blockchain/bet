@@ -258,7 +258,7 @@ int main(int argc, char **argv)
 
 	BET_check_sync();
 	
-	BET_getbalance();
+	BET_listunspent();
 	
 	if((argc>=2)&&(strcmp(argv[1],"dcv")==0))
 	{

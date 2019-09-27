@@ -500,7 +500,6 @@ double BET_getbalance()
 	strcpy(argv[1],"getbalance");
 	make_command(argc,argv,&getbalanceInfo);
 	balance=atof(cJSON_Print(getbalanceInfo));
-	printf("Total spendable amount::%f",balance);
 
 	end:
 		if(argv)
@@ -518,6 +517,38 @@ double BET_getbalance()
 		free(getbalanceInfo);
 
 	return balance;
+}
+
+int32_t BET_lock_transaction(int32_t fundAmount)
+{
+	int argc,balance;
+	char **argv=NULL;
+	cJSON *listunspentInfo=NULL;
+	double fee=0.0005;
+	
+	balance=BET_getbalance();
+	if((fundAmount+fee)>=balance)
+	{
+		argc=2;
+		argv=(char**)malloc(argc*sizeof(char*));
+		for(int i=0;i<argc;i++)
+		{
+			argv[i]=(char*)malloc(100*sizeof(char));
+		}
+		strcpy(argv[0],"chips-cli");
+		strcpy(argv[1],"listunspent");
+		make_command(argc,argv,&listunspentInfo);
 		
+		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(listunspentInfo));
 		
+		for(int i=0;i<cJSON_GetArraySize(listunspentInfo)-1;i++)
+		{
+			cJSON *temp=cJSON_GetArrayItem(listunspentInfo,i);
+			
+			if(strcmp(cJSON_Print(cJSON_GetObjectItem(temp,"spendable")),"true") == 0)
+			{
+				printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(temp));
+			}
+		}
+	}
 }

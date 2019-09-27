@@ -41,5 +41,7 @@ void BET_check_sync();
 void BET_check_sync();
 void BET_listunspent();
 double BET_getbalance();
+int32_t BET_lock_transaction(int32_t fundAmount);
+
 
 
