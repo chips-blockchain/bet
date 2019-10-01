@@ -35,6 +35,8 @@
 // redo unpaid deletes
 //  from external: git submodule add https://github.com/ianlancetaylor/libbacktrace.git
 
+
+#include "../includes/curl/curl.h"
 #include "bet.h"
 #include "gfshare.h"
 #include "cards777.h"
@@ -42,7 +44,24 @@
 #include "host.h"
 #include "table.h"
 #include "network.h"
+#include "commands.h"
 #include "../log/macrologger.h"
+#include "common.h"
+
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/socket.h>
+#include <stdlib.h>
+#include <netinet/in.h>
+#include <string.h>
+
+
+struct privatebet_info *BET_dcv_global=NULL, *BET_bvv_global=NULL,*BET_player_global=NULL;
+struct privatebet_vars *DCV_VARS_global=NULL, *BVV_VARS_global=NULL, *Player_VARS_global=NULL ;
+
+
+
+
 bits256 Myprivkey,Mypubkey;
 int32_t IAMHOST;
 uint16_t LN_port;
@@ -63,7 +82,7 @@ bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 struct enc_share *g_shares=NULL;
 
-char *rootAddress="RVMYRqUqJEuq394KfAgyd13s6ttfcCpLaW";
+char *rootAddress="RSdMRYeeouw3hepxNgUzHn34qFhn1tsubb";
 /*
 char *LN_idstr,Host_ipaddr[64],Host_peerid[67],BET_ORACLEURL[64] = "127.0.0.1:7797";
 uint16_t LN_port;
@@ -214,112 +233,6 @@ void randombytes_buf(void * const buf, const size_t size)
 
 int32_t players_init(int32_t numplayers,int32_t numcards,bits256 deckid);
 void sg777_players_init(int32_t numplayers,int32_t numcards,bits256 deckid);
-char* gethostip()
-{
-	char hostbuffer[256]; 
-	char *hostip; 
-	struct hostent *host_entry; 
-	int hostname; 
-	 hostname = gethostname(hostbuffer, sizeof(hostbuffer)); 
-
-	 // To retrieve host information 
-	 host_entry = gethostbyname(hostbuffer); 
-	 
-	 // To convert an Internet network address into ASCII string 
-	 hostip= inet_ntoa(*((struct in_addr*)host_entry->h_addr_list[0])); 
-	 return hostip;
-}
-int do_bet(double betValue)
-{
-	int argc,maxArguments=10,maxSize=1000;
-	char **argv=NULL,*result=NULL,output[50];
-	cJSON *chipsInfo=NULL,*getInfo=NULL,*unspentInfo=NULL,*txInfo=NULL,*rawtxInfo=NULL,*change=NULL,*temp=NULL,*signedtxInfo=NULL;
-	double balance=0,relayfee;
-	argv=(char**)malloc(maxArguments*sizeof(char*));
-	for(int i=0;i<maxArguments;i++)
-	{
-		argv[i]=(char*)malloc(maxSize*sizeof(char));
-	}
-	argc=2;
-	strcpy(argv[0],".\bet");
-	strcpy(argv[1],"getinfo");
-	result=(char*)malloc(1000*sizeof(char));
-	
-	my_bet(argc,argv,result);
-	getInfo=cJSON_CreateObject();
-	getInfo=cJSON_Parse(result);
-	balance=jdouble(getInfo,"balance");
-	relayfee=jdouble(getInfo,"relayfee");
-	if((balance-relayfee)>=betValue)
-	{
-		memset(argv[1],0x00,sizeof(argv[1]));
-		strcpy(argv[1],"listunspent");
-		memset(result,0x00,sizeof(result));
-		my_bet(argc,argv,result);
-		unspentInfo=cJSON_CreateObject();
-		unspentInfo=cJSON_Parse(result);
-		rawtxInfo=cJSON_CreateArray();
-		for(int i=0;i<cJSON_GetArraySize(unspentInfo);i++)
-		{
-			txInfo=cJSON_GetArrayItem(unspentInfo,i);
-			printf("\ntxid:%s",jstr(txInfo,"txid"));
-			printf("\nvout:%d",jint(txInfo,"vout"));
-			temp=cJSON_CreateObject();
-			cJSON_AddStringToObject(temp,"txid",jstr(txInfo,"txid"));
-			cJSON_AddNumberToObject(temp,"vout",jint(txInfo,"vout"));
-			cJSON_AddItemToArray(rawtxInfo,temp);
-		}
-		printf("\nPrinting raw transaction:\n%s",cJSON_Print(rawtxInfo));
-		change=cJSON_CreateObject();
-		snprintf(output, 50, "%f", betValue);
-		cJSON_AddStringToObject(change,rootAddress,output);
-		memset(output,0x00,sizeof(output));
-		snprintf(output, 50, "%f", (balance-betValue-relayfee));
-		cJSON_AddStringToObject(change,jstr(txInfo,"address"),output);
-		printf("\nPrint this:\n%s",cJSON_Print(change));
-
-		for(int i=1;i<4;i++)
-		{
-			memset(argv[i],0x00,sizeof(argv[i]));
-		}
-		argc=4;
-		strcpy(argv[1],"createrawtransaction");
-		strcpy(argv[2],cJSON_Print(rawtxInfo));
-		strcpy(argv[3],cJSON_Print(change));
-		memset(result,0x00,sizeof(result));
-		my_bet(argc,argv,result);
-		printf("\nThe createrawtransction output:%s",result);
-		for(int i=1;i<3;i++)
-		{
-			memset(argv[i],0x00,sizeof(argv[i]));
-		}
-		strcpy(argv[1],"signrawtransaction");
-		strcpy(argv[2],result);
-		memset(result,0x00,sizeof(result));
-		argc=3;
-		my_bet(argc,argv,result);
-		signedtxInfo=cJSON_CreateObject();
-		signedtxInfo=cJSON_Parse(result);
-		printf("\nThe signrawtransction output:%s",result);
-		for(int i=1;i<3;i++)
-		{
-			memset(argv[i],0x00,sizeof(argv[i]));
-		}
-		strcpy(argv[1],"sendrawtransaction");
-		strcpy(argv[2],jstr(signedtxInfo,"hex"));
-		memset(result,0x00,sizeof(result));
-		argc=3;
-		my_bet(argc,argv,result);
-		
-		printf("\nThe sendtransationoutput:%s",result);
-	}
-	else
-	{
-		printf("\nInsufficient funds to do betting");
-		return -1;
-	}
-	return 1;	
-}
 int main(int argc, char **argv)
 {
     uint16_t tmp,rpcport = 7797,port = 7797+1;
@@ -327,10 +240,11 @@ int main(int argc, char **argv)
 	cJSON *infojson,*argjson,*reqjson,*deckjson; 
 	uint64_t randvals; bits256 privkey,pubkey,pubkeys[64],privkeys[64]; 
 	uint8_t pubkey33[33],taddr=0,pubtype=60; uint32_t i,n,range,numplayers; int32_t testmode=0,pubsock=-1,subsock=-1,pullsock=-1,pushsock=-1; long fsize; 
-	struct privatebet_info *BET_dcv,*BET_bvv,*BET_player;
-	pthread_t dcv_t,bvv_t,player_t;
-	strcpy(hostip,argv[2]);
-	#if 1	
+	pthread_t dcv_t,bvv_t,player_t,dcv_backend,bvv_backend,player_backend;
+	//test_pedersen_commitments();
+    #if 1
+	if(argc>=2)
+		strcpy(hostip,argv[2]);
     OS_init();
 	libgfshare_init();
 	OS_randombytes((uint8_t *)&range,sizeof(range));
@@ -341,11 +255,17 @@ int main(int argc, char **argv)
 	range=52;
 	numplayers=2;
     Maxplayers=2;
+
+	BET_check_sync();
+	
+	BET_listunspent();
+	
 	if((argc>=2)&&(strcmp(argv[1],"dcv")==0))
 	{
 		
 		#if 1
 		/* This code is for sockets*/
+		
 		BET_transportname(0,bindaddr,hostip,port);
 		pubsock = BET_nanosock(1,bindaddr,NN_PUB);
 		
@@ -353,20 +273,40 @@ int main(int argc, char **argv)
 		pullsock = BET_nanosock(1,bindaddr1,NN_PULL);
 			
 		#endif				  
-
+		
+	
 		BET_dcv=calloc(1,sizeof(struct privatebet_info));
+		DCV_VARS = calloc(1,sizeof(struct privatebet_vars));
+
 	    BET_dcv->pubsock = pubsock;//BET_nanosock(1,bindaddr,NN_PUB);
 	    BET_dcv->pullsock = pullsock;//BET_nanosock(1,bindaddr1,NN_PULL);
 	    BET_dcv->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
 	    BET_dcv->maxchips = CARDS777_MAXCHIPS;
 	    BET_dcv->chipsize = CARDS777_CHIPSIZE;
 		BET_dcv->numplayers=0;
+		BET_dcv->myplayerid=-2;
+		BET_dcv->cardid=-1;
+		BET_dcv->turni=-1;
+		BET_dcv->no_of_turns=0;
 	    BET_betinfo_set(BET_dcv,"demo",range,0,Maxplayers);
-	    if ( OS_thread_create(&dcv_t,NULL,(void *)BET_p2p_hostloop,(void *)BET_dcv) != 0 )
+
+		if ( OS_thread_create(&dcv_backend,NULL,(void *) BET_p2p_hostloop,(void *)BET_dcv) != 0 )
+	    {
+	        printf("error launching BET_clientloop BET_hostloop");
+	        exit(-1);
+	    }		
+	    if ( OS_thread_create(&dcv_t,NULL,(void *)BET_ws_dcvloop,NULL) != 0 )
 	    {
 	        printf("error launching BET_hostloop for pub.%d pull.%d\n",BET_dcv->pubsock,BET_dcv->pullsock);
 	        exit(-1);
 	    }
+		
+		
+		if(pthread_join(dcv_backend,NULL))
+		{
+			printf("\nError in joining the main thread for bvvv");
+		}
+
        	if(pthread_join(dcv_t,NULL))
 		{
 			printf("\nError in joining the main thread for dcv");
@@ -377,14 +317,14 @@ int main(int argc, char **argv)
 		#if 1
 			/* This code is for sockets*/
 			BET_transportname(0,bindaddr,hostip,port);
-			printf("\nBinding address:%s",bindaddr);
 		    subsock= BET_nanosock(0,bindaddr,NN_SUB);
 
 		    BET_transportname(0,bindaddr1,hostip,port+1);
-			printf("\nBinding address:%s",bindaddr);
 		    pushsock = BET_nanosock(0,bindaddr1,NN_PUSH);
 
-		#endif				  
+		#endif
+		#if 1
+            BVV_VARS = calloc(1,sizeof(*BVV_VARS));
 			BET_bvv=calloc(1,sizeof(struct privatebet_info));
 		    BET_bvv->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
 		    BET_bvv->pushsock = pushsock/*BET_nanosock(0,bindaddr1,NN_PUSH)*/;
@@ -392,13 +332,25 @@ int main(int argc, char **argv)
 		    BET_bvv->maxchips = CARDS777_MAXCHIPS;
 		    BET_bvv->chipsize = CARDS777_CHIPSIZE;
 			BET_bvv->numplayers=numplayers;
-			BET_bvv->myplayerid=0;
+			BET_bvv->myplayerid=-1;
 		    BET_betinfo_set(BET_bvv,"demo",range,0,Maxplayers);
-		    if ( OS_thread_create(&bvv_t,NULL,(void *)BET_p2p_bvvloop,(void *)BET_bvv) != 0 )
+		#endif
+
+		    if ( OS_thread_create(&bvv_t,NULL,(void *)BET_p2p_bvvloop_test,(void *)BET_bvv) != 0 )
 		    {
 		        printf("error launching BET_clientloop for sub.%d push.%d\n",BET_bvv->subsock,BET_bvv->pushsock);
 		        exit(-1);
 		    }
+			
+			if ( OS_thread_create(&bvv_backend,NULL,(void *)BET_test_function_bvv,NULL) != 0 )
+			{
+				printf("error launching BET_hostloop for pub.%d pull.%d\n",BET_bvv->subsock,BET_bvv->pushsock);
+				exit(-1);
+			}
+			if(pthread_join(bvv_backend,NULL))
+			{
+				printf("\nError in joining the main thread for bvvv");
+			}
 			if(pthread_join(bvv_t,NULL))
 			{
 				printf("\nError in joining the main thread for bvvv");
@@ -406,29 +358,43 @@ int main(int argc, char **argv)
 	}
 	else if((argc==3)&&(strcmp(argv[1],"player")==0)) 
 	{
-		#if 1
-			/* This code is for sockets*/
 			BET_transportname(0,bindaddr,hostip,port);
 			subsock= BET_nanosock(0,bindaddr,NN_SUB);
 
 			BET_transportname(0,bindaddr1,hostip,port+1);
 			pushsock = BET_nanosock(0,bindaddr1,NN_PUSH);
-		#endif				  
-			BET_player=calloc(numplayers,sizeof(struct privatebet_info*));
-			BET_player=calloc(1,sizeof(struct privatebet_info));
-			BET_player->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
-		    BET_player->pushsock = pushsock/*BET_nanosock(0,bindaddr1,NN_PUSH)*/;
-		    BET_player->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
-		    BET_player->maxchips = CARDS777_MAXCHIPS;
-		    BET_player->chipsize = CARDS777_CHIPSIZE;
-			BET_player->numplayers=numplayers;
-		    BET_betinfo_set(BET_player,"demo",range,0,Maxplayers);
-		    if (OS_thread_create(&player_t,NULL,(void *)BET_p2p_clientloop,(void *)BET_player) != 0 )
-		    {
-		        printf("error launching BET_clientloop for sub.%d push.%d\n",BET_player->subsock,BET_player->pushsock);
-		        exit(-1);
-		    }	
+
+			Player_VARS_global=calloc(1,sizeof(*Player_VARS_global));
+			
+			BET_player_global=calloc(1,sizeof(struct privatebet_info));
+			BET_player_global->subsock = subsock/*BET_nanosock(0,bindaddr,NN_SUB)*/;
+		    BET_player_global->pushsock = pushsock/*BET_nanosock(0,bindaddr1,NN_PUSH)*/;
+		    BET_player_global->maxplayers = (Maxplayers < CARDS777_MAXPLAYERS) ? Maxplayers : CARDS777_MAXPLAYERS;
+		    BET_player_global->maxchips = CARDS777_MAXCHIPS;
+		    BET_player_global->chipsize = CARDS777_CHIPSIZE;
+			BET_player_global->numplayers=numplayers;
+		    BET_betinfo_set(BET_player_global,"demo",range,0,Maxplayers);
+
+			if (OS_thread_create(&player_t,NULL,(void *)BET_p2p_clientloop_test,(void *)BET_player_global) != 0 )
+			{
+				printf("\nerror in launching BET_p2p_clientloop_test");
+				exit(-1);
+			}
+			
+			if ( OS_thread_create(&player_backend,NULL,(void *)BET_test_function,NULL) != 0 )
+			{
+				printf("error launching BET_hostloop for pub.%d pull.%d\n",BET_player_global->subsock,BET_player_global->pushsock);
+				exit(-1);
+			}
+
+			
 			if(pthread_join(player_t,NULL))
+			{
+			printf("\nError in joining the main thread for player");
+			}
+
+			
+			if(pthread_join(player_backend,NULL))
 			{
 				printf("\nError in joining the main thread for player %d",i);
 			}
@@ -902,15 +868,15 @@ struct pair256 p2p_bvv_init(bits256 *keys,struct pair256 b_key,bits256 *blinding
 		blindedcards[i] = fmul_donna(finalcards[permis_b[i]],blindings[i]);
 		//g_hash[playerid][i]=temp_hash[permis_b[i]];//optimization
 	}
-	/*
-	printf("\n%s:%d:For Player id:%d",__FUNCTION__,__LINE__,playerid);
+	
+	/*printf("\n%s:%d:For Player id:%d",__FUNCTION__,__LINE__,playerid);
 
 	for(i=0;i<numcards;i++)
 	{
 		printf("\nDCV card:%s",bits256_str(str,finalcards[permis_b[i]]));
 		printf("\nBVV card:%s",bits256_str(str,blindedcards[i]));
-	}*/
-	
+	}
+	*/
     M = (numplayers/2) + 1;
     
     gfshare_calc_sharenrs(sharenrs,numplayers,deckid.bytes,sizeof(deckid)); // same for all players for this round

@@ -35,3 +35,13 @@ int32_t BET_peer_state(char *peerid,char *statestr);
 int32_t BET_channel_status(char *peerid,char *channel,char *status);
 int64_t BET_peer_chipsavail(char *peerid,int32_t chipsize);
 
+int32_t BET_get_chips_blockheight();
+int32_t BET_get_ln_blockheight();
+void BET_check_sync();
+void BET_check_sync();
+void BET_listunspent();
+double BET_getbalance();
+int32_t BET_lock_transaction(int32_t fundAmount);
+
+
+
