@@ -1772,7 +1772,8 @@ int32_t BET_p2p_winner(cJSON *argjson,struct privatebet_info *bet,struct private
 		strcpy(argv[0],"lightning-cli");
 		strcpy(argv[1],"invoice");
 		sprintf(argv[2],"%d",jint(argjson,"winning_amount"));
-		sprintf(argv[3],"%s_%d",bits256_str(hexstr,player_info.deckid),jint(argjson,"winning_amount"));
+		sprintf(argv[3],"%s_%d",bits256_str(hexstr,player_info.deckid),
+jint(argjson,"winning_amount"));
 		sprintf(argv[4],"Winning claim");
 		argv[5]=NULL;
 		argc=5;
@@ -2419,7 +2420,8 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 	}
 	end:
 	if(argv)
-	{
+	{
+
 		for(int i=0;i<argc;i++)
 		{
 			if(argv[i])
@@ -2667,7 +2669,7 @@ int32_t BET_p2p_rest_clientupdate(struct lws *wsi,cJSON *argjson) // update game
 		}
 		else if(strcmp(method,"requestShare") == 0)
 		{
-		
+			printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 			retval=BET_p2p_client_give_share(argjson,bet,vars);
 		}
 		else if(strcmp(method,"share_info") == 0)
