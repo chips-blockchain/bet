@@ -1929,7 +1929,7 @@ int32_t BET_p2p_host_deck_init_info(cJSON *argjson,struct privatebet_info *bet,s
 	  }
 	  	
 	  
-	  printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(deck_init_info));	
+	 // printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(deck_init_info));	
 	  
 	  rendered=cJSON_Print(deck_init_info);
 	  bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
@@ -3410,7 +3410,7 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 	char *rendered=NULL;
     if ( (method= jstr(argjson,"method")) != 0 )
     {
-    	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,method);
+    	//printf("%s::%d::%s\n",__FUNCTION__,__LINE__,method);
 		if(strcmp(method,"join_req") == 0)
 		{
 			

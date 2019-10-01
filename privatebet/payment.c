@@ -401,6 +401,9 @@ int32_t BET_player_create_invoice(cJSON *argjson,struct privatebet_info *bet,str
 	int argc,bytes,retval=1;
 	char **argv=NULL,*rendered=NULL;
 	cJSON *invoiceInfo=NULL,*invoice=NULL;
+	
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+
 	if(jint(argjson,"playerid")==bet->myplayerid)
 	{
 		argv =(char**)malloc(6*sizeof(char*));

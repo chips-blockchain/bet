@@ -2306,7 +2306,6 @@ int32_t BET_check_player_stack(char *uri)
 	}
 	else
 	{
-		balance=-1;
 		printf("%s::%d::Insufficient Funds, Minimum needed::%d mCHIPS but only %d exists on the channel\n",__FUNCTION__,__LINE__,table_stack,balance);
 	}
 	return balance;
@@ -2398,6 +2397,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		initCardInfo=cJSON_CreateObject();
 		cJSON_AddNumberToObject(initCardInfo,"dealer",jint(argjson,"dealer"));
 		balance=BET_check_player_stack(jstr(argjson,"uri"));
+		vars->player_funds=balance;
 		//Here if the balance is not table_stack it should wait for the refill
 		cJSON_AddNumberToObject(initCardInfo,"balance",balance);
 
@@ -2598,7 +2598,7 @@ int32_t BET_player_reset(struct privatebet_info *bet,struct privatebet_vars *var
 	}
 	
 	vars->pot=0;
-	vars->player_funds=10000000; // hardcoded to 10000 satoshis
+	//vars->player_funds=10000000; // hardcoded to 10000 satoshis
 	for(int i=0;i<bet->maxplayers;i++)
 	{
 		for(int j=0;j<CARDS777_MAXROUNDS;j++)
@@ -3079,7 +3079,7 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 	
     if ( (method= jstr(argjson,"method")) != 0 )
     {
-    	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,method);
+    	//printf("%s::%d::%s\n",__FUNCTION__,__LINE__,method);
 	      
     	if ( strcmp(method,"join") == 0 )
 		{
@@ -3103,8 +3103,6 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 		{
 			if(jint(argjson,"peerid")==bet->myplayerid)
 			{
-				printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-				//BET_p2p_host_blinds_info(wsi_global_client);
 				BET_p2p_player_blinds_info();
 				retval=BET_p2p_client_init(argjson,bet,vars);
 			}
@@ -3175,13 +3173,10 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 		{
 			cJSON_AddNumberToObject(argjson,"playerFunds",BET_rest_listfunds());
 			player_lws_write(argjson);
-			//rendered=cJSON_Print(argjson);
-			//lws_write(wsi_global_client,rendered,strlen(rendered),0);
 		}
 		else if(strcmp(method,"finalInfo") == 0)
 		{
 			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-			//lws_write(wsi_global_client,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
 			player_lws_write(argjson);			
 		}
 	}	

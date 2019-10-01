@@ -521,7 +521,13 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 	bet_amount=jint(argjson,"bet_amount");
 	min_amount=jint(argjson,"min_amount");
 
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+
+	
 	vars->betamount[playerid][round]+=bet_amount;
+	for(int i=0;i<bet->maxplayers;i++)
+		printf("%s::%d::vars->betamount[%d][round]::%d\n",__FUNCTION__,__LINE__,i,vars->betamount[i][round]);
+	
 	vars->pot+=bet_amount;
 	vars->funds[playerid]-=bet_amount;
 	//printf("\n%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
@@ -820,7 +826,8 @@ int32_t BET_player_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,st
 	int32_t amount,retval=1,bytes,playerid,round;
 	char *rendered=NULL;
 
-
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+	
 	playerid=jint(argjson,"playerid");
 	round=jint(argjson,"round");
 	
@@ -831,6 +838,9 @@ int32_t BET_player_small_blind_bet(cJSON *argjson,struct privatebet_info *bet,st
 	vars->betamount[playerid][round]=vars->small_blind;
 	vars->pot+=vars->small_blind;
 
+	for(int i=0;i<bet->maxplayers;i++)
+		printf("%s::%d::vars->betamount[%d][%d]::%d\n",__FUNCTION__,__LINE__,i,round,vars->betamount[i][round]);
+	
 	end:
 		return retval;
 }
@@ -841,6 +851,9 @@ int32_t BET_player_big_blind_bet(cJSON *argjson,struct privatebet_info *bet,stru
 	char *rendered=NULL;
 	cJSON *display=NULL;
 
+	
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+
 	playerid=jint(argjson,"playerid");
 	round=jint(argjson,"round");
 
@@ -849,7 +862,10 @@ int32_t BET_player_big_blind_bet(cJSON *argjson,struct privatebet_info *bet,stru
 	vars->bet_actions[playerid][round]=big_blind;
 	vars->betamount[playerid][round]=vars->big_blind;
 	vars->pot+=vars->big_blind;
-	
+
+	for(int i=0;i<bet->maxplayers;i++)
+		printf("%s::%d::vars->betamount[%d][%d]::%d\n",__FUNCTION__,__LINE__,i,round,vars->betamount[i][round]);
+		
 	end:
 		return retval;
 }
@@ -863,7 +879,7 @@ int32_t BET_p2p_dealer_info(cJSON *argjson,struct privatebet_info *bet,struct pr
 	vars->dealer=jint(argjson,"playerid");
 	vars->turni=vars->dealer;
 	vars->pot=0;
-	vars->player_funds=10000000; // hardcoded to 10000 satoshis
+	//vars->player_funds=10000000; // hardcoded to 10000 satoshis
 	for(int i=0;i<bet->maxplayers;i++)
 	{
 		for(int j=0;j<CARDS777_MAXROUNDS;j++)
@@ -1020,14 +1036,26 @@ int32_t BET_player_round_betting_test(cJSON *argjson,struct privatebet_info *bet
 
 	cJSON_AddStringToObject(action_response,"action",action_str[jinti(possibilities,(option-1))]);
 	
+	for(int i=0;i<bet->maxplayers;i++)
+		printf("%s::%d::vars->betamount[%d][%d]::%d\n",__FUNCTION__,__LINE__,i,round,vars->betamount[i][round]);
+
 	if(jinti(possibilities,(option-1))== raise)
 	{
 		raise_amount=jint(argjson,"bet_amount");
 		invoice_amount=raise_amount-vars->betamount[playerid][round];
-		vars->betamount[playerid][round]=raise_amount;
-		vars->player_funds-=raise_amount;
-
+		//vars->betamount[playerid][round]=raise_amount;
+		//vars->player_funds-=raise_amount;
+		
+		vars->betamount[playerid][round]+=invoice_amount;
+		vars->player_funds-=invoice_amount;
+		
 		cJSON_AddNumberToObject(action_response,"bet_amount",invoice_amount);
+
+		for(int i=0;i<bet->maxplayers;i++)
+			printf("%s::%d::vars->betamount[%d][%d]::%d\n",__FUNCTION__,__LINE__,i,round,vars->betamount[i][round]);
+
+		printf("%s::%d::action_response::%s\n",__FUNCTION__,__LINE__,cJSON_Print(action_response));
+		
 		retval=BET_player_create_betting_invoice_request(argjson,action_response,bet,invoice_amount);
 		if(retval<0)
 			goto end;
@@ -1186,11 +1214,16 @@ int32_t BET_player_round_betting_response(cJSON *argjson,struct privatebet_info 
 	min_amount=jint(argjson,"min_amount");
 	bet_amount=jint(argjson,"bet_amount");
 	
-	cJSON_DetachItemFromObject(argjson,"bet_amount");
-	cJSON_AddNumberToObject(argjson,"bet_amount",bet_amount+min_amount);
+	//cJSON_DetachItemFromObject(argjson,"bet_amount");
+	//cJSON_AddNumberToObject(argjson,"bet_amount",bet_amount+min_amount);
 
-	vars->betamount[playerid][round]+=bet_amount;
+	
+	if(bet->myplayerid!=playerid)
+		vars->betamount[playerid][round]+=bet_amount;
+
 	vars->pot+=bet_amount;
+
+	
 	if((action=jstr(argjson,"action")) != NULL)
 	{
 		if(strcmp(action,"check") == 0)
