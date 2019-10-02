@@ -2422,9 +2422,9 @@ int32_t BET_create_betting_invoice(cJSON *argjson,struct privatebet_info *bet,st
 
 	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"invoice");
-	sprintf(argv[2],"%d",jint(argjson,"betAmount"));
-	sprintf(argv[3],"%s_%d_%d_%d_%d",bits256_str(hexstr,dcv_info.deckid),invoiceID,jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
-	sprintf(argv[4],"\"Invoice_details_playerID:%d,round:%d,betting Amount:%d\"",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
+	sprintf(argv[2],"%d",jint(argjson,"invoice_amount"));
+	sprintf(argv[3],"%s_%d_%d_%d_%d",bits256_str(hexstr,dcv_info.deckid),invoiceID,jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"invoice_amount"));
+	sprintf(argv[4],"\"Invoice_details_playerID:%d,round:%d,betting Amount:%d\"",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"invoice_amount"));
 	argv[5]=NULL;
 	argc=5;
 	
@@ -3517,6 +3517,31 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		else if(strcmp(method,"display_current_state") == 0)
 		{
 			retval=BET_p2p_display_current_state(argjson,bet,vars);
+		}
+		else if(strcmp(method,"stack") == 0)
+		{
+			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+			vars->funds[jint(argjson,"playerid")]=jint(argjson,"stack_value");
+			retval=BET_relay(argjson,bet,vars);
+			/*
+			if(bet->numplayers==bet->maxplayers)
+			{
+				cJSON *player_stacks,*stackInfo=cJSON_CreateObject();
+				cJSON_AddStringToObject(stackInfo,"method","stack");
+				cJSON_AddItemToObject(stackInfo,"player_stacks",player_stacks=cJSON_CreateArray());
+				for(int i=0;i<bet->maxplayers;i++)
+				{
+					cJSON_AddItemToArray(player_stacks,cJSON_CreateNumber(vars->funds[i]));
+				}
+				printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(player_stacks));
+				bytes=nn_send(bet->pubsock,cJSON_Print(player_stacks),strlen(cJSON_Print(player_stacks)),0);
+				if(bytes<0)
+				{
+					retval=-1;
+					printf("\nMehtod: %s Failed to send data",method);
+					goto end;
+				}
+			}*/
 		}
 		else
     	{
