@@ -1876,7 +1876,7 @@ void display_cards(cJSON *argjson,struct privatebet_info *bet,struct privatebet_
 	cJSON_AddItemToObject(initCardInfo,"board",boardCardInfo);
 	
 	cJSON_AddItemToObject(initInfo,"deal",initCardInfo);
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(initInfo));
+	//printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(initInfo));
 	player_lws_write(initInfo);
 	//lws_write(wsi_global_client,cJSON_Print(initInfo),strlen(cJSON_Print(initInfo)),0);
 }
@@ -2283,8 +2283,6 @@ int32_t BET_find_channel_balance(char *uri)
 	listfundsInfo=cJSON_CreateObject();
 	make_command(argc,argv,&listfundsInfo);
 
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,uri);
-	
 	channelsInfo=cJSON_CreateObject();
 	channelsInfo=cJSON_GetObjectItem(listfundsInfo,"channels");
 	for(int i=0;i<cJSON_GetArraySize(channelsInfo);i++)
@@ -2313,11 +2311,11 @@ int32_t BET_check_player_stack(char *uri)
 }
 int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	char uri[100];
-	int argc,retval=1,channel_state,buf_size=100,balance;
+	char uri[100],*rendered=NULL;
+	int argc,retval=1,channel_state,buf_size=100,balance,bytes;
 	char **argv=NULL,channel_id[100],buf[100];
 	cJSON *connectInfo=NULL,*fundChannelInfo=NULL;
-	cJSON *initCardInfo=NULL,*holeCardInfo=NULL,*initInfo=NULL;
+	cJSON *initCardInfo=NULL,*holeCardInfo=NULL,*initInfo=NULL,*stackInfo=NULL;
 	int channel_balance;
 	if(0 == bits256_cmp(player_info.player_key.prod,jbits256(argjson,"pubkey")))
 	{
@@ -2364,6 +2362,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			sprintf(buf,"%d",channel_fund_satoshis);
 			strcpy(argv[3],buf);
 
+		
 			fundChannelInfo=cJSON_CreateObject();
 			make_command(argc,argv,&fundChannelInfo);
 			
@@ -2373,6 +2372,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 			{
 				retval=-1;
 				printf("%s::%d::Message:%s\n",__FUNCTION__,__LINE__,jstr(fundChannelInfo,"message"));
+				printf("%s::%d::Existing balance::%d, Needed::%d\n",__FUNCTION__,__LINE__,BET_check_player_stack(jstr(argjson,"uri")),((int)channel_fund_satoshis/100000));
 				goto end;
 			}
 		}
@@ -2393,8 +2393,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		  	 }
 			sleep(2);
 		}
-		printf("%s::%d::%d\n",__FUNCTION__,__LINE__,state);
-
+	
 		initCardInfo=cJSON_CreateObject();
 		cJSON_AddNumberToObject(initCardInfo,"dealer",jint(argjson,"dealer"));
 		balance=BET_check_player_stack(jstr(argjson,"uri"));
@@ -2412,10 +2411,23 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		cJSON_AddStringToObject(initInfo,"method","deal");
 		cJSON_AddItemToObject(initInfo,"deal",initCardInfo);
 
-		printf("%s:%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(initInfo));
-
+	
 		player_lws_write(initInfo);
-		//lws_write(wsi_global_client,cJSON_Print(initInfo),strlen(cJSON_Print(initInfo)),0);
+
+
+		stackInfo=cJSON_CreateObject();
+		cJSON_AddStringToObject(stackInfo,"method","stack");
+		cJSON_AddNumberToObject(stackInfo,"playerid",bet->myplayerid);
+		cJSON_AddNumberToObject(stackInfo,"stack_value",balance);
+		
+		rendered=cJSON_Print(stackInfo);
+        bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+		if(bytes<0)
+		{
+			printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
+			goto end;
+		}
+		
 		
 	}
 	end:
@@ -2749,12 +2761,12 @@ int lws_callback_http_dummy1(struct lws *wsi, enum lws_callback_reasons reason,
 				printf("%s:%d::LWS_CALLBACK_ESTABLISHED\n",__FUNCTION__,__LINE__);
 				break;
 			case LWS_CALLBACK_SERVER_WRITEABLE:
-				printf("%s::%d::LWS_CALLBACK_SERVER_WRITEABLE\n",__FUNCTION__,__LINE__);
+				//printf("%s::%d::LWS_CALLBACK_SERVER_WRITEABLE\n",__FUNCTION__,__LINE__);
 				if(data_exists)
 				{
 						if(guiData)
 						{
-							printf("%s::%d::%s\n",__FUNCTION__,__LINE__,guiData);
+							//printf("%s::%d::%s\n",__FUNCTION__,__LINE__,guiData);
 							lws_write(wsi,guiData,strlen(guiData),0);
 							data_exists=0;
 							
@@ -3180,6 +3192,11 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 		{
 			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 			player_lws_write(argjson);			
+		}
+		else if(strcmp(method,"stack") == 0)
+		{
+		
+			vars->funds[jint(argjson,"playerid")]=jint(argjson,"stack_value");
 		}
 	}	
 	return retval;

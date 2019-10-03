@@ -2422,9 +2422,9 @@ int32_t BET_create_betting_invoice(cJSON *argjson,struct privatebet_info *bet,st
 
 	strcpy(argv[0],"lightning-cli");
 	strcpy(argv[1],"invoice");
-	sprintf(argv[2],"%d",jint(argjson,"betAmount"));
-	sprintf(argv[3],"%s_%d_%d_%d_%d",bits256_str(hexstr,dcv_info.deckid),invoiceID,jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
-	sprintf(argv[4],"\"Invoice_details_playerID:%d,round:%d,betting Amount:%d\"",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"betAmount"));
+	sprintf(argv[2],"%d",jint(argjson,"invoice_amount"));
+	sprintf(argv[3],"%s_%d_%d_%d_%d",bits256_str(hexstr,dcv_info.deckid),invoiceID,jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"invoice_amount"));
+	sprintf(argv[4],"\"Invoice_details_playerID:%d,round:%d,betting Amount:%d\"",jint(argjson,"playerID"),jint(argjson,"round"),jint(argjson,"invoice_amount"));
 	argv[5]=NULL;
 	argc=5;
 	
@@ -2868,65 +2868,75 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 			else
 				only_winner=i;
 	}
+	
 	players_left=bet->maxplayers-players_left;
 	if(players_left<2)
 	{
 		if(only_winner != -1)
 		{
-			retval=BET_DCV_invoice_pay(bet,vars,only_winner,vars->pot);
-			printf("\nWinning player is :%d, winning amount:%d",only_winner,vars->pot);
-			goto end;
-		}
-	}
-		
-	printf("\nEach player got the below cards:\n");
-	for(int i=0;i<bet->maxplayers;i++)
-	{
-		if(p[i]==fold)
-			scores[i]=0;
-		else
-		{
-			printf("\n For Player id: %d, cards: ",i);
-			for(int j=0;j<hand_size;j++)
+			no_of_winners=1;
+			for(int i=0;i<bet->maxplayers;i++)
 			{
-				int temp=card_values[i][j];
-				printf("%s-->%s \t",suit[temp/13],face[temp%13]);
-				h[j]=(unsigned char)card_values[i][j];
-			
+				if(vars->bet_actions[i][vars->round]==fold)
+					winners[i]=0;
+				else
+					winners[i]=1;
 			}
-				scores[i]=SevenCardDrawScore(h);
-			}
-	}
-	for(int i=0;i<bet->maxplayers;i++)
-	{
-		if(max_score<scores[i])
-			max_score=scores[i];
-	}
-	for(int i=0;i<bet->maxplayers;i++)
-	{
-		if(scores[i]==max_score)
-		{
-			winners[i]=1;
-			no_of_winners++;
-		}
-		else
-			winners[i]=0;
-	}
-	
-	printf("\nWinning Amount:%d",(vars->pot/no_of_winners));
-	printf("\nWinning Players Are:");
-	for(int i=0;i<bet->maxplayers;i++)
-	{
-		if(winners[i]==1)
-		{
-			retval=BET_DCV_invoice_pay(bet,vars,i,(vars->pot/no_of_winners));
-			printf("%d\t",i);
-			if(retval == -1)
-				goto end;
+			retval=BET_DCV_invoice_pay(bet,vars,only_winner,vars->pot);
+			printf("Winning player is :%d, winning amount:%d\n",only_winner,vars->pot);
+			//goto end;
 		}
 	}
-	printf("\n");
-
+	else
+	{
+		printf("\nEach player got the below cards:\n");
+		for(int i=0;i<bet->maxplayers;i++)
+		{
+			if(p[i]==fold)
+				scores[i]=0;
+			else
+			{
+				printf("\n For Player id: %d, cards: ",i);
+				for(int j=0;j<hand_size;j++)
+				{
+					int temp=card_values[i][j];
+					printf("%s-->%s \t",suit[temp/13],face[temp%13]);
+					h[j]=(unsigned char)card_values[i][j];
+				
+				}
+					scores[i]=SevenCardDrawScore(h);
+				}
+		}
+		for(int i=0;i<bet->maxplayers;i++)
+		{
+			if(max_score<scores[i])
+				max_score=scores[i];
+		}
+		for(int i=0;i<bet->maxplayers;i++)
+		{
+			if(scores[i]==max_score)
+			{
+				winners[i]=1;
+				no_of_winners++;
+			}
+			else
+				winners[i]=0;
+		}
+		
+		printf("\nWinning Amount:%d",(vars->pot/no_of_winners));
+		printf("\nWinning Players Are:");
+		for(int i=0;i<bet->maxplayers;i++)
+		{
+			if(winners[i]==1)
+			{
+				retval=BET_DCV_invoice_pay(bet,vars,i,(vars->pot/no_of_winners));
+				printf("%d\t",i);
+				if(retval == -1)
+					goto end;
+			}
+		}
+		printf("\n");
+	}
 	cJSON *finalInfo=cJSON_CreateObject();
 	cJSON *cardMatrixInfo=cJSON_CreateArray();
 	cJSON_AddStringToObject(finalInfo,"method","finalInfo");
@@ -2939,31 +2949,26 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 		holeCardInfo=cJSON_CreateArray();
 		for(int j=0;j<no_of_hole_cards;j++)
 		{
-				cJSON_AddItemToArray(holeCardInfo,cJSON_CreateString(cards[card_values[i][j]]));
+				if(card_values[i][j]!=-1)
+					cJSON_AddItemToArray(holeCardInfo,cJSON_CreateString(cards[card_values[i][j]]));
+				else
+					cJSON_AddItemToArray(holeCardInfo,cJSON_CreateNull());
 		}
 		cJSON_AddItemToArray(allHoleCardInfo,holeCardInfo);
 	}
 
 	for(int j=no_of_hole_cards;j<hand_size;j++)
 	{
-		cJSON_AddItemToArray(boardCardInfo,cJSON_CreateString(cards[card_values[0][j]]));
+		if(card_values[0][j]!=-1)
+			cJSON_AddItemToArray(boardCardInfo,cJSON_CreateString(cards[card_values[0][j]]));
+		else
+			cJSON_AddItemToArray(boardCardInfo,cJSON_CreateNull());
 	}
 
 	showInfo=cJSON_CreateObject();
 	cJSON_AddItemToObject(showInfo,"allHoleCardsInfo",allHoleCardInfo);
 	cJSON_AddItemToObject(showInfo,"boardCardInfo",boardCardInfo);
 
-	/*
-	
-	for(int i=0;i<bet->maxplayers;i++)
-	{
-		for(int j=0;j<hand_size;j++)
-		{
-			cJSON_AddItemToArray(cardMatrixInfo,cJSON_CreateNumber(card_values[i][j]));
-		}
-	}
-	cJSON_AddItemToObject(finalInfo,"card_values",cardMatrixInfo);
-    */
     cJSON_AddItemToObject(finalInfo,"showInfo",showInfo);
 	cJSON_AddNumberToObject(finalInfo,"win_amount",vars->pot/no_of_winners);
 
@@ -3517,6 +3522,31 @@ int32_t BET_p2p_hostcommand(cJSON *argjson,struct privatebet_info *bet,struct pr
 		else if(strcmp(method,"display_current_state") == 0)
 		{
 			retval=BET_p2p_display_current_state(argjson,bet,vars);
+		}
+		else if(strcmp(method,"stack") == 0)
+		{
+			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+			vars->funds[jint(argjson,"playerid")]=jint(argjson,"stack_value");
+			retval=BET_relay(argjson,bet,vars);
+			/*
+			if(bet->numplayers==bet->maxplayers)
+			{
+				cJSON *player_stacks,*stackInfo=cJSON_CreateObject();
+				cJSON_AddStringToObject(stackInfo,"method","stack");
+				cJSON_AddItemToObject(stackInfo,"player_stacks",player_stacks=cJSON_CreateArray());
+				for(int i=0;i<bet->maxplayers;i++)
+				{
+					cJSON_AddItemToArray(player_stacks,cJSON_CreateNumber(vars->funds[i]));
+				}
+				printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(player_stacks));
+				bytes=nn_send(bet->pubsock,cJSON_Print(player_stacks),strlen(cJSON_Print(player_stacks)),0);
+				if(bytes<0)
+				{
+					retval=-1;
+					printf("\nMehtod: %s Failed to send data",method);
+					goto end;
+				}
+			}*/
 		}
 		else
     	{

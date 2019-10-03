@@ -493,7 +493,7 @@ int32_t BET_player_create_betting_invoice_request(cJSON *argjson,cJSON *actionRe
 	cJSON_AddStringToObject(betInfo,"method","bettingInvoiceRequest");
 	cJSON_AddNumberToObject(betInfo,"round",jint(argjson,"round"));
 	cJSON_AddNumberToObject(betInfo,"playerID",bet->myplayerid);
-	cJSON_AddNumberToObject(betInfo,"betAmount",amount);
+	cJSON_AddNumberToObject(betInfo,"invoice_amount",amount);
 	cJSON_AddItemToObject(betInfo,"actionResponse",actionResponse);
 
 	rendered=cJSON_Print(betInfo);
