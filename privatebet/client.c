@@ -2419,8 +2419,6 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		cJSON_AddStringToObject(stackInfo,"method","stack");
 		cJSON_AddNumberToObject(stackInfo,"playerid",bet->myplayerid);
 		cJSON_AddNumberToObject(stackInfo,"stack_value",balance);
-
-		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(stackInfo));
 		
 		rendered=cJSON_Print(stackInfo);
         bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
@@ -3197,16 +3195,8 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 		}
 		else if(strcmp(method,"stack") == 0)
 		{
-			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-
+		
 			vars->funds[jint(argjson,"playerid")]=jint(argjson,"stack_value");
-			/*
-			cJSON *player_stacks=cJSON_GetObjectItem(argjson,"player_stacks");
-			for(int i=0;i<cJSON_GetArraySize(player_stacks);i++)
-			{
-				vars->funds[i]=jinti(player_stacks,i);
-			}
-			*/
 		}
 	}	
 	return retval;

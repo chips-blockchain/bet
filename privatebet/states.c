@@ -381,9 +381,24 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 			retval=BET_evaluate_hand_test(argjson,bet,vars);
 			goto end;
 		}
+		printf("%s::%d::players_left::%d\n",__FUNCTION__,__LINE__,players_left);
 		retval=BET_p2p_dcv_turn(argjson,bet,vars);
 		goto end;
 	}
+
+	players_left=0;
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+			if((vars->bet_actions[i][vars->round]==fold)|| (vars->bet_actions[i][vars->round]==allin)) 
+				players_left++;
+	}
+	players_left=bet->maxplayers-players_left;
+	if(players_left<2)
+	{
+		retval=BET_evaluate_hand_test(argjson,bet,vars);
+		goto end;
+	}
+	
 	vars->last_turn=vars->turni;
 	vars->turni=BET_DCV_next_turn(argjson,bet,vars);
 
@@ -1107,6 +1122,7 @@ int32_t BET_player_round_betting_test(cJSON *argjson,struct privatebet_info *bet
 	}
 	else
 	{
+		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(action_response));
 		rendered=cJSON_Print(action_response);
 		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 
@@ -1226,6 +1242,8 @@ int32_t BET_player_round_betting_response(cJSON *argjson,struct privatebet_info 
 	int retval=1,playerid,round,bet_amount=0,maxamount=0,flag1=0,flag2=0,min_amount=0,invoice_amount=0;
 	char *action =NULL;
 	cJSON *playerFunds=NULL;
+
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 	
 	playerid=jint(argjson,"playerid");
 	round=jint(argjson,"round");
@@ -1277,6 +1295,7 @@ int32_t BET_player_round_betting_response(cJSON *argjson,struct privatebet_info 
 		}
 	}
 	//if(bet->myplayerid != playerid)
+		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 	    BET_push_client(argjson);
 	end:
 		return retval;
