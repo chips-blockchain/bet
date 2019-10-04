@@ -2860,7 +2860,7 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 	{
 			p[i]=vars->bet_actions[i][(vars->round-1)];
 			
-			if((vars->bet_actions[i][vars->round]==fold)|| (vars->bet_actions[i][vars->round]==allin)) 
+			if(vars->bet_actions[i][vars->round]==fold)//|| (vars->bet_actions[i][vars->round]==allin)) 
 				players_left++;
 			else
 				only_winner=i;
