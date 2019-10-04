@@ -406,6 +406,9 @@ int32_t BET_player_create_invoice(cJSON *argjson,struct privatebet_info *bet,str
 
 	if(jint(argjson,"playerid")==bet->myplayerid)
 	{
+
+		vars->player_funds+=jint(argjson,"betAmount");
+		
 		argv =(char**)malloc(6*sizeof(char*));
 		for(int i=0;i<6;i++)
 		{
