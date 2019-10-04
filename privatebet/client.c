@@ -2399,9 +2399,12 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		initCardInfo=cJSON_CreateObject();
 		cJSON_AddNumberToObject(initCardInfo,"dealer",jint(argjson,"dealer"));
 		balance=BET_check_player_stack(jstr(argjson,"uri"));
-		vars->player_funds=balance;
+
+		if(vars->player_funds==0)//refill the player stack only if it becomes zero and funds are available
+			vars->player_funds=balance;
+
 		//Here if the balance is not table_stack it should wait for the refill
-		cJSON_AddNumberToObject(initCardInfo,"balance",balance);
+		cJSON_AddNumberToObject(initCardInfo,"balance",vars->player_funds);
 
 		holeCardInfo=cJSON_CreateArray();
 		cJSON_AddItemToArray(holeCardInfo,cJSON_CreateNull());
@@ -2420,7 +2423,7 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 		stackInfo=cJSON_CreateObject();
 		cJSON_AddStringToObject(stackInfo,"method","stack");
 		cJSON_AddNumberToObject(stackInfo,"playerid",bet->myplayerid);
-		cJSON_AddNumberToObject(stackInfo,"stack_value",balance);
+		cJSON_AddNumberToObject(stackInfo,"stack_value",vars->player_funds);
 		
 		rendered=cJSON_Print(stackInfo);
         bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
