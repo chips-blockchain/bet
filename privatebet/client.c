@@ -1724,6 +1724,7 @@ int32_t BET_p2p_betting_invoice(cJSON *argjson,struct privatebet_info *bet,struc
 
 		if(jint(payResponse,"code") != 0)
 		{
+			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(payResponse));
 			retval=-1;
 			goto end;
 		}
@@ -2299,6 +2300,7 @@ int32_t BET_check_player_stack(char *uri)
 {
 	int balance=0;
 	balance=BET_find_channel_balance(uri);
+	balance=balance*100;
 	if(balance>=table_stack)
 	{
 		balance=table_stack;
@@ -3093,7 +3095,7 @@ int32_t BET_p2p_clientupdate_test(cJSON *argjson,struct privatebet_info *bet,str
 	
     if ( (method= jstr(argjson,"method")) != 0 )
     {
-    	//printf("%s::%d::%s\n",__FUNCTION__,__LINE__,method);
+    	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,method);
 	      
     	if ( strcmp(method,"join") == 0 )
 		{
