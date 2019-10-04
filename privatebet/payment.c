@@ -407,14 +407,17 @@ int32_t BET_player_create_invoice(cJSON *argjson,struct privatebet_info *bet,str
 	if(jint(argjson,"playerid")==bet->myplayerid)
 	{
 		argv =(char**)malloc(6*sizeof(char*));
-		for(int i=0;i<5;i++)
+		for(int i=0;i<6;i++)
 		{
 				argv[i]=(char*)malloc(sizeof(char)*1000);
 		}
 		
 		strcpy(argv[0],"lightning-cli");
 		strcpy(argv[1],"invoice");
-		sprintf(argv[2],"%d",jint(argjson,"betAmount")*mchips_msatoshichips);
+		
+		//printf("%s::%d::%d::%d::%ld\n",__FUNCTION__,__LINE__,jint(argjson,"betAmount"),jint(argjson,"betAmount")*mchips_msatoshichips,(long int)jint(argjson,"betAmount")*mchips_msatoshichips);
+
+		sprintf(argv[2],"%ld",(long int)jint(argjson,"betAmount")*mchips_msatoshichips);
 		sprintf(argv[3],"%s_%d",deckid,jint(argjson,"betAmount"));
 		sprintf(argv[4],"\"Winning claim\"");
 		argv[5]=NULL;
@@ -423,6 +426,8 @@ int32_t BET_player_create_invoice(cJSON *argjson,struct privatebet_info *bet,str
 		invoice=cJSON_CreateObject();
 		make_command(argc,argv,&invoice);
 
+		printf("%s::%d::invoice::%s\n",__FUNCTION__,__LINE__,cJSON_Print(invoice));
+		
 		invoiceInfo=cJSON_CreateObject();
 		cJSON_AddStringToObject(invoiceInfo,"method","invoice");
 		cJSON_AddNumberToObject(invoiceInfo,"playerid",bet->myplayerid);

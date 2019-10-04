@@ -22,7 +22,7 @@
 #define big_blind_amount 2 // 2mCHIPS
 */
 
-#define mchips_msatoshichips  100000000 // 1mCHIPS
+#define mchips_msatoshichips  1000000 // 0.01mCHIPS
 #define channel_fund_satoshis 25000000  // 0.05CHIPS or 50 mCHIPS
 
 
