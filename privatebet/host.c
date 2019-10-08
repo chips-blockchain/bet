@@ -2849,6 +2849,7 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 	int winners[CARDS777_MAXPLAYERS],players_left=0,only_winner=-1;
 	cJSON *resetInfo=NULL,*gameInfo=NULL;
 	char *rendered=NULL;
+	int fold_flag=0;
 
 	
 	char* cards[52] = {"2C", "3C", "4C", "5C", "6C", "7C", "8C", "9C", "10C", "JC", "QC", "KC", "AC", 
@@ -2871,6 +2872,7 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 	{
 		if(only_winner != -1)
 		{
+			fold_flag=1;
 			no_of_winners=1;
 			for(int i=0;i<bet->maxplayers;i++)
 			{
@@ -2946,20 +2948,34 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 		holeCardInfo=cJSON_CreateArray();
 		for(int j=0;j<no_of_hole_cards;j++)
 		{
+			if(fold_flag==1)
+			{
+				cJSON_AddItemToArray(holeCardInfo,cJSON_CreateNull());
+			}
+			else
+			{
 				if(card_values[i][j]!=-1)
 					cJSON_AddItemToArray(holeCardInfo,cJSON_CreateString(cards[card_values[i][j]]));
 				else
 					cJSON_AddItemToArray(holeCardInfo,cJSON_CreateNull());
+			}	
 		}
 		cJSON_AddItemToArray(allHoleCardInfo,holeCardInfo);
 	}
 
 	for(int j=no_of_hole_cards;j<hand_size;j++)
 	{
-		if(card_values[0][j]!=-1)
-			cJSON_AddItemToArray(boardCardInfo,cJSON_CreateString(cards[card_values[0][j]]));
-		else
+		if(fold_flag==1)
+		{
 			cJSON_AddItemToArray(boardCardInfo,cJSON_CreateNull());
+		}
+		else
+		{
+			if(card_values[0][j]!=-1)
+				cJSON_AddItemToArray(boardCardInfo,cJSON_CreateString(cards[card_values[0][j]]));
+			else
+				cJSON_AddItemToArray(boardCardInfo,cJSON_CreateNull());
+		}
 	}
 
 	showInfo=cJSON_CreateObject();
