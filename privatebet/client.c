@@ -2598,8 +2598,10 @@ int32_t BET_rest_player_reset(struct lws *wsi,cJSON * argjson)
 
 int32_t BET_player_reset(struct privatebet_info *bet,struct privatebet_vars *vars)
 {
+	int32_t retval=1;
 	cJSON *resetInfo=NULL;
-	printf("\n%s:%d\n",__FUNCTION__,__LINE__);
+
+	player_joined=0;
 	no_of_shares=0;
 	no_of_player_cards=0;
 	for(int i=0;i<bet->range;i++)
@@ -2617,7 +2619,6 @@ int32_t BET_player_reset(struct privatebet_info *bet,struct privatebet_vars *var
 	}
 	
 	vars->pot=0;
-	//vars->player_funds=10000000; // hardcoded to 10000 satoshis
 	for(int i=0;i<bet->maxplayers;i++)
 	{
 		for(int j=0;j<CARDS777_MAXROUNDS;j++)
@@ -2627,12 +2628,10 @@ int32_t BET_player_reset(struct privatebet_info *bet,struct privatebet_vars *var
 		}
 	}
 	
-	//return(BET_p2p_client_join(NULL,bet,vars));
 	resetInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(resetInfo,"method","reset");
-	//BET_push_client(resetInfo);
 	player_lws_write(resetInfo);
-	return 1;
+	return retval;
 }
 
 
@@ -2649,7 +2648,10 @@ int32_t BET_p2p_rest_clientupdate(struct lws *wsi,cJSON *argjson) // update game
     	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 		if ( strcmp(method,"player_join") == 0 )
 		{
-			retval=BET_p2p_client_join(argjson,BET_player_global,vars);
+			if(player_joined == 0)
+				retval=BET_p2p_client_join(argjson,BET_player_global,vars);
+			else
+				printf("%s::%d::Player is already joined\n",__FUNCTION__,__LINE__);
 		}
 		else if ( strcmp(method,"join_res") == 0 )
 		{
