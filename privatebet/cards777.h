@@ -1,12 +1,3 @@
-bits256 cards777_initcrypt(bits256 data,bits256 privkey,bits256 pubkey,int32_t invert);
-bits256 cards777_cardpriv(bits256 playerpriv,bits256 *cardpubs,int32_t numcards,bits256 cipher);
-int32_t cards777_checkcard(bits256 *cardprivp,int32_t cardi,int32_t slot,int32_t destplayer,bits256 playerpriv,bits256 *cardpubs,int32_t numcards,bits256 card);
 int32_t BET_permutation(int32_t *permi,int32_t numcards);
-int32_t BET_permutation_merge(int32_t *permi,int32_t *permiA,int32_t *permiB,int32_t numcards);
-uint64_t BET_permutation_metric(int32_t *permis,int32_t numcards);
-int32_t BET_permutation_sort(int32_t *combined,int32_t permis[][CARDS777_MAXCARDS],int32_t numpermis,int32_t numcards);
-bits256 cards777_deckid(bits256 *pubkeys,int32_t numcards,bits256 cmppubkey);
-bits256 cards777_initdeck(bits256 *cards,bits256 *cardpubs,int32_t numcards,int32_t N,bits256 *playerpubs,bits256 *playerprivs);
 int32_t BET_ciphercreate(bits256 privkey,bits256 destpub,uint8_t *cipher,uint8_t *data,int32_t datalen);
 uint8_t *BET_decrypt(uint8_t *decoded,int32_t maxsize,bits256 senderpub,bits256 mypriv,uint8_t *ptr,int32_t *recvlenp);
-char *BET_createdeck(cJSON *argjson);
