@@ -1,3 +1,8 @@
+
+cJSON* BET_transferfunds(double amount);
+cJSON* BET_sendrawtransaction(cJSON *signedTransaction);
+cJSON* BET_signrawtransactionwithwallet(char *rawtransaction);
+cJSON* BET_createrawtransaction(double amount);
 void BET_listunspent();
 int32_t BET_get_chips_blockheight();
 int32_t BET_get_ln_blockheight();

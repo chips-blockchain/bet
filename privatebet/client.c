@@ -120,7 +120,7 @@ void player_lws_write(cJSON *data)
 
 void make_command(int argc, char **argv,cJSON **argjson)
 {
-	char command[1024];
+	char command[2048];
 	FILE *fp=NULL;
 	char data[65536],temp[65536];
 	char *buf=NULL;
@@ -158,8 +158,17 @@ void make_command(int argc, char **argv,cJSON **argjson)
 	}
 	else
 	{
-		*argjson=cJSON_Parse(data);
-		cJSON_AddNumberToObject(*argjson,"code",0);
+		if((strcmp(argv[1],"createrawtransaction") == 0) || (strcmp(argv[1],"sendrawtransaction") == 0))
+		{
+			if(data[strlen(data)-1]=='\n')
+				data[strlen(data)-1]='\0';
+			*argjson=cJSON_CreateString(data);			
+		}
+		else
+		{
+			*argjson=cJSON_Parse(data);
+			cJSON_AddNumberToObject(*argjson,"code",0);
+		}	
 	}
     end:
 	 if(buf)

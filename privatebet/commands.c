@@ -20,6 +20,133 @@
 
 char BET_ORACLEURL[64] = "127.0.0.1:7797";
 int32_t IAMORACLE;
+char *multisigAddress="bGmKoyJEz4ESuJCTjhVkgEb2Qkt8QuiQzQ";
+
+cJSON* BET_transferfunds(double amount)
+{
+	cJSON *txInfo=NULL;
+	
+	txInfo=BET_sendrawtransaction(BET_signrawtransactionwithwallet(cJSON_str(BET_createrawtransaction(amount))));
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(txInfo));
+	return txInfo;
+}
+cJSON* BET_sendrawtransaction(cJSON *signedTransaction)
+{
+	int argc,maxsize=1000;
+	char **argv=NULL;
+	cJSON *txInfo=NULL;
+
+	argc=3;
+	argv=(char**)malloc(argc*sizeof(char*));
+	for(int i=0;i<argc;i++)
+	{
+		argv[i]=(char*)malloc(maxsize*sizeof(char));
+	}
+	strcpy(argv[0],"chips-cli");
+	strcpy(argv[1],"sendrawtransaction");
+	strcpy(argv[2],jstr(signedTransaction,"hex"));
+	make_command(argc,argv,&txInfo);
+
+	return txInfo;
+			
+}
+
+cJSON* BET_signrawtransactionwithwallet(char *rawtransaction)
+{
+	int argc,maxsize=1000;
+	char **argv=NULL;
+	cJSON *signedTransaction=NULL;
+	
+	argc=3;
+	argv=(char**)malloc(argc*sizeof(char*));
+	for(int i=0;i<argc;i++)
+	{
+		argv[i]=(char*)malloc(maxsize*sizeof(char));
+	}
+	strcpy(argv[0],"chips-cli");
+	strcpy(argv[1],"signrawtransactionwithwallet");
+	strcpy(argv[2],rawtransaction);
+	make_command(argc,argv,&signedTransaction);
+
+	return signedTransaction;	
+}
+
+cJSON* BET_createrawtransaction(double amount)
+{
+	char **argv=NULL,*changeAddress=NULL;
+	int argc,maxsize=1024;
+	cJSON *listunspentInfo=NULL,*addressInfo=NULL,*txListInfo=NULL,*createTX=NULL;
+	double balance,change,temp_balance=0,fee=0.0005;
+
+	balance=BET_getbalance();
+	txListInfo=cJSON_CreateArray();
+	addressInfo=cJSON_CreateObject();
+
+	
+	
+	if((balance+fee)<amount)
+	{
+		printf("%s::%d::Insufficient Funds\n",__FUNCTION__,__LINE__);
+	}
+	else
+	{
+		cJSON_AddNumberToObject(addressInfo,multisigAddress,amount);
+		amount+=fee;
+		
+		argc=4;
+		argv=(char**)malloc(argc*sizeof(char*));
+		for(int i=0;i<argc;i++)
+		{
+			argv[i]=(char*)malloc(maxsize*sizeof(char));
+		}
+		strcpy(argv[0],"chips-cli");
+		strcpy(argv[1],"listunspent");
+		argc=2;
+		make_command(argc,argv,&listunspentInfo);
+		
+		
+		for(int i=0;i<cJSON_GetArraySize(listunspentInfo)-1;i++)
+		{
+			cJSON *temp=cJSON_GetArrayItem(listunspentInfo,i);
+			cJSON *txInfo=cJSON_CreateObject();
+			if(strcmp(cJSON_Print(cJSON_GetObjectItem(temp,"spendable")),"true") == 0)
+			{
+				temp_balance+=jdouble(temp,"amount");
+				if(temp_balance>=amount)
+				{
+					changeAddress=jstr(temp,"address");
+					change=temp_balance-amount;
+					cJSON_AddStringToObject(txInfo,"txid",jstr(temp,"txid"));
+					cJSON_AddNumberToObject(txInfo,"vout",jint(temp,"vout"));
+					cJSON_AddItemToArray(txListInfo,txInfo);
+					break;
+				}
+				else
+				{
+					cJSON_AddStringToObject(txInfo,"txid",jstr(temp,"txid"));
+					cJSON_AddNumberToObject(txInfo,"vout",jint(temp,"vout"));
+					cJSON_AddItemToArray(txListInfo,txInfo);
+
+				}
+			}
+		}
+		if(change != 0)
+		{
+			cJSON_AddNumberToObject(addressInfo,changeAddress,change);
+		}
+		argc=4;
+		for(int i=0;i<argc;i++)
+			memset(argv[i],0x00,maxsize);
+
+		strcpy(argv[0],"chips-cli");
+		strcpy(argv[1],"createrawtransaction");
+		sprintf(argv[2],"\'%s\'",cJSON_Print(txListInfo));
+		sprintf(argv[3],"\'%s\'",cJSON_Print(addressInfo));
+		make_command(argc,argv,&createTX);
+		return createTX;
+	}
+}
+
 
 void BET_listunspent()
 {

@@ -80,7 +80,7 @@ bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 struct enc_share *g_shares=NULL;
 
-char *rootAddress="RSdMRYeeouw3hepxNgUzHn34qFhn1tsubb";
+char *rootAddress="RSdMRYeeouw3hepxNgUzHn34qFhn1tsubb"; //donation Address
 
 int main(int argc, char **argv)
 {
@@ -88,6 +88,7 @@ int main(int argc, char **argv)
     char bindaddr[128]/*="ipc:///tmp/bet.ipc"*/,bindaddr1[128]/*="ipc:///tmp/bet1.ipc"*/,hostip[20]; 
 	uint32_t i,range,numplayers; int32_t pubsock=-1,subsock=-1,pullsock=-1,pushsock=-1;  
 	pthread_t dcv_t,bvv_t,player_t,dcv_backend,bvv_backend,player_backend;
+
     #if 1
 	if(argc>=2)
 		strcpy(hostip,argv[2]);
