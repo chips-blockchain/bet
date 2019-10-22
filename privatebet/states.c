@@ -661,7 +661,7 @@ int32_t BET_player_big_blind_bet(cJSON *argjson,struct privatebet_info *bet,stru
 
 int32_t BET_p2p_dealer_info(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int retval=1,bytes;
+	int retval=0,bytes;
 	cJSON *dealerReady=NULL;
 	char *rendered=NULL;
 	

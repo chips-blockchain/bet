@@ -22,6 +22,67 @@ char BET_ORACLEURL[64] = "127.0.0.1:7797";
 int32_t IAMORACLE;
 char *multisigAddress="bGmKoyJEz4ESuJCTjhVkgEb2Qkt8QuiQzQ";
 
+int BET_validateaddress(char* address)
+{
+	int argc,maxsize=1000;
+	char **argv=NULL;
+	cJSON *addressInfo=NULL;
+	argc=3;
+
+	argv=(char**)malloc(argc*sizeof(char*));
+	for(int i=0;i<argc;i++)
+	{
+		argv[i]=(char*)malloc(maxsize*sizeof(char));
+	}
+	strcpy(argv[0],"chips-cli");
+	strcpy(argv[1],"validateaddress");
+	strcpy(argv[2],address);
+	make_command(argc,argv,&addressInfo);
+
+	cJSON *temp=cJSON_GetObjectItem(addressInfo,"ismine");
+	if(strcmp(cJSON_Print(temp),"true")==0)
+	{
+		return 1;
+	}	
+	else
+		return 0;
+}
+
+
+void BET_listaddressgroupings()
+{
+	int argc,maxsize=1000;
+	char **argv=NULL;
+	cJSON *listaddressgroupingsInfo=NULL;
+
+	argc=3;
+	argv=(char**)malloc(argc*sizeof(char*));
+	for(int i=0;i<argc;i++)
+	{
+		argv[i]=(char*)malloc(maxsize*sizeof(char));
+	}
+	argc=2;
+	strcpy(argv[0],"chips-cli");
+	strcpy(argv[1],"listaddressgroupings");
+	make_command(argc,argv,&listaddressgroupingsInfo);
+
+	for(int i=0;i<cJSON_GetArraySize(listaddressgroupingsInfo);i++)
+	{
+		cJSON *addressInfo=cJSON_GetArrayItem(listaddressgroupingsInfo,i);
+		for(int j=0;j<cJSON_GetArraySize(addressInfo);j++)
+		{
+			cJSON *temp=NULL;
+			temp=cJSON_GetArrayItem(addressInfo,j);
+			cJSON *address=cJSON_GetArrayItem(temp,0);
+			if(BET_validateaddress(cJSON_Print(address))==1)
+			{
+				
+				printf("%s::%f\n",cJSON_Print(address),atof(cJSON_Print(cJSON_GetArrayItem(temp,1))));
+			}
+		}
+	}
+		
+}
 cJSON* BET_transferfunds(double amount)
 {
 	cJSON *txInfo=NULL;

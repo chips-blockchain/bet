@@ -288,7 +288,7 @@ Below code is aimed to implement p2p Pangea
 
 int32_t BET_p2p_bvv_init(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int32_t bytes,retval=1;
+	int32_t bytes,retval=0;
 	char *rendered,str[65],enc_str[177];
 	cJSON *cjsondcvblindcards,*cjsonpeerpubkeys,*bvv_init_info,*cjsonbvvblindcards,*cjsonshamirshards;
 	bits256 dcvblindcards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS],peerpubkeys[CARDS777_MAXPLAYERS];
@@ -317,7 +317,6 @@ int32_t BET_p2p_bvv_init(cJSON *argjson,struct privatebet_info *bet,struct priva
 	{
 		p2p_bvv_init(peerpubkeys,bvv_info.bvv_key,bvvblindingvalues[playerid],bvvblindcards[playerid],
 			dcvblindcards[playerid],bet->range,bvv_info.numplayers,playerid,bvv_info.deckid);
-		//sleep(5);
 
 	}
 	
@@ -348,20 +347,16 @@ int32_t BET_p2p_bvv_init(cJSON *argjson,struct privatebet_info *bet,struct priva
 	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 
 	if(bytes<0)
-	{
 		retval=-1;
-		printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
-		goto end;
-	}
-   end:
-		return retval;
+	
+	return retval;
 	
 }
 
 int32_t BET_p2p_bvv_join_init(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	cJSON *channelInfo=NULL,*addresses,*address,*bvvResponseInfo=NULL;
-	int argc,bytes,retval=1;
+	int argc,bytes,retval=0;
 	char **argv=NULL,*uri=NULL,*rendered=NULL;
 	argc=3;
 	argv=(char**)malloc(argc*sizeof(char*));
@@ -387,6 +382,7 @@ int32_t BET_p2p_bvv_join_init(cJSON *argjson,struct privatebet_info *bet,struct 
 	uri=(char*)malloc(sizeof(char)*100);
 	if(!uri)
 	{
+		retval=-1;
 		printf("%s::%d::malloc failed\n",__FUNCTION__,__LINE__);
 		goto end;
 	}	
@@ -401,16 +397,14 @@ int32_t BET_p2p_bvv_join_init(cJSON *argjson,struct privatebet_info *bet,struct 
 	cJSON_AddStringToObject(bvvResponseInfo,"uri",uri);
 	printf("%s::%d::uri::%s\n",__FUNCTION__,__LINE__,uri);
 	rendered=cJSON_Print(bvvResponseInfo);
-    bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+
+	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 
 	
     if(bytes<0)
-	{
 		retval=-1;
-		printf("\n%s:%d: Failed to send data",__FUNCTION__,__LINE__);
-		goto end;
-	}
-   end:
+
+	end:
 	if(uri)
 		free(uri);
 	if(argv)
@@ -488,7 +482,7 @@ cJSON* BET_p2p_fundchannel(char *channel_id)
 
 int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int retval,channel_state,bytes;
+	int retval=0,channel_state,bytes;
 	cJSON *uriInfo=NULL,*fundChannelInfo=NULL,*bvvReady=NULL;
 	char uri[100],channel_id[100],*rendered=NULL;
 	
@@ -543,6 +537,7 @@ int32_t BET_p2P_check_bvv_ready(cJSON *argjson,struct privatebet_info *bet,struc
     bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 	if(bytes<0)
 		retval=-1;
+
 	end:
 		return retval;
 }
@@ -577,7 +572,7 @@ void BET_BVV_reset(struct privatebet_info *bet,struct privatebet_vars *vars)
 int32_t BET_bvv_frontend(struct lws *wsi, cJSON *argjson)
 {
     char *method; 
-	int32_t retval=1;
+	int32_t retval=0;
 	struct privatebet_info *bet=NULL;
 	struct privatebet_vars *vars=NULL;
     if ( (method= jstr(argjson,"method")) != 0 )
@@ -609,12 +604,6 @@ int32_t BET_bvv_frontend(struct lws *wsi, cJSON *argjson)
 			BET_BVV_reset(bet,vars);
 			
 		}
-		else if(strcmp(method,"seats") == 0)
-		{
-			printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-		}
-        else
-            retval=-1;
     }
     return retval;
 }
@@ -646,7 +635,7 @@ void BET_bvv_backend_loop(void *_ptr)
 	bvvJoinInfo=cJSON_CreateObject();
 	
 	cJSON_AddStringToObject(bvvJoinInfo,"method","bvv_join");
-	if ( BET_bvv_backend(bvvJoinInfo,bet,VARS) < 0 )
+	if ( BET_bvv_backend(bvvJoinInfo,bet,VARS) != 0 )
 	{
         printf("\n%s:%d:BVV joining the table failed",__FUNCTION__,__LINE__);
 	}
@@ -665,7 +654,7 @@ void BET_bvv_backend_loop(void *_ptr)
             {
                 if ( BET_bvv_backend(argjson,bet,BVV_VARS) != 0 ) // usually just relay to players
                 {
-                	// do soemthing incase any command or logic failures
+                	printf("%s::%d::Failed to send data\n",__FUNCTION__,__LINE__);
                 }
                 free_json(argjson);
             }
@@ -683,7 +672,7 @@ void BET_bvv_backend_loop(void *_ptr)
 
 int32_t BET_bvv_backend(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-    char *method; int32_t retval=1;
+    char *method; int32_t retval=0;
 	
     if ( (method= jstr(argjson,"method")) != 0 )
     {
@@ -706,24 +695,16 @@ int32_t BET_bvv_backend(cJSON *argjson,struct privatebet_info *bet,struct privat
 		{
 			retval=BET_p2P_check_bvv_ready(argjson,bet,vars);
 		}
-		else if(strcmp(method,"dealer") == 0)
-		{
-			//retval=BET_p2p_dealer_info(argjson,bet,vars);
-		}
 		else if(strcmp(method,"reset") == 0)
 		{
-			printf("%s::%d::method::%s\n",__FUNCTION__,__LINE__,method);
 			BET_BVV_reset(bet,vars);
 			retval=BET_p2p_bvv_join_init(argjson,BET_bvv,vars);
 		}
 		else if(strcmp(method,"seats") == 0)
 		{
-			printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 			retval=BET_p2p_bvv_join_init(argjson,bet,vars);
 		}
-        else
-            retval=-1;
-    }
+     }
     return retval;
 }
 
@@ -1959,8 +1940,7 @@ int lws_callback_http_bvv(struct lws *wsi, enum lws_callback_reasons reason,
 				if (!lws_is_final_fragment(wsi))
 						break;
 				argjson=cJSON_Parse(lws_buf_bvv);
-				printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-				if( BET_bvv_frontend(wsi,argjson) != 1 )
+				if( BET_bvv_frontend(wsi,argjson) != 0 )
 				{
 					printf("\n%s:%d:Failed to process the host command",__FUNCTION__,__LINE__);
 				}
@@ -1969,7 +1949,6 @@ int lws_callback_http_bvv(struct lws *wsi, enum lws_callback_reasons reason,
 		        break;
 			case LWS_CALLBACK_ESTABLISHED:
 				wsi_global_bvv=wsi;
-				printf("\n%s:%d::LWS_CALLBACK_ESTABLISHED\n",__FUNCTION__,__LINE__);
 				break;
         }
         return 0;

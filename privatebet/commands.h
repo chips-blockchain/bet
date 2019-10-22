@@ -1,4 +1,6 @@
 
+int BET_validateaddress(char* address);
+void BET_listaddressgroupings();
 cJSON* BET_transferfunds(double amount);
 cJSON* BET_sendrawtransaction(cJSON *signedTransaction);
 cJSON* BET_signrawtransactionwithwallet(char *rawtransaction);

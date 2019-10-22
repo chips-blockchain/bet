@@ -326,9 +326,7 @@ void BET_player_paymentloop(void * _ptr)
     			   {
     			   		if(strcmp(method,"invoice") == 0)
 			   			{
-			   							printf("%s::%d\n",__FUNCTION__,__LINE__);
 			   				retval=BET_p2p_invoice(msgjson,bet,NULL);
-							printf("%s::%d::%d\n",__FUNCTION__,__LINE__,retval);
 							flag=0;
 							break;
 			   			}
@@ -337,16 +335,11 @@ void BET_player_paymentloop(void * _ptr)
 							printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(msgjson));
 						}
                    }
-                   
-                    //free_json(msgjson);
                 }
                 
         }
         
     }   
-
-	//return retval;
- 
 }
 
 

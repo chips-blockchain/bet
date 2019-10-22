@@ -1685,15 +1685,8 @@ int32_t BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct pri
 	invoice=cJSON_CreateObject();
 	make_command(argc,argv,&invoice);
 	
-	//ln_bet(argc,argv,buf);
-	//invoice=cJSON_CreateObject();
-	//invoice=cJSON_Parse(buf);
 	if(jint(invoice,"code") != 0)
-	{
 		retval=-1;
-		printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(invoice,"message"));
-		goto end;
-	}
 	else
 	{
 		invoiceInfo=cJSON_CreateObject();
@@ -1702,30 +1695,25 @@ int32_t BET_create_invoice(cJSON *argjson,struct privatebet_info *bet,struct pri
 		cJSON_AddNumberToObject(invoiceInfo,"round",jint(argjson,"round"));
 		cJSON_AddStringToObject(invoiceInfo,"label",argv[3]);
 		cJSON_AddStringToObject(invoiceInfo,"invoice",cJSON_Print(invoice));
-		printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(invoiceInfo));
+
 		rendered=cJSON_Print(invoiceInfo);
 		bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 		
 		if(bytes<0)
-		{
 			retval=-1;
-			printf("\n%s :%d Failed to send data",__FUNCTION__,__LINE__);
-			goto end;
-		}
-					
 	}
 	
-	end:
-		if(argv)
+	if(argv)
+	{
+		for(int i=0;i<6;i++)
 		{
-			for(int i=0;i<6;i++)
-			{
-				if(argv[i])
-					free(argv[i]);
-			}
-			free(argv);
+			if(argv[i])
+				free(argv[i]);
 		}
-		return retval;
+		free(argv);
+	}
+
+	return retval;
 }
 
 
@@ -1757,12 +1745,8 @@ int32_t BET_create_betting_invoice(cJSON *argjson,struct privatebet_info *bet,st
 	make_command(argc,argv,&invoice);
 	
 	if(jint(invoice,"code") != 0)
-	{
-		retval=-1;
-		printf("\n%s:%d: Message:%s",__FUNCTION__,__LINE__,jstr(invoice,"message"));
-		goto end;
-	}
-	else
+			retval=-1;
+	else 
 	{
 		invoiceInfo=cJSON_CreateObject();
 		cJSON_AddStringToObject(invoiceInfo,"method","bettingInvoice");
@@ -1772,30 +1756,23 @@ int32_t BET_create_betting_invoice(cJSON *argjson,struct privatebet_info *bet,st
 		cJSON_AddStringToObject(invoiceInfo,"invoice",cJSON_Print(invoice));
 		cJSON_AddItemToObject(invoiceInfo,"actionResponse",cJSON_GetObjectItem(argjson,"actionResponse"));
 		
-		printf("\n%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(invoiceInfo));
 		rendered=cJSON_Print(invoiceInfo);
 		bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 		
 		if(bytes<0)
-		{
 			retval=-1;
-			printf("\n%s :%d Failed to send data",__FUNCTION__,__LINE__);
-			goto end;
-		}
-					
 	}
-	
-	end:
-		if(argv)
+
+	if(argv)
+	{
+		for(int i=0;i<6;i++)
 		{
-			for(int i=0;i<6;i++)
-			{
-				if(argv[i])
-					free(argv[i]);
-			}
-			free(argv);
+			if(argv[i])
+				free(argv[i]);
 		}
-		return retval;
+		free(argv);
+	}
+	return retval;
 }
 
 	

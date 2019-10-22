@@ -89,6 +89,7 @@ int main(int argc, char **argv)
 	uint32_t i,range,numplayers; int32_t pubsock=-1,subsock=-1,pullsock=-1,pushsock=-1;  
 	pthread_t dcv_t,bvv_t,player_t,dcv_backend,bvv_backend,player_backend;
 
+	BET_listaddressgroupings();
     #if 1
 	if(argc>=2)
 		strcpy(hostip,argv[2]);
