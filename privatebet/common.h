@@ -46,6 +46,7 @@ extern bits256 all_g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXPLAYERS][CARDS777_MAX
 extern struct privatebet_info *BET_dcv;
 extern struct privatebet_vars *DCV_VARS;
 
+extern int32_t no_of_signers,max_no_of_signers,is_signed[CARDS777_MAXPLAYERS];
 
 extern struct privatebet_info *BET_bvv;
 extern struct privatebet_vars *BVV_VARS;
@@ -79,6 +80,8 @@ extern int32_t Num_hostrhashes,Chips_paid;
 extern bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 
 extern struct lws *wsi_global_client;
+
+extern struct cashier *cashier_info;
 
 
 #endif

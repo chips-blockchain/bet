@@ -158,11 +158,17 @@ void make_command(int argc, char **argv,cJSON **argjson)
 	}
 	else
 	{
-		if((strcmp(argv[1],"createrawtransaction") == 0) || (strcmp(argv[1],"sendrawtransaction") == 0))
+		if((strcmp(argv[1],"createrawtransaction") == 0) || (strcmp(argv[1],"sendrawtransaction") == 0) || (strcmp(argv[1],"getnewaddress") == 0))
 		{
 			if(data[strlen(data)-1]=='\n')
 				data[strlen(data)-1]='\0';
 			*argjson=cJSON_CreateString(data);			
+		}
+		else if(strcmp(argv[1],"importaddress") == 0)
+		{
+			*argjson=cJSON_CreateObject();
+			cJSON_AddNumberToObject(*argjson,"code",0);
+						
 		}
 		else
 		{
@@ -1368,6 +1374,74 @@ int32_t BET_p2p_client_init(cJSON *argjson,struct privatebet_info *bet,struct pr
 		return retval;
 }
 
+void LN_connect(char *id)
+{
+	
+	int argc,maxsize=100;
+	char **argv=NULL;
+	cJSON *connectInfo=NULL;
+
+	argc=3;
+	
+    argv=(char**)malloc(argc*sizeof(char*));
+    for(int i=0;i<argc;i++)
+    {
+     argv[i]=(char*)malloc(maxsize*sizeof(char));
+    }
+	
+	strcpy(argv[0],"lightning-cli");
+	strcpy(argv[1],"connect");
+	strcpy(argv[2],id);
+	make_command(argc,argv,&connectInfo);
+}
+
+void LN_connect_to_channel(char *id)
+{
+	int argc,maxsize=100;
+	char **argv=NULL;
+	cJSON *listPeersInfo=NULL;
+	cJSON *peersInfo=NULL;
+	int32_t connected=0;
+	
+	argc=2;
+	
+    argv=(char**)malloc(argc*sizeof(char*));
+    for(int i=0;i<argc;i++)
+    {
+     argv[i]=(char*)malloc(maxsize*sizeof(char));
+    }
+	
+	strcpy(argv[0],"lightning-cli");
+	strcpy(argv[1],"listpeers");
+	make_command(argc,argv,&listPeersInfo);
+
+	
+	peersInfo=cJSON_GetObjectItem(listPeersInfo,"peers");
+
+	
+	for(int i=0;i<cJSON_GetArraySize(peersInfo);i++)
+	{
+		cJSON *peer=cJSON_GetArrayItem(peersInfo,i);
+
+		if(strcmp(jstr(peer,"id"),id) == 0)
+		{
+			cJSON *state=cJSON_GetObjectItem(peer,"connected");
+
+			if(strcmp(cJSON_Print(state),"true") == 0)
+			{
+				connected=1;
+				break;
+			}
+		}
+	}
+
+	if(connected == 0)
+	{
+		LN_connect(id);
+	}
+	
+}
+
 int32_t LN_get_channel_status(char *id)
 {
 	int argc,channel_state=0;
@@ -1525,6 +1599,12 @@ int32_t BET_p2p_client_join_res(cJSON *argjson,struct privatebet_info *bet,struc
 				goto end;
 			}
 		}
+		else
+		{
+			strcpy(uri,jstr(argjson,"uri"));
+			LN_connect_to_channel(uri);
+		}
+		
 		
 		int state;
 		while((state=LN_get_channel_status(channel_id)) != 3)
@@ -1611,13 +1691,10 @@ cJSON* BET_rest_client_join(cJSON *argjson)
 }
 int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int32_t bytes,retval=-1;
+	int32_t bytes,argc,retval=-1;
 	cJSON *joininfo=NULL,*channelInfo=NULL,*addresses=NULL,*address=NULL;
 	struct pair256 key;
-	char *uri=NULL;
-	int argc;
-	char **argv=NULL;
-	char *rendered=NULL;
+	char **argv=NULL,*rendered=NULL,*uri=NULL,*txID=NULL;
 		
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
     if(bet->pushsock>=0)
@@ -1666,6 +1743,15 @@ int32_t BET_p2p_client_join(cJSON *argjson,struct privatebet_info *bet,struct pr
 		cJSON_AddStringToObject(joininfo,"uri",uri);
 		cJSON_AddNumberToObject(joininfo,"gui_playerID",jint(argjson,"gui_playerID"));
 
+		/*
+		txID=cJSON_Print(BET_transferfunds(0.025,NULL));
+
+		cJSON_AddStringToObject(joininfo,"txID",txID);
+
+		cJSON_AddStringToObject(joininfo,"address",BET_getnewaddress());
+		*/
+		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(joininfo));
+		
 		rendered=cJSON_Print(joininfo);
         bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 		if(bytes<0)
@@ -2039,9 +2125,9 @@ void BET_p2p_player_blinds_info()
 int32_t BET_player_backend(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars) // update game state based on host broadcast
 {
 	
-    int32_t retval=1;
+    int32_t retval=1,bytes;
     char *method=NULL; 
-	char hexstr[65];
+	char hexstr[65],*rendered=NULL;
 	
     if ( (method= jstr(argjson,"method")) != 0 )
     {
@@ -2150,6 +2236,26 @@ int32_t BET_player_backend(cJSON *argjson,struct privatebet_info *bet,struct pri
 		
 			vars->funds[jint(argjson,"playerid")]=jint(argjson,"stack_value");
 		}
+		else if(strcmp(method,"signrawtransaction") == 0)
+		{
+			if(jint(argjson,"playerid")==bet->myplayerid)
+			{
+				printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+				cJSON *temp=cJSON_CreateObject();
+				temp=BET_signrawtransactionwithwallet(jstr(argjson,"tx"));
+				cJSON *signedTxInfo=cJSON_CreateObject();
+
+				cJSON_AddStringToObject(signedTxInfo,"method","signedrawtransaction");
+				cJSON_AddStringToObject(signedTxInfo,"tx",jstr(temp,"hex"));
+				cJSON_AddNumberToObject(signedTxInfo,"playerid",bet->myplayerid);
+
+				rendered=cJSON_Print(signedTxInfo);
+				bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
+				if(bytes<0)
+					retval=-1;
+			}	
+		}
+		
 	}	
 	return retval;
 }

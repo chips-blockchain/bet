@@ -79,6 +79,10 @@ void rest_display_cards(cJSON *argjson,int32_t this_playerID);
 
 
 
+void LN_connect_to_channel(char *id);
+void LN_connect(char *id);
+
+
 
 
 

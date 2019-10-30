@@ -117,7 +117,8 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	cJSON *roundBetting=NULL,*possibilities=NULL,*actions=NULL,*betAmounts=NULL;
 	int maxamount=0,bytes,retval=1,players_left=0,toCall=0,toRaise=0,totalBet=0;
 	char *rendered=NULL;
-	
+
+		
 	if((retval=BET_DCV_next_turn(argjson,bet,vars)) == -1)
 	{
 		for(int i=0;i<bet->maxplayers;i++)

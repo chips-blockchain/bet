@@ -62,6 +62,7 @@ int32_t bet_amount[CARDS777_MAXPLAYERS][CARDS777_MAXROUNDS];
 int32_t eval_game_p[CARDS777_MAXPLAYERS],eval_game_c[CARDS777_MAXPLAYERS];
 
 
+char player_chips_address[CARDS777_MAXPLAYERS][64];
 
 int32_t invoiceID;
 
@@ -74,6 +75,8 @@ struct privatebet_vars *DCV_VARS;
 
 
 static int dealerPosition;
+
+int32_t no_of_signers,max_no_of_signers=2,is_signed[CARDS777_MAXPLAYERS];
 
 
 /*
@@ -208,7 +211,8 @@ int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 {
 	cJSON *tableInfo=NULL,*seatInfo=NULL,*seatsInfo=NULL;
 	char *rendered=NULL;
-
+	int32_t retval=0,bytes;
+	
 	tableInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(tableInfo,"method","seats");
 	cJSON_AddItemToObject(tableInfo,"seats",seatsInfo);
@@ -243,7 +247,9 @@ int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 
 	
 
-	nn_send(BET_dcv->pubsock,rendered,strlen(rendered),0);
+	bytes=nn_send(BET_dcv->pubsock,rendered,strlen(rendered),0);
+	if(bytes<0)
+		retval=-1;
 
 	return 0;
 	
@@ -1432,7 +1438,9 @@ int32_t BET_p2p_client_join_req(cJSON *argjson,struct privatebet_info *bet,struc
 	int argc;
 	char **argv=NULL;
 
-	printf("%s::%d::%d\n",__FUNCTION__,__LINE__,jint(argjson,"gui_playerID"));
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+
+	//strcpy(player_chips_address[jint(argjson,"gui_playerID")],jstr(argjson,"txID"));
 	
     bet->numplayers=++players_joined;
 	dcv_info.peerpubkeys[jint(argjson,"gui_playerID")]=jbits256(argjson,"pubkey");
@@ -1883,7 +1891,7 @@ int32_t BET_p2p_check_player_ready(cJSON *playerReady,struct privatebet_info *be
 }
 int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
-	int retval=1,playerid,cardid,card_type,flag;
+	int retval=1,playerid,cardid,card_type,flag=1;
 	
 	playerid=jint(playerCardInfo,"playerid");
 	cardid=jint(playerCardInfo,"cardid");
@@ -1923,7 +1931,8 @@ int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struc
 		card_matrix[playerid][no_of_hole_cards+no_of_flop_cards+no_of_turn_card]=1;
 		card_values[playerid][no_of_hole_cards+no_of_flop_cards+no_of_turn_card]=jint(playerCardInfo,"decoded_card");
 	}
-	/*
+
+	#if 0
 	printf("\nCard Matrix:\n");
 	for(int i=0;i<hand_size;i++)
 	{
@@ -1933,7 +1942,8 @@ int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struc
 		}
 		printf("\n");
 	}
-	*/
+	#endif
+	
 	if(hole_cards_drawn == 0)
 	{
 		flag=1;
@@ -1970,6 +1980,7 @@ int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struc
 	}
 	else if(turn_card_drawn == 0)
 	{
+		flag=1;
 		for(int i=no_of_hole_cards+no_of_flop_cards;((i<no_of_hole_cards+no_of_flop_cards+no_of_turn_card) && (flag));i++)
 		{
 			for(int j=0;((j<bet->maxplayers) &&(flag));j++)
@@ -1986,6 +1997,7 @@ int32_t BET_receive_card(cJSON *playerCardInfo,struct privatebet_info *bet,struc
 	}
 	else if(river_card_drawn == 0)
 	{
+		flag=1;
 		for(int i=no_of_hole_cards+no_of_flop_cards+no_of_turn_card;((i<no_of_hole_cards+no_of_flop_cards+no_of_turn_card+no_of_river_card) && (flag));i++)
 		{
 			for(int j=0;((j<bet->maxplayers) &&(flag));j++)
@@ -2226,6 +2238,8 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 		{
 			if(winners[i]==1)
 			{
+				//printf("%s::%d::Winning Address::%s\n",__FUNCTION__,__LINE__,player_chips_address[i]);
+				//BET_transferfunds(0.05,player_chips_address[i]);
 				retval=BET_DCV_invoice_pay(bet,vars,i,(vars->pot/no_of_winners));
 				printf("%d\t",i);
 				if(retval == -1)
@@ -2737,7 +2751,6 @@ int32_t BET_dcv_backend(cJSON *argjson,struct privatebet_info *bet,struct privat
 						printf("%s::%d::something wrong with BET_LN_check\n",__FUNCTION__,__LINE__);
 						goto end;
 					}
-					//BET_broadcast_table_info(bet);
 					BET_check_BVV_Ready(bet);
 				}
 			}
@@ -2830,6 +2843,24 @@ int32_t BET_dcv_backend(cJSON *argjson,struct privatebet_info *bet,struct privat
 		{
 			vars->funds[jint(argjson,"playerid")]=jint(argjson,"stack_value");
 			retval=BET_relay(argjson,bet,vars);
+		}
+		else if(strcmp(method,"signedrawtransaction") == 0)
+		{
+			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+			no_of_signers++;
+			if(no_of_signers<max_no_of_signers)
+			{
+				is_signed[jint(argjson,"playerid")]=1;
+				BET_publishmultisigtransaction(jstr(argjson,"tx"));
+			}
+			else
+			{
+				cJSON *temp=cJSON_CreateObject();
+				cJSON_AddStringToObject(temp,"hex",jstr(argjson,"tx"));
+				cJSON *finaltx=BET_sendrawtransaction(temp);
+				printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(finaltx));
+			}
+			
 		}
 		else
     	{

@@ -47,6 +47,7 @@
 #include "commands.h"
 #include "../log/macrologger.h"
 #include "common.h"
+#include "cashier.h"
 
 #include <unistd.h>
 #include <stdio.h>
@@ -82,14 +83,23 @@ struct enc_share *g_shares=NULL;
 
 char *rootAddress="RSdMRYeeouw3hepxNgUzHn34qFhn1tsubb"; //donation Address
 
+
+
 int main(int argc, char **argv)
 {
-    uint16_t port = 7797+1;
+    uint16_t port = 7797+1,cashier_port=7901;
     char bindaddr[128]/*="ipc:///tmp/bet.ipc"*/,bindaddr1[128]/*="ipc:///tmp/bet1.ipc"*/,hostip[20]; 
 	uint32_t i,range,numplayers; int32_t pubsock=-1,subsock=-1,pullsock=-1,pushsock=-1;  
-	pthread_t dcv_t,bvv_t,player_t,dcv_backend,bvv_backend,player_backend;
+	pthread_t dcv_t,bvv_t,player_t,dcv_backend,bvv_backend,player_backend,cashier_t;
 
-	BET_listaddressgroupings();
+		
+	/*	
+	char *msig="bQJTo8knsbSoU7k9oGADa6qfWGWyJtxC3o";
+	char *toaddress="bGmKoyJEz4ESuJCTjhVkgEb2Qkt8QuiQzQ";
+
+	cJSON *temp=BET_createrawmultisigtransaction(0.025,toaddress,msig);
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(temp));
+	*/
     #if 1
 	if(argc>=2)
 		strcpy(hostip,argv[2]);
@@ -247,6 +257,35 @@ int main(int argc, char **argv)
 				printf("\nError in joining the main thread for player %d",i);
 			}
 	}
+	#if 0
+	else if(strcmp(argv[1],"cashier")==0)
+	{
+		
+		
+		BET_transportname(0,bindaddr,hostip,cashier_port);
+		pubsock = BET_nanosock(1,bindaddr,NN_PUB);
+		
+		BET_transportname(0,bindaddr1,hostip,cashier_port+1);
+		pullsock = BET_nanosock(1,bindaddr1,NN_PULL);
+		
+		cashier_info=calloc(1,sizeof(struct cashier));
+	
+	    cashier_info->pubsock = pubsock;//BET_nanosock(1,bindaddr,NN_PUB);
+	    cashier_info->pullsock = pullsock;//BET_nanosock(1,bindaddr1,NN_PULL);
+	    if (OS_thread_create(&cashier_t,NULL,(void *)BET_cashier_loop,(void *)cashier_info) != 0 )
+		{
+			printf("\nerror in launching cashier");
+			exit(-1);
+		}
+		
+		
+		if(pthread_join(cashier_t,NULL))
+		{
+		printf("\nError in joining the main thread for cashier");
+		}
+		
+	}
+	#endif
 	else
 	{
 		printf("\nInvalid Usage");

@@ -181,8 +181,19 @@ struct deck_bvv_info
 	uint32_t numplayers,maxplayers;
 };
 
+
+struct cashier
+{
+    int32_t pullsock,pubsock;
+    char addr[67];
+};
+
+
+
 extern struct privatebet_info *BET_player_global;
 extern struct privatebet_vars *Player_VARS_global;
+
+
 
 
 int32_t BET_statemachine_validate(struct privatebet_info *bet,struct privatebet_vars *vars,int32_t round,int32_t senderid);
