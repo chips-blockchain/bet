@@ -239,8 +239,6 @@ int32_t BET_player_create_invoice_request(cJSON *argjson,struct privatebet_info 
 	cJSON_AddNumberToObject(betInfo,"playerID",bet->myplayerid);
 	cJSON_AddNumberToObject(betInfo,"betAmount",amount);
 
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(betInfo));
-	
 	rendered=cJSON_Print(betInfo);
 
 	bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);

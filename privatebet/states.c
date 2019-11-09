@@ -207,7 +207,7 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 	if(vars->last_raise<big_blind_amount)
 		toRaise=big_blind_amount;
 	else
-		toRaise=vars->last_raise*2;
+		toRaise=vars->last_raise;
 
 	toRaise+=toCall;
 	
@@ -322,7 +322,9 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 	cJSON_AddNumberToObject(argjson,"pot",vars->pot);
 	cJSON_AddItemToObject(argjson,"player_funds",playerFunds=cJSON_CreateArray());
 	for(int i=0;i<bet->maxplayers;i++)
-		cJSON_AddItemToArray(playerFunds,cJSON_CreateNumber(vars->funds[i]));
+	{
+		cJSON_AddItemToArray(playerFunds,cJSON_CreateNumber(vars->funds[i]));
+	}		
 
 	if((action=jstr(argjson,"action")) != NULL)
 	{
@@ -530,22 +532,19 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 				if(bet->myplayerid == jint(argjson,"playerid"))
 				{
 					display_cards(argjson,bet,vars);
-					//BET_push_client(argjson);	
 					cJSON *player_funds=NULL;
 					cJSON_AddItemToObject(argjson,"player_funds",player_funds=cJSON_CreateArray());
 
+					
 					for(int i=0;i<bet->maxplayers;i++)
 					{
 						int totalBet=0;
-						for(int j=0;j<=vars->round;j++)
+						for(int j=0;j<=jint(argjson,"round");j++)  //for(int j=0;j<=vars->round;j++)
 						{
 							totalBet+=vars->betamount[i][j];
 						}
 						cJSON_AddItemToArray(player_funds,cJSON_CreateNumber(vars->funds[i]-totalBet));
 					}	
-
-					printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(player_funds));
-
 					player_lws_write(argjson);
 				}
 				else
@@ -818,11 +817,11 @@ int32_t BET_player_round_betting_test(cJSON *argjson,struct privatebet_info *bet
 		vars->betamount[playerid][round]+=invoice_amount;
 		vars->player_funds-=invoice_amount;
 
+
 		if(vars->player_funds==0)
 		{
 			cJSON_DetachItemFromObject(action_response,"action");
 			cJSON_AddStringToObject(action_response,"action","allin");
-			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(action_response));
 			
 		}
 		cJSON_AddNumberToObject(action_response,"bet_amount",jint(argjson,"bet_amount"));
