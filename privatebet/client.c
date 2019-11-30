@@ -895,6 +895,7 @@ int32_t BET_p2p_betting_invoice(cJSON *argjson,struct privatebet_info *bet,struc
 		else
 			retval=-1;
 
+		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(actionResponse));
 		rendered=cJSON_Print(actionResponse);
 		bytes=nn_send(bet->pushsock,rendered,strlen(rendered),0);
 		if(bytes<0)

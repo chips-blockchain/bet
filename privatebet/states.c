@@ -92,10 +92,25 @@ int32_t BET_DCV_next_turn(cJSON *argjson,struct privatebet_info *bet,struct priv
 	
 	for(int i=((vars->turni+1)%bet->maxplayers);(i != vars->turni);i=((i+1)%bet->maxplayers))
 	{
-		if((vars->bet_actions[i][vars->round] != fold)&&(vars->bet_actions[i][vars->round] != allin))
+		if((vars->bet_actions[i][vars->round] != fold)&&(vars->bet_actions[i][vars->round] != allin)&&(vars->funds[i] != 0))
 		{
+			if(vars->bet_actions[i][vars->round] == 0)
+			{
+				retval=i;
+				
+				for(int j=0;j<bet->maxplayers;j++)
+				{
+					if((vars->funds[j] == 0)&&(j != retval))
+					{
+						retval=-1;
+						break;
+					}
+				}
 
-			if((vars->bet_actions[i][vars->round] == 0) || (vars->bet_actions[i][vars->round] == small_blind) || 
+     			break;
+				
+			}
+			else if(/*(vars->bet_actions[i][vars->round] == 0) ||*/ (vars->bet_actions[i][vars->round] == small_blind) || 
 				(vars->bet_actions[i][vars->round] == big_blind) ||	(((vars->bet_actions[i][vars->round] == check) || (vars->bet_actions[i][vars->round] == call) 
 										|| (vars->bet_actions[i][vars->round] == raise)) && (maxamount !=vars->betamount[i][vars->round])) )
 			{
@@ -143,6 +158,15 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 		goto end;
 	}
 
+	printf("%s::%d::This is the fold and allout scenario\n",__FUNCTION__,__LINE__);
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		printf("%s::%d::player id::%d::funds::%d::vars->round::%d\n",__FUNCTION__,__LINE__,i,vars->funds[i],vars->round);
+		for(int j=0;j<=vars->round;j++)
+			printf("%d\t",vars->betamount[i][j]);
+		printf("\n");
+	}
+	
 	players_left=0;
 	for(int i=0;i<bet->maxplayers;i++)
 	{
@@ -243,7 +267,18 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 			int allin_flag=1;
 			for(int i=raise;i<=fold;i++)
 			{
-				if(i==call)
+				if(i==raise)
+				{
+					for(int j=0;j<bet->maxplayers;j++)
+					{
+						if((j != vars->turni)&&(vars->funds[i] != 0))
+						{
+							cJSON_AddItemToArray(possibilities,cJSON_CreateNumber(i));
+							break;
+						}
+					}
+				}
+				else if(i==call)
 				{
 					int totatBet=0;
 					for(int j=0;j<=vars->round;j++)
