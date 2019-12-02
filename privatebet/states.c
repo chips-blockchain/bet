@@ -103,23 +103,18 @@ int32_t BET_DCV_next_turn(cJSON *argjson,struct privatebet_info *bet,struct priv
 					if((vars->funds[j] == 0)&&(j != retval))
 					{
 						retval=-1;
-						break;
+						goto end;
 					}
 				}
-
-     			break;
-				
 			}
 			else if(/*(vars->bet_actions[i][vars->round] == 0) ||*/ (vars->bet_actions[i][vars->round] == small_blind) || 
 				(vars->bet_actions[i][vars->round] == big_blind) ||	(((vars->bet_actions[i][vars->round] == check) || (vars->bet_actions[i][vars->round] == call) 
 										|| (vars->bet_actions[i][vars->round] == raise)) && (maxamount !=vars->betamount[i][vars->round])) )
 			{
 				retval=i;
-				break;
+				goto end;
 								
 			}
-
-			
 		}
 
 	}
@@ -268,7 +263,7 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 			for(int i=raise;i<=fold;i++)
 			{
 				if(i==raise)
-				{
+				{
 					for(int j=0;j<bet->maxplayers;j++)
 					{
 						if((j != vars->turni)&&(vars->funds[i] != 0))
@@ -295,8 +290,7 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 						cJSON_AddItemToArray(possibilities,cJSON_CreateNumber(i));	
 				}
 				else 
-					cJSON_AddItemToArray(possibilities,cJSON_CreateNumber(i));
-						
+					cJSON_AddItemToArray(possibilities,cJSON_CreateNumber(i));						
 				
 			}
 		}
@@ -358,7 +352,8 @@ int32_t BET_DCV_round_betting_response(cJSON *argjson,struct privatebet_info *be
 	cJSON_AddItemToObject(argjson,"player_funds",playerFunds=cJSON_CreateArray());
 	for(int i=0;i<bet->maxplayers;i++)
 	{
-		cJSON_AddItemToArray(playerFunds,cJSON_CreateNumber(vars->funds[i]));
+		cJSON_AddItemToArray(playerFunds,cJSON_CreateNumber(vars->funds[i]));
+
 	}		
 
 	if((action=jstr(argjson,"action")) != NULL)
@@ -500,7 +495,8 @@ int32_t BET_DCV_small_blind(cJSON *argjson,struct privatebet_info *bet,struct pr
 	rendered=cJSON_Print(smallBlindInfo);
 	bytes=nn_send(bet->pubsock,rendered,strlen(rendered),0);
 	if(bytes<0)
-	{
+	{
+
 		retval=-1;
 		printf("\nFailed to send data");
 		goto end;
