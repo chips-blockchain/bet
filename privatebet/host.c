@@ -2169,7 +2169,7 @@ int32_t BET_evaluate_hand_test(cJSON *playerCardInfo,struct privatebet_info *bet
 	
 	for(int i=0;i<bet->maxplayers;i++)
 	{
-			p[i]=vars->bet_actions[i][(vars->round-1)];
+			p[i]=vars->bet_actions[i][(vars->round)];
 			
 			if(vars->bet_actions[i][vars->round]==fold)//|| (vars->bet_actions[i][vars->round]==allin)) 
 				players_left++;
