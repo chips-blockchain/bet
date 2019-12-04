@@ -145,6 +145,7 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 
 		if((vars->round>=CARDS777_MAXROUNDS) || (players_left<2))
 		{
+			vars->round-=1;
 			retval=BET_evaluate_hand_test(argjson,bet,vars);
 			goto end;
 		}
