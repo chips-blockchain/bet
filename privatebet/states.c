@@ -267,7 +267,7 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 				{
 					for(int j=0;j<bet->maxplayers;j++)
 					{
-						if((j != vars->turni)&&(vars->funds[i] != 0))
+						if((j != vars->turni)&&(vars->funds[j] != 0))
 						{
 							cJSON_AddItemToArray(possibilities,cJSON_CreateNumber(i));
 							break;
