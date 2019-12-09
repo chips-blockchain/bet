@@ -82,44 +82,41 @@ int32_t BET_DCV_next_turn(cJSON *argjson,struct privatebet_info *bet,struct priv
 	}
 	players_left=bet->maxplayers-players_left;
 	if(players_left<2)
-		goto end;
+		return retval;
 	
 	for(int i=0;i<bet->maxplayers;i++)
 	{
 		if(maxamount<vars->betamount[i][vars->round])
 			maxamount=vars->betamount[i][vars->round];
 	}
-	
 	for(int i=((vars->turni+1)%bet->maxplayers);(i != vars->turni);i=((i+1)%bet->maxplayers))
 	{
 		if((vars->bet_actions[i][vars->round] != fold)&&(vars->bet_actions[i][vars->round] != allin)&&(vars->funds[i] != 0))
 		{
 			if(vars->bet_actions[i][vars->round] == 0)
 			{
-				retval=i;
 				
 				for(int j=0;j<bet->maxplayers;j++)
 				{
-					if((vars->funds[j] == 0)&&(j != retval))
+					if((i!=j)&&(((vars->bet_actions[j][vars->round] == 0)&&(vars->funds[j]!=0)) || 
+						(vars->bet_actions[j][vars->round] != 0)))
 					{
-						retval=-1;
-						goto end;
+						return i;
 					}
+						
 				}
 			}
 			else if(/*(vars->bet_actions[i][vars->round] == 0) ||*/ (vars->bet_actions[i][vars->round] == small_blind) || 
 				(vars->bet_actions[i][vars->round] == big_blind) ||	(((vars->bet_actions[i][vars->round] == check) || (vars->bet_actions[i][vars->round] == call) 
 										|| (vars->bet_actions[i][vars->round] == raise)) && (maxamount !=vars->betamount[i][vars->round])) )
 			{
-				retval=i;
-				goto end;
+				return i;
 								
 			}
 		}
 
 	}
-	end:
-		return retval;
+	return retval;
 		
 }
 int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
@@ -154,7 +151,6 @@ int32_t BET_DCV_round_betting(cJSON *argjson,struct privatebet_info *bet,struct 
 		goto end;
 	}
 
-	printf("%s::%d::This is the fold and allout scenario\n",__FUNCTION__,__LINE__);
 	for(int i=0;i<bet->maxplayers;i++)
 	{
 		printf("%s::%d::player id::%d::funds::%d::vars->round::%d\n",__FUNCTION__,__LINE__,i,vars->funds[i],vars->round);
