@@ -71,6 +71,29 @@ int32_t BET_p2p_initiate_statemachine(cJSON *argjson,struct privatebet_info *bet
 		return retval;
 }
 
+/** 
+ * 
+ * Function: BET_DCV_next_turn 
+ * 
+ * Parameters: 
+ *
+ *		structure:  cJSON *argjson contains the information about current active turn of the player
+ *		structure:  struct privatebet_info *bet contains deck and player information
+ *		structure:  privatebet_vars *vars contains the game information
+ * 
+ * Return Value :
+ * 
+ *		0 --> bet->maxplayers : It indicates there a valid turn exists in the game. 
+ *		-1 : No valid turn exists
+ * 
+ * Description: 
+ * 
+ *	  	This function identifies if there is any valid turn possible during the game, if any valid turn exists
+ *    	it returns the index of the player if not it returns -1
+ *	   
+ */
+
+
 int32_t BET_DCV_next_turn(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
 	int32_t maxamount=0,retval=-1,players_left=0;
