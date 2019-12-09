@@ -557,29 +557,23 @@ int32_t BET_p2p_betting_statemachine(cJSON *argjson,struct privatebet_info *bet,
 			}
 			else if(strcmp(action,"round_betting") == 0)
 			{
-				if(bet->myplayerid == jint(argjson,"playerid"))
-				{
-					display_cards(argjson,bet,vars);
-					cJSON *player_funds=NULL;
-					cJSON_AddItemToObject(argjson,"player_funds",player_funds=cJSON_CreateArray());
+				display_cards(argjson,bet,vars);
 
-					
-					for(int i=0;i<bet->maxplayers;i++)
-					{
-						int totalBet=0;
-						for(int j=0;j<=jint(argjson,"round");j++)  //for(int j=0;j<=vars->round;j++)
-						{
-							totalBet+=vars->betamount[i][j];
-						}
-						cJSON_AddItemToArray(player_funds,cJSON_CreateNumber(vars->funds[i]-totalBet));
-					}	
-					player_lws_write(argjson);
-				}
-				else
+				cJSON *player_funds=NULL;
+				cJSON_AddItemToObject(argjson,"player_funds",player_funds=cJSON_CreateArray());
+				
+				
+				for(int i=0;i<bet->maxplayers;i++)
 				{
-					player_lws_write(argjson);
-					display_cards(argjson,bet,vars);
-				}
+					int totalBet=0;
+					for(int j=0;j<=jint(argjson,"round");j++)  //for(int j=0;j<=vars->round;j++)
+					{
+						totalBet+=vars->betamount[i][j];
+					}
+					cJSON_AddItemToArray(player_funds,cJSON_CreateNumber(vars->funds[i]-totalBet));
+				}	
+										
+				player_lws_write(argjson);
 			}
 			else if((strcmp(action,"check") == 0) || (strcmp(action,"call") == 0) || (strcmp(action,"raise") == 0)
 									|| (strcmp(action,"fold") == 0) || (strcmp(action,"allin") == 0))																					
