@@ -2956,9 +2956,12 @@ void BET_dcv_frontend_loop(void *_ptr)
     dcv_info.port = 9000;
     dcv_info.mounts = &mount;
     dcv_info.protocols = protocols;
-    dcv_info.options =
+    dcv_info.options = LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT |
         LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
 
+	dcv_info.ssl_cert_filepath="localhost-100y.cert";
+	dcv_info.ssl_private_key_filepath="localhost-100y.key";
+	
     dcv_context = lws_create_context(&dcv_info);
     if (!dcv_context) {
         lwsl_err("lws init failed\n");

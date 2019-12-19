@@ -1994,8 +1994,13 @@ void BET_player_frontend_loop(void* _ptr)
     dcv_info.port = 9000;
     dcv_info.mounts = &lws_http_mount_player;
     dcv_info.protocols = player_http_protocol;
-    dcv_info.options = LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
 
+	dcv_info.options = LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT |
+        LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
+
+	dcv_info.ssl_cert_filepath="localhost-100y.cert";
+	dcv_info.ssl_private_key_filepath="localhost-100y.key";
+	
     dcv_context = lws_create_context(&dcv_info);
     if (!dcv_context) {
         printf("lws init failed\n");
@@ -2085,9 +2090,15 @@ void BET_bvv_frontend_loop(void* _ptr)
     dcv_info.port = 9000;
     dcv_info.mounts = &mount_bvv;
     dcv_info.protocols = protocols_bvv;
-    dcv_info.options =
-    LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
 
+	dcv_info.options = LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT |
+        LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
+
+	dcv_info.ssl_cert_filepath="localhost-100y.cert";
+	dcv_info.ssl_private_key_filepath="localhost-100y.key";
+	
+	
+	
     dcv_context = lws_create_context(&dcv_info);
     if (!dcv_context) {
         printf("lws init failed\n");
