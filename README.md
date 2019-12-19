@@ -30,7 +30,7 @@ $ git clone https://github.com/sg777/libwebsockets.git
 $ cd libwebsockets
 $ mkdir build
 $ cd build
-$ cmake ..
+$ cmake -DLWS_WITH_HTTP2=1 ..
 $ make && sudo make install
 
 # Install libwebsockets
