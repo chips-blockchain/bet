@@ -262,7 +262,6 @@ int32_t BET_rest_game(struct lws *wsi, cJSON *argjson)
 	cJSON *gameInfo=NULL,*gameDetails=NULL,*potInfo=NULL;
 	char *rendered=NULL;
 	gameDetails=cJSON_CreateObject();
-	cJSON_AddNumberToObject(gameDetails,"tocall",0);
 	cJSON_AddNumberToObject(gameDetails,"seats",2);
 	
 	potInfo=cJSON_CreateArray();
