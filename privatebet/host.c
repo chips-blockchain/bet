@@ -1161,7 +1161,7 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 				printf("%s::%d::LWS_CALLBACK_ESTABLISHED\n",__FUNCTION__,__LINE__);
 				break;
 			case LWS_CALLBACK_SERVER_WRITEABLE:
-				if(dcvDataExists)
+				if(dcvDataExists==1)
 				{
 					lws_write(wsi,cJSON_Print(dcvDataToWrite),strlen(cJSON_Print(dcvDataToWrite)),0);
 					dcvDataExists=0;
@@ -2738,6 +2738,13 @@ int32_t BET_dcv_backend(cJSON *argjson,struct privatebet_info *bet,struct privat
 				retval=BET_p2p_client_join_req(argjson,bet,vars);
 				if(retval<0)
 					goto end;
+
+				cJSON *joinInfo=cJSON_CreateObject();
+				cJSON_AddStringToObject(joinInfo,"method","joinInfo");
+				cJSON_AddNumberToObject(joinInfo,"joined_playerid",jint(argjson,"gui_playerID"));
+				cJSON_AddNumberToObject(joinInfo,"tot_players_joined",bet->numplayers);
+				dcv_lws_write(joinInfo);
+				
                 if(bet->numplayers==bet->maxplayers)
 				{
 					printf("Table is filled\n");
