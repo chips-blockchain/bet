@@ -209,43 +209,41 @@ int32_t BET_rest_chat(struct lws *wsi, cJSON *argjson)
 
 int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 {
-	cJSON *tableInfo=NULL,*seatInfo=NULL,*seatsInfo=NULL;
+	cJSON *tableInfo=NULL,*seatsInfo=NULL;
 	char *rendered=NULL;
-	int32_t retval=0,bytes;
-	
+	int32_t retval=0,bytes,no_of_seats=2;
+	cJSON *seat[no_of_seats];
+
+	for(int i=0;i<no_of_seats;i++)
+	{
+		seat[i]=cJSON_CreateObject();
+	}
+
+	cJSON_AddStringToObject(seat[0],"name","player1");
+	cJSON_AddNumberToObject(seat[0],"seat",0);
+	cJSON_AddNumberToObject(seat[0],"stack",0);
+	cJSON_AddNumberToObject(seat[0],"empty",0);
+	cJSON_AddNumberToObject(seat[0],"playing",1);
+
+	cJSON_AddStringToObject(seat[1],"name","player2");
+	cJSON_AddNumberToObject(seat[1],"seat",1);
+	cJSON_AddNumberToObject(seat[1],"stack",0);
+	cJSON_AddNumberToObject(seat[1],"empty",0);
+	cJSON_AddNumberToObject(seat[1],"playing",1);
+
+
+	seatsInfo=cJSON_CreateArray();
+	for(int i=0;i<no_of_seats;i++)
+	{
+		cJSON_AddItemToArray(seatsInfo,seat[i]);
+	}
+			
 	tableInfo=cJSON_CreateObject();
 	cJSON_AddStringToObject(tableInfo,"method","seats");
 	cJSON_AddItemToObject(tableInfo,"seats",seatsInfo);
-
-	cJSON_AddItemToObject(tableInfo,"seats",seatsInfo=cJSON_CreateArray());
-
-
-	seatInfo=cJSON_CreateObject();
-	cJSON_AddStringToObject(seatInfo,"name","player1");
-	cJSON_AddNumberToObject(seatInfo,"seat",0);
-	cJSON_AddNumberToObject(seatInfo,"stack",0);
-	cJSON_AddNumberToObject(seatInfo,"empty",0);
-	cJSON_AddNumberToObject(seatInfo,"playing",1);
-
-	cJSON_AddItemToArray(seatsInfo,seatInfo);
-
-	if(seatInfo)
-		memset(seatInfo,0x00,sizeof(seatInfo));
 	
-	cJSON_AddStringToObject(seatInfo,"name","player2");
-	cJSON_AddNumberToObject(seatInfo,"seat",1);
-	cJSON_AddNumberToObject(seatInfo,"stack",0);
-	cJSON_AddNumberToObject(seatInfo,"empty",0);
-	cJSON_AddNumberToObject(seatInfo,"playing",1);
-
-	cJSON_AddItemToArray(seatsInfo,seatInfo);
-        
-		
 	rendered=cJSON_Print(tableInfo);
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,rendered);
 	lws_write(wsi,rendered,strlen(rendered),0);
-
-	
 
 	bytes=nn_send(BET_dcv->pubsock,rendered,strlen(rendered),0);
 	if(bytes<0)
@@ -1112,7 +1110,6 @@ int32_t BET_dcv_frontend(struct lws *wsi, cJSON *argjson)
 	}
 	else if(strcmp(method,"seats") == 0)
 	{
-		printf("\n%s:%d::maxplayers:%d",__FUNCTION__,__LINE__,BET_dcv->maxplayers);
 		retval=BET_rest_seats(wsi,argjson);
 		
 	}
