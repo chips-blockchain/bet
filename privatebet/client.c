@@ -2142,6 +2142,10 @@ int32_t BET_player_backend(cJSON *argjson,struct privatebet_info *bet,struct pri
 		}
 		else if ( strcmp(method,"join_res") == 0 )
 		{
+			cJSON *joinInfo=cJSON_CreateObject();
+			cJSON_AddStringToObject(joinInfo,"method","joinInfo");
+			cJSON_AddNumberToObject(joinInfo,"playerid",jint(argjson,"peerid"));
+			player_lws_write(joinInfo);
 			retval=BET_p2p_client_join_res(argjson,bet,vars);
 			
 			//retval=BET_rest_player_join_res(wsi_global_client,argjson);
