@@ -662,7 +662,7 @@ void BET_bvv_backend_loop(void *_ptr)
 		  	char *tmp=clonestr(ptr);
             if ( (argjson= cJSON_Parse(tmp)) != 0 )
             {
-                if ( BET_bvv_backend(argjson,bet,BVV_VARS) != 0 ) // usually just relay to players
+                if ( BET_bvv_backend(argjson,bet,BVV_VARS) < 0 ) // usually just relay to players
                 {
                 	printf("%s::%d::Failed to send data\n",__FUNCTION__,__LINE__);
                 }
