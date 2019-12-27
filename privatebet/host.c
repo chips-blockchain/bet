@@ -207,6 +207,15 @@ int32_t BET_rest_chat(struct lws *wsi, cJSON *argjson)
 	return 0;
 }
 
+static inline void initialize_seat(cJSON *seatInfo,char *name,int32_t seat,int32_t stack,int32_t empty,int32_t playing)
+{
+	
+	cJSON_AddStringToObject(seatInfo,"name",name);
+	cJSON_AddNumberToObject(seatInfo,"seat",seat);
+	cJSON_AddNumberToObject(seatInfo,"stack",stack);
+	cJSON_AddNumberToObject(seatInfo,"empty",empty);
+	cJSON_AddNumberToObject(seatInfo,"playing",playing);
+}
 int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 {
 	cJSON *tableInfo=NULL,*seatsInfo=NULL;
@@ -219,19 +228,9 @@ int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 		seat[i]=cJSON_CreateObject();
 	}
 
-	cJSON_AddStringToObject(seat[0],"name","player1");
-	cJSON_AddNumberToObject(seat[0],"seat",0);
-	cJSON_AddNumberToObject(seat[0],"stack",0);
-	cJSON_AddNumberToObject(seat[0],"empty",0);
-	cJSON_AddNumberToObject(seat[0],"playing",1);
-
-	cJSON_AddStringToObject(seat[1],"name","player2");
-	cJSON_AddNumberToObject(seat[1],"seat",1);
-	cJSON_AddNumberToObject(seat[1],"stack",0);
-	cJSON_AddNumberToObject(seat[1],"empty",0);
-	cJSON_AddNumberToObject(seat[1],"playing",1);
-
-
+	initialize_seat(seat[0],"player1",0,0,0,1);
+	initialize_seat(seat[1],"player2",1,0,0,1);
+	
 	seatsInfo=cJSON_CreateArray();
 	for(int i=0;i<no_of_seats;i++)
 	{
@@ -2722,7 +2721,15 @@ int32_t BET_award_winner(cJSON *argjson,struct privatebet_info *bet,struct priva
 		}
 		return retval;
 }
-
+static void BET_push_joinInfo(cJSON *argjson,int32_t numplayers)
+{
+	
+	cJSON *joinInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(joinInfo,"method","joinInfo");
+	cJSON_AddNumberToObject(joinInfo,"joined_playerid",jint(argjson,"gui_playerID"));
+	cJSON_AddNumberToObject(joinInfo,"tot_players_joined",numplayers);
+	dcv_lws_write(joinInfo);
+}
 int32_t BET_dcv_backend(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
     char *method; int32_t bytes,retval=1;
@@ -2738,13 +2745,7 @@ int32_t BET_dcv_backend(cJSON *argjson,struct privatebet_info *bet,struct privat
 				retval=BET_p2p_client_join_req(argjson,bet,vars);
 				if(retval<0)
 					goto end;
-
-				cJSON *joinInfo=cJSON_CreateObject();
-				cJSON_AddStringToObject(joinInfo,"method","joinInfo");
-				cJSON_AddNumberToObject(joinInfo,"joined_playerid",jint(argjson,"gui_playerID"));
-				cJSON_AddNumberToObject(joinInfo,"tot_players_joined",bet->numplayers);
-				dcv_lws_write(joinInfo);
-				
+				BET_push_joinInfo(argjson,bet->numplayers);				
                 if(bet->numplayers==bet->maxplayers)
 				{
 					printf("Table is filled\n");
