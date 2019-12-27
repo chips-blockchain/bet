@@ -61,7 +61,7 @@ int32_t hole_cards_drawn=0,community_cards_drawn=0,flop_cards_drawn=0,turn_card_
 int32_t bet_amount[CARDS777_MAXPLAYERS][CARDS777_MAXROUNDS];
 int32_t eval_game_p[CARDS777_MAXPLAYERS],eval_game_c[CARDS777_MAXPLAYERS];
 
-
+int32_t  player_status[CARDS777_MAXPLAYERS],bvv_status;
 char player_chips_address[CARDS777_MAXPLAYERS][64];
 
 int32_t invoiceID;
@@ -2866,6 +2866,13 @@ int32_t BET_dcv_backend(cJSON *argjson,struct privatebet_info *bet,struct privat
 			}
 			
 		}
+		else if(strcmp(method,"live") == 0)
+		{
+			if(strcmp(jstr(argjson,"node_type"),"bvv")==0)
+				bvv_status=1;
+			else if(strcmp(jstr(argjson,"node_type"),"player")==0)
+				player_status[jint(argjson,"playerid")]=1;
+		}
 		else
     	{
     		bytes=nn_send(bet->pubsock,cJSON_Print(argjson),strlen(cJSON_Print(argjson)),0);
@@ -2977,7 +2984,55 @@ void BET_dcv_frontend_loop(void *_ptr)
 		
 }
 
+static int32_t bet_send_status(	struct privatebet_info *bet)
+{
+	char name[10];	
+	cJSON *status_info=NULL;
+	int bytes;
+	int retval=1;
+	
+	status_info=cJSON_CreateObject();
+	cJSON_AddStringToObject(status_info,"method","status_info");
+	cJSON_AddNumberToObject(status_info,"bvv_status",bvv_status);
 
+	for(int i=0;i<bet->maxplayers;i++)
+	{
+		memset(name,0x00,sizeof(name));
+		sprintf(name,"player_%d",i);
+		cJSON_AddNumberToObject(status_info,name,player_status[i]);
+	}
+	
+	bytes= nn_send(bet->pubsock,cJSON_Print(status_info),strlen(cJSON_Print(status_info)),0);
+	
+	if (bytes<0)
+		retval=-1;
 
+	return retval;
+}
+void BET_dcv_live_loop(void *_ptr)
+{
+	int32_t recvlen; cJSON *argjson=NULL; 
+	void *ptr=NULL; 
+	struct privatebet_info *bet = _ptr;
+	cJSON *live_info=NULL;
+	int32_t retval=1;
+	
+	live_info=cJSON_CreateObject();
+	cJSON_AddStringToObject(live_info,"method","live");
+	while(1)
+	{
+			bvv_status=0;
+			for(int i=0;i<bet->maxplayers;i++)
+				player_status[i]=0;
+			
+			int bytes= nn_send(bet->pubsock,cJSON_Print(live_info),strlen(cJSON_Print(live_info)),0);
+			if (bytes<0)
+				retval=-1;
+			
+			sleep(10);
+			retval=bet_send_status(bet);
 
-
+			if(retval<0)
+				break;
+	}
+}

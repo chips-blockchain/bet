@@ -17,6 +17,7 @@ void BET_DCV_force_reset(struct privatebet_info *bet,struct privatebet_vars *var
 
 
 void BET_dcv_frontend_loop(void * _ptr);
+void BET_dcv_live_loop(void *_ptr);
 
 /*
 REST API's starts from here

@@ -91,7 +91,7 @@ int main(int argc, char **argv)
     char bindaddr[128]/*="ipc:///tmp/bet.ipc"*/,bindaddr1[128]/*="ipc:///tmp/bet1.ipc"*/,hostip[20]; 
 	uint32_t i,range,numplayers; int32_t pubsock=-1,subsock=-1,pullsock=-1,pushsock=-1;  
 	pthread_t dcv_t,bvv_t,player_t,dcv_backend,bvv_backend,player_backend,cashier_t;
-
+	pthread_t live_t;
 		
 	/*	
 	char *msig="bQJTo8knsbSoU7k9oGADa6qfWGWyJtxC3o";
@@ -146,6 +146,13 @@ int main(int argc, char **argv)
 		BET_dcv->no_of_turns=0;
 	    BET_betinfo_set(BET_dcv,"demo",range,0,Maxplayers);
 
+		
+		if ( OS_thread_create(&live_t,NULL,(void *) BET_dcv_live_loop,(void *)BET_dcv) != 0 )
+	    {
+	        printf("error launching BET_clientloop BET_hostloop");
+	        exit(-1);
+	    }		
+
 		if ( OS_thread_create(&dcv_backend,NULL,(void *) BET_dcv_backend_loop,(void *)BET_dcv) != 0 )
 	    {
 	        printf("error launching BET_clientloop BET_hostloop");
@@ -157,7 +164,10 @@ int main(int argc, char **argv)
 	        exit(-1);
 	    }
 		
-		
+		if(pthread_join(live_t,NULL))
+		{
+			printf("\nError in joining the main thread for bvvv");
+		}		
 		if(pthread_join(dcv_backend,NULL))
 		{
 			printf("\nError in joining the main thread for bvvv");
