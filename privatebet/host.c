@@ -2725,7 +2725,7 @@ static void BET_push_joinInfo(cJSON *argjson,int32_t numplayers)
 {
 	
 	cJSON *joinInfo=cJSON_CreateObject();
-	cJSON_AddStringToObject(joinInfo,"method","joinInfo");
+	cJSON_AddStringToObject(joinInfo,"method","join_info");
 	cJSON_AddNumberToObject(joinInfo,"joined_playerid",jint(argjson,"gui_playerID"));
 	cJSON_AddNumberToObject(joinInfo,"tot_players_joined",numplayers);
 	dcv_lws_write(joinInfo);

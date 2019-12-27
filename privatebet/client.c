@@ -2152,7 +2152,13 @@ void BET_p2p_player_blinds_info()
 	
 }
 
-
+static void bet_push_join_info(int32_t playerid)
+{
+	cJSON *joinInfo=cJSON_CreateObject();
+	cJSON_AddStringToObject(joinInfo,"method","join_info");
+	cJSON_AddNumberToObject(joinInfo,"playerid",playerid);
+	player_lws_write(joinInfo);
+}
 int32_t BET_player_backend(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars) // update game state based on host broadcast
 {
 	
@@ -2172,10 +2178,7 @@ int32_t BET_player_backend(cJSON *argjson,struct privatebet_info *bet,struct pri
 		}
 		else if ( strcmp(method,"join_res") == 0 )
 		{
-			cJSON *joinInfo=cJSON_CreateObject();
-			cJSON_AddStringToObject(joinInfo,"method","joinInfo");
-			cJSON_AddNumberToObject(joinInfo,"playerid",jint(argjson,"peerid"));
-			player_lws_write(joinInfo);
+			bet_push_join_info(jint(argjson,"peerid"));
 			retval=BET_p2p_client_join_res(argjson,bet,vars);
 			
 			//retval=BET_rest_player_join_res(wsi_global_client,argjson);
