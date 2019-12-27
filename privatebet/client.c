@@ -39,6 +39,8 @@
 
 struct lws *wsi_global_client=NULL;
 
+int ws_connection_status=0;
+
 struct lws *wsi_global_bvv=NULL;
 
 
@@ -104,17 +106,19 @@ struct deck_player_info all_players_info[CARDS777_MAXPLAYERS];
 
 void player_lws_write(cJSON *data)
 {
-	if(data_exists==1)
+	if(ws_connection_status==1)
 	{
-		printf("%s::%d::There is more data\n",__FUNCTION__,__LINE__);
-		while(data_exists==1)
-			sleep(1);
+		if(data_exists==1)
+		{
+			printf("%s::%d::There is more data\n",__FUNCTION__,__LINE__);
+			while(data_exists==1)
+				sleep(1);
+		}
+		memset(guiData,0,sizeof(guiData));
+		strncpy(guiData,cJSON_Print(data),strlen(cJSON_Print(data)));
+		data_exists=1;
+		lws_callback_on_writable(wsi_global_client);
 	}
-	memset(guiData,0,sizeof(guiData));
-	strncpy(guiData,cJSON_Print(data),strlen(cJSON_Print(data)));
-	data_exists=1;
-	lws_callback_on_writable(wsi_global_client);
-	
 }
 
 
@@ -674,7 +678,24 @@ void BET_bvv_backend_loop(void *_ptr)
 }
 
 
+static int32_t bet_live_response(struct privatebet_info *bet,char *node_type,int32_t playerid)
+{
+	cJSON *live_info=NULL;
+	int retval=1;
+	
+	live_info=cJSON_CreateObject();
+	cJSON_AddStringToObject(live_info,"method","live");
+	cJSON_AddStringToObject(live_info,"node_type",node_type);
 
+	if(strcmp(node_type,"player")==0)
+		cJSON_AddNumberToObject(live_info,"playerid",playerid);
+	
+	int bytes=nn_send(bet->pushsock,cJSON_Print(live_info),strlen(cJSON_Print(live_info)),0);
+	if(bytes<0)
+		retval=-1;
+
+	return retval;
+}
 
 int32_t BET_bvv_backend(cJSON *argjson,struct privatebet_info *bet,struct privatebet_vars *vars)
 {
@@ -709,6 +730,14 @@ int32_t BET_bvv_backend(cJSON *argjson,struct privatebet_info *bet,struct privat
 		else if(strcmp(method,"seats") == 0)
 		{
 			retval=BET_p2p_bvv_join_init(argjson,bet,vars);
+		}
+		else if(strcmp(method,"live") == 0)
+		{
+			retval=bet_live_response(bet,"bvv",-1);
+		}
+		else if(strcmp(method,"status_info") == 0)
+		{
+			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 		}
      }
     return retval;
@@ -1929,6 +1958,7 @@ int lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason,
 			case LWS_CALLBACK_ESTABLISHED:
 				wsi_global_client=wsi;		  
 				printf("%s:%d::LWS_CALLBACK_ESTABLISHED\n",__FUNCTION__,__LINE__);
+				ws_connection_status=1;
 				break;
 			case LWS_CALLBACK_SERVER_WRITEABLE:
 				if(data_exists)
@@ -2260,7 +2290,14 @@ int32_t BET_player_backend(cJSON *argjson,struct privatebet_info *bet,struct pri
 					retval=-1;
 			}	
 		}
-		
+		else if(strcmp(method,"live") == 0)
+		{
+			retval=bet_live_response(bet,"player",bet->myplayerid);
+		}
+		else if(strcmp(method,"status_info") == 0)
+		{
+			player_lws_write(argjson);
+		}
 	}	
 	return retval;
 }
