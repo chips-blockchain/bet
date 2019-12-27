@@ -83,6 +83,7 @@ extern struct lws *wsi_global_client;
 
 extern struct cashier *cashier_info;
 
+extern int32_t Maxplayers;
 
 #endif
 

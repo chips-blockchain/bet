@@ -220,10 +220,10 @@ int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 {
 	cJSON *tableInfo=NULL,*seatsInfo=NULL;
 	char *rendered=NULL;
-	int32_t retval=0,bytes,no_of_seats=2;
-	cJSON *seat[no_of_seats];
+	int32_t retval=0,bytes;
+	cJSON *seat[Maxplayers];
 
-	for(int i=0;i<no_of_seats;i++)
+	for(int i=0;i<Maxplayers;i++)
 	{
 		seat[i]=cJSON_CreateObject();
 	}
@@ -232,7 +232,7 @@ int32_t BET_rest_seats(struct lws *wsi, cJSON *argjson)
 	initialize_seat(seat[1],"player2",1,0,0,1);
 	
 	seatsInfo=cJSON_CreateArray();
-	for(int i=0;i<no_of_seats;i++)
+	for(int i=0;i<Maxplayers;i++)
 	{
 		cJSON_AddItemToArray(seatsInfo,seat[i]);
 	}
