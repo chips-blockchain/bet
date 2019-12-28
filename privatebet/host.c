@@ -2998,7 +2998,7 @@ static int32_t bet_send_status(	struct privatebet_info *bet)
 	for(int i=0;i<bet->maxplayers;i++)
 	{
 		memset(name,0x00,sizeof(name));
-		sprintf(name,"player_%d",i);
+		snprintf(name,sizeof(name),"player_%d",i);
 		cJSON_AddNumberToObject(status_info,name,player_status[i]);
 	}
 	
@@ -3009,6 +3009,7 @@ static int32_t bet_send_status(	struct privatebet_info *bet)
 
 	return retval;
 }
+
 void BET_dcv_live_loop(void *_ptr)
 {
 	int32_t recvlen; cJSON *argjson=NULL; 
