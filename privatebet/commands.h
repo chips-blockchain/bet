@@ -10,7 +10,7 @@ cJSON *BET_sendrawtransaction(cJSON *signedTransaction);
 cJSON *BET_signrawtransactionwithwallet(char *rawtransaction);
 int32_t BET_publishmultisigtransaction(char *tx);
 cJSON *BET_createrawmultisigtransaction(double amount, char *toaddress,
-                                        char *fromaddress);
+					char *fromaddress);
 cJSON *BET_createrawtransaction(double amount, char *address);
 void BET_listunspent();
 int32_t BET_get_chips_blockheight();
