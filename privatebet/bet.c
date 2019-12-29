@@ -88,9 +88,8 @@ int main(int argc, char **argv) {
       bindaddr1[128] /*="ipc:///tmp/bet1.ipc"*/, hostip[20];
   uint32_t i, range, numplayers;
   int32_t pubsock = -1, subsock = -1, pullsock = -1, pushsock = -1;
-  pthread_t dcv_t, bvv_t, player_t, dcv_backend, bvv_backend, player_backend,
-      cashier_t;
-  pthread_t live_t;
+  pthread_t dcv_thrd, bvv_thrd, player_thrd, dcv_backend, bvv_backend, player_backend,
+      live_thrd;
 
   /*
   char *msig="bQJTo8knsbSoU7k9oGADa6qfWGWyJtxC3o";
@@ -144,7 +143,7 @@ int main(int argc, char **argv) {
     BET_dcv->no_of_turns = 0;
     BET_betinfo_set(BET_dcv, "demo", range, 0, Maxplayers);
 
-    if (OS_thread_create(&live_t, NULL, (void *)BET_dcv_live_loop,
+    if (OS_thread_create(&live_thrd, NULL, (void *)BET_dcv_live_loop,
                          (void *)BET_dcv) != 0) {
       printf("error launching BET_clientloop BET_hostloop");
       exit(-1);
@@ -155,21 +154,21 @@ int main(int argc, char **argv) {
       printf("error launching BET_clientloop BET_hostloop");
       exit(-1);
     }
-    if (OS_thread_create(&dcv_t, NULL, (void *)BET_dcv_frontend_loop, NULL) !=
+    if (OS_thread_create(&dcv_thrd, NULL, (void *)BET_dcv_frontend_loop, NULL) !=
         0) {
       printf("error launching BET_hostloop for pub.%d pull.%d\n",
              BET_dcv->pubsock, BET_dcv->pullsock);
       exit(-1);
     }
 
-    if (pthread_join(live_t, NULL)) {
+    if (pthread_join(live_thrd, NULL)) {
       printf("\nError in joining the main thread for bvvv");
     }
     if (pthread_join(dcv_backend, NULL)) {
       printf("\nError in joining the main thread for bvvv");
     }
 
-    if (pthread_join(dcv_t, NULL)) {
+    if (pthread_join(dcv_thrd, NULL)) {
       printf("\nError in joining the main thread for dcv");
     }
   } else if ((argc == 3) && (strcmp(argv[1], "bvv") == 0)) {
@@ -196,7 +195,7 @@ int main(int argc, char **argv) {
     BET_betinfo_set(BET_bvv, "demo", range, 0, Maxplayers);
 #endif
 
-    if (OS_thread_create(&bvv_t, NULL, (void *)BET_bvv_backend_loop,
+    if (OS_thread_create(&bvv_thrd, NULL, (void *)BET_bvv_backend_loop,
                          (void *)BET_bvv) != 0) {
       printf("error launching BET_clientloop for sub.%d push.%d\n",
              BET_bvv->subsock, BET_bvv->pushsock);
@@ -212,7 +211,7 @@ int main(int argc, char **argv) {
     if (pthread_join(bvv_backend, NULL)) {
       printf("\nError in joining the main thread for bvvv");
     }
-    if (pthread_join(bvv_t, NULL)) {
+    if (pthread_join(bvv_thrd, NULL)) {
       printf("\nError in joining the main thread for bvvv");
     }
   } else if ((argc == 3) && (strcmp(argv[1], "player") == 0)) {
@@ -235,7 +234,7 @@ int main(int argc, char **argv) {
     BET_player_global->numplayers = numplayers;
     BET_betinfo_set(BET_player_global, "demo", range, 0, Maxplayers);
 
-    if (OS_thread_create(&player_t, NULL, (void *)BET_player_backend_loop,
+    if (OS_thread_create(&player_thrd, NULL, (void *)BET_player_backend_loop,
                          (void *)BET_player_global) != 0) {
       printf("\nerror in launching BET_p2p_clientloop_test");
       exit(-1);
@@ -248,7 +247,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    if (pthread_join(player_t, NULL)) {
+    if (pthread_join(player_thrd, NULL)) {
       printf("\nError in joining the main thread for player");
     }
 
