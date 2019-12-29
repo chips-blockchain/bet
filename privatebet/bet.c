@@ -88,8 +88,8 @@ int main(int argc, char **argv) {
       bindaddr1[128] /*="ipc:///tmp/bet1.ipc"*/, hostip[20];
   uint32_t i, range, numplayers;
   int32_t pubsock = -1, subsock = -1, pullsock = -1, pushsock = -1;
-  pthread_t dcv_thrd, bvv_thrd, player_thrd, dcv_backend, bvv_backend, player_backend,
-      live_thrd;
+  pthread_t dcv_thrd, bvv_thrd, player_thrd, dcv_backend, bvv_backend,
+      player_backend, live_thrd;
 
   /*
   char *msig="bQJTo8knsbSoU7k9oGADa6qfWGWyJtxC3o";
@@ -154,8 +154,8 @@ int main(int argc, char **argv) {
       printf("error launching BET_clientloop BET_hostloop");
       exit(-1);
     }
-    if (OS_thread_create(&dcv_thrd, NULL, (void *)BET_dcv_frontend_loop, NULL) !=
-        0) {
+    if (OS_thread_create(&dcv_thrd, NULL, (void *)BET_dcv_frontend_loop,
+                         NULL) != 0) {
       printf("error launching BET_hostloop for pub.%d pull.%d\n",
              BET_dcv->pubsock, BET_dcv->pullsock);
       exit(-1);
