@@ -12,33 +12,6 @@
  * Removal or modification of this copyright notice is prohibited.            *
  *                                                                            *
  ******************************************************************************/
-
-// https://lists.linuxfoundation.org/pipermail/lightning-dev/2016-January/000403.html
-// ^ is multisig
-
-// jl777: oracle needs to include other data like deckid also, timestamp! thanks
-// cryptographer dealer needs to timestamp and sign players need to sign their
-// actions and gameeval deterministic sort new method for layered dealing, old
-// method for layered shuffle
-// libscott [11:08 PM]
-// the observer is the chain. the state machine doesnt need to be executed on
-// chain, but the HEAD state of the game should be notarised on a regular basis
-// considering the case where the dealer uniquely generates the blinding value
-// for each card and generates the M of N shard of it and distributes it among
-// the players...
-
-//[9:09]
-// to get to know the card at any given time the player must know atleast M
-// shards from it's peers..
-
-//[11:08]
-// Ie, it's the responsibility of each player to notarise that state after each
-// move is made
-
-// redo unpaid deletes
-//  from external: git submodule add
-//  https://github.com/ianlancetaylor/libbacktrace.git
-
 #include "bet.h"
 #include "../includes/curl/curl.h"
 #include "../log/macrologger.h"
@@ -98,7 +71,6 @@ int main(int argc, char **argv) {
   cJSON *temp=BET_createrawmultisigtransaction(0.025,toaddress,msig);
   printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(temp));
   */
-#if 1
   if (argc >= 2)
     strcpy(hostip, argv[2]);
   OS_init();
@@ -116,16 +88,13 @@ int main(int argc, char **argv) {
 
   if ((argc >= 2) && (strcmp(argv[1], "dcv") == 0)) {
 
-#if 1
-    /* This code is for sockets*/
+   /* This code is for sockets*/
 
     BET_transportname(0, bindaddr, hostip, port);
     pubsock = BET_nanosock(1, bindaddr, NN_PUB);
 
     BET_transportname(0, bindaddr1, hostip, port + 1);
     pullsock = BET_nanosock(1, bindaddr1, NN_PULL);
-
-#endif
 
     BET_dcv = calloc(1, sizeof(struct privatebet_info));
     DCV_VARS = calloc(1, sizeof(struct privatebet_vars));
@@ -172,7 +141,6 @@ int main(int argc, char **argv) {
       printf("\nError in joining the main thread for dcv");
     }
   } else if ((argc == 3) && (strcmp(argv[1], "bvv") == 0)) {
-#if 1
     /* This code is for sockets*/
     BET_transportname(0, bindaddr, hostip, port);
     subsock = BET_nanosock(0, bindaddr, NN_SUB);
@@ -180,8 +148,6 @@ int main(int argc, char **argv) {
     BET_transportname(0, bindaddr1, hostip, port + 1);
     pushsock = BET_nanosock(0, bindaddr1, NN_PUSH);
 
-#endif
-#if 1
     BVV_VARS = calloc(1, sizeof(*BVV_VARS));
     BET_bvv = calloc(1, sizeof(struct privatebet_info));
     BET_bvv->subsock = subsock /*BET_nanosock(0,bindaddr,NN_SUB)*/;
@@ -193,15 +159,12 @@ int main(int argc, char **argv) {
     BET_bvv->numplayers = numplayers;
     BET_bvv->myplayerid = -1;
     BET_betinfo_set(BET_bvv, "demo", range, 0, Maxplayers);
-#endif
-
     if (OS_thread_create(&bvv_thrd, NULL, (void *)BET_bvv_backend_loop,
                          (void *)BET_bvv) != 0) {
       printf("error launching BET_clientloop for sub.%d push.%d\n",
              BET_bvv->subsock, BET_bvv->pushsock);
       exit(-1);
     }
-
     if (OS_thread_create(&bvv_backend, NULL, (void *)BET_bvv_frontend_loop,
                          NULL) != 0) {
       printf("error launching BET_hostloop for pub.%d pull.%d\n",
@@ -255,42 +218,12 @@ int main(int argc, char **argv) {
       printf("\nError in joining the main thread for player %d", i);
     }
   }
-#if 0
-	else if(strcmp(argv[1],"cashier")==0)
-	{
-		
-		
-		BET_transportname(0,bindaddr,hostip,cashier_port);
-		pubsock = BET_nanosock(1,bindaddr,NN_PUB);
-		
-		BET_transportname(0,bindaddr1,hostip,cashier_port+1);
-		pullsock = BET_nanosock(1,bindaddr1,NN_PULL);
-		
-		cashier_info=calloc(1,sizeof(struct cashier));
-	
-	    cashier_info->pubsock = pubsock;//BET_nanosock(1,bindaddr,NN_PUB);
-	    cashier_info->pullsock = pullsock;//BET_nanosock(1,bindaddr1,NN_PULL);
-	    if (OS_thread_create(&cashier_t,NULL,(void *)BET_cashier_loop,(void *)cashier_info) != 0 )
-		{
-			printf("\nerror in launching cashier");
-			exit(-1);
-		}
-		
-		
-		if(pthread_join(cashier_t,NULL))
-		{
-		printf("\nError in joining the main thread for cashier");
-		}
-		
-	}
-#endif
   else {
     printf("\nInvalid Usage");
     printf("\nFor DCV: ./bet dcv");
     printf("\nFor BVV: ./bet bvv");
     printf("\nFor Player: ./bet player player_id");
   }
-#endif
   return 0;
 }
 
