@@ -3,7 +3,7 @@ LIB := libbet
 SRCFILES := cards777.c  client.c  commands.c  gfshare.c  host.c  network.c  oracle.c  payment.c  states.c  table.c poker.c cashier.c
 OBJFILES := $(patsubst %.c,%.o,$(SRCFILES))
 CC := gcc
-WARNINGS := -Werror
+WARNINGS := -Werror -Wunused-variable
 
 CFLAGS := -g -fPIC -std=c99 $(WARNINGS)
 

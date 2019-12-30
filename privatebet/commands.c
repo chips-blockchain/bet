@@ -22,7 +22,7 @@ char BET_ORACLEURL[64] = "127.0.0.1:7797";
 int32_t IAMORACLE;
 char *multisigAddress = "bGmKoyJEz4ESuJCTjhVkgEb2Qkt8QuiQzQ";
 
-int32_t BET_iswatchonly(char *address)
+int32_t chips_iswatchonly(char *address)
 {
 	int argc, maxsize = 100;
 	char **argv = NULL;
@@ -45,19 +45,19 @@ int32_t BET_iswatchonly(char *address)
 		return 0;
 }
 
-void BET_spentmultisigaddress(char *address, double amount)
+void chips_spend_multi_sig_address(char *address, double amount)
 {
 	cJSON *rawTxInfo = NULL;
-	if (BET_iswatchonly(address) == 0) {
-		BET_importaddress(address);
+	if (chips_iswatchonly(address) == 0) {
+		chips_import_address(address);
 	}
 
-	rawTxInfo = BET_createrawtransaction(amount, address);
+	rawTxInfo = chips_create_raw_tx(amount, address);
 
 	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(rawTxInfo));
 }
 
-void BET_importaddress(char *address)
+void chips_import_address(char *address)
 {
 	int argc, maxsize = 100;
 	char **argv = NULL;
@@ -77,7 +77,7 @@ void BET_importaddress(char *address)
 	printf("%s::%d\n", __FUNCTION__, __LINE__);
 }
 
-char *BET_getnewaddress()
+char *chips_get_new_address()
 {
 	int argc, maxsize = 100;
 	char **argv = NULL;
@@ -107,7 +107,7 @@ char *BET_getnewaddress()
 	return cJSON_Print(newAddressInfo);
 }
 
-int BET_validateaddress(char *address)
+int chips_validate_address(char *address)
 {
 	int argc, maxsize = 1000;
 	char **argv = NULL;
@@ -130,7 +130,7 @@ int BET_validateaddress(char *address)
 		return 0;
 }
 
-void BET_listaddressgroupings()
+void chips_list_address_groupings()
 {
 	int argc, maxsize = 1000;
 	char **argv = NULL;
@@ -153,7 +153,7 @@ void BET_listaddressgroupings()
 			cJSON *temp = NULL;
 			temp = cJSON_GetArrayItem(addressInfo, j);
 			cJSON *address = cJSON_GetArrayItem(temp, 0);
-			if (BET_validateaddress(cJSON_Print(address)) == 1) {
+			if (chips_validate_address(cJSON_Print(address)) == 1) {
 				printf("%s::%f\n", cJSON_Print(address),
 				       atof(cJSON_Print(
 					       cJSON_GetArrayItem(temp, 1))));
@@ -169,17 +169,16 @@ void BET_listaddressgroupings()
 		free(argv);
 	}
 }
-cJSON *BET_transferfunds(double amount, char *address)
+cJSON *chips_transfer_funds(double amount, char *address)
 {
 	cJSON *txInfo = NULL, *signedTx = NULL;
-	char *rawTransaction =
-		cJSON_str(BET_createrawtransaction(amount, address));
+	char *rawTransaction = cJSON_str(chips_create_raw_tx(amount, address));
 
-	signedTx = BET_signrawtransactionwithwallet(rawTransaction);
-	txInfo = BET_sendrawtransaction(signedTx);
+	signedTx = chips_sign_raw_tx_with_wallet(rawTransaction);
+	txInfo = chips_send_raw_tx(signedTx);
 	return txInfo;
 }
-cJSON *BET_sendrawtransaction(cJSON *signedTransaction)
+cJSON *chips_send_raw_tx(cJSON *signedTransaction)
 {
 	int argc, maxsize = 1000;
 	char **argv = NULL;
@@ -206,7 +205,7 @@ cJSON *BET_sendrawtransaction(cJSON *signedTransaction)
 	return txInfo;
 }
 
-cJSON *BET_signrawtransactionwithwallet(char *rawtransaction)
+cJSON *chips_sign_raw_tx_with_wallet(char *rawtransaction)
 {
 	int argc, maxsize = 1000;
 	char **argv = NULL;
@@ -233,12 +232,12 @@ cJSON *BET_signrawtransactionwithwallet(char *rawtransaction)
 	return signedTransaction;
 }
 
-int32_t BET_publishmultisigtransaction(char *tx)
+int32_t chips_publish_multisig_tx(char *tx)
 {
 	int32_t flag = 0, bytes, retval = 0;
 	cJSON *txInfo = cJSON_CreateObject();
 	char *rendered = NULL;
-	for (int i = 0; i < BET_dcv->numplayers; i++) {
+	for (int i = 0; i < bet_dcv->numplayers; i++) {
 		if (is_signed[i] == 0) {
 			cJSON_AddNumberToObject(txInfo, "playerid", i);
 			flag = 1;
@@ -250,7 +249,7 @@ int32_t BET_publishmultisigtransaction(char *tx)
 		cJSON_AddStringToObject(txInfo, "tx", tx);
 		rendered = cJSON_Print(txInfo);
 
-		bytes = nn_send(BET_dcv->pubsock, rendered, strlen(rendered),
+		bytes = nn_send(bet_dcv->pubsock, rendered, strlen(rendered),
 				0);
 		if (bytes < 0)
 			retval = -1;
@@ -258,8 +257,8 @@ int32_t BET_publishmultisigtransaction(char *tx)
 	return retval;
 }
 
-cJSON *BET_createrawmultisigtransaction(double amount, char *toaddress,
-					char *fromaddress)
+cJSON *chips_create_raw_multi_sig_tx(double amount, char *toaddress,
+				     char *fromaddress)
 {
 	char **argv = NULL, *changeAddress = NULL;
 	int argc, maxsize = 1024;
@@ -267,7 +266,7 @@ cJSON *BET_createrawmultisigtransaction(double amount, char *toaddress,
 	      *createTX = NULL;
 	double balance, change, temp_balance = 0, fee = 0.0005;
 
-	balance = BET_getbalance();
+	balance = chips_get_balance();
 	txListInfo = cJSON_CreateArray();
 	addressInfo = cJSON_CreateObject();
 
@@ -347,7 +346,7 @@ cJSON *BET_createrawmultisigtransaction(double amount, char *toaddress,
 	}
 }
 
-cJSON *BET_createrawtransaction(double amount, char *address)
+cJSON *chips_create_raw_tx(double amount, char *address)
 {
 	char **argv = NULL, *changeAddress = NULL;
 	int argc, maxsize = 1024;
@@ -355,7 +354,7 @@ cJSON *BET_createrawtransaction(double amount, char *address)
 	      *createTX = NULL;
 	double balance, change, temp_balance = 0, fee = 0.0005;
 
-	balance = BET_getbalance();
+	balance = chips_get_balance();
 	txListInfo = cJSON_CreateArray();
 	addressInfo = cJSON_CreateObject();
 
@@ -440,7 +439,7 @@ cJSON *BET_createrawtransaction(double amount, char *address)
 	}
 }
 
-void BET_listunspent()
+void chips_list_unspent()
 {
 	char **argv = NULL;
 	int argc;
@@ -474,7 +473,7 @@ void BET_listunspent()
 	}
 }
 
-int32_t BET_get_chips_blockheight()
+int32_t chips_get_block_count()
 {
 	char **argv = NULL, *rendered = NULL;
 	int argc, height;
@@ -509,7 +508,7 @@ int32_t BET_get_chips_blockheight()
 	return height;
 }
 
-int32_t BET_get_ln_blockheight()
+int32_t ln_dev_block_height()
 {
 	char **argv = NULL;
 	int argc, block_height;
@@ -540,13 +539,13 @@ int32_t BET_get_ln_blockheight()
 	return block_height;
 }
 
-void BET_check_sync()
+void check_ln_chips_sync()
 {
 	int32_t chips_bh, ln_bh, flag = 1;
 	int32_t threshold_diff = 1000;
 
-	chips_bh = BET_get_chips_blockheight();
-	ln_bh = BET_get_ln_blockheight();
+	chips_bh = chips_get_block_count();
+	ln_bh = ln_dev_block_height();
 
 	while (flag) {
 		if ((chips_bh - ln_bh) > threshold_diff) {
@@ -558,12 +557,12 @@ void BET_check_sync()
 			printf("ln is in sync with chips\n");
 		}
 
-		chips_bh = BET_get_chips_blockheight();
-		ln_bh = BET_get_ln_blockheight();
+		chips_bh = chips_get_block_count();
+		ln_bh = ln_dev_block_height();
 	}
 }
 
-double BET_getbalance()
+double chips_get_balance()
 {
 	char **argv = NULL;
 	int argc;
@@ -593,14 +592,14 @@ double BET_getbalance()
 	return balance;
 }
 
-int32_t BET_lock_transaction(int32_t fundAmount)
+int32_t chips_lock_transaction(int32_t fundAmount)
 {
 	int argc, balance;
 	char **argv = NULL;
 	cJSON *listunspentInfo = NULL;
 	double fee = 0.0005;
 
-	balance = BET_getbalance();
+	balance = chips_get_balance();
 	if ((fundAmount + fee) >= balance) {
 		argc = 2;
 		argv = (char **)malloc(argc * sizeof(char *));
