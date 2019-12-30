@@ -171,7 +171,7 @@ static u32 FiveCardDrawScoreFast(u32 c0, u32 c1, u32 c2, u32 c3, u32 c4, u32 u)
 	return FOUR_KIND_SCORE + (m4 << SUBR_SHL) + m1;
 }
 
-u32 FiveCardDrawScore(const u8 *h)
+u32 five_card_draw_score(const u8 *h)
 {
 	u32 c0, c1, c2, c3, c4, u;
 	// Make suits powers of two.
@@ -267,7 +267,7 @@ static u32 SevenCardDrawFlush(const u8 *h, const u32 c[7])
 
 #define SevenCardDrawFlushScore(f) (FLUSH_SCORE + ((f) >> SUBR_SHL))
 
-u32 SevenCardDrawScore(const u8 *h)
+u32 seven_card_draw_score(const u8 *h)
 {
 	u32 c[7], f, t, s, u, v, m1, m2, m3, m4;
 	c[0] = CardMask[h[0]];
@@ -505,7 +505,7 @@ u32 SevenCardDrawScoreSlow(const u8 *h)
 			for (k = j + 1; k < 7; k++) {
 				h2[k - 2] = h[k];
 			}
-			r = FiveCardDrawScore(h2);
+			r = five_card_draw_score(h2);
 			if (r > m)
 				m = r;
 		}
@@ -572,7 +572,7 @@ void DisplayHand5(const CardPileType *h)
 	for (i = 0; i < 5; i++)
 		DisplayCard(h->entry[i], out);
 	sprintf(out + strlen(out), " => %08X\n",
-		(int)FiveCardDrawScore(&h->entry[0]));
+		(int)five_card_draw_score(&h->entry[0]));
 	printf("%s", out);
 }
 
@@ -610,7 +610,7 @@ uint32_t set_handstr(char *handstr, uint8_t cards[7], int32_t verbose)
 			// printf("illegal card[%d] %d\n",i,cards[i]);
 			return (0);
 		}
-	score = SevenCardDrawScore(&cards[0]);
+	score = seven_card_draw_score(&cards[0]);
 	set_cardstr(cardstr, (score >> SUBR_SHL) & SUBR_SHLMASK);
 	set_cardstr(cardstr2, score & SUBR_SHLMASK);
 	kickerstr = kickerstrs[(score >> RANK_SHL) & 15];
@@ -666,7 +666,7 @@ void DisplayHand7(char *handstr, uint8_t *cards)
 	out[0] = '\0';
 	for (i = 0; i < 7; i++)
 		DisplayCard(cards[i], out);
-	x = SevenCardDrawScore(cards);
+	x = seven_card_draw_score(cards);
 	y = SevenCardDrawScoreSlow(cards);
 	set_handstr(handstr, cards, 1);
 	if (x != y)
@@ -703,7 +703,7 @@ void poker_test()
 		for (c = 0; c < 1000; c++, counter++) {
 			cards = Hands[c % (sizeof(Hands) / sizeof(*Hands))]
 					.entry;
-			score = SevenCardDrawScore(cards);
+			score = seven_card_draw_score(cards);
 			total += score;
 		}
 	}

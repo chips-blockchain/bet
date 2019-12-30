@@ -18,15 +18,15 @@
 #include "common.h"
 #include "gfshare.h"
 
-char *BET_transportname(int32_t bindflag, char *str, char *ipaddr,
-			uint16_t port)
+char *bet_tcp_sock_address(int32_t bindflag, char *str, char *ipaddr,
+			   uint16_t port)
 {
 	sprintf(str, "tcp://%s:%u", bindflag == 0 ? ipaddr : "*",
 		port); // ws is worse
 	return (str);
 }
 
-int32_t BET_nanosock(int32_t bindflag, char *endpoint, int32_t nntype)
+int32_t bet_nanosock(int32_t bindflag, char *endpoint, int32_t nntype)
 {
 	int32_t sock, timeout;
 	if ((sock = nn_socket(AF_SP, nntype)) >= 0) {

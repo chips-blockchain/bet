@@ -24,7 +24,7 @@ bits256 Clientrhash;
 /***************************************************************
 Here contains the functions which are specific to DCV
 ****************************************************************/
-int32_t BET_DCV_create_invoice_request(struct privatebet_info *bet,
+int32_t bet_dcv_create_invoice_request(struct privatebet_info *bet,
 				       int32_t playerid, int32_t amount)
 {
 	int32_t retval = 1, bytes;
@@ -50,15 +50,15 @@ end:
 	return retval;
 }
 
-int32_t BET_DCV_invoice_pay(struct privatebet_info *bet,
+int32_t bet_dcv_invoice_pay(struct privatebet_info *bet,
 			    struct privatebet_vars *vars, int playerid,
 			    int amount)
 {
 	pthread_t pay_t;
 	int32_t retval = 1;
 	printf("%s::%d\n", __FUNCTION__, __LINE__);
-	retval = BET_DCV_create_invoice_request(bet, playerid, amount);
-	if (OS_thread_create(&pay_t, NULL, (void *)BET_DCV_paymentloop,
+	retval = bet_dcv_create_invoice_request(bet, playerid, amount);
+	if (OS_thread_create(&pay_t, NULL, (void *)bet_dcv_paymentloop,
 			     (void *)bet) != 0) {
 		// exit(-1);
 		retval = -1;
@@ -74,7 +74,7 @@ int32_t BET_DCV_invoice_pay(struct privatebet_info *bet,
 	return retval;
 }
 
-int32_t BET_DCV_pay(cJSON *argjson, struct privatebet_info *bet,
+int32_t bet_dcv_pay(cJSON *argjson, struct privatebet_info *bet,
 		    struct privatebet_vars *vars)
 {
 	cJSON *invoiceInfo = NULL, *payResponse = NULL;
@@ -121,7 +121,7 @@ end:
 	return retval;
 }
 
-void BET_DCV_paymentloop(void *_ptr)
+void bet_dcv_paymentloop(void *_ptr)
 {
 	int32_t recvlen;
 	uint8_t flag = 1;
@@ -136,7 +136,7 @@ void BET_DCV_paymentloop(void *_ptr)
 			    (recvlen > 0)) {
 				if ((method = jstr(msgjson, "method")) != 0) {
 					if (strcmp(method, "invoice") == 0) {
-						BET_DCV_pay(msgjson, bet, NULL);
+						bet_dcv_pay(msgjson, bet, NULL);
 						flag = 0;
 					}
 				}
@@ -151,7 +151,7 @@ void BET_DCV_paymentloop(void *_ptr)
 Here contains the functions which are specific to players and BVV
 ****************************************************************/
 
-int32_t BET_player_create_invoice(cJSON *argjson, struct privatebet_info *bet,
+int32_t bet_player_create_invoice(cJSON *argjson, struct privatebet_info *bet,
 				  struct privatebet_vars *vars, char *deckid)
 {
 	int argc, bytes, retval = 1;
@@ -214,7 +214,7 @@ end:
 	return retval;
 }
 
-int32_t BET_player_create_invoice_request(cJSON *argjson,
+int32_t bet_player_create_invoice_request(cJSON *argjson,
 					  struct privatebet_info *bet,
 					  int32_t amount)
 {
@@ -242,10 +242,8 @@ end:
 	return retval;
 }
 
-int32_t BET_player_create_betting_invoice_request(cJSON *argjson,
-						  cJSON *actionResponse,
-						  struct privatebet_info *bet,
-						  int32_t amount)
+int32_t bet_player_invoice_request(cJSON *argjson, cJSON *actionResponse,
+				   struct privatebet_info *bet, int32_t amount)
 {
 	int32_t retval = 1, bytes;
 	cJSON *betInfo = NULL;
@@ -272,14 +270,14 @@ end:
 	return retval;
 }
 
-int32_t BET_player_invoice_pay(cJSON *argjson, struct privatebet_info *bet,
+int32_t bet_player_invoice_pay(cJSON *argjson, struct privatebet_info *bet,
 			       struct privatebet_vars *vars, int amount)
 {
 	pthread_t pay_t;
 	int32_t retval = 1;
 
-	retval = BET_player_create_invoice_request(argjson, bet, amount);
-	if (OS_thread_create(&pay_t, NULL, (void *)BET_player_paymentloop,
+	retval = bet_player_create_invoice_request(argjson, bet, amount);
+	if (OS_thread_create(&pay_t, NULL, (void *)bet_player_paymentloop,
 			     (void *)bet) != 0) {
 		printf("%s::%d::%d\n", __FUNCTION__, __LINE__, retval);
 	}
@@ -291,7 +289,7 @@ int32_t BET_player_invoice_pay(cJSON *argjson, struct privatebet_info *bet,
 	return retval;
 }
 
-void BET_player_paymentloop(void *_ptr)
+void bet_player_paymentloop(void *_ptr)
 {
 	int32_t recvlen, retval = 1;
 	uint8_t flag = 1;
@@ -307,7 +305,7 @@ void BET_player_paymentloop(void *_ptr)
 			    (recvlen > 0)) {
 				if ((method = jstr(msgjson, "method")) != 0) {
 					if (strcmp(method, "invoice") == 0) {
-						retval = BET_p2p_invoice(
+						retval = ln_pay_invoice(
 							msgjson, bet, NULL);
 						flag = 0;
 						break;
@@ -320,68 +318,4 @@ void BET_player_paymentloop(void *_ptr)
 			}
 		}
 	}
-}
-
-/*
-Below are the payment related REST API's
-*/
-
-int32_t BET_rest_player_create_invoice_request_round(struct lws *wsi,
-						     cJSON *argjson,
-						     int32_t amount,
-						     int32_t option)
-{
-	int32_t retval = 1;
-	cJSON *betInfo = NULL;
-
-	betInfo = cJSON_CreateObject();
-	cJSON_AddStringToObject(betInfo, "method", "invoiceRequest");
-	cJSON_AddNumberToObject(betInfo, "round", jint(argjson, "round"));
-	cJSON_AddNumberToObject(
-		betInfo, "playerID",
-		BET_player[jint(argjson, "gui_playerID")]->myplayerid);
-	cJSON_AddNumberToObject(betInfo, "betAmount", amount);
-	cJSON_AddNumberToObject(betInfo, "option", option);
-	cJSON_AddItemToObject(betInfo, "payment_params", argjson);
-	lws_write(wsi, cJSON_Print(betInfo), strlen(cJSON_Print(betInfo)), 0);
-
-	return retval;
-}
-
-int32_t BET_rest_player_create_invoice_request(struct lws *wsi, cJSON *argjson,
-					       int32_t amount)
-{
-	int32_t retval = 1;
-	cJSON *betInfo = NULL;
-
-	betInfo = cJSON_CreateObject();
-	cJSON_AddStringToObject(betInfo, "method", "invoiceRequest");
-	cJSON_AddNumberToObject(betInfo, "round", jint(argjson, "round"));
-	cJSON_AddNumberToObject(
-		betInfo, "playerID",
-		BET_player[jint(argjson, "gui_playerID")]->myplayerid);
-	cJSON_AddNumberToObject(betInfo, "betAmount", amount);
-	cJSON_AddItemToObject(betInfo, "payment_params", argjson);
-	lws_write(wsi, cJSON_Print(betInfo), strlen(cJSON_Print(betInfo)), 0);
-
-	return retval;
-}
-
-int32_t BET_rest_DCV_create_invoice_request(struct lws *wsi, int32_t amount,
-					    int32_t playerID)
-{
-	int32_t retval = 1;
-
-	cJSON *invoiceRequestInfo = NULL;
-
-	invoiceRequestInfo = cJSON_CreateObject();
-	cJSON_AddStringToObject(invoiceRequestInfo, "method",
-				"winningInvoiceRequest");
-	cJSON_AddNumberToObject(invoiceRequestInfo, "playerID", playerID);
-	cJSON_AddNumberToObject(invoiceRequestInfo, "winningAmount", amount);
-
-	lws_write(wsi, cJSON_Print(invoiceRequestInfo),
-		  strlen(cJSON_Print(invoiceRequestInfo)), 0);
-
-	return retval;
 }

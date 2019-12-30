@@ -1,7 +1,7 @@
 struct cashier *cashier_info;
 
 #if 0
-void BET_cashier_loop(void * _ptr)
+void bet_cashier_loop(void * _ptr)
 {
 	int32_t recvlen=0; 
 	void *ptr=NULL; 
@@ -21,7 +21,7 @@ void BET_cashier_loop(void * _ptr)
 					tmp=clonestr(ptr);
                 if ((recvlen>0) && ((msgjson= cJSON_Parse(tmp)) != 0 ))
                 {
-                    if ( BET_cashier_backend(msgjson,bet,Player_VARS_global) < 0 )
+                    if ( BET_cashier_backend(msgjson,bet,player_vars) < 0 )
                     {
                     	printf("\nFAILURE\n");
                     	// do something here, possibly this could be because unknown commnad or because of encountering a special case which state machine fails to handle

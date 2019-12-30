@@ -178,12 +178,8 @@ struct cashier {
 	char addr[67];
 };
 
-extern struct privatebet_info *BET_player_global;
-extern struct privatebet_vars *Player_VARS_global;
-
-int32_t BET_statemachine_validate(struct privatebet_info *bet,
-				  struct privatebet_vars *vars, int32_t round,
-				  int32_t senderid);
+extern struct privatebet_info *bet_player;
+extern struct privatebet_vars *player_vars;
 
 bits256 xoverz_donna(bits256 a);
 bits256 crecip_donna(bits256 a);
@@ -203,6 +199,5 @@ struct pair256 p2p_bvv_init(bits256 *keys, struct pair256 b_key,
 			    bits256 deckid);
 
 bits256 curve25519_fieldelement(bits256 hash);
-void dekgen_vendor_perm(int numcards);
 
 #endif

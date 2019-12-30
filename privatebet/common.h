@@ -41,13 +41,13 @@ extern bits256 all_v_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS]
 extern bits256 all_g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXPLAYERS]
 			 [CARDS777_MAXCARDS];
 
-extern struct privatebet_info *BET_dcv;
-extern struct privatebet_vars *DCV_VARS;
+extern struct privatebet_info *bet_dcv;
+extern struct privatebet_vars *dcv_vars;
 
 extern int32_t no_of_signers, max_no_of_signers, is_signed[CARDS777_MAXPLAYERS];
 
-extern struct privatebet_info *BET_bvv;
-extern struct privatebet_vars *BVV_VARS;
+extern struct privatebet_info *bet_bvv;
+extern struct privatebet_vars *bvv_vars;
 
 extern struct privatebet_info *BET_player[CARDS777_MAXPLAYERS];
 extern struct privatebet_vars *Player_VARS[CARDS777_MAXPLAYERS];
@@ -67,20 +67,14 @@ extern bits256 all_playershares[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS]
 			       [CARDS777_MAXPLAYERS];
 
 extern int32_t permis_d[CARDS777_MAXCARDS], permis_b[CARDS777_MAXCARDS];
-extern bits256 Myprivkey, Mypubkey;
-extern int32_t IAMHOST;
-extern uint16_t LN_port;
-extern int32_t Gamestart, Gamestarted, Lastturni;
 extern bits256 deckid;
 extern uint8_t sharenrs[256];
-extern char *LN_idstr, Host_ipaddr[64], Host_peerid[67], Host_channel[64];
-extern int32_t Num_hostrhashes, Chips_paid;
 extern bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 
 extern struct lws *wsi_global_client;
 
 extern struct cashier *cashier_info;
 
-extern int32_t Maxplayers;
+extern int32_t max_players;
 
 #endif
