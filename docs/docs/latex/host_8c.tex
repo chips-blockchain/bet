@@ -1,0 +1,820 @@
+\hypertarget{host_8c}{}\section{/root/bet/privatebet/host.c File Reference}
+\label{host_8c}\index{/root/bet/privatebet/host.\+c@{/root/bet/privatebet/host.\+c}}
+{\ttfamily \#include \char`\"{}host.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}../log/macrologger.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}bet.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}cards777.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}client.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}commands.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}common.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}network.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}oracle.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}payment.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}poker.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}states.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}table.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$errno.\+h$>$}\newline
+{\ttfamily \#include $<$netinet/in.\+h$>$}\newline
+{\ttfamily \#include $<$pthread.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$sys/socket.\+h$>$}\newline
+{\ttfamily \#include $<$unistd.\+h$>$}\newline
+Include dependency graph for host.\+c\+:
+% FIG 0
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{host_8c_a6ac88fa6a0ff7931eebef9c3e789b53d}{L\+W\+S\+\_\+\+P\+L\+U\+G\+I\+N\+\_\+\+S\+T\+A\+T\+IC}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{host_8c_a1f8e3d38c48ef3c4115775937046b4d6}{dcv\+\_\+lws\+\_\+write} (c\+J\+S\+ON $\ast$data)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a8b1f6bb7284b34b7a98556d15ebce4dc}{B\+E\+T\+\_\+rest\+\_\+from\+\_\+dcv} (struct lws $\ast$wsi, c\+J\+S\+ON $\ast$argjson)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a4a0ddf1904b4d79eb71bd87adb954608}{B\+E\+T\+\_\+rest\+\_\+from\+\_\+bvv} (struct lws $\ast$wsi, c\+J\+S\+ON $\ast$argjson)
+\item 
+int32\+\_\+t \hyperlink{host_8c_ac07b1d62f829f6c1a17f54d8d5b1ef53}{B\+E\+T\+\_\+rest\+\_\+from\+\_\+player} (struct lws $\ast$wsi, c\+J\+S\+ON $\ast$argjson)
+\item 
+int32\+\_\+t \hyperlink{host_8c_af23d0c2074c632617629fce0775356d1}{bet\+\_\+chat} (struct lws $\ast$wsi, c\+J\+S\+ON $\ast$argjson)
+\item 
+static void \hyperlink{host_8c_aeff84950c67efc57eee0d08ea771874d}{initialize\+\_\+seat} (c\+J\+S\+ON $\ast$seat\+Info, char $\ast$name, int32\+\_\+t seat, int32\+\_\+t stack, int32\+\_\+t empty, int32\+\_\+t playing)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a0766fcd2997389e70a025bb3437716ce}{bet\+\_\+seats} (struct lws $\ast$wsi, c\+J\+S\+ON $\ast$argjson)
+\item 
+int32\+\_\+t \hyperlink{host_8c_adbe3ab77bc01747b60c29a13f7cd8690}{bet\+\_\+game} (struct lws $\ast$wsi, c\+J\+S\+ON $\ast$argjson)
+\item 
+int32\+\_\+t \hyperlink{host_8c_af48eb8c9921f365be8d697e76f6c93cd}{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+default} (struct lws $\ast$wsi, c\+J\+S\+ON $\ast$argjson)
+\item 
+int32\+\_\+t \hyperlink{host_8c_abaa86f65a1aa94bb633d612dd872ad54}{B\+E\+T\+\_\+rest\+\_\+client\+\_\+join\+\_\+req} (struct lws $\ast$wsi, c\+J\+S\+ON $\ast$argjson)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a0255f00ad974231097d5cd8e0b064c4e}{B\+E\+T\+\_\+rest\+\_\+broadcast\+\_\+table\+\_\+info} (struct lws $\ast$wsi)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a15ed9e65819de504f324c40247054ec6}{B\+E\+T\+\_\+rest\+\_\+check\+\_\+\+B\+V\+V\+\_\+\+Ready} (struct lws $\ast$wsi)
+\item 
+int32\+\_\+t \hyperlink{host_8c_aca7adf7fe6eb1be6a74c5e639570d5c0}{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+start\+\_\+init} (struct lws $\ast$wsi, c\+J\+S\+ON $\ast$argjson)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a0d6c6c522a5daf092bd11ceea1588dc3}{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+process\+\_\+init\+\_\+p} (struct lws $\ast$wsi, c\+J\+S\+ON $\ast$argjson)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a91aea355ec66d2e59360f9ae913643a0}{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+deck\+\_\+init\+\_\+info} (struct lws $\ast$wsi, c\+J\+S\+ON $\ast$argjson)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a634e0258e414d8dbea7ab3a2120384a1}{B\+E\+T\+\_\+rest\+\_\+check\+\_\+player\+\_\+ready} (struct lws $\ast$wsi, c\+J\+S\+ON $\ast$argjson)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a76251cfcb241c991f6a8769afd0ed4ff}{B\+E\+T\+\_\+rest\+\_\+send\+\_\+turn\+\_\+info} (struct lws $\ast$wsi, int32\+\_\+t playerid, int32\+\_\+t cardid, int32\+\_\+t \hyperlink{bet_8h_aee707e2ff5691dbdefd9341a18de7b14}{card\+\_\+type})
+\item 
+int32\+\_\+t \hyperlink{host_8c_aac1ed76b9a6ae9980f499aa56a6a46b8}{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+\+L\+N\+\_\+check} ()
+\item 
+int32\+\_\+t \hyperlink{host_8c_a75d1949d2e56aab9d81817e5807a5136}{B\+E\+T\+\_\+rest\+\_\+bvv\+\_\+join} (struct lws $\ast$wsi, c\+J\+S\+ON $\ast$argjson)
+\item 
+int32\+\_\+t \hyperlink{host_8c_ae8be3b2e1c1e7cc440c234e7d5234ba6}{B\+E\+T\+\_\+rest\+\_\+create\+\_\+invoice} (struct lws $\ast$wsi, c\+J\+S\+ON $\ast$argjson)
+\item 
+int32\+\_\+t \hyperlink{host_8c_af60c3670db1000a5755ba856fececaa6}{B\+E\+T\+\_\+rest\+\_\+\+D\+C\+V\+\_\+create\+\_\+invoice} (struct lws $\ast$wsi, c\+J\+S\+ON $\ast$argjson)
+\item 
+int32\+\_\+t \hyperlink{host_8c_ad75494813a249482054c13a2fe95d72d}{B\+E\+T\+\_\+rest\+\_\+\+D\+C\+V\+\_\+winning\+Claim} (struct lws $\ast$wsi, c\+J\+S\+ON $\ast$argjson)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a42d58e2d2d642d5853edb8cd663c2b7f}{bet\+\_\+dcv\+\_\+frontend} (struct lws $\ast$wsi, c\+J\+S\+ON $\ast$argjson)
+\item 
+int \hyperlink{host_8c_a107bec281a1ddc6b98e44b556f95e7bf}{lws\+\_\+callback\+\_\+http\+\_\+dummy} (struct lws $\ast$wsi, enum lws\+\_\+callback\+\_\+reasons reason, void $\ast$user, void $\ast$in, size\+\_\+t len)
+\item 
+void \hyperlink{host_8c_a258e3b580e688a0cf46e4258525aeaf1}{sigint\+\_\+handler} (int sig)
+\item 
+void \hyperlink{host_8c_a106ab8d73d9b1bb5fcffcbaba60f384e}{bet\+\_\+push\+\_\+dcv\+\_\+to\+\_\+gui} (c\+J\+S\+ON $\ast$argjson)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a249bb7c069400cdadfbf5111ca893c0b}{bet\+\_\+dcv\+\_\+deck\+\_\+init\+\_\+info} (c\+J\+S\+ON $\ast$argjson, struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet, struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$vars)
+\item 
+int32\+\_\+t \hyperlink{host_8c_af4c0e088e047c4a74e8758ef9a9eb6aa}{bet\+\_\+dcv\+\_\+init} (c\+J\+S\+ON $\ast$argjson, struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet, struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$vars)
+\item 
+int32\+\_\+t \hyperlink{host_8c_ad25de1620622d07c09307119436e23c1}{B\+E\+T\+\_\+p2p\+\_\+bvv\+\_\+join} (c\+J\+S\+ON $\ast$argjson, struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet, struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$vars)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a4c71e107f8f247c73fcdeab359a58c04}{bet\+\_\+dcv\+\_\+start} (struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet, int32\+\_\+t peerid)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a0b9684e66602d8483270b8f214809cc4}{bet\+\_\+player\+\_\+join\+\_\+req} (c\+J\+S\+ON $\ast$argjson, struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet, struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$vars)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a365db996dc7101a2a29268d557d8bf09}{B\+E\+T\+\_\+send\+\_\+turn\+\_\+info} (struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet, int32\+\_\+t playerid, int32\+\_\+t cardid, int32\+\_\+t \hyperlink{bet_8h_aee707e2ff5691dbdefd9341a18de7b14}{card\+\_\+type})
+\item 
+int32\+\_\+t \hyperlink{host_8c_a9dc3264b9db7de223419c5551868b6c7}{bet\+\_\+dcv\+\_\+turn} (c\+J\+S\+ON $\ast$argjson, struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet, struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$vars)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a9d17f9c6b6a2d454798bf5ac36b98ab1}{bet\+\_\+relay} (c\+J\+S\+ON $\ast$argjson, struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet, struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$vars)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a09a42ecccecb3b6bda4bb0997e9b6f13}{B\+E\+T\+\_\+check\+\_\+\+B\+V\+V\+\_\+\+Ready} (struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a3925277a8ed2adbdd141d9b28aa2c71d}{B\+E\+T\+\_\+create\+\_\+invoice} (c\+J\+S\+ON $\ast$argjson, struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet, struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$vars)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a9651b87a5cfc14272baa9a040fb63cc5}{B\+E\+T\+\_\+create\+\_\+betting\+\_\+invoice} (c\+J\+S\+ON $\ast$argjson, struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet, struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$vars)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a45f715b215f34d6b44c72a56a65b6e0e}{bet\+\_\+check\+\_\+player\+\_\+ready} (c\+J\+S\+ON $\ast$player\+Ready, struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet, struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$vars)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a8f77d2616f3863fe0fb744607ba48a15}{bet\+\_\+receive\+\_\+card} (c\+J\+S\+ON $\ast$player\+Card\+Info, struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet, struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$vars)
+\item 
+void \hyperlink{host_8c_af784c4059c06107c85677ad2ff41da26}{bet\+\_\+dcv\+\_\+reset} (struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet, struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$vars)
+\item 
+void \hyperlink{host_8c_a4722546dfbefaa9c5dc84841b0db31ca}{bet\+\_\+dcv\+\_\+force\+\_\+reset} (struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet, struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$vars)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a464a280df03afc8add329418712e5ee5}{bet\+\_\+evaluate\+\_\+hand} (c\+J\+S\+ON $\ast$player\+Card\+Info, struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet, struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$vars)
+\item 
+void \hyperlink{host_8c_ab10bd2334f3863c22752fe36e23fb406}{B\+E\+T\+\_\+establish\+\_\+ln\+\_\+channels} (struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet)
+\item 
+int \hyperlink{host_8c_a0dcdb4751cb340767b4e0f2d05a58ba2}{B\+E\+T\+\_\+\+L\+N\+\_\+check\+\_\+if\+\_\+peer\+\_\+exists} (char $\ast$channel\+\_\+id)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a955fb8217b538dd2f02f91f9f3f03019}{B\+E\+T\+\_\+\+L\+N\+\_\+check} (struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet)
+\item 
+void \hyperlink{host_8c_a02e3a4ee90fb00508d7535562ce4ea47}{B\+E\+T\+\_\+p2p\+\_\+\+L\+N\+\_\+close} (struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a9b9cf58400659709adfe4f50ddfa9c0c}{B\+E\+T\+\_\+award\+\_\+winner} (c\+J\+S\+ON $\ast$argjson, struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet, struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$vars)
+\item 
+static void \hyperlink{host_8c_a7eaecff962dc54d68872b032349bf42f}{B\+E\+T\+\_\+push\+\_\+join\+Info} (c\+J\+S\+ON $\ast$argjson, int32\+\_\+t numplayers)
+\item 
+int32\+\_\+t \hyperlink{host_8c_a853592c099b596451ecd23e99244e1fe}{bet\+\_\+dcv\+\_\+backend} (c\+J\+S\+ON $\ast$argjson, struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet, struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$vars)
+\item 
+void \hyperlink{host_8c_a4a99b05847806e42fbcfc3b5cedc4380}{bet\+\_\+dcv\+\_\+backend\+\_\+loop} (void $\ast$\+\_\+ptr)
+\item 
+void \hyperlink{host_8c_a2ac04c6502a7b7e3c50f6aaf6cc4eb41}{bet\+\_\+dcv\+\_\+frontend\+\_\+loop} (void $\ast$\+\_\+ptr)
+\item 
+static int32\+\_\+t \hyperlink{host_8c_a68d581d035d443e0076a177bee2f4985}{bet\+\_\+send\+\_\+status} (struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$bet)
+\item 
+void \hyperlink{host_8c_af5ffa99b814c76f0ad597b5a700e6f19}{bet\+\_\+dcv\+\_\+live\+\_\+loop} (void $\ast$\+\_\+ptr)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+struct lws $\ast$ \hyperlink{host_8c_abb636672d53a20859277b4ee50d048f2}{wsi\+\_\+global\+\_\+host} = N\+U\+LL
+\item 
+c\+J\+S\+ON $\ast$ \hyperlink{host_8c_ac05c3f04dded9e82101c72a9f50b382c}{dcv\+Data\+To\+Write} = N\+U\+LL
+\item 
+int32\+\_\+t \hyperlink{host_8c_a2fbd79df5e5b5ce8fe30354a12438913}{dcv\+Data\+Exists} = 0
+\item 
+int32\+\_\+t \hyperlink{host_8c_a8b84dc319ea3072597938e05f824fba3}{players\+\_\+joined} = 0
+\item 
+int32\+\_\+t \hyperlink{host_8c_a0da6d4ab8606b9ebb2ff16fffb343982}{turn} = 0
+\item 
+int32\+\_\+t \hyperlink{host_8c_ab0b014c77ee4c0f9c4efbbcaaa2233b8}{no\+\_\+of\+\_\+cards} = 0
+\item 
+int32\+\_\+t \hyperlink{host_8c_a274d848856a16601b02d0612115d6cdb}{no\+\_\+of\+\_\+rounds} = 0
+\item 
+int32\+\_\+t \hyperlink{host_8c_ac7ede27676d45ec9b8f3300616f3c21d}{no\+\_\+of\+\_\+bets} = 0
+\item 
+int32\+\_\+t \hyperlink{host_8c_a257fcb6422d25e775ec752cec7e7f00c}{card\+\_\+matrix} \mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}\mbox{[}\hyperlink{common_8h_abf1aff3f2c475b56db3259d85f51376d}{hand\+\_\+size}\mbox{]}
+\item 
+int32\+\_\+t \hyperlink{host_8c_a103f208d345d3203e2111b4ee85b3c9a}{card\+\_\+values} \mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}\mbox{[}\hyperlink{common_8h_abf1aff3f2c475b56db3259d85f51376d}{hand\+\_\+size}\mbox{]}
+\item 
+int32\+\_\+t \hyperlink{host_8c_a70f8b98912f3ec905230bb8fd4309f63}{all\+\_\+player\+\_\+cards} \mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}\mbox{[}\hyperlink{common_8h_a90f0ea2d767ac1915e44acb24a1fe1bd}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+C\+A\+R\+DS}\mbox{]}
+\item 
+struct \hyperlink{structdeck__dcv__info}{deck\+\_\+dcv\+\_\+info} \hyperlink{host_8c_ad4f60484e62e04a86ab82adf508155ac}{dcv\+\_\+info}
+\item 
+int32\+\_\+t \hyperlink{host_8c_a45143a6ba36953c506de70d9aeb5bf13}{player\+\_\+ready} \mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}
+\item 
+int32\+\_\+t \hyperlink{host_8c_afc92fa9ddca98e6462e2f1fa0b45ce54}{hole\+\_\+cards\+\_\+drawn} = 0
+\item 
+int32\+\_\+t \hyperlink{host_8c_a9291cd79c30f9d5e6158e9f0e17a4ce3}{community\+\_\+cards\+\_\+drawn} = 0
+\item 
+int32\+\_\+t \hyperlink{host_8c_ab778f0489a05381dafaf84814ff42820}{flop\+\_\+cards\+\_\+drawn} = 0
+\item 
+int32\+\_\+t \hyperlink{host_8c_a8d7ceed4310192c3e202c3d66ac1c2ad}{turn\+\_\+card\+\_\+drawn} = 0
+\item 
+int32\+\_\+t \hyperlink{host_8c_a20292555b517e663098d4a6c7ce4301d}{river\+\_\+card\+\_\+drawn} = 0
+\item 
+int32\+\_\+t \hyperlink{host_8c_afcbc8318d0b36b5385337f1e74843988}{bet\+\_\+amount} \mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}\mbox{[}\hyperlink{common_8h_aa7cb3dc82286cdcfc50250b3ec3ae769}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+R\+O\+U\+N\+DS}\mbox{]}
+\item 
+int32\+\_\+t \hyperlink{host_8c_a7518f53581392113f02a0c67ad16b89e}{eval\+\_\+game\+\_\+p} \mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}
+\item 
+int32\+\_\+t \hyperlink{host_8c_ad9ccd5e2c002185825b37a9c4ee13264}{eval\+\_\+game\+\_\+c} \mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}
+\item 
+int32\+\_\+t \hyperlink{host_8c_ac8985cbccf62b12d1acb3cd44380bab9}{player\+\_\+status} \mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}
+\item 
+int32\+\_\+t \hyperlink{host_8c_aa0ac1a7de9a45e00c34202cd8a4c75a8}{bvv\+\_\+status}
+\item 
+char \hyperlink{host_8c_adbcd807d45eb5eab19a770d733173623}{player\+\_\+chips\+\_\+address} \mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}\mbox{[}64\mbox{]}
+\item 
+int32\+\_\+t \hyperlink{host_8c_a391499f348496ec39622c5d6f9e732fd}{invoice\+ID}
+\item 
+char $\ast$ \hyperlink{host_8c_a9c14867c1a22e34535491feeec626898}{suit} \mbox{[}\hyperlink{common_8h_a8f71a68d7f10d41f9c251dee9afd3c57}{N\+S\+U\+I\+TS}\mbox{]} = \{ \char`\"{}clubs\char`\"{}, \char`\"{}diamonds\char`\"{}, \char`\"{}hearts\char`\"{}, \char`\"{}spades\char`\"{} \}
+\item 
+char $\ast$ \hyperlink{host_8c_ad9307743818dc635cc8c74dc1a2a3323}{face} \mbox{[}\hyperlink{common_8h_a7a60859a9235a326a6fd937fd0d5a578}{N\+F\+A\+C\+ES}\mbox{]}
+\item 
+struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$ \hyperlink{host_8c_a62b702b575af739ee2c999554ea33c5a}{bet\+\_\+dcv}
+\item 
+struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$ \hyperlink{host_8c_ab98cf25f28f49f78a9431fcc11bda58e}{dcv\+\_\+vars}
+\item 
+static int \hyperlink{host_8c_ae56101b5edfa437906539229fd5e2d31}{dealer\+Position}
+\item 
+int32\+\_\+t \hyperlink{host_8c_a79d6b450d204447564e6deee2bc97d82}{no\+\_\+of\+\_\+signers}
+\item 
+int32\+\_\+t \hyperlink{host_8c_afc2fd24df5d82cbedddde3b28245f46a}{max\+\_\+no\+\_\+of\+\_\+signers} = 2
+\item 
+int32\+\_\+t \hyperlink{host_8c_ae56653403779513733fee433ef0b6aab}{is\+\_\+signed} \mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}
+\item 
+char \hyperlink{host_8c_a2ce4dbf0f3e8f57ab5d5c40971830609}{lws\+\_\+buf} \mbox{[}65536\mbox{]}
+\item 
+int32\+\_\+t \hyperlink{host_8c_a52aca01cdb7a7e61da5148a62052927d}{lws\+\_\+buf\+\_\+length} = 0
+\item 
+static struct lws\+\_\+protocols \hyperlink{host_8c_a0cde2a0bf68fbf485a05f22364d5ac5b}{protocols} \mbox{[}$\,$\mbox{]}
+\item 
+static int \hyperlink{host_8c_a91a694716d07ab82e16db9cdba7d69c3}{interrupted}
+\item 
+static const struct lws\+\_\+http\+\_\+mount \hyperlink{host_8c_afcd99fd3f865a01dd3dad789fa43e247}{mount}
+\item 
+pthread\+\_\+mutex\+\_\+t \hyperlink{host_8c_a4acff8232e4aec9cd5c6dc200ac55ef3}{mutex} = P\+T\+H\+R\+E\+A\+D\+\_\+\+M\+U\+T\+E\+X\+\_\+\+I\+N\+I\+T\+I\+A\+L\+I\+Z\+ER
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\mbox{\Hypertarget{host_8c_a6ac88fa6a0ff7931eebef9c3e789b53d}\label{host_8c_a6ac88fa6a0ff7931eebef9c3e789b53d}} 
+\index{host.\+c@{host.\+c}!L\+W\+S\+\_\+\+P\+L\+U\+G\+I\+N\+\_\+\+S\+T\+A\+T\+IC@{L\+W\+S\+\_\+\+P\+L\+U\+G\+I\+N\+\_\+\+S\+T\+A\+T\+IC}}
+\index{L\+W\+S\+\_\+\+P\+L\+U\+G\+I\+N\+\_\+\+S\+T\+A\+T\+IC@{L\+W\+S\+\_\+\+P\+L\+U\+G\+I\+N\+\_\+\+S\+T\+A\+T\+IC}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{L\+W\+S\+\_\+\+P\+L\+U\+G\+I\+N\+\_\+\+S\+T\+A\+T\+IC}{LWS\_PLUGIN\_STATIC}}
+{\footnotesize\ttfamily \#define L\+W\+S\+\_\+\+P\+L\+U\+G\+I\+N\+\_\+\+S\+T\+A\+T\+IC}
+
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{host_8c_a9b9cf58400659709adfe4f50ddfa9c0c}\label{host_8c_a9b9cf58400659709adfe4f50ddfa9c0c}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+award\+\_\+winner@{B\+E\+T\+\_\+award\+\_\+winner}}
+\index{B\+E\+T\+\_\+award\+\_\+winner@{B\+E\+T\+\_\+award\+\_\+winner}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+award\+\_\+winner()}{BET\_award\_winner()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+award\+\_\+winner (\begin{DoxyParamCaption}\item[{c\+J\+S\+ON $\ast$}]{argjson,  }\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet,  }\item[{struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$}]{vars }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_af23d0c2074c632617629fce0775356d1}\label{host_8c_af23d0c2074c632617629fce0775356d1}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+chat@{bet\+\_\+chat}}
+\index{bet\+\_\+chat@{bet\+\_\+chat}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+chat()}{bet\_chat()}}
+{\footnotesize\ttfamily int32\+\_\+t bet\+\_\+chat (\begin{DoxyParamCaption}\item[{struct lws $\ast$}]{wsi,  }\item[{c\+J\+S\+ON $\ast$}]{argjson }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a09a42ecccecb3b6bda4bb0997e9b6f13}\label{host_8c_a09a42ecccecb3b6bda4bb0997e9b6f13}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+check\+\_\+\+B\+V\+V\+\_\+\+Ready@{B\+E\+T\+\_\+check\+\_\+\+B\+V\+V\+\_\+\+Ready}}
+\index{B\+E\+T\+\_\+check\+\_\+\+B\+V\+V\+\_\+\+Ready@{B\+E\+T\+\_\+check\+\_\+\+B\+V\+V\+\_\+\+Ready}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+check\+\_\+\+B\+V\+V\+\_\+\+Ready()}{BET\_check\_BVV\_Ready()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+check\+\_\+\+B\+V\+V\+\_\+\+Ready (\begin{DoxyParamCaption}\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a45f715b215f34d6b44c72a56a65b6e0e}\label{host_8c_a45f715b215f34d6b44c72a56a65b6e0e}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+check\+\_\+player\+\_\+ready@{bet\+\_\+check\+\_\+player\+\_\+ready}}
+\index{bet\+\_\+check\+\_\+player\+\_\+ready@{bet\+\_\+check\+\_\+player\+\_\+ready}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+check\+\_\+player\+\_\+ready()}{bet\_check\_player\_ready()}}
+{\footnotesize\ttfamily int32\+\_\+t bet\+\_\+check\+\_\+player\+\_\+ready (\begin{DoxyParamCaption}\item[{c\+J\+S\+ON $\ast$}]{player\+Ready,  }\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet,  }\item[{struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$}]{vars }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a9651b87a5cfc14272baa9a040fb63cc5}\label{host_8c_a9651b87a5cfc14272baa9a040fb63cc5}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+create\+\_\+betting\+\_\+invoice@{B\+E\+T\+\_\+create\+\_\+betting\+\_\+invoice}}
+\index{B\+E\+T\+\_\+create\+\_\+betting\+\_\+invoice@{B\+E\+T\+\_\+create\+\_\+betting\+\_\+invoice}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+create\+\_\+betting\+\_\+invoice()}{BET\_create\_betting\_invoice()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+create\+\_\+betting\+\_\+invoice (\begin{DoxyParamCaption}\item[{c\+J\+S\+ON $\ast$}]{argjson,  }\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet,  }\item[{struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$}]{vars }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a3925277a8ed2adbdd141d9b28aa2c71d}\label{host_8c_a3925277a8ed2adbdd141d9b28aa2c71d}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+create\+\_\+invoice@{B\+E\+T\+\_\+create\+\_\+invoice}}
+\index{B\+E\+T\+\_\+create\+\_\+invoice@{B\+E\+T\+\_\+create\+\_\+invoice}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+create\+\_\+invoice()}{BET\_create\_invoice()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+create\+\_\+invoice (\begin{DoxyParamCaption}\item[{c\+J\+S\+ON $\ast$}]{argjson,  }\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet,  }\item[{struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$}]{vars }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a853592c099b596451ecd23e99244e1fe}\label{host_8c_a853592c099b596451ecd23e99244e1fe}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+dcv\+\_\+backend@{bet\+\_\+dcv\+\_\+backend}}
+\index{bet\+\_\+dcv\+\_\+backend@{bet\+\_\+dcv\+\_\+backend}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+dcv\+\_\+backend()}{bet\_dcv\_backend()}}
+{\footnotesize\ttfamily int32\+\_\+t bet\+\_\+dcv\+\_\+backend (\begin{DoxyParamCaption}\item[{c\+J\+S\+ON $\ast$}]{argjson,  }\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet,  }\item[{struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$}]{vars }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a4a99b05847806e42fbcfc3b5cedc4380}\label{host_8c_a4a99b05847806e42fbcfc3b5cedc4380}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+dcv\+\_\+backend\+\_\+loop@{bet\+\_\+dcv\+\_\+backend\+\_\+loop}}
+\index{bet\+\_\+dcv\+\_\+backend\+\_\+loop@{bet\+\_\+dcv\+\_\+backend\+\_\+loop}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+dcv\+\_\+backend\+\_\+loop()}{bet\_dcv\_backend\_loop()}}
+{\footnotesize\ttfamily void bet\+\_\+dcv\+\_\+backend\+\_\+loop (\begin{DoxyParamCaption}\item[{void $\ast$}]{\+\_\+ptr }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a249bb7c069400cdadfbf5111ca893c0b}\label{host_8c_a249bb7c069400cdadfbf5111ca893c0b}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+dcv\+\_\+deck\+\_\+init\+\_\+info@{bet\+\_\+dcv\+\_\+deck\+\_\+init\+\_\+info}}
+\index{bet\+\_\+dcv\+\_\+deck\+\_\+init\+\_\+info@{bet\+\_\+dcv\+\_\+deck\+\_\+init\+\_\+info}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+dcv\+\_\+deck\+\_\+init\+\_\+info()}{bet\_dcv\_deck\_init\_info()}}
+{\footnotesize\ttfamily int32\+\_\+t bet\+\_\+dcv\+\_\+deck\+\_\+init\+\_\+info (\begin{DoxyParamCaption}\item[{c\+J\+S\+ON $\ast$}]{argjson,  }\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet,  }\item[{struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$}]{vars }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a4722546dfbefaa9c5dc84841b0db31ca}\label{host_8c_a4722546dfbefaa9c5dc84841b0db31ca}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+dcv\+\_\+force\+\_\+reset@{bet\+\_\+dcv\+\_\+force\+\_\+reset}}
+\index{bet\+\_\+dcv\+\_\+force\+\_\+reset@{bet\+\_\+dcv\+\_\+force\+\_\+reset}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+dcv\+\_\+force\+\_\+reset()}{bet\_dcv\_force\_reset()}}
+{\footnotesize\ttfamily void bet\+\_\+dcv\+\_\+force\+\_\+reset (\begin{DoxyParamCaption}\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet,  }\item[{struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$}]{vars }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a42d58e2d2d642d5853edb8cd663c2b7f}\label{host_8c_a42d58e2d2d642d5853edb8cd663c2b7f}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+dcv\+\_\+frontend@{bet\+\_\+dcv\+\_\+frontend}}
+\index{bet\+\_\+dcv\+\_\+frontend@{bet\+\_\+dcv\+\_\+frontend}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+dcv\+\_\+frontend()}{bet\_dcv\_frontend()}}
+{\footnotesize\ttfamily int32\+\_\+t bet\+\_\+dcv\+\_\+frontend (\begin{DoxyParamCaption}\item[{struct lws $\ast$}]{wsi,  }\item[{c\+J\+S\+ON $\ast$}]{argjson }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a2ac04c6502a7b7e3c50f6aaf6cc4eb41}\label{host_8c_a2ac04c6502a7b7e3c50f6aaf6cc4eb41}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+dcv\+\_\+frontend\+\_\+loop@{bet\+\_\+dcv\+\_\+frontend\+\_\+loop}}
+\index{bet\+\_\+dcv\+\_\+frontend\+\_\+loop@{bet\+\_\+dcv\+\_\+frontend\+\_\+loop}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+dcv\+\_\+frontend\+\_\+loop()}{bet\_dcv\_frontend\_loop()}}
+{\footnotesize\ttfamily void bet\+\_\+dcv\+\_\+frontend\+\_\+loop (\begin{DoxyParamCaption}\item[{void $\ast$}]{\+\_\+ptr }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_af4c0e088e047c4a74e8758ef9a9eb6aa}\label{host_8c_af4c0e088e047c4a74e8758ef9a9eb6aa}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+dcv\+\_\+init@{bet\+\_\+dcv\+\_\+init}}
+\index{bet\+\_\+dcv\+\_\+init@{bet\+\_\+dcv\+\_\+init}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+dcv\+\_\+init()}{bet\_dcv\_init()}}
+{\footnotesize\ttfamily int32\+\_\+t bet\+\_\+dcv\+\_\+init (\begin{DoxyParamCaption}\item[{c\+J\+S\+ON $\ast$}]{argjson,  }\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet,  }\item[{struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$}]{vars }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_af5ffa99b814c76f0ad597b5a700e6f19}\label{host_8c_af5ffa99b814c76f0ad597b5a700e6f19}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+dcv\+\_\+live\+\_\+loop@{bet\+\_\+dcv\+\_\+live\+\_\+loop}}
+\index{bet\+\_\+dcv\+\_\+live\+\_\+loop@{bet\+\_\+dcv\+\_\+live\+\_\+loop}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+dcv\+\_\+live\+\_\+loop()}{bet\_dcv\_live\_loop()}}
+{\footnotesize\ttfamily void bet\+\_\+dcv\+\_\+live\+\_\+loop (\begin{DoxyParamCaption}\item[{void $\ast$}]{\+\_\+ptr }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_af784c4059c06107c85677ad2ff41da26}\label{host_8c_af784c4059c06107c85677ad2ff41da26}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+dcv\+\_\+reset@{bet\+\_\+dcv\+\_\+reset}}
+\index{bet\+\_\+dcv\+\_\+reset@{bet\+\_\+dcv\+\_\+reset}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+dcv\+\_\+reset()}{bet\_dcv\_reset()}}
+{\footnotesize\ttfamily void bet\+\_\+dcv\+\_\+reset (\begin{DoxyParamCaption}\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet,  }\item[{struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$}]{vars }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a4c71e107f8f247c73fcdeab359a58c04}\label{host_8c_a4c71e107f8f247c73fcdeab359a58c04}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+dcv\+\_\+start@{bet\+\_\+dcv\+\_\+start}}
+\index{bet\+\_\+dcv\+\_\+start@{bet\+\_\+dcv\+\_\+start}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+dcv\+\_\+start()}{bet\_dcv\_start()}}
+{\footnotesize\ttfamily int32\+\_\+t bet\+\_\+dcv\+\_\+start (\begin{DoxyParamCaption}\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet,  }\item[{int32\+\_\+t}]{peerid }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a9dc3264b9db7de223419c5551868b6c7}\label{host_8c_a9dc3264b9db7de223419c5551868b6c7}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+dcv\+\_\+turn@{bet\+\_\+dcv\+\_\+turn}}
+\index{bet\+\_\+dcv\+\_\+turn@{bet\+\_\+dcv\+\_\+turn}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+dcv\+\_\+turn()}{bet\_dcv\_turn()}}
+{\footnotesize\ttfamily int32\+\_\+t bet\+\_\+dcv\+\_\+turn (\begin{DoxyParamCaption}\item[{c\+J\+S\+ON $\ast$}]{argjson,  }\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet,  }\item[{struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$}]{vars }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_ab10bd2334f3863c22752fe36e23fb406}\label{host_8c_ab10bd2334f3863c22752fe36e23fb406}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+establish\+\_\+ln\+\_\+channels@{B\+E\+T\+\_\+establish\+\_\+ln\+\_\+channels}}
+\index{B\+E\+T\+\_\+establish\+\_\+ln\+\_\+channels@{B\+E\+T\+\_\+establish\+\_\+ln\+\_\+channels}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+establish\+\_\+ln\+\_\+channels()}{BET\_establish\_ln\_channels()}}
+{\footnotesize\ttfamily void B\+E\+T\+\_\+establish\+\_\+ln\+\_\+channels (\begin{DoxyParamCaption}\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a464a280df03afc8add329418712e5ee5}\label{host_8c_a464a280df03afc8add329418712e5ee5}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+evaluate\+\_\+hand@{bet\+\_\+evaluate\+\_\+hand}}
+\index{bet\+\_\+evaluate\+\_\+hand@{bet\+\_\+evaluate\+\_\+hand}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+evaluate\+\_\+hand()}{bet\_evaluate\_hand()}}
+{\footnotesize\ttfamily int32\+\_\+t bet\+\_\+evaluate\+\_\+hand (\begin{DoxyParamCaption}\item[{c\+J\+S\+ON $\ast$}]{player\+Card\+Info,  }\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet,  }\item[{struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$}]{vars }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_adbe3ab77bc01747b60c29a13f7cd8690}\label{host_8c_adbe3ab77bc01747b60c29a13f7cd8690}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+game@{bet\+\_\+game}}
+\index{bet\+\_\+game@{bet\+\_\+game}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+game()}{bet\_game()}}
+{\footnotesize\ttfamily int32\+\_\+t bet\+\_\+game (\begin{DoxyParamCaption}\item[{struct lws $\ast$}]{wsi,  }\item[{c\+J\+S\+ON $\ast$}]{argjson }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a955fb8217b538dd2f02f91f9f3f03019}\label{host_8c_a955fb8217b538dd2f02f91f9f3f03019}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+\+L\+N\+\_\+check@{B\+E\+T\+\_\+\+L\+N\+\_\+check}}
+\index{B\+E\+T\+\_\+\+L\+N\+\_\+check@{B\+E\+T\+\_\+\+L\+N\+\_\+check}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+\+L\+N\+\_\+check()}{BET\_LN\_check()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+\+L\+N\+\_\+check (\begin{DoxyParamCaption}\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a0dcdb4751cb340767b4e0f2d05a58ba2}\label{host_8c_a0dcdb4751cb340767b4e0f2d05a58ba2}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+\+L\+N\+\_\+check\+\_\+if\+\_\+peer\+\_\+exists@{B\+E\+T\+\_\+\+L\+N\+\_\+check\+\_\+if\+\_\+peer\+\_\+exists}}
+\index{B\+E\+T\+\_\+\+L\+N\+\_\+check\+\_\+if\+\_\+peer\+\_\+exists@{B\+E\+T\+\_\+\+L\+N\+\_\+check\+\_\+if\+\_\+peer\+\_\+exists}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+\+L\+N\+\_\+check\+\_\+if\+\_\+peer\+\_\+exists()}{BET\_LN\_check\_if\_peer\_exists()}}
+{\footnotesize\ttfamily int B\+E\+T\+\_\+\+L\+N\+\_\+check\+\_\+if\+\_\+peer\+\_\+exists (\begin{DoxyParamCaption}\item[{char $\ast$}]{channel\+\_\+id }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_ad25de1620622d07c09307119436e23c1}\label{host_8c_ad25de1620622d07c09307119436e23c1}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+p2p\+\_\+bvv\+\_\+join@{B\+E\+T\+\_\+p2p\+\_\+bvv\+\_\+join}}
+\index{B\+E\+T\+\_\+p2p\+\_\+bvv\+\_\+join@{B\+E\+T\+\_\+p2p\+\_\+bvv\+\_\+join}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+p2p\+\_\+bvv\+\_\+join()}{BET\_p2p\_bvv\_join()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+p2p\+\_\+bvv\+\_\+join (\begin{DoxyParamCaption}\item[{c\+J\+S\+ON $\ast$}]{argjson,  }\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet,  }\item[{struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$}]{vars }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a02e3a4ee90fb00508d7535562ce4ea47}\label{host_8c_a02e3a4ee90fb00508d7535562ce4ea47}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+p2p\+\_\+\+L\+N\+\_\+close@{B\+E\+T\+\_\+p2p\+\_\+\+L\+N\+\_\+close}}
+\index{B\+E\+T\+\_\+p2p\+\_\+\+L\+N\+\_\+close@{B\+E\+T\+\_\+p2p\+\_\+\+L\+N\+\_\+close}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+p2p\+\_\+\+L\+N\+\_\+close()}{BET\_p2p\_LN\_close()}}
+{\footnotesize\ttfamily void B\+E\+T\+\_\+p2p\+\_\+\+L\+N\+\_\+close (\begin{DoxyParamCaption}\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a0b9684e66602d8483270b8f214809cc4}\label{host_8c_a0b9684e66602d8483270b8f214809cc4}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+player\+\_\+join\+\_\+req@{bet\+\_\+player\+\_\+join\+\_\+req}}
+\index{bet\+\_\+player\+\_\+join\+\_\+req@{bet\+\_\+player\+\_\+join\+\_\+req}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+player\+\_\+join\+\_\+req()}{bet\_player\_join\_req()}}
+{\footnotesize\ttfamily int32\+\_\+t bet\+\_\+player\+\_\+join\+\_\+req (\begin{DoxyParamCaption}\item[{c\+J\+S\+ON $\ast$}]{argjson,  }\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet,  }\item[{struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$}]{vars }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a106ab8d73d9b1bb5fcffcbaba60f384e}\label{host_8c_a106ab8d73d9b1bb5fcffcbaba60f384e}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+push\+\_\+dcv\+\_\+to\+\_\+gui@{bet\+\_\+push\+\_\+dcv\+\_\+to\+\_\+gui}}
+\index{bet\+\_\+push\+\_\+dcv\+\_\+to\+\_\+gui@{bet\+\_\+push\+\_\+dcv\+\_\+to\+\_\+gui}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+push\+\_\+dcv\+\_\+to\+\_\+gui()}{bet\_push\_dcv\_to\_gui()}}
+{\footnotesize\ttfamily void bet\+\_\+push\+\_\+dcv\+\_\+to\+\_\+gui (\begin{DoxyParamCaption}\item[{c\+J\+S\+ON $\ast$}]{argjson }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a7eaecff962dc54d68872b032349bf42f}\label{host_8c_a7eaecff962dc54d68872b032349bf42f}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+push\+\_\+join\+Info@{B\+E\+T\+\_\+push\+\_\+join\+Info}}
+\index{B\+E\+T\+\_\+push\+\_\+join\+Info@{B\+E\+T\+\_\+push\+\_\+join\+Info}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+push\+\_\+join\+Info()}{BET\_push\_joinInfo()}}
+{\footnotesize\ttfamily static void B\+E\+T\+\_\+push\+\_\+join\+Info (\begin{DoxyParamCaption}\item[{c\+J\+S\+ON $\ast$}]{argjson,  }\item[{int32\+\_\+t}]{numplayers }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{host_8c_a8f77d2616f3863fe0fb744607ba48a15}\label{host_8c_a8f77d2616f3863fe0fb744607ba48a15}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+receive\+\_\+card@{bet\+\_\+receive\+\_\+card}}
+\index{bet\+\_\+receive\+\_\+card@{bet\+\_\+receive\+\_\+card}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+receive\+\_\+card()}{bet\_receive\_card()}}
+{\footnotesize\ttfamily int32\+\_\+t bet\+\_\+receive\+\_\+card (\begin{DoxyParamCaption}\item[{c\+J\+S\+ON $\ast$}]{player\+Card\+Info,  }\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet,  }\item[{struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$}]{vars }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a9d17f9c6b6a2d454798bf5ac36b98ab1}\label{host_8c_a9d17f9c6b6a2d454798bf5ac36b98ab1}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+relay@{bet\+\_\+relay}}
+\index{bet\+\_\+relay@{bet\+\_\+relay}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+relay()}{bet\_relay()}}
+{\footnotesize\ttfamily int32\+\_\+t bet\+\_\+relay (\begin{DoxyParamCaption}\item[{c\+J\+S\+ON $\ast$}]{argjson,  }\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet,  }\item[{struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$}]{vars }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a0255f00ad974231097d5cd8e0b064c4e}\label{host_8c_a0255f00ad974231097d5cd8e0b064c4e}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+rest\+\_\+broadcast\+\_\+table\+\_\+info@{B\+E\+T\+\_\+rest\+\_\+broadcast\+\_\+table\+\_\+info}}
+\index{B\+E\+T\+\_\+rest\+\_\+broadcast\+\_\+table\+\_\+info@{B\+E\+T\+\_\+rest\+\_\+broadcast\+\_\+table\+\_\+info}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+rest\+\_\+broadcast\+\_\+table\+\_\+info()}{BET\_rest\_broadcast\_table\_info()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+rest\+\_\+broadcast\+\_\+table\+\_\+info (\begin{DoxyParamCaption}\item[{struct lws $\ast$}]{wsi }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a75d1949d2e56aab9d81817e5807a5136}\label{host_8c_a75d1949d2e56aab9d81817e5807a5136}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+rest\+\_\+bvv\+\_\+join@{B\+E\+T\+\_\+rest\+\_\+bvv\+\_\+join}}
+\index{B\+E\+T\+\_\+rest\+\_\+bvv\+\_\+join@{B\+E\+T\+\_\+rest\+\_\+bvv\+\_\+join}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+rest\+\_\+bvv\+\_\+join()}{BET\_rest\_bvv\_join()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+rest\+\_\+bvv\+\_\+join (\begin{DoxyParamCaption}\item[{struct lws $\ast$}]{wsi,  }\item[{c\+J\+S\+ON $\ast$}]{argjson }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a15ed9e65819de504f324c40247054ec6}\label{host_8c_a15ed9e65819de504f324c40247054ec6}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+rest\+\_\+check\+\_\+\+B\+V\+V\+\_\+\+Ready@{B\+E\+T\+\_\+rest\+\_\+check\+\_\+\+B\+V\+V\+\_\+\+Ready}}
+\index{B\+E\+T\+\_\+rest\+\_\+check\+\_\+\+B\+V\+V\+\_\+\+Ready@{B\+E\+T\+\_\+rest\+\_\+check\+\_\+\+B\+V\+V\+\_\+\+Ready}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+rest\+\_\+check\+\_\+\+B\+V\+V\+\_\+\+Ready()}{BET\_rest\_check\_BVV\_Ready()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+rest\+\_\+check\+\_\+\+B\+V\+V\+\_\+\+Ready (\begin{DoxyParamCaption}\item[{struct lws $\ast$}]{wsi }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a634e0258e414d8dbea7ab3a2120384a1}\label{host_8c_a634e0258e414d8dbea7ab3a2120384a1}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+rest\+\_\+check\+\_\+player\+\_\+ready@{B\+E\+T\+\_\+rest\+\_\+check\+\_\+player\+\_\+ready}}
+\index{B\+E\+T\+\_\+rest\+\_\+check\+\_\+player\+\_\+ready@{B\+E\+T\+\_\+rest\+\_\+check\+\_\+player\+\_\+ready}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+rest\+\_\+check\+\_\+player\+\_\+ready()}{BET\_rest\_check\_player\_ready()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+rest\+\_\+check\+\_\+player\+\_\+ready (\begin{DoxyParamCaption}\item[{struct lws $\ast$}]{wsi,  }\item[{c\+J\+S\+ON $\ast$}]{argjson }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_abaa86f65a1aa94bb633d612dd872ad54}\label{host_8c_abaa86f65a1aa94bb633d612dd872ad54}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+rest\+\_\+client\+\_\+join\+\_\+req@{B\+E\+T\+\_\+rest\+\_\+client\+\_\+join\+\_\+req}}
+\index{B\+E\+T\+\_\+rest\+\_\+client\+\_\+join\+\_\+req@{B\+E\+T\+\_\+rest\+\_\+client\+\_\+join\+\_\+req}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+rest\+\_\+client\+\_\+join\+\_\+req()}{BET\_rest\_client\_join\_req()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+rest\+\_\+client\+\_\+join\+\_\+req (\begin{DoxyParamCaption}\item[{struct lws $\ast$}]{wsi,  }\item[{c\+J\+S\+ON $\ast$}]{argjson }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_ae8be3b2e1c1e7cc440c234e7d5234ba6}\label{host_8c_ae8be3b2e1c1e7cc440c234e7d5234ba6}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+rest\+\_\+create\+\_\+invoice@{B\+E\+T\+\_\+rest\+\_\+create\+\_\+invoice}}
+\index{B\+E\+T\+\_\+rest\+\_\+create\+\_\+invoice@{B\+E\+T\+\_\+rest\+\_\+create\+\_\+invoice}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+rest\+\_\+create\+\_\+invoice()}{BET\_rest\_create\_invoice()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+rest\+\_\+create\+\_\+invoice (\begin{DoxyParamCaption}\item[{struct lws $\ast$}]{wsi,  }\item[{c\+J\+S\+ON $\ast$}]{argjson }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_af60c3670db1000a5755ba856fececaa6}\label{host_8c_af60c3670db1000a5755ba856fececaa6}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+rest\+\_\+\+D\+C\+V\+\_\+create\+\_\+invoice@{B\+E\+T\+\_\+rest\+\_\+\+D\+C\+V\+\_\+create\+\_\+invoice}}
+\index{B\+E\+T\+\_\+rest\+\_\+\+D\+C\+V\+\_\+create\+\_\+invoice@{B\+E\+T\+\_\+rest\+\_\+\+D\+C\+V\+\_\+create\+\_\+invoice}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+rest\+\_\+\+D\+C\+V\+\_\+create\+\_\+invoice()}{BET\_rest\_DCV\_create\_invoice()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+rest\+\_\+\+D\+C\+V\+\_\+create\+\_\+invoice (\begin{DoxyParamCaption}\item[{struct lws $\ast$}]{wsi,  }\item[{c\+J\+S\+ON $\ast$}]{argjson }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a91aea355ec66d2e59360f9ae913643a0}\label{host_8c_a91aea355ec66d2e59360f9ae913643a0}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+deck\+\_\+init\+\_\+info@{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+deck\+\_\+init\+\_\+info}}
+\index{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+deck\+\_\+init\+\_\+info@{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+deck\+\_\+init\+\_\+info}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+deck\+\_\+init\+\_\+info()}{BET\_rest\_dcv\_deck\_init\_info()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+deck\+\_\+init\+\_\+info (\begin{DoxyParamCaption}\item[{struct lws $\ast$}]{wsi,  }\item[{c\+J\+S\+ON $\ast$}]{argjson }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_af48eb8c9921f365be8d697e76f6c93cd}\label{host_8c_af48eb8c9921f365be8d697e76f6c93cd}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+default@{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+default}}
+\index{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+default@{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+default}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+default()}{BET\_rest\_dcv\_default()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+default (\begin{DoxyParamCaption}\item[{struct lws $\ast$}]{wsi,  }\item[{c\+J\+S\+ON $\ast$}]{argjson }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_aac1ed76b9a6ae9980f499aa56a6a46b8}\label{host_8c_aac1ed76b9a6ae9980f499aa56a6a46b8}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+\+L\+N\+\_\+check@{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+\+L\+N\+\_\+check}}
+\index{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+\+L\+N\+\_\+check@{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+\+L\+N\+\_\+check}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+\+L\+N\+\_\+check()}{BET\_rest\_dcv\_LN\_check()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+\+L\+N\+\_\+check (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a0d6c6c522a5daf092bd11ceea1588dc3}\label{host_8c_a0d6c6c522a5daf092bd11ceea1588dc3}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+process\+\_\+init\+\_\+p@{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+process\+\_\+init\+\_\+p}}
+\index{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+process\+\_\+init\+\_\+p@{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+process\+\_\+init\+\_\+p}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+process\+\_\+init\+\_\+p()}{BET\_rest\_dcv\_process\_init\_p()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+process\+\_\+init\+\_\+p (\begin{DoxyParamCaption}\item[{struct lws $\ast$}]{wsi,  }\item[{c\+J\+S\+ON $\ast$}]{argjson }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_aca7adf7fe6eb1be6a74c5e639570d5c0}\label{host_8c_aca7adf7fe6eb1be6a74c5e639570d5c0}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+start\+\_\+init@{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+start\+\_\+init}}
+\index{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+start\+\_\+init@{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+start\+\_\+init}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+start\+\_\+init()}{BET\_rest\_dcv\_start\_init()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+rest\+\_\+dcv\+\_\+start\+\_\+init (\begin{DoxyParamCaption}\item[{struct lws $\ast$}]{wsi,  }\item[{c\+J\+S\+ON $\ast$}]{argjson }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_ad75494813a249482054c13a2fe95d72d}\label{host_8c_ad75494813a249482054c13a2fe95d72d}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+rest\+\_\+\+D\+C\+V\+\_\+winning\+Claim@{B\+E\+T\+\_\+rest\+\_\+\+D\+C\+V\+\_\+winning\+Claim}}
+\index{B\+E\+T\+\_\+rest\+\_\+\+D\+C\+V\+\_\+winning\+Claim@{B\+E\+T\+\_\+rest\+\_\+\+D\+C\+V\+\_\+winning\+Claim}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+rest\+\_\+\+D\+C\+V\+\_\+winning\+Claim()}{BET\_rest\_DCV\_winningClaim()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+rest\+\_\+\+D\+C\+V\+\_\+winning\+Claim (\begin{DoxyParamCaption}\item[{struct lws $\ast$}]{wsi,  }\item[{c\+J\+S\+ON $\ast$}]{argjson }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a4a0ddf1904b4d79eb71bd87adb954608}\label{host_8c_a4a0ddf1904b4d79eb71bd87adb954608}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+rest\+\_\+from\+\_\+bvv@{B\+E\+T\+\_\+rest\+\_\+from\+\_\+bvv}}
+\index{B\+E\+T\+\_\+rest\+\_\+from\+\_\+bvv@{B\+E\+T\+\_\+rest\+\_\+from\+\_\+bvv}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+rest\+\_\+from\+\_\+bvv()}{BET\_rest\_from\_bvv()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+rest\+\_\+from\+\_\+bvv (\begin{DoxyParamCaption}\item[{struct lws $\ast$}]{wsi,  }\item[{c\+J\+S\+ON $\ast$}]{argjson }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a8b1f6bb7284b34b7a98556d15ebce4dc}\label{host_8c_a8b1f6bb7284b34b7a98556d15ebce4dc}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+rest\+\_\+from\+\_\+dcv@{B\+E\+T\+\_\+rest\+\_\+from\+\_\+dcv}}
+\index{B\+E\+T\+\_\+rest\+\_\+from\+\_\+dcv@{B\+E\+T\+\_\+rest\+\_\+from\+\_\+dcv}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+rest\+\_\+from\+\_\+dcv()}{BET\_rest\_from\_dcv()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+rest\+\_\+from\+\_\+dcv (\begin{DoxyParamCaption}\item[{struct lws $\ast$}]{wsi,  }\item[{c\+J\+S\+ON $\ast$}]{argjson }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_ac07b1d62f829f6c1a17f54d8d5b1ef53}\label{host_8c_ac07b1d62f829f6c1a17f54d8d5b1ef53}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+rest\+\_\+from\+\_\+player@{B\+E\+T\+\_\+rest\+\_\+from\+\_\+player}}
+\index{B\+E\+T\+\_\+rest\+\_\+from\+\_\+player@{B\+E\+T\+\_\+rest\+\_\+from\+\_\+player}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+rest\+\_\+from\+\_\+player()}{BET\_rest\_from\_player()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+rest\+\_\+from\+\_\+player (\begin{DoxyParamCaption}\item[{struct lws $\ast$}]{wsi,  }\item[{c\+J\+S\+ON $\ast$}]{argjson }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a76251cfcb241c991f6a8769afd0ed4ff}\label{host_8c_a76251cfcb241c991f6a8769afd0ed4ff}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+rest\+\_\+send\+\_\+turn\+\_\+info@{B\+E\+T\+\_\+rest\+\_\+send\+\_\+turn\+\_\+info}}
+\index{B\+E\+T\+\_\+rest\+\_\+send\+\_\+turn\+\_\+info@{B\+E\+T\+\_\+rest\+\_\+send\+\_\+turn\+\_\+info}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+rest\+\_\+send\+\_\+turn\+\_\+info()}{BET\_rest\_send\_turn\_info()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+rest\+\_\+send\+\_\+turn\+\_\+info (\begin{DoxyParamCaption}\item[{struct lws $\ast$}]{wsi,  }\item[{int32\+\_\+t}]{playerid,  }\item[{int32\+\_\+t}]{cardid,  }\item[{int32\+\_\+t}]{card\+\_\+type }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a0766fcd2997389e70a025bb3437716ce}\label{host_8c_a0766fcd2997389e70a025bb3437716ce}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+seats@{bet\+\_\+seats}}
+\index{bet\+\_\+seats@{bet\+\_\+seats}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+seats()}{bet\_seats()}}
+{\footnotesize\ttfamily int32\+\_\+t bet\+\_\+seats (\begin{DoxyParamCaption}\item[{struct lws $\ast$}]{wsi,  }\item[{c\+J\+S\+ON $\ast$}]{argjson }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a68d581d035d443e0076a177bee2f4985}\label{host_8c_a68d581d035d443e0076a177bee2f4985}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+send\+\_\+status@{bet\+\_\+send\+\_\+status}}
+\index{bet\+\_\+send\+\_\+status@{bet\+\_\+send\+\_\+status}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+send\+\_\+status()}{bet\_send\_status()}}
+{\footnotesize\ttfamily static int32\+\_\+t bet\+\_\+send\+\_\+status (\begin{DoxyParamCaption}\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{host_8c_a365db996dc7101a2a29268d557d8bf09}\label{host_8c_a365db996dc7101a2a29268d557d8bf09}} 
+\index{host.\+c@{host.\+c}!B\+E\+T\+\_\+send\+\_\+turn\+\_\+info@{B\+E\+T\+\_\+send\+\_\+turn\+\_\+info}}
+\index{B\+E\+T\+\_\+send\+\_\+turn\+\_\+info@{B\+E\+T\+\_\+send\+\_\+turn\+\_\+info}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{B\+E\+T\+\_\+send\+\_\+turn\+\_\+info()}{BET\_send\_turn\_info()}}
+{\footnotesize\ttfamily int32\+\_\+t B\+E\+T\+\_\+send\+\_\+turn\+\_\+info (\begin{DoxyParamCaption}\item[{struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$}]{bet,  }\item[{int32\+\_\+t}]{playerid,  }\item[{int32\+\_\+t}]{cardid,  }\item[{int32\+\_\+t}]{card\+\_\+type }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a1f8e3d38c48ef3c4115775937046b4d6}\label{host_8c_a1f8e3d38c48ef3c4115775937046b4d6}} 
+\index{host.\+c@{host.\+c}!dcv\+\_\+lws\+\_\+write@{dcv\+\_\+lws\+\_\+write}}
+\index{dcv\+\_\+lws\+\_\+write@{dcv\+\_\+lws\+\_\+write}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{dcv\+\_\+lws\+\_\+write()}{dcv\_lws\_write()}}
+{\footnotesize\ttfamily void dcv\+\_\+lws\+\_\+write (\begin{DoxyParamCaption}\item[{c\+J\+S\+ON $\ast$}]{data }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_aeff84950c67efc57eee0d08ea771874d}\label{host_8c_aeff84950c67efc57eee0d08ea771874d}} 
+\index{host.\+c@{host.\+c}!initialize\+\_\+seat@{initialize\+\_\+seat}}
+\index{initialize\+\_\+seat@{initialize\+\_\+seat}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{initialize\+\_\+seat()}{initialize\_seat()}}
+{\footnotesize\ttfamily static void initialize\+\_\+seat (\begin{DoxyParamCaption}\item[{c\+J\+S\+ON $\ast$}]{seat\+Info,  }\item[{char $\ast$}]{name,  }\item[{int32\+\_\+t}]{seat,  }\item[{int32\+\_\+t}]{stack,  }\item[{int32\+\_\+t}]{empty,  }\item[{int32\+\_\+t}]{playing }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\mbox{\Hypertarget{host_8c_a107bec281a1ddc6b98e44b556f95e7bf}\label{host_8c_a107bec281a1ddc6b98e44b556f95e7bf}} 
+\index{host.\+c@{host.\+c}!lws\+\_\+callback\+\_\+http\+\_\+dummy@{lws\+\_\+callback\+\_\+http\+\_\+dummy}}
+\index{lws\+\_\+callback\+\_\+http\+\_\+dummy@{lws\+\_\+callback\+\_\+http\+\_\+dummy}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{lws\+\_\+callback\+\_\+http\+\_\+dummy()}{lws\_callback\_http\_dummy()}}
+{\footnotesize\ttfamily int lws\+\_\+callback\+\_\+http\+\_\+dummy (\begin{DoxyParamCaption}\item[{struct lws $\ast$}]{wsi,  }\item[{enum lws\+\_\+callback\+\_\+reasons}]{reason,  }\item[{void $\ast$}]{user,  }\item[{void $\ast$}]{in,  }\item[{size\+\_\+t}]{len }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{host_8c_a258e3b580e688a0cf46e4258525aeaf1}\label{host_8c_a258e3b580e688a0cf46e4258525aeaf1}} 
+\index{host.\+c@{host.\+c}!sigint\+\_\+handler@{sigint\+\_\+handler}}
+\index{sigint\+\_\+handler@{sigint\+\_\+handler}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{sigint\+\_\+handler()}{sigint\_handler()}}
+{\footnotesize\ttfamily void sigint\+\_\+handler (\begin{DoxyParamCaption}\item[{int}]{sig }\end{DoxyParamCaption})}
+
+
+
+\subsection{Variable Documentation}
+\mbox{\Hypertarget{host_8c_a70f8b98912f3ec905230bb8fd4309f63}\label{host_8c_a70f8b98912f3ec905230bb8fd4309f63}} 
+\index{host.\+c@{host.\+c}!all\+\_\+player\+\_\+cards@{all\+\_\+player\+\_\+cards}}
+\index{all\+\_\+player\+\_\+cards@{all\+\_\+player\+\_\+cards}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{all\+\_\+player\+\_\+cards}{all\_player\_cards}}
+{\footnotesize\ttfamily int32\+\_\+t all\+\_\+player\+\_\+cards\mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}\mbox{[}\hyperlink{common_8h_a90f0ea2d767ac1915e44acb24a1fe1bd}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+C\+A\+R\+DS}\mbox{]}}
+
+\mbox{\Hypertarget{host_8c_afcbc8318d0b36b5385337f1e74843988}\label{host_8c_afcbc8318d0b36b5385337f1e74843988}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+amount@{bet\+\_\+amount}}
+\index{bet\+\_\+amount@{bet\+\_\+amount}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+amount}{bet\_amount}}
+{\footnotesize\ttfamily int32\+\_\+t bet\+\_\+amount\mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}\mbox{[}\hyperlink{common_8h_aa7cb3dc82286cdcfc50250b3ec3ae769}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+R\+O\+U\+N\+DS}\mbox{]}}
+
+\mbox{\Hypertarget{host_8c_a62b702b575af739ee2c999554ea33c5a}\label{host_8c_a62b702b575af739ee2c999554ea33c5a}} 
+\index{host.\+c@{host.\+c}!bet\+\_\+dcv@{bet\+\_\+dcv}}
+\index{bet\+\_\+dcv@{bet\+\_\+dcv}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bet\+\_\+dcv}{bet\_dcv}}
+{\footnotesize\ttfamily struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info}$\ast$ bet\+\_\+dcv}
+
+\mbox{\Hypertarget{host_8c_aa0ac1a7de9a45e00c34202cd8a4c75a8}\label{host_8c_aa0ac1a7de9a45e00c34202cd8a4c75a8}} 
+\index{host.\+c@{host.\+c}!bvv\+\_\+status@{bvv\+\_\+status}}
+\index{bvv\+\_\+status@{bvv\+\_\+status}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{bvv\+\_\+status}{bvv\_status}}
+{\footnotesize\ttfamily int32\+\_\+t bvv\+\_\+status}
+
+\mbox{\Hypertarget{host_8c_a257fcb6422d25e775ec752cec7e7f00c}\label{host_8c_a257fcb6422d25e775ec752cec7e7f00c}} 
+\index{host.\+c@{host.\+c}!card\+\_\+matrix@{card\+\_\+matrix}}
+\index{card\+\_\+matrix@{card\+\_\+matrix}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{card\+\_\+matrix}{card\_matrix}}
+{\footnotesize\ttfamily int32\+\_\+t card\+\_\+matrix\mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}\mbox{[}\hyperlink{common_8h_abf1aff3f2c475b56db3259d85f51376d}{hand\+\_\+size}\mbox{]}}
+
+\mbox{\Hypertarget{host_8c_a103f208d345d3203e2111b4ee85b3c9a}\label{host_8c_a103f208d345d3203e2111b4ee85b3c9a}} 
+\index{host.\+c@{host.\+c}!card\+\_\+values@{card\+\_\+values}}
+\index{card\+\_\+values@{card\+\_\+values}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{card\+\_\+values}{card\_values}}
+{\footnotesize\ttfamily int32\+\_\+t card\+\_\+values\mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}\mbox{[}\hyperlink{common_8h_abf1aff3f2c475b56db3259d85f51376d}{hand\+\_\+size}\mbox{]}}
+
+\mbox{\Hypertarget{host_8c_a9291cd79c30f9d5e6158e9f0e17a4ce3}\label{host_8c_a9291cd79c30f9d5e6158e9f0e17a4ce3}} 
+\index{host.\+c@{host.\+c}!community\+\_\+cards\+\_\+drawn@{community\+\_\+cards\+\_\+drawn}}
+\index{community\+\_\+cards\+\_\+drawn@{community\+\_\+cards\+\_\+drawn}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{community\+\_\+cards\+\_\+drawn}{community\_cards\_drawn}}
+{\footnotesize\ttfamily int32\+\_\+t community\+\_\+cards\+\_\+drawn = 0}
+
+\mbox{\Hypertarget{host_8c_ad4f60484e62e04a86ab82adf508155ac}\label{host_8c_ad4f60484e62e04a86ab82adf508155ac}} 
+\index{host.\+c@{host.\+c}!dcv\+\_\+info@{dcv\+\_\+info}}
+\index{dcv\+\_\+info@{dcv\+\_\+info}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{dcv\+\_\+info}{dcv\_info}}
+{\footnotesize\ttfamily struct \hyperlink{structdeck__dcv__info}{deck\+\_\+dcv\+\_\+info} dcv\+\_\+info}
+
+\mbox{\Hypertarget{host_8c_ab98cf25f28f49f78a9431fcc11bda58e}\label{host_8c_ab98cf25f28f49f78a9431fcc11bda58e}} 
+\index{host.\+c@{host.\+c}!dcv\+\_\+vars@{dcv\+\_\+vars}}
+\index{dcv\+\_\+vars@{dcv\+\_\+vars}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{dcv\+\_\+vars}{dcv\_vars}}
+{\footnotesize\ttfamily struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars}$\ast$ dcv\+\_\+vars}
+
+\mbox{\Hypertarget{host_8c_a2fbd79df5e5b5ce8fe30354a12438913}\label{host_8c_a2fbd79df5e5b5ce8fe30354a12438913}} 
+\index{host.\+c@{host.\+c}!dcv\+Data\+Exists@{dcv\+Data\+Exists}}
+\index{dcv\+Data\+Exists@{dcv\+Data\+Exists}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{dcv\+Data\+Exists}{dcvDataExists}}
+{\footnotesize\ttfamily int32\+\_\+t dcv\+Data\+Exists = 0}
+
+\mbox{\Hypertarget{host_8c_ac05c3f04dded9e82101c72a9f50b382c}\label{host_8c_ac05c3f04dded9e82101c72a9f50b382c}} 
+\index{host.\+c@{host.\+c}!dcv\+Data\+To\+Write@{dcv\+Data\+To\+Write}}
+\index{dcv\+Data\+To\+Write@{dcv\+Data\+To\+Write}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{dcv\+Data\+To\+Write}{dcvDataToWrite}}
+{\footnotesize\ttfamily c\+J\+S\+ON$\ast$ dcv\+Data\+To\+Write = N\+U\+LL}
+
+\mbox{\Hypertarget{host_8c_ae56101b5edfa437906539229fd5e2d31}\label{host_8c_ae56101b5edfa437906539229fd5e2d31}} 
+\index{host.\+c@{host.\+c}!dealer\+Position@{dealer\+Position}}
+\index{dealer\+Position@{dealer\+Position}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{dealer\+Position}{dealerPosition}}
+{\footnotesize\ttfamily int dealer\+Position\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{host_8c_ad9ccd5e2c002185825b37a9c4ee13264}\label{host_8c_ad9ccd5e2c002185825b37a9c4ee13264}} 
+\index{host.\+c@{host.\+c}!eval\+\_\+game\+\_\+c@{eval\+\_\+game\+\_\+c}}
+\index{eval\+\_\+game\+\_\+c@{eval\+\_\+game\+\_\+c}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{eval\+\_\+game\+\_\+c}{eval\_game\_c}}
+{\footnotesize\ttfamily int32\+\_\+t eval\+\_\+game\+\_\+c\mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}}
+
+\mbox{\Hypertarget{host_8c_a7518f53581392113f02a0c67ad16b89e}\label{host_8c_a7518f53581392113f02a0c67ad16b89e}} 
+\index{host.\+c@{host.\+c}!eval\+\_\+game\+\_\+p@{eval\+\_\+game\+\_\+p}}
+\index{eval\+\_\+game\+\_\+p@{eval\+\_\+game\+\_\+p}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{eval\+\_\+game\+\_\+p}{eval\_game\_p}}
+{\footnotesize\ttfamily int32\+\_\+t eval\+\_\+game\+\_\+p\mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}}
+
+\mbox{\Hypertarget{host_8c_ad9307743818dc635cc8c74dc1a2a3323}\label{host_8c_ad9307743818dc635cc8c74dc1a2a3323}} 
+\index{host.\+c@{host.\+c}!face@{face}}
+\index{face@{face}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{face}{face}}
+{\footnotesize\ttfamily char$\ast$ face\mbox{[}\hyperlink{common_8h_a7a60859a9235a326a6fd937fd0d5a578}{N\+F\+A\+C\+ES}\mbox{]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= \{ \textcolor{stringliteral}{"two"},  \textcolor{stringliteral}{"three"}, \textcolor{stringliteral}{"four"}, \textcolor{stringliteral}{"five"}, \textcolor{stringliteral}{"six"},
+               \textcolor{stringliteral}{"seven"}, \textcolor{stringliteral}{"eight"}, \textcolor{stringliteral}{"nine"}, \textcolor{stringliteral}{"ten"},  \textcolor{stringliteral}{"jack"},
+               \textcolor{stringliteral}{"queen"}, \textcolor{stringliteral}{"king"},  \textcolor{stringliteral}{"ace"} \}
+\end{DoxyCode}
+\mbox{\Hypertarget{host_8c_ab778f0489a05381dafaf84814ff42820}\label{host_8c_ab778f0489a05381dafaf84814ff42820}} 
+\index{host.\+c@{host.\+c}!flop\+\_\+cards\+\_\+drawn@{flop\+\_\+cards\+\_\+drawn}}
+\index{flop\+\_\+cards\+\_\+drawn@{flop\+\_\+cards\+\_\+drawn}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{flop\+\_\+cards\+\_\+drawn}{flop\_cards\_drawn}}
+{\footnotesize\ttfamily int32\+\_\+t flop\+\_\+cards\+\_\+drawn = 0}
+
+\mbox{\Hypertarget{host_8c_afc92fa9ddca98e6462e2f1fa0b45ce54}\label{host_8c_afc92fa9ddca98e6462e2f1fa0b45ce54}} 
+\index{host.\+c@{host.\+c}!hole\+\_\+cards\+\_\+drawn@{hole\+\_\+cards\+\_\+drawn}}
+\index{hole\+\_\+cards\+\_\+drawn@{hole\+\_\+cards\+\_\+drawn}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{hole\+\_\+cards\+\_\+drawn}{hole\_cards\_drawn}}
+{\footnotesize\ttfamily int32\+\_\+t hole\+\_\+cards\+\_\+drawn = 0}
+
+\mbox{\Hypertarget{host_8c_a91a694716d07ab82e16db9cdba7d69c3}\label{host_8c_a91a694716d07ab82e16db9cdba7d69c3}} 
+\index{host.\+c@{host.\+c}!interrupted@{interrupted}}
+\index{interrupted@{interrupted}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{interrupted}{interrupted}}
+{\footnotesize\ttfamily int interrupted\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{host_8c_a391499f348496ec39622c5d6f9e732fd}\label{host_8c_a391499f348496ec39622c5d6f9e732fd}} 
+\index{host.\+c@{host.\+c}!invoice\+ID@{invoice\+ID}}
+\index{invoice\+ID@{invoice\+ID}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{invoice\+ID}{invoiceID}}
+{\footnotesize\ttfamily int32\+\_\+t invoice\+ID}
+
+\mbox{\Hypertarget{host_8c_ae56653403779513733fee433ef0b6aab}\label{host_8c_ae56653403779513733fee433ef0b6aab}} 
+\index{host.\+c@{host.\+c}!is\+\_\+signed@{is\+\_\+signed}}
+\index{is\+\_\+signed@{is\+\_\+signed}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{is\+\_\+signed}{is\_signed}}
+{\footnotesize\ttfamily int32\+\_\+t is\+\_\+signed\mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}}
+
+\mbox{\Hypertarget{host_8c_a2ce4dbf0f3e8f57ab5d5c40971830609}\label{host_8c_a2ce4dbf0f3e8f57ab5d5c40971830609}} 
+\index{host.\+c@{host.\+c}!lws\+\_\+buf@{lws\+\_\+buf}}
+\index{lws\+\_\+buf@{lws\+\_\+buf}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{lws\+\_\+buf}{lws\_buf}}
+{\footnotesize\ttfamily char lws\+\_\+buf\mbox{[}65536\mbox{]}}
+
+\mbox{\Hypertarget{host_8c_a52aca01cdb7a7e61da5148a62052927d}\label{host_8c_a52aca01cdb7a7e61da5148a62052927d}} 
+\index{host.\+c@{host.\+c}!lws\+\_\+buf\+\_\+length@{lws\+\_\+buf\+\_\+length}}
+\index{lws\+\_\+buf\+\_\+length@{lws\+\_\+buf\+\_\+length}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{lws\+\_\+buf\+\_\+length}{lws\_buf\_length}}
+{\footnotesize\ttfamily int32\+\_\+t lws\+\_\+buf\+\_\+length = 0}
+
+\mbox{\Hypertarget{host_8c_afc2fd24df5d82cbedddde3b28245f46a}\label{host_8c_afc2fd24df5d82cbedddde3b28245f46a}} 
+\index{host.\+c@{host.\+c}!max\+\_\+no\+\_\+of\+\_\+signers@{max\+\_\+no\+\_\+of\+\_\+signers}}
+\index{max\+\_\+no\+\_\+of\+\_\+signers@{max\+\_\+no\+\_\+of\+\_\+signers}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{max\+\_\+no\+\_\+of\+\_\+signers}{max\_no\_of\_signers}}
+{\footnotesize\ttfamily int32\+\_\+t max\+\_\+no\+\_\+of\+\_\+signers = 2}
+
+\mbox{\Hypertarget{host_8c_afcd99fd3f865a01dd3dad789fa43e247}\label{host_8c_afcd99fd3f865a01dd3dad789fa43e247}} 
+\index{host.\+c@{host.\+c}!mount@{mount}}
+\index{mount@{mount}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{mount}{mount}}
+{\footnotesize\ttfamily const struct lws\+\_\+http\+\_\+mount mount\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= \{
+     NULL, 
+     \textcolor{stringliteral}{"/"}, 
+     \textcolor{stringliteral}{"./mount-origin"}, 
+     \textcolor{stringliteral}{"index.html"}, 
+     NULL,
+     NULL,
+     NULL,
+     NULL,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     LWSMPRO\_FILE, 
+     1, 
+     NULL,
+\}
+\end{DoxyCode}
+\mbox{\Hypertarget{host_8c_a4acff8232e4aec9cd5c6dc200ac55ef3}\label{host_8c_a4acff8232e4aec9cd5c6dc200ac55ef3}} 
+\index{host.\+c@{host.\+c}!mutex@{mutex}}
+\index{mutex@{mutex}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{mutex}{mutex}}
+{\footnotesize\ttfamily pthread\+\_\+mutex\+\_\+t mutex = P\+T\+H\+R\+E\+A\+D\+\_\+\+M\+U\+T\+E\+X\+\_\+\+I\+N\+I\+T\+I\+A\+L\+I\+Z\+ER}
+
+\mbox{\Hypertarget{host_8c_ac7ede27676d45ec9b8f3300616f3c21d}\label{host_8c_ac7ede27676d45ec9b8f3300616f3c21d}} 
+\index{host.\+c@{host.\+c}!no\+\_\+of\+\_\+bets@{no\+\_\+of\+\_\+bets}}
+\index{no\+\_\+of\+\_\+bets@{no\+\_\+of\+\_\+bets}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{no\+\_\+of\+\_\+bets}{no\_of\_bets}}
+{\footnotesize\ttfamily int32\+\_\+t no\+\_\+of\+\_\+bets = 0}
+
+\mbox{\Hypertarget{host_8c_ab0b014c77ee4c0f9c4efbbcaaa2233b8}\label{host_8c_ab0b014c77ee4c0f9c4efbbcaaa2233b8}} 
+\index{host.\+c@{host.\+c}!no\+\_\+of\+\_\+cards@{no\+\_\+of\+\_\+cards}}
+\index{no\+\_\+of\+\_\+cards@{no\+\_\+of\+\_\+cards}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{no\+\_\+of\+\_\+cards}{no\_of\_cards}}
+{\footnotesize\ttfamily int32\+\_\+t no\+\_\+of\+\_\+cards = 0}
+
+\mbox{\Hypertarget{host_8c_a274d848856a16601b02d0612115d6cdb}\label{host_8c_a274d848856a16601b02d0612115d6cdb}} 
+\index{host.\+c@{host.\+c}!no\+\_\+of\+\_\+rounds@{no\+\_\+of\+\_\+rounds}}
+\index{no\+\_\+of\+\_\+rounds@{no\+\_\+of\+\_\+rounds}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{no\+\_\+of\+\_\+rounds}{no\_of\_rounds}}
+{\footnotesize\ttfamily int32\+\_\+t no\+\_\+of\+\_\+rounds = 0}
+
+\mbox{\Hypertarget{host_8c_a79d6b450d204447564e6deee2bc97d82}\label{host_8c_a79d6b450d204447564e6deee2bc97d82}} 
+\index{host.\+c@{host.\+c}!no\+\_\+of\+\_\+signers@{no\+\_\+of\+\_\+signers}}
+\index{no\+\_\+of\+\_\+signers@{no\+\_\+of\+\_\+signers}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{no\+\_\+of\+\_\+signers}{no\_of\_signers}}
+{\footnotesize\ttfamily int32\+\_\+t no\+\_\+of\+\_\+signers}
+
+\mbox{\Hypertarget{host_8c_adbcd807d45eb5eab19a770d733173623}\label{host_8c_adbcd807d45eb5eab19a770d733173623}} 
+\index{host.\+c@{host.\+c}!player\+\_\+chips\+\_\+address@{player\+\_\+chips\+\_\+address}}
+\index{player\+\_\+chips\+\_\+address@{player\+\_\+chips\+\_\+address}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{player\+\_\+chips\+\_\+address}{player\_chips\_address}}
+{\footnotesize\ttfamily char player\+\_\+chips\+\_\+address\mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}\mbox{[}64\mbox{]}}
+
+\mbox{\Hypertarget{host_8c_a45143a6ba36953c506de70d9aeb5bf13}\label{host_8c_a45143a6ba36953c506de70d9aeb5bf13}} 
+\index{host.\+c@{host.\+c}!player\+\_\+ready@{player\+\_\+ready}}
+\index{player\+\_\+ready@{player\+\_\+ready}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{player\+\_\+ready}{player\_ready}}
+{\footnotesize\ttfamily int32\+\_\+t player\+\_\+ready\mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}}
+
+\mbox{\Hypertarget{host_8c_ac8985cbccf62b12d1acb3cd44380bab9}\label{host_8c_ac8985cbccf62b12d1acb3cd44380bab9}} 
+\index{host.\+c@{host.\+c}!player\+\_\+status@{player\+\_\+status}}
+\index{player\+\_\+status@{player\+\_\+status}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{player\+\_\+status}{player\_status}}
+{\footnotesize\ttfamily int32\+\_\+t player\+\_\+status\mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}}
+
+\mbox{\Hypertarget{host_8c_a8b84dc319ea3072597938e05f824fba3}\label{host_8c_a8b84dc319ea3072597938e05f824fba3}} 
+\index{host.\+c@{host.\+c}!players\+\_\+joined@{players\+\_\+joined}}
+\index{players\+\_\+joined@{players\+\_\+joined}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{players\+\_\+joined}{players\_joined}}
+{\footnotesize\ttfamily int32\+\_\+t players\+\_\+joined = 0}
+
+\mbox{\Hypertarget{host_8c_a0cde2a0bf68fbf485a05f22364d5ac5b}\label{host_8c_a0cde2a0bf68fbf485a05f22364d5ac5b}} 
+\index{host.\+c@{host.\+c}!protocols@{protocols}}
+\index{protocols@{protocols}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{protocols}{protocols}}
+{\footnotesize\ttfamily struct lws\+\_\+protocols protocols\mbox{[}$\,$\mbox{]}\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= \{
+    \{ \textcolor{stringliteral}{"http"}, \hyperlink{host_8c_a107bec281a1ddc6b98e44b556f95e7bf}{lws\_callback\_http\_dummy}, 0, 0 \},
+    \{ NULL, NULL, 0, 0 \} 
+\}
+\end{DoxyCode}
+\mbox{\Hypertarget{host_8c_a20292555b517e663098d4a6c7ce4301d}\label{host_8c_a20292555b517e663098d4a6c7ce4301d}} 
+\index{host.\+c@{host.\+c}!river\+\_\+card\+\_\+drawn@{river\+\_\+card\+\_\+drawn}}
+\index{river\+\_\+card\+\_\+drawn@{river\+\_\+card\+\_\+drawn}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{river\+\_\+card\+\_\+drawn}{river\_card\_drawn}}
+{\footnotesize\ttfamily int32\+\_\+t river\+\_\+card\+\_\+drawn = 0}
+
+\mbox{\Hypertarget{host_8c_a9c14867c1a22e34535491feeec626898}\label{host_8c_a9c14867c1a22e34535491feeec626898}} 
+\index{host.\+c@{host.\+c}!suit@{suit}}
+\index{suit@{suit}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{suit}{suit}}
+{\footnotesize\ttfamily char$\ast$ suit\mbox{[}\hyperlink{common_8h_a8f71a68d7f10d41f9c251dee9afd3c57}{N\+S\+U\+I\+TS}\mbox{]} = \{ \char`\"{}clubs\char`\"{}, \char`\"{}diamonds\char`\"{}, \char`\"{}hearts\char`\"{}, \char`\"{}spades\char`\"{} \}}
+
+\mbox{\Hypertarget{host_8c_a0da6d4ab8606b9ebb2ff16fffb343982}\label{host_8c_a0da6d4ab8606b9ebb2ff16fffb343982}} 
+\index{host.\+c@{host.\+c}!turn@{turn}}
+\index{turn@{turn}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{turn}{turn}}
+{\footnotesize\ttfamily int32\+\_\+t turn = 0}
+
+\mbox{\Hypertarget{host_8c_a8d7ceed4310192c3e202c3d66ac1c2ad}\label{host_8c_a8d7ceed4310192c3e202c3d66ac1c2ad}} 
+\index{host.\+c@{host.\+c}!turn\+\_\+card\+\_\+drawn@{turn\+\_\+card\+\_\+drawn}}
+\index{turn\+\_\+card\+\_\+drawn@{turn\+\_\+card\+\_\+drawn}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{turn\+\_\+card\+\_\+drawn}{turn\_card\_drawn}}
+{\footnotesize\ttfamily int32\+\_\+t turn\+\_\+card\+\_\+drawn = 0}
+
+\mbox{\Hypertarget{host_8c_abb636672d53a20859277b4ee50d048f2}\label{host_8c_abb636672d53a20859277b4ee50d048f2}} 
+\index{host.\+c@{host.\+c}!wsi\+\_\+global\+\_\+host@{wsi\+\_\+global\+\_\+host}}
+\index{wsi\+\_\+global\+\_\+host@{wsi\+\_\+global\+\_\+host}!host.\+c@{host.\+c}}
+\subsubsection{\texorpdfstring{wsi\+\_\+global\+\_\+host}{wsi\_global\_host}}
+{\footnotesize\ttfamily struct lws$\ast$ wsi\+\_\+global\+\_\+host = N\+U\+LL}
+

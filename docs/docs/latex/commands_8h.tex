@@ -1,0 +1,157 @@
+\hypertarget{commands_8h}{}\section{/root/bet/privatebet/commands.h File Reference}
+\label{commands_8h}\index{/root/bet/privatebet/commands.\+h@{/root/bet/privatebet/commands.\+h}}
+{\ttfamily \#include \char`\"{}bet.\+h\char`\"{}}\newline
+Include dependency graph for commands.\+h\+:
+% FIG 0
+This graph shows which files directly or indirectly include this file\+:
+% FIG 1
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int32\+\_\+t \hyperlink{commands_8h_a739d7fb76e0f339cfd05fcd3af1a7996}{chips\+\_\+iswatchonly} (char $\ast$address)
+\item 
+void \hyperlink{commands_8h_a02d0209f0f84414814db784e6789fa8a}{chips\+\_\+spend\+\_\+multi\+\_\+sig\+\_\+address} (char $\ast$address, double amount)
+\item 
+void \hyperlink{commands_8h_a30b8a6f31c7cff766088550d724b65e7}{chips\+\_\+import\+\_\+address} (char $\ast$address)
+\item 
+char $\ast$ \hyperlink{commands_8h_a22a4ef884a7340e5b5942b6d07f6324c}{chips\+\_\+get\+\_\+new\+\_\+address} ()
+\item 
+int \hyperlink{commands_8h_ae809d04ee9f63dc499c935b837533281}{chips\+\_\+validate\+\_\+address} (char $\ast$address)
+\item 
+void \hyperlink{commands_8h_afae8e5b50da7091be7b91d5e112c25ee}{chips\+\_\+list\+\_\+address\+\_\+groupings} ()
+\item 
+c\+J\+S\+ON $\ast$ \hyperlink{commands_8h_aa2f5924aa180ba7f7340d699a6f77027}{chips\+\_\+transfer\+\_\+funds} (double amount, char $\ast$address)
+\item 
+c\+J\+S\+ON $\ast$ \hyperlink{commands_8h_a12e5cfa7bc2b417750b9b3394f93f95a}{chips\+\_\+send\+\_\+raw\+\_\+tx} (c\+J\+S\+ON $\ast$signed\+Transaction)
+\item 
+c\+J\+S\+ON $\ast$ \hyperlink{commands_8h_a651c6b1b8725fb048acb5cf321dc249a}{chips\+\_\+sign\+\_\+raw\+\_\+tx\+\_\+with\+\_\+wallet} (char $\ast$rawtransaction)
+\item 
+int32\+\_\+t \hyperlink{commands_8h_a0a14a4f38a09aa381473cbd43357582d}{chips\+\_\+publish\+\_\+multisig\+\_\+tx} (char $\ast$tx)
+\item 
+c\+J\+S\+ON $\ast$ \hyperlink{commands_8h_a127e79ac6db1ec54d970d46b0c24516d}{chips\+\_\+create\+\_\+raw\+\_\+multi\+\_\+sig\+\_\+tx} (double amount, char $\ast$toaddress, char $\ast$fromaddress)
+\item 
+c\+J\+S\+ON $\ast$ \hyperlink{commands_8h_accffaa855b618cd9a7e274a3ea3d3e38}{chips\+\_\+create\+\_\+raw\+\_\+tx} (double amount, char $\ast$address)
+\item 
+void \hyperlink{commands_8h_adbd1855ec50eecc1c799ef803d64f202}{chips\+\_\+list\+\_\+unspent} ()
+\item 
+int32\+\_\+t \hyperlink{commands_8h_aa536c2d22ecb79268d31956d7ec4f36d}{chips\+\_\+get\+\_\+block\+\_\+count} ()
+\item 
+int32\+\_\+t \hyperlink{commands_8h_aa9981a010ee441f6ecd10019f90eb674}{ln\+\_\+dev\+\_\+block\+\_\+height} ()
+\item 
+void \hyperlink{commands_8h_af32277231a4357cbc4743ce3f8361fc9}{check\+\_\+ln\+\_\+chips\+\_\+sync} ()
+\item 
+double \hyperlink{commands_8h_a17c5067dbb627fd8f2eca1461a012e03}{chips\+\_\+get\+\_\+balance} ()
+\item 
+int32\+\_\+t \hyperlink{commands_8h_a8f35ff6c18f2b0a991c3fc583615c2b0}{chips\+\_\+lock\+\_\+transaction} (int32\+\_\+t fund\+Amount)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{commands_8h_af32277231a4357cbc4743ce3f8361fc9}\label{commands_8h_af32277231a4357cbc4743ce3f8361fc9}} 
+\index{commands.\+h@{commands.\+h}!check\+\_\+ln\+\_\+chips\+\_\+sync@{check\+\_\+ln\+\_\+chips\+\_\+sync}}
+\index{check\+\_\+ln\+\_\+chips\+\_\+sync@{check\+\_\+ln\+\_\+chips\+\_\+sync}!commands.\+h@{commands.\+h}}
+\subsubsection{\texorpdfstring{check\+\_\+ln\+\_\+chips\+\_\+sync()}{check\_ln\_chips\_sync()}}
+{\footnotesize\ttfamily void check\+\_\+ln\+\_\+chips\+\_\+sync (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{commands_8h_a127e79ac6db1ec54d970d46b0c24516d}\label{commands_8h_a127e79ac6db1ec54d970d46b0c24516d}} 
+\index{commands.\+h@{commands.\+h}!chips\+\_\+create\+\_\+raw\+\_\+multi\+\_\+sig\+\_\+tx@{chips\+\_\+create\+\_\+raw\+\_\+multi\+\_\+sig\+\_\+tx}}
+\index{chips\+\_\+create\+\_\+raw\+\_\+multi\+\_\+sig\+\_\+tx@{chips\+\_\+create\+\_\+raw\+\_\+multi\+\_\+sig\+\_\+tx}!commands.\+h@{commands.\+h}}
+\subsubsection{\texorpdfstring{chips\+\_\+create\+\_\+raw\+\_\+multi\+\_\+sig\+\_\+tx()}{chips\_create\_raw\_multi\_sig\_tx()}}
+{\footnotesize\ttfamily c\+J\+S\+ON$\ast$ chips\+\_\+create\+\_\+raw\+\_\+multi\+\_\+sig\+\_\+tx (\begin{DoxyParamCaption}\item[{double}]{amount,  }\item[{char $\ast$}]{toaddress,  }\item[{char $\ast$}]{fromaddress }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{commands_8h_accffaa855b618cd9a7e274a3ea3d3e38}\label{commands_8h_accffaa855b618cd9a7e274a3ea3d3e38}} 
+\index{commands.\+h@{commands.\+h}!chips\+\_\+create\+\_\+raw\+\_\+tx@{chips\+\_\+create\+\_\+raw\+\_\+tx}}
+\index{chips\+\_\+create\+\_\+raw\+\_\+tx@{chips\+\_\+create\+\_\+raw\+\_\+tx}!commands.\+h@{commands.\+h}}
+\subsubsection{\texorpdfstring{chips\+\_\+create\+\_\+raw\+\_\+tx()}{chips\_create\_raw\_tx()}}
+{\footnotesize\ttfamily c\+J\+S\+ON$\ast$ chips\+\_\+create\+\_\+raw\+\_\+tx (\begin{DoxyParamCaption}\item[{double}]{amount,  }\item[{char $\ast$}]{address }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{commands_8h_a17c5067dbb627fd8f2eca1461a012e03}\label{commands_8h_a17c5067dbb627fd8f2eca1461a012e03}} 
+\index{commands.\+h@{commands.\+h}!chips\+\_\+get\+\_\+balance@{chips\+\_\+get\+\_\+balance}}
+\index{chips\+\_\+get\+\_\+balance@{chips\+\_\+get\+\_\+balance}!commands.\+h@{commands.\+h}}
+\subsubsection{\texorpdfstring{chips\+\_\+get\+\_\+balance()}{chips\_get\_balance()}}
+{\footnotesize\ttfamily double chips\+\_\+get\+\_\+balance (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{commands_8h_aa536c2d22ecb79268d31956d7ec4f36d}\label{commands_8h_aa536c2d22ecb79268d31956d7ec4f36d}} 
+\index{commands.\+h@{commands.\+h}!chips\+\_\+get\+\_\+block\+\_\+count@{chips\+\_\+get\+\_\+block\+\_\+count}}
+\index{chips\+\_\+get\+\_\+block\+\_\+count@{chips\+\_\+get\+\_\+block\+\_\+count}!commands.\+h@{commands.\+h}}
+\subsubsection{\texorpdfstring{chips\+\_\+get\+\_\+block\+\_\+count()}{chips\_get\_block\_count()}}
+{\footnotesize\ttfamily int32\+\_\+t chips\+\_\+get\+\_\+block\+\_\+count (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{commands_8h_a22a4ef884a7340e5b5942b6d07f6324c}\label{commands_8h_a22a4ef884a7340e5b5942b6d07f6324c}} 
+\index{commands.\+h@{commands.\+h}!chips\+\_\+get\+\_\+new\+\_\+address@{chips\+\_\+get\+\_\+new\+\_\+address}}
+\index{chips\+\_\+get\+\_\+new\+\_\+address@{chips\+\_\+get\+\_\+new\+\_\+address}!commands.\+h@{commands.\+h}}
+\subsubsection{\texorpdfstring{chips\+\_\+get\+\_\+new\+\_\+address()}{chips\_get\_new\_address()}}
+{\footnotesize\ttfamily char$\ast$ chips\+\_\+get\+\_\+new\+\_\+address (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{commands_8h_a30b8a6f31c7cff766088550d724b65e7}\label{commands_8h_a30b8a6f31c7cff766088550d724b65e7}} 
+\index{commands.\+h@{commands.\+h}!chips\+\_\+import\+\_\+address@{chips\+\_\+import\+\_\+address}}
+\index{chips\+\_\+import\+\_\+address@{chips\+\_\+import\+\_\+address}!commands.\+h@{commands.\+h}}
+\subsubsection{\texorpdfstring{chips\+\_\+import\+\_\+address()}{chips\_import\_address()}}
+{\footnotesize\ttfamily void chips\+\_\+import\+\_\+address (\begin{DoxyParamCaption}\item[{char $\ast$}]{address }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{commands_8h_a739d7fb76e0f339cfd05fcd3af1a7996}\label{commands_8h_a739d7fb76e0f339cfd05fcd3af1a7996}} 
+\index{commands.\+h@{commands.\+h}!chips\+\_\+iswatchonly@{chips\+\_\+iswatchonly}}
+\index{chips\+\_\+iswatchonly@{chips\+\_\+iswatchonly}!commands.\+h@{commands.\+h}}
+\subsubsection{\texorpdfstring{chips\+\_\+iswatchonly()}{chips\_iswatchonly()}}
+{\footnotesize\ttfamily int32\+\_\+t chips\+\_\+iswatchonly (\begin{DoxyParamCaption}\item[{char $\ast$}]{address }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{commands_8h_afae8e5b50da7091be7b91d5e112c25ee}\label{commands_8h_afae8e5b50da7091be7b91d5e112c25ee}} 
+\index{commands.\+h@{commands.\+h}!chips\+\_\+list\+\_\+address\+\_\+groupings@{chips\+\_\+list\+\_\+address\+\_\+groupings}}
+\index{chips\+\_\+list\+\_\+address\+\_\+groupings@{chips\+\_\+list\+\_\+address\+\_\+groupings}!commands.\+h@{commands.\+h}}
+\subsubsection{\texorpdfstring{chips\+\_\+list\+\_\+address\+\_\+groupings()}{chips\_list\_address\_groupings()}}
+{\footnotesize\ttfamily void chips\+\_\+list\+\_\+address\+\_\+groupings (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{commands_8h_adbd1855ec50eecc1c799ef803d64f202}\label{commands_8h_adbd1855ec50eecc1c799ef803d64f202}} 
+\index{commands.\+h@{commands.\+h}!chips\+\_\+list\+\_\+unspent@{chips\+\_\+list\+\_\+unspent}}
+\index{chips\+\_\+list\+\_\+unspent@{chips\+\_\+list\+\_\+unspent}!commands.\+h@{commands.\+h}}
+\subsubsection{\texorpdfstring{chips\+\_\+list\+\_\+unspent()}{chips\_list\_unspent()}}
+{\footnotesize\ttfamily void chips\+\_\+list\+\_\+unspent (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{commands_8h_a8f35ff6c18f2b0a991c3fc583615c2b0}\label{commands_8h_a8f35ff6c18f2b0a991c3fc583615c2b0}} 
+\index{commands.\+h@{commands.\+h}!chips\+\_\+lock\+\_\+transaction@{chips\+\_\+lock\+\_\+transaction}}
+\index{chips\+\_\+lock\+\_\+transaction@{chips\+\_\+lock\+\_\+transaction}!commands.\+h@{commands.\+h}}
+\subsubsection{\texorpdfstring{chips\+\_\+lock\+\_\+transaction()}{chips\_lock\_transaction()}}
+{\footnotesize\ttfamily int32\+\_\+t chips\+\_\+lock\+\_\+transaction (\begin{DoxyParamCaption}\item[{int32\+\_\+t}]{fund\+Amount }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{commands_8h_a0a14a4f38a09aa381473cbd43357582d}\label{commands_8h_a0a14a4f38a09aa381473cbd43357582d}} 
+\index{commands.\+h@{commands.\+h}!chips\+\_\+publish\+\_\+multisig\+\_\+tx@{chips\+\_\+publish\+\_\+multisig\+\_\+tx}}
+\index{chips\+\_\+publish\+\_\+multisig\+\_\+tx@{chips\+\_\+publish\+\_\+multisig\+\_\+tx}!commands.\+h@{commands.\+h}}
+\subsubsection{\texorpdfstring{chips\+\_\+publish\+\_\+multisig\+\_\+tx()}{chips\_publish\_multisig\_tx()}}
+{\footnotesize\ttfamily int32\+\_\+t chips\+\_\+publish\+\_\+multisig\+\_\+tx (\begin{DoxyParamCaption}\item[{char $\ast$}]{tx }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{commands_8h_a12e5cfa7bc2b417750b9b3394f93f95a}\label{commands_8h_a12e5cfa7bc2b417750b9b3394f93f95a}} 
+\index{commands.\+h@{commands.\+h}!chips\+\_\+send\+\_\+raw\+\_\+tx@{chips\+\_\+send\+\_\+raw\+\_\+tx}}
+\index{chips\+\_\+send\+\_\+raw\+\_\+tx@{chips\+\_\+send\+\_\+raw\+\_\+tx}!commands.\+h@{commands.\+h}}
+\subsubsection{\texorpdfstring{chips\+\_\+send\+\_\+raw\+\_\+tx()}{chips\_send\_raw\_tx()}}
+{\footnotesize\ttfamily c\+J\+S\+ON$\ast$ chips\+\_\+send\+\_\+raw\+\_\+tx (\begin{DoxyParamCaption}\item[{c\+J\+S\+ON $\ast$}]{signed\+Transaction }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{commands_8h_a651c6b1b8725fb048acb5cf321dc249a}\label{commands_8h_a651c6b1b8725fb048acb5cf321dc249a}} 
+\index{commands.\+h@{commands.\+h}!chips\+\_\+sign\+\_\+raw\+\_\+tx\+\_\+with\+\_\+wallet@{chips\+\_\+sign\+\_\+raw\+\_\+tx\+\_\+with\+\_\+wallet}}
+\index{chips\+\_\+sign\+\_\+raw\+\_\+tx\+\_\+with\+\_\+wallet@{chips\+\_\+sign\+\_\+raw\+\_\+tx\+\_\+with\+\_\+wallet}!commands.\+h@{commands.\+h}}
+\subsubsection{\texorpdfstring{chips\+\_\+sign\+\_\+raw\+\_\+tx\+\_\+with\+\_\+wallet()}{chips\_sign\_raw\_tx\_with\_wallet()}}
+{\footnotesize\ttfamily c\+J\+S\+ON$\ast$ chips\+\_\+sign\+\_\+raw\+\_\+tx\+\_\+with\+\_\+wallet (\begin{DoxyParamCaption}\item[{char $\ast$}]{rawtransaction }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{commands_8h_a02d0209f0f84414814db784e6789fa8a}\label{commands_8h_a02d0209f0f84414814db784e6789fa8a}} 
+\index{commands.\+h@{commands.\+h}!chips\+\_\+spend\+\_\+multi\+\_\+sig\+\_\+address@{chips\+\_\+spend\+\_\+multi\+\_\+sig\+\_\+address}}
+\index{chips\+\_\+spend\+\_\+multi\+\_\+sig\+\_\+address@{chips\+\_\+spend\+\_\+multi\+\_\+sig\+\_\+address}!commands.\+h@{commands.\+h}}
+\subsubsection{\texorpdfstring{chips\+\_\+spend\+\_\+multi\+\_\+sig\+\_\+address()}{chips\_spend\_multi\_sig\_address()}}
+{\footnotesize\ttfamily void chips\+\_\+spend\+\_\+multi\+\_\+sig\+\_\+address (\begin{DoxyParamCaption}\item[{char $\ast$}]{address,  }\item[{double}]{amount }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{commands_8h_aa2f5924aa180ba7f7340d699a6f77027}\label{commands_8h_aa2f5924aa180ba7f7340d699a6f77027}} 
+\index{commands.\+h@{commands.\+h}!chips\+\_\+transfer\+\_\+funds@{chips\+\_\+transfer\+\_\+funds}}
+\index{chips\+\_\+transfer\+\_\+funds@{chips\+\_\+transfer\+\_\+funds}!commands.\+h@{commands.\+h}}
+\subsubsection{\texorpdfstring{chips\+\_\+transfer\+\_\+funds()}{chips\_transfer\_funds()}}
+{\footnotesize\ttfamily c\+J\+S\+ON$\ast$ chips\+\_\+transfer\+\_\+funds (\begin{DoxyParamCaption}\item[{double}]{amount,  }\item[{char $\ast$}]{address }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{commands_8h_ae809d04ee9f63dc499c935b837533281}\label{commands_8h_ae809d04ee9f63dc499c935b837533281}} 
+\index{commands.\+h@{commands.\+h}!chips\+\_\+validate\+\_\+address@{chips\+\_\+validate\+\_\+address}}
+\index{chips\+\_\+validate\+\_\+address@{chips\+\_\+validate\+\_\+address}!commands.\+h@{commands.\+h}}
+\subsubsection{\texorpdfstring{chips\+\_\+validate\+\_\+address()}{chips\_validate\_address()}}
+{\footnotesize\ttfamily int chips\+\_\+validate\+\_\+address (\begin{DoxyParamCaption}\item[{char $\ast$}]{address }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{commands_8h_aa9981a010ee441f6ecd10019f90eb674}\label{commands_8h_aa9981a010ee441f6ecd10019f90eb674}} 
+\index{commands.\+h@{commands.\+h}!ln\+\_\+dev\+\_\+block\+\_\+height@{ln\+\_\+dev\+\_\+block\+\_\+height}}
+\index{ln\+\_\+dev\+\_\+block\+\_\+height@{ln\+\_\+dev\+\_\+block\+\_\+height}!commands.\+h@{commands.\+h}}
+\subsubsection{\texorpdfstring{ln\+\_\+dev\+\_\+block\+\_\+height()}{ln\_dev\_block\_height()}}
+{\footnotesize\ttfamily int32\+\_\+t ln\+\_\+dev\+\_\+block\+\_\+height (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+

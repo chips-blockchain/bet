@@ -1,0 +1,285 @@
+\hypertarget{bet_8h}{}\section{/root/bet/privatebet/bet.h File Reference}
+\label{bet_8h}\index{/root/bet/privatebet/bet.\+h@{/root/bet/privatebet/bet.\+h}}
+{\ttfamily \#include $<$stdint.\+h$>$}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$arpa/inet.\+h$>$}\newline
+{\ttfamily \#include $<$errno.\+h$>$}\newline
+{\ttfamily \#include $<$netdb.\+h$>$}\newline
+{\ttfamily \#include $<$netinet/in.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$sys/socket.\+h$>$}\newline
+{\ttfamily \#include $<$sys/types.\+h$>$}\newline
+{\ttfamily \#include $<$unistd.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}../crypto777/\+O\+S\+\_\+portable.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$libwebsockets.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}/usr/local/include/nng/compat/nanomsg/bus.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}/usr/local/include/nng/compat/nanomsg/nn.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}/usr/local/include/nng/compat/nanomsg/pair.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}/usr/local/include/nng/compat/nanomsg/pipeline.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}/usr/local/include/nng/compat/nanomsg/pubsub.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}/usr/local/include/nng/compat/nanomsg/reqrep.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}/usr/local/include/nng/compat/nanomsg/tcp.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}common.\+h\char`\"{}}\newline
+Include dependency graph for bet.\+h\+:
+% FIG 0
+This graph shows which files directly or indirectly include this file\+:
+% FIG 1
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structBET__shardsinfo}{B\+E\+T\+\_\+shardsinfo}
+\item 
+struct \hyperlink{structgfshare__ctx__bet}{gfshare\+\_\+ctx\+\_\+bet}
+\item 
+struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info}
+\item 
+struct \hyperlink{structprivatebet__rawpeerln}{privatebet\+\_\+rawpeerln}
+\item 
+struct \hyperlink{structprivatebet__peerln}{privatebet\+\_\+peerln}
+\item 
+struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars}
+\item 
+struct \hyperlink{structpair256}{pair256}
+\item 
+struct \hyperlink{structprivatebet__share}{privatebet\+\_\+share}
+\item 
+struct \hyperlink{structenc__share}{enc\+\_\+share}
+\item 
+struct \hyperlink{structdeck__player__info}{deck\+\_\+player\+\_\+info}
+\item 
+struct \hyperlink{structdeck__dcv__info}{deck\+\_\+dcv\+\_\+info}
+\item 
+struct \hyperlink{structdeck__bvv__info}{deck\+\_\+bvv\+\_\+info}
+\item 
+struct \hyperlink{structcashier}{cashier}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{bet_8h_a614217d263be1fb1a5f76e2ff7be19a2}{P\+O\+RT}~9000
+\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{bet_8h_a864de25b94a13d8c17e790b2e1638687}{action\+\_\+type} \{ \newline
+\hyperlink{bet_8h_a864de25b94a13d8c17e790b2e1638687a9068486ed14b88864e4ddbe5c42d3519}{small\+\_\+blind} = 1, 
+\hyperlink{bet_8h_a864de25b94a13d8c17e790b2e1638687aaaa621c44e114e3e22f2c23f3d62dcf8}{big\+\_\+blind}, 
+\hyperlink{bet_8h_a864de25b94a13d8c17e790b2e1638687a8961e41d90f82b7cf2573e175337722a}{check}, 
+\hyperlink{bet_8h_a864de25b94a13d8c17e790b2e1638687ab13f5aed8ee81ec8a73046c062c33dac}{raise}, 
+\newline
+\hyperlink{bet_8h_a864de25b94a13d8c17e790b2e1638687a98ab4979bd774d191f9a4642f9df392f}{call}, 
+\hyperlink{bet_8h_a864de25b94a13d8c17e790b2e1638687a0d155be11acdd7b79514830c4db72559}{allin}, 
+\hyperlink{bet_8h_a864de25b94a13d8c17e790b2e1638687a8a644c686eb987d3a5d2b55bae4c9a3a}{fold}
+ \}
+\item 
+enum \hyperlink{bet_8h_aee707e2ff5691dbdefd9341a18de7b14}{card\+\_\+type} \{ \newline
+\hyperlink{bet_8h_aee707e2ff5691dbdefd9341a18de7b14a58562e432b5f58ab1c4eb0e13166f201}{burn\+\_\+card} = 0, 
+\hyperlink{bet_8h_aee707e2ff5691dbdefd9341a18de7b14a4969c2cbaa32a74db09d8559d1c0b1a9}{hole\+\_\+card}, 
+\hyperlink{bet_8h_aee707e2ff5691dbdefd9341a18de7b14a02ead816385097389854682941be41e2}{flop\+\_\+card\+\_\+1}, 
+\hyperlink{bet_8h_aee707e2ff5691dbdefd9341a18de7b14ad2cdc62f85d20ec1fe77d3e49b044f20}{flop\+\_\+card\+\_\+2}, 
+\newline
+\hyperlink{bet_8h_aee707e2ff5691dbdefd9341a18de7b14a7cf51dfa037d510b321774807d19ab04}{flop\+\_\+card\+\_\+3}, 
+\hyperlink{bet_8h_aee707e2ff5691dbdefd9341a18de7b14a317688c06860216584fd68751241a00a}{turn\+\_\+card}, 
+\hyperlink{bet_8h_aee707e2ff5691dbdefd9341a18de7b14a89c9fed6b7d99172a68a2e4890393b0b}{river\+\_\+card}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bits256 \hyperlink{bet_8h_ac1717706afec7e9fd7ce46acc957a381}{xoverz\+\_\+donna} (bits256 a)
+\item 
+bits256 \hyperlink{bet_8h_a252e0af563e434c78a3a62a3246ca976}{crecip\+\_\+donna} (bits256 a)
+\item 
+bits256 \hyperlink{bet_8h_a4eed07cb5561b32c853dd9ac514ea68b}{fmul\+\_\+donna} (bits256 a, bits256 b)
+\item 
+bits256 \hyperlink{bet_8h_a639f0e80f94d1ce9adf7bb0d52f8f77b}{card\+\_\+rand256} (int32\+\_\+t privkeyflag, int8\+\_\+t index)
+\item 
+struct \hyperlink{structpair256}{pair256} \hyperlink{bet_8h_af1caf4bd39a77add770c8e9a9b859c25}{deckgen\+\_\+common} (struct \hyperlink{structpair256}{pair256} $\ast$randcards, int32\+\_\+t numcards)
+\item 
+struct \hyperlink{structpair256}{pair256} \hyperlink{bet_8h_ae418903f2f00fb0f13c7d21858a4efdd}{deckgen\+\_\+player} (bits256 $\ast$playerprivs, bits256 $\ast$playercards, int32\+\_\+t $\ast$permis, int32\+\_\+t numcards)
+\item 
+int32\+\_\+t \hyperlink{bet_8h_a8d60448109ceb768b85e3e46a56b523d}{sg777\+\_\+deckgen\+\_\+vendor} (int32\+\_\+t playerid, bits256 $\ast$cardprods, bits256 $\ast$finalcards, int32\+\_\+t numcards, bits256 $\ast$playercards, bits256 \hyperlink{common_8h_acab83b0ae8f9771b03b3a9a1d51eeffe}{deckid})
+\item 
+struct \hyperlink{structpair256}{pair256} \hyperlink{bet_8h_aed0d6ecdf0b295306ebdc2ce145bdd01}{p2p\+\_\+bvv\+\_\+init} (bits256 $\ast$keys, struct \hyperlink{structpair256}{pair256} b\+\_\+key, bits256 $\ast$blindings, bits256 $\ast$blindedcards, bits256 $\ast$finalcards, int32\+\_\+t numcards, int32\+\_\+t numplayers, int32\+\_\+t playerid, bits256 \hyperlink{common_8h_acab83b0ae8f9771b03b3a9a1d51eeffe}{deckid})
+\item 
+bits256 \hyperlink{bet_8h_a486c8d59b898af86c8e498798a3d500a}{curve25519\+\_\+fieldelement} (bits256 hash)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structenc__share}{enc\+\_\+share} $\ast$ \hyperlink{bet_8h_a9af9f2fdf27f0f54f624d89b32af82ff}{g\+\_\+shares}
+\item 
+struct \hyperlink{structenc__share}{enc\+\_\+share} $\ast$ \hyperlink{bet_8h_a26137bbeb0831e55a2a1207feb76264e}{all\+\_\+g\+\_\+shares} \mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}
+\item 
+struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info} $\ast$ \hyperlink{bet_8h_acce96a8256760a7d9ee28b0d0b722e29}{bet\+\_\+player}
+\item 
+struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars} $\ast$ \hyperlink{bet_8h_abe20de78a27f415da1e9437e26fd2061}{player\+\_\+vars}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\mbox{\Hypertarget{bet_8h_a614217d263be1fb1a5f76e2ff7be19a2}\label{bet_8h_a614217d263be1fb1a5f76e2ff7be19a2}} 
+\index{bet.\+h@{bet.\+h}!P\+O\+RT@{P\+O\+RT}}
+\index{P\+O\+RT@{P\+O\+RT}!bet.\+h@{bet.\+h}}
+\subsubsection{\texorpdfstring{P\+O\+RT}{PORT}}
+{\footnotesize\ttfamily \#define P\+O\+RT~9000}
+
+
+
+\subsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{bet_8h_a864de25b94a13d8c17e790b2e1638687}\label{bet_8h_a864de25b94a13d8c17e790b2e1638687}} 
+\index{bet.\+h@{bet.\+h}!action\+\_\+type@{action\+\_\+type}}
+\index{action\+\_\+type@{action\+\_\+type}!bet.\+h@{bet.\+h}}
+\subsubsection{\texorpdfstring{action\+\_\+type}{action\_type}}
+{\footnotesize\ttfamily enum \hyperlink{bet_8h_a864de25b94a13d8c17e790b2e1638687}{action\+\_\+type}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{small\+\_\+blind@{small\+\_\+blind}!bet.\+h@{bet.\+h}}\index{bet.\+h@{bet.\+h}!small\+\_\+blind@{small\+\_\+blind}}}\mbox{\Hypertarget{bet_8h_a864de25b94a13d8c17e790b2e1638687a9068486ed14b88864e4ddbe5c42d3519}\label{bet_8h_a864de25b94a13d8c17e790b2e1638687a9068486ed14b88864e4ddbe5c42d3519}} 
+small\+\_\+blind&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{big\+\_\+blind@{big\+\_\+blind}!bet.\+h@{bet.\+h}}\index{bet.\+h@{bet.\+h}!big\+\_\+blind@{big\+\_\+blind}}}\mbox{\Hypertarget{bet_8h_a864de25b94a13d8c17e790b2e1638687aaaa621c44e114e3e22f2c23f3d62dcf8}\label{bet_8h_a864de25b94a13d8c17e790b2e1638687aaaa621c44e114e3e22f2c23f3d62dcf8}} 
+big\+\_\+blind&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{check@{check}!bet.\+h@{bet.\+h}}\index{bet.\+h@{bet.\+h}!check@{check}}}\mbox{\Hypertarget{bet_8h_a864de25b94a13d8c17e790b2e1638687a8961e41d90f82b7cf2573e175337722a}\label{bet_8h_a864de25b94a13d8c17e790b2e1638687a8961e41d90f82b7cf2573e175337722a}} 
+check&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{raise@{raise}!bet.\+h@{bet.\+h}}\index{bet.\+h@{bet.\+h}!raise@{raise}}}\mbox{\Hypertarget{bet_8h_a864de25b94a13d8c17e790b2e1638687ab13f5aed8ee81ec8a73046c062c33dac}\label{bet_8h_a864de25b94a13d8c17e790b2e1638687ab13f5aed8ee81ec8a73046c062c33dac}} 
+raise&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{call@{call}!bet.\+h@{bet.\+h}}\index{bet.\+h@{bet.\+h}!call@{call}}}\mbox{\Hypertarget{bet_8h_a864de25b94a13d8c17e790b2e1638687a98ab4979bd774d191f9a4642f9df392f}\label{bet_8h_a864de25b94a13d8c17e790b2e1638687a98ab4979bd774d191f9a4642f9df392f}} 
+call&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{allin@{allin}!bet.\+h@{bet.\+h}}\index{bet.\+h@{bet.\+h}!allin@{allin}}}\mbox{\Hypertarget{bet_8h_a864de25b94a13d8c17e790b2e1638687a0d155be11acdd7b79514830c4db72559}\label{bet_8h_a864de25b94a13d8c17e790b2e1638687a0d155be11acdd7b79514830c4db72559}} 
+allin&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{fold@{fold}!bet.\+h@{bet.\+h}}\index{bet.\+h@{bet.\+h}!fold@{fold}}}\mbox{\Hypertarget{bet_8h_a864de25b94a13d8c17e790b2e1638687a8a644c686eb987d3a5d2b55bae4c9a3a}\label{bet_8h_a864de25b94a13d8c17e790b2e1638687a8a644c686eb987d3a5d2b55bae4c9a3a}} 
+fold&\\
+\hline
+
+\end{DoxyEnumFields}
+\mbox{\Hypertarget{bet_8h_aee707e2ff5691dbdefd9341a18de7b14}\label{bet_8h_aee707e2ff5691dbdefd9341a18de7b14}} 
+\index{bet.\+h@{bet.\+h}!card\+\_\+type@{card\+\_\+type}}
+\index{card\+\_\+type@{card\+\_\+type}!bet.\+h@{bet.\+h}}
+\subsubsection{\texorpdfstring{card\+\_\+type}{card\_type}}
+{\footnotesize\ttfamily enum \hyperlink{bet_8h_aee707e2ff5691dbdefd9341a18de7b14}{card\+\_\+type}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{burn\+\_\+card@{burn\+\_\+card}!bet.\+h@{bet.\+h}}\index{bet.\+h@{bet.\+h}!burn\+\_\+card@{burn\+\_\+card}}}\mbox{\Hypertarget{bet_8h_aee707e2ff5691dbdefd9341a18de7b14a58562e432b5f58ab1c4eb0e13166f201}\label{bet_8h_aee707e2ff5691dbdefd9341a18de7b14a58562e432b5f58ab1c4eb0e13166f201}} 
+burn\+\_\+card&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{hole\+\_\+card@{hole\+\_\+card}!bet.\+h@{bet.\+h}}\index{bet.\+h@{bet.\+h}!hole\+\_\+card@{hole\+\_\+card}}}\mbox{\Hypertarget{bet_8h_aee707e2ff5691dbdefd9341a18de7b14a4969c2cbaa32a74db09d8559d1c0b1a9}\label{bet_8h_aee707e2ff5691dbdefd9341a18de7b14a4969c2cbaa32a74db09d8559d1c0b1a9}} 
+hole\+\_\+card&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{flop\+\_\+card\+\_\+1@{flop\+\_\+card\+\_\+1}!bet.\+h@{bet.\+h}}\index{bet.\+h@{bet.\+h}!flop\+\_\+card\+\_\+1@{flop\+\_\+card\+\_\+1}}}\mbox{\Hypertarget{bet_8h_aee707e2ff5691dbdefd9341a18de7b14a02ead816385097389854682941be41e2}\label{bet_8h_aee707e2ff5691dbdefd9341a18de7b14a02ead816385097389854682941be41e2}} 
+flop\+\_\+card\+\_\+1&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{flop\+\_\+card\+\_\+2@{flop\+\_\+card\+\_\+2}!bet.\+h@{bet.\+h}}\index{bet.\+h@{bet.\+h}!flop\+\_\+card\+\_\+2@{flop\+\_\+card\+\_\+2}}}\mbox{\Hypertarget{bet_8h_aee707e2ff5691dbdefd9341a18de7b14ad2cdc62f85d20ec1fe77d3e49b044f20}\label{bet_8h_aee707e2ff5691dbdefd9341a18de7b14ad2cdc62f85d20ec1fe77d3e49b044f20}} 
+flop\+\_\+card\+\_\+2&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{flop\+\_\+card\+\_\+3@{flop\+\_\+card\+\_\+3}!bet.\+h@{bet.\+h}}\index{bet.\+h@{bet.\+h}!flop\+\_\+card\+\_\+3@{flop\+\_\+card\+\_\+3}}}\mbox{\Hypertarget{bet_8h_aee707e2ff5691dbdefd9341a18de7b14a7cf51dfa037d510b321774807d19ab04}\label{bet_8h_aee707e2ff5691dbdefd9341a18de7b14a7cf51dfa037d510b321774807d19ab04}} 
+flop\+\_\+card\+\_\+3&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{turn\+\_\+card@{turn\+\_\+card}!bet.\+h@{bet.\+h}}\index{bet.\+h@{bet.\+h}!turn\+\_\+card@{turn\+\_\+card}}}\mbox{\Hypertarget{bet_8h_aee707e2ff5691dbdefd9341a18de7b14a317688c06860216584fd68751241a00a}\label{bet_8h_aee707e2ff5691dbdefd9341a18de7b14a317688c06860216584fd68751241a00a}} 
+turn\+\_\+card&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{river\+\_\+card@{river\+\_\+card}!bet.\+h@{bet.\+h}}\index{bet.\+h@{bet.\+h}!river\+\_\+card@{river\+\_\+card}}}\mbox{\Hypertarget{bet_8h_aee707e2ff5691dbdefd9341a18de7b14a89c9fed6b7d99172a68a2e4890393b0b}\label{bet_8h_aee707e2ff5691dbdefd9341a18de7b14a89c9fed6b7d99172a68a2e4890393b0b}} 
+river\+\_\+card&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{bet_8h_a639f0e80f94d1ce9adf7bb0d52f8f77b}\label{bet_8h_a639f0e80f94d1ce9adf7bb0d52f8f77b}} 
+\index{bet.\+h@{bet.\+h}!card\+\_\+rand256@{card\+\_\+rand256}}
+\index{card\+\_\+rand256@{card\+\_\+rand256}!bet.\+h@{bet.\+h}}
+\subsubsection{\texorpdfstring{card\+\_\+rand256()}{card\_rand256()}}
+{\footnotesize\ttfamily bits256 card\+\_\+rand256 (\begin{DoxyParamCaption}\item[{int32\+\_\+t}]{privkeyflag,  }\item[{int8\+\_\+t}]{index }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{bet_8h_a252e0af563e434c78a3a62a3246ca976}\label{bet_8h_a252e0af563e434c78a3a62a3246ca976}} 
+\index{bet.\+h@{bet.\+h}!crecip\+\_\+donna@{crecip\+\_\+donna}}
+\index{crecip\+\_\+donna@{crecip\+\_\+donna}!bet.\+h@{bet.\+h}}
+\subsubsection{\texorpdfstring{crecip\+\_\+donna()}{crecip\_donna()}}
+{\footnotesize\ttfamily bits256 crecip\+\_\+donna (\begin{DoxyParamCaption}\item[{bits256}]{a }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{bet_8h_a486c8d59b898af86c8e498798a3d500a}\label{bet_8h_a486c8d59b898af86c8e498798a3d500a}} 
+\index{bet.\+h@{bet.\+h}!curve25519\+\_\+fieldelement@{curve25519\+\_\+fieldelement}}
+\index{curve25519\+\_\+fieldelement@{curve25519\+\_\+fieldelement}!bet.\+h@{bet.\+h}}
+\subsubsection{\texorpdfstring{curve25519\+\_\+fieldelement()}{curve25519\_fieldelement()}}
+{\footnotesize\ttfamily bits256 curve25519\+\_\+fieldelement (\begin{DoxyParamCaption}\item[{bits256}]{hash }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{bet_8h_af1caf4bd39a77add770c8e9a9b859c25}\label{bet_8h_af1caf4bd39a77add770c8e9a9b859c25}} 
+\index{bet.\+h@{bet.\+h}!deckgen\+\_\+common@{deckgen\+\_\+common}}
+\index{deckgen\+\_\+common@{deckgen\+\_\+common}!bet.\+h@{bet.\+h}}
+\subsubsection{\texorpdfstring{deckgen\+\_\+common()}{deckgen\_common()}}
+{\footnotesize\ttfamily struct \hyperlink{structpair256}{pair256} deckgen\+\_\+common (\begin{DoxyParamCaption}\item[{struct \hyperlink{structpair256}{pair256} $\ast$}]{randcards,  }\item[{int32\+\_\+t}]{numcards }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{bet_8h_ae418903f2f00fb0f13c7d21858a4efdd}\label{bet_8h_ae418903f2f00fb0f13c7d21858a4efdd}} 
+\index{bet.\+h@{bet.\+h}!deckgen\+\_\+player@{deckgen\+\_\+player}}
+\index{deckgen\+\_\+player@{deckgen\+\_\+player}!bet.\+h@{bet.\+h}}
+\subsubsection{\texorpdfstring{deckgen\+\_\+player()}{deckgen\_player()}}
+{\footnotesize\ttfamily struct \hyperlink{structpair256}{pair256} deckgen\+\_\+player (\begin{DoxyParamCaption}\item[{bits256 $\ast$}]{playerprivs,  }\item[{bits256 $\ast$}]{playercards,  }\item[{int32\+\_\+t $\ast$}]{permis,  }\item[{int32\+\_\+t}]{numcards }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{bet_8h_a4eed07cb5561b32c853dd9ac514ea68b}\label{bet_8h_a4eed07cb5561b32c853dd9ac514ea68b}} 
+\index{bet.\+h@{bet.\+h}!fmul\+\_\+donna@{fmul\+\_\+donna}}
+\index{fmul\+\_\+donna@{fmul\+\_\+donna}!bet.\+h@{bet.\+h}}
+\subsubsection{\texorpdfstring{fmul\+\_\+donna()}{fmul\_donna()}}
+{\footnotesize\ttfamily bits256 fmul\+\_\+donna (\begin{DoxyParamCaption}\item[{bits256}]{a,  }\item[{bits256}]{b }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{bet_8h_aed0d6ecdf0b295306ebdc2ce145bdd01}\label{bet_8h_aed0d6ecdf0b295306ebdc2ce145bdd01}} 
+\index{bet.\+h@{bet.\+h}!p2p\+\_\+bvv\+\_\+init@{p2p\+\_\+bvv\+\_\+init}}
+\index{p2p\+\_\+bvv\+\_\+init@{p2p\+\_\+bvv\+\_\+init}!bet.\+h@{bet.\+h}}
+\subsubsection{\texorpdfstring{p2p\+\_\+bvv\+\_\+init()}{p2p\_bvv\_init()}}
+{\footnotesize\ttfamily struct \hyperlink{structpair256}{pair256} p2p\+\_\+bvv\+\_\+init (\begin{DoxyParamCaption}\item[{bits256 $\ast$}]{keys,  }\item[{struct \hyperlink{structpair256}{pair256}}]{b\+\_\+key,  }\item[{bits256 $\ast$}]{blindings,  }\item[{bits256 $\ast$}]{blindedcards,  }\item[{bits256 $\ast$}]{finalcards,  }\item[{int32\+\_\+t}]{numcards,  }\item[{int32\+\_\+t}]{numplayers,  }\item[{int32\+\_\+t}]{playerid,  }\item[{bits256}]{deckid }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{bet_8h_a8d60448109ceb768b85e3e46a56b523d}\label{bet_8h_a8d60448109ceb768b85e3e46a56b523d}} 
+\index{bet.\+h@{bet.\+h}!sg777\+\_\+deckgen\+\_\+vendor@{sg777\+\_\+deckgen\+\_\+vendor}}
+\index{sg777\+\_\+deckgen\+\_\+vendor@{sg777\+\_\+deckgen\+\_\+vendor}!bet.\+h@{bet.\+h}}
+\subsubsection{\texorpdfstring{sg777\+\_\+deckgen\+\_\+vendor()}{sg777\_deckgen\_vendor()}}
+{\footnotesize\ttfamily int32\+\_\+t sg777\+\_\+deckgen\+\_\+vendor (\begin{DoxyParamCaption}\item[{int32\+\_\+t}]{playerid,  }\item[{bits256 $\ast$}]{cardprods,  }\item[{bits256 $\ast$}]{finalcards,  }\item[{int32\+\_\+t}]{numcards,  }\item[{bits256 $\ast$}]{playercards,  }\item[{bits256}]{deckid }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{bet_8h_ac1717706afec7e9fd7ce46acc957a381}\label{bet_8h_ac1717706afec7e9fd7ce46acc957a381}} 
+\index{bet.\+h@{bet.\+h}!xoverz\+\_\+donna@{xoverz\+\_\+donna}}
+\index{xoverz\+\_\+donna@{xoverz\+\_\+donna}!bet.\+h@{bet.\+h}}
+\subsubsection{\texorpdfstring{xoverz\+\_\+donna()}{xoverz\_donna()}}
+{\footnotesize\ttfamily bits256 xoverz\+\_\+donna (\begin{DoxyParamCaption}\item[{bits256}]{a }\end{DoxyParamCaption})}
+
+
+
+\subsection{Variable Documentation}
+\mbox{\Hypertarget{bet_8h_a26137bbeb0831e55a2a1207feb76264e}\label{bet_8h_a26137bbeb0831e55a2a1207feb76264e}} 
+\index{bet.\+h@{bet.\+h}!all\+\_\+g\+\_\+shares@{all\+\_\+g\+\_\+shares}}
+\index{all\+\_\+g\+\_\+shares@{all\+\_\+g\+\_\+shares}!bet.\+h@{bet.\+h}}
+\subsubsection{\texorpdfstring{all\+\_\+g\+\_\+shares}{all\_g\_shares}}
+{\footnotesize\ttfamily struct \hyperlink{structenc__share}{enc\+\_\+share}$\ast$ all\+\_\+g\+\_\+shares\mbox{[}\hyperlink{common_8h_a97d6188fd175f4ea7268e9445107a7c0}{C\+A\+R\+D\+S777\+\_\+\+M\+A\+X\+P\+L\+A\+Y\+E\+RS}\mbox{]}}
+
+\mbox{\Hypertarget{bet_8h_acce96a8256760a7d9ee28b0d0b722e29}\label{bet_8h_acce96a8256760a7d9ee28b0d0b722e29}} 
+\index{bet.\+h@{bet.\+h}!bet\+\_\+player@{bet\+\_\+player}}
+\index{bet\+\_\+player@{bet\+\_\+player}!bet.\+h@{bet.\+h}}
+\subsubsection{\texorpdfstring{bet\+\_\+player}{bet\_player}}
+{\footnotesize\ttfamily struct \hyperlink{structprivatebet__info}{privatebet\+\_\+info}$\ast$ bet\+\_\+player}
+
+\mbox{\Hypertarget{bet_8h_a9af9f2fdf27f0f54f624d89b32af82ff}\label{bet_8h_a9af9f2fdf27f0f54f624d89b32af82ff}} 
+\index{bet.\+h@{bet.\+h}!g\+\_\+shares@{g\+\_\+shares}}
+\index{g\+\_\+shares@{g\+\_\+shares}!bet.\+h@{bet.\+h}}
+\subsubsection{\texorpdfstring{g\+\_\+shares}{g\_shares}}
+{\footnotesize\ttfamily struct \hyperlink{structenc__share}{enc\+\_\+share}$\ast$ g\+\_\+shares}
+
+\mbox{\Hypertarget{bet_8h_abe20de78a27f415da1e9437e26fd2061}\label{bet_8h_abe20de78a27f415da1e9437e26fd2061}} 
+\index{bet.\+h@{bet.\+h}!player\+\_\+vars@{player\+\_\+vars}}
+\index{player\+\_\+vars@{player\+\_\+vars}!bet.\+h@{bet.\+h}}
+\subsubsection{\texorpdfstring{player\+\_\+vars}{player\_vars}}
+{\footnotesize\ttfamily struct \hyperlink{structprivatebet__vars}{privatebet\+\_\+vars}$\ast$ player\+\_\+vars}
+

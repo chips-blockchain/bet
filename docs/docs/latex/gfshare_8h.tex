@@ -1,0 +1,141 @@
+\hypertarget{gfshare_8h}{}\section{/root/bet/privatebet/gfshare.h File Reference}
+\label{gfshare_8h}\index{/root/bet/privatebet/gfshare.\+h@{/root/bet/privatebet/gfshare.\+h}}
+{\ttfamily \#include \char`\"{}bet.\+h\char`\"{}}\newline
+Include dependency graph for gfshare.\+h\+:
+% FIG 0
+This graph shows which files directly or indirectly include this file\+:
+% FIG 1
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{gfshare_8h_a8da60e5c8a3ff68bdf483dc027e326c9}{libgfshare\+\_\+init} ()
+\item 
+struct \hyperlink{structgfshare__ctx__bet}{gfshare\+\_\+ctx\+\_\+bet} $\ast$ \hyperlink{gfshare_8h_a39ad7d1399a2a4361abbc72c309f4f65}{\+\_\+gfshare\+\_\+init\+\_\+core} (uint8\+\_\+t $\ast$\hyperlink{common_8h_ad0579cac3407f0f0cb742891f36d6e56}{sharenrs}, uint32\+\_\+t sharecount, uint8\+\_\+t threshold, uint32\+\_\+t size, void $\ast$space, int32\+\_\+t spacesize)
+\item 
+struct \hyperlink{structgfshare__ctx__bet}{gfshare\+\_\+ctx\+\_\+bet} $\ast$ \hyperlink{gfshare_8h_af4b2071d9c94b528018ec573e39cca05}{gfshare\+\_\+initenc} (uint8\+\_\+t $\ast$\hyperlink{common_8h_ad0579cac3407f0f0cb742891f36d6e56}{sharenrs}, uint32\+\_\+t sharecount, uint8\+\_\+t threshold, uint32\+\_\+t size, void $\ast$space, int32\+\_\+t spacesize)
+\item 
+struct \hyperlink{structgfshare__ctx__bet}{gfshare\+\_\+ctx\+\_\+bet} $\ast$ \hyperlink{gfshare_8h_a53ce4ea8b2a11f4376c43589d11f8113}{gfshare\+\_\+initdec} (uint8\+\_\+t $\ast$\hyperlink{common_8h_ad0579cac3407f0f0cb742891f36d6e56}{sharenrs}, uint32\+\_\+t sharecount, uint32\+\_\+t size, void $\ast$space, int32\+\_\+t spacesize)
+\item 
+struct \hyperlink{structgfshare__ctx__bet}{gfshare\+\_\+ctx\+\_\+bet} $\ast$ \hyperlink{gfshare_8h_a5703f5987bc8c19f45238b53a1a3a005}{gfshare\+\_\+sg777\+\_\+initdec} (uint8\+\_\+t $\ast$\hyperlink{common_8h_ad0579cac3407f0f0cb742891f36d6e56}{sharenrs}, uint32\+\_\+t sharecount, uint8\+\_\+t threshold, uint32\+\_\+t size, void $\ast$space, int32\+\_\+t spacesize)
+\item 
+void \hyperlink{gfshare_8h_aae637bf4bae06c3081219ca6d15c0e8d}{gfshare\+\_\+free} (struct \hyperlink{structgfshare__ctx__bet}{gfshare\+\_\+ctx\+\_\+bet} $\ast$ctx)
+\item 
+void \hyperlink{gfshare_8h_a1b6e4fabe8dd5d7f686962c7e040b2cf}{gfshare\+\_\+enc\+\_\+setsecret} (struct \hyperlink{structgfshare__ctx__bet}{gfshare\+\_\+ctx\+\_\+bet} $\ast$ctx, uint8\+\_\+t $\ast$secret)
+\item 
+void \hyperlink{gfshare_8h_a41d18c5f16254b5161ead9ce861fbc13}{gfshare\+\_\+encgetshare} (uint8\+\_\+t $\ast$\+\_\+logs, uint8\+\_\+t $\ast$\+\_\+exps, struct \hyperlink{structgfshare__ctx__bet}{gfshare\+\_\+ctx\+\_\+bet} $\ast$ctx, uint8\+\_\+t sharenr, uint8\+\_\+t $\ast$share)
+\item 
+void \hyperlink{gfshare_8h_a323be5de03be37cfe4939186746fc988}{gfshare\+\_\+dec\+\_\+newshares} (struct \hyperlink{structgfshare__ctx__bet}{gfshare\+\_\+ctx\+\_\+bet} $\ast$ctx, uint8\+\_\+t $\ast$\hyperlink{common_8h_ad0579cac3407f0f0cb742891f36d6e56}{sharenrs})
+\item 
+void \hyperlink{gfshare_8h_a8665725a133ec094f35f51620c6593f0}{gfshare\+\_\+dec\+\_\+giveshare} (struct \hyperlink{structgfshare__ctx__bet}{gfshare\+\_\+ctx\+\_\+bet} $\ast$ctx, uint8\+\_\+t sharenr, uint8\+\_\+t $\ast$share)
+\item 
+void \hyperlink{gfshare_8h_a5a30aaf2121bc77e19b85a8f3cb2f6ae}{gfshare\+\_\+decextract} (uint8\+\_\+t $\ast$\+\_\+logs, uint8\+\_\+t $\ast$\+\_\+exps, struct \hyperlink{structgfshare__ctx__bet}{gfshare\+\_\+ctx\+\_\+bet} $\ast$ctx, uint8\+\_\+t $\ast$secretbuf)
+\item 
+int32\+\_\+t \hyperlink{gfshare_8h_a7137856a8a64316ff96b8e6dae47c5a9}{gfshare\+\_\+calc\+\_\+sharenrs} (uint8\+\_\+t $\ast$\hyperlink{common_8h_ad0579cac3407f0f0cb742891f36d6e56}{sharenrs}, int32\+\_\+t N, uint8\+\_\+t $\ast$data, int32\+\_\+t datasize)
+\item 
+int32\+\_\+t \hyperlink{gfshare_8h_a1c3c2965cc907b20b57b20cc9ca6f213}{gfshare\+\_\+init\+\_\+sharenrs} (uint8\+\_\+t \hyperlink{common_8h_ad0579cac3407f0f0cb742891f36d6e56}{sharenrs}\mbox{[}255\mbox{]}, uint8\+\_\+t $\ast$orig, int32\+\_\+t m, int32\+\_\+t n)
+\item 
+uint8\+\_\+t $\ast$ \hyperlink{gfshare_8h_a1e3750e6cfdaad8a6495d54d31fc96cb}{gfshare\+\_\+recoverdata} (uint8\+\_\+t $\ast$shares\mbox{[}$\,$\mbox{]}, uint8\+\_\+t $\ast$\hyperlink{common_8h_ad0579cac3407f0f0cb742891f36d6e56}{sharenrs}, int32\+\_\+t M, uint8\+\_\+t $\ast$recover, int32\+\_\+t datasize, int32\+\_\+t N)
+\item 
+void \hyperlink{gfshare_8h_a8e7b5db33b16aed8e9e52f25d30c5284}{gfshare\+\_\+calc\+\_\+share} (uint8\+\_\+t $\ast$buffer, int32\+\_\+t size, int32\+\_\+t M, uint32\+\_\+t ilog, uint8\+\_\+t $\ast$share)
+\item 
+void \hyperlink{gfshare_8h_a9b3942a13178129e7e2188454fdec070}{gfshare\+\_\+calc\+\_\+shares} (uint8\+\_\+t $\ast$shares, uint8\+\_\+t $\ast$secret, int32\+\_\+t size, int32\+\_\+t width, int32\+\_\+t M, int32\+\_\+t N, uint8\+\_\+t $\ast$\hyperlink{common_8h_ad0579cac3407f0f0cb742891f36d6e56}{sharenrs}, uint8\+\_\+t $\ast$space, int32\+\_\+t spacesize)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{gfshare_8h_a39ad7d1399a2a4361abbc72c309f4f65}\label{gfshare_8h_a39ad7d1399a2a4361abbc72c309f4f65}} 
+\index{gfshare.\+h@{gfshare.\+h}!\+\_\+gfshare\+\_\+init\+\_\+core@{\+\_\+gfshare\+\_\+init\+\_\+core}}
+\index{\+\_\+gfshare\+\_\+init\+\_\+core@{\+\_\+gfshare\+\_\+init\+\_\+core}!gfshare.\+h@{gfshare.\+h}}
+\subsubsection{\texorpdfstring{\+\_\+gfshare\+\_\+init\+\_\+core()}{\_gfshare\_init\_core()}}
+{\footnotesize\ttfamily struct \hyperlink{structgfshare__ctx__bet}{gfshare\+\_\+ctx\+\_\+bet}$\ast$ \+\_\+gfshare\+\_\+init\+\_\+core (\begin{DoxyParamCaption}\item[{uint8\+\_\+t $\ast$}]{sharenrs,  }\item[{uint32\+\_\+t}]{sharecount,  }\item[{uint8\+\_\+t}]{threshold,  }\item[{uint32\+\_\+t}]{size,  }\item[{void $\ast$}]{space,  }\item[{int32\+\_\+t}]{spacesize }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{gfshare_8h_a8e7b5db33b16aed8e9e52f25d30c5284}\label{gfshare_8h_a8e7b5db33b16aed8e9e52f25d30c5284}} 
+\index{gfshare.\+h@{gfshare.\+h}!gfshare\+\_\+calc\+\_\+share@{gfshare\+\_\+calc\+\_\+share}}
+\index{gfshare\+\_\+calc\+\_\+share@{gfshare\+\_\+calc\+\_\+share}!gfshare.\+h@{gfshare.\+h}}
+\subsubsection{\texorpdfstring{gfshare\+\_\+calc\+\_\+share()}{gfshare\_calc\_share()}}
+{\footnotesize\ttfamily void gfshare\+\_\+calc\+\_\+share (\begin{DoxyParamCaption}\item[{uint8\+\_\+t $\ast$}]{buffer,  }\item[{int32\+\_\+t}]{size,  }\item[{int32\+\_\+t}]{M,  }\item[{uint32\+\_\+t}]{ilog,  }\item[{uint8\+\_\+t $\ast$}]{share }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{gfshare_8h_a7137856a8a64316ff96b8e6dae47c5a9}\label{gfshare_8h_a7137856a8a64316ff96b8e6dae47c5a9}} 
+\index{gfshare.\+h@{gfshare.\+h}!gfshare\+\_\+calc\+\_\+sharenrs@{gfshare\+\_\+calc\+\_\+sharenrs}}
+\index{gfshare\+\_\+calc\+\_\+sharenrs@{gfshare\+\_\+calc\+\_\+sharenrs}!gfshare.\+h@{gfshare.\+h}}
+\subsubsection{\texorpdfstring{gfshare\+\_\+calc\+\_\+sharenrs()}{gfshare\_calc\_sharenrs()}}
+{\footnotesize\ttfamily int32\+\_\+t gfshare\+\_\+calc\+\_\+sharenrs (\begin{DoxyParamCaption}\item[{uint8\+\_\+t $\ast$}]{sharenrs,  }\item[{int32\+\_\+t}]{N,  }\item[{uint8\+\_\+t $\ast$}]{data,  }\item[{int32\+\_\+t}]{datasize }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{gfshare_8h_a9b3942a13178129e7e2188454fdec070}\label{gfshare_8h_a9b3942a13178129e7e2188454fdec070}} 
+\index{gfshare.\+h@{gfshare.\+h}!gfshare\+\_\+calc\+\_\+shares@{gfshare\+\_\+calc\+\_\+shares}}
+\index{gfshare\+\_\+calc\+\_\+shares@{gfshare\+\_\+calc\+\_\+shares}!gfshare.\+h@{gfshare.\+h}}
+\subsubsection{\texorpdfstring{gfshare\+\_\+calc\+\_\+shares()}{gfshare\_calc\_shares()}}
+{\footnotesize\ttfamily void gfshare\+\_\+calc\+\_\+shares (\begin{DoxyParamCaption}\item[{uint8\+\_\+t $\ast$}]{shares,  }\item[{uint8\+\_\+t $\ast$}]{secret,  }\item[{int32\+\_\+t}]{size,  }\item[{int32\+\_\+t}]{width,  }\item[{int32\+\_\+t}]{M,  }\item[{int32\+\_\+t}]{N,  }\item[{uint8\+\_\+t $\ast$}]{sharenrs,  }\item[{uint8\+\_\+t $\ast$}]{space,  }\item[{int32\+\_\+t}]{spacesize }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{gfshare_8h_a8665725a133ec094f35f51620c6593f0}\label{gfshare_8h_a8665725a133ec094f35f51620c6593f0}} 
+\index{gfshare.\+h@{gfshare.\+h}!gfshare\+\_\+dec\+\_\+giveshare@{gfshare\+\_\+dec\+\_\+giveshare}}
+\index{gfshare\+\_\+dec\+\_\+giveshare@{gfshare\+\_\+dec\+\_\+giveshare}!gfshare.\+h@{gfshare.\+h}}
+\subsubsection{\texorpdfstring{gfshare\+\_\+dec\+\_\+giveshare()}{gfshare\_dec\_giveshare()}}
+{\footnotesize\ttfamily void gfshare\+\_\+dec\+\_\+giveshare (\begin{DoxyParamCaption}\item[{struct \hyperlink{structgfshare__ctx__bet}{gfshare\+\_\+ctx\+\_\+bet} $\ast$}]{ctx,  }\item[{uint8\+\_\+t}]{sharenr,  }\item[{uint8\+\_\+t $\ast$}]{share }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{gfshare_8h_a323be5de03be37cfe4939186746fc988}\label{gfshare_8h_a323be5de03be37cfe4939186746fc988}} 
+\index{gfshare.\+h@{gfshare.\+h}!gfshare\+\_\+dec\+\_\+newshares@{gfshare\+\_\+dec\+\_\+newshares}}
+\index{gfshare\+\_\+dec\+\_\+newshares@{gfshare\+\_\+dec\+\_\+newshares}!gfshare.\+h@{gfshare.\+h}}
+\subsubsection{\texorpdfstring{gfshare\+\_\+dec\+\_\+newshares()}{gfshare\_dec\_newshares()}}
+{\footnotesize\ttfamily void gfshare\+\_\+dec\+\_\+newshares (\begin{DoxyParamCaption}\item[{struct \hyperlink{structgfshare__ctx__bet}{gfshare\+\_\+ctx\+\_\+bet} $\ast$}]{ctx,  }\item[{uint8\+\_\+t $\ast$}]{sharenrs }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{gfshare_8h_a5a30aaf2121bc77e19b85a8f3cb2f6ae}\label{gfshare_8h_a5a30aaf2121bc77e19b85a8f3cb2f6ae}} 
+\index{gfshare.\+h@{gfshare.\+h}!gfshare\+\_\+decextract@{gfshare\+\_\+decextract}}
+\index{gfshare\+\_\+decextract@{gfshare\+\_\+decextract}!gfshare.\+h@{gfshare.\+h}}
+\subsubsection{\texorpdfstring{gfshare\+\_\+decextract()}{gfshare\_decextract()}}
+{\footnotesize\ttfamily void gfshare\+\_\+decextract (\begin{DoxyParamCaption}\item[{uint8\+\_\+t $\ast$}]{\+\_\+logs,  }\item[{uint8\+\_\+t $\ast$}]{\+\_\+exps,  }\item[{struct \hyperlink{structgfshare__ctx__bet}{gfshare\+\_\+ctx\+\_\+bet} $\ast$}]{ctx,  }\item[{uint8\+\_\+t $\ast$}]{secretbuf }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{gfshare_8h_a1b6e4fabe8dd5d7f686962c7e040b2cf}\label{gfshare_8h_a1b6e4fabe8dd5d7f686962c7e040b2cf}} 
+\index{gfshare.\+h@{gfshare.\+h}!gfshare\+\_\+enc\+\_\+setsecret@{gfshare\+\_\+enc\+\_\+setsecret}}
+\index{gfshare\+\_\+enc\+\_\+setsecret@{gfshare\+\_\+enc\+\_\+setsecret}!gfshare.\+h@{gfshare.\+h}}
+\subsubsection{\texorpdfstring{gfshare\+\_\+enc\+\_\+setsecret()}{gfshare\_enc\_setsecret()}}
+{\footnotesize\ttfamily void gfshare\+\_\+enc\+\_\+setsecret (\begin{DoxyParamCaption}\item[{struct \hyperlink{structgfshare__ctx__bet}{gfshare\+\_\+ctx\+\_\+bet} $\ast$}]{ctx,  }\item[{uint8\+\_\+t $\ast$}]{secret }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{gfshare_8h_a41d18c5f16254b5161ead9ce861fbc13}\label{gfshare_8h_a41d18c5f16254b5161ead9ce861fbc13}} 
+\index{gfshare.\+h@{gfshare.\+h}!gfshare\+\_\+encgetshare@{gfshare\+\_\+encgetshare}}
+\index{gfshare\+\_\+encgetshare@{gfshare\+\_\+encgetshare}!gfshare.\+h@{gfshare.\+h}}
+\subsubsection{\texorpdfstring{gfshare\+\_\+encgetshare()}{gfshare\_encgetshare()}}
+{\footnotesize\ttfamily void gfshare\+\_\+encgetshare (\begin{DoxyParamCaption}\item[{uint8\+\_\+t $\ast$}]{\+\_\+logs,  }\item[{uint8\+\_\+t $\ast$}]{\+\_\+exps,  }\item[{struct \hyperlink{structgfshare__ctx__bet}{gfshare\+\_\+ctx\+\_\+bet} $\ast$}]{ctx,  }\item[{uint8\+\_\+t}]{sharenr,  }\item[{uint8\+\_\+t $\ast$}]{share }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{gfshare_8h_aae637bf4bae06c3081219ca6d15c0e8d}\label{gfshare_8h_aae637bf4bae06c3081219ca6d15c0e8d}} 
+\index{gfshare.\+h@{gfshare.\+h}!gfshare\+\_\+free@{gfshare\+\_\+free}}
+\index{gfshare\+\_\+free@{gfshare\+\_\+free}!gfshare.\+h@{gfshare.\+h}}
+\subsubsection{\texorpdfstring{gfshare\+\_\+free()}{gfshare\_free()}}
+{\footnotesize\ttfamily void gfshare\+\_\+free (\begin{DoxyParamCaption}\item[{struct \hyperlink{structgfshare__ctx__bet}{gfshare\+\_\+ctx\+\_\+bet} $\ast$}]{ctx }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{gfshare_8h_a1c3c2965cc907b20b57b20cc9ca6f213}\label{gfshare_8h_a1c3c2965cc907b20b57b20cc9ca6f213}} 
+\index{gfshare.\+h@{gfshare.\+h}!gfshare\+\_\+init\+\_\+sharenrs@{gfshare\+\_\+init\+\_\+sharenrs}}
+\index{gfshare\+\_\+init\+\_\+sharenrs@{gfshare\+\_\+init\+\_\+sharenrs}!gfshare.\+h@{gfshare.\+h}}
+\subsubsection{\texorpdfstring{gfshare\+\_\+init\+\_\+sharenrs()}{gfshare\_init\_sharenrs()}}
+{\footnotesize\ttfamily int32\+\_\+t gfshare\+\_\+init\+\_\+sharenrs (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{sharenrs\mbox{[}255\mbox{]},  }\item[{uint8\+\_\+t $\ast$}]{orig,  }\item[{int32\+\_\+t}]{m,  }\item[{int32\+\_\+t}]{n }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{gfshare_8h_a53ce4ea8b2a11f4376c43589d11f8113}\label{gfshare_8h_a53ce4ea8b2a11f4376c43589d11f8113}} 
+\index{gfshare.\+h@{gfshare.\+h}!gfshare\+\_\+initdec@{gfshare\+\_\+initdec}}
+\index{gfshare\+\_\+initdec@{gfshare\+\_\+initdec}!gfshare.\+h@{gfshare.\+h}}
+\subsubsection{\texorpdfstring{gfshare\+\_\+initdec()}{gfshare\_initdec()}}
+{\footnotesize\ttfamily struct \hyperlink{structgfshare__ctx__bet}{gfshare\+\_\+ctx\+\_\+bet}$\ast$ gfshare\+\_\+initdec (\begin{DoxyParamCaption}\item[{uint8\+\_\+t $\ast$}]{sharenrs,  }\item[{uint32\+\_\+t}]{sharecount,  }\item[{uint32\+\_\+t}]{size,  }\item[{void $\ast$}]{space,  }\item[{int32\+\_\+t}]{spacesize }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{gfshare_8h_af4b2071d9c94b528018ec573e39cca05}\label{gfshare_8h_af4b2071d9c94b528018ec573e39cca05}} 
+\index{gfshare.\+h@{gfshare.\+h}!gfshare\+\_\+initenc@{gfshare\+\_\+initenc}}
+\index{gfshare\+\_\+initenc@{gfshare\+\_\+initenc}!gfshare.\+h@{gfshare.\+h}}
+\subsubsection{\texorpdfstring{gfshare\+\_\+initenc()}{gfshare\_initenc()}}
+{\footnotesize\ttfamily struct \hyperlink{structgfshare__ctx__bet}{gfshare\+\_\+ctx\+\_\+bet}$\ast$ gfshare\+\_\+initenc (\begin{DoxyParamCaption}\item[{uint8\+\_\+t $\ast$}]{sharenrs,  }\item[{uint32\+\_\+t}]{sharecount,  }\item[{uint8\+\_\+t}]{threshold,  }\item[{uint32\+\_\+t}]{size,  }\item[{void $\ast$}]{space,  }\item[{int32\+\_\+t}]{spacesize }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{gfshare_8h_a1e3750e6cfdaad8a6495d54d31fc96cb}\label{gfshare_8h_a1e3750e6cfdaad8a6495d54d31fc96cb}} 
+\index{gfshare.\+h@{gfshare.\+h}!gfshare\+\_\+recoverdata@{gfshare\+\_\+recoverdata}}
+\index{gfshare\+\_\+recoverdata@{gfshare\+\_\+recoverdata}!gfshare.\+h@{gfshare.\+h}}
+\subsubsection{\texorpdfstring{gfshare\+\_\+recoverdata()}{gfshare\_recoverdata()}}
+{\footnotesize\ttfamily uint8\+\_\+t$\ast$ gfshare\+\_\+recoverdata (\begin{DoxyParamCaption}\item[{uint8\+\_\+t $\ast$}]{shares\mbox{[}$\,$\mbox{]},  }\item[{uint8\+\_\+t $\ast$}]{sharenrs,  }\item[{int32\+\_\+t}]{M,  }\item[{uint8\+\_\+t $\ast$}]{recover,  }\item[{int32\+\_\+t}]{datasize,  }\item[{int32\+\_\+t}]{N }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{gfshare_8h_a5703f5987bc8c19f45238b53a1a3a005}\label{gfshare_8h_a5703f5987bc8c19f45238b53a1a3a005}} 
+\index{gfshare.\+h@{gfshare.\+h}!gfshare\+\_\+sg777\+\_\+initdec@{gfshare\+\_\+sg777\+\_\+initdec}}
+\index{gfshare\+\_\+sg777\+\_\+initdec@{gfshare\+\_\+sg777\+\_\+initdec}!gfshare.\+h@{gfshare.\+h}}
+\subsubsection{\texorpdfstring{gfshare\+\_\+sg777\+\_\+initdec()}{gfshare\_sg777\_initdec()}}
+{\footnotesize\ttfamily struct \hyperlink{structgfshare__ctx__bet}{gfshare\+\_\+ctx\+\_\+bet}$\ast$ gfshare\+\_\+sg777\+\_\+initdec (\begin{DoxyParamCaption}\item[{uint8\+\_\+t $\ast$}]{sharenrs,  }\item[{uint32\+\_\+t}]{sharecount,  }\item[{uint8\+\_\+t}]{threshold,  }\item[{uint32\+\_\+t}]{size,  }\item[{void $\ast$}]{space,  }\item[{int32\+\_\+t}]{spacesize }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{gfshare_8h_a8da60e5c8a3ff68bdf483dc027e326c9}\label{gfshare_8h_a8da60e5c8a3ff68bdf483dc027e326c9}} 
+\index{gfshare.\+h@{gfshare.\+h}!libgfshare\+\_\+init@{libgfshare\+\_\+init}}
+\index{libgfshare\+\_\+init@{libgfshare\+\_\+init}!gfshare.\+h@{gfshare.\+h}}
+\subsubsection{\texorpdfstring{libgfshare\+\_\+init()}{libgfshare\_init()}}
+{\footnotesize\ttfamily void libgfshare\+\_\+init (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+

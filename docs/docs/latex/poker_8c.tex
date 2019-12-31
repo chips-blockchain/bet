@@ -1,0 +1,430 @@
+\hypertarget{poker_8c}{}\section{/root/bet/privatebet/poker.c File Reference}
+\label{poker_8c}\index{/root/bet/privatebet/poker.\+c@{/root/bet/privatebet/poker.\+c}}
+{\ttfamily \#include $<$stdint.\+h$>$}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$time.\+h$>$}\newline
+Include dependency graph for poker.\+c\+:
+% FIG 0
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structCardPileType}{Card\+Pile\+Type}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{poker_8c_a613059795622f7f32edd2d3b6ddd3660}{C\+L\+U\+B\+\_\+\+S\+U\+IT}~(1)
+\item 
+\#define \hyperlink{poker_8c_ac6da7b0d6a04884878334f1529992d8e}{D\+I\+A\+M\+O\+N\+D\+\_\+\+S\+U\+IT}~(2)
+\item 
+\#define \hyperlink{poker_8c_a2783635b64e96f42c27bdd1a5c649321}{H\+E\+A\+R\+T\+\_\+\+S\+U\+IT}~(4)
+\item 
+\#define \hyperlink{poker_8c_a0a474986223e8ad48c42d2b8d8c654a3}{S\+P\+A\+D\+E\+\_\+\+S\+U\+IT}~(8)
+\item 
+\#define \hyperlink{poker_8c_abe32f004631c4ff9b9f878e83698de7e}{R\+A\+N\+K\+\_\+\+S\+HL}~(27)
+\item 
+\#define \hyperlink{poker_8c_a43695e1778b5715e372fc5b1bf3eef04}{S\+U\+B\+R\+\_\+\+S\+HL}~(13)
+\item 
+\#define \hyperlink{poker_8c_abf7eea484f5824b302f8231bedead0b2}{S\+U\+B\+R\+\_\+\+S\+H\+L\+M\+A\+SK}~((1 $<$$<$ \hyperlink{poker_8c_a43695e1778b5715e372fc5b1bf3eef04}{S\+U\+B\+R\+\_\+\+S\+HL}) -\/ 1)
+\item 
+\#define \hyperlink{poker_8c_aca8ab57a5490e797ec73ce6c850f8f5b}{S\+T\+R\+A\+I\+G\+H\+T\+\_\+\+F\+L\+U\+S\+H\+\_\+\+S\+C\+O\+RE}~(8 $<$$<$ \hyperlink{poker_8c_abe32f004631c4ff9b9f878e83698de7e}{R\+A\+N\+K\+\_\+\+S\+HL})
+\item 
+\#define \hyperlink{poker_8c_af092d1170e8174c285ec3d7ac9c352a8}{F\+O\+U\+R\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE}~(7 $<$$<$ \hyperlink{poker_8c_abe32f004631c4ff9b9f878e83698de7e}{R\+A\+N\+K\+\_\+\+S\+HL})
+\item 
+\#define \hyperlink{poker_8c_a32f7788b2d25205f136370e3efcee980}{F\+U\+L\+L\+\_\+\+H\+O\+U\+S\+E\+\_\+\+S\+C\+O\+RE}~(6 $<$$<$ \hyperlink{poker_8c_abe32f004631c4ff9b9f878e83698de7e}{R\+A\+N\+K\+\_\+\+S\+HL})
+\item 
+\#define \hyperlink{poker_8c_a54917d5c33d9e8efa83b40ee7004baee}{F\+L\+U\+S\+H\+\_\+\+S\+C\+O\+RE}~(5 $<$$<$ \hyperlink{poker_8c_abe32f004631c4ff9b9f878e83698de7e}{R\+A\+N\+K\+\_\+\+S\+HL})
+\item 
+\#define \hyperlink{poker_8c_a76b585f6b88d59f40aa54f9234d56b8a}{S\+T\+R\+A\+I\+G\+H\+T\+\_\+\+S\+C\+O\+RE}~(4 $<$$<$ \hyperlink{poker_8c_abe32f004631c4ff9b9f878e83698de7e}{R\+A\+N\+K\+\_\+\+S\+HL})
+\item 
+\#define \hyperlink{poker_8c_aaa4fd936a91a0d9bc7b8a480786892ed}{T\+H\+R\+E\+E\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE}~(3 $<$$<$ \hyperlink{poker_8c_abe32f004631c4ff9b9f878e83698de7e}{R\+A\+N\+K\+\_\+\+S\+HL})
+\item 
+\#define \hyperlink{poker_8c_ac6532f9413c1cbf003813be93e0f3a24}{T\+W\+O\+\_\+\+P\+A\+I\+R\+\_\+\+S\+C\+O\+RE}~(2 $<$$<$ \hyperlink{poker_8c_abe32f004631c4ff9b9f878e83698de7e}{R\+A\+N\+K\+\_\+\+S\+HL})
+\item 
+\#define \hyperlink{poker_8c_a7df5076cc3497a919f8dc71f154971ef}{T\+W\+O\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE}~(1 $<$$<$ \hyperlink{poker_8c_abe32f004631c4ff9b9f878e83698de7e}{R\+A\+N\+K\+\_\+\+S\+HL})
+\item 
+\#define \hyperlink{poker_8c_a7e12e423c0afaf2ac5a0d714204b8243}{O\+N\+E\+\_\+\+P\+A\+I\+R\+\_\+\+S\+C\+O\+RE}~(\hyperlink{poker_8c_a7df5076cc3497a919f8dc71f154971ef}{T\+W\+O\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE})
+\item 
+\#define \hyperlink{poker_8c_aac1db89700e6424f3d153b6b3b0d7fb6}{Seven\+Card\+Draw\+Flush\+Score}(f)~(\hyperlink{poker_8c_a54917d5c33d9e8efa83b40ee7004baee}{F\+L\+U\+S\+H\+\_\+\+S\+C\+O\+RE} + ((f) $>$$>$ \hyperlink{poker_8c_a43695e1778b5715e372fc5b1bf3eef04}{S\+U\+B\+R\+\_\+\+S\+HL}))
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef uint8\+\_\+t \hyperlink{poker_8c_a92c50087ca0e64fa93fc59402c55f8ca}{u8}
+\item 
+typedef int8\+\_\+t \hyperlink{poker_8c_a9e382f207c65ca13ab4ae98363aeda80}{s8}
+\item 
+typedef uint32\+\_\+t \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32}
+\item 
+typedef int32\+\_\+t \hyperlink{poker_8c_ae9b1af5c037e57a98884758875d3a7c4}{s32}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int32\+\_\+t \hyperlink{poker_8c_a9b6a6c7ff344c8a7823c0e67fb072772}{cardstr} (char $\ast$cardstr, uint8\+\_\+t card)
+\item 
+static \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} \hyperlink{poker_8c_afe9491d9d9532c0ab6cc581642931a5d}{Five\+Card\+Draw\+Score\+Fast} (\hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} c0, \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} c1, \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} c2, \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} c3, \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} c4, \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} u)
+\item 
+\hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} \hyperlink{poker_8c_af6a626651997d57da7ff0f9184b991a0}{five\+\_\+card\+\_\+draw\+\_\+score} (const \hyperlink{poker_8c_a92c50087ca0e64fa93fc59402c55f8ca}{u8} $\ast$h)
+\item 
+static \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} \hyperlink{poker_8c_adbf73cb45bbbf4297b03e18bbfd533c5}{Seven\+Card\+Draw\+Flush} (const \hyperlink{poker_8c_a92c50087ca0e64fa93fc59402c55f8ca}{u8} $\ast$h, const \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} c\mbox{[}7\mbox{]})
+\item 
+\hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} \hyperlink{poker_8c_a7105eec27c81da5abbc505946b417bf1}{seven\+\_\+card\+\_\+draw\+\_\+score} (const \hyperlink{poker_8c_a92c50087ca0e64fa93fc59402c55f8ca}{u8} $\ast$h)
+\item 
+\hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} \hyperlink{poker_8c_a6ab75915cc9017e3217b5cbb80bba5b3}{Seven\+Card\+Draw\+Score\+Slow} (const \hyperlink{poker_8c_a92c50087ca0e64fa93fc59402c55f8ca}{u8} $\ast$h)
+\item 
+static void \hyperlink{poker_8c_a40cffff9fbc138de76f603a6f7e8c9ca}{Shuffle} (\hyperlink{structCardPileType}{Card\+Pile\+Type} $\ast$c)
+\item 
+static int32\+\_\+t \hyperlink{poker_8c_a4f63fa5aeea5b926806694d772a66fc6}{Deal} (\hyperlink{structCardPileType}{Card\+Pile\+Type} $\ast$h, \hyperlink{structCardPileType}{Card\+Pile\+Type} $\ast$d, int32\+\_\+t n)
+\item 
+static void \hyperlink{poker_8c_a47b0e41137b46259ca5e050fdfaa9bab}{Init\+Deck} (\hyperlink{structCardPileType}{Card\+Pile\+Type} $\ast$deck)
+\item 
+static void \hyperlink{poker_8c_a0507ecc305af4038e505f2000406aa85}{Display\+Card} (\hyperlink{poker_8c_a92c50087ca0e64fa93fc59402c55f8ca}{u8} c, char out\mbox{[}$\,$\mbox{]})
+\item 
+void \hyperlink{poker_8c_acef1a3deae5b92dc182a742281a81bd8}{Display\+Hand5} (const \hyperlink{structCardPileType}{Card\+Pile\+Type} $\ast$h)
+\item 
+void \hyperlink{poker_8c_a9db86ea390a878443149b0c92968ed37}{set\+\_\+cardstr} (char $\ast$\hyperlink{poker_8c_a9b6a6c7ff344c8a7823c0e67fb072772}{cardstr}, uint32\+\_\+t c)
+\item 
+uint32\+\_\+t \hyperlink{poker_8c_acdc182ed757e42020f170f27b5abe278}{set\+\_\+handstr} (char $\ast$handstr, uint8\+\_\+t cards\mbox{[}7\mbox{]}, int32\+\_\+t verbose)
+\item 
+void \hyperlink{poker_8c_abba617f9153e929f0305576e8c761993}{Display\+Hand7} (char $\ast$handstr, uint8\+\_\+t $\ast$cards)
+\item 
+void \hyperlink{poker_8c_a0ded1fa0dbc3debd1a36333887723a20}{poker\+\_\+test} ()
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+static char $\ast$ \hyperlink{poker_8c_a1febeba6ae7e1e4aa4bdcacf444e7baf}{handstrs} \mbox{[}16\mbox{]}
+\item 
+static char $\ast$ \hyperlink{poker_8c_aaab18c836f7ea862caec703454865c7b}{kickerstrs} \mbox{[}16\mbox{]}
+\item 
+static \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} \hyperlink{poker_8c_a2e3b6dec6fd2052e145b496a12885039}{Card\+Value} \mbox{[}52\mbox{]}
+\item 
+static \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} \hyperlink{poker_8c_a1b7df48baac6409350528ce8ac4399f5}{Card\+Suit} \mbox{[}52\mbox{]}
+\item 
+static \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} \hyperlink{poker_8c_aba5a822926da9c10d159f0c1657b4e5b}{Card\+Suit\+Idx} \mbox{[}52\mbox{]}
+\item 
+static \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} \hyperlink{poker_8c_ade63573b26953751edff9c57b993baf7}{Card\+Mask} \mbox{[}52\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\mbox{\Hypertarget{poker_8c_a613059795622f7f32edd2d3b6ddd3660}\label{poker_8c_a613059795622f7f32edd2d3b6ddd3660}} 
+\index{poker.\+c@{poker.\+c}!C\+L\+U\+B\+\_\+\+S\+U\+IT@{C\+L\+U\+B\+\_\+\+S\+U\+IT}}
+\index{C\+L\+U\+B\+\_\+\+S\+U\+IT@{C\+L\+U\+B\+\_\+\+S\+U\+IT}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{C\+L\+U\+B\+\_\+\+S\+U\+IT}{CLUB\_SUIT}}
+{\footnotesize\ttfamily \#define C\+L\+U\+B\+\_\+\+S\+U\+IT~(1)}
+
+\mbox{\Hypertarget{poker_8c_ac6da7b0d6a04884878334f1529992d8e}\label{poker_8c_ac6da7b0d6a04884878334f1529992d8e}} 
+\index{poker.\+c@{poker.\+c}!D\+I\+A\+M\+O\+N\+D\+\_\+\+S\+U\+IT@{D\+I\+A\+M\+O\+N\+D\+\_\+\+S\+U\+IT}}
+\index{D\+I\+A\+M\+O\+N\+D\+\_\+\+S\+U\+IT@{D\+I\+A\+M\+O\+N\+D\+\_\+\+S\+U\+IT}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{D\+I\+A\+M\+O\+N\+D\+\_\+\+S\+U\+IT}{DIAMOND\_SUIT}}
+{\footnotesize\ttfamily \#define D\+I\+A\+M\+O\+N\+D\+\_\+\+S\+U\+IT~(2)}
+
+\mbox{\Hypertarget{poker_8c_a54917d5c33d9e8efa83b40ee7004baee}\label{poker_8c_a54917d5c33d9e8efa83b40ee7004baee}} 
+\index{poker.\+c@{poker.\+c}!F\+L\+U\+S\+H\+\_\+\+S\+C\+O\+RE@{F\+L\+U\+S\+H\+\_\+\+S\+C\+O\+RE}}
+\index{F\+L\+U\+S\+H\+\_\+\+S\+C\+O\+RE@{F\+L\+U\+S\+H\+\_\+\+S\+C\+O\+RE}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{F\+L\+U\+S\+H\+\_\+\+S\+C\+O\+RE}{FLUSH\_SCORE}}
+{\footnotesize\ttfamily \#define F\+L\+U\+S\+H\+\_\+\+S\+C\+O\+RE~(5 $<$$<$ \hyperlink{poker_8c_abe32f004631c4ff9b9f878e83698de7e}{R\+A\+N\+K\+\_\+\+S\+HL})}
+
+\mbox{\Hypertarget{poker_8c_af092d1170e8174c285ec3d7ac9c352a8}\label{poker_8c_af092d1170e8174c285ec3d7ac9c352a8}} 
+\index{poker.\+c@{poker.\+c}!F\+O\+U\+R\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE@{F\+O\+U\+R\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE}}
+\index{F\+O\+U\+R\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE@{F\+O\+U\+R\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{F\+O\+U\+R\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE}{FOUR\_KIND\_SCORE}}
+{\footnotesize\ttfamily \#define F\+O\+U\+R\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE~(7 $<$$<$ \hyperlink{poker_8c_abe32f004631c4ff9b9f878e83698de7e}{R\+A\+N\+K\+\_\+\+S\+HL})}
+
+\mbox{\Hypertarget{poker_8c_a32f7788b2d25205f136370e3efcee980}\label{poker_8c_a32f7788b2d25205f136370e3efcee980}} 
+\index{poker.\+c@{poker.\+c}!F\+U\+L\+L\+\_\+\+H\+O\+U\+S\+E\+\_\+\+S\+C\+O\+RE@{F\+U\+L\+L\+\_\+\+H\+O\+U\+S\+E\+\_\+\+S\+C\+O\+RE}}
+\index{F\+U\+L\+L\+\_\+\+H\+O\+U\+S\+E\+\_\+\+S\+C\+O\+RE@{F\+U\+L\+L\+\_\+\+H\+O\+U\+S\+E\+\_\+\+S\+C\+O\+RE}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{F\+U\+L\+L\+\_\+\+H\+O\+U\+S\+E\+\_\+\+S\+C\+O\+RE}{FULL\_HOUSE\_SCORE}}
+{\footnotesize\ttfamily \#define F\+U\+L\+L\+\_\+\+H\+O\+U\+S\+E\+\_\+\+S\+C\+O\+RE~(6 $<$$<$ \hyperlink{poker_8c_abe32f004631c4ff9b9f878e83698de7e}{R\+A\+N\+K\+\_\+\+S\+HL})}
+
+\mbox{\Hypertarget{poker_8c_a2783635b64e96f42c27bdd1a5c649321}\label{poker_8c_a2783635b64e96f42c27bdd1a5c649321}} 
+\index{poker.\+c@{poker.\+c}!H\+E\+A\+R\+T\+\_\+\+S\+U\+IT@{H\+E\+A\+R\+T\+\_\+\+S\+U\+IT}}
+\index{H\+E\+A\+R\+T\+\_\+\+S\+U\+IT@{H\+E\+A\+R\+T\+\_\+\+S\+U\+IT}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{H\+E\+A\+R\+T\+\_\+\+S\+U\+IT}{HEART\_SUIT}}
+{\footnotesize\ttfamily \#define H\+E\+A\+R\+T\+\_\+\+S\+U\+IT~(4)}
+
+\mbox{\Hypertarget{poker_8c_a7e12e423c0afaf2ac5a0d714204b8243}\label{poker_8c_a7e12e423c0afaf2ac5a0d714204b8243}} 
+\index{poker.\+c@{poker.\+c}!O\+N\+E\+\_\+\+P\+A\+I\+R\+\_\+\+S\+C\+O\+RE@{O\+N\+E\+\_\+\+P\+A\+I\+R\+\_\+\+S\+C\+O\+RE}}
+\index{O\+N\+E\+\_\+\+P\+A\+I\+R\+\_\+\+S\+C\+O\+RE@{O\+N\+E\+\_\+\+P\+A\+I\+R\+\_\+\+S\+C\+O\+RE}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{O\+N\+E\+\_\+\+P\+A\+I\+R\+\_\+\+S\+C\+O\+RE}{ONE\_PAIR\_SCORE}}
+{\footnotesize\ttfamily \#define O\+N\+E\+\_\+\+P\+A\+I\+R\+\_\+\+S\+C\+O\+RE~(\hyperlink{poker_8c_a7df5076cc3497a919f8dc71f154971ef}{T\+W\+O\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE})}
+
+\mbox{\Hypertarget{poker_8c_abe32f004631c4ff9b9f878e83698de7e}\label{poker_8c_abe32f004631c4ff9b9f878e83698de7e}} 
+\index{poker.\+c@{poker.\+c}!R\+A\+N\+K\+\_\+\+S\+HL@{R\+A\+N\+K\+\_\+\+S\+HL}}
+\index{R\+A\+N\+K\+\_\+\+S\+HL@{R\+A\+N\+K\+\_\+\+S\+HL}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{R\+A\+N\+K\+\_\+\+S\+HL}{RANK\_SHL}}
+{\footnotesize\ttfamily \#define R\+A\+N\+K\+\_\+\+S\+HL~(27)}
+
+\mbox{\Hypertarget{poker_8c_aac1db89700e6424f3d153b6b3b0d7fb6}\label{poker_8c_aac1db89700e6424f3d153b6b3b0d7fb6}} 
+\index{poker.\+c@{poker.\+c}!Seven\+Card\+Draw\+Flush\+Score@{Seven\+Card\+Draw\+Flush\+Score}}
+\index{Seven\+Card\+Draw\+Flush\+Score@{Seven\+Card\+Draw\+Flush\+Score}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{Seven\+Card\+Draw\+Flush\+Score}{SevenCardDrawFlushScore}}
+{\footnotesize\ttfamily \#define Seven\+Card\+Draw\+Flush\+Score(\begin{DoxyParamCaption}\item[{}]{f }\end{DoxyParamCaption})~(\hyperlink{poker_8c_a54917d5c33d9e8efa83b40ee7004baee}{F\+L\+U\+S\+H\+\_\+\+S\+C\+O\+RE} + ((f) $>$$>$ \hyperlink{poker_8c_a43695e1778b5715e372fc5b1bf3eef04}{S\+U\+B\+R\+\_\+\+S\+HL}))}
+
+\mbox{\Hypertarget{poker_8c_a0a474986223e8ad48c42d2b8d8c654a3}\label{poker_8c_a0a474986223e8ad48c42d2b8d8c654a3}} 
+\index{poker.\+c@{poker.\+c}!S\+P\+A\+D\+E\+\_\+\+S\+U\+IT@{S\+P\+A\+D\+E\+\_\+\+S\+U\+IT}}
+\index{S\+P\+A\+D\+E\+\_\+\+S\+U\+IT@{S\+P\+A\+D\+E\+\_\+\+S\+U\+IT}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{S\+P\+A\+D\+E\+\_\+\+S\+U\+IT}{SPADE\_SUIT}}
+{\footnotesize\ttfamily \#define S\+P\+A\+D\+E\+\_\+\+S\+U\+IT~(8)}
+
+\mbox{\Hypertarget{poker_8c_aca8ab57a5490e797ec73ce6c850f8f5b}\label{poker_8c_aca8ab57a5490e797ec73ce6c850f8f5b}} 
+\index{poker.\+c@{poker.\+c}!S\+T\+R\+A\+I\+G\+H\+T\+\_\+\+F\+L\+U\+S\+H\+\_\+\+S\+C\+O\+RE@{S\+T\+R\+A\+I\+G\+H\+T\+\_\+\+F\+L\+U\+S\+H\+\_\+\+S\+C\+O\+RE}}
+\index{S\+T\+R\+A\+I\+G\+H\+T\+\_\+\+F\+L\+U\+S\+H\+\_\+\+S\+C\+O\+RE@{S\+T\+R\+A\+I\+G\+H\+T\+\_\+\+F\+L\+U\+S\+H\+\_\+\+S\+C\+O\+RE}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{S\+T\+R\+A\+I\+G\+H\+T\+\_\+\+F\+L\+U\+S\+H\+\_\+\+S\+C\+O\+RE}{STRAIGHT\_FLUSH\_SCORE}}
+{\footnotesize\ttfamily \#define S\+T\+R\+A\+I\+G\+H\+T\+\_\+\+F\+L\+U\+S\+H\+\_\+\+S\+C\+O\+RE~(8 $<$$<$ \hyperlink{poker_8c_abe32f004631c4ff9b9f878e83698de7e}{R\+A\+N\+K\+\_\+\+S\+HL})}
+
+\mbox{\Hypertarget{poker_8c_a76b585f6b88d59f40aa54f9234d56b8a}\label{poker_8c_a76b585f6b88d59f40aa54f9234d56b8a}} 
+\index{poker.\+c@{poker.\+c}!S\+T\+R\+A\+I\+G\+H\+T\+\_\+\+S\+C\+O\+RE@{S\+T\+R\+A\+I\+G\+H\+T\+\_\+\+S\+C\+O\+RE}}
+\index{S\+T\+R\+A\+I\+G\+H\+T\+\_\+\+S\+C\+O\+RE@{S\+T\+R\+A\+I\+G\+H\+T\+\_\+\+S\+C\+O\+RE}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{S\+T\+R\+A\+I\+G\+H\+T\+\_\+\+S\+C\+O\+RE}{STRAIGHT\_SCORE}}
+{\footnotesize\ttfamily \#define S\+T\+R\+A\+I\+G\+H\+T\+\_\+\+S\+C\+O\+RE~(4 $<$$<$ \hyperlink{poker_8c_abe32f004631c4ff9b9f878e83698de7e}{R\+A\+N\+K\+\_\+\+S\+HL})}
+
+\mbox{\Hypertarget{poker_8c_a43695e1778b5715e372fc5b1bf3eef04}\label{poker_8c_a43695e1778b5715e372fc5b1bf3eef04}} 
+\index{poker.\+c@{poker.\+c}!S\+U\+B\+R\+\_\+\+S\+HL@{S\+U\+B\+R\+\_\+\+S\+HL}}
+\index{S\+U\+B\+R\+\_\+\+S\+HL@{S\+U\+B\+R\+\_\+\+S\+HL}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{S\+U\+B\+R\+\_\+\+S\+HL}{SUBR\_SHL}}
+{\footnotesize\ttfamily \#define S\+U\+B\+R\+\_\+\+S\+HL~(13)}
+
+\mbox{\Hypertarget{poker_8c_abf7eea484f5824b302f8231bedead0b2}\label{poker_8c_abf7eea484f5824b302f8231bedead0b2}} 
+\index{poker.\+c@{poker.\+c}!S\+U\+B\+R\+\_\+\+S\+H\+L\+M\+A\+SK@{S\+U\+B\+R\+\_\+\+S\+H\+L\+M\+A\+SK}}
+\index{S\+U\+B\+R\+\_\+\+S\+H\+L\+M\+A\+SK@{S\+U\+B\+R\+\_\+\+S\+H\+L\+M\+A\+SK}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{S\+U\+B\+R\+\_\+\+S\+H\+L\+M\+A\+SK}{SUBR\_SHLMASK}}
+{\footnotesize\ttfamily \#define S\+U\+B\+R\+\_\+\+S\+H\+L\+M\+A\+SK~((1 $<$$<$ \hyperlink{poker_8c_a43695e1778b5715e372fc5b1bf3eef04}{S\+U\+B\+R\+\_\+\+S\+HL}) -\/ 1)}
+
+\mbox{\Hypertarget{poker_8c_aaa4fd936a91a0d9bc7b8a480786892ed}\label{poker_8c_aaa4fd936a91a0d9bc7b8a480786892ed}} 
+\index{poker.\+c@{poker.\+c}!T\+H\+R\+E\+E\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE@{T\+H\+R\+E\+E\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE}}
+\index{T\+H\+R\+E\+E\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE@{T\+H\+R\+E\+E\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{T\+H\+R\+E\+E\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE}{THREE\_KIND\_SCORE}}
+{\footnotesize\ttfamily \#define T\+H\+R\+E\+E\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE~(3 $<$$<$ \hyperlink{poker_8c_abe32f004631c4ff9b9f878e83698de7e}{R\+A\+N\+K\+\_\+\+S\+HL})}
+
+\mbox{\Hypertarget{poker_8c_a7df5076cc3497a919f8dc71f154971ef}\label{poker_8c_a7df5076cc3497a919f8dc71f154971ef}} 
+\index{poker.\+c@{poker.\+c}!T\+W\+O\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE@{T\+W\+O\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE}}
+\index{T\+W\+O\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE@{T\+W\+O\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{T\+W\+O\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE}{TWO\_KIND\_SCORE}}
+{\footnotesize\ttfamily \#define T\+W\+O\+\_\+\+K\+I\+N\+D\+\_\+\+S\+C\+O\+RE~(1 $<$$<$ \hyperlink{poker_8c_abe32f004631c4ff9b9f878e83698de7e}{R\+A\+N\+K\+\_\+\+S\+HL})}
+
+\mbox{\Hypertarget{poker_8c_ac6532f9413c1cbf003813be93e0f3a24}\label{poker_8c_ac6532f9413c1cbf003813be93e0f3a24}} 
+\index{poker.\+c@{poker.\+c}!T\+W\+O\+\_\+\+P\+A\+I\+R\+\_\+\+S\+C\+O\+RE@{T\+W\+O\+\_\+\+P\+A\+I\+R\+\_\+\+S\+C\+O\+RE}}
+\index{T\+W\+O\+\_\+\+P\+A\+I\+R\+\_\+\+S\+C\+O\+RE@{T\+W\+O\+\_\+\+P\+A\+I\+R\+\_\+\+S\+C\+O\+RE}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{T\+W\+O\+\_\+\+P\+A\+I\+R\+\_\+\+S\+C\+O\+RE}{TWO\_PAIR\_SCORE}}
+{\footnotesize\ttfamily \#define T\+W\+O\+\_\+\+P\+A\+I\+R\+\_\+\+S\+C\+O\+RE~(2 $<$$<$ \hyperlink{poker_8c_abe32f004631c4ff9b9f878e83698de7e}{R\+A\+N\+K\+\_\+\+S\+HL})}
+
+
+
+\subsection{Typedef Documentation}
+\mbox{\Hypertarget{poker_8c_ae9b1af5c037e57a98884758875d3a7c4}\label{poker_8c_ae9b1af5c037e57a98884758875d3a7c4}} 
+\index{poker.\+c@{poker.\+c}!s32@{s32}}
+\index{s32@{s32}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{s32}{s32}}
+{\footnotesize\ttfamily typedef int32\+\_\+t \hyperlink{poker_8c_ae9b1af5c037e57a98884758875d3a7c4}{s32}}
+
+\mbox{\Hypertarget{poker_8c_a9e382f207c65ca13ab4ae98363aeda80}\label{poker_8c_a9e382f207c65ca13ab4ae98363aeda80}} 
+\index{poker.\+c@{poker.\+c}!s8@{s8}}
+\index{s8@{s8}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{s8}{s8}}
+{\footnotesize\ttfamily typedef int8\+\_\+t \hyperlink{poker_8c_a9e382f207c65ca13ab4ae98363aeda80}{s8}}
+
+\mbox{\Hypertarget{poker_8c_afaa62991928fb9fb18ff0db62a040aba}\label{poker_8c_afaa62991928fb9fb18ff0db62a040aba}} 
+\index{poker.\+c@{poker.\+c}!u32@{u32}}
+\index{u32@{u32}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{u32}{u32}}
+{\footnotesize\ttfamily typedef uint32\+\_\+t \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32}}
+
+\mbox{\Hypertarget{poker_8c_a92c50087ca0e64fa93fc59402c55f8ca}\label{poker_8c_a92c50087ca0e64fa93fc59402c55f8ca}} 
+\index{poker.\+c@{poker.\+c}!u8@{u8}}
+\index{u8@{u8}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{u8}{u8}}
+{\footnotesize\ttfamily typedef uint8\+\_\+t \hyperlink{poker_8c_a92c50087ca0e64fa93fc59402c55f8ca}{u8}}
+
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{poker_8c_a9b6a6c7ff344c8a7823c0e67fb072772}\label{poker_8c_a9b6a6c7ff344c8a7823c0e67fb072772}} 
+\index{poker.\+c@{poker.\+c}!cardstr@{cardstr}}
+\index{cardstr@{cardstr}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{cardstr()}{cardstr()}}
+{\footnotesize\ttfamily int32\+\_\+t cardstr (\begin{DoxyParamCaption}\item[{char $\ast$}]{cardstr,  }\item[{uint8\+\_\+t}]{card }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{poker_8c_a4f63fa5aeea5b926806694d772a66fc6}\label{poker_8c_a4f63fa5aeea5b926806694d772a66fc6}} 
+\index{poker.\+c@{poker.\+c}!Deal@{Deal}}
+\index{Deal@{Deal}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{Deal()}{Deal()}}
+{\footnotesize\ttfamily static int32\+\_\+t Deal (\begin{DoxyParamCaption}\item[{\hyperlink{structCardPileType}{Card\+Pile\+Type} $\ast$}]{h,  }\item[{\hyperlink{structCardPileType}{Card\+Pile\+Type} $\ast$}]{d,  }\item[{int32\+\_\+t}]{n }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{poker_8c_a0507ecc305af4038e505f2000406aa85}\label{poker_8c_a0507ecc305af4038e505f2000406aa85}} 
+\index{poker.\+c@{poker.\+c}!Display\+Card@{Display\+Card}}
+\index{Display\+Card@{Display\+Card}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{Display\+Card()}{DisplayCard()}}
+{\footnotesize\ttfamily static void Display\+Card (\begin{DoxyParamCaption}\item[{\hyperlink{poker_8c_a92c50087ca0e64fa93fc59402c55f8ca}{u8}}]{c,  }\item[{char}]{out\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{poker_8c_acef1a3deae5b92dc182a742281a81bd8}\label{poker_8c_acef1a3deae5b92dc182a742281a81bd8}} 
+\index{poker.\+c@{poker.\+c}!Display\+Hand5@{Display\+Hand5}}
+\index{Display\+Hand5@{Display\+Hand5}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{Display\+Hand5()}{DisplayHand5()}}
+{\footnotesize\ttfamily void Display\+Hand5 (\begin{DoxyParamCaption}\item[{const \hyperlink{structCardPileType}{Card\+Pile\+Type} $\ast$}]{h }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{poker_8c_abba617f9153e929f0305576e8c761993}\label{poker_8c_abba617f9153e929f0305576e8c761993}} 
+\index{poker.\+c@{poker.\+c}!Display\+Hand7@{Display\+Hand7}}
+\index{Display\+Hand7@{Display\+Hand7}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{Display\+Hand7()}{DisplayHand7()}}
+{\footnotesize\ttfamily void Display\+Hand7 (\begin{DoxyParamCaption}\item[{char $\ast$}]{handstr,  }\item[{uint8\+\_\+t $\ast$}]{cards }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{poker_8c_af6a626651997d57da7ff0f9184b991a0}\label{poker_8c_af6a626651997d57da7ff0f9184b991a0}} 
+\index{poker.\+c@{poker.\+c}!five\+\_\+card\+\_\+draw\+\_\+score@{five\+\_\+card\+\_\+draw\+\_\+score}}
+\index{five\+\_\+card\+\_\+draw\+\_\+score@{five\+\_\+card\+\_\+draw\+\_\+score}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{five\+\_\+card\+\_\+draw\+\_\+score()}{five\_card\_draw\_score()}}
+{\footnotesize\ttfamily \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} five\+\_\+card\+\_\+draw\+\_\+score (\begin{DoxyParamCaption}\item[{const \hyperlink{poker_8c_a92c50087ca0e64fa93fc59402c55f8ca}{u8} $\ast$}]{h }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{poker_8c_afe9491d9d9532c0ab6cc581642931a5d}\label{poker_8c_afe9491d9d9532c0ab6cc581642931a5d}} 
+\index{poker.\+c@{poker.\+c}!Five\+Card\+Draw\+Score\+Fast@{Five\+Card\+Draw\+Score\+Fast}}
+\index{Five\+Card\+Draw\+Score\+Fast@{Five\+Card\+Draw\+Score\+Fast}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{Five\+Card\+Draw\+Score\+Fast()}{FiveCardDrawScoreFast()}}
+{\footnotesize\ttfamily static \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} Five\+Card\+Draw\+Score\+Fast (\begin{DoxyParamCaption}\item[{\hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32}}]{c0,  }\item[{\hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32}}]{c1,  }\item[{\hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32}}]{c2,  }\item[{\hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32}}]{c3,  }\item[{\hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32}}]{c4,  }\item[{\hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32}}]{u }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{poker_8c_a47b0e41137b46259ca5e050fdfaa9bab}\label{poker_8c_a47b0e41137b46259ca5e050fdfaa9bab}} 
+\index{poker.\+c@{poker.\+c}!Init\+Deck@{Init\+Deck}}
+\index{Init\+Deck@{Init\+Deck}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{Init\+Deck()}{InitDeck()}}
+{\footnotesize\ttfamily static void Init\+Deck (\begin{DoxyParamCaption}\item[{\hyperlink{structCardPileType}{Card\+Pile\+Type} $\ast$}]{deck }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{poker_8c_a0ded1fa0dbc3debd1a36333887723a20}\label{poker_8c_a0ded1fa0dbc3debd1a36333887723a20}} 
+\index{poker.\+c@{poker.\+c}!poker\+\_\+test@{poker\+\_\+test}}
+\index{poker\+\_\+test@{poker\+\_\+test}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{poker\+\_\+test()}{poker\_test()}}
+{\footnotesize\ttfamily void poker\+\_\+test (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{poker_8c_a9db86ea390a878443149b0c92968ed37}\label{poker_8c_a9db86ea390a878443149b0c92968ed37}} 
+\index{poker.\+c@{poker.\+c}!set\+\_\+cardstr@{set\+\_\+cardstr}}
+\index{set\+\_\+cardstr@{set\+\_\+cardstr}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{set\+\_\+cardstr()}{set\_cardstr()}}
+{\footnotesize\ttfamily void set\+\_\+cardstr (\begin{DoxyParamCaption}\item[{char $\ast$}]{cardstr,  }\item[{uint32\+\_\+t}]{c }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{poker_8c_acdc182ed757e42020f170f27b5abe278}\label{poker_8c_acdc182ed757e42020f170f27b5abe278}} 
+\index{poker.\+c@{poker.\+c}!set\+\_\+handstr@{set\+\_\+handstr}}
+\index{set\+\_\+handstr@{set\+\_\+handstr}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{set\+\_\+handstr()}{set\_handstr()}}
+{\footnotesize\ttfamily uint32\+\_\+t set\+\_\+handstr (\begin{DoxyParamCaption}\item[{char $\ast$}]{handstr,  }\item[{uint8\+\_\+t}]{cards\mbox{[}7\mbox{]},  }\item[{int32\+\_\+t}]{verbose }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{poker_8c_a7105eec27c81da5abbc505946b417bf1}\label{poker_8c_a7105eec27c81da5abbc505946b417bf1}} 
+\index{poker.\+c@{poker.\+c}!seven\+\_\+card\+\_\+draw\+\_\+score@{seven\+\_\+card\+\_\+draw\+\_\+score}}
+\index{seven\+\_\+card\+\_\+draw\+\_\+score@{seven\+\_\+card\+\_\+draw\+\_\+score}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{seven\+\_\+card\+\_\+draw\+\_\+score()}{seven\_card\_draw\_score()}}
+{\footnotesize\ttfamily \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} seven\+\_\+card\+\_\+draw\+\_\+score (\begin{DoxyParamCaption}\item[{const \hyperlink{poker_8c_a92c50087ca0e64fa93fc59402c55f8ca}{u8} $\ast$}]{h }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{poker_8c_adbf73cb45bbbf4297b03e18bbfd533c5}\label{poker_8c_adbf73cb45bbbf4297b03e18bbfd533c5}} 
+\index{poker.\+c@{poker.\+c}!Seven\+Card\+Draw\+Flush@{Seven\+Card\+Draw\+Flush}}
+\index{Seven\+Card\+Draw\+Flush@{Seven\+Card\+Draw\+Flush}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{Seven\+Card\+Draw\+Flush()}{SevenCardDrawFlush()}}
+{\footnotesize\ttfamily static \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} Seven\+Card\+Draw\+Flush (\begin{DoxyParamCaption}\item[{const \hyperlink{poker_8c_a92c50087ca0e64fa93fc59402c55f8ca}{u8} $\ast$}]{h,  }\item[{const \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32}}]{c\mbox{[}7\mbox{]} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{poker_8c_a6ab75915cc9017e3217b5cbb80bba5b3}\label{poker_8c_a6ab75915cc9017e3217b5cbb80bba5b3}} 
+\index{poker.\+c@{poker.\+c}!Seven\+Card\+Draw\+Score\+Slow@{Seven\+Card\+Draw\+Score\+Slow}}
+\index{Seven\+Card\+Draw\+Score\+Slow@{Seven\+Card\+Draw\+Score\+Slow}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{Seven\+Card\+Draw\+Score\+Slow()}{SevenCardDrawScoreSlow()}}
+{\footnotesize\ttfamily \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} Seven\+Card\+Draw\+Score\+Slow (\begin{DoxyParamCaption}\item[{const \hyperlink{poker_8c_a92c50087ca0e64fa93fc59402c55f8ca}{u8} $\ast$}]{h }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{poker_8c_a40cffff9fbc138de76f603a6f7e8c9ca}\label{poker_8c_a40cffff9fbc138de76f603a6f7e8c9ca}} 
+\index{poker.\+c@{poker.\+c}!Shuffle@{Shuffle}}
+\index{Shuffle@{Shuffle}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{Shuffle()}{Shuffle()}}
+{\footnotesize\ttfamily static void Shuffle (\begin{DoxyParamCaption}\item[{\hyperlink{structCardPileType}{Card\+Pile\+Type} $\ast$}]{c }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+\subsection{Variable Documentation}
+\mbox{\Hypertarget{poker_8c_ade63573b26953751edff9c57b993baf7}\label{poker_8c_ade63573b26953751edff9c57b993baf7}} 
+\index{poker.\+c@{poker.\+c}!Card\+Mask@{Card\+Mask}}
+\index{Card\+Mask@{Card\+Mask}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{Card\+Mask}{CardMask}}
+{\footnotesize\ttfamily \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} Card\+Mask\mbox{[}52\mbox{]}\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= \{
+    1, 2, 4, 8, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x800, 0x1000,
+    1, 2, 4, 8, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x800, 0x1000,
+    1, 2, 4, 8, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x800, 0x1000,
+    1, 2, 4, 8, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x800, 0x1000
+\}
+\end{DoxyCode}
+\mbox{\Hypertarget{poker_8c_a1b7df48baac6409350528ce8ac4399f5}\label{poker_8c_a1b7df48baac6409350528ce8ac4399f5}} 
+\index{poker.\+c@{poker.\+c}!Card\+Suit@{Card\+Suit}}
+\index{Card\+Suit@{Card\+Suit}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{Card\+Suit}{CardSuit}}
+{\footnotesize\ttfamily \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} Card\+Suit\mbox{[}52\mbox{]}\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= \{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+                4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+                8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{poker_8c_aba5a822926da9c10d159f0c1657b4e5b}\label{poker_8c_aba5a822926da9c10d159f0c1657b4e5b}} 
+\index{poker.\+c@{poker.\+c}!Card\+Suit\+Idx@{Card\+Suit\+Idx}}
+\index{Card\+Suit\+Idx@{Card\+Suit\+Idx}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{Card\+Suit\+Idx}{CardSuitIdx}}
+{\footnotesize\ttfamily \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} Card\+Suit\+Idx\mbox{[}52\mbox{]}\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= \{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                   2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+                   3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{poker_8c_a2e3b6dec6fd2052e145b496a12885039}\label{poker_8c_a2e3b6dec6fd2052e145b496a12885039}} 
+\index{poker.\+c@{poker.\+c}!Card\+Value@{Card\+Value}}
+\index{Card\+Value@{Card\+Value}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{Card\+Value}{CardValue}}
+{\footnotesize\ttfamily \hyperlink{poker_8c_afaa62991928fb9fb18ff0db62a040aba}{u32} Card\+Value\mbox{[}52\mbox{]}\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= \{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{poker_8c_a1febeba6ae7e1e4aa4bdcacf444e7baf}\label{poker_8c_a1febeba6ae7e1e4aa4bdcacf444e7baf}} 
+\index{poker.\+c@{poker.\+c}!handstrs@{handstrs}}
+\index{handstrs@{handstrs}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{handstrs}{handstrs}}
+{\footnotesize\ttfamily char$\ast$ handstrs\mbox{[}16\mbox{]}\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= \{ \textcolor{stringliteral}{"high card"},
+                  \textcolor{stringliteral}{"one pair"},
+                  \textcolor{stringliteral}{"two pair"},
+                  \textcolor{stringliteral}{"three of a kind"},
+                  \textcolor{stringliteral}{"straight"},
+                  \textcolor{stringliteral}{"flush"},
+                  \textcolor{stringliteral}{"full house"},
+                  \textcolor{stringliteral}{"four of a kind"},
+                  \textcolor{stringliteral}{"straight flush"},
+                  \textcolor{stringliteral}{"err"},
+                  \textcolor{stringliteral}{"err"},
+                  \textcolor{stringliteral}{"err"},
+                  \textcolor{stringliteral}{"err"},
+                  \textcolor{stringliteral}{"err"},
+                  \textcolor{stringliteral}{"err"},
+                  \textcolor{stringliteral}{"err"} \}
+\end{DoxyCode}
+\mbox{\Hypertarget{poker_8c_aaab18c836f7ea862caec703454865c7b}\label{poker_8c_aaab18c836f7ea862caec703454865c7b}} 
+\index{poker.\+c@{poker.\+c}!kickerstrs@{kickerstrs}}
+\index{kickerstrs@{kickerstrs}!poker.\+c@{poker.\+c}}
+\subsubsection{\texorpdfstring{kickerstrs}{kickerstrs}}
+{\footnotesize\ttfamily char$\ast$ kickerstrs\mbox{[}16\mbox{]}\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= \{ \textcolor{stringliteral}{""}, \textcolor{stringliteral}{"kickers"}, \textcolor{stringliteral}{"kicker"},  \textcolor{stringliteral}{"kickers"},
+                \textcolor{stringliteral}{"high"}, \textcolor{stringliteral}{"high"},    \textcolor{stringliteral}{"full of"}, \textcolor{stringliteral}{"kicker"},
+                \textcolor{stringliteral}{"high"}, \textcolor{stringliteral}{"err"},     \textcolor{stringliteral}{"err"},     \textcolor{stringliteral}{"err"},
+                \textcolor{stringliteral}{"err"},  \textcolor{stringliteral}{"err"},     \textcolor{stringliteral}{"err"},     \textcolor{stringliteral}{"err"} \}
+\end{DoxyCode}
