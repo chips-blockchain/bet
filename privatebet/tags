@@ -1,0 +1,342 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+BET_LN_check	host.c	/^int32_t BET_LN_check(struct privatebet_info *bet)$/;"	f
+BET_LN_check_if_peer_exists	host.c	/^int BET_LN_check_if_peer_exists(char *channel_id)$/;"	f
+BET_award_winner	host.c	/^int32_t BET_award_winner(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+BET_check_BVV_Ready	host.c	/^int32_t BET_check_BVV_Ready(struct privatebet_info *bet)$/;"	f
+BET_check_player_stack	client.c	/^int32_t BET_check_player_stack(char *uri)$/;"	f
+BET_create_betting_invoice	host.c	/^int32_t BET_create_betting_invoice(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+BET_create_invoice	host.c	/^int32_t BET_create_invoice(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+BET_establish_ln_channels	host.c	/^void BET_establish_ln_channels(struct privatebet_info *bet)$/;"	f
+BET_exps	gfshare.c	/^uint8_t BET_logs[256], BET_exps[510];$/;"	v
+BET_find_channel_balance	client.c	/^int32_t BET_find_channel_balance(char *uri)$/;"	f
+BET_logs	gfshare.c	/^uint8_t BET_logs[256], BET_exps[510];$/;"	v
+BET_p2P_check_bvv_ready	client.c	/^int32_t BET_p2P_check_bvv_ready(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+BET_p2p_LN_close	host.c	/^void BET_p2p_LN_close(struct privatebet_info *bet)$/;"	f
+BET_p2p_bet_round	client.c	/^int32_t BET_p2p_bet_round(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+BET_p2p_betting_invoice	client.c	/^int32_t BET_p2p_betting_invoice(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+BET_p2p_bvv_join	host.c	/^int32_t BET_p2p_bvv_join(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+BET_p2p_bvv_join_init	client.c	/^int32_t BET_p2p_bvv_join_init(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+BET_p2p_client_ask_share	client.c	/^int32_t BET_p2p_client_ask_share(struct privatebet_info *bet, int32_t cardid,$/;"	f
+BET_p2p_connect	client.c	/^int32_t BET_p2p_connect(char *uri)$/;"	f
+BET_p2p_fundchannel	client.c	/^cJSON *BET_p2p_fundchannel(char *channel_id)$/;"	f
+BET_p2p_player_blinds_info	client.c	/^void BET_p2p_player_blinds_info()$/;"	f
+BET_p2p_winner	client.c	/^int32_t BET_p2p_winner(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+BET_player	client.c	/^struct privatebet_info *BET_player[CARDS777_MAXPLAYERS];$/;"	v	typeref:struct:privatebet_info
+BET_push_joinInfo	host.c	/^static void BET_push_joinInfo(cJSON *argjson, int32_t numplayers)$/;"	f	file:
+BET_rest_DCV_create_invoice	host.c	/^int32_t BET_rest_DCV_create_invoice(struct lws *wsi, cJSON *argjson)$/;"	f
+BET_rest_DCV_next_turn	states.c	/^int32_t BET_rest_DCV_next_turn(struct lws *wsi)$/;"	f
+BET_rest_DCV_winningClaim	host.c	/^int32_t BET_rest_DCV_winningClaim(struct lws *wsi, cJSON *argjson)$/;"	f
+BET_rest_broadcast_table_info	host.c	/^int32_t BET_rest_broadcast_table_info(struct lws *wsi)$/;"	f
+BET_rest_bvv_join	host.c	/^int32_t BET_rest_bvv_join(struct lws *wsi, cJSON *argjson)$/;"	f
+BET_rest_check_BVV_Ready	host.c	/^int32_t BET_rest_check_BVV_Ready(struct lws *wsi)$/;"	f
+BET_rest_check_player_ready	host.c	/^int32_t BET_rest_check_player_ready(struct lws *wsi, cJSON *argjson)$/;"	f
+BET_rest_client_join_req	host.c	/^int32_t BET_rest_client_join_req(struct lws *wsi, cJSON *argjson)$/;"	f
+BET_rest_create_invoice	host.c	/^int32_t BET_rest_create_invoice(struct lws *wsi, cJSON *argjson)$/;"	f
+BET_rest_dcv_LN_check	host.c	/^int32_t BET_rest_dcv_LN_check()$/;"	f
+BET_rest_dcv_deck_init_info	host.c	/^int32_t BET_rest_dcv_deck_init_info(struct lws *wsi, cJSON *argjson)$/;"	f
+BET_rest_dcv_default	host.c	/^int32_t BET_rest_dcv_default(struct lws *wsi, cJSON *argjson)$/;"	f
+BET_rest_dcv_process_init_p	host.c	/^int32_t BET_rest_dcv_process_init_p(struct lws *wsi, cJSON *argjson)$/;"	f
+BET_rest_dcv_start_init	host.c	/^int32_t BET_rest_dcv_start_init(struct lws *wsi, cJSON *argjson)$/;"	f
+BET_rest_decode_card	client.c	/^bits256 BET_rest_decode_card(int32_t this_playerID, int32_t cardid)$/;"	f
+BET_rest_from_bvv	host.c	/^int32_t BET_rest_from_bvv(struct lws *wsi, cJSON *argjson)$/;"	f
+BET_rest_from_dcv	host.c	/^int32_t BET_rest_from_dcv(struct lws *wsi, cJSON *argjson)$/;"	f
+BET_rest_from_player	host.c	/^int32_t BET_rest_from_player(struct lws *wsi, cJSON *argjson)$/;"	f
+BET_rest_player_ask_share	client.c	/^int32_t BET_rest_player_ask_share(struct lws *wsi, int32_t cardid,$/;"	f
+BET_rest_player_get_own_share	client.c	/^int32_t BET_rest_player_get_own_share(struct lws *wsi, cJSON *argjson,$/;"	f
+BET_rest_player_ready	client.c	/^int32_t BET_rest_player_ready(struct lws *wsi, int32_t playerID)$/;"	f
+BET_rest_send_turn_info	host.c	/^int32_t BET_rest_send_turn_info(struct lws *wsi, int32_t playerid,$/;"	f
+BET_send_turn_info	host.c	/^int32_t BET_send_turn_info(struct privatebet_info *bet, int32_t playerid,$/;"	f
+CLUB_SUIT	poker.c	11;"	d	file:
+CardMask	poker.c	/^static u32 CardMask[52] = {$/;"	v	file:
+CardPileType	poker.c	/^} CardPileType;$/;"	t	typeref:struct:__anon1	file:
+CardSuit	poker.c	/^static u32 CardSuit[52] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,$/;"	v	file:
+CardSuitIdx	poker.c	/^static u32 CardSuitIdx[52] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,$/;"	v	file:
+CardValue	poker.c	/^static u32 CardValue[52] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,$/;"	v	file:
+DIAMOND_SUIT	poker.c	12;"	d	file:
+Deal	poker.c	/^static int32_t Deal(CardPileType *h, CardPileType *d, int32_t n)$/;"	f	file:
+DisplayCard	poker.c	/^static void DisplayCard(u8 c, char out[])$/;"	f	file:
+DisplayHand5	poker.c	/^void DisplayHand5(const CardPileType *h)$/;"	f
+DisplayHand7	poker.c	/^void DisplayHand7(char *handstr, uint8_t *cards)$/;"	f
+FLUSH_SCORE	poker.c	23;"	d	file:
+FOUR_KIND_SCORE	poker.c	21;"	d	file:
+FULL_HOUSE_SCORE	poker.c	22;"	d	file:
+FiveCardDrawScoreFast	poker.c	/^static u32 FiveCardDrawScoreFast(u32 c0, u32 c1, u32 c2, u32 c3, u32 c4, u32 u)$/;"	f	file:
+HEART_SUIT	poker.c	13;"	d	file:
+InitDeck	poker.c	/^static void InitDeck(CardPileType *deck)$/;"	f	file:
+LWS_PLUGIN_STATIC	client.c	35;"	d	file:
+LWS_PLUGIN_STATIC	host.c	40;"	d	file:
+ONE_PAIR_SCORE	poker.c	29;"	d	file:
+RANK_SHL	poker.c	16;"	d	file:
+SPADE_SUIT	poker.c	14;"	d	file:
+STRAIGHT_FLUSH_SCORE	poker.c	20;"	d	file:
+STRAIGHT_SCORE	poker.c	24;"	d	file:
+SUBR_SHL	poker.c	17;"	d	file:
+SUBR_SHLMASK	poker.c	18;"	d	file:
+SevenCardDrawFlush	poker.c	/^static u32 SevenCardDrawFlush(const u8 *h, const u32 c[7])$/;"	f	file:
+SevenCardDrawFlushScore	poker.c	268;"	d	file:
+SevenCardDrawScoreSlow	poker.c	/^u32 SevenCardDrawScoreSlow(const u8 *h)$/;"	f
+Shuffle	poker.c	/^static void Shuffle(CardPileType *c)$/;"	f	file:
+THREE_KIND_SCORE	poker.c	25;"	d	file:
+TWO_KIND_SCORE	poker.c	27;"	d	file:
+TWO_PAIR_SCORE	poker.c	26;"	d	file:
+_POSIX_C_SOURCE	client.c	15;"	d	file:
+_gfshare_init_core	gfshare.c	/^struct gfshare_ctx_bet *_gfshare_init_core(uint8_t *sharenrs,$/;"	f
+action_str	states.c	/^char action_str[8][100] = { "",	     "small_blind", "big_blind", "check",$/;"	v
+all_g_hash	client.c	/^bits256 all_g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];$/;"	v
+all_g_shares	client.c	/^struct enc_share *all_g_shares[CARDS777_MAXPLAYERS];$/;"	v	typeref:struct:enc_share
+all_no_of_player_cards	client.c	/^int32_t all_no_of_player_cards[CARDS777_MAXPLAYERS];$/;"	v
+all_number_cards_drawn	client.c	/^int32_t all_number_cards_drawn[CARDS777_MAXPLAYERS];$/;"	v
+all_player_card_values	client.c	/^int32_t all_player_card_values[CARDS777_MAXPLAYERS][hand_size];$/;"	v
+all_player_cards	client.c	/^int32_t all_player_cards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];$/;"	v
+all_player_cards	host.c	/^int32_t all_player_cards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];$/;"	v
+all_players_info	client.c	/^struct deck_player_info all_players_info[CARDS777_MAXPLAYERS];$/;"	v	typeref:struct:deck_player_info
+all_playershares	client.c	/^bits256 all_playershares[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS]$/;"	v
+all_sharesflag	client.c	/^int32_t all_sharesflag[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS]$/;"	v
+all_v_hash	client.c	/^bits256 all_v_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS][CARDS777_MAXCARDS];$/;"	v
+bet_amount	host.c	/^int32_t bet_amount[CARDS777_MAXPLAYERS][CARDS777_MAXROUNDS];$/;"	v
+bet_bvv	client.c	/^struct privatebet_info *bet_bvv;$/;"	v	typeref:struct:privatebet_info
+bet_bvv_backend	client.c	/^int32_t bet_bvv_backend(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_bvv_backend_loop	client.c	/^void bet_bvv_backend_loop(void *_ptr)$/;"	f
+bet_bvv_frontend	client.c	/^int32_t bet_bvv_frontend(struct lws *wsi, cJSON *argjson)$/;"	f
+bet_bvv_frontend_loop	client.c	/^void bet_bvv_frontend_loop(void *_ptr)$/;"	f
+bet_bvv_init	client.c	/^int32_t bet_bvv_init(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_bvv_initialize	bet.c	/^static void bet_bvv_initialize(char *host_ip, const int32_t port)$/;"	f	file:
+bet_bvv_reset	client.c	/^void bet_bvv_reset(struct privatebet_info *bet, struct privatebet_vars *vars)$/;"	f
+bet_chat	host.c	/^int32_t bet_chat(struct lws *wsi, cJSON *argjson)$/;"	f
+bet_check_player_ready	host.c	/^int32_t bet_check_player_ready(cJSON *playerReady, struct privatebet_info *bet,$/;"	f
+bet_cipher_create	cards777.c	/^int32_t bet_cipher_create(bits256 privkey, bits256 destpub, uint8_t *cipher,$/;"	f
+bet_client_bvv_init	client.c	/^int32_t bet_client_bvv_init(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_client_dcv_init	client.c	/^int32_t bet_client_dcv_init(cJSON *dcv_info, struct privatebet_info *bet,$/;"	f
+bet_client_give_share	client.c	/^int32_t bet_client_give_share(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_client_init	client.c	/^int32_t bet_client_init(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_client_join	client.c	/^int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_client_join_res	client.c	/^int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_client_receive_share	client.c	/^int32_t bet_client_receive_share(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_client_turn	client.c	/^int32_t bet_client_turn(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_dcv	host.c	/^struct privatebet_info *bet_dcv;$/;"	v	typeref:struct:privatebet_info
+bet_dcv_backend	host.c	/^int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_dcv_backend_loop	host.c	/^void bet_dcv_backend_loop(void *_ptr)$/;"	f
+bet_dcv_big_blind	states.c	/^int32_t bet_dcv_big_blind(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_dcv_big_blind_bet	states.c	/^int32_t bet_dcv_big_blind_bet(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_dcv_create_invoice_request	payment.c	/^int32_t bet_dcv_create_invoice_request(struct privatebet_info *bet,$/;"	f
+bet_dcv_deck_init_info	host.c	/^int32_t bet_dcv_deck_init_info(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_dcv_force_reset	host.c	/^void bet_dcv_force_reset(struct privatebet_info *bet,$/;"	f
+bet_dcv_frontend	host.c	/^int32_t bet_dcv_frontend(struct lws *wsi, cJSON *argjson)$/;"	f
+bet_dcv_frontend_loop	host.c	/^void bet_dcv_frontend_loop(void *_ptr)$/;"	f
+bet_dcv_init	host.c	/^int32_t bet_dcv_init(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_dcv_initialize	bet.c	/^static void bet_dcv_initialize(char *host_ip, const int32_t port)$/;"	f	file:
+bet_dcv_invoice_pay	payment.c	/^int32_t bet_dcv_invoice_pay(struct privatebet_info *bet,$/;"	f
+bet_dcv_live_loop	host.c	/^void bet_dcv_live_loop(void *_ptr)$/;"	f
+bet_dcv_next_turn	states.c	/^int32_t bet_dcv_next_turn(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_dcv_pay	payment.c	/^int32_t bet_dcv_pay(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_dcv_paymentloop	payment.c	/^void bet_dcv_paymentloop(void *_ptr)$/;"	f
+bet_dcv_reset	host.c	/^void bet_dcv_reset(struct privatebet_info *bet, struct privatebet_vars *vars)$/;"	f
+bet_dcv_round_betting	states.c	/^int32_t bet_dcv_round_betting(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_dcv_round_betting_response	states.c	/^int32_t bet_dcv_round_betting_response(cJSON *argjson,$/;"	f
+bet_dcv_small_blind	states.c	/^int32_t bet_dcv_small_blind(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_dcv_small_blind_bet	states.c	/^int32_t bet_dcv_small_blind_bet(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_dcv_start	host.c	/^int32_t bet_dcv_start(struct privatebet_info *bet, int32_t peerid)$/;"	f
+bet_dcv_turn	host.c	/^int32_t bet_dcv_turn(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_decode_card	client.c	/^bits256 bet_decode_card(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_decrypt	cards777.c	/^uint8_t *bet_decrypt(uint8_t *decoded, int32_t maxsize, bits256 senderpub,$/;"	f
+bet_display_current_state	states.c	/^int32_t bet_display_current_state(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_evaluate_hand	host.c	/^int32_t bet_evaluate_hand(cJSON *playerCardInfo, struct privatebet_info *bet,$/;"	f
+bet_game	host.c	/^int32_t bet_game(struct lws *wsi, cJSON *argjson)$/;"	f
+bet_get_deckid	client.c	/^bits256 bet_get_deckid(int32_t playerID)$/;"	f
+bet_get_own_share	client.c	/^int32_t bet_get_own_share(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_info_set	table.c	/^void bet_info_set(struct privatebet_info *bet, char *game, int32_t range,$/;"	f
+bet_initiate_statemachine	states.c	/^int32_t bet_initiate_statemachine(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_live_response	client.c	/^static int32_t bet_live_response(struct privatebet_info *bet, char *node_type,$/;"	f	file:
+bet_nanosock	network.c	/^int32_t bet_nanosock(int32_t bindflag, char *endpoint, int32_t nntype)$/;"	f
+bet_permutation	cards777.c	/^int32_t bet_permutation(int32_t *permi, int32_t numcards)$/;"	f
+bet_player	bet.c	/^struct privatebet_info *bet_player = NULL;$/;"	v	typeref:struct:privatebet_info
+bet_player_backend	client.c	/^bet_player_backend(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_player_backend_loop	client.c	/^void bet_player_backend_loop(void *_ptr)$/;"	f
+bet_player_betting_statemachine	states.c	/^int32_t bet_player_betting_statemachine(cJSON *argjson,$/;"	f
+bet_player_big_blind	states.c	/^int32_t bet_player_big_blind(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_player_big_blind_bet	states.c	/^int32_t bet_player_big_blind_bet(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_player_create_invoice	payment.c	/^int32_t bet_player_create_invoice(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_player_create_invoice_request	payment.c	/^int32_t bet_player_create_invoice_request(cJSON *argjson,$/;"	f
+bet_player_dealer_info	states.c	/^int32_t bet_player_dealer_info(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_player_frontend	client.c	/^int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)$/;"	f
+bet_player_frontend_loop	client.c	/^void bet_player_frontend_loop(void *_ptr)$/;"	f
+bet_player_initialize	bet.c	/^static void bet_player_initialize(char *host_ip, const int32_t port)$/;"	f	file:
+bet_player_invoice_pay	payment.c	/^int32_t bet_player_invoice_pay(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_player_invoice_request	payment.c	/^int32_t bet_player_invoice_request(cJSON *argjson, cJSON *actionResponse,$/;"	f
+bet_player_join_req	host.c	/^int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_player_paymentloop	payment.c	/^void bet_player_paymentloop(void *_ptr)$/;"	f
+bet_player_ready	client.c	/^int32_t bet_player_ready(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_player_reset	client.c	/^int32_t bet_player_reset(struct privatebet_info *bet,$/;"	f
+bet_player_round_betting	states.c	/^int32_t bet_player_round_betting(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_player_round_betting_response	states.c	/^int32_t bet_player_round_betting_response(cJSON *argjson,$/;"	f
+bet_player_small_blind	states.c	/^int32_t bet_player_small_blind(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_player_small_blind_bet	states.c	/^int32_t bet_player_small_blind_bet(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_push_client	client.c	/^void bet_push_client(cJSON *argjson)$/;"	f
+bet_push_dcv_to_gui	host.c	/^void bet_push_dcv_to_gui(cJSON *argjson)$/;"	f
+bet_push_join_info	client.c	/^static void bet_push_join_info(int32_t playerid)$/;"	f	file:
+bet_receive_card	host.c	/^int32_t bet_receive_card(cJSON *playerCardInfo, struct privatebet_info *bet,$/;"	f
+bet_relay	host.c	/^int32_t bet_relay(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_seats	host.c	/^int32_t bet_seats(struct lws *wsi, cJSON *argjson)$/;"	f
+bet_send_status	host.c	/^static int32_t bet_send_status(struct privatebet_info *bet)$/;"	f	file:
+bet_table_info	client.c	/^void bet_table_info(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+bet_tcp_sock_address	network.c	/^char *bet_tcp_sock_address(int32_t bindflag, char *str, char *ipaddr,$/;"	f
+bvv_info	client.c	/^struct deck_bvv_info bvv_info;$/;"	v	typeref:struct:deck_bvv_info
+bvv_status	host.c	/^int32_t player_status[CARDS777_MAXPLAYERS], bvv_status;$/;"	v
+bvv_vars	client.c	/^struct privatebet_vars *bvv_vars;$/;"	v	typeref:struct:privatebet_vars
+card_matrix	host.c	/^int32_t card_matrix[CARDS777_MAXPLAYERS][hand_size];$/;"	v
+card_rand256	bet.c	/^bits256 card_rand256(int32_t privkeyflag, int8_t index)$/;"	f
+card_values	host.c	/^int32_t card_values[CARDS777_MAXPLAYERS][hand_size];$/;"	v
+cardstr	poker.c	/^int32_t cardstr(char *cardstr, uint8_t card)$/;"	f
+cashier_info	cashier.c	/^struct cashier *cashier_info;$/;"	v	typeref:struct:cashier
+check_ln_chips_sync	commands.c	/^void check_ln_chips_sync()$/;"	f
+chips_create_raw_multi_sig_tx	commands.c	/^cJSON *chips_create_raw_multi_sig_tx(double amount, char *toaddress,$/;"	f
+chips_create_raw_tx	commands.c	/^cJSON *chips_create_raw_tx(double amount, char *address)$/;"	f
+chips_get_balance	commands.c	/^double chips_get_balance()$/;"	f
+chips_get_block_count	commands.c	/^int32_t chips_get_block_count()$/;"	f
+chips_get_new_address	commands.c	/^char *chips_get_new_address()$/;"	f
+chips_import_address	commands.c	/^void chips_import_address(char *address)$/;"	f
+chips_iswatchonly	commands.c	/^int32_t chips_iswatchonly(char *address)$/;"	f
+chips_list_address_groupings	commands.c	/^void chips_list_address_groupings()$/;"	f
+chips_list_unspent	commands.c	/^void chips_list_unspent()$/;"	f
+chips_lock_transaction	commands.c	/^int32_t chips_lock_transaction(int32_t fundAmount)$/;"	f
+chips_publish_multisig_tx	commands.c	/^int32_t chips_publish_multisig_tx(char *tx)$/;"	f
+chips_send_raw_tx	commands.c	/^cJSON *chips_send_raw_tx(cJSON *signedTransaction)$/;"	f
+chips_sign_raw_tx_with_wallet	commands.c	/^cJSON *chips_sign_raw_tx_with_wallet(char *rawtransaction)$/;"	f
+chips_spend_multi_sig_address	commands.c	/^void chips_spend_multi_sig_address(char *address, double amount)$/;"	f
+chips_transfer_funds	commands.c	/^cJSON *chips_transfer_funds(double amount, char *address)$/;"	f
+chips_validate_address	commands.c	/^int chips_validate_address(char *address)$/;"	f
+community_cards_drawn	host.c	/^int32_t hole_cards_drawn = 0, community_cards_drawn = 0, flop_cards_drawn = 0,$/;"	v
+curve25519_fieldelement	bet.c	/^bits256 curve25519_fieldelement(bits256 hash)$/;"	f
+data_exists	client.c	/^int32_t data_exists = 0;$/;"	v
+dcvDataExists	host.c	/^int32_t dcvDataExists = 0;$/;"	v
+dcvDataToWrite	host.c	/^cJSON *dcvDataToWrite = NULL;$/;"	v
+dcv_info	host.c	/^struct deck_dcv_info dcv_info;$/;"	v	typeref:struct:deck_dcv_info
+dcv_lws_write	host.c	/^void dcv_lws_write(cJSON *data)$/;"	f
+dcv_vars	host.c	/^struct privatebet_vars *dcv_vars;$/;"	v	typeref:struct:privatebet_vars
+dealerPosition	host.c	/^static int dealerPosition;$/;"	v	file:
+deckgen_common	bet.c	/^struct pair256 deckgen_common(struct pair256 *randcards, int32_t numcards)$/;"	f
+deckgen_common2	bet.c	/^void deckgen_common2(struct pair256 *randcards, int32_t numcards)$/;"	f
+deckgen_player	bet.c	/^struct pair256 deckgen_player(bits256 *playerprivs, bits256 *playercards,$/;"	f
+deckid	bet.c	/^bits256 deckid;$/;"	v
+display_cards	client.c	/^void display_cards(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+enc_share_str	client.c	/^char *enc_share_str(char hexstr[177], struct enc_share x)$/;"	f
+entry	poker.c	/^	u8 entry[52];$/;"	m	struct:__anon1	file:
+eval_game_c	host.c	/^int32_t eval_game_p[CARDS777_MAXPLAYERS], eval_game_c[CARDS777_MAXPLAYERS];$/;"	v
+eval_game_p	host.c	/^int32_t eval_game_p[CARDS777_MAXPLAYERS], eval_game_c[CARDS777_MAXPLAYERS];$/;"	v
+face	host.c	/^char *face[NFACES] = { "two",	"three", "four", "five", "six",$/;"	v
+five_card_draw_score	poker.c	/^u32 five_card_draw_score(const u8 *h)$/;"	f
+flop_cards_drawn	host.c	/^int32_t hole_cards_drawn = 0, community_cards_drawn = 0, flop_cards_drawn = 0,$/;"	v
+g_hash	bet.c	/^bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];$/;"	v
+g_shares	bet.c	/^struct enc_share *g_shares = NULL;$/;"	v	typeref:struct:enc_share
+get_API_enc_share	client.c	/^struct enc_share get_API_enc_share(cJSON *obj)$/;"	f
+gfshare_calc_share	gfshare.c	/^void gfshare_calc_share(uint8_t *buffer, int32_t size, int32_t M, uint32_t ilog,$/;"	f
+gfshare_calc_sharenrs	gfshare.c	/^int32_t gfshare_calc_sharenrs(uint8_t *sharenrs, int32_t N, uint8_t *data,$/;"	f
+gfshare_calc_shares	gfshare.c	/^void gfshare_calc_shares(uint8_t *shares, uint8_t *secret, int32_t size,$/;"	f
+gfshare_dec_giveshare	gfshare.c	/^void gfshare_dec_giveshare(struct gfshare_ctx_bet *ctx, uint8_t sharenr,$/;"	f
+gfshare_dec_newshares	gfshare.c	/^void gfshare_dec_newshares(struct gfshare_ctx_bet *ctx, uint8_t *sharenrs)$/;"	f
+gfshare_decextract	gfshare.c	/^void gfshare_decextract(uint8_t *_logs, uint8_t *_exps,$/;"	f
+gfshare_enc_setsecret	gfshare.c	/^void gfshare_enc_setsecret(struct gfshare_ctx_bet *ctx, uint8_t *secret)$/;"	f
+gfshare_encgetshare	gfshare.c	/^void gfshare_encgetshare(uint8_t *_logs, uint8_t *_exps,$/;"	f
+gfshare_free	gfshare.c	/^void gfshare_free(struct gfshare_ctx_bet *ctx)$/;"	f
+gfshare_init_sharenrs	gfshare.c	/^int32_t gfshare_init_sharenrs(uint8_t sharenrs[255], uint8_t *orig, int32_t m,$/;"	f
+gfshare_initdec	gfshare.c	/^struct gfshare_ctx_bet *gfshare_initdec(uint8_t *sharenrs, uint32_t sharecount,$/;"	f
+gfshare_initenc	gfshare.c	/^struct gfshare_ctx_bet *gfshare_initenc(uint8_t *sharenrs, uint32_t sharecount,$/;"	f
+gfshare_recoverdata	gfshare.c	/^uint8_t *gfshare_recoverdata(uint8_t *shares[], uint8_t *sharenrs, int32_t M,$/;"	f
+gfshare_sg777_initdec	gfshare.c	/^struct gfshare_ctx_bet *gfshare_sg777_initdec(uint8_t *sharenrs,$/;"	f
+handstrs	poker.c	/^static char *handstrs[16] = { "high card",$/;"	v	file:
+hole_cards_drawn	host.c	/^int32_t hole_cards_drawn = 0, community_cards_drawn = 0, flop_cards_drawn = 0,$/;"	v
+initialize_seat	host.c	/^static inline void initialize_seat(cJSON *seatInfo, char *name, int32_t seat,$/;"	f	file:
+interrupted	host.c	/^static int interrupted;$/;"	v	file:
+interrupted1	client.c	/^static int interrupted1;$/;"	v	file:
+interrupted_bvv	client.c	/^static int interrupted_bvv;$/;"	v	file:
+invoiceID	host.c	/^int32_t invoiceID;$/;"	v
+is_signed	host.c	/^int32_t no_of_signers, max_no_of_signers = 2, is_signed[CARDS777_MAXPLAYERS];$/;"	v
+kickerstrs	poker.c	/^static char *kickerstrs[16] = { "",	"kickers", "kicker",  "kickers",$/;"	v	file:
+len	poker.c	/^	int32_t len;$/;"	m	struct:__anon1	file:
+libgfshare_init	gfshare.c	/^void libgfshare_init()$/;"	f
+ln_check_peer_and_connect	client.c	/^void ln_check_peer_and_connect(char *id)$/;"	f
+ln_connect	client.c	/^void ln_connect(char *id)$/;"	f
+ln_connect_uri	client.c	/^int32_t ln_connect_uri(char *uri)$/;"	f
+ln_dev_block_height	commands.c	/^int32_t ln_dev_block_height()$/;"	f
+ln_fundChannel	client.c	/^int32_t ln_fundChannel(char *channel_id)$/;"	f
+ln_get_channel_status	client.c	/^int32_t ln_get_channel_status(char *id)$/;"	f
+ln_get_uri	client.c	/^int32_t ln_get_uri(char **uri)$/;"	f
+ln_listfunds	client.c	/^int32_t ln_listfunds()$/;"	f
+ln_pay	client.c	/^int32_t ln_pay(char *bolt11)$/;"	f
+ln_pay_invoice	client.c	/^int32_t ln_pay_invoice(cJSON *argjson, struct privatebet_info *bet,$/;"	f
+lws_buf	host.c	/^char lws_buf[65536];$/;"	v
+lws_buf_1	client.c	/^char lws_buf_1[65536];$/;"	v
+lws_buf_bvv	client.c	/^char lws_buf_bvv[2000];$/;"	v
+lws_buf_length	host.c	/^int32_t lws_buf_length = 0;$/;"	v
+lws_buf_length_1	client.c	/^int32_t lws_buf_length_1 = 0;$/;"	v
+lws_buf_length_bvv	client.c	/^int32_t lws_buf_length_bvv = 0;$/;"	v
+lws_callback_http_bvv	client.c	/^int lws_callback_http_bvv(struct lws *wsi, enum lws_callback_reasons reason,$/;"	f
+lws_callback_http_dummy	host.c	/^int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,$/;"	f
+lws_callback_http_player	client.c	/^int lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason,$/;"	f
+lws_http_mount_player	client.c	/^static const struct lws_http_mount lws_http_mount_player = {$/;"	v	typeref:struct:lws_http_mount	file:
+main	bet.c	/^int main(int argc, char **argv)$/;"	f
+make_command	client.c	/^void make_command(int argc, char **argv, cJSON **argjson)$/;"	f
+max_no_of_signers	host.c	/^int32_t no_of_signers, max_no_of_signers = 2, is_signed[CARDS777_MAXPLAYERS];$/;"	v
+max_players	bet.c	/^int32_t max_players = 2;$/;"	v
+mount	host.c	/^static const struct lws_http_mount mount = {$/;"	v	typeref:struct:lws_http_mount	file:
+mount_bvv	client.c	/^static const struct lws_http_mount mount_bvv = {$/;"	v	typeref:struct:lws_http_mount	file:
+multisigAddress	commands.c	/^char *multisigAddress = "bGmKoyJEz4ESuJCTjhVkgEb2Qkt8QuiQzQ";$/;"	v
+mutex	host.c	/^pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;$/;"	v
+no_of_bets	host.c	/^int32_t turn = 0, no_of_cards = 0, no_of_rounds = 0, no_of_bets = 0;$/;"	v
+no_of_cards	host.c	/^int32_t turn = 0, no_of_cards = 0, no_of_rounds = 0, no_of_bets = 0;$/;"	v
+no_of_player_cards	client.c	/^int32_t no_of_player_cards = 0;$/;"	v
+no_of_rounds	host.c	/^int32_t turn = 0, no_of_cards = 0, no_of_rounds = 0, no_of_bets = 0;$/;"	v
+no_of_shares	client.c	/^int32_t no_of_shares = 0;$/;"	v
+no_of_signers	host.c	/^int32_t no_of_signers, max_no_of_signers = 2, is_signed[CARDS777_MAXPLAYERS];$/;"	v
+number_cards_drawn	client.c	/^int32_t number_cards_drawn = 0;$/;"	v
+p2p_bvv_init	bet.c	/^struct pair256 p2p_bvv_init(bits256 *keys, struct pair256 b_key,$/;"	f
+permis_b	bet.c	/^int32_t permis_d[CARDS777_MAXCARDS], permis_b[CARDS777_MAXCARDS];$/;"	v
+permis_d	bet.c	/^int32_t permis_d[CARDS777_MAXCARDS], permis_b[CARDS777_MAXCARDS];$/;"	v
+player_card_matrix	client.c	/^int32_t player_card_matrix[hand_size];$/;"	v
+player_card_values	client.c	/^int32_t player_card_values[hand_size];$/;"	v
+player_cards	client.c	/^int32_t player_cards[CARDS777_MAXCARDS];$/;"	v
+player_chips_address	host.c	/^char player_chips_address[CARDS777_MAXPLAYERS][64];$/;"	v
+player_gui_data	client.c	/^char player_gui_data[1024];$/;"	v
+player_http_protocol	client.c	/^static struct lws_protocols player_http_protocol[] = {$/;"	v	typeref:struct:lws_protocols	file:
+player_id	client.c	/^int32_t player_id = 0;$/;"	v
+player_info	client.c	/^struct deck_player_info player_info;$/;"	v	typeref:struct:deck_player_info
+player_joined	client.c	/^int32_t player_joined = 0;$/;"	v
+player_lws_write	client.c	/^void player_lws_write(cJSON *data)$/;"	f
+player_ready	host.c	/^int32_t player_ready[CARDS777_MAXPLAYERS];$/;"	v
+player_sigint_handler	client.c	/^void player_sigint_handler(int sig)$/;"	f
+player_status	host.c	/^int32_t player_status[CARDS777_MAXPLAYERS], bvv_status;$/;"	v
+player_vars	bet.c	/^struct privatebet_vars *player_vars = NULL;$/;"	v	typeref:struct:privatebet_vars
+players_joined	host.c	/^int32_t players_joined = 0;$/;"	v
+playershares	bet.c	/^bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];$/;"	v
+poker_deck_size	bet.c	/^int32_t poker_deck_size = 52;$/;"	v
+poker_test	poker.c	/^void poker_test()$/;"	f
+protocols	host.c	/^static struct lws_protocols protocols[] = {$/;"	v	typeref:struct:lws_protocols	file:
+protocols_bvv	client.c	/^static struct lws_protocols protocols_bvv[] = {$/;"	v	typeref:struct:lws_protocols	file:
+rest_display_cards	client.c	/^void rest_display_cards(cJSON *argjson, int32_t this_playerID)$/;"	f
+rest_push_cards	client.c	/^void rest_push_cards(struct lws *wsi, cJSON *argjson, int32_t this_playerID)$/;"	f
+river_card_drawn	host.c	/^	turn_card_drawn = 0, river_card_drawn = 0;$/;"	v
+rootAddress	bet.c	/^char *rootAddress = "RSdMRYeeouw3hepxNgUzHn34qFhn1tsubb"; \/\/ donation Address$/;"	v
+s32	poker.c	/^typedef int32_t s32;$/;"	t	file:
+s8	poker.c	/^typedef int8_t s8;$/;"	t	file:
+set_cardstr	poker.c	/^void set_cardstr(char *cardstr, uint32_t c)$/;"	f
+set_handstr	poker.c	/^uint32_t set_handstr(char *handstr, uint8_t cards[7], int32_t verbose)$/;"	f
+seven_card_draw_score	poker.c	/^u32 seven_card_draw_score(const u8 *h)$/;"	f
+sg777_deckgen_vendor	bet.c	/^int32_t sg777_deckgen_vendor($/;"	f
+sharenrs	bet.c	/^uint8_t sharenrs[256];$/;"	v
+sharesflag	client.c	/^int32_t sharesflag[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];$/;"	v
+sigint_handler	host.c	/^void sigint_handler(int sig)$/;"	f
+suit	host.c	/^char *suit[NSUITS] = { "clubs", "diamonds", "hearts", "spades" };$/;"	v
+turn	host.c	/^int32_t turn = 0, no_of_cards = 0, no_of_rounds = 0, no_of_bets = 0;$/;"	v
+turn_card_drawn	host.c	/^	turn_card_drawn = 0, river_card_drawn = 0;$/;"	v
+u32	poker.c	/^typedef uint32_t u32;$/;"	t	file:
+u8	poker.c	/^typedef uint8_t u8;$/;"	t	file:
+v_hash	bet.c	/^bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];$/;"	v
+ws_connection_status	client.c	/^int ws_connection_status = 0;$/;"	v
+wsi_global_bvv	client.c	/^struct lws *wsi_global_bvv = NULL;$/;"	v	typeref:struct:lws
+wsi_global_client	client.c	/^struct lws *wsi_global_client = NULL;$/;"	v	typeref:struct:lws
+wsi_global_host	host.c	/^struct lws *wsi_global_host = NULL;$/;"	v	typeref:struct:lws

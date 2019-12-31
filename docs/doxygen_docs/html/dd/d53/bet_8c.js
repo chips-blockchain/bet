@@ -1,0 +1,27 @@
+var bet_8c =
+[
+    [ "bet_bvv_initialize", "dd/d53/bet_8c.html#abb41d56704e5ba1aea3c7c97e67cee9a", null ],
+    [ "bet_dcv_initialize", "dd/d53/bet_8c.html#aaee466e723c622115fa30a49a699e97e", null ],
+    [ "bet_player_initialize", "dd/d53/bet_8c.html#a1fb0766f6a7a21ce0bf73b4a3cbb4a02", null ],
+    [ "card_rand256", "dd/d53/bet_8c.html#a639f0e80f94d1ce9adf7bb0d52f8f77b", null ],
+    [ "curve25519_fieldelement", "dd/d53/bet_8c.html#a486c8d59b898af86c8e498798a3d500a", null ],
+    [ "deckgen_common", "dd/d53/bet_8c.html#af1caf4bd39a77add770c8e9a9b859c25", null ],
+    [ "deckgen_common2", "dd/d53/bet_8c.html#a15b788badb600230760e48274d4f36b6", null ],
+    [ "deckgen_player", "dd/d53/bet_8c.html#ae418903f2f00fb0f13c7d21858a4efdd", null ],
+    [ "main", "dd/d53/bet_8c.html#a3c04138a5bfe5d72780bb7e82a18e627", null ],
+    [ "p2p_bvv_init", "dd/d53/bet_8c.html#aed0d6ecdf0b295306ebdc2ce145bdd01", null ],
+    [ "sg777_deckgen_vendor", "dd/d53/bet_8c.html#a8d60448109ceb768b85e3e46a56b523d", null ],
+    [ "bet_player", "dd/d53/bet_8c.html#acce96a8256760a7d9ee28b0d0b722e29", null ],
+    [ "deckid", "dd/d53/bet_8c.html#acab83b0ae8f9771b03b3a9a1d51eeffe", null ],
+    [ "g_hash", "dd/d53/bet_8c.html#a0d28177dced0059c86fb2c7fc9c8d660", null ],
+    [ "g_shares", "dd/d53/bet_8c.html#a9af9f2fdf27f0f54f624d89b32af82ff", null ],
+    [ "max_players", "dd/d53/bet_8c.html#a097028f2c20ab139a38e5c621193f223", null ],
+    [ "permis_b", "dd/d53/bet_8c.html#a42ef3c7ba5e18cd42816bcb7def71fbf", null ],
+    [ "permis_d", "dd/d53/bet_8c.html#a68a976bb37813f4fa860943eecc2779a", null ],
+    [ "player_vars", "dd/d53/bet_8c.html#abe20de78a27f415da1e9437e26fd2061", null ],
+    [ "playershares", "dd/d53/bet_8c.html#a4f81cce59752f55ccee614846f8dfec8", null ],
+    [ "poker_deck_size", "dd/d53/bet_8c.html#a72cf71d5ef0640767677fd54d4729359", null ],
+    [ "rootAddress", "dd/d53/bet_8c.html#a538351e3178156bc6cc8e6156c6d88ba", null ],
+    [ "sharenrs", "dd/d53/bet_8c.html#ad0579cac3407f0f0cb742891f36d6e56", null ],
+    [ "v_hash", "dd/d53/bet_8c.html#ad6edd7e1c4d864d80357255a938dd8b9", null ]
+];
