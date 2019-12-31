@@ -18,8 +18,6 @@
 #include "common.h"
 #include "oracle.h"
 
-char BET_ORACLEURL[64] = "127.0.0.1:7797";
-int32_t IAMORACLE;
 char *multisigAddress = "bGmKoyJEz4ESuJCTjhVkgEb2Qkt8QuiQzQ";
 
 int32_t chips_iswatchonly(char *address)

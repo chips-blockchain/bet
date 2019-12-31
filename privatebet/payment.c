@@ -18,8 +18,6 @@
 #include "commands.h"
 #include "common.h"
 #include "network.h"
-bits256 Host_rhashes[256];
-bits256 Clientrhash;
 
 /***************************************************************
 Here contains the functions which are specific to DCV
