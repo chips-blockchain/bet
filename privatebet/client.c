@@ -72,10 +72,10 @@ bits256 all_playershares[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS]
 
 struct enc_share *all_g_shares[CARDS777_MAXPLAYERS];
 
-struct privatebet_info *bet_bvv;
-struct privatebet_vars *bvv_vars;
+struct privatebet_info *bet_bvv = NULL;
+struct privatebet_vars *bvv_vars = NULL;
 
-struct privatebet_info *BET_player[CARDS777_MAXPLAYERS];
+struct privatebet_info *BET_player[CARDS777_MAXPLAYERS] = {NULL};
 struct deck_player_info all_players_info[CARDS777_MAXPLAYERS];
 
 void player_lws_write(cJSON *data)

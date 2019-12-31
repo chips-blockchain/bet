@@ -43,20 +43,20 @@ bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 struct enc_share *g_shares = NULL;
 int32_t max_players = 2;
-int32_t poker_deck_size = 52;
+static const int32_t poker_deck_size = 52;
 
-char *rootAddress = "RSdMRYeeouw3hepxNgUzHn34qFhn1tsubb"; // donation Address
+const char *rootAddress = "RSdMRYeeouw3hepxNgUzHn34qFhn1tsubb"; // donation Address
 
 static void bet_player_initialize(char *host_ip, const int32_t port)
 {
 	int32_t subsock = -1, pushsock = -1;
-	char bindaddr[128], bindaddr1[128];
+	char bind_sub_addr[128], bind_push_addr[128];
 
-	bet_tcp_sock_address(0, bindaddr, host_ip, port);
-	subsock = bet_nanosock(0, bindaddr, NN_SUB);
+	bet_tcp_sock_address(0, bind_sub_addr, host_ip, port);
+	subsock = bet_nanosock(0, bind_sub_addr, NN_SUB);
 
-	bet_tcp_sock_address(0, bindaddr1, host_ip, port + 1);
-	pushsock = bet_nanosock(0, bindaddr1, NN_PUSH);
+	bet_tcp_sock_address(0, bind_push_addr, host_ip, port + 1);
+	pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
 
 	player_vars = calloc(1, sizeof(*player_vars));
 
@@ -75,13 +75,13 @@ static void bet_player_initialize(char *host_ip, const int32_t port)
 static void bet_bvv_initialize(char *host_ip, const int32_t port)
 {
 	int32_t subsock = -1, pushsock = -1;
-	char bindaddr[128], bindaddr1[128];
+	char bind_sub_addr[128], bind_push_addr[128];
 
-	bet_tcp_sock_address(0, bindaddr, host_ip, port);
-	subsock = bet_nanosock(0, bindaddr, NN_SUB);
+	bet_tcp_sock_address(0, bind_sub_addr, host_ip, port);
+	subsock = bet_nanosock(0, bind_sub_addr, NN_SUB);
 
-	bet_tcp_sock_address(0, bindaddr1, host_ip, port + 1);
-	pushsock = bet_nanosock(0, bindaddr1, NN_PUSH);
+	bet_tcp_sock_address(0, bind_push_addr, host_ip, port + 1);
+	pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
 
 	bvv_vars = calloc(1, sizeof(*bvv_vars));
 	bet_bvv = calloc(1, sizeof(struct privatebet_info));
@@ -100,13 +100,13 @@ static void bet_bvv_initialize(char *host_ip, const int32_t port)
 static void bet_dcv_initialize(char *host_ip, const int32_t port)
 {
 	int32_t pubsock = -1, pullsock = -1;
-	char bindaddr[128], bindaddr1[128];
+	char bind_pub_addr[128], bind_pull_addr[128];
 
-	bet_tcp_sock_address(0, bindaddr, host_ip, port);
-	pubsock = bet_nanosock(1, bindaddr, NN_PUB);
+	bet_tcp_sock_address(0, bind_pub_addr, host_ip, port);
+	pubsock = bet_nanosock(1, bind_pub_addr, NN_PUB);
 
-	bet_tcp_sock_address(0, bindaddr1, host_ip, port + 1);
-	pullsock = bet_nanosock(1, bindaddr1, NN_PULL);
+	bet_tcp_sock_address(0, bind_pull_addr, host_ip, port + 1);
+	pullsock = bet_nanosock(1, bind_pull_addr, NN_PULL);
 
 	bet_dcv = calloc(1, sizeof(struct privatebet_info));
 	dcv_vars = calloc(1, sizeof(struct privatebet_vars));
@@ -132,11 +132,13 @@ int main(int argc, char **argv)
 	pthread_t dcv_thrd, bvv_thrd, player_thrd, dcv_backend, bvv_backend,
 		player_backend, live_thrd;
 
-	if (argc >= 2)
-		strcpy(hostip, argv[2]);
+	if (argc >= 2) 
+		strncpy(hostip, argv[2],sizeof(hostip));
+	else
+		exit(-1);
+	
 	OS_init();
 	libgfshare_init();
-
 	check_ln_chips_sync();
 
 	if ((argc >= 2) && (strcmp(argv[1], "dcv") == 0)) {
