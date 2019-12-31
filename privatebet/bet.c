@@ -38,14 +38,11 @@ struct privatebet_vars *player_vars = NULL;
 uint8_t sharenrs[256];
 bits256 deckid;
 bits256 playershares[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
-
-int32_t IAMLP;
-int32_t max_players = 2;
 int32_t permis_d[CARDS777_MAXCARDS], permis_b[CARDS777_MAXCARDS];
 bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 struct enc_share *g_shares = NULL;
-
+int32_t max_players = 2;
 int32_t poker_deck_size = 52;
 
 char *rootAddress = "RSdMRYeeouw3hepxNgUzHn34qFhn1tsubb"; // donation Address

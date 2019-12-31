@@ -46,10 +46,8 @@ int32_t number_cards_drawn = 0;
 
 int32_t sharesflag[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 
-cJSON *dataToWrite = NULL;
 int32_t data_exists = 0;
-
-char guiData[1024];
+char player_gui_data[1024];
 
 struct deck_player_info player_info;
 struct deck_bvv_info bvv_info;
@@ -65,10 +63,8 @@ bits256 all_g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 int32_t all_sharesflag[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS]
 		      [CARDS777_MAXPLAYERS];
 
-int32_t all_player_card_matrix[CARDS777_MAXPLAYERS][hand_size];
 int32_t all_player_card_values[CARDS777_MAXPLAYERS][hand_size];
 int32_t all_number_cards_drawn[CARDS777_MAXPLAYERS];
-int32_t all_no_of_shares[CARDS777_MAXPLAYERS];
 int32_t all_player_cards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 int32_t all_no_of_player_cards[CARDS777_MAXPLAYERS];
 bits256 all_playershares[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS]
@@ -76,21 +72,10 @@ bits256 all_playershares[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS]
 
 struct enc_share *all_g_shares[CARDS777_MAXPLAYERS];
 
-char *LN_db = "../../.chipsln/lightningd1.sqlite3";
-
-struct privatebet_info *BET_Player1;
-struct privatebet_vars *Player1_VARS;
-struct deck_player_info player1_info;
-
-struct privatebet_info *BET_Player2;
-struct privatebet_vars *Player2_VARS;
-struct deck_player_info player2_info;
-
 struct privatebet_info *bet_bvv;
 struct privatebet_vars *bvv_vars;
 
 struct privatebet_info *BET_player[CARDS777_MAXPLAYERS];
-struct privatebet_vars *Player_VARS[CARDS777_MAXPLAYERS];
 struct deck_player_info all_players_info[CARDS777_MAXPLAYERS];
 
 void player_lws_write(cJSON *data)
@@ -102,8 +87,8 @@ void player_lws_write(cJSON *data)
 			while (data_exists == 1)
 				sleep(1);
 		}
-		memset(guiData, 0, sizeof(guiData));
-		strncpy(guiData, cJSON_Print(data), strlen(cJSON_Print(data)));
+		memset(player_gui_data, 0, sizeof(player_gui_data));
+		strncpy(player_gui_data, cJSON_Print(data), strlen(cJSON_Print(data)));
 		data_exists = 1;
 		lws_callback_on_writable(wsi_global_client);
 	}
@@ -1714,8 +1699,8 @@ int lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason,
 		break;
 	case LWS_CALLBACK_SERVER_WRITEABLE:
 		if (data_exists) {
-			if (guiData) {
-				lws_write(wsi, guiData, strlen(guiData), 0);
+			if (player_gui_data) {
+				lws_write(wsi, player_gui_data, strlen(player_gui_data), 0);
 				data_exists = 0;
 			}
 		}

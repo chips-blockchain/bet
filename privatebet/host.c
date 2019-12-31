@@ -44,10 +44,6 @@ struct lws *wsi_global_host = NULL;
 cJSON *dcvDataToWrite = NULL;
 int32_t dcvDataExists = 0;
 
-struct privatebet_rawpeerln Rawpeersln[CARDS777_MAXPLAYERS + 1],
-	oldRawpeersln[CARDS777_MAXPLAYERS + 1];
-struct privatebet_peerln Peersln[CARDS777_MAXPLAYERS + 1];
-int32_t Num_rawpeersln, oldNum_rawpeersln, Num_peersln, Numgames;
 int32_t players_joined = 0;
 int32_t turn = 0, no_of_cards = 0, no_of_rounds = 0, no_of_bets = 0;
 int32_t card_matrix[CARDS777_MAXPLAYERS][hand_size];
