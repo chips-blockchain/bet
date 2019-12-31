@@ -3362,12 +3362,12 @@
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>bet_check_bvv_Ready</Name>
+      <Name>bet_check_bvv_ready</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
     </TokenIdentifier>
     <Path>df/da9/host_8c.html</Path>
-    <Anchor>a90bcca4d0aeee5db50f13915bf280409</Anchor>
+    <Anchor>a60b7bc85684a727039535e64a4e24db2</Anchor>
     <DeclaredIn>host.c</DeclaredIn>
   </Token>
   <Token>

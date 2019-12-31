@@ -3,7 +3,7 @@ var host_8c =
     [ "LWS_PLUGIN_STATIC", "df/da9/host_8c.html#a6ac88fa6a0ff7931eebef9c3e789b53d", null ],
     [ "bet_award_winner", "df/da9/host_8c.html#a195c93135325361eacfada5593143502", null ],
     [ "bet_chat", "df/da9/host_8c.html#af23d0c2074c632617629fce0775356d1", null ],
-    [ "bet_check_bvv_Ready", "df/da9/host_8c.html#a90bcca4d0aeee5db50f13915bf280409", null ],
+    [ "bet_check_bvv_ready", "df/da9/host_8c.html#a60b7bc85684a727039535e64a4e24db2", null ],
     [ "bet_check_player_ready", "df/da9/host_8c.html#a45f715b215f34d6b44c72a56a65b6e0e", null ],
     [ "bet_create_betting_invoice", "df/da9/host_8c.html#a3d990524438302387f253eb15f4da292", null ],
     [ "bet_create_invoice", "df/da9/host_8c.html#a936dda54fe149da9e2104428419f24e0", null ],

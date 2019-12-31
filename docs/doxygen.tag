@@ -2482,9 +2482,9 @@
     </member>
     <member kind="function" static="yes">
       <type>static int32_t</type>
-      <name>bet_check_bvv_Ready</name>
+      <name>bet_check_bvv_ready</name>
       <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a90bcca4d0aeee5db50f13915bf280409</anchor>
+      <anchor>a60b7bc85684a727039535e64a4e24db2</anchor>
       <arglist>(struct privatebet_info *bet)</arglist>
     </member>
     <member kind="function" static="yes">
