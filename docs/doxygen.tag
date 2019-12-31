@@ -1,11 +1,6 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
 <tagfile>
   <compound kind="file">
-    <name>mainpage.dox</name>
-    <path>/root/bet/</path>
-    <filename>d5/d4d/mainpage_8dox</filename>
-  </compound>
-  <compound kind="file">
     <name>bet.c</name>
     <path>/root/bet/privatebet/</path>
     <filename>dd/d53/bet_8c</filename>
@@ -545,32 +540,32 @@
       <anchor>a02f69144de0f51d065fe1722db95c0fd</anchor>
       <arglist>(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
     </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_p2p_bvv_join_init</name>
+    <member kind="function" static="yes">
+      <type>static int32_t</type>
+      <name>bet_bvv_join_init</name>
       <anchorfile>dd/d93/client_8c.html</anchorfile>
-      <anchor>a3f6469fd1ea8ca29919ad26985ef1ee5</anchor>
+      <anchor>a34abc6db860e03c1ac45e4a0cc60c75a</anchor>
       <arglist>(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
     </member>
     <member kind="function">
       <type>int32_t</type>
-      <name>BET_p2p_connect</name>
+      <name>bet_bvv_connect</name>
       <anchorfile>dd/d93/client_8c.html</anchorfile>
-      <anchor>a9c3f895c06911dc250d31cf09b79c756</anchor>
+      <anchor>ae4364bdbf746f8389d371c6036a6b545</anchor>
       <arglist>(char *uri)</arglist>
     </member>
-    <member kind="function">
-      <type>cJSON *</type>
-      <name>BET_p2p_fundchannel</name>
+    <member kind="function" static="yes">
+      <type>static cJSON *</type>
+      <name>bet_player_fundchannel</name>
       <anchorfile>dd/d93/client_8c.html</anchorfile>
-      <anchor>ad129faeb97ca4aac051c0ffb71475fec</anchor>
+      <anchor>a5e0edf5f933f02de44629e3c0e502ec1</anchor>
       <arglist>(char *channel_id)</arglist>
     </member>
     <member kind="function">
       <type>int32_t</type>
-      <name>BET_p2P_check_bvv_ready</name>
+      <name>bet_check_bvv_ready</name>
       <anchorfile>dd/d93/client_8c.html</anchorfile>
-      <anchor>a0178bc8a9e08a71d962ddce21e7ea4a8</anchor>
+      <anchor>a4ad2af1820b2b0e342828218f23f320f</anchor>
       <arglist>(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
     </member>
     <member kind="function">
@@ -622,25 +617,25 @@
       <anchor>aae312929e00d18a0b4b799beb8351aa1</anchor>
       <arglist>(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
     </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_p2p_betting_invoice</name>
+    <member kind="function" static="yes">
+      <type>static int32_t</type>
+      <name>bet_player_betting_invoice</name>
       <anchorfile>dd/d93/client_8c.html</anchorfile>
-      <anchor>a72bf5bfd4c82026594d7bf2b31dd82ad</anchor>
+      <anchor>aad0c032fd04f6e8a2398273c1b438c96</anchor>
       <arglist>(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
     </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_p2p_winner</name>
+    <member kind="function" static="yes">
+      <type>static int32_t</type>
+      <name>bet_player_winner</name>
       <anchorfile>dd/d93/client_8c.html</anchorfile>
-      <anchor>a45f9b20e0f05dc3dbffce294efe85b9a</anchor>
+      <anchor>af7ba085f6f1a0fd81f0ec7eff12faa15</anchor>
       <arglist>(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
     </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_p2p_bet_round</name>
+    <member kind="function" static="yes">
+      <type>static int32_t</type>
+      <name>bet_player_bet_round</name>
       <anchorfile>dd/d93/client_8c.html</anchorfile>
-      <anchor>a25208fd40942a99f29b60342846bb543</anchor>
+      <anchor>ad3ea7038053ebf89ac283e9cd8c69930</anchor>
       <arglist>(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
     </member>
     <member kind="function">
@@ -657,11 +652,11 @@
       <anchor>ad6f7d36feece182dc2ac96e835a1f351</anchor>
       <arglist>(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
     </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_p2p_client_ask_share</name>
+    <member kind="function" static="yes">
+      <type>static int32_t</type>
+      <name>bet_player_ask_share</name>
       <anchorfile>dd/d93/client_8c.html</anchorfile>
-      <anchor>a6e2395da513cd4df02047281bf1bcc36</anchor>
+      <anchor>ae41060baf8bf1f8a80b49ddbfb85d334</anchor>
       <arglist>(struct privatebet_info *bet, int32_t cardid, int32_t playerid, int32_t card_type)</arglist>
     </member>
     <member kind="function">
@@ -734,18 +729,18 @@
       <anchor>ad27a4916bafd17c35c6d415131471118</anchor>
       <arglist>(char *id)</arglist>
     </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_find_channel_balance</name>
+    <member kind="function" static="yes">
+      <type>static int32_t</type>
+      <name>bet_find_channel_balance</name>
       <anchorfile>dd/d93/client_8c.html</anchorfile>
-      <anchor>a19654eea514a6e737bbe43546ac602ad</anchor>
+      <anchor>aa8658785cefc47b902f9739f4c057ecd</anchor>
       <arglist>(char *uri)</arglist>
     </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_check_player_stack</name>
+    <member kind="function" static="yes">
+      <type>static int32_t</type>
+      <name>bet_check_player_stack</name>
       <anchorfile>dd/d93/client_8c.html</anchorfile>
-      <anchor>abea699cd66f862d7b7e6e589ddfa03f1</anchor>
+      <anchor>af0c4b735deff7caa8fdb0690f5fcf475</anchor>
       <arglist>(char *uri)</arglist>
     </member>
     <member kind="function">
@@ -825,11 +820,11 @@
       <anchor>a78e953bcd3956ce5d9ef3dc35d2eb479</anchor>
       <arglist>(cJSON *argjson)</arglist>
     </member>
-    <member kind="function">
-      <type>void</type>
-      <name>BET_p2p_player_blinds_info</name>
+    <member kind="function" static="yes">
+      <type>static void</type>
+      <name>bet_player_blinds_info</name>
       <anchorfile>dd/d93/client_8c.html</anchorfile>
-      <anchor>a5911fa385f94a714fa6c97d2f5500dbb</anchor>
+      <anchor>aafa872bf2874caf5e37161bb1f74f053</anchor>
       <arglist>()</arglist>
     </member>
     <member kind="function" static="yes">
@@ -876,13 +871,6 @@
     </member>
     <member kind="function">
       <type>int32_t</type>
-      <name>BET_rest_player_ready</name>
-      <anchorfile>dd/d93/client_8c.html</anchorfile>
-      <anchor>a07c8dc3e95c41f48eba333a38c42f179</anchor>
-      <arglist>(struct lws *wsi, int32_t playerID)</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
       <name>ln_fundChannel</name>
       <anchorfile>dd/d93/client_8c.html</anchorfile>
       <anchor>ab4c0283de7c6c864ba138f812bcb42c8</anchor>
@@ -894,27 +882,6 @@
       <anchorfile>dd/d93/client_8c.html</anchorfile>
       <anchor>a568e321cab9e12012475b221d8530454</anchor>
       <arglist>(char *uri)</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_rest_player_ask_share</name>
-      <anchorfile>dd/d93/client_8c.html</anchorfile>
-      <anchor>a5edf9e5c06b7b05fd96d3685e0c4f338</anchor>
-      <arglist>(struct lws *wsi, int32_t cardid, int32_t playerid, int32_t card_type, int32_t toPlayer, int32_t fromPlayer)</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_rest_player_get_own_share</name>
-      <anchorfile>dd/d93/client_8c.html</anchorfile>
-      <anchor>a82b28bed5a112333cad65833fec5b0e2</anchor>
-      <arglist>(struct lws *wsi, cJSON *argjson, int32_t this_playerID)</arglist>
-    </member>
-    <member kind="function">
-      <type>bits256</type>
-      <name>BET_rest_decode_card</name>
-      <anchorfile>dd/d93/client_8c.html</anchorfile>
-      <anchor>a90aa7b10c984a766e4a13f8aeb02f556</anchor>
-      <arglist>(int32_t this_playerID, int32_t cardid)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
@@ -1154,6 +1121,20 @@
       <anchor>a24e383e25a68fc20c7ac5c2244728933</anchor>
       <arglist></arglist>
     </member>
+    <member kind="variable">
+      <type>char</type>
+      <name>lws_buf_bvv</name>
+      <anchorfile>dd/d93/client_8c.html</anchorfile>
+      <anchor>a230d70f0c3046d76fe0d8a7da97b11fb</anchor>
+      <arglist>[2000]</arglist>
+    </member>
+    <member kind="variable">
+      <type>int32_t</type>
+      <name>lws_buf_length_bvv</name>
+      <anchorfile>dd/d93/client_8c.html</anchorfile>
+      <anchor>aa075c466195ca84dfa726f2d53195d03</anchor>
+      <arglist></arglist>
+    </member>
     <member kind="variable" static="yes">
       <type>static struct lws_protocols</type>
       <name>player_http_protocol</name>
@@ -1173,20 +1154,6 @@
       <name>lws_http_mount_player</name>
       <anchorfile>dd/d93/client_8c.html</anchorfile>
       <anchor>a34646bfc439d4d74de5788b2788f6c8f</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>char</type>
-      <name>lws_buf_bvv</name>
-      <anchorfile>dd/d93/client_8c.html</anchorfile>
-      <anchor>a230d70f0c3046d76fe0d8a7da97b11fb</anchor>
-      <arglist>[2000]</arglist>
-    </member>
-    <member kind="variable">
-      <type>int32_t</type>
-      <name>lws_buf_length_bvv</name>
-      <anchorfile>dd/d93/client_8c.html</anchorfile>
-      <anchor>aa075c466195ca84dfa726f2d53195d03</anchor>
       <arglist></arglist>
     </member>
     <member kind="variable" static="yes">
@@ -2403,27 +2370,6 @@
     </member>
     <member kind="function">
       <type>int32_t</type>
-      <name>BET_rest_from_dcv</name>
-      <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a8b1f6bb7284b34b7a98556d15ebce4dc</anchor>
-      <arglist>(struct lws *wsi, cJSON *argjson)</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_rest_from_bvv</name>
-      <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a4a0ddf1904b4d79eb71bd87adb954608</anchor>
-      <arglist>(struct lws *wsi, cJSON *argjson)</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_rest_from_player</name>
-      <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>ac07b1d62f829f6c1a17f54d8d5b1ef53</anchor>
-      <arglist>(struct lws *wsi, cJSON *argjson)</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
       <name>bet_chat</name>
       <anchorfile>df/da9/host_8c.html</anchorfile>
       <anchor>af23d0c2074c632617629fce0775356d1</anchor>
@@ -2448,104 +2394,6 @@
       <name>bet_game</name>
       <anchorfile>df/da9/host_8c.html</anchorfile>
       <anchor>adbe3ab77bc01747b60c29a13f7cd8690</anchor>
-      <arglist>(struct lws *wsi, cJSON *argjson)</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_rest_dcv_default</name>
-      <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>af48eb8c9921f365be8d697e76f6c93cd</anchor>
-      <arglist>(struct lws *wsi, cJSON *argjson)</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_rest_client_join_req</name>
-      <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>abaa86f65a1aa94bb633d612dd872ad54</anchor>
-      <arglist>(struct lws *wsi, cJSON *argjson)</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_rest_broadcast_table_info</name>
-      <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a0255f00ad974231097d5cd8e0b064c4e</anchor>
-      <arglist>(struct lws *wsi)</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_rest_check_BVV_Ready</name>
-      <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a15ed9e65819de504f324c40247054ec6</anchor>
-      <arglist>(struct lws *wsi)</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_rest_dcv_start_init</name>
-      <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>aca7adf7fe6eb1be6a74c5e639570d5c0</anchor>
-      <arglist>(struct lws *wsi, cJSON *argjson)</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_rest_dcv_process_init_p</name>
-      <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a0d6c6c522a5daf092bd11ceea1588dc3</anchor>
-      <arglist>(struct lws *wsi, cJSON *argjson)</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_rest_dcv_deck_init_info</name>
-      <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a91aea355ec66d2e59360f9ae913643a0</anchor>
-      <arglist>(struct lws *wsi, cJSON *argjson)</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_rest_check_player_ready</name>
-      <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a634e0258e414d8dbea7ab3a2120384a1</anchor>
-      <arglist>(struct lws *wsi, cJSON *argjson)</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_rest_send_turn_info</name>
-      <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a76251cfcb241c991f6a8769afd0ed4ff</anchor>
-      <arglist>(struct lws *wsi, int32_t playerid, int32_t cardid, int32_t card_type)</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_rest_dcv_LN_check</name>
-      <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>aac1ed76b9a6ae9980f499aa56a6a46b8</anchor>
-      <arglist>()</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_rest_bvv_join</name>
-      <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a75d1949d2e56aab9d81817e5807a5136</anchor>
-      <arglist>(struct lws *wsi, cJSON *argjson)</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_rest_create_invoice</name>
-      <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>ae8be3b2e1c1e7cc440c234e7d5234ba6</anchor>
-      <arglist>(struct lws *wsi, cJSON *argjson)</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_rest_DCV_create_invoice</name>
-      <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>af60c3670db1000a5755ba856fececaa6</anchor>
-      <arglist>(struct lws *wsi, cJSON *argjson)</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_rest_DCV_winningClaim</name>
-      <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>ad75494813a249482054c13a2fe95d72d</anchor>
       <arglist>(struct lws *wsi, cJSON *argjson)</arglist>
     </member>
     <member kind="function">
@@ -2590,11 +2438,11 @@
       <anchor>af4c0e088e047c4a74e8758ef9a9eb6aa</anchor>
       <arglist>(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
     </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_p2p_bvv_join</name>
+    <member kind="function" static="yes">
+      <type>static int32_t</type>
+      <name>bet_dcv_bvv_join</name>
       <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>ad25de1620622d07c09307119436e23c1</anchor>
+      <anchor>a4ef5468acf5b7e9079468541d5c72577</anchor>
       <arglist>(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
     </member>
     <member kind="function">
@@ -2611,11 +2459,11 @@
       <anchor>a0b9684e66602d8483270b8f214809cc4</anchor>
       <arglist>(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
     </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_send_turn_info</name>
+    <member kind="function" static="yes">
+      <type>static int32_t</type>
+      <name>bet_send_turn_info</name>
       <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a365db996dc7101a2a29268d557d8bf09</anchor>
+      <anchor>a5aa313eb5aede5ab3c152519390fb42e</anchor>
       <arglist>(struct privatebet_info *bet, int32_t playerid, int32_t cardid, int32_t card_type)</arglist>
     </member>
     <member kind="function">
@@ -2632,25 +2480,25 @@
       <anchor>a9d17f9c6b6a2d454798bf5ac36b98ab1</anchor>
       <arglist>(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
     </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_check_BVV_Ready</name>
+    <member kind="function" static="yes">
+      <type>static int32_t</type>
+      <name>bet_check_bvv_Ready</name>
       <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a09a42ecccecb3b6bda4bb0997e9b6f13</anchor>
+      <anchor>a90bcca4d0aeee5db50f13915bf280409</anchor>
       <arglist>(struct privatebet_info *bet)</arglist>
     </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_create_invoice</name>
+    <member kind="function" static="yes">
+      <type>static int32_t</type>
+      <name>bet_create_invoice</name>
       <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a3925277a8ed2adbdd141d9b28aa2c71d</anchor>
+      <anchor>a936dda54fe149da9e2104428419f24e0</anchor>
       <arglist>(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
     </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_create_betting_invoice</name>
+    <member kind="function" static="yes">
+      <type>static int32_t</type>
+      <name>bet_create_betting_invoice</name>
       <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a9651b87a5cfc14272baa9a040fb63cc5</anchor>
+      <anchor>a3d990524438302387f253eb15f4da292</anchor>
       <arglist>(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
     </member>
     <member kind="function">
@@ -2689,45 +2537,24 @@
       <arglist>(cJSON *playerCardInfo, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
     </member>
     <member kind="function">
-      <type>void</type>
-      <name>BET_establish_ln_channels</name>
-      <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>ab10bd2334f3863c22752fe36e23fb406</anchor>
-      <arglist>(struct privatebet_info *bet)</arglist>
-    </member>
-    <member kind="function">
-      <type>int</type>
-      <name>BET_LN_check_if_peer_exists</name>
-      <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a0dcdb4751cb340767b4e0f2d05a58ba2</anchor>
-      <arglist>(char *channel_id)</arglist>
-    </member>
-    <member kind="function">
       <type>int32_t</type>
-      <name>BET_LN_check</name>
+      <name>bet_ln_check</name>
       <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a955fb8217b538dd2f02f91f9f3f03019</anchor>
+      <anchor>a52ad122e76b59ba9de77f8f8043503e7</anchor>
       <arglist>(struct privatebet_info *bet)</arglist>
     </member>
-    <member kind="function">
-      <type>void</type>
-      <name>BET_p2p_LN_close</name>
+    <member kind="function" static="yes">
+      <type>static int32_t</type>
+      <name>bet_award_winner</name>
       <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a02e3a4ee90fb00508d7535562ce4ea47</anchor>
-      <arglist>(struct privatebet_info *bet)</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_award_winner</name>
-      <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a9b9cf58400659709adfe4f50ddfa9c0c</anchor>
+      <anchor>a195c93135325361eacfada5593143502</anchor>
       <arglist>(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
     </member>
     <member kind="function" static="yes">
       <type>static void</type>
-      <name>BET_push_joinInfo</name>
+      <name>bet_push_joinInfo</name>
       <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a7eaecff962dc54d68872b032349bf42f</anchor>
+      <anchor>a47f853e44ecdc0e3406571a7b370fbbb</anchor>
       <arglist>(cJSON *argjson, int32_t numplayers)</arglist>
     </member>
     <member kind="function">
@@ -3010,6 +2837,13 @@
       <anchor>a52aca01cdb7a7e61da5148a62052927d</anchor>
       <arglist></arglist>
     </member>
+    <member kind="variable">
+      <type>pthread_mutex_t</type>
+      <name>mutex</name>
+      <anchorfile>df/da9/host_8c.html</anchorfile>
+      <anchor>a4acff8232e4aec9cd5c6dc200ac55ef3</anchor>
+      <arglist></arglist>
+    </member>
     <member kind="variable" static="yes">
       <type>static struct lws_protocols</type>
       <name>protocols</name>
@@ -3029,13 +2863,6 @@
       <name>mount</name>
       <anchorfile>df/da9/host_8c.html</anchorfile>
       <anchor>afcd99fd3f865a01dd3dad789fa43e247</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>pthread_mutex_t</type>
-      <name>mutex</name>
-      <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a4acff8232e4aec9cd5c6dc200ac55ef3</anchor>
       <arglist></arglist>
     </member>
   </compound>
@@ -3840,13 +3667,6 @@
       <anchorfile>dc/d3d/states_8c.html</anchorfile>
       <anchor>ab602935874a768d0852d3b1e666b9ed1</anchor>
       <arglist>(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
-    </member>
-    <member kind="function">
-      <type>int32_t</type>
-      <name>BET_rest_DCV_next_turn</name>
-      <anchorfile>dc/d3d/states_8c.html</anchorfile>
-      <anchor>a154b91aac41b30f79053eb5094a45ef1</anchor>
-      <arglist>(struct lws *wsi)</arglist>
     </member>
     <member kind="variable">
       <type>char</type>

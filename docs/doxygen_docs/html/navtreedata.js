@@ -29,8 +29,8 @@ var NAVTREEINDEX =
 [
 "annotated.html",
 "d9/d0c/structdeck__bvv__info.html#ab8b8de70d12f184c0ac81af66ca5c083",
-"dd/d93/client_8c.html#aae1d74e648774b5ec5a4e94f57439d2e",
-"globals_func.html"
+"dd/d93/client_8c.html#ac49dcdcdce0afba5b6d3966d1ee9aa2a",
+"globals_s.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

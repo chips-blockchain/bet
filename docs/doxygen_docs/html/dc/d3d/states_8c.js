@@ -17,6 +17,5 @@ var states_8c =
     [ "bet_player_round_betting_response", "dc/d3d/states_8c.html#ab602935874a768d0852d3b1e666b9ed1", null ],
     [ "bet_player_small_blind", "dc/d3d/states_8c.html#a4217e97cd49f3bc8f1678c4194680a4c", null ],
     [ "bet_player_small_blind_bet", "dc/d3d/states_8c.html#a7c0dce7f16194239b75ff85f61a4c026", null ],
-    [ "BET_rest_DCV_next_turn", "dc/d3d/states_8c.html#a154b91aac41b30f79053eb5094a45ef1", null ],
     [ "action_str", "dc/d3d/states_8c.html#a4b5d8caf832a6b74a80d5cefd1b012f1", null ]
 ];
