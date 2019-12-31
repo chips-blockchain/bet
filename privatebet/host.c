@@ -33,8 +33,6 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#if 1 // this is for websockets
-
 #include <string.h>
 
 #define LWS_PLUGIN_STATIC
@@ -70,8 +68,12 @@ struct privatebet_info *bet_dcv;
 struct privatebet_vars *dcv_vars;
 
 static int dealerPosition;
-
 int32_t no_of_signers, max_no_of_signers = 2, is_signed[CARDS777_MAXPLAYERS];
+
+char lws_buf[65536];
+int32_t lws_buf_length = 0;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
 
 void dcv_lws_write(cJSON *data)
 {
@@ -82,38 +84,6 @@ void dcv_lws_write(cJSON *data)
 	dcvDataToWrite = data;
 	dcvDataExists = 1;
 	lws_callback_on_writable(wsi_global_host);
-}
-
-int32_t BET_rest_from_dcv(struct lws *wsi, cJSON *argjson)
-{
-	cJSON *info = NULL;
-	info = cJSON_CreateObject();
-	info = cJSON_Parse(jstr(argjson, "dcv"));
-	printf("\n%s\n", jstr(argjson, "dcv"));
-	printf("\n%s", jstr(info, "deckid"));
-	printf("\n%s", jstr(info, "pubkey"));
-
-	return 0;
-}
-
-int32_t BET_rest_from_bvv(struct lws *wsi, cJSON *argjson)
-{
-	cJSON *info = NULL;
-	info = cJSON_CreateObject();
-	info = cJSON_Parse(jstr(argjson, "bvv"));
-	printf("\n%s\n", cJSON_Print(info));
-
-	return 0;
-}
-
-int32_t BET_rest_from_player(struct lws *wsi, cJSON *argjson)
-{
-	cJSON *info = NULL;
-	info = cJSON_CreateObject();
-	info = cJSON_Parse(jstr(argjson, "player"));
-	printf("\n%s\n", cJSON_Print(info));
-
-	return 0;
 }
 
 int32_t bet_chat(struct lws *wsi, cJSON *argjson)
@@ -193,496 +163,6 @@ int32_t bet_game(struct lws *wsi, cJSON *argjson)
 	return 0;
 }
 
-int32_t BET_rest_dcv_default(struct lws *wsi, cJSON *argjson)
-{
-	cJSON *defaultInfo = NULL;
-	defaultInfo = cJSON_CreateObject();
-	cJSON_AddStringToObject(defaultInfo, "default",
-				"Unable to process this command");
-
-	printf("\n%s:%d::%s", __FUNCTION__, __LINE__, cJSON_Print(defaultInfo));
-	lws_write(wsi, cJSON_Print(defaultInfo),
-		  strlen(cJSON_Print(defaultInfo)), 0);
-	return 0;
-}
-
-int32_t BET_rest_client_join_req(struct lws *wsi, cJSON *argjson)
-{
-	cJSON *playerInfo = NULL;
-	char *uri = NULL;
-	char *rendered = NULL;
-
-	int32_t bytes;
-
-	bet_dcv->numplayers = ++players_joined;
-	dcv_info.peerpubkeys[players_joined - 1] = jbits256(argjson, "pubkey");
-	strcpy(dcv_info.uri[players_joined - 1], jstr(argjson, "uri"));
-
-	playerInfo = cJSON_CreateObject();
-	cJSON_AddStringToObject(playerInfo, "method", "join_res");
-	cJSON_AddNumberToObject(
-		playerInfo, "peerid",
-		bet_dcv->numplayers -
-			1); // players numbering starts from 0(zero)
-	jaddbits256(playerInfo, "pubkey", jbits256(argjson, "pubkey"));
-
-	uri = (char *)malloc(sizeof(char) * 200);
-	memset(uri, 0x00, sizeof(uri));
-	ln_get_uri(&uri);
-	printf("%s::%d::uri::%s\n", __FUNCTION__, __LINE__, uri);
-
-	cJSON_AddStringToObject(playerInfo, "uri", uri);
-
-	printf("\n%s:%d::%s", __FUNCTION__, __LINE__, cJSON_Print(playerInfo));
-
-	lws_write(wsi, cJSON_Print(playerInfo), strlen(cJSON_Print(playerInfo)),
-		  0);
-
-	rendered = cJSON_Print(playerInfo);
-	bytes = nn_send(bet_dcv->pubsock, rendered, strlen(rendered), 0);
-	if (bytes < 0) {
-		printf("\n%s:%d::sending failed\n", __FUNCTION__, __LINE__);
-	}
-
-	if (uri)
-		free(uri);
-
-	return 0;
-}
-
-int32_t BET_rest_broadcast_table_info(struct lws *wsi)
-{
-	cJSON *tableInfo = NULL, *playersInfo = NULL;
-	char str[65];
-	int32_t retval = 1;
-	;
-
-	tableInfo = cJSON_CreateObject();
-	cJSON_AddStringToObject(tableInfo, "method", "TableInfo");
-	cJSON_AddItemToObject(tableInfo, "playersInfo",
-			      playersInfo = cJSON_CreateArray());
-	for (int32_t i = 0; i < bet_dcv->maxplayers; i++) {
-		cJSON_AddItemToArray(playersInfo,
-				     cJSON_CreateString(bits256_str(
-					     str, dcv_info.peerpubkeys[i])));
-	}
-	printf("\nTable Info:%s", cJSON_Print(tableInfo));
-
-	lws_write(wsi, cJSON_Print(tableInfo), strlen(cJSON_Print(tableInfo)),
-		  0);
-
-	return retval;
-}
-
-int32_t BET_rest_check_BVV_Ready(struct lws *wsi)
-{
-	int32_t retval = -1;
-	cJSON *bvvReady = NULL, *uriInfo = NULL;
-	bvvReady = cJSON_CreateObject();
-	cJSON_AddStringToObject(bvvReady, "method", "check_bvv_ready");
-	cJSON_AddItemToObject(bvvReady, "uri_info",
-			      uriInfo = cJSON_CreateArray());
-	for (int i = 0; i < bet_dcv->maxplayers; i++) {
-		jaddistr(uriInfo, dcv_info.uri[i]);
-	}
-
-	printf("\n%s:%d::%s", __FUNCTION__, __LINE__, cJSON_Print(bvvReady));
-	lws_write(wsi, cJSON_Print(bvvReady), strlen(cJSON_Print(bvvReady)), 0);
-
-	return retval;
-}
-
-int32_t BET_rest_dcv_start_init(struct lws *wsi, cJSON *argjson)
-{
-	cJSON *init = NULL;
-	char *rendered = NULL;
-	int32_t bytes;
-
-	init = cJSON_CreateObject();
-	cJSON_AddStringToObject(init, "method", "init");
-
-	lws_write(wsi, cJSON_Print(init), strlen(cJSON_Print(init)), 0);
-
-	rendered = cJSON_Print(init);
-	bytes = nn_send(bet_dcv->pubsock, rendered, strlen(rendered), 0);
-
-	if (bytes < 0)
-		printf("\n%s::%d::Failed to send data", __FUNCTION__, __LINE__);
-
-	return 0;
-}
-
-int32_t BET_rest_dcv_process_init_p(struct lws *wsi, cJSON *argjson)
-{
-	int32_t peerid, retval = 1;
-	bits256 cardpubvalues[CARDS777_MAXCARDS];
-	cJSON *cardinfo = NULL;
-
-	peerid = jint(argjson, "peerid");
-	cardinfo = cJSON_GetObjectItem(argjson, "cardinfo");
-	for (int i = 0; i < cJSON_GetArraySize(cardinfo); i++) {
-		cardpubvalues[i] = jbits256i(cardinfo, i);
-	}
-
-	retval = sg777_deckgen_vendor(peerid, dcv_info.cardprods[peerid],
-				      dcv_info.dcvblindcards[peerid],
-				      bet_dcv->range, cardpubvalues,
-				      dcv_info.deckid);
-	dcv_info.numplayers = dcv_info.numplayers + 1;
-	return retval;
-}
-
-int32_t BET_rest_dcv_deck_init_info(struct lws *wsi, cJSON *argjson)
-{
-	cJSON *deck_init_info, *cjsoncardprods, *cjsondcvblindcards,
-		*cjsong_hash, *cjsonpeerpubkeys;
-	char str[65];
-	int32_t retval = 1;
-
-	deck_init_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(deck_init_info, "method", "init_d");
-	jaddbits256(deck_init_info, "deckid", dcv_info.deckid);
-	cJSON_AddItemToObject(deck_init_info, "cardprods",
-			      cjsoncardprods = cJSON_CreateArray());
-	for (int i = 0; i < dcv_info.numplayers; i++) {
-		for (int j = 0; j < bet_dcv->range; j++) {
-			cJSON_AddItemToArray(
-				cjsoncardprods,
-				cJSON_CreateString(bits256_str(
-					str, dcv_info.cardprods[i][j])));
-		}
-	}
-	cJSON_AddItemToObject(deck_init_info, "dcvblindcards",
-			      cjsondcvblindcards = cJSON_CreateArray());
-	for (int i = 0; i < dcv_info.numplayers; i++) {
-		for (int j = 0; j < bet_dcv->range; j++) {
-			cJSON_AddItemToArray(
-				cjsondcvblindcards,
-				cJSON_CreateString(bits256_str(
-					str, dcv_info.dcvblindcards[i][j])));
-		}
-	}
-
-	cJSON_AddItemToObject(deck_init_info, "g_hash",
-			      cjsong_hash = cJSON_CreateArray());
-	for (int i = 0; i < dcv_info.numplayers; i++) {
-		for (int j = 0; j < bet_dcv->range; j++) {
-			cJSON_AddItemToArray(cjsong_hash,
-					     cJSON_CreateString(bits256_str(
-						     str, g_hash[i][j])));
-		}
-	}
-	cJSON_AddItemToObject(deck_init_info, "peerpubkeys",
-			      cjsonpeerpubkeys = cJSON_CreateArray());
-	for (int i = 0; i < dcv_info.numplayers; i++) {
-		cJSON_AddItemToArray(cjsonpeerpubkeys,
-				     cJSON_CreateString(bits256_str(
-					     str, dcv_info.peerpubkeys[i])));
-	}
-
-	// printf("\n%s:%d::%s",__FUNCTION__,__LINE__,cJSON_Print(deck_init_info));
-	lws_write(wsi, cJSON_Print(deck_init_info),
-		  strlen(cJSON_Print(deck_init_info)), 0);
-	return retval;
-}
-
-int32_t BET_rest_check_player_ready(struct lws *wsi, cJSON *argjson)
-{
-	int flag = 1;
-	player_ready[jint(argjson, "playerID")] = 1;
-	for (int i = 0; i < bet_dcv->maxplayers; i++) {
-		if (player_ready[i] == 0) {
-			flag = 0;
-			break;
-		}
-	}
-	return flag;
-}
-
-int32_t BET_rest_send_turn_info(struct lws *wsi, int32_t playerid,
-				int32_t cardid, int32_t card_type)
-{
-	cJSON *turninfo = NULL;
-	int retval = 1;
-
-	turninfo = cJSON_CreateObject();
-	cJSON_AddStringToObject(turninfo, "method", "turn");
-	cJSON_AddNumberToObject(turninfo, "playerid", playerid);
-	cJSON_AddNumberToObject(turninfo, "cardid", cardid);
-	cJSON_AddNumberToObject(turninfo, "card_type", card_type);
-
-	lws_write(wsi, cJSON_Print(turninfo), strlen(cJSON_Print(turninfo)), 0);
-
-	return retval;
-}
-
-int32_t BET_rest_dcv_LN_check()
-{
-	char channel_id[100], channel_state;
-	int argc, retval = 1;
-	char **argv = NULL, uri[100];
-	cJSON *fundChannelInfo = NULL;
-	cJSON *temp = NULL;
-	argc = 6;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++)
-		argv[i] = (char *)malloc(100);
-	strcpy(uri, dcv_info.bvv_uri);
-	strcpy(channel_id, strtok(uri, "@"));
-	channel_state = ln_get_channel_status(channel_id);
-	if ((channel_state != 2) && (channel_state != 3)) {
-		argc = 6;
-		for (int i = 0; i < argc; i++)
-			memset(argv[i], 0x00, sizeof(argv[i]));
-		strcpy(argv[0], "lightning-cli");
-		strcpy(argv[1], "connect");
-		strcpy(argv[2], dcv_info.bvv_uri);
-		argv[3] = NULL;
-		argc = 3;
-
-		// ln_bet(argc,argv,buf);
-		temp = cJSON_CreateObject();
-		make_command(argc, argv, &temp);
-
-		argc = 6;
-		for (int i = 0; i < argc; i++)
-			memset(argv[i], 0x00, sizeof(argv[i]));
-		strcpy(argv[0], "lightning-cli");
-		strcpy(argv[1], "fundchannel");
-		strcpy(argv[2], channel_id);
-		strcpy(argv[3], "500000");
-		argv[4] = NULL;
-		argc = 4;
-
-		// ln_bet(argc,argv,buf);
-
-		fundChannelInfo = cJSON_CreateObject();
-		make_command(argc, argv, &fundChannelInfo);
-
-		if (jint(fundChannelInfo, "code") == -1) {
-			retval = -1;
-			printf("\n%s:%d: Message: %s", __FUNCTION__, __LINE__,
-			       jstr(fundChannelInfo, "message"));
-			goto end;
-		}
-	}
-
-	while ((channel_state = ln_get_channel_status(channel_id)) != 3) {
-		if (channel_state == 2) {
-			printf("\nCHANNELD AWAITING LOCKIN");
-			sleep(5);
-		} else {
-			retval = -1;
-			printf("\n%s:%d: DCV is failed to establish the channel with BVV",
-			       __FUNCTION__, __LINE__);
-			goto end;
-		}
-	}
-	printf("\nDCV-->BVV channel ready");
-
-	for (int i = 0; i < bet_dcv->maxplayers; i++) {
-		strcpy(uri, dcv_info.uri[i]);
-		strcpy(channel_id, strtok(uri, "@"));
-
-		while ((channel_state = ln_get_channel_status(channel_id)) !=
-		       3) {
-			if (channel_state == 2) {
-				printf("\nCHANNELD AWAITING LOCKIN");
-				sleep(5);
-			} else {
-				retval = -1;
-				printf("\n%s:%d: Player: %d is failed to establish the channel "
-				       "with DCV",
-				       __FUNCTION__, __LINE__, i);
-				goto end;
-			}
-		}
-
-		printf("\nPlayer %d --> DCV channel ready", i);
-	}
-
-end:
-	if (argv) {
-		for (int i = 0; i < 6; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-
-	return retval;
-}
-
-int32_t BET_rest_bvv_join(struct lws *wsi, cJSON *argjson)
-{
-	char uri[100], channel_id[100];
-	strcpy(uri, jstr(argjson, "uri"));
-	strcpy(dcv_info.bvv_uri, uri);
-	if ((ln_get_channel_status(strtok(jstr(argjson, "uri"), "@")) !=
-	     3)) // 3 means channel is already established with the peer
-	{
-		if (ln_connect_uri(uri)) {
-			strcpy(channel_id, strtok(jstr(argjson, "uri"), "@"));
-			ln_fundChannel(channel_id);
-		}
-	}
-	return 0;
-}
-
-int32_t BET_rest_create_invoice(struct lws *wsi, cJSON *argjson)
-{
-	int argc, retval = 1;
-	char **argv;
-	char hexstr[65];
-	cJSON *invoiceInfo = NULL, *invoice = NULL;
-	argc = 6;
-	argv = (char **)malloc(argc * sizeof(char *));
-	invoiceID++;
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(sizeof(char) * 1000);
-	}
-	dcv_info.betamount += jint(argjson, "betAmount");
-
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "invoice");
-	sprintf(argv[2], "%d", jint(argjson, "betAmount"));
-	sprintf(argv[3], "%s_%d_%d_%d_%d", bits256_str(hexstr, dcv_info.deckid),
-		invoiceID, jint(argjson, "playerID"), jint(argjson, "round"),
-		jint(argjson, "betAmount"));
-	sprintf(argv[4],
-		"Invoice_details_playerID:%d,round:%d,betting_Amount:%d",
-		jint(argjson, "playerID"), jint(argjson, "round"),
-		jint(argjson, "betAmount"));
-	argv[5] = NULL;
-	argc = 5;
-
-	invoice = cJSON_CreateObject();
-	make_command(argc, argv, &invoice);
-
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(invoice));
-	if (jint(invoice, "code") != 0) {
-		retval = -1;
-		printf("\n%s:%d: Message:%s", __FUNCTION__, __LINE__,
-		       jstr(invoice, "message"));
-		goto end;
-	} else {
-		invoiceInfo = cJSON_CreateObject();
-		cJSON_AddStringToObject(invoiceInfo, "method", "invoice");
-		cJSON_AddNumberToObject(invoiceInfo, "playerID",
-					jint(argjson, "playerID"));
-		cJSON_AddNumberToObject(invoiceInfo, "round",
-					jint(argjson, "round"));
-		cJSON_AddNumberToObject(invoiceInfo, "betAmount",
-					jint(argjson, "betAmount"));
-
-		if (strcmp(jstr(cJSON_GetObjectItem(argjson, "payment_params"),
-				"action"),
-			   "round_betting") == 0) {
-			cJSON_AddNumberToObject(invoiceInfo, "option",
-						jint(argjson, "option"));
-		}
-
-		cJSON_AddStringToObject(invoiceInfo, "label", argv[3]);
-		cJSON_AddStringToObject(invoiceInfo, "invoice",
-					cJSON_Print(invoice));
-		cJSON_AddItemToObject(invoiceInfo, "payment_params",
-				      cJSON_GetObjectItem(argjson,
-							  "payment_params"));
-		lws_write(wsi, cJSON_Print(invoiceInfo),
-			  strlen(cJSON_Print(invoiceInfo)), 0);
-	}
-
-end:
-
-	if (argv) {
-		for (int i = 0; i < 6; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-
-	return retval;
-}
-
-int32_t BET_rest_DCV_create_invoice(struct lws *wsi, cJSON *argjson)
-{
-	int argc, retval = 1;
-	char **argv = NULL;
-	char hexstr[65];
-	cJSON *invoiceInfo = NULL, *invoice = NULL;
-
-	argc = 6;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(sizeof(char) * 1000);
-	}
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "invoice");
-	sprintf(argv[2], "%d", jint(argjson, "winningAmount"));
-	sprintf(argv[3], "%d_%d_%s", jint(argjson, "playerID"),
-		jint(argjson, "winningAmount"),
-		bits256_str(hexstr, bet_get_deckid(jint(argjson, "playerID"))));
-	sprintf(argv[4], "\"Invoice details playerID:%d,winning Amount:%d\"",
-		jint(argjson, "playerID"), jint(argjson, "winningAmount"));
-	argv[5] = NULL;
-	argc = 5;
-
-	invoice = cJSON_CreateObject();
-	make_command(argc, argv, &invoice);
-
-	if (jint(invoice, "code") != 0) {
-		retval = -1;
-		printf("\n%s:%d: Message:%s", __FUNCTION__, __LINE__,
-		       jstr(invoice, "message"));
-		goto end;
-	} else {
-		invoiceInfo = cJSON_CreateObject();
-		cJSON_AddStringToObject(invoiceInfo, "method", "winningClaim");
-		cJSON_AddNumberToObject(invoiceInfo, "playerID",
-					jint(argjson, "playerID"));
-		cJSON_AddNumberToObject(invoiceInfo, "winningAmount",
-					jint(argjson, "winningAmount"));
-		cJSON_AddStringToObject(invoiceInfo, "label", argv[3]);
-		cJSON_AddStringToObject(invoiceInfo, "invoice",
-					cJSON_Print(invoice));
-
-		printf("%s:%d::%s\n", __FUNCTION__, __LINE__,
-		       cJSON_Print(invoiceInfo));
-		lws_write(wsi, cJSON_Print(invoiceInfo),
-			  strlen(cJSON_Print(invoiceInfo)), 0);
-	}
-
-end:
-	if (argv) {
-		for (int i = 0; i < 6; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-
-	return retval;
-}
-
-int32_t BET_rest_DCV_winningClaim(struct lws *wsi, cJSON *argjson)
-{
-	int32_t retval = 1;
-	char *invoice = NULL;
-	cJSON *invoiceInfo = NULL;
-
-	invoice = jstr(argjson, "invoice");
-	invoiceInfo = cJSON_Parse(invoice);
-
-	retval = ln_pay(jstr(invoiceInfo, "bolt11"));
-	if (retval)
-		printf("\n%d Satoshis paid to the player:%d\n",
-		       jint(argjson, "winningAmount"),
-		       jint(argjson, "playerID"));
-
-	return retval;
-}
-
 int32_t bet_dcv_frontend(struct lws *wsi, cJSON *argjson)
 {
 	int retval = 1;
@@ -710,9 +190,6 @@ int32_t bet_dcv_frontend(struct lws *wsi, cJSON *argjson)
 
 	return retval;
 }
-
-char lws_buf[65536];
-int32_t lws_buf_length = 0;
 
 int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason,
 			    void *user, void *in, size_t len)
@@ -779,8 +256,6 @@ void sigint_handler(int sig)
 {
 	interrupted = 1;
 }
-
-#endif
 
 void bet_push_dcv_to_gui(cJSON *argjson)
 {
@@ -878,7 +353,7 @@ int32_t bet_dcv_init(cJSON *argjson, struct privatebet_info *bet,
 	return retval;
 }
 
-int32_t BET_p2p_bvv_join(cJSON *argjson, struct privatebet_info *bet,
+static int32_t bet_dcv_bvv_join(cJSON *argjson, struct privatebet_info *bet,
 			 struct privatebet_vars *vars)
 {
 	int argc, retval = 1, state, buf_size = 100;
@@ -1054,7 +529,7 @@ end:
 	return retval;
 }
 
-int32_t BET_send_turn_info(struct privatebet_info *bet, int32_t playerid,
+static int32_t bet_send_turn_info(struct privatebet_info *bet, int32_t playerid,
 			   int32_t cardid, int32_t card_type)
 {
 	cJSON *turninfo = NULL;
@@ -1083,7 +558,7 @@ int32_t bet_dcv_turn(cJSON *argjson, struct privatebet_info *bet,
 		for (int i = 0; i < no_of_hole_cards; i++) {
 			for (int j = 0; j < bet->maxplayers; j++) {
 				if (card_matrix[j][i] == 0) {
-					retval = BET_send_turn_info(
+					retval = bet_send_turn_info(
 						bet, j,
 						(i * bet->maxplayers) + j,
 						hole_card);
@@ -1097,7 +572,7 @@ int32_t bet_dcv_turn(cJSON *argjson, struct privatebet_info *bet,
 			for (int j = 0; j < bet->maxplayers; j++) {
 				if (card_matrix[j][i] == 0) {
 					if ((i - (no_of_hole_cards)) == 0) {
-						retval = BET_send_turn_info(
+						retval = bet_send_turn_info(
 							bet, j,
 							(no_of_hole_cards *
 							 bet->maxplayers) +
@@ -1107,7 +582,7 @@ int32_t bet_dcv_turn(cJSON *argjson, struct privatebet_info *bet,
 							flop_card_1);
 					} else if ((i - (no_of_hole_cards)) ==
 						   1) {
-						retval = BET_send_turn_info(
+						retval = bet_send_turn_info(
 							bet, j,
 							(no_of_hole_cards *
 							 bet->maxplayers) +
@@ -1117,7 +592,7 @@ int32_t bet_dcv_turn(cJSON *argjson, struct privatebet_info *bet,
 							flop_card_2);
 					} else if ((i - (no_of_hole_cards)) ==
 						   2) {
-						retval = BET_send_turn_info(
+						retval = bet_send_turn_info(
 							bet, j,
 							(no_of_hole_cards *
 							 bet->maxplayers) +
@@ -1136,7 +611,7 @@ int32_t bet_dcv_turn(cJSON *argjson, struct privatebet_info *bet,
 		     i++) {
 			for (int j = 0; j < bet->maxplayers; j++) {
 				if (card_matrix[j][i] == 0) {
-					retval = BET_send_turn_info(
+					retval = bet_send_turn_info(
 						bet, j,
 						(no_of_hole_cards *
 						 bet->maxplayers) +
@@ -1155,7 +630,7 @@ int32_t bet_dcv_turn(cJSON *argjson, struct privatebet_info *bet,
 		     i++) {
 			for (int j = 0; j < bet->maxplayers; j++) {
 				if (card_matrix[j][i] == 0) {
-					retval = BET_send_turn_info(
+					retval = bet_send_turn_info(
 						bet, j,
 						(no_of_hole_cards *
 						 bet->maxplayers) +
@@ -1190,7 +665,7 @@ end:
 	return retval;
 }
 
-int32_t BET_check_BVV_Ready(struct privatebet_info *bet)
+static int32_t bet_check_bvv_Ready(struct privatebet_info *bet)
 {
 	int32_t bytes, retval = -1;
 	char *rendered = NULL;
@@ -1211,7 +686,7 @@ int32_t BET_check_BVV_Ready(struct privatebet_info *bet)
 	return retval;
 }
 
-int32_t BET_create_invoice(cJSON *argjson, struct privatebet_info *bet,
+static int32_t bet_create_invoice(cJSON *argjson, struct privatebet_info *bet,
 			   struct privatebet_vars *vars)
 {
 	int argc, bytes, retval = 1;
@@ -1274,7 +749,7 @@ int32_t BET_create_invoice(cJSON *argjson, struct privatebet_info *bet,
 	return retval;
 }
 
-int32_t BET_create_betting_invoice(cJSON *argjson, struct privatebet_info *bet,
+static int32_t bet_create_betting_invoice(cJSON *argjson, struct privatebet_info *bet,
 				   struct privatebet_vars *vars)
 {
 	int argc, bytes, retval = 1;
@@ -1396,18 +871,6 @@ int32_t bet_receive_card(cJSON *playerCardInfo, struct privatebet_info *bet,
 				      no_of_turn_card] =
 			jint(playerCardInfo, "decoded_card");
 	}
-
-#if 0
-	printf("\nCard Matrix:\n");
-	for(int i=0;i<hand_size;i++)
-	{
-		for(int j=0;j<bet->maxplayers;j++)
-		{
-			printf("%d\t",card_matrix[j][i]);
-		}
-		printf("\n");
-	}
-#endif
 
 	if (hole_cards_drawn == 0) {
 		flag = 1;
@@ -1774,73 +1237,7 @@ end:
 	return retval;
 }
 
-void BET_establish_ln_channels(struct privatebet_info *bet)
-{
-	int argc;
-	char **argv = NULL;
-	cJSON *connectInfo = NULL;
-
-	argc = 4;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(100 * sizeof(char));
-	}
-	argv[3] = NULL;
-	argc = 3;
-	for (int i = 0; i < bet->maxplayers; i++) {
-		strcpy(argv[0], "lightning-cli");
-		strcpy(argv[1], "connect");
-		strcpy(argv[2], dcv_info.uri[i]);
-
-		connectInfo = cJSON_CreateObject();
-		make_command(argc, argv, &connectInfo);
-		// ln_bet(argc,argv,buf);
-		printf("\n%s:%d:Conncet Response:%s", __FUNCTION__, __LINE__,
-		       cJSON_Print(connectInfo));
-	}
-
-	if (argv) {
-		for (int i = 0; i < 4; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-}
-
-int BET_LN_check_if_peer_exists(char *channel_id)
-{
-	int argc, retval = 0;
-	char **argv = NULL;
-	cJSON *peerInfo = NULL;
-
-	argc = 4;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++)
-		argv[i] = (char *)malloc(100);
-
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "check-if-peer-exists");
-	strcpy(argv[2], channel_id);
-	argv[3] = NULL;
-	argc = 3;
-
-	peerInfo = cJSON_CreateObject();
-	make_command(argc, argv, &peerInfo);
-
-	if (strcmp(jstr(peerInfo, "peer-exists"), "true") == 0)
-		retval = 1;
-
-	if (argv) {
-		for (int i = 0; i < 4; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-	return retval;
-}
-int32_t BET_LN_check(struct privatebet_info *bet)
+int32_t bet_ln_check(struct privatebet_info *bet)
 {
 	char channel_id[100], channel_state;
 	int argc, retval = 1;
@@ -1936,35 +1333,7 @@ end:
 	return retval;
 }
 
-void BET_p2p_LN_close(struct privatebet_info *bet)
-{
-	int argc;
-	char **argv = NULL;
-	cJSON *closeInfo = NULL;
-	argc = 4;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++)
-		argv[i] = (char *)malloc(100 * sizeof(char));
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "close");
-	argv[3] = NULL;
-	argc = 3;
-	closeInfo = cJSON_CreateObject();
-	for (int i = 0; i < bet->maxplayers; i++) {
-		memset(argv[2], 0x00, sizeof(argv[2]));
-		strcpy(argv[2], strtok(dcv_info.uri[i], "@"));
-		make_command(argc, argv, &closeInfo);
-	}
-
-	if (argv) {
-		for (int i = 0; i < 4; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-}
-int32_t BET_award_winner(cJSON *argjson, struct privatebet_info *bet,
+static int32_t bet_award_winner(cJSON *argjson, struct privatebet_info *bet,
 			 struct privatebet_vars *vars)
 {
 	int argc, retval = 1;
@@ -2040,7 +1409,6 @@ int32_t BET_award_winner(cJSON *argjson, struct privatebet_info *bet,
 
 	if (strcmp(jstr(payResponse, "status"), "complete") == 0) {
 		printf("\nPayment Success\n");
-		// BET_p2p_LN_close(bet);
 	}
 
 end:
@@ -2053,7 +1421,7 @@ end:
 	}
 	return retval;
 }
-static void BET_push_joinInfo(cJSON *argjson, int32_t numplayers)
+static void bet_push_joinInfo(cJSON *argjson, int32_t numplayers)
 {
 	cJSON *joinInfo = cJSON_CreateObject();
 	cJSON_AddStringToObject(joinInfo, "method", "join_info");
@@ -2076,16 +1444,16 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet,
 					bet_player_join_req(argjson, bet, vars);
 				if (retval < 0)
 					goto end;
-				BET_push_joinInfo(argjson, bet->numplayers);
+				bet_push_joinInfo(argjson, bet->numplayers);
 				if (bet->numplayers == bet->maxplayers) {
 					printf("Table is filled\n");
-					retval = BET_LN_check(bet);
+					retval = bet_ln_check(bet);
 					if (retval < 0) {
-						printf("%s::%d::something wrong with BET_LN_check\n",
+						printf("%s::%d::something wrong with bet_ln_check\n",
 						       __FUNCTION__, __LINE__);
 						goto end;
 					}
-					BET_check_BVV_Ready(bet);
+					bet_check_bvv_Ready(bet);
 				}
 			}
 
@@ -2101,7 +1469,7 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet,
 								vars);
 			}
 		} else if (strcmp(method, "bvv_join") == 0) {
-			retval = BET_p2p_bvv_join(argjson, bet, vars);
+			retval = bet_dcv_bvv_join(argjson, bet, vars);
 		} else if ((strcmp(method, "init_b") == 0) ||
 			   (strcmp(method, "next_turn") == 0)) {
 			if (strcmp(method, "init_b") == 0) {
@@ -2120,11 +1488,11 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet,
 		} else if (strcmp(method, "playerCardInfo") == 0) {
 			retval = bet_receive_card(argjson, bet, vars);
 		} else if (strcmp(method, "invoiceRequest") == 0) {
-			retval = BET_create_invoice(argjson, bet, vars);
+			retval = bet_create_invoice(argjson, bet, vars);
 		} else if (strcmp(method, "bettingInvoiceRequest") == 0) {
-			retval = BET_create_betting_invoice(argjson, bet, vars);
+			retval = bet_create_betting_invoice(argjson, bet, vars);
 		} else if (strcmp(method, "claim") == 0) {
-			retval = BET_award_winner(argjson, bet, vars);
+			retval = bet_award_winner(argjson, bet, vars);
 		} else if (strcmp(method, "requestShare") == 0) {
 			rendered = cJSON_Print(argjson);
 			for (int i = 0; i < 2; i++) {
@@ -2182,7 +1550,6 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet,
 end:
 	return retval;
 }
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void bet_dcv_backend_loop(void *_ptr)
 {
