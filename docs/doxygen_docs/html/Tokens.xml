@@ -672,42 +672,42 @@
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>BET_p2p_bvv_join_init</Name>
+      <Name>bet_bvv_join_init</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
     </TokenIdentifier>
     <Path>dd/d93/client_8c.html</Path>
-    <Anchor>a3f6469fd1ea8ca29919ad26985ef1ee5</Anchor>
+    <Anchor>a34abc6db860e03c1ac45e4a0cc60c75a</Anchor>
     <DeclaredIn>client.c</DeclaredIn>
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>BET_p2p_connect</Name>
+      <Name>bet_bvv_connect</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
     </TokenIdentifier>
     <Path>dd/d93/client_8c.html</Path>
-    <Anchor>a9c3f895c06911dc250d31cf09b79c756</Anchor>
+    <Anchor>ae4364bdbf746f8389d371c6036a6b545</Anchor>
     <DeclaredIn>client.c</DeclaredIn>
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>BET_p2p_fundchannel</Name>
+      <Name>bet_player_fundchannel</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
     </TokenIdentifier>
     <Path>dd/d93/client_8c.html</Path>
-    <Anchor>ad129faeb97ca4aac051c0ffb71475fec</Anchor>
+    <Anchor>a5e0edf5f933f02de44629e3c0e502ec1</Anchor>
     <DeclaredIn>client.c</DeclaredIn>
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>BET_p2P_check_bvv_ready</Name>
+      <Name>bet_check_bvv_ready</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
     </TokenIdentifier>
     <Path>dd/d93/client_8c.html</Path>
-    <Anchor>a0178bc8a9e08a71d962ddce21e7ea4a8</Anchor>
+    <Anchor>a4ad2af1820b2b0e342828218f23f320f</Anchor>
     <DeclaredIn>client.c</DeclaredIn>
   </Token>
   <Token>
@@ -782,32 +782,32 @@
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>BET_p2p_betting_invoice</Name>
+      <Name>bet_player_betting_invoice</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
     </TokenIdentifier>
     <Path>dd/d93/client_8c.html</Path>
-    <Anchor>a72bf5bfd4c82026594d7bf2b31dd82ad</Anchor>
+    <Anchor>aad0c032fd04f6e8a2398273c1b438c96</Anchor>
     <DeclaredIn>client.c</DeclaredIn>
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>BET_p2p_winner</Name>
+      <Name>bet_player_winner</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
     </TokenIdentifier>
     <Path>dd/d93/client_8c.html</Path>
-    <Anchor>a45f9b20e0f05dc3dbffce294efe85b9a</Anchor>
+    <Anchor>af7ba085f6f1a0fd81f0ec7eff12faa15</Anchor>
     <DeclaredIn>client.c</DeclaredIn>
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>BET_p2p_bet_round</Name>
+      <Name>bet_player_bet_round</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
     </TokenIdentifier>
     <Path>dd/d93/client_8c.html</Path>
-    <Anchor>a25208fd40942a99f29b60342846bb543</Anchor>
+    <Anchor>ad3ea7038053ebf89ac283e9cd8c69930</Anchor>
     <DeclaredIn>client.c</DeclaredIn>
   </Token>
   <Token>
@@ -832,12 +832,12 @@
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>BET_p2p_client_ask_share</Name>
+      <Name>bet_player_ask_share</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
     </TokenIdentifier>
     <Path>dd/d93/client_8c.html</Path>
-    <Anchor>a6e2395da513cd4df02047281bf1bcc36</Anchor>
+    <Anchor>ae41060baf8bf1f8a80b49ddbfb85d334</Anchor>
     <DeclaredIn>client.c</DeclaredIn>
   </Token>
   <Token>
@@ -942,22 +942,22 @@
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>BET_find_channel_balance</Name>
+      <Name>bet_find_channel_balance</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
     </TokenIdentifier>
     <Path>dd/d93/client_8c.html</Path>
-    <Anchor>a19654eea514a6e737bbe43546ac602ad</Anchor>
+    <Anchor>aa8658785cefc47b902f9739f4c057ecd</Anchor>
     <DeclaredIn>client.c</DeclaredIn>
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>BET_check_player_stack</Name>
+      <Name>bet_check_player_stack</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
     </TokenIdentifier>
     <Path>dd/d93/client_8c.html</Path>
-    <Anchor>abea699cd66f862d7b7e6e589ddfa03f1</Anchor>
+    <Anchor>af0c4b735deff7caa8fdb0690f5fcf475</Anchor>
     <DeclaredIn>client.c</DeclaredIn>
   </Token>
   <Token>
@@ -1072,12 +1072,12 @@
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>BET_p2p_player_blinds_info</Name>
+      <Name>bet_player_blinds_info</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
     </TokenIdentifier>
     <Path>dd/d93/client_8c.html</Path>
-    <Anchor>a5911fa385f94a714fa6c97d2f5500dbb</Anchor>
+    <Anchor>aafa872bf2874caf5e37161bb1f74f053</Anchor>
     <DeclaredIn>client.c</DeclaredIn>
   </Token>
   <Token>
@@ -1142,16 +1142,6 @@
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>BET_rest_player_ready</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>dd/d93/client_8c.html</Path>
-    <Anchor>a07c8dc3e95c41f48eba333a38c42f179</Anchor>
-    <DeclaredIn>client.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
       <Name>ln_fundChannel</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
@@ -1168,36 +1158,6 @@
     </TokenIdentifier>
     <Path>dd/d93/client_8c.html</Path>
     <Anchor>a568e321cab9e12012475b221d8530454</Anchor>
-    <DeclaredIn>client.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_rest_player_ask_share</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>dd/d93/client_8c.html</Path>
-    <Anchor>a5edf9e5c06b7b05fd96d3685e0c4f338</Anchor>
-    <DeclaredIn>client.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_rest_player_get_own_share</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>dd/d93/client_8c.html</Path>
-    <Anchor>a82b28bed5a112333cad65833fec5b0e2</Anchor>
-    <DeclaredIn>client.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_rest_decode_card</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>dd/d93/client_8c.html</Path>
-    <Anchor>a90aa7b10c984a766e4a13f8aeb02f556</Anchor>
     <DeclaredIn>client.c</DeclaredIn>
   </Token>
   <Token>
@@ -1542,6 +1502,26 @@
   </Token>
   <Token>
     <TokenIdentifier>
+      <Name>lws_buf_bvv</Name>
+      <APILanguage>c</APILanguage>
+      <Type>data</Type>
+    </TokenIdentifier>
+    <Path>dd/d93/client_8c.html</Path>
+    <Anchor>a230d70f0c3046d76fe0d8a7da97b11fb</Anchor>
+    <DeclaredIn>client.c</DeclaredIn>
+  </Token>
+  <Token>
+    <TokenIdentifier>
+      <Name>lws_buf_length_bvv</Name>
+      <APILanguage>c</APILanguage>
+      <Type>data</Type>
+    </TokenIdentifier>
+    <Path>dd/d93/client_8c.html</Path>
+    <Anchor>aa075c466195ca84dfa726f2d53195d03</Anchor>
+    <DeclaredIn>client.c</DeclaredIn>
+  </Token>
+  <Token>
+    <TokenIdentifier>
       <Name>player_http_protocol</Name>
       <APILanguage>c</APILanguage>
       <Type>data</Type>
@@ -1568,26 +1548,6 @@
     </TokenIdentifier>
     <Path>dd/d93/client_8c.html</Path>
     <Anchor>a34646bfc439d4d74de5788b2788f6c8f</Anchor>
-    <DeclaredIn>client.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>lws_buf_bvv</Name>
-      <APILanguage>c</APILanguage>
-      <Type>data</Type>
-    </TokenIdentifier>
-    <Path>dd/d93/client_8c.html</Path>
-    <Anchor>a230d70f0c3046d76fe0d8a7da97b11fb</Anchor>
-    <DeclaredIn>client.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>lws_buf_length_bvv</Name>
-      <APILanguage>c</APILanguage>
-      <Type>data</Type>
-    </TokenIdentifier>
-    <Path>dd/d93/client_8c.html</Path>
-    <Anchor>aa075c466195ca84dfa726f2d53195d03</Anchor>
     <DeclaredIn>client.c</DeclaredIn>
   </Token>
   <Token>
@@ -3242,36 +3202,6 @@
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>BET_rest_from_dcv</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>df/da9/host_8c.html</Path>
-    <Anchor>a8b1f6bb7284b34b7a98556d15ebce4dc</Anchor>
-    <DeclaredIn>host.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_rest_from_bvv</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>df/da9/host_8c.html</Path>
-    <Anchor>a4a0ddf1904b4d79eb71bd87adb954608</Anchor>
-    <DeclaredIn>host.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_rest_from_player</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>df/da9/host_8c.html</Path>
-    <Anchor>ac07b1d62f829f6c1a17f54d8d5b1ef53</Anchor>
-    <DeclaredIn>host.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
       <Name>bet_chat</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
@@ -3308,146 +3238,6 @@
     </TokenIdentifier>
     <Path>df/da9/host_8c.html</Path>
     <Anchor>adbe3ab77bc01747b60c29a13f7cd8690</Anchor>
-    <DeclaredIn>host.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_rest_dcv_default</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>df/da9/host_8c.html</Path>
-    <Anchor>af48eb8c9921f365be8d697e76f6c93cd</Anchor>
-    <DeclaredIn>host.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_rest_client_join_req</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>df/da9/host_8c.html</Path>
-    <Anchor>abaa86f65a1aa94bb633d612dd872ad54</Anchor>
-    <DeclaredIn>host.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_rest_broadcast_table_info</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>df/da9/host_8c.html</Path>
-    <Anchor>a0255f00ad974231097d5cd8e0b064c4e</Anchor>
-    <DeclaredIn>host.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_rest_check_BVV_Ready</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>df/da9/host_8c.html</Path>
-    <Anchor>a15ed9e65819de504f324c40247054ec6</Anchor>
-    <DeclaredIn>host.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_rest_dcv_start_init</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>df/da9/host_8c.html</Path>
-    <Anchor>aca7adf7fe6eb1be6a74c5e639570d5c0</Anchor>
-    <DeclaredIn>host.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_rest_dcv_process_init_p</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>df/da9/host_8c.html</Path>
-    <Anchor>a0d6c6c522a5daf092bd11ceea1588dc3</Anchor>
-    <DeclaredIn>host.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_rest_dcv_deck_init_info</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>df/da9/host_8c.html</Path>
-    <Anchor>a91aea355ec66d2e59360f9ae913643a0</Anchor>
-    <DeclaredIn>host.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_rest_check_player_ready</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>df/da9/host_8c.html</Path>
-    <Anchor>a634e0258e414d8dbea7ab3a2120384a1</Anchor>
-    <DeclaredIn>host.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_rest_send_turn_info</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>df/da9/host_8c.html</Path>
-    <Anchor>a76251cfcb241c991f6a8769afd0ed4ff</Anchor>
-    <DeclaredIn>host.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_rest_dcv_LN_check</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>df/da9/host_8c.html</Path>
-    <Anchor>aac1ed76b9a6ae9980f499aa56a6a46b8</Anchor>
-    <DeclaredIn>host.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_rest_bvv_join</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>df/da9/host_8c.html</Path>
-    <Anchor>a75d1949d2e56aab9d81817e5807a5136</Anchor>
-    <DeclaredIn>host.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_rest_create_invoice</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>df/da9/host_8c.html</Path>
-    <Anchor>ae8be3b2e1c1e7cc440c234e7d5234ba6</Anchor>
-    <DeclaredIn>host.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_rest_DCV_create_invoice</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>df/da9/host_8c.html</Path>
-    <Anchor>af60c3670db1000a5755ba856fececaa6</Anchor>
-    <DeclaredIn>host.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_rest_DCV_winningClaim</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>df/da9/host_8c.html</Path>
-    <Anchor>ad75494813a249482054c13a2fe95d72d</Anchor>
     <DeclaredIn>host.c</DeclaredIn>
   </Token>
   <Token>
@@ -3512,12 +3302,12 @@
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>BET_p2p_bvv_join</Name>
+      <Name>bet_dcv_bvv_join</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
     </TokenIdentifier>
     <Path>df/da9/host_8c.html</Path>
-    <Anchor>ad25de1620622d07c09307119436e23c1</Anchor>
+    <Anchor>a4ef5468acf5b7e9079468541d5c72577</Anchor>
     <DeclaredIn>host.c</DeclaredIn>
   </Token>
   <Token>
@@ -3542,12 +3332,12 @@
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>BET_send_turn_info</Name>
+      <Name>bet_send_turn_info</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
     </TokenIdentifier>
     <Path>df/da9/host_8c.html</Path>
-    <Anchor>a365db996dc7101a2a29268d557d8bf09</Anchor>
+    <Anchor>a5aa313eb5aede5ab3c152519390fb42e</Anchor>
     <DeclaredIn>host.c</DeclaredIn>
   </Token>
   <Token>
@@ -3572,32 +3362,32 @@
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>BET_check_BVV_Ready</Name>
+      <Name>bet_check_bvv_Ready</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
     </TokenIdentifier>
     <Path>df/da9/host_8c.html</Path>
-    <Anchor>a09a42ecccecb3b6bda4bb0997e9b6f13</Anchor>
+    <Anchor>a90bcca4d0aeee5db50f13915bf280409</Anchor>
     <DeclaredIn>host.c</DeclaredIn>
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>BET_create_invoice</Name>
+      <Name>bet_create_invoice</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
     </TokenIdentifier>
     <Path>df/da9/host_8c.html</Path>
-    <Anchor>a3925277a8ed2adbdd141d9b28aa2c71d</Anchor>
+    <Anchor>a936dda54fe149da9e2104428419f24e0</Anchor>
     <DeclaredIn>host.c</DeclaredIn>
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>BET_create_betting_invoice</Name>
+      <Name>bet_create_betting_invoice</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
     </TokenIdentifier>
     <Path>df/da9/host_8c.html</Path>
-    <Anchor>a9651b87a5cfc14272baa9a040fb63cc5</Anchor>
+    <Anchor>a3d990524438302387f253eb15f4da292</Anchor>
     <DeclaredIn>host.c</DeclaredIn>
   </Token>
   <Token>
@@ -3652,62 +3442,32 @@
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>BET_establish_ln_channels</Name>
+      <Name>bet_ln_check</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
     </TokenIdentifier>
     <Path>df/da9/host_8c.html</Path>
-    <Anchor>ab10bd2334f3863c22752fe36e23fb406</Anchor>
+    <Anchor>a52ad122e76b59ba9de77f8f8043503e7</Anchor>
     <DeclaredIn>host.c</DeclaredIn>
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>BET_LN_check_if_peer_exists</Name>
+      <Name>bet_award_winner</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
     </TokenIdentifier>
     <Path>df/da9/host_8c.html</Path>
-    <Anchor>a0dcdb4751cb340767b4e0f2d05a58ba2</Anchor>
+    <Anchor>a195c93135325361eacfada5593143502</Anchor>
     <DeclaredIn>host.c</DeclaredIn>
   </Token>
   <Token>
     <TokenIdentifier>
-      <Name>BET_LN_check</Name>
+      <Name>bet_push_joinInfo</Name>
       <APILanguage>c</APILanguage>
       <Type>func</Type>
     </TokenIdentifier>
     <Path>df/da9/host_8c.html</Path>
-    <Anchor>a955fb8217b538dd2f02f91f9f3f03019</Anchor>
-    <DeclaredIn>host.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_p2p_LN_close</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>df/da9/host_8c.html</Path>
-    <Anchor>a02e3a4ee90fb00508d7535562ce4ea47</Anchor>
-    <DeclaredIn>host.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_award_winner</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>df/da9/host_8c.html</Path>
-    <Anchor>a9b9cf58400659709adfe4f50ddfa9c0c</Anchor>
-    <DeclaredIn>host.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_push_joinInfo</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>df/da9/host_8c.html</Path>
-    <Anchor>a7eaecff962dc54d68872b032349bf42f</Anchor>
+    <Anchor>a47f853e44ecdc0e3406571a7b370fbbb</Anchor>
     <DeclaredIn>host.c</DeclaredIn>
   </Token>
   <Token>
@@ -4112,6 +3872,16 @@
   </Token>
   <Token>
     <TokenIdentifier>
+      <Name>mutex</Name>
+      <APILanguage>c</APILanguage>
+      <Type>data</Type>
+    </TokenIdentifier>
+    <Path>df/da9/host_8c.html</Path>
+    <Anchor>a4acff8232e4aec9cd5c6dc200ac55ef3</Anchor>
+    <DeclaredIn>host.c</DeclaredIn>
+  </Token>
+  <Token>
+    <TokenIdentifier>
       <Name>protocols</Name>
       <APILanguage>c</APILanguage>
       <Type>data</Type>
@@ -4138,16 +3908,6 @@
     </TokenIdentifier>
     <Path>df/da9/host_8c.html</Path>
     <Anchor>afcd99fd3f865a01dd3dad789fa43e247</Anchor>
-    <DeclaredIn>host.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>mutex</Name>
-      <APILanguage>c</APILanguage>
-      <Type>data</Type>
-    </TokenIdentifier>
-    <Path>df/da9/host_8c.html</Path>
-    <Anchor>a4acff8232e4aec9cd5c6dc200ac55ef3</Anchor>
     <DeclaredIn>host.c</DeclaredIn>
   </Token>
   <Token>
@@ -5189,16 +4949,6 @@
     </TokenIdentifier>
     <Path>dc/d3d/states_8c.html</Path>
     <Anchor>ab602935874a768d0852d3b1e666b9ed1</Anchor>
-    <DeclaredIn>states.c</DeclaredIn>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>BET_rest_DCV_next_turn</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>dc/d3d/states_8c.html</Path>
-    <Anchor>a154b91aac41b30f79053eb5094a45ef1</Anchor>
     <DeclaredIn>states.c</DeclaredIn>
   </Token>
   <Token>
