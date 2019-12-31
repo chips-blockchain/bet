@@ -665,7 +665,7 @@ end:
 	return retval;
 }
 
-static int32_t bet_check_bvv_Ready(struct privatebet_info *bet)
+static int32_t bet_check_bvv_ready(struct privatebet_info *bet)
 {
 	int32_t bytes, retval = -1;
 	char *rendered = NULL;
@@ -1453,7 +1453,7 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet,
 						       __FUNCTION__, __LINE__);
 						goto end;
 					}
-					bet_check_bvv_Ready(bet);
+					bet_check_bvv_ready(bet);
 				}
 			}
 
