@@ -73,10 +73,6 @@ static int dealerPosition;
 
 int32_t no_of_signers, max_no_of_signers = 2, is_signed[CARDS777_MAXPLAYERS];
 
-/*
-Below are the API's which are written to support REST
-*/
-
 void dcv_lws_write(cJSON *data)
 {
 	if (!dcvDataToWrite)
