@@ -1,4 +1,4 @@
 *.o
 privatebet/bet
 *.sisc
-
+*.a
