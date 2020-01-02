@@ -2,47 +2,30 @@
 
 char *enc_share_str(char hexstr[177], struct enc_share x);
 struct enc_share get_API_enc_share(cJSON *obj);
-int32_t bet_bvv_init(cJSON *argjson, struct privatebet_info *bet,
-		     struct privatebet_vars *vars);
-int32_t bet_bvv_backend(cJSON *argjson, struct privatebet_info *bet,
-			struct privatebet_vars *vars);
+int32_t bet_bvv_init(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
+int32_t bet_bvv_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
 void bet_bvv_reset(struct privatebet_info *bet, struct privatebet_vars *vars);
 
-bits256 bet_decode_card(cJSON *argjson, struct privatebet_info *bet,
-			struct privatebet_vars *vars, int32_t cardid);
-int32_t bet_client_receive_share(cJSON *argjson, struct privatebet_info *bet,
-				 struct privatebet_vars *vars);
-int32_t bet_client_give_share(cJSON *argjson, struct privatebet_info *bet,
-			      struct privatebet_vars *vars);
-int32_t bet_get_own_share(cJSON *argjson, struct privatebet_info *bet,
-			  struct privatebet_vars *vars);
-int32_t bet_client_turn(cJSON *argjson, struct privatebet_info *bet,
-			struct privatebet_vars *vars);
-int32_t bet_client_bvv_init(cJSON *argjson, struct privatebet_info *bet,
-			    struct privatebet_vars *vars);
-int32_t bet_client_dcv_init(cJSON *dcv_info, struct privatebet_info *bet,
-			    struct privatebet_vars *vars);
-int32_t bet_client_init(cJSON *argjson, struct privatebet_info *bet,
-			struct privatebet_vars *vars);
-int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet,
-			    struct privatebet_vars *vars);
-int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet,
-			struct privatebet_vars *vars);
+bits256 bet_decode_card(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars, int32_t cardid);
+int32_t bet_client_receive_share(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
+int32_t bet_client_give_share(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
+int32_t bet_get_own_share(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
+int32_t bet_client_turn(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
+int32_t bet_client_bvv_init(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
+int32_t bet_client_dcv_init(cJSON *dcv_info, struct privatebet_info *bet, struct privatebet_vars *vars);
+int32_t bet_client_init(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
+int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
+int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
 void bet_player_backend_loop(void *_ptr);
 
 int32_t ln_get_channel_status(char *id);
-int32_t bet_player_ready(cJSON *argjson, struct privatebet_info *bet,
-			 struct privatebet_vars *vars);
-void bet_table_info(cJSON *argjson, struct privatebet_info *bet,
-		    struct privatebet_vars *vars);
-void display_cards(cJSON *argjson, struct privatebet_info *bet,
-		   struct privatebet_vars *vars);
-int32_t bet_player_reset(struct privatebet_info *bet,
-			 struct privatebet_vars *vars);
+int32_t bet_player_ready(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
+void bet_table_info(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
+void display_cards(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
+int32_t bet_player_reset(struct privatebet_info *bet, struct privatebet_vars *vars);
 
 void bet_player_frontend_loop();
-int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet,
-			   struct privatebet_vars *vars);
+int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
 int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson);
 void bet_bvv_backend_loop(void *_ptr);
 int32_t bet_bvv_frontend(struct lws *wsi, cJSON *argjson);
@@ -61,7 +44,6 @@ void ln_connect(char *id);
 void ln_check_peer_and_connect(char *id);
 
 void rest_push_cards(struct lws *wsi, cJSON *argjson, int32_t this_playerID);
-int32_t ln_pay_invoice(cJSON *argjson, struct privatebet_info *bet,
-		       struct privatebet_vars *vars);
+int32_t ln_pay_invoice(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
 void player_lws_write(cJSON *data);
 void rest_display_cards(cJSON *argjson, int32_t this_playerID);

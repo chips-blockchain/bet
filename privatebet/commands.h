@@ -9,8 +9,7 @@ cJSON *chips_transfer_funds(double amount, char *address);
 cJSON *chips_send_raw_tx(cJSON *signedTransaction);
 cJSON *chips_sign_raw_tx_with_wallet(char *rawtransaction);
 int32_t chips_publish_multisig_tx(char *tx);
-cJSON *chips_create_raw_multi_sig_tx(double amount, char *toaddress,
-				     char *fromaddress);
+cJSON *chips_create_raw_multi_sig_tx(double amount, char *toaddress, char *fromaddress);
 cJSON *chips_create_raw_tx(double amount, char *address);
 void chips_list_unspent();
 int32_t chips_get_block_count();

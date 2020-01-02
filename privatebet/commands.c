@@ -91,8 +91,7 @@ char *chips_get_new_address()
 
 	make_command(argc, argv, &newAddressInfo);
 
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__,
-	       cJSON_Print(newAddressInfo));
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(newAddressInfo));
 
 	if (argv) {
 		for (int i = 0; i < argc; i++) {
@@ -145,16 +144,14 @@ void chips_list_address_groupings()
 	make_command(argc, argv, &listaddressgroupingsInfo);
 
 	for (int i = 0; i < cJSON_GetArraySize(listaddressgroupingsInfo); i++) {
-		cJSON *addressInfo =
-			cJSON_GetArrayItem(listaddressgroupingsInfo, i);
+		cJSON *addressInfo = cJSON_GetArrayItem(listaddressgroupingsInfo, i);
 		for (int j = 0; j < cJSON_GetArraySize(addressInfo); j++) {
 			cJSON *temp = NULL;
 			temp = cJSON_GetArrayItem(addressInfo, j);
 			cJSON *address = cJSON_GetArrayItem(temp, 0);
 			if (chips_validate_address(cJSON_Print(address)) == 1) {
 				printf("%s::%f\n", cJSON_Print(address),
-				       atof(cJSON_Print(
-					       cJSON_GetArrayItem(temp, 1))));
+				       atof(cJSON_Print(cJSON_GetArrayItem(temp, 1))));
 			}
 		}
 	}
@@ -247,29 +244,25 @@ int32_t chips_publish_multisig_tx(char *tx)
 		cJSON_AddStringToObject(txInfo, "tx", tx);
 		rendered = cJSON_Print(txInfo);
 
-		bytes = nn_send(bet_dcv->pubsock, rendered, strlen(rendered),
-				0);
+		bytes = nn_send(bet_dcv->pubsock, rendered, strlen(rendered), 0);
 		if (bytes < 0)
 			retval = -1;
 	}
 	return retval;
 }
 
-cJSON *chips_create_raw_multi_sig_tx(double amount, char *toaddress,
-				     char *fromaddress)
+cJSON *chips_create_raw_multi_sig_tx(double amount, char *toaddress, char *fromaddress)
 {
 	char **argv = NULL, *changeAddress = NULL;
 	int argc, maxsize = 1024;
-	cJSON *listunspentInfo = NULL, *addressInfo = NULL, *txListInfo = NULL,
-	      *createTX = NULL;
+	cJSON *listunspentInfo = NULL, *addressInfo = NULL, *txListInfo = NULL, *createTX = NULL;
 	double balance, change, temp_balance = 0, fee = 0.0005;
 
 	balance = chips_get_balance();
 	txListInfo = cJSON_CreateArray();
 	addressInfo = cJSON_CreateObject();
 
-	printf("%s::%d::toaddress::%s::fromaddress::%s\n", __FUNCTION__,
-	       __LINE__, toaddress, fromaddress);
+	printf("%s::%d::toaddress::%s::fromaddress::%s\n", __FUNCTION__, __LINE__, toaddress, fromaddress);
 
 	if ((balance + fee) < amount) {
 		printf("%s::%d::Insufficient Funds\n", __FUNCTION__, __LINE__);
@@ -287,8 +280,7 @@ cJSON *chips_create_raw_multi_sig_tx(double amount, char *toaddress,
 		argc = 2;
 		make_command(argc, argv, &listunspentInfo);
 
-		for (int i = 0; i < cJSON_GetArraySize(listunspentInfo) - 1;
-		     i++) {
+		for (int i = 0; i < cJSON_GetArraySize(listunspentInfo) - 1; i++) {
 			cJSON *temp = cJSON_GetArrayItem(listunspentInfo, i);
 			cJSON *txInfo = cJSON_CreateObject();
 
@@ -297,30 +289,19 @@ cJSON *chips_create_raw_multi_sig_tx(double amount, char *toaddress,
 				if (temp_balance >= amount) {
 					changeAddress = jstr(temp, "address");
 					change = temp_balance - amount;
-					cJSON_AddStringToObject(txInfo, "txid",
-								jstr(temp,
-								     "txid"));
-					cJSON_AddNumberToObject(txInfo, "vout",
-								jint(temp,
-								     "vout"));
-					cJSON_AddItemToArray(txListInfo,
-							     txInfo);
+					cJSON_AddStringToObject(txInfo, "txid", jstr(temp, "txid"));
+					cJSON_AddNumberToObject(txInfo, "vout", jint(temp, "vout"));
+					cJSON_AddItemToArray(txListInfo, txInfo);
 					break;
 				} else {
-					cJSON_AddStringToObject(txInfo, "txid",
-								jstr(temp,
-								     "txid"));
-					cJSON_AddNumberToObject(txInfo, "vout",
-								jint(temp,
-								     "vout"));
-					cJSON_AddItemToArray(txListInfo,
-							     txInfo);
+					cJSON_AddStringToObject(txInfo, "txid", jstr(temp, "txid"));
+					cJSON_AddNumberToObject(txInfo, "vout", jint(temp, "vout"));
+					cJSON_AddItemToArray(txListInfo, txInfo);
 				}
 			}
 		}
 		if (change != 0) {
-			cJSON_AddNumberToObject(addressInfo, changeAddress,
-						change);
+			cJSON_AddNumberToObject(addressInfo, changeAddress, change);
 		}
 		argc = 4;
 		for (int i = 0; i < argc; i++)
@@ -348,8 +329,7 @@ cJSON *chips_create_raw_tx(double amount, char *address)
 {
 	char **argv = NULL, *changeAddress = NULL;
 	int argc, maxsize = 1024;
-	cJSON *listunspentInfo = NULL, *addressInfo = NULL, *txListInfo = NULL,
-	      *createTX = NULL;
+	cJSON *listunspentInfo = NULL, *addressInfo = NULL, *txListInfo = NULL, *createTX = NULL;
 	double balance, change, temp_balance = 0, fee = 0.0005;
 
 	balance = chips_get_balance();
@@ -379,41 +359,27 @@ cJSON *chips_create_raw_tx(double amount, char *address)
 		argc = 2;
 		make_command(argc, argv, &listunspentInfo);
 
-		for (int i = 0; i < cJSON_GetArraySize(listunspentInfo) - 1;
-		     i++) {
+		for (int i = 0; i < cJSON_GetArraySize(listunspentInfo) - 1; i++) {
 			cJSON *temp = cJSON_GetArrayItem(listunspentInfo, i);
 			cJSON *txInfo = cJSON_CreateObject();
-			if (strcmp(cJSON_Print(cJSON_GetObjectItem(
-					   temp, "spendable")),
-				   "true") == 0) {
+			if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "spendable")), "true") == 0) {
 				temp_balance += jdouble(temp, "amount");
 				if (temp_balance >= amount) {
 					changeAddress = jstr(temp, "address");
 					change = temp_balance - amount;
-					cJSON_AddStringToObject(txInfo, "txid",
-								jstr(temp,
-								     "txid"));
-					cJSON_AddNumberToObject(txInfo, "vout",
-								jint(temp,
-								     "vout"));
-					cJSON_AddItemToArray(txListInfo,
-							     txInfo);
+					cJSON_AddStringToObject(txInfo, "txid", jstr(temp, "txid"));
+					cJSON_AddNumberToObject(txInfo, "vout", jint(temp, "vout"));
+					cJSON_AddItemToArray(txListInfo, txInfo);
 					break;
 				} else {
-					cJSON_AddStringToObject(txInfo, "txid",
-								jstr(temp,
-								     "txid"));
-					cJSON_AddNumberToObject(txInfo, "vout",
-								jint(temp,
-								     "vout"));
-					cJSON_AddItemToArray(txListInfo,
-							     txInfo);
+					cJSON_AddStringToObject(txInfo, "txid", jstr(temp, "txid"));
+					cJSON_AddNumberToObject(txInfo, "vout", jint(temp, "vout"));
+					cJSON_AddItemToArray(txListInfo, txInfo);
 				}
 			}
 		}
 		if (change != 0) {
-			cJSON_AddNumberToObject(addressInfo, changeAddress,
-						change);
+			cJSON_AddNumberToObject(addressInfo, changeAddress, change);
 		}
 		argc = 4;
 		for (int i = 0; i < argc; i++)
@@ -455,10 +421,8 @@ void chips_list_unspent()
 	for (int i = 0; i < cJSON_GetArraySize(listunspentInfo) - 1; i++) {
 		cJSON *temp = cJSON_GetArrayItem(listunspentInfo, i);
 
-		if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "spendable")),
-			   "true") == 0) {
-			printf("%s::%d::%s\n", __FUNCTION__, __LINE__,
-			       cJSON_Print(temp));
+		if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "spendable")), "true") == 0) {
+			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
 		}
 	}
 
@@ -547,8 +511,7 @@ void check_ln_chips_sync()
 
 	while (flag) {
 		if ((chips_bh - ln_bh) > threshold_diff) {
-			printf("\rln is %d blocks behind chips network",
-			       (chips_bh - ln_bh));
+			printf("\rln is %d blocks behind chips network", (chips_bh - ln_bh));
 			fflush(stdout);
 		} else {
 			flag = 0;
@@ -608,18 +571,13 @@ int32_t chips_lock_transaction(int32_t fundAmount)
 		strcpy(argv[1], "listunspent");
 		make_command(argc, argv, &listunspentInfo);
 
-		printf("%s::%d::%s\n", __FUNCTION__, __LINE__,
-		       cJSON_Print(listunspentInfo));
+		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(listunspentInfo));
 
-		for (int i = 0; i < cJSON_GetArraySize(listunspentInfo) - 1;
-		     i++) {
+		for (int i = 0; i < cJSON_GetArraySize(listunspentInfo) - 1; i++) {
 			cJSON *temp = cJSON_GetArrayItem(listunspentInfo, i);
 
-			if (strcmp(cJSON_Print(cJSON_GetObjectItem(
-					   temp, "spendable")),
-				   "true") == 0) {
-				printf("%s::%d::%s\n", __FUNCTION__, __LINE__,
-				       cJSON_Print(temp));
+			if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "spendable")), "true") == 0) {
+				printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
 			}
 		}
 	}

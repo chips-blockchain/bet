@@ -54,20 +54,14 @@ static char *handstrs[16] = { "high card",
 			      "err",
 			      "err",
 			      "err" };
-static char *kickerstrs[16] = { "",	"kickers", "kicker",  "kickers",
-				"high", "high",	   "full of", "kicker",
-				"high", "err",	   "err",     "err",
-				"err",	"err",	   "err",     "err" };
+static char *kickerstrs[16] = { "",	"kickers", "kicker", "kickers", "high", "high", "full of", "kicker",
+				"high", "err",	   "err",    "err",	"err",	"err",	"err",	   "err" };
 
-static u32 CardValue[52] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-			     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-			     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-			     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+static u32 CardValue[52] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+			     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
-static u32 CardSuit[52] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-			    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-			    4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-			    8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8 };
+static u32 CardSuit[52] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+			    4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8 };
 
 int32_t cardstr(char *cardstr, uint8_t card)
 {
@@ -82,17 +76,13 @@ int32_t cardstr(char *cardstr, uint8_t card)
 	return (card);
 }
 
-static u32 CardSuitIdx[52] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-			       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-			       2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-			       3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 };
+static u32 CardSuitIdx[52] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			       2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 };
 
-static u32 CardMask[52] = {
-	1, 2, 4, 8, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x800, 0x1000,
-	1, 2, 4, 8, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x800, 0x1000,
-	1, 2, 4, 8, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x800, 0x1000,
-	1, 2, 4, 8, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x800, 0x1000
-};
+static u32 CardMask[52] = { 1, 2, 4, 8, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x800, 0x1000,
+			    1, 2, 4, 8, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x800, 0x1000,
+			    1, 2, 4, 8, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x800, 0x1000,
+			    1, 2, 4, 8, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x800, 0x1000 };
 
 static u32 FiveCardDrawScoreFast(u32 c0, u32 c1, u32 c2, u32 c3, u32 c4, u32 u)
 {
@@ -243,9 +233,7 @@ static u32 SevenCardDrawFlush(const u8 *h, const u32 c[7])
 		// Map the negative count (of which there is at most 1) to the suit
 		// index.
 
-		s = (((cc[0] & 8) | (cc[1] & 16)) |
-		     ((cc[2] & 32) | (cc[3] & 64))) >>
-		    3;
+		s = (((cc[0] & 8) | (cc[1] & 16)) | ((cc[2] & 32) | (cc[3] & 64))) >> 3;
 		s = LG2TAB[s];
 
 		// Work out the top 5 cards, so that the proper flush is also known ...
@@ -571,8 +559,7 @@ void DisplayHand5(const CardPileType *h)
 	out[0] = '\0';
 	for (i = 0; i < 5; i++)
 		DisplayCard(h->entry[i], out);
-	sprintf(out + strlen(out), " => %08X\n",
-		(int)five_card_draw_score(&h->entry[0]));
+	sprintf(out + strlen(out), " => %08X\n", (int)five_card_draw_score(&h->entry[0]));
 	printf("%s", out);
 }
 
@@ -617,39 +604,29 @@ uint32_t set_handstr(char *handstr, uint8_t cards[7], int32_t verbose)
 	str = handstrs[(score >> RANK_SHL) & 15];
 	if (verbose != 0) {
 		if (strcmp(kickerstr, "high") == 0)
-			sprintf(handstr, "%c%c high %s", cardstr2[0],
-				cardstr2[1], str);
+			sprintf(handstr, "%c%c high %s", cardstr2[0], cardstr2[1], str);
 		else if (strcmp(str, "full house") == 0)
-			sprintf(handstr, "%c%c full of %c%c", cardstr[0],
-				cardstr[1], cardstr2[0], cardstr2[1]);
+			sprintf(handstr, "%c%c full of %c%c", cardstr[0], cardstr[1], cardstr2[0], cardstr2[1]);
 		else if (strcmp(str, "three of a kind") == 0)
-			sprintf(handstr, "set of %c%c with kickers %c%c %c%c",
-				cardstr[0], cardstr[1], cardstr2[0],
+			sprintf(handstr, "set of %c%c with kickers %c%c %c%c", cardstr[0], cardstr[1], cardstr2[0],
 				cardstr2[1], cardstr2[3], cardstr2[4]);
 		else if (strcmp(str, "two pair") == 0)
-			sprintf(handstr,
-				"two pair %c%c and %c%c with %c%c kicker",
-				cardstr[0], cardstr[1], cardstr[3], cardstr[4],
-				cardstr2[0], cardstr2[1]);
+			sprintf(handstr, "two pair %c%c and %c%c with %c%c kicker", cardstr[0], cardstr[1], cardstr[3],
+				cardstr[4], cardstr2[0], cardstr2[1]);
 		else if (strcmp(str, "one pair") == 0)
-			sprintf(handstr, "pair of %c%c with %c%c kicker",
-				cardstr[0], cardstr[1], cardstr2[0],
+			sprintf(handstr, "pair of %c%c with %c%c kicker", cardstr[0], cardstr[1], cardstr2[0],
 				cardstr2[1]);
 		else
-			sprintf(handstr, "%s %s %s %s", str, cardstr, kickerstr,
-				cardstr2);
+			sprintf(handstr, "%s %s %s %s", str, cardstr, kickerstr, cardstr2);
 	} else {
 		if (strcmp(kickerstr, "high") == 0)
-			sprintf(handstr, "%c%c high %s", cardstr2[0],
-				cardstr2[1], str);
+			sprintf(handstr, "%c%c high %s", cardstr2[0], cardstr2[1], str);
 		else if (strcmp(str, "full house") == 0)
-			sprintf(handstr, "fullhouse %c%c %c%c", cardstr[0],
-				cardstr[1], cardstr2[0], cardstr2[1]);
+			sprintf(handstr, "fullhouse %c%c %c%c", cardstr[0], cardstr[1], cardstr2[0], cardstr2[1]);
 		else if (strcmp(str, "three of a kind") == 0)
 			sprintf(handstr, "trip %c%c", cardstr[0], cardstr[1]);
 		else if (strcmp(str, "two pair") == 0)
-			sprintf(handstr, "two pairs %c%c %c%c", cardstr[0],
-				cardstr[1], cardstr[3], cardstr[4]);
+			sprintf(handstr, "two pairs %c%c %c%c", cardstr[0], cardstr[1], cardstr[3], cardstr[4]);
 		else if (strcmp(str, "one pair") == 0)
 			sprintf(handstr, "pair %c%c", cardstr[0], cardstr[1]);
 		else
@@ -670,10 +647,9 @@ void DisplayHand7(char *handstr, uint8_t *cards)
 	y = SevenCardDrawScoreSlow(cards);
 	set_handstr(handstr, cards, 1);
 	if (x != y)
-		fprintf(stderr, "Error slow score %08x vs fast score %08x???\n",
-			y, x);
-	sprintf(out + strlen(out), " => %08x %6d %6d ->   (%s)", x,
-		(x >> SUBR_SHL) & SUBR_SHLMASK, x & SUBR_SHLMASK, handstr);
+		fprintf(stderr, "Error slow score %08x vs fast score %08x???\n", y, x);
+	sprintf(out + strlen(out), " => %08x %6d %6d ->   (%s)", x, (x >> SUBR_SHL) & SUBR_SHLMASK, x & SUBR_SHLMASK,
+		handstr);
 	printf("%s\n", out);
 }
 
@@ -701,16 +677,14 @@ void poker_test()
 	total = counter = 0;
 	while ((uint32_t)time(NULL) < starttime + 11) {
 		for (c = 0; c < 1000; c++, counter++) {
-			cards = Hands[c % (sizeof(Hands) / sizeof(*Hands))]
-					.entry;
+			cards = Hands[c % (sizeof(Hands) / sizeof(*Hands))].entry;
 			score = seven_card_draw_score(cards);
 			total += score;
 		}
 	}
 	char *mbstr(char *str, double val);
 	char str[65];
-	printf("counter.%llu %s in 10 seconds: ave score %llx\n",
-	       (long long)counter, mbstr(str, counter),
+	printf("counter.%llu %s in 10 seconds: ave score %llx\n", (long long)counter, mbstr(str, counter),
 	       (long long)(total / counter));
 #endif
 }
