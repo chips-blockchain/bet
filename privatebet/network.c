@@ -12,11 +12,42 @@
  * Removal or modification of this copyright notice is prohibited.            *
  *                                                                            *
  ******************************************************************************/
+#define _DEFAULT_SOURCE
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <net/if.h>
+#include <sys/ioctl.h>
+
 #include "network.h"
 #include "bet.h"
 #include "cards777.h"
 #include "common.h"
 #include "gfshare.h"
+
+char* bet_get_etho_ip()
+{
+	
+	struct ifreq ifr;
+	int fd;
+	unsigned char ip_address[15];
+
+	fd = socket(AF_INET, SOCK_DGRAM, 0);
+	ifr.ifr_addr.sa_family = AF_INET;
+	memcpy(ifr.ifr_name, "eth0", IFNAMSIZ-1);
+	ioctl(fd, SIOCGIFADDR, &ifr);
+	close(fd);
+	strcpy(ip_address,inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
+	return (inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));     
+}
+
 
 char *bet_tcp_sock_address(int32_t bindflag, char *str, char *ipaddr, uint16_t port)
 {
