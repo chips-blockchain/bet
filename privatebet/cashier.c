@@ -11,8 +11,8 @@ char msig_addr[64] = { "bQJTo8knsbSoU7k9oGADa6qfWGWyJtxC3o" };
 
 struct cashier *cashier_info = NULL;
 int32_t live_notaries = 0;
-int32_t notary_status[4] = {0};
-char* bet_check_notary_status()
+int32_t notary_status[4] = { 0 };
+char *bet_check_notary_status()
 {
 	int32_t c_subsock, c_pushsock;
 	uint16_t cashier_pubsub_port = 7901, cashier_pushpull_port = 7902;
@@ -27,7 +27,7 @@ char* bet_check_notary_status()
 		memset(cashier_info, 0x00, sizeof(struct cashier));
 		memset(bind_sub_addr, 0x00, sizeof(bind_sub_addr));
 		memset(bind_push_addr, 0x00, sizeof(bind_push_addr));
-		
+
 		bet_tcp_sock_address(0, bind_sub_addr, notary_node_ips[i], cashier_pubsub_port);
 		c_subsock = bet_nanosock(0, bind_sub_addr, NN_SUB);
 
@@ -49,27 +49,24 @@ char* bet_check_notary_status()
 			printf("\nError in joining the main thread for cashier");
 		}
 
-		if ((temp+1) == live_notaries)
+		if ((temp + 1) == live_notaries)
 			notary_status[i] = 1;
 	}
-	if(live_notaries>0)
-	{
+	if (live_notaries > 0) {
 		printf("Below notaries are live, you can choose one\n");
-		for(int i=0; i<no_of_notaries; i++) {
-			if(notary_status[i] == 1)
-				printf("%d. %s\n",i,notary_node_ips[i]);
+		for (int i = 0; i < no_of_notaries; i++) {
+			if (notary_status[i] == 1)
+				printf("%d. %s\n", i, notary_node_ips[i]);
 		}
-		
+
 		int choice;
-		top:
-			printf("Enter your choice::\n");
-			scanf("%d",&choice);
-			if(((choice>=0)&&(choice<no_of_notaries))&&(notary_status[choice]==1))
-			{
-				return notary_node_ips[choice];
-			}
-			else
-				goto top;
+	top:
+		printf("Enter your choice::\n");
+		scanf("%d", &choice);
+		if (((choice >= 0) && (choice < no_of_notaries)) && (notary_status[choice] == 1)) {
+			return notary_node_ips[choice];
+		} else
+			goto top;
 	}
 	return NULL;
 }

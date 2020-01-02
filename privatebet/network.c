@@ -32,22 +32,20 @@
 #include "common.h"
 #include "gfshare.h"
 
-char* bet_get_etho_ip()
+char *bet_get_etho_ip()
 {
-	
 	struct ifreq ifr;
 	int fd;
 	unsigned char ip_address[15];
 
 	fd = socket(AF_INET, SOCK_DGRAM, 0);
 	ifr.ifr_addr.sa_family = AF_INET;
-	memcpy(ifr.ifr_name, "eth0", IFNAMSIZ-1);
+	memcpy(ifr.ifr_name, "eth0", IFNAMSIZ - 1);
 	ioctl(fd, SIOCGIFADDR, &ifr);
 	close(fd);
-	strcpy(ip_address,inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
-	return (inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));     
+	strcpy(ip_address, inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
+	return (inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
 }
-
 
 char *bet_tcp_sock_address(int32_t bindflag, char *str, char *ipaddr, uint16_t port)
 {

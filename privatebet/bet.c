@@ -64,7 +64,6 @@ static void bet_cashier_client_initialize(char *node_ip, const int32_t port)
 	cashier_info->c_pushsock = pushsock;
 }
 
-
 static void bet_player_initialize(char *dcv_ip, const int32_t port)
 {
 	int32_t subsock = -1, pushsock = -1;
@@ -88,12 +87,12 @@ static void bet_player_initialize(char *dcv_ip, const int32_t port)
 	bet_info_set(bet_player, "demo", poker_deck_size, 0, max_players);
 }
 
-static void bet_player_thrd(char *dcv_ip, const int32_t port,char *node_ip, const int32_t c_port)
+static void bet_player_thrd(char *dcv_ip, const int32_t port, char *node_ip, const int32_t c_port)
 {
 	pthread_t player_thrd, player_backend, client_thrd;
 
 	bet_player_initialize(dcv_ip, port);
-	bet_cashier_client_initialize(node_ip,c_port);
+	bet_cashier_client_initialize(node_ip, c_port);
 	if (OS_thread_create(&player_thrd, NULL, (void *)bet_player_backend_loop, (void *)bet_player) != 0) {
 		printf("error in launching bet_player_backend_loop\n");
 		exit(-1);
@@ -142,12 +141,12 @@ static void bet_bvv_initialize(char *dcv_ip, const int32_t port)
 	bet_info_set(bet_bvv, "demo", poker_deck_size, 0, max_players);
 }
 
-static void bet_bvv_thrd(char *dcv_ip, const int32_t port,char *node_ip, const int32_t c_port)
+static void bet_bvv_thrd(char *dcv_ip, const int32_t port, char *node_ip, const int32_t c_port)
 {
-	pthread_t bvv_thrd, bvv_backend,client_thrd;
+	pthread_t bvv_thrd, bvv_backend, client_thrd;
 
 	bet_bvv_initialize(dcv_ip, port);
-	bet_cashier_client_initialize(node_ip,c_port);
+	bet_cashier_client_initialize(node_ip, c_port);
 	if (OS_thread_create(&bvv_thrd, NULL, (void *)bet_bvv_backend_loop, (void *)bet_bvv) != 0) {
 		printf("error launching bet_bvv_backend_loop\n");
 		exit(-1);
@@ -197,12 +196,12 @@ static void bet_dcv_initialize(char *dcv_ip, const int32_t port)
 	bet_info_set(bet_dcv, "demo", poker_deck_size, 0, max_players);
 }
 
-static void bet_dcv_thrd(char *dcv_ip, const int32_t port,char *node_ip, const int32_t c_port)
+static void bet_dcv_thrd(char *dcv_ip, const int32_t port, char *node_ip, const int32_t c_port)
 {
 	pthread_t live_thrd, dcv_backend, dcv_thrd, client_thrd;
 
 	bet_dcv_initialize(dcv_ip, port);
-	bet_cashier_client_initialize(node_ip,c_port);
+	bet_cashier_client_initialize(node_ip, c_port);
 	if (OS_thread_create(&live_thrd, NULL, (void *)bet_dcv_live_loop, (void *)bet_dcv) != 0) {
 		printf("error launching bet_dcv_live_loop]n");
 		exit(-1);
@@ -234,7 +233,6 @@ static void bet_dcv_thrd(char *dcv_ip, const int32_t port,char *node_ip, const i
 		printf("\nError in joining the main thread for dcv_thrd");
 	}
 }
-
 
 static void bet_cashier_server_initialize(char *node_ip, const int32_t port)
 {
@@ -270,25 +268,25 @@ static void bet_cashier_server_thrd(char *node_ip, const int32_t port)
 int main(int argc, char **argv)
 {
 	uint16_t port = 7797 + 1;
-	uint16_t cashier_pub_sub_port = 7901,cashier_push_pull_port = 7902;
-	char dcv_ip[20],node_ip[20];
-	
+	uint16_t cashier_pub_sub_port = 7901, cashier_push_pull_port = 7902;
+	char dcv_ip[20], node_ip[20];
+
 	OS_init();
 	libgfshare_init();
 	check_ln_chips_sync();
 	if (argc == 3) {
 		strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
 		strncpy(node_ip, bet_check_notary_status(), sizeof(node_ip));
-		printf("notary chosen::%s\n",node_ip);
+		printf("notary chosen::%s\n", node_ip);
 		if (strcmp(argv[1], "dcv") == 0) {
-			bet_dcv_thrd(dcv_ip, port,node_ip,cashier_push_pull_port);
+			bet_dcv_thrd(dcv_ip, port, node_ip, cashier_push_pull_port);
 		} else if (strcmp(argv[1], "bvv") == 0) {
-			bet_bvv_thrd(dcv_ip, port,node_ip,cashier_push_pull_port);
+			bet_bvv_thrd(dcv_ip, port, node_ip, cashier_push_pull_port);
 		} else if (strcmp(argv[1], "player") == 0) {
-			bet_player_thrd(dcv_ip, port,node_ip,cashier_push_pull_port);
-		} 
+			bet_player_thrd(dcv_ip, port, node_ip, cashier_push_pull_port);
+		}
 	} else if ((argc == 2) && (strcmp(argv[1], "cashier") == 0)) {
-			bet_cashier_server_thrd(bet_get_etho_ip(),cashier_pub_sub_port);
+		bet_cashier_server_thrd(bet_get_etho_ip(), cashier_pub_sub_port);
 	} else {
 		printf("\nInvalid Usage");
 		printf("\nFor DCV: ./bet dcv <dcv_ip_address>");
