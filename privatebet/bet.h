@@ -154,7 +154,7 @@ struct deck_bvv_info {
 };
 
 struct cashier {
-	int32_t pullsock, pubsock;
+	int32_t c_pullsock, c_pubsock, c_subsock, c_pushsock;
 	char addr[67];
 };
 

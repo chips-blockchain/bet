@@ -1205,7 +1205,7 @@ static int32_t bet_award_winner(cJSON *argjson, struct privatebet_info *bet, str
 
 		fund_channel_info = cJSON_CreateObject();
 		make_command(argc, argv, &fund_channel_info);
-	
+
 		if (jint(fund_channel_info, "code") != 0) {
 			retval = -1;
 			printf("\n%s:%d: Message:%s", __FUNCTION__, __LINE__, jstr(fund_channel_info, "message"));
