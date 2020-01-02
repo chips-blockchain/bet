@@ -70,6 +70,29 @@ static void bet_player_initialize(char *host_ip, const int32_t port)
 	bet_info_set(bet_player, "demo", poker_deck_size, 0, max_players);
 }
 
+static void bet_player_thrd(char *host_ip, const int32_t port)
+{
+	pthread_t player_thrd, player_backend;
+
+	bet_player_initialize(host_ip, port);
+	if (OS_thread_create(&player_thrd, NULL, (void *)bet_player_backend_loop, (void *)bet_player) != 0) {
+		printf("error in launching bet_player_backend_loop\n");
+		exit(-1);
+	}
+	if (OS_thread_create(&player_backend, NULL, (void *)bet_player_frontend_loop, NULL) != 0) {
+		printf("error launching bet_player_frontend_loop\n");
+		exit(-1);
+	}
+
+	if (pthread_join(player_thrd, NULL)) {
+		printf("\nError in joining the main thread for player_thrd");
+	}
+
+	if (pthread_join(player_backend, NULL)) {
+		printf("\nError in joining the main thread for player_backend");
+	}
+}
+
 static void bet_bvv_initialize(char *host_ip, const int32_t port)
 {
 	int32_t subsock = -1, pushsock = -1;
@@ -93,6 +116,26 @@ static void bet_bvv_initialize(char *host_ip, const int32_t port)
 	bet_info_set(bet_bvv, "demo", poker_deck_size, 0, max_players);
 }
 
+static void bet_bvv_thrd(char *host_ip, const int32_t port)
+{
+	pthread_t bvv_thrd, bvv_backend;
+
+	bet_bvv_initialize(host_ip, port);
+	if (OS_thread_create(&bvv_thrd, NULL, (void *)bet_bvv_backend_loop, (void *)bet_bvv) != 0) {
+		printf("error launching bet_bvv_backend_loop\n");
+		exit(-1);
+	}
+	if (OS_thread_create(&bvv_backend, NULL, (void *)bet_bvv_frontend_loop, NULL) != 0) {
+		printf("error launching bet_bvv_frontend_loop\n");
+		exit(-1);
+	}
+	if (pthread_join(bvv_backend, NULL)) {
+		printf("\nError in joining the main thread for bvv_backend");
+	}
+	if (pthread_join(bvv_thrd, NULL)) {
+		printf("\nError in joining the main thread for bvv_thrd");
+	}
+}
 static void bet_dcv_initialize(char *host_ip, const int32_t port)
 {
 	int32_t pubsock = -1, pullsock = -1;
@@ -120,85 +163,62 @@ static void bet_dcv_initialize(char *host_ip, const int32_t port)
 	bet_info_set(bet_dcv, "demo", poker_deck_size, 0, max_players);
 }
 
+static void bet_dcv_thrd(char *host_ip, const int32_t port)
+{
+	pthread_t live_thrd, dcv_backend, dcv_thrd;
+
+	bet_dcv_initialize(host_ip, port);
+	if (OS_thread_create(&live_thrd, NULL, (void *)bet_dcv_live_loop, (void *)bet_dcv) != 0) {
+		printf("error launching bet_dcv_live_loop]n");
+		exit(-1);
+	}
+
+	if (OS_thread_create(&dcv_backend, NULL, (void *)bet_dcv_backend_loop, (void *)bet_dcv) != 0) {
+		printf("error launching bet_dcv_backend_loop\n");
+		exit(-1);
+	}
+	if (OS_thread_create(&dcv_thrd, NULL, (void *)bet_dcv_frontend_loop, NULL) != 0) {
+		printf("error launching bet_dcv_frontend_loop\n");
+		exit(-1);
+	}
+
+	if (pthread_join(live_thrd, NULL)) {
+		printf("\nError in joining the main thread for live_thrd");
+	}
+	if (pthread_join(dcv_backend, NULL)) {
+		printf("\nError in joining the main thread for dcv_backend");
+	}
+	if (pthread_join(dcv_thrd, NULL)) {
+		printf("\nError in joining the main thread for dcv_thrd");
+	}
+}
+
 int main(int argc, char **argv)
 {
 	uint16_t port = 7797 + 1;
 	char hostip[20];
-	pthread_t dcv_thrd, bvv_thrd, player_thrd, dcv_backend, bvv_backend, player_backend, live_thrd;
-
-	if (argc >= 2)
-		strncpy(hostip, argv[2], sizeof(hostip));
-	else
-		exit(-1);
 
 	OS_init();
 	libgfshare_init();
 	check_ln_chips_sync();
 
-	if ((argc >= 2) && (strcmp(argv[1], "dcv") == 0)) {
-		bet_dcv_initialize(hostip, port);
-		if (OS_thread_create(&live_thrd, NULL, (void *)bet_dcv_live_loop, (void *)bet_dcv) != 0) {
-			printf("error launching bet_dcv_live_loop]n");
-			exit(-1);
-		}
-
-		if (OS_thread_create(&dcv_backend, NULL, (void *)bet_dcv_backend_loop, (void *)bet_dcv) != 0) {
-			printf("error launching bet_dcv_backend_loop\n");
-			exit(-1);
-		}
-		if (OS_thread_create(&dcv_thrd, NULL, (void *)bet_dcv_frontend_loop, NULL) != 0) {
-			printf("error launching bet_dcv_frontend_loop\n");
-			exit(-1);
-		}
-
-		if (pthread_join(live_thrd, NULL)) {
-			printf("\nError in joining the main thread for live_thrd");
-		}
-		if (pthread_join(dcv_backend, NULL)) {
-			printf("\nError in joining the main thread for dcv_backend");
-		}
-		if (pthread_join(dcv_thrd, NULL)) {
-			printf("\nError in joining the main thread for dcv_thrd");
-		}
-	} else if ((argc == 3) && (strcmp(argv[1], "bvv") == 0)) {
-		bet_bvv_initialize(hostip, port);
-		if (OS_thread_create(&bvv_thrd, NULL, (void *)bet_bvv_backend_loop, (void *)bet_bvv) != 0) {
-			printf("error launching bet_bvv_backend_loop\n");
-			exit(-1);
-		}
-		if (OS_thread_create(&bvv_backend, NULL, (void *)bet_bvv_frontend_loop, NULL) != 0) {
-			printf("error launching bet_bvv_frontend_loop\n");
-			exit(-1);
-		}
-		if (pthread_join(bvv_backend, NULL)) {
-			printf("\nError in joining the main thread for bvv_backend");
-		}
-		if (pthread_join(bvv_thrd, NULL)) {
-			printf("\nError in joining the main thread for bvv_thrd");
-		}
-	} else if ((argc == 3) && (strcmp(argv[1], "player") == 0)) {
-		bet_player_initialize(hostip, port);
-		if (OS_thread_create(&player_thrd, NULL, (void *)bet_player_backend_loop, (void *)bet_player) != 0) {
-			printf("error in launching bet_player_backend_loop\n");
-			exit(-1);
-		}
-		if (OS_thread_create(&player_backend, NULL, (void *)bet_player_frontend_loop, NULL) != 0) {
-			printf("error launching bet_player_frontend_loop\n");
-			exit(-1);
-		}
-
-		if (pthread_join(player_thrd, NULL)) {
-			printf("\nError in joining the main thread for player_thrd");
-		}
-
-		if (pthread_join(player_backend, NULL)) {
-			printf("\nError in joining the main thread for player_backend");
+	if (argc >= 2) {
+		strncpy(hostip, argv[2], sizeof(hostip));
+		if (strcmp(argv[1], "dcv") == 0) {
+			bet_dcv_thrd(hostip, port);
+		} else if (strcmp(argv[1], "bvv") == 0) {
+			bet_bvv_thrd(hostip, port);
+		} else if (strcmp(argv[1], "player") == 0) {
+			bet_player_thrd(hostip, port);
+		} else if (strcmp(argv[1], "cashier") == 0) {
+			// it needs to be implemented
 		}
 	} else {
 		printf("\nInvalid Usage");
-		printf("\nFor DCV: ./bet dcv");
-		printf("\nFor BVV: ./bet bvv");
-		printf("\nFor Player: ./bet player player_id");
+		printf("\nFor DCV: ./bet dcv <dcv_ip_address>");
+		printf("\nFor BVV: ./bet bvv <dcv_ip_address>");
+		printf("\nFor Player: ./bet player <dcv_ip_address>");
+		printf("\nFor Cashier: ./bet player <cashier_ip_address>");
 	}
 	return 0;
 }
