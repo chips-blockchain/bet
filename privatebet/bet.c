@@ -47,15 +47,33 @@ static const int32_t poker_deck_size = 52;
 
 const char *rootAddress = "RSdMRYeeouw3hepxNgUzHn34qFhn1tsubb"; // donation Address
 
-static void bet_player_initialize(char *host_ip, const int32_t port)
+static void bet_cashier_client_initialize(char *node_ip, const int32_t port)
 {
 	int32_t subsock = -1, pushsock = -1;
 	char bind_sub_addr[128], bind_push_addr[128];
 
-	bet_tcp_sock_address(0, bind_sub_addr, host_ip, port);
+	bet_tcp_sock_address(0, bind_sub_addr, node_ip, port);
 	subsock = bet_nanosock(0, bind_sub_addr, NN_SUB);
 
-	bet_tcp_sock_address(0, bind_push_addr, host_ip, port + 1);
+	bet_tcp_sock_address(0, bind_push_addr, node_ip, port + 1);
+	pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
+
+	cashier_info = calloc(1, sizeof(struct cashier));
+
+	cashier_info->c_subsock = subsock;
+	cashier_info->c_pushsock = pushsock;
+}
+
+
+static void bet_player_initialize(char *dcv_ip, const int32_t port)
+{
+	int32_t subsock = -1, pushsock = -1;
+	char bind_sub_addr[128], bind_push_addr[128];
+
+	bet_tcp_sock_address(0, bind_sub_addr, dcv_ip, port);
+	subsock = bet_nanosock(0, bind_sub_addr, NN_SUB);
+
+	bet_tcp_sock_address(0, bind_push_addr, dcv_ip, port + 1);
 	pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
 
 	player_vars = calloc(1, sizeof(*player_vars));
@@ -70,11 +88,12 @@ static void bet_player_initialize(char *host_ip, const int32_t port)
 	bet_info_set(bet_player, "demo", poker_deck_size, 0, max_players);
 }
 
-static void bet_player_thrd(char *host_ip, const int32_t port)
+static void bet_player_thrd(char *dcv_ip, const int32_t port,char *node_ip, const int32_t c_port)
 {
-	pthread_t player_thrd, player_backend;
+	pthread_t player_thrd, player_backend, client_thrd;
 
-	bet_player_initialize(host_ip, port);
+	bet_player_initialize(dcv_ip, port);
+	bet_cashier_client_initialize(node_ip,c_port);
 	if (OS_thread_create(&player_thrd, NULL, (void *)bet_player_backend_loop, (void *)bet_player) != 0) {
 		printf("error in launching bet_player_backend_loop\n");
 		exit(-1);
@@ -82,6 +101,13 @@ static void bet_player_thrd(char *host_ip, const int32_t port)
 	if (OS_thread_create(&player_backend, NULL, (void *)bet_player_frontend_loop, NULL) != 0) {
 		printf("error launching bet_player_frontend_loop\n");
 		exit(-1);
+	}
+	if (OS_thread_create(&client_thrd, NULL, (void *)bet_cashier_client_loop, (void *)cashier_info) != 0) {
+		printf("error launching bet_dcv_live_loop]n");
+		exit(-1);
+	}
+	if (pthread_join(client_thrd, NULL)) {
+		printf("\nError in joining the main thread for live_thrd");
 	}
 
 	if (pthread_join(player_thrd, NULL)) {
@@ -93,15 +119,15 @@ static void bet_player_thrd(char *host_ip, const int32_t port)
 	}
 }
 
-static void bet_bvv_initialize(char *host_ip, const int32_t port)
+static void bet_bvv_initialize(char *dcv_ip, const int32_t port)
 {
 	int32_t subsock = -1, pushsock = -1;
 	char bind_sub_addr[128], bind_push_addr[128];
 
-	bet_tcp_sock_address(0, bind_sub_addr, host_ip, port);
+	bet_tcp_sock_address(0, bind_sub_addr, dcv_ip, port);
 	subsock = bet_nanosock(0, bind_sub_addr, NN_SUB);
 
-	bet_tcp_sock_address(0, bind_push_addr, host_ip, port + 1);
+	bet_tcp_sock_address(0, bind_push_addr, dcv_ip, port + 1);
 	pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
 
 	bvv_vars = calloc(1, sizeof(*bvv_vars));
@@ -116,11 +142,12 @@ static void bet_bvv_initialize(char *host_ip, const int32_t port)
 	bet_info_set(bet_bvv, "demo", poker_deck_size, 0, max_players);
 }
 
-static void bet_bvv_thrd(char *host_ip, const int32_t port)
+static void bet_bvv_thrd(char *dcv_ip, const int32_t port,char *node_ip, const int32_t c_port)
 {
-	pthread_t bvv_thrd, bvv_backend;
+	pthread_t bvv_thrd, bvv_backend,client_thrd;
 
-	bet_bvv_initialize(host_ip, port);
+	bet_bvv_initialize(dcv_ip, port);
+	bet_cashier_client_initialize(node_ip,c_port);
 	if (OS_thread_create(&bvv_thrd, NULL, (void *)bet_bvv_backend_loop, (void *)bet_bvv) != 0) {
 		printf("error launching bet_bvv_backend_loop\n");
 		exit(-1);
@@ -129,6 +156,13 @@ static void bet_bvv_thrd(char *host_ip, const int32_t port)
 		printf("error launching bet_bvv_frontend_loop\n");
 		exit(-1);
 	}
+	if (OS_thread_create(&client_thrd, NULL, (void *)bet_cashier_client_loop, (void *)cashier_info) != 0) {
+		printf("error launching bet_dcv_live_loop]n");
+		exit(-1);
+	}
+	if (pthread_join(client_thrd, NULL)) {
+		printf("\nError in joining the main thread for live_thrd");
+	}
 	if (pthread_join(bvv_backend, NULL)) {
 		printf("\nError in joining the main thread for bvv_backend");
 	}
@@ -136,15 +170,15 @@ static void bet_bvv_thrd(char *host_ip, const int32_t port)
 		printf("\nError in joining the main thread for bvv_thrd");
 	}
 }
-static void bet_dcv_initialize(char *host_ip, const int32_t port)
+static void bet_dcv_initialize(char *dcv_ip, const int32_t port)
 {
 	int32_t pubsock = -1, pullsock = -1;
 	char bind_pub_addr[128], bind_pull_addr[128];
 
-	bet_tcp_sock_address(0, bind_pub_addr, host_ip, port);
+	bet_tcp_sock_address(0, bind_pub_addr, dcv_ip, port);
 	pubsock = bet_nanosock(1, bind_pub_addr, NN_PUB);
 
-	bet_tcp_sock_address(0, bind_pull_addr, host_ip, port + 1);
+	bet_tcp_sock_address(0, bind_pull_addr, dcv_ip, port + 1);
 	pullsock = bet_nanosock(1, bind_pull_addr, NN_PULL);
 
 	bet_dcv = calloc(1, sizeof(struct privatebet_info));
@@ -163,11 +197,12 @@ static void bet_dcv_initialize(char *host_ip, const int32_t port)
 	bet_info_set(bet_dcv, "demo", poker_deck_size, 0, max_players);
 }
 
-static void bet_dcv_thrd(char *host_ip, const int32_t port)
+static void bet_dcv_thrd(char *dcv_ip, const int32_t port,char *node_ip, const int32_t c_port)
 {
-	pthread_t live_thrd, dcv_backend, dcv_thrd;
+	pthread_t live_thrd, dcv_backend, dcv_thrd, client_thrd;
 
-	bet_dcv_initialize(host_ip, port);
+	bet_dcv_initialize(dcv_ip, port);
+	bet_cashier_client_initialize(node_ip,c_port);
 	if (OS_thread_create(&live_thrd, NULL, (void *)bet_dcv_live_loop, (void *)bet_dcv) != 0) {
 		printf("error launching bet_dcv_live_loop]n");
 		exit(-1);
@@ -181,6 +216,13 @@ static void bet_dcv_thrd(char *host_ip, const int32_t port)
 		printf("error launching bet_dcv_frontend_loop\n");
 		exit(-1);
 	}
+	if (OS_thread_create(&client_thrd, NULL, (void *)bet_cashier_client_loop, (void *)cashier_info) != 0) {
+		printf("error launching bet_dcv_live_loop]n");
+		exit(-1);
+	}
+	if (pthread_join(client_thrd, NULL)) {
+		printf("\nError in joining the main thread for live_thrd");
+	}
 
 	if (pthread_join(live_thrd, NULL)) {
 		printf("\nError in joining the main thread for live_thrd");
@@ -193,26 +235,60 @@ static void bet_dcv_thrd(char *host_ip, const int32_t port)
 	}
 }
 
+
+static void bet_cashier_server_initialize(char *node_ip, const int32_t port)
+{
+	int32_t pubsock = -1, pullsock = -1;
+	char bind_pub_addr[128], bind_pull_addr[128];
+
+	bet_tcp_sock_address(0, bind_pub_addr, node_ip, port);
+	pubsock = bet_nanosock(1, bind_pub_addr, NN_PUB);
+
+	bet_tcp_sock_address(0, bind_pull_addr, node_ip, port + 1);
+	pullsock = bet_nanosock(1, bind_pull_addr, NN_PULL);
+
+	cashier_info = calloc(1, sizeof(struct cashier));
+
+	cashier_info->c_pubsock = pubsock;
+	cashier_info->c_pullsock = pullsock;
+}
+
+static void bet_cashier_server_thrd(char *node_ip, const int32_t port)
+{
+	pthread_t server_thrd;
+
+	bet_cashier_server_initialize(node_ip, port);
+	if (OS_thread_create(&server_thrd, NULL, (void *)bet_cashier_server_loop, (void *)cashier_info) != 0) {
+		printf("error launching bet_dcv_live_loop]n");
+		exit(-1);
+	}
+	if (pthread_join(server_thrd, NULL)) {
+		printf("\nError in joining the main thread for live_thrd");
+	}
+}
+
 int main(int argc, char **argv)
 {
 	uint16_t port = 7797 + 1;
-	char hostip[20];
-
+	uint16_t cashier_pub_sub_port = 7901,cashier_push_pull_port = 7902;
+	char dcv_ip[20],node_ip[20];
+	
 	OS_init();
 	libgfshare_init();
 	check_ln_chips_sync();
-
-	if (argc >= 2) {
-		strncpy(hostip, argv[2], sizeof(hostip));
+	if (argc == 3) {
+		strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
+		strncpy(node_ip, bet_check_notary_status(), sizeof(node_ip));
+		printf("notary chosen::%s\n",node_ip);
 		if (strcmp(argv[1], "dcv") == 0) {
-			bet_dcv_thrd(hostip, port);
+			bet_dcv_thrd(dcv_ip, port,node_ip,cashier_push_pull_port);
 		} else if (strcmp(argv[1], "bvv") == 0) {
-			bet_bvv_thrd(hostip, port);
+			bet_bvv_thrd(dcv_ip, port,node_ip,cashier_push_pull_port);
 		} else if (strcmp(argv[1], "player") == 0) {
-			bet_player_thrd(hostip, port);
-		} else if (strcmp(argv[1], "cashier") == 0) {
-			// it needs to be implemented
-		}
+			bet_player_thrd(dcv_ip, port,node_ip,cashier_push_pull_port);
+		} 
+	} else if ((argc == 2) && (strcmp(argv[1], "cashier") == 0)) {
+			bet_cashier_server_thrd(bet_get_etho_ip(),cashier_pub_sub_port);
 	} else {
 		printf("\nInvalid Usage");
 		printf("\nFor DCV: ./bet dcv <dcv_ip_address>");
