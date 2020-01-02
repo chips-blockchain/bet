@@ -269,14 +269,14 @@ int main(int argc, char **argv)
 {
 	uint16_t port = 7797 + 1;
 	uint16_t cashier_pub_sub_port = 7901, cashier_push_pull_port = 7902;
-	char dcv_ip[20], node_ip[20];
+	char dcv_ip[20], *node_ip = NULL;
 
 	OS_init();
 	libgfshare_init();
 	check_ln_chips_sync();
 	if (argc == 3) {
 		strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
-		strncpy(node_ip, bet_check_notary_status(), sizeof(node_ip));
+		node_ip = bet_check_notary_status();
 		printf("notary chosen::%s\n", node_ip);
 		if (strcmp(argv[1], "dcv") == 0) {
 			bet_dcv_thrd(dcv_ip, port, node_ip, cashier_push_pull_port);
@@ -292,7 +292,7 @@ int main(int argc, char **argv)
 		printf("\nFor DCV: ./bet dcv <dcv_ip_address>");
 		printf("\nFor BVV: ./bet bvv <dcv_ip_address>");
 		printf("\nFor Player: ./bet player <dcv_ip_address>");
-		printf("\nFor Cashier: ./bet player <cashier_ip_address>");
+		printf("\nFor Cashier: ./bet cashier");
 	}
 	return 0;
 }
