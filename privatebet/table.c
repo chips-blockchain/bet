@@ -17,8 +17,7 @@
 #include "common.h"
 #include "network.h"
 
-void bet_info_set(struct privatebet_info *bet, char *game, int32_t range,
-		  int32_t numrounds, int32_t maxplayers)
+void bet_info_set(struct privatebet_info *bet, char *game, int32_t range, int32_t numrounds, int32_t maxplayers)
 {
 	safecopy(bet->game, game, sizeof(bet->game));
 	bet->range = range;

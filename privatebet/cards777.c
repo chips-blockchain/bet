@@ -59,8 +59,7 @@ int32_t bet_permutation(int32_t *permi, int32_t numcards)
 	return (0);
 }
 
-int32_t bet_cipher_create(bits256 privkey, bits256 destpub, uint8_t *cipher,
-			  uint8_t *data, int32_t datalen)
+int32_t bet_cipher_create(bits256 privkey, bits256 destpub, uint8_t *cipher, uint8_t *data, int32_t datalen)
 {
 	int32_t msglen;
 	uint32_t crc32;
@@ -69,24 +68,21 @@ int32_t bet_cipher_create(bits256 privkey, bits256 destpub, uint8_t *cipher,
 	nonce = cipher;
 	OS_randombytes(nonce, crypto_box_NONCEBYTES);
 	ptr = &cipher[crypto_box_NONCEBYTES];
-	buffer = malloc(datalen + crypto_box_NONCEBYTES + crypto_box_ZEROBYTES +
-			256);
-	msglen = _SuperNET_cipher(nonce, ptr, data, msglen, destpub, privkey,
-				  buffer);
+	buffer = malloc(datalen + crypto_box_NONCEBYTES + crypto_box_ZEROBYTES + 256);
+	msglen = _SuperNET_cipher(nonce, ptr, data, msglen, destpub, privkey, buffer);
 	crc32 = calc_crc32(0, ptr, msglen);
 	msglen += crypto_box_NONCEBYTES;
 	if ((0)) {
 		char str[65];
-		fprintf(stderr, "encode into msglen.%d crc32.%u [%llx] %s\n",
-			msglen, crc32, *(long long *)cipher,
+		fprintf(stderr, "encode into msglen.%d crc32.%u [%llx] %s\n", msglen, crc32, *(long long *)cipher,
 			bits256_str(str, curve25519(privkey, destpub)));
 	}
 	free(buffer);
 	return (msglen);
 }
 
-uint8_t *bet_decrypt(uint8_t *decoded, int32_t maxsize, bits256 senderpub,
-		     bits256 mypriv, uint8_t *ptr, int32_t *recvlenp)
+uint8_t *bet_decrypt(uint8_t *decoded, int32_t maxsize, bits256 senderpub, bits256 mypriv, uint8_t *ptr,
+		     int32_t *recvlenp)
 {
 	uint8_t *nonce, *cipher, *dest = 0;
 	int32_t recvlen, cipherlen;
@@ -100,15 +96,11 @@ uint8_t *bet_decrypt(uint8_t *decoded, int32_t maxsize, bits256 senderpub,
 		char str[65];
 		for (i = 0; i < recvlen; i++)
 			printf("%02x", ptr[i]);
-		printf(" decrypt [%llx] recvlen.%d crc32.%u %s\n",
-		       *(long long *)ptr, recvlen,
-		       calc_crc32(0, cipher, cipherlen),
-		       bits256_str(str, curve25519(mypriv, senderpub)));
+		printf(" decrypt [%llx] recvlen.%d crc32.%u %s\n", *(long long *)ptr, recvlen,
+		       calc_crc32(0, cipher, cipherlen), bits256_str(str, curve25519(mypriv, senderpub)));
 	}
 	if (cipherlen > 0 && cipherlen <= maxsize) {
-		if ((dest = _SuperNET_decipher(nonce, cipher, decoded,
-					       cipherlen, senderpub, mypriv)) !=
-		    0) {
+		if ((dest = _SuperNET_decipher(nonce, cipher, decoded, cipherlen, senderpub, mypriv)) != 0) {
 			recvlen = (cipherlen - crypto_box_ZEROBYTES);
 			if ((0)) {
 				int32_t i;

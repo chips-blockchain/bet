@@ -21,15 +21,13 @@
 #include "payment.h"
 #include "table.h"
 
-char action_str[8][100] = { "",	     "small_blind", "big_blind", "check",
-			    "raise", "call",	    "allin",	 "fold" };
+char action_str[8][100] = { "", "small_blind", "big_blind", "check", "raise", "call", "allin", "fold" };
 
 /***************************************************************
 Here contains the functions which are specific to DCV
 ****************************************************************/
 
-int32_t bet_initiate_statemachine(cJSON *argjson, struct privatebet_info *bet,
-				  struct privatebet_vars *vars)
+int32_t bet_initiate_statemachine(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	cJSON *dealerInfo = NULL;
 	int32_t retval = 1, bytes;
@@ -91,8 +89,7 @@ end:
  *
  */
 
-int32_t bet_dcv_next_turn(cJSON *argjson, struct privatebet_info *bet,
-			  struct privatebet_vars *vars)
+int32_t bet_dcv_next_turn(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int32_t maxamount = 0, retval = -1, players_left = 0;
 
@@ -108,48 +105,34 @@ int32_t bet_dcv_next_turn(cJSON *argjson, struct privatebet_info *bet,
 		if (maxamount < vars->betamount[i][vars->round])
 			maxamount = vars->betamount[i][vars->round];
 	}
-	for (int i = ((vars->turni + 1) % bet->maxplayers); (i != vars->turni);
-	     i = ((i + 1) % bet->maxplayers)) {
-		if ((vars->bet_actions[i][vars->round] != fold) &&
-		    (vars->bet_actions[i][vars->round] != allin) &&
+	for (int i = ((vars->turni + 1) % bet->maxplayers); (i != vars->turni); i = ((i + 1) % bet->maxplayers)) {
+		if ((vars->bet_actions[i][vars->round] != fold) && (vars->bet_actions[i][vars->round] != allin) &&
 		    (vars->funds[i] != 0)) {
 			if (vars->bet_actions[i][vars->round] == 0) {
 				for (int j = 0; j < bet->maxplayers; j++) {
 					if ((i != j) &&
-					    (((vars->bet_actions[j][vars->round] ==
-					       0) &&
-					      (vars->funds[j] != 0)) ||
-					     (vars->bet_actions[j][vars->round] !=
-					      0))) {
+					    (((vars->bet_actions[j][vars->round] == 0) && (vars->funds[j] != 0)) ||
+					     (vars->bet_actions[j][vars->round] != 0))) {
 						return i;
 					}
 				}
-			} else if (/*(vars->bet_actions[i][vars->round] == 0) ||*/ (
-					   vars->bet_actions[i][vars->round] ==
-					   small_blind) ||
-				   (vars->bet_actions[i][vars->round] ==
-				    big_blind) ||
-				   (((vars->bet_actions[i][vars->round] ==
-				      check) ||
-				     (vars->bet_actions[i][vars->round] ==
-				      call) ||
-				     (vars->bet_actions[i][vars->round] ==
-				      raise)) &&
-				    (maxamount !=
-				     vars->betamount[i][vars->round]))) {
+			} else if (/*(vars->bet_actions[i][vars->round] == 0) ||*/ (vars->bet_actions[i][vars->round] ==
+										    small_blind) ||
+				   (vars->bet_actions[i][vars->round] == big_blind) ||
+				   (((vars->bet_actions[i][vars->round] == check) ||
+				     (vars->bet_actions[i][vars->round] == call) ||
+				     (vars->bet_actions[i][vars->round] == raise)) &&
+				    (maxamount != vars->betamount[i][vars->round]))) {
 				return i;
 			}
 		}
 	}
 	return retval;
 }
-int32_t bet_dcv_round_betting(cJSON *argjson, struct privatebet_info *bet,
-			      struct privatebet_vars *vars)
+int32_t bet_dcv_round_betting(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	cJSON *roundBetting = NULL, *possibilities = NULL, *actions = NULL,
-	      *betAmounts = NULL;
-	int maxamount = 0, bytes, retval = 1, players_left = 0, toCall = 0,
-	    toRaise = 0, totalBet = 0;
+	cJSON *roundBetting = NULL, *possibilities = NULL, *actions = NULL, *betAmounts = NULL;
+	int maxamount = 0, bytes, retval = 1, players_left = 0, toCall = 0, toRaise = 0, totalBet = 0;
 	char *rendered = NULL;
 
 	if ((retval = bet_dcv_next_turn(argjson, bet, vars)) == -1) {
@@ -167,7 +150,7 @@ int32_t bet_dcv_round_betting(cJSON *argjson, struct privatebet_info *bet,
 
 		if ((vars->round >= CARDS777_MAXROUNDS) || (players_left < 2)) {
 			vars->round -= 1;
-			retval = bet_evaluate_hand(argjson, bet, vars);
+			retval = bet_evaluate_hand(bet, vars);
 			goto end;
 		}
 
@@ -176,8 +159,8 @@ int32_t bet_dcv_round_betting(cJSON *argjson, struct privatebet_info *bet,
 	}
 
 	for (int i = 0; i < bet->maxplayers; i++) {
-		printf("%s::%d::player id::%d::funds::%d::vars->round::%d\n",
-		       __FUNCTION__, __LINE__, i, vars->funds[i], vars->round);
+		printf("%s::%d::player id::%d::funds::%d::vars->round::%d\n", __FUNCTION__, __LINE__, i, vars->funds[i],
+		       vars->round);
 		for (int j = 0; j <= vars->round; j++)
 			printf("%d\t", vars->betamount[i][j]);
 		printf("\n");
@@ -185,13 +168,12 @@ int32_t bet_dcv_round_betting(cJSON *argjson, struct privatebet_info *bet,
 
 	players_left = 0;
 	for (int i = 0; i < bet->maxplayers; i++) {
-		if ((vars->bet_actions[i][vars->round] ==
-		     fold)) //|| (vars->bet_actions[i][vars->round]==allin))
+		if ((vars->bet_actions[i][vars->round] == fold)) //|| (vars->bet_actions[i][vars->round]==allin))
 			players_left++;
 	}
 	players_left = bet->maxplayers - players_left;
 	if (players_left < 2) {
-		retval = bet_evaluate_hand(argjson, bet, vars);
+		retval = bet_evaluate_hand(bet, vars);
 		goto end;
 	}
 
@@ -205,8 +187,7 @@ int32_t bet_dcv_round_betting(cJSON *argjson, struct privatebet_info *bet,
 	cJSON_AddNumberToObject(roundBetting, "round", vars->round);
 	cJSON_AddNumberToObject(roundBetting, "pot", vars->pot);
 	/* */
-	cJSON_AddItemToObject(roundBetting, "betAmounts",
-			      betAmounts = cJSON_CreateArray());
+	cJSON_AddItemToObject(roundBetting, "betAmounts", betAmounts = cJSON_CreateArray());
 	for (int j = 0; j < bet->maxplayers; j++) {
 		totalBet = 0;
 		for (int i = 0; i <= vars->round; i++) {
@@ -215,23 +196,17 @@ int32_t bet_dcv_round_betting(cJSON *argjson, struct privatebet_info *bet,
 		cJSON_AddItemToArray(betAmounts, cJSON_CreateNumber(totalBet));
 	}
 
-	cJSON_AddItemToObject(roundBetting, "actions",
-			      actions = cJSON_CreateArray());
+	cJSON_AddItemToObject(roundBetting, "actions", actions = cJSON_CreateArray());
 	for (int i = 0; i <= vars->round; i++) {
 		for (int j = 0; j < bet->maxplayers; j++) {
 			if (vars->bet_actions[j][i] > 0)
-				cJSON_AddItemToArray(
-					actions,
-					cJSON_CreateNumber(
-						vars->bet_actions[j][i]));
+				cJSON_AddItemToArray(actions, cJSON_CreateNumber(vars->bet_actions[j][i]));
 		}
 	}
 
-	cJSON_AddItemToObject(roundBetting, "possibilities",
-			      possibilities = cJSON_CreateArray());
+	cJSON_AddItemToObject(roundBetting, "possibilities", possibilities = cJSON_CreateArray());
 
-	if (vars->betamount[vars->last_turn][vars->round] ==
-	    vars->betamount[vars->turni][vars->round]) {
+	if (vars->betamount[vars->last_turn][vars->round] == vars->betamount[vars->turni][vars->round]) {
 		// check, allin, fold
 		if (vars->bet_actions[vars->turni][vars->round] == big_blind)
 			toCall = vars->betamount[vars->turni][vars->round];
@@ -261,79 +236,54 @@ int32_t bet_dcv_round_betting(cJSON *argjson, struct privatebet_info *bet,
 		if (maxamount >= vars->funds[vars->turni]) {
 			for (int i = allin; i <= fold; i++) {
 				if (i == allin)
-					cJSON_AddItemToArray(
-						possibilities,
-						cJSON_CreateNumber(call));
+					cJSON_AddItemToArray(possibilities, cJSON_CreateNumber(call));
 				else
-					cJSON_AddItemToArray(
-						possibilities,
-						cJSON_CreateNumber(i));
+					cJSON_AddItemToArray(possibilities, cJSON_CreateNumber(i));
 			}
 
 		} else {
 			int allin_flag = 1;
 			for (int i = raise; i <= fold; i++) {
 				if (i == raise) {
-					for (int j = 0; j < bet->maxplayers;
-					     j++) {
-						if ((j != vars->turni) &&
-						    (vars->funds[j] != 0)) {
-							cJSON_AddItemToArray(
-								possibilities,
-								cJSON_CreateNumber(
-									i));
+					for (int j = 0; j < bet->maxplayers; j++) {
+						if ((j != vars->turni) && (vars->funds[j] != 0)) {
+							cJSON_AddItemToArray(possibilities, cJSON_CreateNumber(i));
 							break;
 						}
 					}
 				} else if (i == call) {
 					int totatBet = 0;
 					for (int j = 0; j <= vars->round; j++)
-						totatBet +=
-							vars->betamount
-								[vars->turni][j];
-					if (toCall ==
-					    (totalBet +
-					     vars->funds[vars->turni])) {
+						totatBet += vars->betamount[vars->turni][j];
+					if (toCall == (totalBet + vars->funds[vars->turni])) {
 						allin_flag = 0;
 					}
-					cJSON_AddItemToArray(
-						possibilities,
-						cJSON_CreateNumber(i));
+					cJSON_AddItemToArray(possibilities, cJSON_CreateNumber(i));
 				} else if (i == allin) {
 					if (allin_flag == 1)
-						cJSON_AddItemToArray(
-							possibilities,
-							cJSON_CreateNumber(i));
+						cJSON_AddItemToArray(possibilities, cJSON_CreateNumber(i));
 				} else
-					cJSON_AddItemToArray(
-						possibilities,
-						cJSON_CreateNumber(i));
+					cJSON_AddItemToArray(possibilities, cJSON_CreateNumber(i));
 			}
 		}
 
 		// raise or fold or call
 	} else if (maxamount == vars->betamount[vars->turni][vars->round]) {
 		if (maxamount >= vars->funds[vars->turni]) {
-			cJSON_AddItemToArray(possibilities,
-					     cJSON_CreateNumber(check));
+			cJSON_AddItemToArray(possibilities, cJSON_CreateNumber(check));
 			for (int i = allin; i <= fold; i++)
-				cJSON_AddItemToArray(possibilities,
-						     cJSON_CreateNumber(i));
+				cJSON_AddItemToArray(possibilities, cJSON_CreateNumber(i));
 
 		} else {
 			for (int i = check; i <= fold; i++) {
 				if (i != call)
-					cJSON_AddItemToArray(
-						possibilities,
-						cJSON_CreateNumber(i));
+					cJSON_AddItemToArray(possibilities, cJSON_CreateNumber(i));
 			}
 		}
 		// raise or fold or call or check
 	}
 
-	cJSON_AddNumberToObject(
-		roundBetting, "min_amount",
-		(maxamount - vars->betamount[vars->turni][vars->round]));
+	cJSON_AddNumberToObject(roundBetting, "min_amount", (maxamount - vars->betamount[vars->turni][vars->round]));
 
 	rendered = cJSON_Print(roundBetting);
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
@@ -347,12 +297,9 @@ end:
 	return retval;
 }
 
-int32_t bet_dcv_round_betting_response(cJSON *argjson,
-				       struct privatebet_info *bet,
-				       struct privatebet_vars *vars)
+int32_t bet_dcv_round_betting_response(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int retval = 1, playerid, round, bet_amount = 0, players_left = 0,
-	    min_amount = 0;
+	int retval = 1, playerid, round, bet_amount = 0, players_left = 0, min_amount = 0;
 	char *action = NULL;
 	cJSON *playerFunds = NULL;
 
@@ -366,11 +313,9 @@ int32_t bet_dcv_round_betting_response(cJSON *argjson,
 	vars->funds[playerid] -= bet_amount;
 
 	cJSON_AddNumberToObject(argjson, "pot", vars->pot);
-	cJSON_AddItemToObject(argjson, "player_funds",
-			      playerFunds = cJSON_CreateArray());
+	cJSON_AddItemToObject(argjson, "player_funds", playerFunds = cJSON_CreateArray());
 	for (int i = 0; i < bet->maxplayers; i++) {
-		cJSON_AddItemToArray(playerFunds,
-				     cJSON_CreateNumber(vars->funds[i]));
+		cJSON_AddItemToArray(playerFunds, cJSON_CreateNumber(vars->funds[i]));
 	}
 
 	if ((action = jstr(argjson, "action")) != NULL) {
@@ -394,11 +339,8 @@ int32_t bet_dcv_round_betting_response(cJSON *argjson,
 		players_left = bet->maxplayers - players_left;
 		if (players_left < 2) {
 			for (int i = 0; i < bet->maxplayers; i++) {
-				for (int j = vars->round;
-				     j < CARDS777_MAXROUNDS; j++) {
-					vars->bet_actions[i][j] =
-						vars->bet_actions[i]
-								 [round]; // check
+				for (int j = vars->round; j < CARDS777_MAXROUNDS; j++) {
+					vars->bet_actions[i][j] = vars->bet_actions[i][round]; // check
 				}
 			}
 		}
@@ -408,8 +350,7 @@ int32_t bet_dcv_round_betting_response(cJSON *argjson,
 	return retval;
 }
 
-int32_t bet_dcv_big_blind_bet(cJSON *argjson, struct privatebet_info *bet,
-			      struct privatebet_vars *vars)
+int32_t bet_dcv_big_blind_bet(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int retval = 1, playerid, round;
 
@@ -427,8 +368,7 @@ int32_t bet_dcv_big_blind_bet(cJSON *argjson, struct privatebet_info *bet,
 	return retval;
 }
 
-int32_t bet_dcv_big_blind(cJSON *argjson, struct privatebet_info *bet,
-			  struct privatebet_vars *vars)
+int32_t bet_dcv_big_blind(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	char *rendered = NULL;
 	int32_t retval = 1, bytes;
@@ -440,8 +380,7 @@ int32_t bet_dcv_big_blind(cJSON *argjson, struct privatebet_info *bet,
 	cJSON_AddStringToObject(big_blind_info, "method", "betting");
 	cJSON_AddStringToObject(big_blind_info, "action", "big_blind");
 	cJSON_AddNumberToObject(big_blind_info, "playerid", vars->turni);
-	cJSON_AddNumberToObject(big_blind_info, "min_amount",
-				(vars->small_blind * 2));
+	cJSON_AddNumberToObject(big_blind_info, "min_amount", (vars->small_blind * 2));
 	cJSON_AddNumberToObject(big_blind_info, "pot", vars->pot);
 
 	rendered = cJSON_Print(big_blind_info);
@@ -457,8 +396,7 @@ end:
 	return retval;
 }
 
-int32_t bet_dcv_small_blind_bet(cJSON *argjson, struct privatebet_info *bet,
-				struct privatebet_vars *vars)
+int32_t bet_dcv_small_blind_bet(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int32_t retval = 1, playerid, round;
 
@@ -476,16 +414,14 @@ int32_t bet_dcv_small_blind_bet(cJSON *argjson, struct privatebet_info *bet,
 	return retval;
 }
 
-int32_t bet_dcv_small_blind(cJSON *argjson, struct privatebet_info *bet,
-			    struct privatebet_vars *vars)
+int32_t bet_dcv_small_blind(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	cJSON *smallBlindInfo = NULL;
 	int32_t retval = 1, bytes;
 	char *rendered = NULL;
 
 	vars->last_turn = vars->dealer;
-	vars->turni = (vars->dealer) %
-		      bet->maxplayers; // vars->dealer+1 is removed since
+	vars->turni = (vars->dealer) % bet->maxplayers; // vars->dealer+1 is removed since
 	// dealer is the one who does small_blind
 
 	smallBlindInfo = cJSON_CreateObject();
@@ -509,9 +445,7 @@ end:
 Here contains the functions which are common across all the nodes
 ****************************************************************/
 
-int32_t bet_player_betting_statemachine(cJSON *argjson,
-					struct privatebet_info *bet,
-					struct privatebet_vars *vars)
+int32_t bet_player_betting_statemachine(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	char *action = NULL;
 	char *rendered = NULL;
@@ -520,73 +454,57 @@ int32_t bet_player_betting_statemachine(cJSON *argjson,
 		if (strcmp(action, "small_blind") == 0) {
 			if (jint(argjson, "playerid") == bet->myplayerid) {
 				display_cards(argjson, bet, vars);
-				retval = bet_player_small_blind(argjson, bet,
-								vars);
+				retval = bet_player_small_blind(argjson, bet, vars);
 			}
 		} else if (strcmp(action, "big_blind") == 0) {
 			if (jint(argjson, "playerid") == bet->myplayerid) {
 				display_cards(argjson, bet, vars);
-				retval = bet_player_big_blind(argjson, bet,
-							      vars);
+				retval = bet_player_big_blind(argjson, bet, vars);
 			}
 		} else if (strcmp(action, "small_blind_bet") == 0) {
 			if (bet->myplayerid == -2) {
 				bet_relay(argjson, bet, vars);
-				retval = bet_dcv_small_blind_bet(argjson, bet,
-								 vars);
+				retval = bet_dcv_small_blind_bet(argjson, bet, vars);
 			} else {
 				bet_player_small_blind_bet(argjson, bet, vars);
 			}
 		} else if (strcmp(action, "big_blind_bet") == 0) {
 			if (bet->myplayerid == -2) {
 				bet_relay(argjson, bet, vars);
-				retval = bet_dcv_big_blind_bet(argjson, bet,
-							       vars);
+				retval = bet_dcv_big_blind_bet(argjson, bet, vars);
 			} else {
-				retval = bet_player_big_blind_bet(argjson, bet,
-								  vars);
+				retval = bet_player_big_blind_bet(argjson, bet, vars);
 			}
 
 		} else if (strcmp(action, "round_betting") == 0) {
 			display_cards(argjson, bet, vars);
 
 			cJSON *player_funds = NULL;
-			cJSON_AddItemToObject(argjson, "player_funds",
-					      player_funds =
-						      cJSON_CreateArray());
+			cJSON_AddItemToObject(argjson, "player_funds", player_funds = cJSON_CreateArray());
 
 			for (int i = 0; i < bet->maxplayers; i++) {
 				int totalBet = 0;
-				for (int j = 0; j <= jint(argjson, "round");
-				     j++) // for(int j=0;j<=vars->round;j++)
+				for (int j = 0; j <= jint(argjson, "round"); j++) // for(int j=0;j<=vars->round;j++)
 				{
 					totalBet += vars->betamount[i][j];
 				}
-				cJSON_AddItemToArray(
-					player_funds,
-					cJSON_CreateNumber(vars->funds[i] -
-							   totalBet));
+				cJSON_AddItemToArray(player_funds, cJSON_CreateNumber(vars->funds[i] - totalBet));
 			}
 
 			player_lws_write(argjson);
-		} else if ((strcmp(action, "check") == 0) ||
-			   (strcmp(action, "call") == 0) ||
-			   (strcmp(action, "raise") == 0) ||
-			   (strcmp(action, "fold") == 0) ||
+		} else if ((strcmp(action, "check") == 0) || (strcmp(action, "call") == 0) ||
+			   (strcmp(action, "raise") == 0) || (strcmp(action, "fold") == 0) ||
 			   (strcmp(action, "allin") == 0)) {
 			if (bet->myplayerid == -2) {
 				rendered = cJSON_Print(argjson);
-				bytes = nn_send(bet->pubsock, rendered,
-						strlen(rendered), 0);
+				bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 				if (bytes < 0) {
 					retval = -1;
 					goto end;
 				}
-				retval = bet_dcv_round_betting_response(
-					argjson, bet, vars);
+				retval = bet_dcv_round_betting_response(argjson, bet, vars);
 			} else {
-				retval = bet_player_round_betting_response(
-					argjson, bet, vars);
+				retval = bet_player_round_betting_response(argjson, bet, vars);
 			}
 		}
 	}
@@ -594,8 +512,7 @@ end:
 	return retval;
 }
 
-int32_t bet_display_current_state(cJSON *argjson, struct privatebet_info *bet,
-				  struct privatebet_vars *vars)
+int32_t bet_display_current_state(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int32_t retval = 1;
 
@@ -630,8 +547,7 @@ int32_t bet_display_current_state(cJSON *argjson, struct privatebet_info *bet,
 /***************************************************************
 Here contains the functions which are specific to players and BVV
 ****************************************************************/
-int32_t bet_player_small_blind_bet(cJSON *argjson, struct privatebet_info *bet,
-				   struct privatebet_vars *vars)
+int32_t bet_player_small_blind_bet(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int32_t retval = 1, playerid, round;
 
@@ -647,8 +563,7 @@ int32_t bet_player_small_blind_bet(cJSON *argjson, struct privatebet_info *bet,
 	return retval;
 }
 
-int32_t bet_player_big_blind_bet(cJSON *argjson, struct privatebet_info *bet,
-				 struct privatebet_vars *vars)
+int32_t bet_player_big_blind_bet(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int retval = 1, playerid, round;
 
@@ -664,8 +579,7 @@ int32_t bet_player_big_blind_bet(cJSON *argjson, struct privatebet_info *bet,
 	return retval;
 }
 
-int32_t bet_player_dealer_info(cJSON *argjson, struct privatebet_info *bet,
-			       struct privatebet_vars *vars)
+int32_t bet_player_dealer_info(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int retval = 0, bytes;
 	cJSON *dealerReady = NULL;
@@ -687,8 +601,7 @@ int32_t bet_player_dealer_info(cJSON *argjson, struct privatebet_info *bet,
 	}
 
 	if (vars->dealer == bet->myplayerid) {
-		printf("\n%s:%d::I AM THE DEALER: %d\n", __FUNCTION__, __LINE__,
-		       bet->myplayerid);
+		printf("\n%s:%d::I AM THE DEALER: %d\n", __FUNCTION__, __LINE__, bet->myplayerid);
 		dealerReady = cJSON_CreateObject();
 		cJSON_AddStringToObject(dealerReady, "method", "dealer_ready");
 		rendered = cJSON_Print(dealerReady);
@@ -704,8 +617,7 @@ end:
 	return retval;
 }
 
-int32_t bet_player_small_blind(cJSON *argjson, struct privatebet_info *bet,
-			       struct privatebet_vars *vars)
+int32_t bet_player_small_blind(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	cJSON *small_blind_info = NULL;
 	int32_t amount, retval = 1, bytes;
@@ -723,12 +635,9 @@ int32_t bet_player_small_blind(cJSON *argjson, struct privatebet_info *bet,
 
 	cJSON_AddStringToObject(small_blind_info, "action", "small_blind_bet");
 	cJSON_AddNumberToObject(small_blind_info, "amount", amount);
-	vars->betamount[bet->myplayerid][vars->round] =
-		vars->betamount[bet->myplayerid][vars->round] + amount;
-	cJSON_AddNumberToObject(small_blind_info, "playerid",
-				jint(argjson, "playerid"));
-	cJSON_AddNumberToObject(small_blind_info, "round",
-				jint(argjson, "round"));
+	vars->betamount[bet->myplayerid][vars->round] = vars->betamount[bet->myplayerid][vars->round] + amount;
+	cJSON_AddNumberToObject(small_blind_info, "playerid", jint(argjson, "playerid"));
+	cJSON_AddNumberToObject(small_blind_info, "round", jint(argjson, "round"));
 
 	temp = cJSON_CreateObject();
 	temp = cJSON_Parse(cJSON_Print(small_blind_info));
@@ -746,8 +655,7 @@ end:
 	return retval;
 }
 
-int32_t bet_player_big_blind(cJSON *argjson, struct privatebet_info *bet,
-			     struct privatebet_vars *vars)
+int32_t bet_player_big_blind(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	cJSON *big_blind_info = NULL, *temp = NULL;
 	int32_t amount, retval = 1, bytes;
@@ -765,12 +673,9 @@ int32_t bet_player_big_blind(cJSON *argjson, struct privatebet_info *bet,
 		goto end;
 
 	cJSON_AddNumberToObject(big_blind_info, "amount", amount);
-	vars->betamount[bet->myplayerid][vars->round] =
-		vars->betamount[bet->myplayerid][vars->round] + amount;
-	cJSON_AddNumberToObject(big_blind_info, "playerid",
-				jint(argjson, "playerid"));
-	cJSON_AddNumberToObject(big_blind_info, "round",
-				jint(argjson, "round"));
+	vars->betamount[bet->myplayerid][vars->round] = vars->betamount[bet->myplayerid][vars->round] + amount;
+	cJSON_AddNumberToObject(big_blind_info, "playerid", jint(argjson, "playerid"));
+	cJSON_AddNumberToObject(big_blind_info, "round", jint(argjson, "round"));
 
 	temp = cJSON_CreateObject();
 	temp = cJSON_Parse(cJSON_Print(big_blind_info));
@@ -787,12 +692,10 @@ end:
 	return retval;
 }
 
-int32_t bet_player_round_betting(cJSON *argjson, struct privatebet_info *bet,
-				 struct privatebet_vars *vars)
+int32_t bet_player_round_betting(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	cJSON *possibilities = NULL, *action_response = NULL;
-	int bytes, retval = 1, playerid, round, min_amount, option,
-		   raise_amount = 0, invoice_amount = 0;
+	int bytes, retval = 1, playerid, round, min_amount, option, raise_amount = 0, invoice_amount = 0;
 	char *rendered = NULL;
 
 	playerid = jint(argjson, "playerid");
@@ -801,40 +704,32 @@ int32_t bet_player_round_betting(cJSON *argjson, struct privatebet_info *bet,
 
 	action_response = cJSON_CreateObject();
 	cJSON_AddStringToObject(action_response, "method", "betting");
-	cJSON_AddNumberToObject(action_response, "playerid",
-				jint(argjson, "playerid"));
-	cJSON_AddNumberToObject(action_response, "round",
-				jint(argjson, "round"));
+	cJSON_AddNumberToObject(action_response, "playerid", jint(argjson, "playerid"));
+	cJSON_AddNumberToObject(action_response, "round", jint(argjson, "round"));
 	cJSON_AddNumberToObject(action_response, "min_amount", min_amount);
 	possibilities = cJSON_GetObjectItem(argjson, "possibilities");
 
 	option = 1;
 	vars->bet_actions[playerid][round] = jinti(possibilities, (option - 1));
 
-	cJSON_AddStringToObject(action_response, "action",
-				action_str[jinti(possibilities, (option - 1))]);
+	cJSON_AddStringToObject(action_response, "action", action_str[jinti(possibilities, (option - 1))]);
 
 	if (jinti(possibilities, (option - 1)) == raise) {
 		raise_amount = jint(argjson, "bet_amount");
-		invoice_amount =
-			raise_amount - vars->betamount[playerid][round];
+		invoice_amount = raise_amount - vars->betamount[playerid][round];
 
 		vars->betamount[playerid][round] += invoice_amount;
 		vars->player_funds -= invoice_amount;
 
 		if (vars->player_funds == 0) {
 			cJSON_DetachItemFromObject(action_response, "action");
-			cJSON_AddStringToObject(action_response, "action",
-						"allin");
+			cJSON_AddStringToObject(action_response, "action", "allin");
 		}
-		cJSON_AddNumberToObject(action_response, "bet_amount",
-					jint(argjson, "bet_amount"));
+		cJSON_AddNumberToObject(action_response, "bet_amount", jint(argjson, "bet_amount"));
 
-		cJSON_AddNumberToObject(action_response, "invoice_amount",
-					invoice_amount);
+		cJSON_AddNumberToObject(action_response, "invoice_amount", invoice_amount);
 
-		retval = bet_player_invoice_request(argjson, action_response,
-						    bet, invoice_amount);
+		retval = bet_player_invoice_request(argjson, action_response, bet, invoice_amount);
 		if (retval < 0)
 			goto end;
 
@@ -844,42 +739,33 @@ int32_t bet_player_round_betting(cJSON *argjson, struct privatebet_info *bet,
 
 		if (vars->player_funds == 0) {
 			cJSON_DetachItemFromObject(action_response, "action");
-			cJSON_AddStringToObject(action_response, "action",
-						"allin");
-			printf("%s::%d::%s\n", __FUNCTION__, __LINE__,
-			       cJSON_Print(action_response));
+			cJSON_AddStringToObject(action_response, "action", "allin");
+			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(action_response));
 		}
 
-		cJSON_AddNumberToObject(action_response, "bet_amount",
-					jint(argjson, "bet_amount"));
+		cJSON_AddNumberToObject(action_response, "bet_amount", jint(argjson, "bet_amount"));
 
-		cJSON_AddNumberToObject(action_response, "invoice_amount",
-					min_amount);
+		cJSON_AddNumberToObject(action_response, "invoice_amount", min_amount);
 
-		retval = bet_player_invoice_request(argjson, action_response,
-						    bet, min_amount);
+		retval = bet_player_invoice_request(argjson, action_response, bet, min_amount);
 		if (retval < 0) {
 			goto end;
 		}
 
 	} else if (jinti(possibilities, (option - 1)) == allin) {
 		vars->betamount[playerid][round] += vars->player_funds;
-		cJSON_AddNumberToObject(action_response, "bet_amount",
-					jint(argjson, "bet_amount"));
+		cJSON_AddNumberToObject(action_response, "bet_amount", jint(argjson, "bet_amount"));
 
-		cJSON_AddNumberToObject(action_response, "invoice_amount",
-					vars->player_funds);
+		cJSON_AddNumberToObject(action_response, "invoice_amount", vars->player_funds);
 
 		vars->player_funds = 0;
 
-		retval = bet_player_invoice_request(argjson, action_response,
-						    bet, vars->player_funds);
+		retval = bet_player_invoice_request(argjson, action_response, bet, vars->player_funds);
 		if (retval < 0)
 			goto end;
 
 	} else {
-		printf("%s::%d::%s\n", __FUNCTION__, __LINE__,
-		       cJSON_Print(action_response));
+		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(action_response));
 		rendered = cJSON_Print(action_response);
 		bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 
@@ -893,9 +779,7 @@ end:
 	return retval;
 }
 
-int32_t bet_player_round_betting_response(cJSON *argjson,
-					  struct privatebet_info *bet,
-					  struct privatebet_vars *vars)
+int32_t bet_player_round_betting_response(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int retval = 1, playerid, round, invoice_amount = 0;
 	char *action = NULL;
@@ -911,16 +795,13 @@ int32_t bet_player_round_betting_response(cJSON *argjson,
 	vars->pot += invoice_amount;
 
 	cJSON_AddNumberToObject(argjson, "pot", vars->pot);
-	cJSON_AddItemToObject(argjson, "player_funds",
-			      playerFunds = cJSON_CreateArray());
+	cJSON_AddItemToObject(argjson, "player_funds", playerFunds = cJSON_CreateArray());
 	for (int i = 0; i < bet->maxplayers; i++) {
 		int totalBet = 0;
 		for (int j = 0; j <= vars->round; j++) {
 			totalBet += vars->betamount[i][j];
 		}
-		cJSON_AddItemToArray(
-			playerFunds,
-			cJSON_CreateNumber(vars->funds[i] - totalBet));
+		cJSON_AddItemToArray(playerFunds, cJSON_CreateNumber(vars->funds[i] - totalBet));
 	}
 
 	if ((action = jstr(argjson, "action")) != NULL) {

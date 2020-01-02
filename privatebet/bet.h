@@ -44,25 +44,9 @@
 
 #define PORT 9000
 
-enum action_type {
-	small_blind = 1,
-	big_blind,
-	check,
-	raise,
-	call,
-	allin,
-	fold
-};
+enum action_type { small_blind = 1, big_blind, check, raise, call, allin, fold };
 
-enum card_type {
-	burn_card = 0,
-	hole_card,
-	flop_card_1,
-	flop_card_2,
-	flop_card_3,
-	turn_card,
-	river_card
-};
+enum card_type { burn_card = 0, hole_card, flop_card_1, flop_card_2, flop_card_3, turn_card, river_card };
 
 struct BET_shardsinfo {
 	UT_hash_handle hh;
@@ -78,11 +62,9 @@ struct gfshare_ctx_bet {
 
 struct privatebet_info {
 	char game[64];
-	bits256 MofN[CARDS777_MAXCARDS * CARDS777_MAXPLAYERS],
-		cardpubs[CARDS777_MAXCARDS],
+	bits256 MofN[CARDS777_MAXCARDS * CARDS777_MAXPLAYERS], cardpubs[CARDS777_MAXCARDS],
 		playerpubs[CARDS777_MAXPLAYERS + 1], tableid, deckid;
-	int32_t numplayers, maxplayers, numrounds, range, myplayerid, maxchips,
-		chipsize;
+	int32_t numplayers, maxplayers, numrounds, range, myplayerid, maxchips, chipsize;
 	int32_t pullsock, pubsock, subsock, pushsock;
 	uint32_t timestamp;
 	char peerids[CARDS777_MAXPLAYERS + 1][67];
@@ -105,11 +87,10 @@ struct privatebet_peerln {
 struct privatebet_vars {
 	bits256 myhash, hashes[CARDS777_MAXPLAYERS + 1][2];
 	int32_t permis[CARDS777_MAXPLAYERS + 1][CARDS777_MAXCARDS];
-	uint32_t endround[CARDS777_MAXPLAYERS + 1],
-		evalcrcs[CARDS777_MAXPLAYERS + 1], consensus;
+	uint32_t endround[CARDS777_MAXPLAYERS + 1], evalcrcs[CARDS777_MAXPLAYERS + 1], consensus;
 	cJSON *actions[CARDS777_MAXROUNDS][CARDS777_MAXPLAYERS + 1];
-	int32_t mypermi[CARDS777_MAXCARDS], permi[CARDS777_MAXCARDS], turni,
-		round, validperms, roundready, lastround, numconsensus;
+	int32_t mypermi[CARDS777_MAXCARDS], permi[CARDS777_MAXCARDS], turni, round, validperms, roundready, lastround,
+		numconsensus;
 	int32_t small_blind, big_blind;
 	int32_t betamount[CARDS777_MAXPLAYERS][CARDS777_MAXROUNDS];
 	int32_t bet_actions[CARDS777_MAXPLAYERS][CARDS777_MAXROUNDS];
@@ -131,8 +112,7 @@ struct privatebet_share {
 };
 
 struct enc_share {
-	uint8_t bytes[sizeof(bits256) + crypto_box_NONCEBYTES +
-		      crypto_box_ZEROBYTES];
+	uint8_t bytes[sizeof(bits256) + crypto_box_NONCEBYTES + crypto_box_ZEROBYTES];
 };
 
 extern struct enc_share *g_shares;
@@ -186,16 +166,12 @@ bits256 crecip_donna(bits256 a);
 bits256 fmul_donna(bits256 a, bits256 b);
 bits256 card_rand256(int32_t privkeyflag, int8_t index);
 struct pair256 deckgen_common(struct pair256 *randcards, int32_t numcards);
-struct pair256 deckgen_player(bits256 *playerprivs, bits256 *playercards,
-			      int32_t *permis, int32_t numcards);
-int32_t sg777_deckgen_vendor(int32_t playerid, bits256 *cardprods,
-			     bits256 *finalcards, int32_t numcards,
+struct pair256 deckgen_player(bits256 *playerprivs, bits256 *playercards, int32_t *permis, int32_t numcards);
+int32_t sg777_deckgen_vendor(int32_t playerid, bits256 *cardprods, bits256 *finalcards, int32_t numcards,
 			     bits256 *playercards, bits256 deckid);
 
-struct pair256 p2p_bvv_init(bits256 *keys, struct pair256 b_key,
-			    bits256 *blindings, bits256 *blindedcards,
-			    bits256 *finalcards, int32_t numcards,
-			    int32_t numplayers, int32_t playerid,
+struct pair256 p2p_bvv_init(bits256 *keys, struct pair256 b_key, bits256 *blindings, bits256 *blindedcards,
+			    bits256 *finalcards, int32_t numcards, int32_t numplayers, int32_t playerid,
 			    bits256 deckid);
 
 bits256 curve25519_fieldelement(bits256 hash);
