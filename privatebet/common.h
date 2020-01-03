@@ -68,4 +68,12 @@ extern struct cashier *cashier_info;
 
 extern int32_t max_players;
 
+extern int32_t no_of_notaries;
+extern int32_t threshold_value;
+
+extern char notary_node_addrs[][64];
+extern char notary_node_ips[][25];
+extern char msig_addr[64];
+extern char notary_node_pubkeys[][67];
+
 #endif
