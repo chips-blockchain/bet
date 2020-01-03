@@ -17,3 +17,4 @@ int32_t ln_dev_block_height();
 void check_ln_chips_sync();
 double chips_get_balance();
 int32_t chips_lock_transaction(int32_t fundAmount);
+cJSON *chips_add_multisig_address();
