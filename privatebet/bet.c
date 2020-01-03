@@ -87,6 +87,14 @@ static void bet_player_initialize(char *dcv_ip, const int32_t port)
 	bet_info_set(bet_player, "demo", poker_deck_size, 0, max_players);
 }
 
+static void bet_player_deinitialize()
+{
+	if(bet_player)
+		free(bet_player);
+	if(player_vars)
+		free(player_vars);
+}
+
 static void bet_player_thrd(char *dcv_ip, const int32_t port, char *node_ip, const int32_t c_port)
 {
 	pthread_t player_thrd, player_backend, client_thrd;
@@ -116,6 +124,7 @@ static void bet_player_thrd(char *dcv_ip, const int32_t port, char *node_ip, con
 	if (pthread_join(player_backend, NULL)) {
 		printf("\nError in joining the main thread for player_backend");
 	}
+	bet_player_deinitialize();
 }
 
 static void bet_bvv_initialize(char *dcv_ip, const int32_t port)
@@ -139,6 +148,14 @@ static void bet_bvv_initialize(char *dcv_ip, const int32_t port)
 	bet_bvv->numplayers = max_players;
 	bet_bvv->myplayerid = -1;
 	bet_info_set(bet_bvv, "demo", poker_deck_size, 0, max_players);
+}
+
+static void bet_bvv_deinitialize()
+{
+	if(bet_bvv)
+		free(bet_bvv);
+	if(bvv_vars)
+		free(bvv_vars);
 }
 
 static void bet_bvv_thrd(char *dcv_ip, const int32_t port, char *node_ip, const int32_t c_port)
@@ -168,6 +185,7 @@ static void bet_bvv_thrd(char *dcv_ip, const int32_t port, char *node_ip, const 
 	if (pthread_join(bvv_thrd, NULL)) {
 		printf("\nError in joining the main thread for bvv_thrd");
 	}
+	bet_bvv_deinitialize();
 }
 static void bet_dcv_initialize(char *dcv_ip, const int32_t port)
 {
@@ -194,6 +212,14 @@ static void bet_dcv_initialize(char *dcv_ip, const int32_t port)
 	bet_dcv->turni = -1;
 	bet_dcv->no_of_turns = 0;
 	bet_info_set(bet_dcv, "demo", poker_deck_size, 0, max_players);
+}
+
+static void bet_dcv_deinitialize()
+{
+	if(bet_dcv)
+		free(bet_dcv);
+	if(dcv_vars)
+		free(dcv_vars);
 }
 
 static void bet_dcv_thrd(char *dcv_ip, const int32_t port, char *node_ip, const int32_t c_port)
@@ -232,6 +258,7 @@ static void bet_dcv_thrd(char *dcv_ip, const int32_t port, char *node_ip, const 
 	if (pthread_join(dcv_thrd, NULL)) {
 		printf("\nError in joining the main thread for dcv_thrd");
 	}
+	bet_dcv_deinitialize();
 }
 
 static void bet_cashier_server_initialize(char *node_ip, const int32_t port)
