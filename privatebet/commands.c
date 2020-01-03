@@ -583,3 +583,41 @@ int32_t chips_lock_transaction(int32_t fundAmount)
 	}
 	return 0;
 }
+
+cJSON *chips_add_multisig_address()
+{
+	int argc;
+	char **argv = NULL;
+	cJSON *addr_list = NULL;
+	cJSON *msig_address = NULL;
+
+	argc = 5;
+	argv = (char **)malloc(argc * sizeof(char *));
+	for (int i = 0; i < argc; i++) {
+		argv[i] = (char *)malloc(1000 * sizeof(char));
+	}
+	strcpy(argv[0], "chips-cli");
+	strcpy(argv[1], "addmultisigaddress");
+	sprintf(argv[2], "%d", threshold_value);
+	addr_list = cJSON_CreateArray();
+
+	for (int i = 0; i < no_of_notaries; i++)
+		cJSON_AddItemToArray(addr_list, cJSON_CreateString_Length(notary_node_pubkeys[i],67));
+
+	strcpy(argv[3],cJSON_Print(cJSON_CreateString(cJSON_Print(addr_list))));
+	strcpy(argv[4], "-addresstype legacy");
+	
+	msig_address = cJSON_CreateObject();
+	make_command(argc, argv, &msig_address);
+
+	if(argv)
+	{
+		for(int i=0;i<argc;i++)
+			{
+			if(argv[i])
+				free(argv[i]);
+			}
+		free(argv);
+	}
+	return msig_address;
+}
