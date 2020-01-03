@@ -64,6 +64,12 @@ static void bet_cashier_client_initialize(char *node_ip, const int32_t port)
 	cashier_info->c_pushsock = pushsock;
 }
 
+static void bet_cashier_deinitialize()
+{
+	if(cashier_info)
+		free(cashier_info);
+}
+
 static void bet_player_initialize(char *dcv_ip, const int32_t port)
 {
 	int32_t subsock = -1, pushsock = -1;
@@ -125,6 +131,7 @@ static void bet_player_thrd(char *dcv_ip, const int32_t port, char *node_ip, con
 		printf("\nError in joining the main thread for player_backend");
 	}
 	bet_player_deinitialize();
+	bet_cashier_deinitialize();
 }
 
 static void bet_bvv_initialize(char *dcv_ip, const int32_t port)
@@ -186,6 +193,7 @@ static void bet_bvv_thrd(char *dcv_ip, const int32_t port, char *node_ip, const 
 		printf("\nError in joining the main thread for bvv_thrd");
 	}
 	bet_bvv_deinitialize();
+	bet_cashier_deinitialize();
 }
 static void bet_dcv_initialize(char *dcv_ip, const int32_t port)
 {
@@ -259,6 +267,7 @@ static void bet_dcv_thrd(char *dcv_ip, const int32_t port, char *node_ip, const 
 		printf("\nError in joining the main thread for dcv_thrd");
 	}
 	bet_dcv_deinitialize();
+	bet_cashier_deinitialize();
 }
 
 static void bet_cashier_server_initialize(char *node_ip, const int32_t port)
@@ -290,6 +299,7 @@ static void bet_cashier_server_thrd(char *node_ip, const int32_t port)
 	if (pthread_join(server_thrd, NULL)) {
 		printf("\nError in joining the main thread for live_thrd");
 	}
+	bet_cashier_deinitialize();
 }
 
 int main(int argc, char **argv)
