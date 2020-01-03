@@ -111,6 +111,7 @@ extern "C"
     extern cJSON *cJSON_CreateBool(int32_t b);
     extern cJSON *cJSON_CreateNumber(double num);
     extern cJSON *cJSON_CreateString(const char *string);
+	extern cJSON *cJSON_CreateString_Length(const char *string,const int length);
     extern cJSON *cJSON_CreateArray(void);
     extern cJSON *cJSON_CreateObject(void);
     
