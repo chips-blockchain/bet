@@ -113,6 +113,19 @@ static char* cJSON_strdup(const char* str)
     return copy;
 }
 
+static char* cJSON_strdup_length(const char* str,int length)
+{
+    size_t len;
+    char* copy;
+    
+    //len = strlen(str) + 1;
+    len=length;
+    if (!(copy = (char*)cJSON_mallocstr((int32_t)len+1))) return 0;
+    memcpy(copy,str,len);
+    return copy;
+}
+
+
 void cJSON_InitHooks(cJSON_Hooks* hooks)
 {
     if (!hooks) { /* Reset hooks */
@@ -626,11 +639,17 @@ cJSON *cJSON_CreateBool(int32_t b)					{cJSON *item=cJSON_New_Item();if(item)ite
 cJSON *cJSON_CreateNumber(double num)			{cJSON *item=cJSON_New_Item();if(item){item->type=cJSON_Number;item->valuedouble=num;item->valueint=(int64_t)num;}return item;}
 cJSON *cJSON_CreateString(const char *string)	{cJSON *item=cJSON_New_Item();if(item){item->type=cJSON_String;item->valuestring=cJSON_strdup(string);}return item;}
 
+cJSON *cJSON_CreateString_Length(const char *string,const int length)	{cJSON *item=cJSON_New_Item();if(item){item->type=cJSON_String;item->valuestring=cJSON_strdup_length(string,length);}return item;}
+
+
+
 /* Create Arrays: */
 cJSON *cJSON_CreateIntArray(int64_t *numbers,int32_t count)		{int32_t i;cJSON *n=0,*p=0,*a=cJSON_CreateArray();for(i=0;a && i<count;i++){n=cJSON_CreateNumber((double)numbers[i]);if(!i)a->child=n;else suffix_object(p,n);p=n;}return a;}
 cJSON *cJSON_CreateFloatArray(float *numbers,int32_t count)	{int32_t i;cJSON *n=0,*p=0,*a=cJSON_CreateArray();for(i=0;a && i<count;i++){n=cJSON_CreateNumber(numbers[i]);if(!i)a->child=n;else suffix_object(p,n);p=n;}return a;}
 cJSON *cJSON_CreateDoubleArray(double *numbers,int32_t count)	{int32_t i;cJSON *n=0,*p=0,*a=cJSON_CreateArray();for(i=0;a && i<count;i++){n=cJSON_CreateNumber(numbers[i]);if(!i)a->child=n;else suffix_object(p,n);p=n;}return a;}
 cJSON *cJSON_CreateStringArray(char **strings,int32_t count)	{int32_t i;cJSON *n=0,*p=0,*a=cJSON_CreateArray();for(i=0;a && i<count;i++){n=cJSON_CreateString(strings[i]);if(!i)a->child=n;else suffix_object(p,n);p=n;}return a;}
+
+
 
 /* Duplication */
 cJSON *cJSON_Duplicate(cJSON *item,int32_t recurse)
