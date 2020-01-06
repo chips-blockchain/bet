@@ -1364,6 +1364,31 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 				bvv_status = 1;
 			else if (strcmp(jstr(argjson, "node_type"), "player") == 0)
 				player_status[jint(argjson, "playerid")] = 1;
+		} else if (strcmp(method, "stack_info_req") == 0) {
+				cJSON *temp = cJSON_CreateObject();
+				cJSON_AddStringToObject(temp,"method","stack_info_resp");
+				cJSON_AddNumberToObject(temp,"table_stack_in_chips",table_stack_in_chips);
+				bytes = nn_send(bet->pubsock,cJSON_Print(temp),strlen(cJSON_Print(temp)),0);
+				if(bytes < 0) {
+					retval = -1;
+					goto end;
+				}
+		} else if (strcmp(method, "tx") == 0) {
+			cJSON *tx_info = cJSON_CreateObject();
+			int32_t block_height = jint(argjson,"block_height");
+			tx_info = cJSON_GetObjectItem(argjson,"tx_info");
+			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+
+			while(block_height < chips_get_block_count()) {
+					sleep(2);
+			}
+			if (chips_check_if_tx_unspent(cJSON_Print(tx_info)) == 1) {
+				
+				printf("valid tx\n");
+			}	
+			else
+				printf("invalid tx\n");
+
 		} else {
 			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
 			if (bytes < 0) {

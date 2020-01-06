@@ -98,7 +98,7 @@ void player_lws_write(cJSON *data)
 
 void make_command(int argc, char **argv, cJSON **argjson)
 {
-	char command[2048];
+	char command[4096];
 	FILE *fp = NULL;
 	char data[65536], temp[65536];
 	char *buf = NULL;
@@ -1752,6 +1752,28 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			retval = bet_live_response(bet, "player", bet->myplayerid);
 		} else if (strcmp(method, "status_info") == 0) {
 			player_lws_write(argjson);
+		} else if (strcmp(method, "stack_info_resp") == 0) {
+
+			double funds_needed = jdouble(argjson,"table_stack_in_chips");
+			if (chips_get_balance() < (funds_needed+ chips_tx_fee)) {
+				printf("%s::%d::Insufficient funds\n",__FUNCTION__,__LINE__);
+				retval = -1;
+			}
+			else {
+				cJSON *tx_info = cJSON_CreateObject();
+				cJSON *txid = chips_transfer_funds(funds_needed,legacy_2_of_4_msig_Addr);
+				cJSON_AddStringToObject(tx_info,"method","tx");
+				cJSON_AddItemToObject(tx_info,"tx_info",txid);
+				while(chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
+					sleep(2);
+				}
+				cJSON_AddNumberToObject(tx_info,"block_height",chips_get_block_height(chips_get_block_hash_from_txid(cJSON_Print(txid))));
+				printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(tx_info));
+				bytes = nn_send(bet->pushsock,cJSON_Print(tx_info),strlen(cJSON_Print(tx_info)),0);
+				if(bytes < 0)
+					retval = -1;
+				
+			}
 		}
 	}
 	return retval;
@@ -1764,7 +1786,16 @@ void bet_player_backend_loop(void *_ptr)
 	cJSON *msgjson = NULL;
 	struct privatebet_info *bet = _ptr;
 	uint8_t flag = 1;
-
+	cJSON *funds_info=NULL;
+	int32_t bytes;
+	
+	funds_info=cJSON_CreateObject();
+	cJSON_AddStringToObject(funds_info,"method","stack_info_req");
+	bytes=nn_send(bet->pushsock,cJSON_Print(funds_info),strlen(cJSON_Print(funds_info)),0);
+	if(bytes < 0)  {
+		printf("%s::%d::Failed to send data\n",__FUNCTION__,__LINE__);
+		flag = 0;
+	}
 	while (flag) {
 		if (bet->subsock >= 0 && bet->pushsock >= 0) {
 			ptr = 0;
@@ -1778,6 +1809,7 @@ void bet_player_backend_loop(void *_ptr)
 					// do something here, possibly this could be because unknown
 					// commnad or because of encountering a special case which
 					// state machine fails to handle
+					break;
 				}
 				if (tmp)
 					free(tmp);

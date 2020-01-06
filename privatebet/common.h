@@ -76,4 +76,11 @@ extern char notary_node_ips[][25];
 extern char msig_addr[64];
 extern char notary_node_pubkeys[][67];
 
+extern double table_stack_in_chips;
+extern double chips_tx_fee;
+
+extern char dev_fund_addr[64];
+extern char legacy_2_of_3_msig_addr[64];
+extern char legacy_2_of_4_msig_Addr[64];
+
 #endif
