@@ -18,3 +18,6 @@ void check_ln_chips_sync();
 double chips_get_balance();
 int32_t chips_lock_transaction(int32_t fundAmount);
 cJSON *chips_add_multisig_address();
+int32_t chips_check_if_tx_unspent(char *input_tx);
+char* chips_get_block_hash_from_txid(char* txid);
+int32_t chips_get_block_height(char* block_hash);

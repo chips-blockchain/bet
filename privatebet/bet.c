@@ -45,8 +45,6 @@ struct enc_share *g_shares = NULL;
 int32_t max_players = 2;
 static const int32_t poker_deck_size = 52;
 
-const char *rootAddress = "RSdMRYeeouw3hepxNgUzHn34qFhn1tsubb"; // donation Address
-
 static void bet_cashier_client_initialize(char *node_ip, const int32_t port)
 {
 	int32_t subsock = -1, pushsock = -1;
@@ -66,7 +64,7 @@ static void bet_cashier_client_initialize(char *node_ip, const int32_t port)
 
 static void bet_cashier_deinitialize()
 {
-	if(cashier_info)
+	if (cashier_info)
 		free(cashier_info);
 }
 
@@ -95,9 +93,9 @@ static void bet_player_initialize(char *dcv_ip, const int32_t port)
 
 static void bet_player_deinitialize()
 {
-	if(bet_player)
+	if (bet_player)
 		free(bet_player);
-	if(player_vars)
+	if (player_vars)
 		free(player_vars);
 }
 
@@ -159,9 +157,9 @@ static void bet_bvv_initialize(char *dcv_ip, const int32_t port)
 
 static void bet_bvv_deinitialize()
 {
-	if(bet_bvv)
+	if (bet_bvv)
 		free(bet_bvv);
-	if(bvv_vars)
+	if (bvv_vars)
 		free(bvv_vars);
 }
 
@@ -224,9 +222,9 @@ static void bet_dcv_initialize(char *dcv_ip, const int32_t port)
 
 static void bet_dcv_deinitialize()
 {
-	if(bet_dcv)
+	if (bet_dcv)
 		free(bet_dcv);
-	if(dcv_vars)
+	if (dcv_vars)
 		free(dcv_vars);
 }
 
@@ -302,8 +300,18 @@ static void bet_cashier_server_thrd(char *node_ip, const int32_t port)
 	bet_cashier_deinitialize();
 }
 
+static void bet_display_usage()
+{
+	printf("\nInvalid Usage");
+	printf("\nFor DCV: ./bet dcv <dcv_ip_address>");
+	printf("\nFor BVV: ./bet bvv <dcv_ip_address>");
+	printf("\nFor Player: ./bet player <dcv_ip_address>");
+	printf("\nFor Cashier: ./bet cashier");
+}
+
 int main(int argc, char **argv)
 {
+#if 1
 	uint16_t port = 7797 + 1;
 	uint16_t cashier_pub_sub_port = 7901, cashier_push_pull_port = 7902;
 	char dcv_ip[20], *node_ip = NULL;
@@ -325,12 +333,13 @@ int main(int argc, char **argv)
 	} else if ((argc == 2) && (strcmp(argv[1], "cashier") == 0)) {
 		bet_cashier_server_thrd(bet_get_etho_ip(), cashier_pub_sub_port);
 	} else {
-		printf("\nInvalid Usage");
-		printf("\nFor DCV: ./bet dcv <dcv_ip_address>");
-		printf("\nFor BVV: ./bet bvv <dcv_ip_address>");
-		printf("\nFor Player: ./bet player <dcv_ip_address>");
-		printf("\nFor Cashier: ./bet cashier");
+		bet_display_usage();
 	}
+#endif
+#if 0
+	printf("%s\n",chips_get_block_hash_from_txid("4e290fea39da2166a32e143399ae4168bd9e29981ae5a57a4849e30931743e9c"));
+	printf("block height::%d\n",chips_get_block_height(	chips_get_block_hash_from_txid("4e290fea39da2166a32e143399ae4168bd9e29981ae5a57a4849e30931743e9c")));
+#endif	
 	return 0;
 }
 
