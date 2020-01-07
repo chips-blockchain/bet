@@ -25,6 +25,7 @@
 #include "poker.h"
 #include "states.h"
 #include "table.h"
+#include "cashier.h"
 
 #include <errno.h>
 #include <netinet/in.h>
@@ -72,6 +73,9 @@ int32_t no_of_signers, max_no_of_signers = 2, is_signed[CARDS777_MAXPLAYERS];
 char lws_buf[65536];
 int32_t lws_buf_length = 0;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+int32_t no_of_txs = 0;
+char tx_ids[CARDS777_MAXPLAYERS][100];
 
 void dcv_lws_write(cJSON *data)
 {
@@ -1365,28 +1369,32 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 			else if (strcmp(jstr(argjson, "node_type"), "player") == 0)
 				player_status[jint(argjson, "playerid")] = 1;
 		} else if (strcmp(method, "stack_info_req") == 0) {
-				cJSON *temp = cJSON_CreateObject();
-				cJSON_AddStringToObject(temp,"method","stack_info_resp");
-				cJSON_AddNumberToObject(temp,"table_stack_in_chips",table_stack_in_chips);
-				bytes = nn_send(bet->pubsock,cJSON_Print(temp),strlen(cJSON_Print(temp)),0);
-				if(bytes < 0) {
-					retval = -1;
-					goto end;
-				}
+			cJSON *temp = cJSON_CreateObject();
+			cJSON_AddStringToObject(temp, "method", "stack_info_resp");
+			cJSON_AddNumberToObject(temp, "table_stack_in_chips", table_stack_in_chips);
+			bytes = nn_send(bet->pubsock, cJSON_Print(temp), strlen(cJSON_Print(temp)), 0);
+			if (bytes < 0) {
+				retval = -1;
+				goto end;
+			}
 		} else if (strcmp(method, "tx") == 0) {
 			cJSON *tx_info = cJSON_CreateObject();
-			int32_t block_height = jint(argjson,"block_height");
-			tx_info = cJSON_GetObjectItem(argjson,"tx_info");
-			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+			int32_t block_height = jint(argjson, "block_height");
+			tx_info = cJSON_GetObjectItem(argjson, "tx_info");
+			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 
-			while(block_height < chips_get_block_count()) {
-					sleep(2);
+			while (block_height < chips_get_block_count()) {
+				sleep(2);
 			}
 			if (chips_check_if_tx_unspent(cJSON_Print(tx_info)) == 1) {
-				
+				strcpy(tx_ids[no_of_txs++], cJSON_Print(tx_info));
 				printf("valid tx\n");
-			}	
-			else
+				if (no_of_txs == 2) {
+					for (int i = 0; i < no_of_txs; i++)
+						printf("%s\n", tx_ids[i]);
+					chips_create_tx_from_tx_list(notary_node_addrs[1], no_of_txs, tx_ids);
+				}
+			} else
 				printf("invalid tx\n");
 
 		} else {
@@ -1485,7 +1493,7 @@ void bet_dcv_frontend_loop(void *_ptr)
 	lws_context_destroy(dcv_context);
 }
 
-static int32_t bet_send_status(struct privatebet_info *bet)
+static int32_t bet_live_status(struct privatebet_info *bet)
 {
 	char name[10];
 	cJSON *status_info = NULL;
@@ -1528,7 +1536,7 @@ void bet_dcv_live_loop(void *_ptr)
 			retval = -1;
 
 		sleep(10);
-		retval = bet_send_status(bet);
+		retval = bet_live_status(bet);
 
 		if (retval < 0)
 			break;

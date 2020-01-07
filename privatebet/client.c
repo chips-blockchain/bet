@@ -100,7 +100,7 @@ void make_command(int argc, char **argv, cJSON **argjson)
 {
 	char command[4096];
 	FILE *fp = NULL;
-	char data[65536], temp[65536];
+	char data[262144];
 	char *buf = NULL;
 
 	memset(command, 0x00, sizeof(command));
@@ -115,6 +115,7 @@ void make_command(int argc, char **argv, cJSON **argjson)
 		printf("Failed to run command\n");
 		exit(1);
 	}
+
 	buf = (char *)malloc(200);
 	if (!buf) {
 		printf("%s::%d::Malloc failed\n", __FUNCTION__, __LINE__);
@@ -124,11 +125,9 @@ void make_command(int argc, char **argv, cJSON **argjson)
 		strcat(data, buf);
 		memset(buf, 0x00, 200);
 	}
-	if (strncmp("error", data, strlen("error")) == 0) {
-		memset(temp, 0x00, sizeof(temp));
-		strncpy(temp, data + strlen("error"), (strlen(data) - strlen("error")));
-		*argjson = cJSON_Parse(temp);
-
+	if (strlen(data) == 0) {
+		cJSON_AddStringToObject(*argjson, "error", "command failed");
+		cJSON_AddStringToObject(*argjson, "command", command);
 	} else {
 		if ((strcmp(argv[1], "createrawtransaction") == 0) || (strcmp(argv[1], "sendrawtransaction") == 0) ||
 		    (strcmp(argv[1], "getnewaddress") == 0)) {
@@ -1753,26 +1752,25 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		} else if (strcmp(method, "status_info") == 0) {
 			player_lws_write(argjson);
 		} else if (strcmp(method, "stack_info_resp") == 0) {
-
-			double funds_needed = jdouble(argjson,"table_stack_in_chips");
-			if (chips_get_balance() < (funds_needed+ chips_tx_fee)) {
-				printf("%s::%d::Insufficient funds\n",__FUNCTION__,__LINE__);
+			double funds_needed = jdouble(argjson, "table_stack_in_chips");
+			if (chips_get_balance() < (funds_needed + chips_tx_fee)) {
+				printf("%s::%d::Insufficient funds\n", __FUNCTION__, __LINE__);
 				retval = -1;
-			}
-			else {
+			} else {
 				cJSON *tx_info = cJSON_CreateObject();
-				cJSON *txid = chips_transfer_funds(funds_needed,legacy_2_of_4_msig_Addr);
-				cJSON_AddStringToObject(tx_info,"method","tx");
-				cJSON_AddItemToObject(tx_info,"tx_info",txid);
-				while(chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
+				cJSON *txid = chips_transfer_funds(funds_needed, legacy_2_of_4_msig_Addr);
+				cJSON_AddStringToObject(tx_info, "method", "tx");
+				cJSON_AddItemToObject(tx_info, "tx_info", txid);
+				while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
 					sleep(2);
 				}
-				cJSON_AddNumberToObject(tx_info,"block_height",chips_get_block_height(chips_get_block_hash_from_txid(cJSON_Print(txid))));
-				printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(tx_info));
-				bytes = nn_send(bet->pushsock,cJSON_Print(tx_info),strlen(cJSON_Print(tx_info)),0);
-				if(bytes < 0)
+				cJSON_AddNumberToObject(tx_info, "block_height",
+							chips_get_block_height_from_block_hash(
+								chips_get_block_hash_from_txid(cJSON_Print(txid))));
+				printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(tx_info));
+				bytes = nn_send(bet->pushsock, cJSON_Print(tx_info), strlen(cJSON_Print(tx_info)), 0);
+				if (bytes < 0)
 					retval = -1;
-				
 			}
 		}
 	}
@@ -1786,14 +1784,14 @@ void bet_player_backend_loop(void *_ptr)
 	cJSON *msgjson = NULL;
 	struct privatebet_info *bet = _ptr;
 	uint8_t flag = 1;
-	cJSON *funds_info=NULL;
+	cJSON *funds_info = NULL;
 	int32_t bytes;
-	
-	funds_info=cJSON_CreateObject();
-	cJSON_AddStringToObject(funds_info,"method","stack_info_req");
-	bytes=nn_send(bet->pushsock,cJSON_Print(funds_info),strlen(cJSON_Print(funds_info)),0);
-	if(bytes < 0)  {
-		printf("%s::%d::Failed to send data\n",__FUNCTION__,__LINE__);
+
+	funds_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(funds_info, "method", "stack_info_req");
+	bytes = nn_send(bet->pushsock, cJSON_Print(funds_info), strlen(cJSON_Print(funds_info)), 0);
+	if (bytes < 0) {
+		printf("%s::%d::Failed to send data\n", __FUNCTION__, __LINE__);
 		flag = 0;
 	}
 	while (flag) {
