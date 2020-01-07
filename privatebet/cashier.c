@@ -2,6 +2,7 @@
 #include "cashier.h"
 #include "network.h"
 #include "common.h"
+#include "commands.h"
 
 int32_t no_of_notaries = 4;
 int32_t threshold_value = 2;
@@ -23,10 +24,10 @@ int32_t notary_status[4] = { 0 };
 double table_stack_in_chips = 0.01;
 double chips_tx_fee = 0.0005;
 
-char dev_fund_addr[64] = {"RSdMRYeeouw3hepxNgUzHn34qFhn1tsubb"}; // donation Address
+char dev_fund_addr[64] = { "RSdMRYeeouw3hepxNgUzHn34qFhn1tsubb" }; // donation Address
 
-char legacy_2_of_3_msig_addr[64] = {"bQJTo8knsbSoU7k9oGADa6qfWGWyJtxC3o"};
-char legacy_2_of_4_msig_Addr[64] = {"bRCUpox55j6sFJBuEn9E1fwNLFKFvRvo9W"};
+char legacy_2_of_3_msig_addr[64] = { "bQJTo8knsbSoU7k9oGADa6qfWGWyJtxC3o" };
+char legacy_2_of_4_msig_Addr[64] = { "bRCUpox55j6sFJBuEn9E1fwNLFKFvRvo9W" };
 
 char *bet_check_notary_status()
 {
@@ -68,6 +69,7 @@ char *bet_check_notary_status()
 		if ((temp + 1) == live_notaries)
 			notary_status[i] = 1;
 	}
+#if 0
 	if (live_notaries > 0) {
 		printf("Below notaries are live, you can choose one\n");
 		for (int i = 0; i < no_of_notaries; i++) {
@@ -84,6 +86,7 @@ char *bet_check_notary_status()
 		} else
 			goto top;
 	}
+#endif
 	return NULL;
 }
 
@@ -110,6 +113,17 @@ int32_t bet_cashier_backend(cJSON *argjson, struct cashier *cashier_info)
 	if ((method = jstr(argjson, "method")) != 0) {
 		if (strcmp(method, "live") == 0) {
 			retval = bet_send_status(cashier_info);
+		} else if (strcmp(method, "raw_msig_tx") == 0) {
+			cJSON *signed_tx = NULL;
+			signed_tx = cJSON_CreateObject();
+			cJSON_AddStringToObject(signed_tx, "method", "signed_tx");
+			char *tx = cJSON_Print(cJSON_GetObjectItem(argjson, "tx"));
+			cJSON_AddItemToObject(signed_tx, "signed_tx", chips_sign_raw_tx_with_wallet(tx));
+			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(signed_tx));
+			int bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(signed_tx),
+					    strlen(cJSON_Print(signed_tx)), 0);
+			if (bytes < 0)
+				retval = -1;
 		}
 	}
 	return retval;
@@ -124,6 +138,8 @@ static int32_t bet_cashier_client_backend(cJSON *argjson, struct cashier *cashie
 	if ((method = jstr(argjson, "method")) != 0) {
 		if (strcmp(method, "live") == 0) {
 			retval = bet_send_status(cashier_info);
+		} else if (strcmp(method, "signed_tx") == 0) {
+			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 		}
 	}
 	return retval;
@@ -171,7 +187,6 @@ void bet_cashier_client_loop(void *_ptr)
 	cJSON *argjson = NULL;
 	struct cashier *cashier_info = _ptr;
 
-	printf("%s::%d::cahsier client started\n", __FUNCTION__, __LINE__);
 	while (cashier_info->c_pushsock >= 0 && cashier_info->c_subsock >= 0) {
 		ptr = 0;
 		if ((recvlen = nn_recv(cashier_info->c_subsock, &ptr, NN_MSG, 0)) > 0) {
@@ -222,4 +237,22 @@ void bet_cashier_server_loop(void *_ptr)
 			}
 		}
 	}
+}
+
+int32_t bet_submit_msig_raw_tx(cJSON *tx)
+{
+	cJSON *msig_raw_tx = NULL;
+	int32_t bytes, retval = 0;
+
+	msig_raw_tx = cJSON_CreateObject();
+	cJSON_AddStringToObject(msig_raw_tx, "method", "raw_msig_tx");
+	cJSON_AddItemToObject(msig_raw_tx, "tx", tx);
+
+	if (cashier_info->c_pushsock > 0) {
+		bytes = nn_send(cashier_info->c_pushsock, cJSON_Print(msig_raw_tx), strlen(cJSON_Print(msig_raw_tx)),
+				0);
+		if (bytes < 0)
+			retval = -1;
+	}
+	return retval;
 }

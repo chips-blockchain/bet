@@ -17,6 +17,8 @@
 #include "client.h"
 #include "common.h"
 #include "oracle.h"
+#include "network.h"
+#include "cashier.h"
 
 char *multisigAddress = "bGmKoyJEz4ESuJCTjhVkgEb2Qkt8QuiQzQ";
 
@@ -24,7 +26,7 @@ int32_t chips_iswatchonly(char *address)
 {
 	int argc, maxsize = 100;
 	char **argv = NULL;
-	cJSON *isWatchOnly = NULL;
+	cJSON *is_watch_only = NULL;
 	argc = 3;
 
 	argv = (char **)malloc(argc * sizeof(char *));
@@ -34,9 +36,9 @@ int32_t chips_iswatchonly(char *address)
 	strcpy(argv[0], "chips-cli");
 	strcpy(argv[1], "validateaddress");
 	strcpy(argv[2], address);
-	make_command(argc, argv, &isWatchOnly);
+	make_command(argc, argv, &is_watch_only);
 
-	cJSON *temp = cJSON_GetObjectItem(isWatchOnly, "iswatchonly");
+	cJSON *temp = cJSON_GetObjectItem(is_watch_only, "iswatchonly");
 	if (strcmp(cJSON_Print(temp), "true") == 0) {
 		return 1;
 	} else
@@ -45,21 +47,21 @@ int32_t chips_iswatchonly(char *address)
 
 void chips_spend_multi_sig_address(char *address, double amount)
 {
-	cJSON *rawTxInfo = NULL;
+	cJSON *raw_tx = NULL;
 	if (chips_iswatchonly(address) == 0) {
 		chips_import_address(address);
 	}
 
-	rawTxInfo = chips_create_raw_tx(amount, address);
+	raw_tx = chips_create_raw_tx(amount, address);
 
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(rawTxInfo));
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(raw_tx));
 }
 
 void chips_import_address(char *address)
 {
 	int argc, maxsize = 100;
 	char **argv = NULL;
-	cJSON *importAddressInfo = NULL;
+	cJSON *import_address = NULL;
 	argc = 3;
 
 	argv = (char **)malloc(argc * sizeof(char *));
@@ -70,7 +72,7 @@ void chips_import_address(char *address)
 	strcpy(argv[1], "importaddress");
 	strcpy(argv[2], address);
 
-	make_command(argc, argv, &importAddressInfo);
+	make_command(argc, argv, &import_address);
 
 	printf("%s::%d\n", __FUNCTION__, __LINE__);
 }
@@ -79,7 +81,7 @@ char *chips_get_new_address()
 {
 	int argc, maxsize = 100;
 	char **argv = NULL;
-	cJSON *newAddressInfo = NULL;
+	cJSON *new_address = NULL;
 	argc = 2;
 
 	argv = (char **)malloc(argc * sizeof(char *));
@@ -89,9 +91,9 @@ char *chips_get_new_address()
 	strcpy(argv[0], "chips-cli");
 	strcpy(argv[1], "getnewaddress");
 
-	make_command(argc, argv, &newAddressInfo);
+	make_command(argc, argv, &new_address);
 
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(newAddressInfo));
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(new_address));
 
 	if (argv) {
 		for (int i = 0; i < argc; i++) {
@@ -101,14 +103,14 @@ char *chips_get_new_address()
 		free(argv);
 	}
 
-	return cJSON_Print(newAddressInfo);
+	return cJSON_Print(new_address);
 }
 
 int chips_validate_address(char *address)
 {
 	int argc, maxsize = 1000;
 	char **argv = NULL;
-	cJSON *addressInfo = NULL;
+	cJSON *address_info = NULL;
 	argc = 3;
 
 	argv = (char **)malloc(argc * sizeof(char *));
@@ -118,9 +120,9 @@ int chips_validate_address(char *address)
 	strcpy(argv[0], "chips-cli");
 	strcpy(argv[1], "validateaddress");
 	strcpy(argv[2], address);
-	make_command(argc, argv, &addressInfo);
+	make_command(argc, argv, &address_info);
 
-	cJSON *temp = cJSON_GetObjectItem(addressInfo, "ismine");
+	cJSON *temp = cJSON_GetObjectItem(address_info, "ismine");
 	if (strcmp(cJSON_Print(temp), "true") == 0) {
 		return 1;
 	} else
@@ -131,7 +133,7 @@ void chips_list_address_groupings()
 {
 	int argc, maxsize = 1000;
 	char **argv = NULL;
-	cJSON *listaddressgroupingsInfo = NULL;
+	cJSON *list_address_groupings = NULL;
 
 	argc = 3;
 	argv = (char **)malloc(argc * sizeof(char *));
@@ -141,13 +143,13 @@ void chips_list_address_groupings()
 	argc = 2;
 	strcpy(argv[0], "chips-cli");
 	strcpy(argv[1], "listaddressgroupings");
-	make_command(argc, argv, &listaddressgroupingsInfo);
+	make_command(argc, argv, &list_address_groupings);
 
-	for (int i = 0; i < cJSON_GetArraySize(listaddressgroupingsInfo); i++) {
-		cJSON *addressInfo = cJSON_GetArrayItem(listaddressgroupingsInfo, i);
-		for (int j = 0; j < cJSON_GetArraySize(addressInfo); j++) {
+	for (int i = 0; i < cJSON_GetArraySize(list_address_groupings); i++) {
+		cJSON *address_info = cJSON_GetArrayItem(list_address_groupings, i);
+		for (int j = 0; j < cJSON_GetArraySize(address_info); j++) {
 			cJSON *temp = NULL;
-			temp = cJSON_GetArrayItem(addressInfo, j);
+			temp = cJSON_GetArrayItem(address_info, j);
 			cJSON *address = cJSON_GetArrayItem(temp, 0);
 			if (chips_validate_address(cJSON_Print(address)) == 1) {
 				printf("%s::%f\n", cJSON_Print(address),
@@ -166,18 +168,18 @@ void chips_list_address_groupings()
 }
 cJSON *chips_transfer_funds(double amount, char *address)
 {
-	cJSON *txInfo = NULL, *signedTx = NULL;
-	char *rawTransaction = cJSON_str(chips_create_raw_tx(amount, address));
+	cJSON *tx_info = NULL, *signed_tx = NULL;
+	char *raw_tx = cJSON_str(chips_create_raw_tx(amount, address));
 
-	signedTx = chips_sign_raw_tx_with_wallet(rawTransaction);
-	txInfo = chips_send_raw_tx(signedTx);
-	return txInfo;
+	signed_tx = chips_sign_raw_tx_with_wallet(raw_tx);
+	tx_info = chips_send_raw_tx(signed_tx);
+	return tx_info;
 }
-cJSON *chips_send_raw_tx(cJSON *signedTransaction)
+cJSON *chips_send_raw_tx(cJSON *signed_tx)
 {
 	int argc, maxsize = 2048;
 	char **argv = NULL;
-	cJSON *txInfo = NULL;
+	cJSON *tx_info = NULL;
 
 	argc = 3;
 	argv = (char **)malloc(argc * sizeof(char *));
@@ -186,8 +188,8 @@ cJSON *chips_send_raw_tx(cJSON *signedTransaction)
 	}
 	strcpy(argv[0], "chips-cli");
 	strcpy(argv[1], "sendrawtransaction");
-	strcpy(argv[2], jstr(signedTransaction, "hex"));
-	make_command(argc, argv, &txInfo);
+	strcpy(argv[2], jstr(signed_tx, "hex"));
+	make_command(argc, argv, &tx_info);
 
 	if (argv) {
 		for (int i = 0; i < argc; i++) {
@@ -197,14 +199,14 @@ cJSON *chips_send_raw_tx(cJSON *signedTransaction)
 		free(argv);
 	}
 
-	return txInfo;
+	return tx_info;
 }
 
-cJSON *chips_sign_raw_tx_with_wallet(char *rawtransaction)
+cJSON *chips_sign_raw_tx_with_wallet(char *raw_tx)
 {
 	int argc, maxsize = 2048;
 	char **argv = NULL;
-	cJSON *signedTransaction = NULL;
+	cJSON *signed_tx = NULL;
 
 	argc = 3;
 	argv = (char **)malloc(argc * sizeof(char *));
@@ -213,8 +215,8 @@ cJSON *chips_sign_raw_tx_with_wallet(char *rawtransaction)
 	}
 	strcpy(argv[0], "chips-cli");
 	strcpy(argv[1], "signrawtransactionwithwallet");
-	strcpy(argv[2], rawtransaction);
-	make_command(argc, argv, &signedTransaction);
+	strcpy(argv[2], raw_tx);
+	make_command(argc, argv, &signed_tx);
 
 	if (argv) {
 		for (int i = 0; i < argc; i++) {
@@ -224,25 +226,25 @@ cJSON *chips_sign_raw_tx_with_wallet(char *rawtransaction)
 		free(argv);
 	}
 
-	return signedTransaction;
+	return signed_tx;
 }
 
 int32_t chips_publish_multisig_tx(char *tx)
 {
 	int32_t flag = 0, bytes, retval = 0;
-	cJSON *txInfo = cJSON_CreateObject();
+	cJSON *tx_info = cJSON_CreateObject();
 	char *rendered = NULL;
 	for (int i = 0; i < bet_dcv->numplayers; i++) {
 		if (is_signed[i] == 0) {
-			cJSON_AddNumberToObject(txInfo, "playerid", i);
+			cJSON_AddNumberToObject(tx_info, "playerid", i);
 			flag = 1;
 			break;
 		}
 	}
 	if (flag) {
-		cJSON_AddStringToObject(txInfo, "method", "signrawtransaction");
-		cJSON_AddStringToObject(txInfo, "tx", tx);
-		rendered = cJSON_Print(txInfo);
+		cJSON_AddStringToObject(tx_info, "method", "signrawtransaction");
+		cJSON_AddStringToObject(tx_info, "tx", tx);
+		rendered = cJSON_Print(tx_info);
 
 		bytes = nn_send(bet_dcv->pubsock, rendered, strlen(rendered), 0);
 		if (bytes < 0)
@@ -251,23 +253,23 @@ int32_t chips_publish_multisig_tx(char *tx)
 	return retval;
 }
 
-cJSON *chips_create_raw_multi_sig_tx(double amount, char *toaddress, char *fromaddress)
+cJSON *chips_create_raw_multi_sig_tx(double amount, char *to_addr, char *from_addr)
 {
 	char **argv = NULL, *changeAddress = NULL;
 	int argc, maxsize = 1024;
-	cJSON *listunspentInfo = NULL, *addressInfo = NULL, *txListInfo = NULL, *createTX = NULL;
+	cJSON *listunspent_info = NULL, *address_info = NULL, *tx_list = NULL, *tx = NULL;
 	double balance, change, temp_balance = 0, fee = 0.0005;
 
 	balance = chips_get_balance();
-	txListInfo = cJSON_CreateArray();
-	addressInfo = cJSON_CreateObject();
+	tx_list = cJSON_CreateArray();
+	address_info = cJSON_CreateObject();
 
-	printf("%s::%d::toaddress::%s::fromaddress::%s\n", __FUNCTION__, __LINE__, toaddress, fromaddress);
+	printf("%s::%d::toaddress::%s::fromaddress::%s\n", __FUNCTION__, __LINE__, to_addr, from_addr);
 
 	if ((balance + fee) < amount) {
 		printf("%s::%d::Insufficient Funds\n", __FUNCTION__, __LINE__);
 	} else {
-		cJSON_AddNumberToObject(addressInfo, toaddress, amount);
+		cJSON_AddNumberToObject(address_info, to_addr, amount);
 		amount += fee;
 
 		argc = 4;
@@ -278,30 +280,30 @@ cJSON *chips_create_raw_multi_sig_tx(double amount, char *toaddress, char *froma
 		strcpy(argv[0], "chips-cli");
 		strcpy(argv[1], "listunspent");
 		argc = 2;
-		make_command(argc, argv, &listunspentInfo);
+		make_command(argc, argv, &listunspent_info);
 
-		for (int i = 0; i < cJSON_GetArraySize(listunspentInfo) - 1; i++) {
-			cJSON *temp = cJSON_GetArrayItem(listunspentInfo, i);
-			cJSON *txInfo = cJSON_CreateObject();
+		for (int i = 0; i < cJSON_GetArraySize(listunspent_info) - 1; i++) {
+			cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
+			cJSON *tx_info = cJSON_CreateObject();
 
-			if (strcmp(jstr(temp, "address"), fromaddress) == 0) {
+			if (strcmp(jstr(temp, "address"), from_addr) == 0) {
 				temp_balance += jdouble(temp, "amount");
 				if (temp_balance >= amount) {
 					changeAddress = jstr(temp, "address");
 					change = temp_balance - amount;
-					cJSON_AddStringToObject(txInfo, "txid", jstr(temp, "txid"));
-					cJSON_AddNumberToObject(txInfo, "vout", jint(temp, "vout"));
-					cJSON_AddItemToArray(txListInfo, txInfo);
+					cJSON_AddStringToObject(tx_info, "txid", jstr(temp, "txid"));
+					cJSON_AddNumberToObject(tx_info, "vout", jint(temp, "vout"));
+					cJSON_AddItemToArray(tx_list, tx_info);
 					break;
 				} else {
-					cJSON_AddStringToObject(txInfo, "txid", jstr(temp, "txid"));
-					cJSON_AddNumberToObject(txInfo, "vout", jint(temp, "vout"));
-					cJSON_AddItemToArray(txListInfo, txInfo);
+					cJSON_AddStringToObject(tx_info, "txid", jstr(temp, "txid"));
+					cJSON_AddNumberToObject(tx_info, "vout", jint(temp, "vout"));
+					cJSON_AddItemToArray(tx_list, tx_info);
 				}
 			}
 		}
 		if (change != 0) {
-			cJSON_AddNumberToObject(addressInfo, changeAddress, change);
+			cJSON_AddNumberToObject(address_info, changeAddress, change);
 		}
 		argc = 4;
 		for (int i = 0; i < argc; i++)
@@ -309,9 +311,9 @@ cJSON *chips_create_raw_multi_sig_tx(double amount, char *toaddress, char *froma
 
 		strcpy(argv[0], "chips-cli");
 		strcpy(argv[1], "createrawtransaction");
-		sprintf(argv[2], "\'%s\'", cJSON_Print(txListInfo));
-		sprintf(argv[3], "\'%s\'", cJSON_Print(addressInfo));
-		make_command(argc, argv, &createTX);
+		sprintf(argv[2], "\'%s\'", cJSON_Print(tx_list));
+		sprintf(argv[3], "\'%s\'", cJSON_Print(address_info));
+		make_command(argc, argv, &tx);
 
 		if (argv) {
 			for (int i = 0; i < argc; i++) {
@@ -321,7 +323,7 @@ cJSON *chips_create_raw_multi_sig_tx(double amount, char *toaddress, char *froma
 			free(argv);
 		}
 
-		return createTX;
+		return tx;
 	}
 }
 
@@ -329,12 +331,12 @@ cJSON *chips_create_raw_tx(double amount, char *address)
 {
 	char **argv = NULL, *changeAddress = NULL;
 	int argc, maxsize = 1024;
-	cJSON *listunspentInfo = NULL, *addressInfo = NULL, *txListInfo = NULL, *createTX = NULL;
+	cJSON *listunspent_info = NULL, *address_info = NULL, *tx_list = NULL, *tx = NULL;
 	double balance, change, temp_balance = 0, fee = 0.0005;
 
 	balance = chips_get_balance();
-	txListInfo = cJSON_CreateArray();
-	addressInfo = cJSON_CreateObject();
+	tx_list = cJSON_CreateArray();
+	address_info = cJSON_CreateObject();
 
 	if (address == NULL) {
 		address = (char *)malloc(64 * sizeof(char));
@@ -346,7 +348,7 @@ cJSON *chips_create_raw_tx(double amount, char *address)
 	if ((balance + fee) < amount) {
 		printf("%s::%d::Insufficient Funds\n", __FUNCTION__, __LINE__);
 	} else {
-		cJSON_AddNumberToObject(addressInfo, address, amount);
+		cJSON_AddNumberToObject(address_info, address, amount);
 		amount += fee;
 
 		argc = 4;
@@ -357,29 +359,29 @@ cJSON *chips_create_raw_tx(double amount, char *address)
 		strcpy(argv[0], "chips-cli");
 		strcpy(argv[1], "listunspent");
 		argc = 2;
-		make_command(argc, argv, &listunspentInfo);
+		make_command(argc, argv, &listunspent_info);
 
-		for (int i = 0; i < cJSON_GetArraySize(listunspentInfo) - 1; i++) {
-			cJSON *temp = cJSON_GetArrayItem(listunspentInfo, i);
-			cJSON *txInfo = cJSON_CreateObject();
+		for (int i = 0; i < cJSON_GetArraySize(listunspent_info) - 1; i++) {
+			cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
+			cJSON *tx_info = cJSON_CreateObject();
 			if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "spendable")), "true") == 0) {
 				temp_balance += jdouble(temp, "amount");
 				if (temp_balance >= amount) {
 					changeAddress = jstr(temp, "address");
 					change = temp_balance - amount;
-					cJSON_AddStringToObject(txInfo, "txid", jstr(temp, "txid"));
-					cJSON_AddNumberToObject(txInfo, "vout", jint(temp, "vout"));
-					cJSON_AddItemToArray(txListInfo, txInfo);
+					cJSON_AddStringToObject(tx_info, "txid", jstr(temp, "txid"));
+					cJSON_AddNumberToObject(tx_info, "vout", jint(temp, "vout"));
+					cJSON_AddItemToArray(tx_list, tx_info);
 					break;
 				} else {
-					cJSON_AddStringToObject(txInfo, "txid", jstr(temp, "txid"));
-					cJSON_AddNumberToObject(txInfo, "vout", jint(temp, "vout"));
-					cJSON_AddItemToArray(txListInfo, txInfo);
+					cJSON_AddStringToObject(tx_info, "txid", jstr(temp, "txid"));
+					cJSON_AddNumberToObject(tx_info, "vout", jint(temp, "vout"));
+					cJSON_AddItemToArray(tx_list, tx_info);
 				}
 			}
 		}
 		if (change != 0) {
-			cJSON_AddNumberToObject(addressInfo, changeAddress, change);
+			cJSON_AddNumberToObject(address_info, changeAddress, change);
 		}
 		argc = 4;
 		for (int i = 0; i < argc; i++)
@@ -387,9 +389,9 @@ cJSON *chips_create_raw_tx(double amount, char *address)
 
 		strcpy(argv[0], "chips-cli");
 		strcpy(argv[1], "createrawtransaction");
-		sprintf(argv[2], "\'%s\'", cJSON_Print(txListInfo));
-		sprintf(argv[3], "\'%s\'", cJSON_Print(addressInfo));
-		make_command(argc, argv, &createTX);
+		sprintf(argv[2], "\'%s\'", cJSON_Print(tx_list));
+		sprintf(argv[3], "\'%s\'", cJSON_Print(address_info));
+		make_command(argc, argv, &tx);
 
 		if (argv) {
 			for (int i = 0; i < argc; i++) {
@@ -399,7 +401,7 @@ cJSON *chips_create_raw_tx(double amount, char *address)
 			free(argv);
 		}
 
-		return createTX;
+		return tx;
 	}
 }
 
@@ -407,7 +409,7 @@ void chips_list_unspent()
 {
 	char **argv = NULL;
 	int argc;
-	cJSON *listunspentInfo = NULL;
+	cJSON *listunspent_info = NULL;
 
 	argc = 2;
 	argv = (char **)malloc(argc * sizeof(char *));
@@ -416,10 +418,10 @@ void chips_list_unspent()
 	}
 	strcpy(argv[0], "chips-cli");
 	strcpy(argv[1], "listunspent");
-	make_command(argc, argv, &listunspentInfo);
+	make_command(argc, argv, &listunspent_info);
 
-	for (int i = 0; i < cJSON_GetArraySize(listunspentInfo) - 1; i++) {
-		cJSON *temp = cJSON_GetArrayItem(listunspentInfo, i);
+	for (int i = 0; i < cJSON_GetArraySize(listunspent_info) - 1; i++) {
+		cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
 
 		if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "spendable")), "true") == 0) {
 			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
@@ -553,15 +555,15 @@ double chips_get_balance()
 	return balance;
 }
 
-int32_t chips_lock_transaction(int32_t fundAmount)
+int32_t chips_lock_transaction(int32_t fund_amount)
 {
 	int argc, balance;
 	char **argv = NULL;
-	cJSON *listunspentInfo = NULL;
+	cJSON *listunspent_info = NULL;
 	double fee = 0.0005;
 
 	balance = chips_get_balance();
-	if ((fundAmount + fee) >= balance) {
+	if ((fund_amount + fee) >= balance) {
 		argc = 2;
 		argv = (char **)malloc(argc * sizeof(char *));
 		for (int i = 0; i < argc; i++) {
@@ -569,12 +571,12 @@ int32_t chips_lock_transaction(int32_t fundAmount)
 		}
 		strcpy(argv[0], "chips-cli");
 		strcpy(argv[1], "listunspent");
-		make_command(argc, argv, &listunspentInfo);
+		make_command(argc, argv, &listunspent_info);
 
-		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(listunspentInfo));
+		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(listunspent_info));
 
-		for (int i = 0; i < cJSON_GetArraySize(listunspentInfo) - 1; i++) {
-			cJSON *temp = cJSON_GetArrayItem(listunspentInfo, i);
+		for (int i = 0; i < cJSON_GetArraySize(listunspent_info) - 1; i++) {
+			cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
 
 			if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "spendable")), "true") == 0) {
 				printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
@@ -620,7 +622,6 @@ cJSON *chips_add_multisig_address()
 	return msig_address;
 }
 
-
 int32_t chips_check_if_tx_unspent(char *input_tx)
 {
 	char **argv = NULL;
@@ -628,7 +629,7 @@ int32_t chips_check_if_tx_unspent(char *input_tx)
 	cJSON *listunspent_info = NULL;
 	int32_t spendable = 0;
 
-	printf("%s::%d::%s ",__FUNCTION__,__LINE__,input_tx);
+	printf("%s::%d::%s ", __FUNCTION__, __LINE__, input_tx);
 	argc = 2;
 	argv = (char **)malloc(argc * sizeof(char *));
 	for (int i = 0; i < argc; i++) {
@@ -638,11 +639,11 @@ int32_t chips_check_if_tx_unspent(char *input_tx)
 	strcpy(argv[1], "listunspent");
 	listunspent_info = cJSON_CreateObject();
 	make_command(argc, argv, &listunspent_info);
-	
-	for (int i = 0; i < cJSON_GetArraySize(listunspent_info) - 1; i++) {
+
+	for (int i = 0; i < cJSON_GetArraySize(listunspent_info); i++) {
 		cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
-		if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp,"txid")),input_tx) == 0) {
-			if (strcmp(jstr(temp,"address"),legacy_2_of_4_msig_Addr) == 0) {
+		if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "txid")), input_tx) == 0) {
+			if (strcmp(jstr(temp, "address"), legacy_2_of_4_msig_Addr) == 0) {
 				spendable = 1;
 				break;
 			}
@@ -658,17 +659,17 @@ int32_t chips_check_if_tx_unspent(char *input_tx)
 	return spendable;
 }
 
-char* chips_get_block_hash_from_txid(char* txid)
+char *chips_get_block_hash_from_txid(char *txid)
 {
-	int argc,arg_size=1024;
+	int argc, arg_size = 1024;
 	char **argv = NULL;
 	cJSON *raw_tx_info = NULL;
 	char *block_hash = NULL;
-		
+
 	argc = 4;
 	argv = (char **)malloc(argc * sizeof(char *));
 	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(arg_size* sizeof(char));
+		argv[i] = (char *)malloc(arg_size * sizeof(char));
 	}
 	strcpy(argv[0], "chips-cli");
 	strcpy(argv[1], "getrawtransaction");
@@ -676,8 +677,8 @@ char* chips_get_block_hash_from_txid(char* txid)
 	strcpy(argv[3], "1");
 
 	raw_tx_info = cJSON_CreateObject();
-	make_command(argc,argv,&raw_tx_info);
-	block_hash = jstr(raw_tx_info,"blockhash");
+	make_command(argc, argv, &raw_tx_info);
+	block_hash = jstr(raw_tx_info, "blockhash");
 	if (argv) {
 		for (int i = 0; i < argc; i++) {
 			if (argv[i])
@@ -686,28 +687,26 @@ char* chips_get_block_hash_from_txid(char* txid)
 		free(argv);
 	}
 	return block_hash;
-	
 }
 
-int32_t chips_get_block_height(char* block_hash)
+int32_t chips_get_block_height_from_block_hash(char *block_hash)
 {
-	int argc,arg_size=1024,block_height;
+	int argc, arg_size = 1024, block_height;
 	char **argv = NULL;
 	cJSON *block_info = NULL;
-	
+
 	argc = 3;
 	argv = (char **)malloc(argc * sizeof(char *));
 	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(arg_size* sizeof(char));
+		argv[i] = (char *)malloc(arg_size * sizeof(char));
 	}
 	strcpy(argv[0], "chips-cli");
 	strcpy(argv[1], "getblock");
 	strcpy(argv[2], block_hash);
 	block_info = cJSON_CreateObject();
-	make_command(argc,argv,&block_info);
-	block_height = jint(block_info,"height");
+	make_command(argc, argv, &block_info);
+	block_height = jint(block_info, "height");
 
-	
 	if (argv) {
 		for (int i = 0; i < argc; i++) {
 			if (argv[i])
@@ -715,5 +714,138 @@ int32_t chips_get_block_height(char* block_hash)
 		}
 		free(argv);
 	}
-	return block_height;	
+	return block_height;
+}
+
+static int32_t check_if_tx_exists(char *txid, int32_t no_of_txs, char tx_ids[][100])
+{
+	int32_t exists = 0;
+	for (int32_t i = 0; i < no_of_txs; i++) {
+		if (strcmp(tx_ids[i], txid) == 0) {
+			exists = 1;
+			break;
+		}
+	}
+	return exists;
+}
+
+cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_ids[][100])
+{
+	int argc, arg_size = 2048;
+	char **argv = NULL;
+	cJSON *listunspent_info = NULL;
+	double amount = 0;
+	cJSON *tx_list = NULL, *to_addr_info = NULL, *tx = NULL;
+
+	to_addr_info = cJSON_CreateObject();
+	tx_list = cJSON_CreateArray();
+	argc = 4;
+	argv = (char **)malloc(argc * sizeof(char *));
+	for (int i = 0; i < argc; i++) {
+		argv[i] = (char *)malloc(arg_size * sizeof(char));
+	}
+	strcpy(argv[0], "chips-cli");
+	strcpy(argv[1], "listunspent");
+	listunspent_info = cJSON_CreateObject();
+	argc = 2;
+	make_command(argc, argv, &listunspent_info);
+
+	for (int i = 0; i < cJSON_GetArraySize(listunspent_info) - 1; i++) {
+		cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
+		if (temp) {
+			if (check_if_tx_exists(jstr(temp, "txid"), no_of_txs, tx_ids) == 1) {
+				cJSON *tx_info = cJSON_CreateObject();
+				amount += jdouble(temp, "amount");
+				cJSON_AddStringToObject(tx_info, "txid", jstr(temp, "txid"));
+				cJSON_AddNumberToObject(tx_info, "vout", jint(temp, "vout"));
+				cJSON_AddItemToArray(tx_list, tx_info);
+			}
+		}
+	}
+	cJSON_AddNumberToObject(to_addr_info, to_addr, (amount - chips_tx_fee));
+	argc = 4;
+	for (int i = 0; i < argc; i++)
+		memset(argv[i], 0x00, arg_size);
+
+	strcpy(argv[0], "chips-cli");
+	strcpy(argv[1], "createrawtransaction");
+	sprintf(argv[2], "\'%s\'", cJSON_Print(tx_list));
+	sprintf(argv[3], "\'%s\'", cJSON_Print(to_addr_info));
+	tx = cJSON_CreateObject();
+	make_command(argc, argv, &tx);
+
+	if (argv) {
+		for (int i = 0; i < argc; i++) {
+			if (argv[i])
+				free(argv[i]);
+		}
+		free(argv);
+	}
+	return tx;
+}
+
+cJSON *chips_sign_msig_tx(char *ip, cJSON *raw_tx)
+{
+	int32_t c_subsock, c_pushsock, bytes, recvlen;
+	uint16_t cashier_pubsub_port = 7901, cashier_pushpull_port = 7902;
+	char bind_sub_addr[128] = { 0 }, bind_push_addr[128] = { 0 };
+	void *ptr;
+	cJSON *argjson = NULL, *msig_raw_tx = NULL;
+
+	bet_tcp_sock_address(0, bind_sub_addr, ip, cashier_pubsub_port);
+	c_subsock = bet_nanosock(0, bind_sub_addr, NN_SUB);
+
+	bet_tcp_sock_address(0, bind_push_addr, ip, cashier_pushpull_port);
+	c_pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
+
+	msig_raw_tx = cJSON_CreateObject();
+	cJSON_AddStringToObject(msig_raw_tx, "method", "raw_msig_tx");
+	cJSON_AddItemToObject(msig_raw_tx, "tx", raw_tx);
+	bytes = nn_send(c_pushsock, cJSON_Print(msig_raw_tx), strlen(cJSON_Print(msig_raw_tx)), 0);
+	if (bytes < 0)
+		return NULL;
+
+	while (c_pushsock >= 0 && c_subsock >= 0) {
+		ptr = 0;
+		if ((recvlen = nn_recv(c_subsock, &ptr, NN_MSG, 0)) > 0) {
+			char *tmp = clonestr(ptr);
+			if ((argjson = cJSON_Parse(tmp)) != 0) {
+				printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
+				return argjson;
+			}
+			if (tmp)
+				free(tmp);
+			if (ptr)
+				nn_freemsg(ptr);
+		}
+	}
+	return NULL;
+}
+
+cJSON *chips_spend_msig_txs(char *to_addr, int no_of_txs, char tx_ids[][100])
+{
+	int signers = 0;
+	cJSON *hex = NULL, *tx = NULL;
+
+	bet_check_notary_status();
+	for (int i = 0; i < no_of_notaries; i++) {
+		if (notary_status[i] == 1) {
+			if (signers == 0) {
+				cJSON *temp = chips_sign_msig_tx(
+					notary_node_ips[i], chips_create_tx_from_tx_list(to_addr, no_of_txs, tx_ids));
+				hex = cJSON_GetObjectItem(cJSON_GetObjectItem(temp, "signed_tx"), "hex");
+				signers++;
+			} else if (signers == 1) {
+				cJSON *temp1 = chips_sign_msig_tx(notary_node_ips[i], hex);
+				cJSON *status =
+					cJSON_GetObjectItem(cJSON_GetObjectItem(temp1, "signed_tx"), "complete");
+				if (strcmp(cJSON_Print(status), "true") == 0) {
+					tx = chips_send_raw_tx(cJSON_GetObjectItem(temp1, "signed_tx"));
+					signers++;
+					break;
+				}
+			}
+		}
+	}
+	return tx;
 }
