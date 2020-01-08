@@ -214,7 +214,7 @@ static void bet_dcv_thrd(char *dcv_ip, const int32_t port)
 	pthread_t live_thrd, dcv_backend, dcv_thrd;
 
 	bet_dcv_initialize(dcv_ip, port);
-	
+
 	if (OS_thread_create(&live_thrd, NULL, (void *)bet_dcv_live_loop, (void *)bet_dcv) != 0) {
 		printf("error launching bet_dcv_live_loop]n");
 		exit(-1);
