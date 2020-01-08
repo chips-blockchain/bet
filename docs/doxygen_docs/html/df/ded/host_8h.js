@@ -1,6 +1,6 @@
 var host_8h =
 [
-    [ "bet_chat", "df/ded/host_8h.html#af23d0c2074c632617629fce0775356d1", null ],
+    [ "bet_chat", "df/ded/host_8h.html#a9152403ddbd79001c781d0de09331e7d", null ],
     [ "bet_check_player_ready", "df/ded/host_8h.html#a45f715b215f34d6b44c72a56a65b6e0e", null ],
     [ "bet_dcv_backend", "df/ded/host_8h.html#a853592c099b596451ecd23e99244e1fe", null ],
     [ "bet_dcv_backend_loop", "df/ded/host_8h.html#a4a99b05847806e42fbcfc3b5cedc4380", null ],
@@ -13,7 +13,7 @@ var host_8h =
     [ "bet_dcv_reset", "df/ded/host_8h.html#af784c4059c06107c85677ad2ff41da26", null ],
     [ "bet_dcv_start", "df/ded/host_8h.html#a4c71e107f8f247c73fcdeab359a58c04", null ],
     [ "bet_dcv_turn", "df/ded/host_8h.html#a9dc3264b9db7de223419c5551868b6c7", null ],
-    [ "bet_evaluate_hand", "df/ded/host_8h.html#a464a280df03afc8add329418712e5ee5", null ],
+    [ "bet_evaluate_hand", "df/ded/host_8h.html#a3cd8c62791775e9d8daf81350df54fb5", null ],
     [ "bet_game", "df/ded/host_8h.html#adbe3ab77bc01747b60c29a13f7cd8690", null ],
     [ "bet_player_join_req", "df/ded/host_8h.html#a0b9684e66602d8483270b8f214809cc4", null ],
     [ "bet_push_dcv_to_gui", "df/ded/host_8h.html#a106ab8d73d9b1bb5fcffcbaba60f384e", null ],

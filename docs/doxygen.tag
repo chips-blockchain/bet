@@ -1,6 +1,21 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
 <tagfile>
   <compound kind="file">
+    <name>bet-api.md</name>
+    <path>/root/bet/</path>
+    <filename>d3/df9/bet-api_8md</filename>
+  </compound>
+  <compound kind="file">
+    <name>cashier_protocol.md</name>
+    <path>/root/bet/</path>
+    <filename>d7/da0/cashier__protocol_8md</filename>
+  </compound>
+  <compound kind="file">
+    <name>compile.md</name>
+    <path>/root/bet/</path>
+    <filename>d5/db3/compile_8md</filename>
+  </compound>
+  <compound kind="file">
     <name>bet.c</name>
     <path>/root/bet/privatebet/</path>
     <filename>dd/d53/bet_8c</filename>
@@ -16,24 +31,101 @@
     <includes id="dd/d98/table_8h" name="table.h" local="yes" imported="no">table.h</includes>
     <member kind="function" static="yes">
       <type>static void</type>
+      <name>bet_cashier_client_initialize</name>
+      <anchorfile>dd/d53/bet_8c.html</anchorfile>
+      <anchor>ad1c0d680cfa5542409a5a81e83866c27</anchor>
+      <arglist>(char *node_ip, const int32_t port)</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static void</type>
+      <name>bet_cashier_deinitialize</name>
+      <anchorfile>dd/d53/bet_8c.html</anchorfile>
+      <anchor>a5e9110c489c33d2d85488e3f068ccbdc</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static void</type>
       <name>bet_player_initialize</name>
       <anchorfile>dd/d53/bet_8c.html</anchorfile>
-      <anchor>a1fb0766f6a7a21ce0bf73b4a3cbb4a02</anchor>
-      <arglist>(char *host_ip, const int32_t port)</arglist>
+      <anchor>af4e09e4bf901fa7d49b97644bf97e7c1</anchor>
+      <arglist>(char *dcv_ip, const int32_t port)</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static void</type>
+      <name>bet_player_deinitialize</name>
+      <anchorfile>dd/d53/bet_8c.html</anchorfile>
+      <anchor>a5d80e638baeaa54929d22baf244f1347</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static void</type>
+      <name>bet_player_thrd</name>
+      <anchorfile>dd/d53/bet_8c.html</anchorfile>
+      <anchor>ac2a6862edb31366c4d1a6da680f85241</anchor>
+      <arglist>(char *dcv_ip, const int32_t port)</arglist>
     </member>
     <member kind="function" static="yes">
       <type>static void</type>
       <name>bet_bvv_initialize</name>
       <anchorfile>dd/d53/bet_8c.html</anchorfile>
-      <anchor>abb41d56704e5ba1aea3c7c97e67cee9a</anchor>
-      <arglist>(char *host_ip, const int32_t port)</arglist>
+      <anchor>a475994d3b8d287f74d9bcf83eab44595</anchor>
+      <arglist>(char *dcv_ip, const int32_t port)</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static void</type>
+      <name>bet_bvv_deinitialize</name>
+      <anchorfile>dd/d53/bet_8c.html</anchorfile>
+      <anchor>aeebf318c0558fb16e78578f9090cce82</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static void</type>
+      <name>bet_bvv_thrd</name>
+      <anchorfile>dd/d53/bet_8c.html</anchorfile>
+      <anchor>a87cc06af265d08f36e1c40cee836f87a</anchor>
+      <arglist>(char *dcv_ip, const int32_t port)</arglist>
     </member>
     <member kind="function" static="yes">
       <type>static void</type>
       <name>bet_dcv_initialize</name>
       <anchorfile>dd/d53/bet_8c.html</anchorfile>
-      <anchor>aaee466e723c622115fa30a49a699e97e</anchor>
-      <arglist>(char *host_ip, const int32_t port)</arglist>
+      <anchor>aa860977a7c9179f036b66390138b971b</anchor>
+      <arglist>(char *dcv_ip, const int32_t port)</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static void</type>
+      <name>bet_dcv_deinitialize</name>
+      <anchorfile>dd/d53/bet_8c.html</anchorfile>
+      <anchor>adb7af14559d9153b3b7ab2e7354d7a28</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static void</type>
+      <name>bet_dcv_thrd</name>
+      <anchorfile>dd/d53/bet_8c.html</anchorfile>
+      <anchor>afcdca9e81e58ca60c65b7adb4a84a625</anchor>
+      <arglist>(char *dcv_ip, const int32_t port)</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static void</type>
+      <name>bet_cashier_server_initialize</name>
+      <anchorfile>dd/d53/bet_8c.html</anchorfile>
+      <anchor>a53c0e03ace1222a4603e870100d409c7</anchor>
+      <arglist>(char *node_ip, const int32_t port)</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static void</type>
+      <name>bet_cashier_server_thrd</name>
+      <anchorfile>dd/d53/bet_8c.html</anchorfile>
+      <anchor>a2ffe5af3c560b2846ce9aaa4f900ea3a</anchor>
+      <arglist>(char *node_ip, const int32_t port)</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static void</type>
+      <name>bet_display_usage</name>
+      <anchorfile>dd/d53/bet_8c.html</anchorfile>
+      <anchor>a9e4edbcf57620d008703d803b40c271e</anchor>
+      <arglist>()</arglist>
     </member>
     <member kind="function">
       <type>int</type>
@@ -173,13 +265,6 @@
       <name>poker_deck_size</name>
       <anchorfile>dd/d53/bet_8c.html</anchorfile>
       <anchor>a72cf71d5ef0640767677fd54d4729359</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>const char *</type>
-      <name>rootAddress</name>
-      <anchorfile>dd/d53/bet_8c.html</anchorfile>
-      <anchor>a538351e3178156bc6cc8e6156c6d88ba</anchor>
       <arglist></arglist>
     </member>
   </compound>
@@ -457,6 +542,109 @@
     <name>cashier.c</name>
     <path>/root/bet/privatebet/</path>
     <filename>de/d4f/cashier_8c</filename>
+    <includes id="df/d5a/bet_8h" name="bet.h" local="yes" imported="no">bet.h</includes>
+    <includes id="d5/d3a/cashier_8h" name="cashier.h" local="yes" imported="no">cashier.h</includes>
+    <includes id="d9/d94/network_8h" name="network.h" local="yes" imported="no">network.h</includes>
+    <includes id="dc/d54/common_8h" name="common.h" local="yes" imported="no">common.h</includes>
+    <includes id="d5/d90/commands_8h" name="commands.h" local="yes" imported="no">commands.h</includes>
+    <member kind="function">
+      <type>char *</type>
+      <name>bet_check_notary_status</name>
+      <anchorfile>de/d4f/cashier_8c.html</anchorfile>
+      <anchor>a47d4ed0ac34a97667697f86114f5ea86</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>int32_t</type>
+      <name>bet_send_status</name>
+      <anchorfile>de/d4f/cashier_8c.html</anchorfile>
+      <anchor>a59e8c83495ad55c3bb636c03ef7d302c</anchor>
+      <arglist>(struct cashier *cashier_info)</arglist>
+    </member>
+    <member kind="function">
+      <type>int32_t</type>
+      <name>bet_cashier_backend</name>
+      <anchorfile>de/d4f/cashier_8c.html</anchorfile>
+      <anchor>ae91ed2f8e60cdf9fa8fe63b71c59e799</anchor>
+      <arglist>(cJSON *argjson, struct cashier *cashier_info)</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static int32_t</type>
+      <name>bet_cashier_client_backend</name>
+      <anchorfile>de/d4f/cashier_8c.html</anchorfile>
+      <anchor>a81d7f8bb3895b9406551318fdcc0c0a7</anchor>
+      <arglist>(cJSON *argjson, struct cashier *cashier_info)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>bet_cashier_status_loop</name>
+      <anchorfile>de/d4f/cashier_8c.html</anchorfile>
+      <anchor>abbe73a37ad2cabc7da5678391c24b3de</anchor>
+      <arglist>(void *_ptr)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>bet_cashier_client_loop</name>
+      <anchorfile>de/d4f/cashier_8c.html</anchorfile>
+      <anchor>a153db704ece479884f8f1ae335b151f3</anchor>
+      <arglist>(void *_ptr)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>bet_cashier_server_loop</name>
+      <anchorfile>de/d4f/cashier_8c.html</anchorfile>
+      <anchor>ad514f45748e5a23f2439928c5c74b513</anchor>
+      <arglist>(void *_ptr)</arglist>
+    </member>
+    <member kind="function">
+      <type>int32_t</type>
+      <name>bet_submit_msig_raw_tx</name>
+      <anchorfile>de/d4f/cashier_8c.html</anchorfile>
+      <anchor>a7ef58bce91f2ca7bd38410e99cea3473</anchor>
+      <arglist>(cJSON *tx)</arglist>
+    </member>
+    <member kind="variable">
+      <type>int32_t</type>
+      <name>no_of_notaries</name>
+      <anchorfile>de/d4f/cashier_8c.html</anchorfile>
+      <anchor>ad4c489d7e10c84b3fb4128c32974384b</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>int32_t</type>
+      <name>threshold_value</name>
+      <anchorfile>de/d4f/cashier_8c.html</anchorfile>
+      <anchor>a35959cfbb47e64ffdf370d41ed67c884</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>char</type>
+      <name>notary_node_addrs</name>
+      <anchorfile>de/d4f/cashier_8c.html</anchorfile>
+      <anchor>acce57cb05b34126f8bee8dc393c9f6bc</anchor>
+      <arglist>[][64]</arglist>
+    </member>
+    <member kind="variable">
+      <type>char</type>
+      <name>notary_node_ips</name>
+      <anchorfile>de/d4f/cashier_8c.html</anchorfile>
+      <anchor>ae13e194f7c4d647e50a0e3c0c90d5c87</anchor>
+      <arglist>[][25]</arglist>
+    </member>
+    <member kind="variable">
+      <type>char</type>
+      <name>msig_addr</name>
+      <anchorfile>de/d4f/cashier_8c.html</anchorfile>
+      <anchor>a48f0ea139a8e96bd78037cebeb11289a</anchor>
+      <arglist>[64]</arglist>
+    </member>
+    <member kind="variable">
+      <type>char</type>
+      <name>notary_node_pubkeys</name>
+      <anchorfile>de/d4f/cashier_8c.html</anchorfile>
+      <anchor>a8e2be7606a52ec9af92f64e4f31bb313</anchor>
+      <arglist>[][67]</arglist>
+    </member>
     <member kind="variable">
       <type>struct cashier *</type>
       <name>cashier_info</name>
@@ -464,17 +652,108 @@
       <anchor>a28b711b1a0ece6b40a95e022e13c7425</anchor>
       <arglist></arglist>
     </member>
+    <member kind="variable">
+      <type>int32_t</type>
+      <name>live_notaries</name>
+      <anchorfile>de/d4f/cashier_8c.html</anchorfile>
+      <anchor>a3b9b497be13fd2b7e2acdcad4f666e44</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>int32_t</type>
+      <name>notary_status</name>
+      <anchorfile>de/d4f/cashier_8c.html</anchorfile>
+      <anchor>aae51076507dc6010d747e0357dd270ea</anchor>
+      <arglist>[4]</arglist>
+    </member>
+    <member kind="variable">
+      <type>double</type>
+      <name>table_stack_in_chips</name>
+      <anchorfile>de/d4f/cashier_8c.html</anchorfile>
+      <anchor>a64f97fd05dc38d4a760b501c15539760</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>double</type>
+      <name>chips_tx_fee</name>
+      <anchorfile>de/d4f/cashier_8c.html</anchorfile>
+      <anchor>a1b42019ee77457af36b1483e3b544f42</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>char</type>
+      <name>dev_fund_addr</name>
+      <anchorfile>de/d4f/cashier_8c.html</anchorfile>
+      <anchor>a61d463cada52b05618af0347c85a51ca</anchor>
+      <arglist>[64]</arglist>
+    </member>
+    <member kind="variable">
+      <type>char</type>
+      <name>legacy_2_of_3_msig_addr</name>
+      <anchorfile>de/d4f/cashier_8c.html</anchorfile>
+      <anchor>a56167dfefcb43ce757ddf6cb29c8f46f</anchor>
+      <arglist>[64]</arglist>
+    </member>
+    <member kind="variable">
+      <type>char</type>
+      <name>legacy_2_of_4_msig_Addr</name>
+      <anchorfile>de/d4f/cashier_8c.html</anchorfile>
+      <anchor>a9326b598f59f86371697fe7d21303a13</anchor>
+      <arglist>[64]</arglist>
+    </member>
   </compound>
   <compound kind="file">
     <name>cashier.h</name>
     <path>/root/bet/privatebet/</path>
     <filename>d5/d3a/cashier_8h</filename>
     <member kind="function">
-      <type>void</type>
-      <name>bet_cashier_loop</name>
+      <type>char *</type>
+      <name>bet_check_notary_status</name>
       <anchorfile>d5/d3a/cashier_8h.html</anchorfile>
-      <anchor>a58481d6501f0921ac04c5e279dd52a5d</anchor>
+      <anchor>a47d4ed0ac34a97667697f86114f5ea86</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>int32_t</type>
+      <name>bet_send_status</name>
+      <anchorfile>d5/d3a/cashier_8h.html</anchorfile>
+      <anchor>a59e8c83495ad55c3bb636c03ef7d302c</anchor>
+      <arglist>(struct cashier *cashier_info)</arglist>
+    </member>
+    <member kind="function">
+      <type>int32_t</type>
+      <name>bet_cashier_backend</name>
+      <anchorfile>d5/d3a/cashier_8h.html</anchorfile>
+      <anchor>ae91ed2f8e60cdf9fa8fe63b71c59e799</anchor>
+      <arglist>(cJSON *argjson, struct cashier *cashier_info)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>bet_cashier_server_loop</name>
+      <anchorfile>d5/d3a/cashier_8h.html</anchorfile>
+      <anchor>ad514f45748e5a23f2439928c5c74b513</anchor>
       <arglist>(void *_ptr)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>bet_cashier_client_loop</name>
+      <anchorfile>d5/d3a/cashier_8h.html</anchorfile>
+      <anchor>a153db704ece479884f8f1ae335b151f3</anchor>
+      <arglist>(void *_ptr)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>bet_cashier_status_loop</name>
+      <anchorfile>d5/d3a/cashier_8h.html</anchorfile>
+      <anchor>abbe73a37ad2cabc7da5678391c24b3de</anchor>
+      <arglist>(void *_ptr)</arglist>
+    </member>
+    <member kind="function">
+      <type>int32_t</type>
+      <name>bet_submit_msig_raw_tx</name>
+      <anchorfile>d5/d3a/cashier_8h.html</anchorfile>
+      <anchor>a7ef58bce91f2ca7bd38410e99cea3473</anchor>
+      <arglist>(cJSON *tx)</arglist>
     </member>
   </compound>
   <compound kind="file">
@@ -866,8 +1145,8 @@
       <type>bits256</type>
       <name>bet_get_deckid</name>
       <anchorfile>dd/d93/client_8c.html</anchorfile>
-      <anchor>ae96e125f8a557913057f5a9ba24422af</anchor>
-      <arglist>(int32_t playerID)</arglist>
+      <anchor>adad564e6033d90720a95b391a53631fb</anchor>
+      <arglist>(int32_t player_id)</arglist>
     </member>
     <member kind="function">
       <type>int32_t</type>
@@ -1480,6 +1759,8 @@
     <includes id="d8/de1/client_8h" name="client.h" local="yes" imported="no">client.h</includes>
     <includes id="dc/d54/common_8h" name="common.h" local="yes" imported="no">common.h</includes>
     <includes id="d1/d48/oracle_8h" name="oracle.h" local="yes" imported="no">oracle.h</includes>
+    <includes id="d9/d94/network_8h" name="network.h" local="yes" imported="no">network.h</includes>
+    <includes id="d5/d3a/cashier_8h" name="cashier.h" local="yes" imported="no">cashier.h</includes>
     <member kind="function">
       <type>int32_t</type>
       <name>chips_iswatchonly</name>
@@ -1533,15 +1814,15 @@
       <type>cJSON *</type>
       <name>chips_send_raw_tx</name>
       <anchorfile>de/d21/commands_8c.html</anchorfile>
-      <anchor>a12e5cfa7bc2b417750b9b3394f93f95a</anchor>
-      <arglist>(cJSON *signedTransaction)</arglist>
+      <anchor>aa6d1dc7b96872592c1687aadb5248b9b</anchor>
+      <arglist>(cJSON *signed_tx)</arglist>
     </member>
     <member kind="function">
       <type>cJSON *</type>
       <name>chips_sign_raw_tx_with_wallet</name>
       <anchorfile>de/d21/commands_8c.html</anchorfile>
-      <anchor>a651c6b1b8725fb048acb5cf321dc249a</anchor>
-      <arglist>(char *rawtransaction)</arglist>
+      <anchor>ab74f6f5c30d61b06af6fb6efc602c7a0</anchor>
+      <arglist>(char *raw_tx)</arglist>
     </member>
     <member kind="function">
       <type>int32_t</type>
@@ -1554,8 +1835,8 @@
       <type>cJSON *</type>
       <name>chips_create_raw_multi_sig_tx</name>
       <anchorfile>de/d21/commands_8c.html</anchorfile>
-      <anchor>a127e79ac6db1ec54d970d46b0c24516d</anchor>
-      <arglist>(double amount, char *toaddress, char *fromaddress)</arglist>
+      <anchor>a9c93a3bc94008fc99aa2fe822d731b88</anchor>
+      <arglist>(double amount, char *to_addr, char *from_addr)</arglist>
     </member>
     <member kind="function">
       <type>cJSON *</type>
@@ -1603,8 +1884,64 @@
       <type>int32_t</type>
       <name>chips_lock_transaction</name>
       <anchorfile>de/d21/commands_8c.html</anchorfile>
-      <anchor>a8f35ff6c18f2b0a991c3fc583615c2b0</anchor>
-      <arglist>(int32_t fundAmount)</arglist>
+      <anchor>add7b9d88dce327785de2c95f3f6a696a</anchor>
+      <arglist>(int32_t fund_amount)</arglist>
+    </member>
+    <member kind="function">
+      <type>cJSON *</type>
+      <name>chips_add_multisig_address</name>
+      <anchorfile>de/d21/commands_8c.html</anchorfile>
+      <anchor>aa692af3de118f4480a647ab50748b650</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>int32_t</type>
+      <name>chips_check_if_tx_unspent</name>
+      <anchorfile>de/d21/commands_8c.html</anchorfile>
+      <anchor>ae3df3196342fe482cc2f9f7b6e6f4c97</anchor>
+      <arglist>(char *input_tx)</arglist>
+    </member>
+    <member kind="function">
+      <type>char *</type>
+      <name>chips_get_block_hash_from_txid</name>
+      <anchorfile>de/d21/commands_8c.html</anchorfile>
+      <anchor>a0abdad86f933c8cf6fae976a16aab289</anchor>
+      <arglist>(char *txid)</arglist>
+    </member>
+    <member kind="function">
+      <type>int32_t</type>
+      <name>chips_get_block_height_from_block_hash</name>
+      <anchorfile>de/d21/commands_8c.html</anchorfile>
+      <anchor>a28cdbbebc122c4217c11cf58ec989fed</anchor>
+      <arglist>(char *block_hash)</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static int32_t</type>
+      <name>check_if_tx_exists</name>
+      <anchorfile>de/d21/commands_8c.html</anchorfile>
+      <anchor>ab6358ab4420c86f6b3504af03826b194</anchor>
+      <arglist>(char *txid, int32_t no_of_txs, char tx_ids[][100])</arglist>
+    </member>
+    <member kind="function">
+      <type>cJSON *</type>
+      <name>chips_create_tx_from_tx_list</name>
+      <anchorfile>de/d21/commands_8c.html</anchorfile>
+      <anchor>a5cef295e6e4b10eb23fdcf5e003ebdcf</anchor>
+      <arglist>(char *to_addr, int32_t no_of_txs, char tx_ids[][100])</arglist>
+    </member>
+    <member kind="function">
+      <type>cJSON *</type>
+      <name>chips_sign_msig_tx</name>
+      <anchorfile>de/d21/commands_8c.html</anchorfile>
+      <anchor>a98ea77e19785809a75b781c38f898a2e</anchor>
+      <arglist>(char *ip, cJSON *raw_tx)</arglist>
+    </member>
+    <member kind="function">
+      <type>cJSON *</type>
+      <name>chips_spend_msig_txs</name>
+      <anchorfile>de/d21/commands_8c.html</anchorfile>
+      <anchor>a8f23bc2eff0a786d4e94fef0ac4044c1</anchor>
+      <arglist>(char *to_addr, int no_of_txs, char tx_ids[][100])</arglist>
     </member>
     <member kind="variable">
       <type>char *</type>
@@ -1672,15 +2009,15 @@
       <type>cJSON *</type>
       <name>chips_send_raw_tx</name>
       <anchorfile>d5/d90/commands_8h.html</anchorfile>
-      <anchor>a12e5cfa7bc2b417750b9b3394f93f95a</anchor>
-      <arglist>(cJSON *signedTransaction)</arglist>
+      <anchor>aa6d1dc7b96872592c1687aadb5248b9b</anchor>
+      <arglist>(cJSON *signed_tx)</arglist>
     </member>
     <member kind="function">
       <type>cJSON *</type>
       <name>chips_sign_raw_tx_with_wallet</name>
       <anchorfile>d5/d90/commands_8h.html</anchorfile>
-      <anchor>a651c6b1b8725fb048acb5cf321dc249a</anchor>
-      <arglist>(char *rawtransaction)</arglist>
+      <anchor>ab74f6f5c30d61b06af6fb6efc602c7a0</anchor>
+      <arglist>(char *raw_tx)</arglist>
     </member>
     <member kind="function">
       <type>int32_t</type>
@@ -1693,8 +2030,8 @@
       <type>cJSON *</type>
       <name>chips_create_raw_multi_sig_tx</name>
       <anchorfile>d5/d90/commands_8h.html</anchorfile>
-      <anchor>a127e79ac6db1ec54d970d46b0c24516d</anchor>
-      <arglist>(double amount, char *toaddress, char *fromaddress)</arglist>
+      <anchor>a9c93a3bc94008fc99aa2fe822d731b88</anchor>
+      <arglist>(double amount, char *to_addr, char *from_addr)</arglist>
     </member>
     <member kind="function">
       <type>cJSON *</type>
@@ -1742,8 +2079,57 @@
       <type>int32_t</type>
       <name>chips_lock_transaction</name>
       <anchorfile>d5/d90/commands_8h.html</anchorfile>
-      <anchor>a8f35ff6c18f2b0a991c3fc583615c2b0</anchor>
-      <arglist>(int32_t fundAmount)</arglist>
+      <anchor>add7b9d88dce327785de2c95f3f6a696a</anchor>
+      <arglist>(int32_t fund_amount)</arglist>
+    </member>
+    <member kind="function">
+      <type>cJSON *</type>
+      <name>chips_add_multisig_address</name>
+      <anchorfile>d5/d90/commands_8h.html</anchorfile>
+      <anchor>aa692af3de118f4480a647ab50748b650</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>int32_t</type>
+      <name>chips_check_if_tx_unspent</name>
+      <anchorfile>d5/d90/commands_8h.html</anchorfile>
+      <anchor>ae3df3196342fe482cc2f9f7b6e6f4c97</anchor>
+      <arglist>(char *input_tx)</arglist>
+    </member>
+    <member kind="function">
+      <type>char *</type>
+      <name>chips_get_block_hash_from_txid</name>
+      <anchorfile>d5/d90/commands_8h.html</anchorfile>
+      <anchor>a0abdad86f933c8cf6fae976a16aab289</anchor>
+      <arglist>(char *txid)</arglist>
+    </member>
+    <member kind="function">
+      <type>int32_t</type>
+      <name>chips_get_block_height_from_block_hash</name>
+      <anchorfile>d5/d90/commands_8h.html</anchorfile>
+      <anchor>a28cdbbebc122c4217c11cf58ec989fed</anchor>
+      <arglist>(char *block_hash)</arglist>
+    </member>
+    <member kind="function">
+      <type>cJSON *</type>
+      <name>chips_create_tx_from_tx_list</name>
+      <anchorfile>d5/d90/commands_8h.html</anchorfile>
+      <anchor>a5cef295e6e4b10eb23fdcf5e003ebdcf</anchor>
+      <arglist>(char *to_addr, int32_t no_of_txs, char tx_ids[][100])</arglist>
+    </member>
+    <member kind="function">
+      <type>cJSON *</type>
+      <name>chips_sign_msig_tx</name>
+      <anchorfile>d5/d90/commands_8h.html</anchorfile>
+      <anchor>a98ea77e19785809a75b781c38f898a2e</anchor>
+      <arglist>(char *ip, cJSON *raw_tx)</arglist>
+    </member>
+    <member kind="function">
+      <type>cJSON *</type>
+      <name>chips_spend_msig_txs</name>
+      <anchorfile>d5/d90/commands_8h.html</anchorfile>
+      <anchor>a8f23bc2eff0a786d4e94fef0ac4044c1</anchor>
+      <arglist>(char *to_addr, int no_of_txs, char tx_ids[][100])</arglist>
     </member>
   </compound>
   <compound kind="file">
@@ -2086,6 +2472,104 @@
       <anchor>a097028f2c20ab139a38e5c621193f223</anchor>
       <arglist></arglist>
     </member>
+    <member kind="variable">
+      <type>int32_t</type>
+      <name>no_of_notaries</name>
+      <anchorfile>dc/d54/common_8h.html</anchorfile>
+      <anchor>ad4c489d7e10c84b3fb4128c32974384b</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>int32_t</type>
+      <name>threshold_value</name>
+      <anchorfile>dc/d54/common_8h.html</anchorfile>
+      <anchor>a35959cfbb47e64ffdf370d41ed67c884</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>char</type>
+      <name>notary_node_addrs</name>
+      <anchorfile>dc/d54/common_8h.html</anchorfile>
+      <anchor>acce57cb05b34126f8bee8dc393c9f6bc</anchor>
+      <arglist>[][64]</arglist>
+    </member>
+    <member kind="variable">
+      <type>char</type>
+      <name>notary_node_ips</name>
+      <anchorfile>dc/d54/common_8h.html</anchorfile>
+      <anchor>ae13e194f7c4d647e50a0e3c0c90d5c87</anchor>
+      <arglist>[][25]</arglist>
+    </member>
+    <member kind="variable">
+      <type>char</type>
+      <name>msig_addr</name>
+      <anchorfile>dc/d54/common_8h.html</anchorfile>
+      <anchor>a48f0ea139a8e96bd78037cebeb11289a</anchor>
+      <arglist>[64]</arglist>
+    </member>
+    <member kind="variable">
+      <type>char</type>
+      <name>notary_node_pubkeys</name>
+      <anchorfile>dc/d54/common_8h.html</anchorfile>
+      <anchor>a8e2be7606a52ec9af92f64e4f31bb313</anchor>
+      <arglist>[][67]</arglist>
+    </member>
+    <member kind="variable">
+      <type>double</type>
+      <name>table_stack_in_chips</name>
+      <anchorfile>dc/d54/common_8h.html</anchorfile>
+      <anchor>a64f97fd05dc38d4a760b501c15539760</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>double</type>
+      <name>chips_tx_fee</name>
+      <anchorfile>dc/d54/common_8h.html</anchorfile>
+      <anchor>a1b42019ee77457af36b1483e3b544f42</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>char</type>
+      <name>dev_fund_addr</name>
+      <anchorfile>dc/d54/common_8h.html</anchorfile>
+      <anchor>a61d463cada52b05618af0347c85a51ca</anchor>
+      <arglist>[64]</arglist>
+    </member>
+    <member kind="variable">
+      <type>char</type>
+      <name>legacy_2_of_3_msig_addr</name>
+      <anchorfile>dc/d54/common_8h.html</anchorfile>
+      <anchor>a56167dfefcb43ce757ddf6cb29c8f46f</anchor>
+      <arglist>[64]</arglist>
+    </member>
+    <member kind="variable">
+      <type>char</type>
+      <name>legacy_2_of_4_msig_Addr</name>
+      <anchorfile>dc/d54/common_8h.html</anchorfile>
+      <anchor>a9326b598f59f86371697fe7d21303a13</anchor>
+      <arglist>[64]</arglist>
+    </member>
+    <member kind="variable">
+      <type>int32_t</type>
+      <name>no_of_txs</name>
+      <anchorfile>dc/d54/common_8h.html</anchorfile>
+      <anchor>ad987737d22beba5af09be0b024f0dab7</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>char</type>
+      <name>tx_ids</name>
+      <anchorfile>dc/d54/common_8h.html</anchorfile>
+      <anchor>afb5e882209b8e93041295e0ebd9376ef</anchor>
+      <arglist>[CARDS777_MAXPLAYERS][100]</arglist>
+    </member>
+    <member kind="variable">
+      <type>int32_t</type>
+      <name>notary_status</name>
+      <anchorfile>dc/d54/common_8h.html</anchorfile>
+      <anchor>aae51076507dc6010d747e0357dd270ea</anchor>
+      <arglist>[4]</arglist>
+    </member>
   </compound>
   <compound kind="file">
     <name>gfshare.c</name>
@@ -2354,6 +2838,7 @@
     <includes id="d1/dc9/poker_8h" name="poker.h" local="yes" imported="no">poker.h</includes>
     <includes id="db/ddb/states_8h" name="states.h" local="yes" imported="no">states.h</includes>
     <includes id="dd/d98/table_8h" name="table.h" local="yes" imported="no">table.h</includes>
+    <includes id="d5/d3a/cashier_8h" name="cashier.h" local="yes" imported="no">cashier.h</includes>
     <member kind="define">
       <type>#define</type>
       <name>LWS_PLUGIN_STATIC</name>
@@ -2369,18 +2854,18 @@
       <arglist>(cJSON *data)</arglist>
     </member>
     <member kind="function">
-      <type>int32_t</type>
+      <type>void</type>
       <name>bet_chat</name>
       <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>af23d0c2074c632617629fce0775356d1</anchor>
+      <anchor>a9152403ddbd79001c781d0de09331e7d</anchor>
       <arglist>(struct lws *wsi, cJSON *argjson)</arglist>
     </member>
     <member kind="function" static="yes">
       <type>static void</type>
       <name>initialize_seat</name>
       <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>aeff84950c67efc57eee0d08ea771874d</anchor>
-      <arglist>(cJSON *seatInfo, char *name, int32_t seat, int32_t stack, int32_t empty, int32_t playing)</arglist>
+      <anchor>ac3047df011ab8dc8ce2d0dd06e822eb6</anchor>
+      <arglist>(cJSON *seat_info, char *name, int32_t seat, int32_t stack, int32_t empty, int32_t playing)</arglist>
     </member>
     <member kind="function">
       <type>int32_t</type>
@@ -2505,15 +2990,15 @@
       <type>int32_t</type>
       <name>bet_check_player_ready</name>
       <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a45f715b215f34d6b44c72a56a65b6e0e</anchor>
-      <arglist>(cJSON *playerReady, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
+      <anchor>afe80f062f19af185693a2749515c2419</anchor>
+      <arglist>(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
     </member>
     <member kind="function">
       <type>int32_t</type>
       <name>bet_receive_card</name>
       <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a8f77d2616f3863fe0fb744607ba48a15</anchor>
-      <arglist>(cJSON *playerCardInfo, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
+      <anchor>aa5c738304b1ab17cc29f305141338cd8</anchor>
+      <arglist>(cJSON *player_card_info, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
@@ -2533,8 +3018,8 @@
       <type>int32_t</type>
       <name>bet_evaluate_hand</name>
       <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a464a280df03afc8add329418712e5ee5</anchor>
-      <arglist>(cJSON *playerCardInfo, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
+      <anchor>a3cd8c62791775e9d8daf81350df54fb5</anchor>
+      <arglist>(struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
     </member>
     <member kind="function">
       <type>int32_t</type>
@@ -2580,9 +3065,9 @@
     </member>
     <member kind="function" static="yes">
       <type>static int32_t</type>
-      <name>bet_send_status</name>
+      <name>bet_live_status</name>
       <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a68d581d035d443e0076a177bee2f4985</anchor>
+      <anchor>a588e9e27e5d13eccaf10fa2fc8413e47</anchor>
       <arglist>(struct privatebet_info *bet)</arglist>
     </member>
     <member kind="function">
@@ -2601,16 +3086,16 @@
     </member>
     <member kind="variable">
       <type>cJSON *</type>
-      <name>dcvDataToWrite</name>
+      <name>dcv_data_to_write</name>
       <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>ac05c3f04dded9e82101c72a9f50b382c</anchor>
+      <anchor>a827aa558b4a4b13001b7350ce60244a3</anchor>
       <arglist></arglist>
     </member>
     <member kind="variable">
       <type>int32_t</type>
-      <name>dcvDataExists</name>
+      <name>dcv_data_exists</name>
       <anchorfile>df/da9/host_8c.html</anchorfile>
-      <anchor>a2fbd79df5e5b5ce8fe30354a12438913</anchor>
+      <anchor>a3a2b593abf90f15466d2c23a5f9dae95</anchor>
       <arglist></arglist>
     </member>
     <member kind="variable">
@@ -2844,6 +3329,20 @@
       <anchor>a4acff8232e4aec9cd5c6dc200ac55ef3</anchor>
       <arglist></arglist>
     </member>
+    <member kind="variable">
+      <type>int32_t</type>
+      <name>no_of_txs</name>
+      <anchorfile>df/da9/host_8c.html</anchorfile>
+      <anchor>ad987737d22beba5af09be0b024f0dab7</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>char</type>
+      <name>tx_ids</name>
+      <anchorfile>df/da9/host_8c.html</anchorfile>
+      <anchor>afb5e882209b8e93041295e0ebd9376ef</anchor>
+      <arglist>[CARDS777_MAXPLAYERS][100]</arglist>
+    </member>
     <member kind="variable" static="yes">
       <type>static struct lws_protocols</type>
       <name>protocols</name>
@@ -2970,10 +3469,10 @@
       <arglist>(void *_ptr)</arglist>
     </member>
     <member kind="function">
-      <type>int32_t</type>
+      <type>void</type>
       <name>bet_chat</name>
       <anchorfile>df/ded/host_8h.html</anchorfile>
-      <anchor>af23d0c2074c632617629fce0775356d1</anchor>
+      <anchor>a9152403ddbd79001c781d0de09331e7d</anchor>
       <arglist>(struct lws *wsi, cJSON *argjson)</arglist>
     </member>
     <member kind="function">
@@ -3001,8 +3500,8 @@
       <type>int32_t</type>
       <name>bet_evaluate_hand</name>
       <anchorfile>df/ded/host_8h.html</anchorfile>
-      <anchor>a464a280df03afc8add329418712e5ee5</anchor>
-      <arglist>(cJSON *playerCardInfo, struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
+      <anchor>a3cd8c62791775e9d8daf81350df54fb5</anchor>
+      <arglist>(struct privatebet_info *bet, struct privatebet_vars *vars)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
@@ -3028,6 +3527,20 @@
     <includes id="d0/db9/cards777_8h" name="cards777.h" local="yes" imported="no">cards777.h</includes>
     <includes id="dc/d54/common_8h" name="common.h" local="yes" imported="no">common.h</includes>
     <includes id="d4/d71/gfshare_8h" name="gfshare.h" local="yes" imported="no">gfshare.h</includes>
+    <member kind="define">
+      <type>#define</type>
+      <name>_DEFAULT_SOURCE</name>
+      <anchorfile>d6/d6e/network_8c.html</anchorfile>
+      <anchor>a8fb447618db946a9e2a596d9ea18763f</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="function">
+      <type>char *</type>
+      <name>bet_get_etho_ip</name>
+      <anchorfile>d6/d6e/network_8c.html</anchorfile>
+      <anchor>a63cefd5dcc58b67fb1f1e2b30aa3c74a</anchor>
+      <arglist>()</arglist>
+    </member>
     <member kind="function">
       <type>char *</type>
       <name>bet_tcp_sock_address</name>
@@ -3048,6 +3561,13 @@
     <path>/root/bet/privatebet/</path>
     <filename>d9/d94/network_8h</filename>
     <includes id="df/d5a/bet_8h" name="bet.h" local="yes" imported="no">bet.h</includes>
+    <member kind="function">
+      <type>char *</type>
+      <name>bet_get_etho_ip</name>
+      <anchorfile>d9/d94/network_8h.html</anchorfile>
+      <anchor>a63cefd5dcc58b67fb1f1e2b30aa3c74a</anchor>
+      <arglist>()</arglist>
+    </member>
     <member kind="function">
       <type>char *</type>
       <name>bet_tcp_sock_address</name>
@@ -3904,16 +4424,30 @@
     <filename>da/d77/structcashier.html</filename>
     <member kind="variable">
       <type>int32_t</type>
-      <name>pullsock</name>
+      <name>c_pullsock</name>
       <anchorfile>da/d77/structcashier.html</anchorfile>
-      <anchor>a0b5bb840a70a75c97b3a2ea956e38d74</anchor>
+      <anchor>a0a43e10afc008c60f57b3e4341061d83</anchor>
       <arglist></arglist>
     </member>
     <member kind="variable">
       <type>int32_t</type>
-      <name>pubsock</name>
+      <name>c_pubsock</name>
       <anchorfile>da/d77/structcashier.html</anchorfile>
-      <anchor>a446347ed86dea33ee1b83be7b78fe4c9</anchor>
+      <anchor>aeff03d6f79d5d7908c8f8d77de2265b2</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>int32_t</type>
+      <name>c_subsock</name>
+      <anchorfile>da/d77/structcashier.html</anchorfile>
+      <anchor>a083158d9583aa41f8b92c8de3502d60d</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>int32_t</type>
+      <name>c_pushsock</name>
+      <anchorfile>da/d77/structcashier.html</anchorfile>
+      <anchor>a577492f5cb062491ea96145ab56fcacb</anchor>
       <arglist></arglist>
     </member>
     <member kind="variable">
@@ -4167,7 +4701,7 @@
       <type>uint8_t</type>
       <name>bytes</name>
       <anchorfile>d0/d0d/structenc__share.html</anchorfile>
-      <anchor>a4bac0ffac6bcc7a207ef17db51b8c471</anchor>
+      <anchor>ae6113029fd5982c537b79d4169d1255d</anchor>
       <arglist>[sizeof(bits256)+crypto_box_NONCEBYTES+crypto_box_ZEROBYTES]</arglist>
     </member>
   </compound>
@@ -4744,6 +5278,21 @@
       <anchor>acb9cb80d690397299df31c2495f5ae87</anchor>
       <arglist>[CARDS777_MAXPLAYERS]</arglist>
     </member>
+  </compound>
+  <compound kind="page">
+    <name>md__root_bet_bet-api</name>
+    <title>Usage guide of the bet-api&apos;s</title>
+    <filename>db/d97/md__root_bet_bet-api</filename>
+  </compound>
+  <compound kind="page">
+    <name>md__root_bet_cashier_protocol</name>
+    <title>Cashier Protocol</title>
+    <filename>dc/d33/md__root_bet_cashier_protocol</filename>
+  </compound>
+  <compound kind="page">
+    <name>md__root_bet_compile</name>
+    <title>Steps to compile</title>
+    <filename>de/df3/md__root_bet_compile</filename>
   </compound>
   <compound kind="page">
     <name>md__root_bet_README</name>

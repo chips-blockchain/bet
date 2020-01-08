@@ -68,19 +68,294 @@ $(document).ready(function(){initNavTree('de/d4f/cashier_8c.html','../../');});
 <div id="doc-content">
 <div class="header">
   <div class="summary">
+<a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">cashier.c File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
+<div class="textblock"><code>#include &quot;<a class="el" href="../../df/d5a/bet_8h_source.html">bet.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="../../d5/d3a/cashier_8h_source.html">cashier.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="../../d9/d94/network_8h_source.html">network.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="../../dc/d54/common_8h_source.html">common.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="../../d5/d90/commands_8h_source.html">commands.h</a>&quot;</code><br />
+</div><div class="textblock"><div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-0-trigger" src="../../closed.png" alt="+"/> Include dependency graph for cashier.c:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+<div class="center"><!-- SVG 0 -->
+</div>
+</div>
+</div>
 <p><a href="../../de/d4f/cashier_8c_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a47d4ed0ac34a97667697f86114f5ea86"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#a47d4ed0ac34a97667697f86114f5ea86">bet_check_notary_status</a> ()</td></tr>
+<tr class="separator:a47d4ed0ac34a97667697f86114f5ea86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59e8c83495ad55c3bb636c03ef7d302c"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#a59e8c83495ad55c3bb636c03ef7d302c">bet_send_status</a> (struct <a class="el" href="../../da/d77/structcashier.html">cashier</a> *<a class="el" href="../../dc/d54/common_8h.html#a28b711b1a0ece6b40a95e022e13c7425">cashier_info</a>)</td></tr>
+<tr class="separator:a59e8c83495ad55c3bb636c03ef7d302c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae91ed2f8e60cdf9fa8fe63b71c59e799"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#ae91ed2f8e60cdf9fa8fe63b71c59e799">bet_cashier_backend</a> (cJSON *argjson, struct <a class="el" href="../../da/d77/structcashier.html">cashier</a> *<a class="el" href="../../dc/d54/common_8h.html#a28b711b1a0ece6b40a95e022e13c7425">cashier_info</a>)</td></tr>
+<tr class="separator:ae91ed2f8e60cdf9fa8fe63b71c59e799"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81d7f8bb3895b9406551318fdcc0c0a7"><td class="memItemLeft" align="right" valign="top">static int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#a81d7f8bb3895b9406551318fdcc0c0a7">bet_cashier_client_backend</a> (cJSON *argjson, struct <a class="el" href="../../da/d77/structcashier.html">cashier</a> *<a class="el" href="../../dc/d54/common_8h.html#a28b711b1a0ece6b40a95e022e13c7425">cashier_info</a>)</td></tr>
+<tr class="separator:a81d7f8bb3895b9406551318fdcc0c0a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbe73a37ad2cabc7da5678391c24b3de"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#abbe73a37ad2cabc7da5678391c24b3de">bet_cashier_status_loop</a> (void *_ptr)</td></tr>
+<tr class="separator:abbe73a37ad2cabc7da5678391c24b3de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a153db704ece479884f8f1ae335b151f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#a153db704ece479884f8f1ae335b151f3">bet_cashier_client_loop</a> (void *_ptr)</td></tr>
+<tr class="separator:a153db704ece479884f8f1ae335b151f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad514f45748e5a23f2439928c5c74b513"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#ad514f45748e5a23f2439928c5c74b513">bet_cashier_server_loop</a> (void *_ptr)</td></tr>
+<tr class="separator:ad514f45748e5a23f2439928c5c74b513"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ef58bce91f2ca7bd38410e99cea3473"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#a7ef58bce91f2ca7bd38410e99cea3473">bet_submit_msig_raw_tx</a> (cJSON *tx)</td></tr>
+<tr class="separator:a7ef58bce91f2ca7bd38410e99cea3473"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a28b711b1a0ece6b40a95e022e13c7425"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="../../da/d77/structcashier.html">cashier</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#a28b711b1a0ece6b40a95e022e13c7425">cashier_info</a></td></tr>
+<tr class="memitem:ad4c489d7e10c84b3fb4128c32974384b"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#ad4c489d7e10c84b3fb4128c32974384b">no_of_notaries</a> = 4</td></tr>
+<tr class="separator:ad4c489d7e10c84b3fb4128c32974384b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35959cfbb47e64ffdf370d41ed67c884"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#a35959cfbb47e64ffdf370d41ed67c884">threshold_value</a> = 2</td></tr>
+<tr class="separator:a35959cfbb47e64ffdf370d41ed67c884"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acce57cb05b34126f8bee8dc393c9f6bc"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#acce57cb05b34126f8bee8dc393c9f6bc">notary_node_addrs</a> [][64]</td></tr>
+<tr class="separator:acce57cb05b34126f8bee8dc393c9f6bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae13e194f7c4d647e50a0e3c0c90d5c87"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#ae13e194f7c4d647e50a0e3c0c90d5c87">notary_node_ips</a> [][25] = { &quot;159.69.23.28&quot;, &quot;159.69.23.29&quot;, &quot;159.69.23.30&quot;, &quot;159.69.23.31&quot; }</td></tr>
+<tr class="separator:ae13e194f7c4d647e50a0e3c0c90d5c87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48f0ea139a8e96bd78037cebeb11289a"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#a48f0ea139a8e96bd78037cebeb11289a">msig_addr</a> [64] = { &quot;bQJTo8knsbSoU7k9oGADa6qfWGWyJtxC3o&quot; }</td></tr>
+<tr class="separator:a48f0ea139a8e96bd78037cebeb11289a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e2be7606a52ec9af92f64e4f31bb313"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#a8e2be7606a52ec9af92f64e4f31bb313">notary_node_pubkeys</a> [][67]</td></tr>
+<tr class="separator:a8e2be7606a52ec9af92f64e4f31bb313"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28b711b1a0ece6b40a95e022e13c7425"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="../../da/d77/structcashier.html">cashier</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#a28b711b1a0ece6b40a95e022e13c7425">cashier_info</a> = NULL</td></tr>
 <tr class="separator:a28b711b1a0ece6b40a95e022e13c7425"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b9b497be13fd2b7e2acdcad4f666e44"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#a3b9b497be13fd2b7e2acdcad4f666e44">live_notaries</a> = 0</td></tr>
+<tr class="separator:a3b9b497be13fd2b7e2acdcad4f666e44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae51076507dc6010d747e0357dd270ea"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#aae51076507dc6010d747e0357dd270ea">notary_status</a> [4] = { 0 }</td></tr>
+<tr class="separator:aae51076507dc6010d747e0357dd270ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64f97fd05dc38d4a760b501c15539760"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#a64f97fd05dc38d4a760b501c15539760">table_stack_in_chips</a> = 0.01</td></tr>
+<tr class="separator:a64f97fd05dc38d4a760b501c15539760"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b42019ee77457af36b1483e3b544f42"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#a1b42019ee77457af36b1483e3b544f42">chips_tx_fee</a> = 0.0005</td></tr>
+<tr class="separator:a1b42019ee77457af36b1483e3b544f42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61d463cada52b05618af0347c85a51ca"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#a61d463cada52b05618af0347c85a51ca">dev_fund_addr</a> [64] = { &quot;RSdMRYeeouw3hepxNgUzHn34qFhn1tsubb&quot; }</td></tr>
+<tr class="separator:a61d463cada52b05618af0347c85a51ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56167dfefcb43ce757ddf6cb29c8f46f"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#a56167dfefcb43ce757ddf6cb29c8f46f">legacy_2_of_3_msig_addr</a> [64] = { &quot;bQJTo8knsbSoU7k9oGADa6qfWGWyJtxC3o&quot; }</td></tr>
+<tr class="separator:a56167dfefcb43ce757ddf6cb29c8f46f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9326b598f59f86371697fe7d21303a13"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4f/cashier_8c.html#a9326b598f59f86371697fe7d21303a13">legacy_2_of_4_msig_Addr</a> [64] = { &quot;bRCUpox55j6sFJBuEn9E1fwNLFKFvRvo9W&quot; }</td></tr>
+<tr class="separator:a9326b598f59f86371697fe7d21303a13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="ae91ed2f8e60cdf9fa8fe63b71c59e799"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae91ed2f8e60cdf9fa8fe63b71c59e799">&#9670;&nbsp;</a></span>bet_cashier_backend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t bet_cashier_backend </td>
+          <td>(</td>
+          <td class="paramtype">cJSON *&#160;</td>
+          <td class="paramname"><em>argjson</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct <a class="el" href="../../da/d77/structcashier.html">cashier</a> *&#160;</td>
+          <td class="paramname"><em>cashier_info</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00107">107</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+<p class="reference">References <a class="el" href="../../de/d4f/cashier_8c_source.html#l00093">bet_send_status()</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00157">cashier::c_pubsock</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00205">chips_sign_raw_tx_with_wallet()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../de/d4f/cashier_8c_source.html#l00212">bet_cashier_server_loop()</a>.</p>
+
+</div>
+</div>
+<a id="a81d7f8bb3895b9406551318fdcc0c0a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81d7f8bb3895b9406551318fdcc0c0a7">&#9670;&nbsp;</a></span>bet_cashier_client_backend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int32_t bet_cashier_client_backend </td>
+          <td>(</td>
+          <td class="paramtype">cJSON *&#160;</td>
+          <td class="paramname"><em>argjson</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct <a class="el" href="../../da/d77/structcashier.html">cashier</a> *&#160;</td>
+          <td class="paramname"><em>cashier_info</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00132">132</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+<p class="reference">References <a class="el" href="../../de/d4f/cashier_8c_source.html#l00093">bet_send_status()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../de/d4f/cashier_8c_source.html#l00183">bet_cashier_client_loop()</a>.</p>
+
+</div>
+</div>
+<a id="a153db704ece479884f8f1ae335b151f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a153db704ece479884f8f1ae335b151f3">&#9670;&nbsp;</a></span>bet_cashier_client_loop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bet_cashier_client_loop </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>_ptr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00183">183</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+<p class="reference">References <a class="el" href="../../de/d4f/cashier_8c_source.html#l00132">bet_cashier_client_backend()</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00157">cashier::c_pushsock</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00157">cashier::c_subsock</a>.</p>
+
+</div>
+</div>
+<a id="ad514f45748e5a23f2439928c5c74b513"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad514f45748e5a23f2439928c5c74b513">&#9670;&nbsp;</a></span>bet_cashier_server_loop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bet_cashier_server_loop </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>_ptr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00212">212</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+<p class="reference">References <a class="el" href="../../de/d4f/cashier_8c_source.html#l00107">bet_cashier_backend()</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00157">cashier::c_pubsock</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00157">cashier::c_pullsock</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../dd/d53/bet_8c_source.html#l00259">bet_cashier_server_thrd()</a>.</p>
+
+</div>
+</div>
+<a id="abbe73a37ad2cabc7da5678391c24b3de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbe73a37ad2cabc7da5678391c24b3de">&#9670;&nbsp;</a></span>bet_cashier_status_loop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bet_cashier_status_loop </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>_ptr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00148">148</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00157">cashier::c_pushsock</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00157">cashier::c_subsock</a>, and <a class="el" href="../../de/d4f/cashier_8c_source.html#l00021">live_notaries</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../de/d4f/cashier_8c_source.html#l00032">bet_check_notary_status()</a>.</p>
+
+</div>
+</div>
+<a id="a47d4ed0ac34a97667697f86114f5ea86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47d4ed0ac34a97667697f86114f5ea86">&#9670;&nbsp;</a></span>bet_check_notary_status()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char* bet_check_notary_status </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00032">32</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+<p class="reference">References <a class="el" href="../../de/d4f/cashier_8c_source.html#l00148">bet_cashier_status_loop()</a>, <a class="el" href="../../d6/d6e/network_8c_source.html#l00057">bet_nanosock()</a>, <a class="el" href="../../d6/d6e/network_8c_source.html#l00050">bet_tcp_sock_address()</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00157">cashier::c_pushsock</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00157">cashier::c_subsock</a>, <a class="el" href="../../de/d4f/cashier_8c_source.html#l00021">live_notaries</a>, <a class="el" href="../../de/d4f/cashier_8c_source.html#l00007">no_of_notaries</a>, <a class="el" href="../../de/d4f/cashier_8c_source.html#l00012">notary_node_ips</a>, and <a class="el" href="../../de/d4f/cashier_8c_source.html#l00022">notary_status</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../de/d21/commands_8c_source.html#l00825">chips_spend_msig_txs()</a>.</p>
+
+</div>
+</div>
+<a id="a59e8c83495ad55c3bb636c03ef7d302c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59e8c83495ad55c3bb636c03ef7d302c">&#9670;&nbsp;</a></span>bet_send_status()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t bet_send_status </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="../../da/d77/structcashier.html">cashier</a> *&#160;</td>
+          <td class="paramname"><em>cashier_info</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00093">93</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00157">cashier::c_pubsock</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../de/d4f/cashier_8c_source.html#l00107">bet_cashier_backend()</a>, and <a class="el" href="../../de/d4f/cashier_8c_source.html#l00132">bet_cashier_client_backend()</a>.</p>
+
+</div>
+</div>
+<a id="a7ef58bce91f2ca7bd38410e99cea3473"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ef58bce91f2ca7bd38410e99cea3473">&#9670;&nbsp;</a></span>bet_submit_msig_raw_tx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t bet_submit_msig_raw_tx </td>
+          <td>(</td>
+          <td class="paramtype">cJSON *&#160;</td>
+          <td class="paramname"><em>tx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00242">242</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00157">cashier::c_pushsock</a>.</p>
+
+</div>
+</div>
 <h2 class="groupheader">Variable Documentation</h2>
 <a id="a28b711b1a0ece6b40a95e022e13c7425"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a28b711b1a0ece6b40a95e022e13c7425">&#9670;&nbsp;</a></span>cashier_info</h2>
@@ -89,12 +364,242 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">struct <a class="el" href="../../da/d77/structcashier.html">cashier</a>* cashier_info</td>
+          <td class="memname">struct <a class="el" href="../../da/d77/structcashier.html">cashier</a>* cashier_info = NULL</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00001">1</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00020">20</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../dd/d53/bet_8c_source.html#l00048">bet_cashier_client_initialize()</a>, <a class="el" href="../../dd/d53/bet_8c_source.html#l00065">bet_cashier_deinitialize()</a>, <a class="el" href="../../dd/d53/bet_8c_source.html#l00242">bet_cashier_server_initialize()</a>, and <a class="el" href="../../dd/d53/bet_8c_source.html#l00259">bet_cashier_server_thrd()</a>.</p>
+
+</div>
+</div>
+<a id="a1b42019ee77457af36b1483e3b544f42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b42019ee77457af36b1483e3b544f42">&#9670;&nbsp;</a></span>chips_tx_fee</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double chips_tx_fee = 0.0005</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00025">25</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../dd/d93/client_8c_source.html#l01677">bet_player_backend()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00732">chips_create_tx_from_tx_list()</a>.</p>
+
+</div>
+</div>
+<a id="a61d463cada52b05618af0347c85a51ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61d463cada52b05618af0347c85a51ca">&#9670;&nbsp;</a></span>dev_fund_addr</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char dev_fund_addr[64] = { &quot;RSdMRYeeouw3hepxNgUzHn34qFhn1tsubb&quot; }</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00027">27</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+</div>
+</div>
+<a id="a56167dfefcb43ce757ddf6cb29c8f46f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56167dfefcb43ce757ddf6cb29c8f46f">&#9670;&nbsp;</a></span>legacy_2_of_3_msig_addr</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char legacy_2_of_3_msig_addr[64] = { &quot;bQJTo8knsbSoU7k9oGADa6qfWGWyJtxC3o&quot; }</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00029">29</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+</div>
+</div>
+<a id="a9326b598f59f86371697fe7d21303a13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9326b598f59f86371697fe7d21303a13">&#9670;&nbsp;</a></span>legacy_2_of_4_msig_Addr</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char legacy_2_of_4_msig_Addr[64] = { &quot;bRCUpox55j6sFJBuEn9E1fwNLFKFvRvo9W&quot; }</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00030">30</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../dd/d93/client_8c_source.html#l01677">bet_player_backend()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00625">chips_check_if_tx_unspent()</a>.</p>
+
+</div>
+</div>
+<a id="a3b9b497be13fd2b7e2acdcad4f666e44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b9b497be13fd2b7e2acdcad4f666e44">&#9670;&nbsp;</a></span>live_notaries</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t live_notaries = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00021">21</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../de/d4f/cashier_8c_source.html#l00148">bet_cashier_status_loop()</a>, and <a class="el" href="../../de/d4f/cashier_8c_source.html#l00032">bet_check_notary_status()</a>.</p>
+
+</div>
+</div>
+<a id="a48f0ea139a8e96bd78037cebeb11289a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48f0ea139a8e96bd78037cebeb11289a">&#9670;&nbsp;</a></span>msig_addr</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char msig_addr[64] = { &quot;bQJTo8knsbSoU7k9oGADa6qfWGWyJtxC3o&quot; }</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00013">13</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+</div>
+</div>
+<a id="ad4c489d7e10c84b3fb4128c32974384b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4c489d7e10c84b3fb4128c32974384b">&#9670;&nbsp;</a></span>no_of_notaries</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t no_of_notaries = 4</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00007">7</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../de/d4f/cashier_8c_source.html#l00032">bet_check_notary_status()</a>, <a class="el" href="../../de/d21/commands_8c_source.html#l00589">chips_add_multisig_address()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00825">chips_spend_msig_txs()</a>.</p>
+
+</div>
+</div>
+<a id="acce57cb05b34126f8bee8dc393c9f6bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acce57cb05b34126f8bee8dc393c9f6bc">&#9670;&nbsp;</a></span>notary_node_addrs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char notary_node_addrs[][64]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= { <span class="stringliteral">&quot;bQepVNtzfjMaBJdaaCq68trQDAPDgKnwrD&quot;</span>, <span class="stringliteral">&quot;bSa7CrTXykfPZ6yhThjXAoQ8r4H7muiPPC&quot;</span>,</div><div class="line">                                 <span class="stringliteral">&quot;bGmKoyJEz4ESuJCTjhVkgEb2Qkt8QuiQzQ&quot;</span>, <span class="stringliteral">&quot;bR7BXnWT1yVSP9aB57pq22XN2WYNpGgDrD&quot;</span> }</div></div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00010">10</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>.</p>
+
+</div>
+</div>
+<a id="ae13e194f7c4d647e50a0e3c0c90d5c87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae13e194f7c4d647e50a0e3c0c90d5c87">&#9670;&nbsp;</a></span>notary_node_ips</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char notary_node_ips[][25] = { &quot;159.69.23.28&quot;, &quot;159.69.23.29&quot;, &quot;159.69.23.30&quot;, &quot;159.69.23.31&quot; }</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00012">12</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../de/d4f/cashier_8c_source.html#l00032">bet_check_notary_status()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00825">chips_spend_msig_txs()</a>.</p>
+
+</div>
+</div>
+<a id="a8e2be7606a52ec9af92f64e4f31bb313"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e2be7606a52ec9af92f64e4f31bb313">&#9670;&nbsp;</a></span>notary_node_pubkeys</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char notary_node_pubkeys[][67]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= { <span class="stringliteral">&quot;034d2b213240cfb4efcc24cc21a237a2313c0c734a4f0efc30087c095fd010385f&quot;</span>,</div><div class="line">                                   <span class="stringliteral">&quot;02137b5400ace827c225238765d4661a1b4fe589b9b625b10469c69f0867f7bc53&quot;</span>,</div><div class="line">                                   <span class="stringliteral">&quot;03b020866c9efae106e3c086a640e8b50cce7ae91cb30996ecf0f8816ce5ed8f49&quot;</span>,</div><div class="line">                                   <span class="stringliteral">&quot;0274ae1ce244bd0f9c52edfb6b9e60dc5d22f001dd74af95d1297edbcc8ae39568&quot;</span> }</div></div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00015">15</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../de/d21/commands_8c_source.html#l00589">chips_add_multisig_address()</a>.</p>
+
+</div>
+</div>
+<a id="aae51076507dc6010d747e0357dd270ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae51076507dc6010d747e0357dd270ea">&#9670;&nbsp;</a></span>notary_status</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t notary_status[4] = { 0 }</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00022">22</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../de/d4f/cashier_8c_source.html#l00032">bet_check_notary_status()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00825">chips_spend_msig_txs()</a>.</p>
+
+</div>
+</div>
+<a id="a64f97fd05dc38d4a760b501c15539760"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64f97fd05dc38d4a760b501c15539760">&#9670;&nbsp;</a></span>table_stack_in_chips</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double table_stack_in_chips = 0.01</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00024">24</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>.</p>
+
+</div>
+</div>
+<a id="a35959cfbb47e64ffdf370d41ed67c884"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35959cfbb47e64ffdf370d41ed67c884">&#9670;&nbsp;</a></span>threshold_value</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t threshold_value = 2</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d4f/cashier_8c_source.html#l00008">8</a> of file <a class="el" href="../../de/d4f/cashier_8c_source.html">cashier.c</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../de/d21/commands_8c_source.html#l00589">chips_add_multisig_address()</a>.</p>
 
 </div>
 </div>
@@ -104,7 +609,7 @@ Variables</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../dir_6533845711e9597c85a5594888097196.html">privatebet</a></li><li class="navelem"><a class="el" href="../../de/d4f/cashier_8c.html">cashier.c</a></li>
-    <li class="footer">Generated on Tue Dec 31 2019 11:12:16 for Bet by
+    <li class="footer">Generated on Wed Jan 8 2020 09:05:04 for Bet by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

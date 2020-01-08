@@ -1,6 +1,8 @@
 var structcashier =
 [
     [ "addr", "da/d77/structcashier.html#ac1cabcc8e9aad13e98becac8c3effccb", null ],
-    [ "pubsock", "da/d77/structcashier.html#a446347ed86dea33ee1b83be7b78fe4c9", null ],
-    [ "pullsock", "da/d77/structcashier.html#a0b5bb840a70a75c97b3a2ea956e38d74", null ]
+    [ "c_pubsock", "da/d77/structcashier.html#aeff03d6f79d5d7908c8f8d77de2265b2", null ],
+    [ "c_pullsock", "da/d77/structcashier.html#a0a43e10afc008c60f57b3e4341061d83", null ],
+    [ "c_pushsock", "da/d77/structcashier.html#a577492f5cb062491ea96145ab56fcacb", null ],
+    [ "c_subsock", "da/d77/structcashier.html#a083158d9583aa41f8b92c8de3502d60d", null ]
 ];

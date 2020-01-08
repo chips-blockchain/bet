@@ -88,6 +88,7 @@ $(document).ready(function(){initNavTree('df/da9/host_8c.html','../../');});
 <code>#include &quot;<a class="el" href="../../d1/dc9/poker_8h_source.html">poker.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="../../db/ddb/states_8h_source.html">states.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="../../dd/d98/table_8h_source.html">table.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="../../d5/d3a/cashier_8h_source.html">cashier.h</a>&quot;</code><br />
 <code>#include &lt;errno.h&gt;</code><br />
 <code>#include &lt;netinet/in.h&gt;</code><br />
 <code>#include &lt;pthread.h&gt;</code><br />
@@ -114,10 +115,10 @@ Macros</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:a1f8e3d38c48ef3c4115775937046b4d6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a1f8e3d38c48ef3c4115775937046b4d6">dcv_lws_write</a> (cJSON *data)</td></tr>
 <tr class="separator:a1f8e3d38c48ef3c4115775937046b4d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af23d0c2074c632617629fce0775356d1"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#af23d0c2074c632617629fce0775356d1">bet_chat</a> (struct lws *wsi, cJSON *argjson)</td></tr>
-<tr class="separator:af23d0c2074c632617629fce0775356d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeff84950c67efc57eee0d08ea771874d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#aeff84950c67efc57eee0d08ea771874d">initialize_seat</a> (cJSON *seatInfo, char *name, int32_t seat, int32_t stack, int32_t empty, int32_t playing)</td></tr>
-<tr class="separator:aeff84950c67efc57eee0d08ea771874d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9152403ddbd79001c781d0de09331e7d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a9152403ddbd79001c781d0de09331e7d">bet_chat</a> (struct lws *wsi, cJSON *argjson)</td></tr>
+<tr class="separator:a9152403ddbd79001c781d0de09331e7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3047df011ab8dc8ce2d0dd06e822eb6"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#ac3047df011ab8dc8ce2d0dd06e822eb6">initialize_seat</a> (cJSON *seat_info, char *name, int32_t seat, int32_t stack, int32_t empty, int32_t playing)</td></tr>
+<tr class="separator:ac3047df011ab8dc8ce2d0dd06e822eb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0766fcd2997389e70a025bb3437716ce"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a0766fcd2997389e70a025bb3437716ce">bet_seats</a> (struct lws *wsi, cJSON *argjson)</td></tr>
 <tr class="separator:a0766fcd2997389e70a025bb3437716ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adbe3ab77bc01747b60c29a13f7cd8690"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#adbe3ab77bc01747b60c29a13f7cd8690">bet_game</a> (struct lws *wsi, cJSON *argjson)</td></tr>
@@ -152,16 +153,16 @@ Functions</h2></td></tr>
 <tr class="separator:a936dda54fe149da9e2104428419f24e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d990524438302387f253eb15f4da292"><td class="memItemLeft" align="right" valign="top">static int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a3d990524438302387f253eb15f4da292">bet_create_betting_invoice</a> (cJSON *argjson, struct <a class="el" href="../../d0/d9f/structprivatebet__info.html">privatebet_info</a> *bet, struct <a class="el" href="../../d7/d03/structprivatebet__vars.html">privatebet_vars</a> *vars)</td></tr>
 <tr class="separator:a3d990524438302387f253eb15f4da292"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a45f715b215f34d6b44c72a56a65b6e0e"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a45f715b215f34d6b44c72a56a65b6e0e">bet_check_player_ready</a> (cJSON *playerReady, struct <a class="el" href="../../d0/d9f/structprivatebet__info.html">privatebet_info</a> *bet, struct <a class="el" href="../../d7/d03/structprivatebet__vars.html">privatebet_vars</a> *vars)</td></tr>
-<tr class="separator:a45f715b215f34d6b44c72a56a65b6e0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f77d2616f3863fe0fb744607ba48a15"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a8f77d2616f3863fe0fb744607ba48a15">bet_receive_card</a> (cJSON *playerCardInfo, struct <a class="el" href="../../d0/d9f/structprivatebet__info.html">privatebet_info</a> *bet, struct <a class="el" href="../../d7/d03/structprivatebet__vars.html">privatebet_vars</a> *vars)</td></tr>
-<tr class="separator:a8f77d2616f3863fe0fb744607ba48a15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe80f062f19af185693a2749515c2419"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#afe80f062f19af185693a2749515c2419">bet_check_player_ready</a> (cJSON *argjson, struct <a class="el" href="../../d0/d9f/structprivatebet__info.html">privatebet_info</a> *bet, struct <a class="el" href="../../d7/d03/structprivatebet__vars.html">privatebet_vars</a> *vars)</td></tr>
+<tr class="separator:afe80f062f19af185693a2749515c2419"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5c738304b1ab17cc29f305141338cd8"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#aa5c738304b1ab17cc29f305141338cd8">bet_receive_card</a> (cJSON *player_card_info, struct <a class="el" href="../../d0/d9f/structprivatebet__info.html">privatebet_info</a> *bet, struct <a class="el" href="../../d7/d03/structprivatebet__vars.html">privatebet_vars</a> *vars)</td></tr>
+<tr class="separator:aa5c738304b1ab17cc29f305141338cd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af784c4059c06107c85677ad2ff41da26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#af784c4059c06107c85677ad2ff41da26">bet_dcv_reset</a> (struct <a class="el" href="../../d0/d9f/structprivatebet__info.html">privatebet_info</a> *bet, struct <a class="el" href="../../d7/d03/structprivatebet__vars.html">privatebet_vars</a> *vars)</td></tr>
 <tr class="separator:af784c4059c06107c85677ad2ff41da26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4722546dfbefaa9c5dc84841b0db31ca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a4722546dfbefaa9c5dc84841b0db31ca">bet_dcv_force_reset</a> (struct <a class="el" href="../../d0/d9f/structprivatebet__info.html">privatebet_info</a> *bet, struct <a class="el" href="../../d7/d03/structprivatebet__vars.html">privatebet_vars</a> *vars)</td></tr>
 <tr class="separator:a4722546dfbefaa9c5dc84841b0db31ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a464a280df03afc8add329418712e5ee5"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a464a280df03afc8add329418712e5ee5">bet_evaluate_hand</a> (cJSON *playerCardInfo, struct <a class="el" href="../../d0/d9f/structprivatebet__info.html">privatebet_info</a> *bet, struct <a class="el" href="../../d7/d03/structprivatebet__vars.html">privatebet_vars</a> *vars)</td></tr>
-<tr class="separator:a464a280df03afc8add329418712e5ee5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cd8c62791775e9d8daf81350df54fb5"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a3cd8c62791775e9d8daf81350df54fb5">bet_evaluate_hand</a> (struct <a class="el" href="../../d0/d9f/structprivatebet__info.html">privatebet_info</a> *bet, struct <a class="el" href="../../d7/d03/structprivatebet__vars.html">privatebet_vars</a> *vars)</td></tr>
+<tr class="separator:a3cd8c62791775e9d8daf81350df54fb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a52ad122e76b59ba9de77f8f8043503e7"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a52ad122e76b59ba9de77f8f8043503e7">bet_ln_check</a> (struct <a class="el" href="../../d0/d9f/structprivatebet__info.html">privatebet_info</a> *bet)</td></tr>
 <tr class="separator:a52ad122e76b59ba9de77f8f8043503e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a195c93135325361eacfada5593143502"><td class="memItemLeft" align="right" valign="top">static int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a195c93135325361eacfada5593143502">bet_award_winner</a> (cJSON *argjson, struct <a class="el" href="../../d0/d9f/structprivatebet__info.html">privatebet_info</a> *bet, struct <a class="el" href="../../d7/d03/structprivatebet__vars.html">privatebet_vars</a> *vars)</td></tr>
@@ -174,8 +175,8 @@ Functions</h2></td></tr>
 <tr class="separator:a4a99b05847806e42fbcfc3b5cedc4380"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ac04c6502a7b7e3c50f6aaf6cc4eb41"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a2ac04c6502a7b7e3c50f6aaf6cc4eb41">bet_dcv_frontend_loop</a> (void *_ptr)</td></tr>
 <tr class="separator:a2ac04c6502a7b7e3c50f6aaf6cc4eb41"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68d581d035d443e0076a177bee2f4985"><td class="memItemLeft" align="right" valign="top">static int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a68d581d035d443e0076a177bee2f4985">bet_send_status</a> (struct <a class="el" href="../../d0/d9f/structprivatebet__info.html">privatebet_info</a> *bet)</td></tr>
-<tr class="separator:a68d581d035d443e0076a177bee2f4985"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a588e9e27e5d13eccaf10fa2fc8413e47"><td class="memItemLeft" align="right" valign="top">static int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a588e9e27e5d13eccaf10fa2fc8413e47">bet_live_status</a> (struct <a class="el" href="../../d0/d9f/structprivatebet__info.html">privatebet_info</a> *bet)</td></tr>
+<tr class="separator:a588e9e27e5d13eccaf10fa2fc8413e47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af5ffa99b814c76f0ad597b5a700e6f19"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#af5ffa99b814c76f0ad597b5a700e6f19">bet_dcv_live_loop</a> (void *_ptr)</td></tr>
 <tr class="separator:af5ffa99b814c76f0ad597b5a700e6f19"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -183,10 +184,10 @@ Functions</h2></td></tr>
 Variables</h2></td></tr>
 <tr class="memitem:abb636672d53a20859277b4ee50d048f2"><td class="memItemLeft" align="right" valign="top">struct lws *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#abb636672d53a20859277b4ee50d048f2">wsi_global_host</a> = NULL</td></tr>
 <tr class="separator:abb636672d53a20859277b4ee50d048f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac05c3f04dded9e82101c72a9f50b382c"><td class="memItemLeft" align="right" valign="top">cJSON *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#ac05c3f04dded9e82101c72a9f50b382c">dcvDataToWrite</a> = NULL</td></tr>
-<tr class="separator:ac05c3f04dded9e82101c72a9f50b382c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2fbd79df5e5b5ce8fe30354a12438913"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a2fbd79df5e5b5ce8fe30354a12438913">dcvDataExists</a> = 0</td></tr>
-<tr class="separator:a2fbd79df5e5b5ce8fe30354a12438913"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a827aa558b4a4b13001b7350ce60244a3"><td class="memItemLeft" align="right" valign="top">cJSON *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a827aa558b4a4b13001b7350ce60244a3">dcv_data_to_write</a> = NULL</td></tr>
+<tr class="separator:a827aa558b4a4b13001b7350ce60244a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a2b593abf90f15466d2c23a5f9dae95"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a3a2b593abf90f15466d2c23a5f9dae95">dcv_data_exists</a> = 0</td></tr>
+<tr class="separator:a3a2b593abf90f15466d2c23a5f9dae95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b84dc319ea3072597938e05f824fba3"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a8b84dc319ea3072597938e05f824fba3">players_joined</a> = 0</td></tr>
 <tr class="separator:a8b84dc319ea3072597938e05f824fba3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0da6d4ab8606b9ebb2ff16fffb343982"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a0da6d4ab8606b9ebb2ff16fffb343982">turn</a> = 0</td></tr>
@@ -235,9 +236,9 @@ Variables</h2></td></tr>
 <tr class="separator:a9c14867c1a22e34535491feeec626898"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9307743818dc635cc8c74dc1a2a3323"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#ad9307743818dc635cc8c74dc1a2a3323">face</a> [<a class="el" href="../../dc/d54/common_8h.html#a7a60859a9235a326a6fd937fd0d5a578">NFACES</a>]</td></tr>
 <tr class="separator:ad9307743818dc635cc8c74dc1a2a3323"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a62b702b575af739ee2c999554ea33c5a"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="../../d0/d9f/structprivatebet__info.html">privatebet_info</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a62b702b575af739ee2c999554ea33c5a">bet_dcv</a></td></tr>
+<tr class="memitem:a62b702b575af739ee2c999554ea33c5a"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="../../d0/d9f/structprivatebet__info.html">privatebet_info</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a62b702b575af739ee2c999554ea33c5a">bet_dcv</a> = NULL</td></tr>
 <tr class="separator:a62b702b575af739ee2c999554ea33c5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab98cf25f28f49f78a9431fcc11bda58e"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="../../d7/d03/structprivatebet__vars.html">privatebet_vars</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#ab98cf25f28f49f78a9431fcc11bda58e">dcv_vars</a></td></tr>
+<tr class="memitem:ab98cf25f28f49f78a9431fcc11bda58e"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="../../d7/d03/structprivatebet__vars.html">privatebet_vars</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#ab98cf25f28f49f78a9431fcc11bda58e">dcv_vars</a> = NULL</td></tr>
 <tr class="separator:ab98cf25f28f49f78a9431fcc11bda58e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae56101b5edfa437906539229fd5e2d31"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#ae56101b5edfa437906539229fd5e2d31">dealerPosition</a></td></tr>
 <tr class="separator:ae56101b5edfa437906539229fd5e2d31"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -253,6 +254,10 @@ Variables</h2></td></tr>
 <tr class="separator:a52aca01cdb7a7e61da5148a62052927d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4acff8232e4aec9cd5c6dc200ac55ef3"><td class="memItemLeft" align="right" valign="top">pthread_mutex_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a4acff8232e4aec9cd5c6dc200ac55ef3">mutex</a> = PTHREAD_MUTEX_INITIALIZER</td></tr>
 <tr class="separator:a4acff8232e4aec9cd5c6dc200ac55ef3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad987737d22beba5af09be0b024f0dab7"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#ad987737d22beba5af09be0b024f0dab7">no_of_txs</a> = 0</td></tr>
+<tr class="separator:ad987737d22beba5af09be0b024f0dab7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb5e882209b8e93041295e0ebd9376ef"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#afb5e882209b8e93041295e0ebd9376ef">tx_ids</a> [<a class="el" href="../../dc/d54/common_8h.html#a97d6188fd175f4ea7268e9445107a7c0">CARDS777_MAXPLAYERS</a>][100]</td></tr>
+<tr class="separator:afb5e882209b8e93041295e0ebd9376ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0cde2a0bf68fbf485a05f22364d5ac5b"><td class="memItemLeft" align="right" valign="top">static struct lws_protocols&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a0cde2a0bf68fbf485a05f22364d5ac5b">protocols</a> []</td></tr>
 <tr class="separator:a0cde2a0bf68fbf485a05f22364d5ac5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a91a694716d07ab82e16db9cdba7d69c3"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/da9/host_8c.html#a91a694716d07ab82e16db9cdba7d69c3">interrupted</a></td></tr>
@@ -273,7 +278,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00038">38</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00039">39</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
 </div>
 </div>
@@ -318,22 +323,22 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l01336">1336</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l01191">1191</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00050">dcv_info</a>, <a class="el" href="../../dd/d93/client_8c_source.html#l01302">ln_get_channel_status()</a>, <a class="el" href="../../dd/d93/client_8c_source.html#l00102">make_command()</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00161">deck_dcv_info::uri</a>.</p>
+<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00051">dcv_info</a>, <a class="el" href="../../dd/d93/client_8c_source.html#l01147">ln_get_channel_status()</a>, <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00141">deck_dcv_info::uri</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>.</p>
 
 </div>
 </div>
-<a id="af23d0c2074c632617629fce0775356d1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af23d0c2074c632617629fce0775356d1">&#9670;&nbsp;</a></span>bet_chat()</h2>
+<a id="a9152403ddbd79001c781d0de09331e7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9152403ddbd79001c781d0de09331e7d">&#9670;&nbsp;</a></span>bet_chat()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t bet_chat </td>
+          <td class="memname">void bet_chat </td>
           <td>(</td>
           <td class="paramtype">struct lws *&#160;</td>
           <td class="paramname"><em>wsi</em>, </td>
@@ -352,9 +357,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00089">89</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00091">91</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00166">bet_dcv_frontend()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00168">bet_dcv_frontend()</a>.</p>
 
 </div>
 </div>
@@ -382,16 +387,16 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00668">668</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00601">601</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00050">dcv_info</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::maxplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00086">privatebet_info::pubsock</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00161">deck_dcv_info::uri</a>.</p>
+<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00051">dcv_info</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::maxplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00068">privatebet_info::pubsock</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00141">deck_dcv_info::uri</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>.</p>
 
 </div>
 </div>
-<a id="a45f715b215f34d6b44c72a56a65b6e0e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a45f715b215f34d6b44c72a56a65b6e0e">&#9670;&nbsp;</a></span>bet_check_player_ready()</h2>
+<a id="afe80f062f19af185693a2749515c2419"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe80f062f19af185693a2749515c2419">&#9670;&nbsp;</a></span>bet_check_player_ready()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -400,7 +405,7 @@ Variables</h2></td></tr>
           <td class="memname">int32_t bet_check_player_ready </td>
           <td>(</td>
           <td class="paramtype">cJSON *&#160;</td>
-          <td class="paramname"><em>playerReady</em>, </td>
+          <td class="paramname"><em>argjson</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -422,11 +427,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00819">819</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00730">730</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::maxplayers</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00051">player_ready</a>.</p>
+<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::maxplayers</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00052">player_ready</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>.</p>
 
 </div>
 </div>
@@ -470,11 +475,11 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00752">752</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00676">676</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00162">deck_dcv_info::betamount</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00050">dcv_info</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00153">deck_dcv_info::deckid</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00060">invoiceID</a>, <a class="el" href="../../dd/d93/client_8c_source.html#l00102">make_command()</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00023">mchips_msatoshichips</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00086">privatebet_info::pubsock</a>.</p>
+<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00142">deck_dcv_info::betamount</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00051">dcv_info</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00133">deck_dcv_info::deckid</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00061">invoiceID</a>, <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00023">mchips_msatoshichips</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00068">privatebet_info::pubsock</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>.</p>
 
 </div>
 </div>
@@ -518,11 +523,11 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00689">689</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00622">622</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00162">deck_dcv_info::betamount</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00050">dcv_info</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00153">deck_dcv_info::deckid</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00060">invoiceID</a>, <a class="el" href="../../dd/d93/client_8c_source.html#l00102">make_command()</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00023">mchips_msatoshichips</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00086">privatebet_info::pubsock</a>.</p>
+<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00142">deck_dcv_info::betamount</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00051">dcv_info</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00133">deck_dcv_info::deckid</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00061">invoiceID</a>, <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00023">mchips_msatoshichips</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00068">privatebet_info::pubsock</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>.</p>
 
 </div>
 </div>
@@ -558,11 +563,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l01433">1433</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l01279">1279</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l01336">bet_award_winner()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00668">bet_check_bvv_ready()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00819">bet_check_player_ready()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00752">bet_create_betting_invoice()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00689">bet_create_invoice()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00356">bet_dcv_bvv_join()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00267">bet_dcv_deck_init_info()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00330">bet_dcv_init()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00445">bet_dcv_start()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00552">bet_dcv_turn()</a>, <a class="el" href="../../dc/d3d/states_8c_source.html#l00597">bet_display_current_state()</a>, <a class="el" href="../../dc/d3d/states_8c_source.html#l00031">bet_initiate_statemachine()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01240">bet_ln_check()</a>, <a class="el" href="../../dc/d3d/states_8c_source.html#l00512">bet_player_betting_statemachine()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00462">bet_player_join_req()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01424">bet_push_joinInfo()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00832">bet_receive_card()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00650">bet_relay()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00057">bvv_status</a>, <a class="el" href="../../de/d21/commands_8c_source.html#l00233">chips_publish_multisig_tx()</a>, <a class="el" href="../../de/d21/commands_8c_source.html#l00179">chips_send_raw_tx()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00050">dcv_info</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00119">privatebet_vars::funds</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00071">is_signed</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00071">max_no_of_signers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::maxplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00160">deck_dcv_info::maxplayers</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00071">no_of_signers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::numplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00160">deck_dcv_info::numplayers</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00057">player_status</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00086">privatebet_info::pubsock</a>.</p>
+<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l01191">bet_award_winner()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00601">bet_check_bvv_ready()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00730">bet_check_player_ready()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00676">bet_create_betting_invoice()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00622">bet_create_invoice()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00336">bet_dcv_bvv_join()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00265">bet_dcv_deck_init_info()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00313">bet_dcv_init()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00419">bet_dcv_start()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00515">bet_dcv_turn()</a>, <a class="el" href="../../dc/d3d/states_8c_source.html#l00515">bet_display_current_state()</a>, <a class="el" href="../../dc/d3d/states_8c_source.html#l00030">bet_initiate_statemachine()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01099">bet_ln_check()</a>, <a class="el" href="../../dc/d3d/states_8c_source.html#l00448">bet_player_betting_statemachine()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00436">bet_player_join_req()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01269">bet_push_joinInfo()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00743">bet_receive_card()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00584">bet_relay()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00058">bvv_status</a>, <a class="el" href="../../de/d21/commands_8c_source.html#l00625">chips_check_if_tx_unspent()</a>, <a class="el" href="../../de/d21/commands_8c_source.html#l00732">chips_create_tx_from_tx_list()</a>, <a class="el" href="../../de/d21/commands_8c_source.html#l00440">chips_get_block_count()</a>, <a class="el" href="../../de/d21/commands_8c_source.html#l00232">chips_publish_multisig_tx()</a>, <a class="el" href="../../de/d21/commands_8c_source.html#l00178">chips_send_raw_tx()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00051">dcv_info</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00100">privatebet_vars::funds</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00071">is_signed</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00071">max_no_of_signers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::maxplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00140">deck_dcv_info::maxplayers</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00071">no_of_signers</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00077">no_of_txs</a>, <a class="el" href="../../de/d4f/cashier_8c_source.html#l00010">notary_node_addrs</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::numplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00140">deck_dcv_info::numplayers</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00058">player_status</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00068">privatebet_info::pubsock</a>, <a class="el" href="../../de/d4f/cashier_8c_source.html#l00024">table_stack_in_chips</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00078">tx_ids</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01554">bet_dcv_backend_loop()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01413">bet_dcv_backend_loop()</a>.</p>
 
 </div>
 </div>
@@ -582,11 +587,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l01554">1554</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l01413">1413</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>, <a class="el" href="../../d5/d08/cards777_8c_source.html#l00020">bet_permutation()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00047">card_matrix</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00048">card_values</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00050">dcv_info</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00154">deck_dcv_info::dcv_key</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00116">privatebet_vars::dealer</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00070">dealerPosition</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00153">deck_dcv_info::deckid</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00004">hand_size</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00060">invoiceID</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::maxplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00160">deck_dcv_info::maxplayers</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00075">mutex</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00160">deck_dcv_info::numplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00155">deck_dcv_info::permis</a>, <a class="el" href="../../dd/d53/bet_8c_source.html#l00041">permis_d</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00051">player_ready</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00123">pair256::priv</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00123">pair256::prod</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00086">privatebet_info::pubsock</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00086">privatebet_info::pullsock</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::range</a>.</p>
+<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>, <a class="el" href="../../d5/d08/cards777_8c_source.html#l00020">bet_permutation()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00048">card_matrix</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00049">card_values</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00051">dcv_info</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00134">deck_dcv_info::dcv_key</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00097">privatebet_vars::dealer</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00070">dealerPosition</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00133">deck_dcv_info::deckid</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00004">hand_size</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00061">invoiceID</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::maxplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00140">deck_dcv_info::maxplayers</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00075">mutex</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00140">deck_dcv_info::numplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00135">deck_dcv_info::permis</a>, <a class="el" href="../../dd/d53/bet_8c_source.html#l00041">permis_d</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00052">player_ready</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00104">pair256::priv</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00104">pair256::prod</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00068">privatebet_info::pubsock</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00068">privatebet_info::pullsock</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::range</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../dd/d53/bet_8c_source.html#l00128">main()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../dd/d53/bet_8c_source.html#l00212">bet_dcv_thrd()</a>.</p>
 
 </div>
 </div>
@@ -630,11 +635,11 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00356">356</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00336">336</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00165">deck_dcv_info::bvv_uri</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00024">channel_fund_satoshis</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00050">dcv_info</a>, <a class="el" href="../../dd/d93/client_8c_source.html#l01302">ln_get_channel_status()</a>, and <a class="el" href="../../dd/d93/client_8c_source.html#l00102">make_command()</a>.</p>
+<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00145">deck_dcv_info::bvv_uri</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00024">channel_fund_satoshis</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00051">dcv_info</a>, <a class="el" href="../../dd/d93/client_8c_source.html#l01147">ln_get_channel_status()</a>, and <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>.</p>
 
 </div>
 </div>
@@ -670,11 +675,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00267">267</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00265">265</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00158">deck_dcv_info::cardprods</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00050">dcv_info</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00157">deck_dcv_info::dcvblindcards</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00153">deck_dcv_info::deckid</a>, <a class="el" href="../../dd/d53/bet_8c_source.html#l00043">g_hash</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00160">deck_dcv_info::numplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00159">deck_dcv_info::peerpubkeys</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00086">privatebet_info::pubsock</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::range</a>.</p>
+<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00138">deck_dcv_info::cardprods</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00051">dcv_info</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00137">deck_dcv_info::dcvblindcards</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00133">deck_dcv_info::deckid</a>, <a class="el" href="../../dd/d53/bet_8c_source.html#l00043">g_hash</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00140">deck_dcv_info::numplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00139">deck_dcv_info::peerpubkeys</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00068">privatebet_info::pubsock</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::range</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>.</p>
 
 </div>
 </div>
@@ -704,11 +709,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l01013">1013</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00902">902</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00115">privatebet_vars::bet_actions</a>, <a class="el" href="../../d5/d08/cards777_8c_source.html#l00020">bet_permutation()</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00114">privatebet_vars::betamount</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00047">card_matrix</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00048">card_values</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00089">privatebet_info::cardid</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00028">CARDS777_MAXROUNDS</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00052">community_cards_drawn</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00050">dcv_info</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00154">deck_dcv_info::dcv_key</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00153">deck_dcv_info::deckid</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00052">flop_cards_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00119">privatebet_vars::funds</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00004">hand_size</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00052">hole_cards_drawn</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00060">invoiceID</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00116">privatebet_vars::last_raise</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00116">privatebet_vars::last_turn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::maxplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00160">deck_dcv_info::maxplayers</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00046">no_of_bets</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00046">no_of_cards</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00046">no_of_rounds</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00090">privatebet_info::no_of_turns</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::numplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00160">deck_dcv_info::numplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00155">deck_dcv_info::permis</a>, <a class="el" href="../../dd/d53/bet_8c_source.html#l00041">permis_d</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00051">player_ready</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00045">players_joined</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00117">privatebet_vars::pot</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00123">pair256::priv</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00123">pair256::prod</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::range</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00053">river_card_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00111">privatebet_vars::round</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00046">turn</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00053">turn_card_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00089">privatebet_info::turni</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00111">privatebet_vars::turni</a>.</p>
+<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00096">privatebet_vars::bet_actions</a>, <a class="el" href="../../d5/d08/cards777_8c_source.html#l00020">bet_permutation()</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00095">privatebet_vars::betamount</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00048">card_matrix</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00049">card_values</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00071">privatebet_info::cardid</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00028">CARDS777_MAXROUNDS</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00053">community_cards_drawn</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00051">dcv_info</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00134">deck_dcv_info::dcv_key</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00133">deck_dcv_info::deckid</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00053">flop_cards_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00100">privatebet_vars::funds</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00004">hand_size</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00053">hole_cards_drawn</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00061">invoiceID</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00097">privatebet_vars::last_raise</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00097">privatebet_vars::last_turn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::maxplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00140">deck_dcv_info::maxplayers</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00047">no_of_bets</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00047">no_of_cards</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00047">no_of_rounds</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00072">privatebet_info::no_of_turns</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::numplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00140">deck_dcv_info::numplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00135">deck_dcv_info::permis</a>, <a class="el" href="../../dd/d53/bet_8c_source.html#l00041">permis_d</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00052">player_ready</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00046">players_joined</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00098">privatebet_vars::pot</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00104">pair256::priv</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00104">pair256::prod</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::range</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00054">river_card_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00092">privatebet_vars::round</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00047">turn</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00053">turn_card_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00071">privatebet_info::turni</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00092">privatebet_vars::turni</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00166">bet_dcv_frontend()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00168">bet_dcv_frontend()</a>.</p>
 
 </div>
 </div>
@@ -738,11 +743,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00166">166</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00168">168</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00089">bet_chat()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01013">bet_dcv_force_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00141">bet_game()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00108">bet_seats()</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00086">privatebet_info::pubsock</a>.</p>
+<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00091">bet_chat()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00902">bet_dcv_force_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00143">bet_game()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00110">bet_seats()</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00068">privatebet_info::pubsock</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00194">lws_callback_http_dummy()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00195">lws_callback_http_dummy()</a>.</p>
 
 </div>
 </div>
@@ -762,11 +767,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l01609">1609</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l01467">1467</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00233">interrupted</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00235">mount</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00228">protocols</a>.</p>
+<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00231">interrupted</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00233">mount</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00226">protocols</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../dd/d53/bet_8c_source.html#l00128">main()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../dd/d53/bet_8c_source.html#l00212">bet_dcv_thrd()</a>.</p>
 
 </div>
 </div>
@@ -802,11 +807,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00330">330</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00313">313</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00445">bet_dcv_start()</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00158">deck_dcv_info::cardprods</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00026">CARDS777_MAXCARDS</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00050">dcv_info</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00157">deck_dcv_info::dcvblindcards</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00153">deck_dcv_info::deckid</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::maxplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00160">deck_dcv_info::numplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::range</a>, and <a class="el" href="../../dd/d53/bet_8c_source.html#l00275">sg777_deckgen_vendor()</a>.</p>
+<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00419">bet_dcv_start()</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00138">deck_dcv_info::cardprods</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00026">CARDS777_MAXCARDS</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00051">dcv_info</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00137">deck_dcv_info::dcvblindcards</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00133">deck_dcv_info::deckid</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::maxplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00140">deck_dcv_info::numplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::range</a>, and <a class="el" href="../../dd/d53/bet_8c_source.html#l00355">sg777_deckgen_vendor()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>.</p>
 
 </div>
 </div>
@@ -826,11 +831,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l01666">1666</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l01521">1521</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l01640">bet_send_status()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00057">bvv_status</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::maxplayers</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00057">player_status</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00086">privatebet_info::pubsock</a>.</p>
+<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l01496">bet_live_status()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00058">bvv_status</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::maxplayers</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00058">player_status</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00068">privatebet_info::pubsock</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../dd/d53/bet_8c_source.html#l00128">main()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../dd/d53/bet_8c_source.html#l00212">bet_dcv_thrd()</a>.</p>
 
 </div>
 </div>
@@ -860,11 +865,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00952">952</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00841">841</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00115">privatebet_vars::bet_actions</a>, <a class="el" href="../../d5/d08/cards777_8c_source.html#l00020">bet_permutation()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00260">bet_push_dcv_to_gui()</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00114">privatebet_vars::betamount</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00047">card_matrix</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00048">card_values</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00089">privatebet_info::cardid</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00028">CARDS777_MAXROUNDS</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00052">community_cards_drawn</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00050">dcv_info</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00154">deck_dcv_info::dcv_key</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00116">privatebet_vars::dealer</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00070">dealerPosition</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00153">deck_dcv_info::deckid</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00052">flop_cards_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00119">privatebet_vars::funds</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00004">hand_size</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00052">hole_cards_drawn</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00060">invoiceID</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00116">privatebet_vars::last_raise</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00116">privatebet_vars::last_turn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::maxplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00160">deck_dcv_info::maxplayers</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00046">no_of_bets</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00046">no_of_cards</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00046">no_of_rounds</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00090">privatebet_info::no_of_turns</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::numplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00160">deck_dcv_info::numplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00155">deck_dcv_info::permis</a>, <a class="el" href="../../dd/d53/bet_8c_source.html#l00041">permis_d</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00051">player_ready</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00045">players_joined</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00117">privatebet_vars::pot</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00123">pair256::priv</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00123">pair256::prod</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::range</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00053">river_card_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00111">privatebet_vars::round</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00046">turn</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00053">turn_card_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00089">privatebet_info::turni</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00111">privatebet_vars::turni</a>.</p>
+<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00096">privatebet_vars::bet_actions</a>, <a class="el" href="../../d5/d08/cards777_8c_source.html#l00020">bet_permutation()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00258">bet_push_dcv_to_gui()</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00095">privatebet_vars::betamount</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00048">card_matrix</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00049">card_values</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00071">privatebet_info::cardid</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00028">CARDS777_MAXROUNDS</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00053">community_cards_drawn</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00051">dcv_info</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00134">deck_dcv_info::dcv_key</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00097">privatebet_vars::dealer</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00070">dealerPosition</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00133">deck_dcv_info::deckid</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00053">flop_cards_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00100">privatebet_vars::funds</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00004">hand_size</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00053">hole_cards_drawn</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00061">invoiceID</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00097">privatebet_vars::last_raise</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00097">privatebet_vars::last_turn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::maxplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00140">deck_dcv_info::maxplayers</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00047">no_of_bets</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00047">no_of_cards</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00047">no_of_rounds</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00072">privatebet_info::no_of_turns</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::numplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00140">deck_dcv_info::numplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00135">deck_dcv_info::permis</a>, <a class="el" href="../../dd/d53/bet_8c_source.html#l00041">permis_d</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00052">player_ready</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00046">players_joined</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00098">privatebet_vars::pot</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00104">pair256::priv</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00104">pair256::prod</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::range</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00054">river_card_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00092">privatebet_vars::round</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00047">turn</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00053">turn_card_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00071">privatebet_info::turni</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00092">privatebet_vars::turni</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01066">bet_evaluate_hand()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00954">bet_evaluate_hand()</a>.</p>
 
 </div>
 </div>
@@ -894,11 +899,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00445">445</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00419">419</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00086">privatebet_info::pubsock</a>.</p>
+<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00068">privatebet_info::pubsock</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00330">bet_dcv_init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00313">bet_dcv_init()</a>.</p>
 
 </div>
 </div>
@@ -934,16 +939,16 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00552">552</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00515">515</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00532">bet_send_turn_info()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00047">card_matrix</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00060">flop_card_1</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00061">flop_card_2</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00062">flop_card_3</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00052">flop_cards_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00059">hole_card</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00052">hole_cards_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::maxplayers</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00006">no_of_flop_cards</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00005">no_of_hole_cards</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00008">no_of_river_card</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00007">no_of_turn_card</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00064">river_card</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00053">river_card_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00063">turn_card</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00053">turn_card_drawn</a>.</p>
+<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00496">bet_send_turn_info()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00048">card_matrix</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00049">flop_card_1</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00049">flop_card_2</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00049">flop_card_3</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00053">flop_cards_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00049">hole_card</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00053">hole_cards_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::maxplayers</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00006">no_of_flop_cards</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00005">no_of_hole_cards</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00008">no_of_river_card</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00007">no_of_turn_card</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00049">river_card</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00054">river_card_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00049">turn_card</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00053">turn_card_drawn</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>, <a class="el" href="../../dc/d3d/states_8c_source.html#l00146">bet_dcv_round_betting()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00832">bet_receive_card()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>, <a class="el" href="../../dc/d3d/states_8c_source.html#l00132">bet_dcv_round_betting()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00743">bet_receive_card()</a>.</p>
 
 </div>
 </div>
-<a id="a464a280df03afc8add329418712e5ee5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a464a280df03afc8add329418712e5ee5">&#9670;&nbsp;</a></span>bet_evaluate_hand()</h2>
+<a id="a3cd8c62791775e9d8daf81350df54fb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cd8c62791775e9d8daf81350df54fb5">&#9670;&nbsp;</a></span>bet_evaluate_hand()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -951,12 +956,6 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">int32_t bet_evaluate_hand </td>
           <td>(</td>
-          <td class="paramtype">cJSON *&#160;</td>
-          <td class="paramname"><em>playerCardInfo</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">struct <a class="el" href="../../d0/d9f/structprivatebet__info.html">privatebet_info</a> *&#160;</td>
           <td class="paramname"><em>bet</em>, </td>
         </tr>
@@ -974,11 +973,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l01066">1066</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00954">954</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00115">privatebet_vars::bet_actions</a>, <a class="el" href="../../d5/df6/payment_8c_source.html#l00051">bet_dcv_invoice_pay()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00952">bet_dcv_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00048">card_values</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00027">CARDS777_MAXPLAYERS</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00063">face</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00054">fold</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00004">hand_size</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::maxplayers</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00005">no_of_hole_cards</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00117">privatebet_vars::pot</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00086">privatebet_info::pubsock</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00111">privatebet_vars::round</a>, <a class="el" href="../../db/dd5/poker_8c_source.html#l00270">seven_card_draw_score()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00062">suit</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00040">wsi_global_host</a>.</p>
+<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00096">privatebet_vars::bet_actions</a>, <a class="el" href="../../d5/df6/payment_8c_source.html#l00050">bet_dcv_invoice_pay()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00841">bet_dcv_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00049">card_values</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00027">CARDS777_MAXPLAYERS</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00047">fold</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00004">hand_size</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::maxplayers</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00005">no_of_hole_cards</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00098">privatebet_vars::pot</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00068">privatebet_info::pubsock</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00092">privatebet_vars::round</a>, <a class="el" href="../../db/dd5/poker_8c_source.html#l00258">seven_card_draw_score()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00041">wsi_global_host</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../dc/d3d/states_8c_source.html#l00146">bet_dcv_round_betting()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../dc/d3d/states_8c_source.html#l00132">bet_dcv_round_betting()</a>.</p>
 
 </div>
 </div>
@@ -1008,11 +1007,43 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00141">141</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00143">143</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dc/d54/common_8h_source.html#l00015">big_blind_amount</a>, and <a class="el" href="../../dc/d54/common_8h_source.html#l00014">small_blind_amount</a>.</p>
+<p class="reference">References <a class="el" href="../../dc/d54/common_8h_source.html#l00015">big_blind_amount</a>, <a class="el" href="../../dd/d53/bet_8c_source.html#l00045">max_players</a>, and <a class="el" href="../../dc/d54/common_8h_source.html#l00014">small_blind_amount</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00166">bet_dcv_frontend()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00168">bet_dcv_frontend()</a>.</p>
+
+</div>
+</div>
+<a id="a588e9e27e5d13eccaf10fa2fc8413e47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a588e9e27e5d13eccaf10fa2fc8413e47">&#9670;&nbsp;</a></span>bet_live_status()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int32_t bet_live_status </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="../../d0/d9f/structprivatebet__info.html">privatebet_info</a> *&#160;</td>
+          <td class="paramname"><em>bet</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l01496">1496</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+
+<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00058">bvv_status</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::maxplayers</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00058">player_status</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00068">privatebet_info::pubsock</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01521">bet_dcv_live_loop()</a>.</p>
 
 </div>
 </div>
@@ -1032,11 +1063,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l01240">1240</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l01099">1099</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00165">deck_dcv_info::bvv_uri</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00050">dcv_info</a>, <a class="el" href="../../dd/d93/client_8c_source.html#l01302">ln_get_channel_status()</a>, <a class="el" href="../../dd/d93/client_8c_source.html#l00102">make_command()</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::maxplayers</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00161">deck_dcv_info::uri</a>.</p>
+<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00145">deck_dcv_info::bvv_uri</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00051">dcv_info</a>, <a class="el" href="../../dd/d93/client_8c_source.html#l01147">ln_get_channel_status()</a>, <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::maxplayers</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00141">deck_dcv_info::uri</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>.</p>
 
 </div>
 </div>
@@ -1072,11 +1103,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00462">462</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00436">436</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00050">dcv_info</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00070">dealerPosition</a>, <a class="el" href="../../dd/d93/client_8c_source.html#l00102">make_command()</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::numplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00159">deck_dcv_info::peerpubkeys</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00045">players_joined</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00086">privatebet_info::pubsock</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00161">deck_dcv_info::uri</a>.</p>
+<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00051">dcv_info</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00070">dealerPosition</a>, <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::numplayers</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00139">deck_dcv_info::peerpubkeys</a>, <a class="el" href="../../dd/d93/client_8c_source.html#l00052">player_info</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00046">players_joined</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00068">privatebet_info::pubsock</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00141">deck_dcv_info::uri</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>.</p>
 
 </div>
 </div>
@@ -1096,11 +1127,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00260">260</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00258">258</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00078">dcv_lws_write()</a>.</p>
+<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00080">dcv_lws_write()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00952">bet_dcv_reset()</a>, and <a class="el" href="../../dc/d3d/states_8c_source.html#l00031">bet_initiate_statemachine()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00841">bet_dcv_reset()</a>, and <a class="el" href="../../dc/d3d/states_8c_source.html#l00030">bet_initiate_statemachine()</a>.</p>
 
 </div>
 </div>
@@ -1138,16 +1169,16 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l01424">1424</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l01269">1269</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00078">dcv_lws_write()</a>.</p>
+<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00080">dcv_lws_write()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>.</p>
 
 </div>
 </div>
-<a id="a8f77d2616f3863fe0fb744607ba48a15"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8f77d2616f3863fe0fb744607ba48a15">&#9670;&nbsp;</a></span>bet_receive_card()</h2>
+<a id="aa5c738304b1ab17cc29f305141338cd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5c738304b1ab17cc29f305141338cd8">&#9670;&nbsp;</a></span>bet_receive_card()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1156,7 +1187,7 @@ Variables</h2></td></tr>
           <td class="memname">int32_t bet_receive_card </td>
           <td>(</td>
           <td class="paramtype">cJSON *&#160;</td>
-          <td class="paramname"><em>playerCardInfo</em>, </td>
+          <td class="paramname"><em>player_card_info</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1178,11 +1209,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00832">832</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00743">743</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dc/d3d/states_8c_source.html#l00146">bet_dcv_round_betting()</a>, <a class="el" href="../../dc/d3d/states_8c_source.html#l00479">bet_dcv_small_blind()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00552">bet_dcv_turn()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00047">card_matrix</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00048">card_values</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00055">eval_game_c</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00055">eval_game_p</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00060">flop_card_1</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00061">flop_card_2</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00062">flop_card_3</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00052">flop_cards_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00059">hole_card</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00052">hole_cards_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::maxplayers</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00046">no_of_cards</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00006">no_of_flop_cards</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00005">no_of_hole_cards</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00008">no_of_river_card</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00007">no_of_turn_card</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00064">river_card</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00053">river_card_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00111">privatebet_vars::round</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00063">turn_card</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00053">turn_card_drawn</a>.</p>
+<p class="reference">References <a class="el" href="../../dc/d3d/states_8c_source.html#l00132">bet_dcv_round_betting()</a>, <a class="el" href="../../dc/d3d/states_8c_source.html#l00417">bet_dcv_small_blind()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00515">bet_dcv_turn()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00048">card_matrix</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00049">card_values</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00056">eval_game_c</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00056">eval_game_p</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00049">flop_card_1</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00049">flop_card_2</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00049">flop_card_3</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00053">flop_cards_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00049">hole_card</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00053">hole_cards_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::maxplayers</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00047">no_of_cards</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00006">no_of_flop_cards</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00005">no_of_hole_cards</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00008">no_of_river_card</a>, <a class="el" href="../../dc/d54/common_8h_source.html#l00007">no_of_turn_card</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00049">river_card</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00054">river_card_drawn</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00092">privatebet_vars::round</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00049">turn_card</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00053">turn_card_drawn</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>.</p>
 
 </div>
 </div>
@@ -1218,11 +1249,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00650">650</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00584">584</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00086">privatebet_info::pubsock</a>.</p>
+<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00068">privatebet_info::pubsock</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>, and <a class="el" href="../../dc/d3d/states_8c_source.html#l00512">bet_player_betting_statemachine()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>, and <a class="el" href="../../dc/d3d/states_8c_source.html#l00448">bet_player_betting_statemachine()</a>.</p>
 
 </div>
 </div>
@@ -1252,43 +1283,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00108">108</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00110">110</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00098">initialize_seat()</a>, <a class="el" href="../../dd/d53/bet_8c_source.html#l00045">max_players</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00086">privatebet_info::pubsock</a>.</p>
+<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00100">initialize_seat()</a>, <a class="el" href="../../dd/d53/bet_8c_source.html#l00045">max_players</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00068">privatebet_info::pubsock</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00166">bet_dcv_frontend()</a>.</p>
-
-</div>
-</div>
-<a id="a68d581d035d443e0076a177bee2f4985"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a68d581d035d443e0076a177bee2f4985">&#9670;&nbsp;</a></span>bet_send_status()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static int32_t bet_send_status </td>
-          <td>(</td>
-          <td class="paramtype">struct <a class="el" href="../../d0/d9f/structprivatebet__info.html">privatebet_info</a> *&#160;</td>
-          <td class="paramname"><em>bet</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l01640">1640</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
-
-<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00057">bvv_status</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::maxplayers</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00057">player_status</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00086">privatebet_info::pubsock</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01666">bet_dcv_live_loop()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00168">bet_dcv_frontend()</a>.</p>
 
 </div>
 </div>
@@ -1338,11 +1337,11 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00532">532</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00496">496</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00086">privatebet_info::pubsock</a>.</p>
+<p class="reference">References <a class="el" href="../../df/d5a/bet_8h_source.html#l00068">privatebet_info::pubsock</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00552">bet_dcv_turn()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00515">bet_dcv_turn()</a>.</p>
 
 </div>
 </div>
@@ -1362,16 +1361,16 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00078">78</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00080">80</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00043">dcvDataExists</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00042">dcvDataToWrite</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00040">wsi_global_host</a>.</p>
+<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00044">dcv_data_exists</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00043">dcv_data_to_write</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00041">wsi_global_host</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00260">bet_push_dcv_to_gui()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l01424">bet_push_joinInfo()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00258">bet_push_dcv_to_gui()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l01269">bet_push_joinInfo()</a>.</p>
 
 </div>
 </div>
-<a id="aeff84950c67efc57eee0d08ea771874d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeff84950c67efc57eee0d08ea771874d">&#9670;&nbsp;</a></span>initialize_seat()</h2>
+<a id="ac3047df011ab8dc8ce2d0dd06e822eb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3047df011ab8dc8ce2d0dd06e822eb6">&#9670;&nbsp;</a></span>initialize_seat()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1383,7 +1382,7 @@ Variables</h2></td></tr>
           <td class="memname">static void initialize_seat </td>
           <td>(</td>
           <td class="paramtype">cJSON *&#160;</td>
-          <td class="paramname"><em>seatInfo</em>, </td>
+          <td class="paramname"><em>seat_info</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1428,9 +1427,9 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00098">98</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00100">100</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00108">bet_seats()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00110">bet_seats()</a>.</p>
 
 </div>
 </div>
@@ -1478,9 +1477,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00194">194</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00195">195</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00166">bet_dcv_frontend()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00043">dcvDataExists</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00042">dcvDataToWrite</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00073">lws_buf</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00074">lws_buf_length</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00040">wsi_global_host</a>.</p>
+<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00168">bet_dcv_frontend()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00044">dcv_data_exists</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00043">dcv_data_to_write</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00073">lws_buf</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00074">lws_buf_length</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00041">wsi_global_host</a>.</p>
 
 </div>
 </div>
@@ -1500,9 +1499,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00255">255</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00253">253</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00233">interrupted</a>.</p>
+<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00231">interrupted</a>.</p>
 
 </div>
 </div>
@@ -1519,7 +1518,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00049">49</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00050">50</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
 </div>
 </div>
@@ -1535,9 +1534,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00054">54</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00055">55</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../dc/d3d/states_8c_source.html#l00350">bet_dcv_round_betting_response()</a>, and <a class="el" href="../../dd/d93/client_8c_source.html#l00843">bet_player_bet_round()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../dc/d3d/states_8c_source.html#l00300">bet_dcv_round_betting_response()</a>, and <a class="el" href="../../dd/d93/client_8c_source.html#l00749">bet_player_bet_round()</a>.</p>
 
 </div>
 </div>
@@ -1548,14 +1547,14 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">struct <a class="el" href="../../d0/d9f/structprivatebet__info.html">privatebet_info</a>* bet_dcv</td>
+          <td class="memname">struct <a class="el" href="../../d0/d9f/structprivatebet__info.html">privatebet_info</a>* bet_dcv = NULL</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00067">67</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../dd/d53/bet_8c_source.html#l00100">bet_dcv_initialize()</a>, <a class="el" href="../../de/d21/commands_8c_source.html#l00233">chips_publish_multisig_tx()</a>, and <a class="el" href="../../dd/d53/bet_8c_source.html#l00128">main()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../dd/d53/bet_8c_source.html#l00204">bet_dcv_deinitialize()</a>, <a class="el" href="../../dd/d53/bet_8c_source.html#l00177">bet_dcv_initialize()</a>, <a class="el" href="../../dd/d53/bet_8c_source.html#l00212">bet_dcv_thrd()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00232">chips_publish_multisig_tx()</a>.</p>
 
 </div>
 </div>
@@ -1571,9 +1570,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00057">57</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00058">58</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01666">bet_dcv_live_loop()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l01640">bet_send_status()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01521">bet_dcv_live_loop()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l01496">bet_live_status()</a>.</p>
 
 </div>
 </div>
@@ -1589,9 +1588,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00047">47</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00048">48</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01554">bet_dcv_backend_loop()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01013">bet_dcv_force_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00952">bet_dcv_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00552">bet_dcv_turn()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00832">bet_receive_card()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01413">bet_dcv_backend_loop()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00902">bet_dcv_force_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00841">bet_dcv_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00515">bet_dcv_turn()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00743">bet_receive_card()</a>.</p>
 
 </div>
 </div>
@@ -1607,9 +1606,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00048">48</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00049">49</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01554">bet_dcv_backend_loop()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01013">bet_dcv_force_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00952">bet_dcv_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01066">bet_evaluate_hand()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00832">bet_receive_card()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01413">bet_dcv_backend_loop()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00902">bet_dcv_force_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00841">bet_dcv_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00954">bet_evaluate_hand()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00743">bet_receive_card()</a>.</p>
 
 </div>
 </div>
@@ -1625,9 +1624,45 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00052">52</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00053">53</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01013">bet_dcv_force_reset()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00952">bet_dcv_reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00902">bet_dcv_force_reset()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00841">bet_dcv_reset()</a>.</p>
+
+</div>
+</div>
+<a id="a3a2b593abf90f15466d2c23a5f9dae95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a2b593abf90f15466d2c23a5f9dae95">&#9670;&nbsp;</a></span>dcv_data_exists</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t dcv_data_exists = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00044">44</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00080">dcv_lws_write()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00195">lws_callback_http_dummy()</a>.</p>
+
+</div>
+</div>
+<a id="a827aa558b4a4b13001b7350ce60244a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a827aa558b4a4b13001b7350ce60244a3">&#9670;&nbsp;</a></span>dcv_data_to_write</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">cJSON* dcv_data_to_write = NULL</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00043">43</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00080">dcv_lws_write()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00195">lws_callback_http_dummy()</a>.</p>
 
 </div>
 </div>
@@ -1643,9 +1678,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00050">50</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00051">51</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01336">bet_award_winner()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00668">bet_check_bvv_ready()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00752">bet_create_betting_invoice()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00689">bet_create_invoice()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01554">bet_dcv_backend_loop()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00356">bet_dcv_bvv_join()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00267">bet_dcv_deck_init_info()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01013">bet_dcv_force_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00330">bet_dcv_init()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00952">bet_dcv_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01240">bet_ln_check()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00462">bet_player_join_req()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01191">bet_award_winner()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00601">bet_check_bvv_ready()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00676">bet_create_betting_invoice()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00622">bet_create_invoice()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01413">bet_dcv_backend_loop()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00336">bet_dcv_bvv_join()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00265">bet_dcv_deck_init_info()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00902">bet_dcv_force_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00313">bet_dcv_init()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00841">bet_dcv_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01099">bet_ln_check()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00436">bet_player_join_req()</a>.</p>
 
 </div>
 </div>
@@ -1656,50 +1691,14 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">struct <a class="el" href="../../d7/d03/structprivatebet__vars.html">privatebet_vars</a>* dcv_vars</td>
+          <td class="memname">struct <a class="el" href="../../d7/d03/structprivatebet__vars.html">privatebet_vars</a>* dcv_vars = NULL</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00068">68</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../dd/d53/bet_8c_source.html#l00100">bet_dcv_initialize()</a>.</p>
-
-</div>
-</div>
-<a id="a2fbd79df5e5b5ce8fe30354a12438913"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2fbd79df5e5b5ce8fe30354a12438913">&#9670;&nbsp;</a></span>dcvDataExists</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int32_t dcvDataExists = 0</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00043">43</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00078">dcv_lws_write()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00194">lws_callback_http_dummy()</a>.</p>
-
-</div>
-</div>
-<a id="ac05c3f04dded9e82101c72a9f50b382c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac05c3f04dded9e82101c72a9f50b382c">&#9670;&nbsp;</a></span>dcvDataToWrite</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">cJSON* dcvDataToWrite = NULL</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00042">42</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00078">dcv_lws_write()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00194">lws_callback_http_dummy()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../dd/d53/bet_8c_source.html#l00204">bet_dcv_deinitialize()</a>, and <a class="el" href="../../dd/d53/bet_8c_source.html#l00177">bet_dcv_initialize()</a>.</p>
 
 </div>
 </div>
@@ -1725,7 +1724,7 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00070">70</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01554">bet_dcv_backend_loop()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00952">bet_dcv_reset()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00462">bet_player_join_req()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01413">bet_dcv_backend_loop()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00841">bet_dcv_reset()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00436">bet_player_join_req()</a>.</p>
 
 </div>
 </div>
@@ -1741,9 +1740,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00055">55</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00056">56</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00832">bet_receive_card()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00743">bet_receive_card()</a>.</p>
 
 </div>
 </div>
@@ -1759,9 +1758,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00055">55</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00056">56</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00832">bet_receive_card()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00743">bet_receive_card()</a>.</p>
 
 </div>
 </div>
@@ -1776,10 +1775,10 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= { <span class="stringliteral">&quot;two&quot;</span>,      <span class="stringliteral">&quot;three&quot;</span>, <span class="stringliteral">&quot;four&quot;</span>, <span class="stringliteral">&quot;five&quot;</span>, <span class="stringliteral">&quot;six&quot;</span>,</div><div class="line">                       <span class="stringliteral">&quot;seven&quot;</span>, <span class="stringliteral">&quot;eight&quot;</span>, <span class="stringliteral">&quot;nine&quot;</span>, <span class="stringliteral">&quot;ten&quot;</span>,  <span class="stringliteral">&quot;jack&quot;</span>,</div><div class="line">                       <span class="stringliteral">&quot;queen&quot;</span>, <span class="stringliteral">&quot;king&quot;</span>,  <span class="stringliteral">&quot;ace&quot;</span> }</div></div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00063">63</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<b>Initial value:</b><div class="fragment"><div class="line">= { <span class="stringliteral">&quot;two&quot;</span>,  <span class="stringliteral">&quot;three&quot;</span>, <span class="stringliteral">&quot;four&quot;</span>, <span class="stringliteral">&quot;five&quot;</span>,     <span class="stringliteral">&quot;six&quot;</span>,  <span class="stringliteral">&quot;seven&quot;</span>, <span class="stringliteral">&quot;eight&quot;</span>,</div><div class="line">                       <span class="stringliteral">&quot;nine&quot;</span>, <span class="stringliteral">&quot;ten&quot;</span>,   <span class="stringliteral">&quot;jack&quot;</span>, <span class="stringliteral">&quot;queen&quot;</span>, <span class="stringliteral">&quot;king&quot;</span>, <span class="stringliteral">&quot;ace&quot;</span> }</div></div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00064">64</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01066">bet_evaluate_hand()</a>, and <a class="el" href="../../dd/d93/client_8c_source.html#l02247">rest_display_cards()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../dd/d93/client_8c_source.html#l02041">rest_display_cards()</a>.</p>
 
 </div>
 </div>
@@ -1795,9 +1794,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00052">52</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00053">53</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01013">bet_dcv_force_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00952">bet_dcv_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00552">bet_dcv_turn()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00832">bet_receive_card()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00902">bet_dcv_force_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00841">bet_dcv_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00515">bet_dcv_turn()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00743">bet_receive_card()</a>.</p>
 
 </div>
 </div>
@@ -1813,9 +1812,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00052">52</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00053">53</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01013">bet_dcv_force_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00952">bet_dcv_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00552">bet_dcv_turn()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00832">bet_receive_card()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00902">bet_dcv_force_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00841">bet_dcv_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00515">bet_dcv_turn()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00743">bet_receive_card()</a>.</p>
 
 </div>
 </div>
@@ -1839,9 +1838,9 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00233">233</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00231">231</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01609">bet_dcv_frontend_loop()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00255">sigint_handler()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01467">bet_dcv_frontend_loop()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00253">sigint_handler()</a>.</p>
 
 </div>
 </div>
@@ -1857,9 +1856,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00060">60</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00061">61</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00752">bet_create_betting_invoice()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00689">bet_create_invoice()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01554">bet_dcv_backend_loop()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01013">bet_dcv_force_reset()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00952">bet_dcv_reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00676">bet_create_betting_invoice()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00622">bet_create_invoice()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01413">bet_dcv_backend_loop()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00902">bet_dcv_force_reset()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00841">bet_dcv_reset()</a>.</p>
 
 </div>
 </div>
@@ -1877,7 +1876,7 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00071">71</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00233">chips_publish_multisig_tx()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00232">chips_publish_multisig_tx()</a>.</p>
 
 </div>
 </div>
@@ -1895,7 +1894,7 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00073">73</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00194">lws_callback_http_dummy()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00195">lws_callback_http_dummy()</a>.</p>
 
 </div>
 </div>
@@ -1913,7 +1912,7 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00074">74</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00194">lws_callback_http_dummy()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00195">lws_callback_http_dummy()</a>.</p>
 
 </div>
 </div>
@@ -1931,7 +1930,7 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00071">71</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>.</p>
 
 </div>
 </div>
@@ -1955,9 +1954,9 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div><div class="line">         NULL, </div><div class="line">         <span class="stringliteral">&quot;/&quot;</span>, </div><div class="line">         <span class="stringliteral">&quot;./mount-origin&quot;</span>, </div><div class="line">         <span class="stringliteral">&quot;index.html&quot;</span>, </div><div class="line">         NULL,</div><div class="line">         NULL,</div><div class="line">         NULL,</div><div class="line">         NULL,</div><div class="line">         0,</div><div class="line">         0,</div><div class="line">         0,</div><div class="line">         0,</div><div class="line">         0,</div><div class="line">         0,</div><div class="line">         LWSMPRO_FILE, </div><div class="line">         1, </div><div class="line">         NULL,</div><div class="line">}</div></div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00235">235</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00233">233</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01609">bet_dcv_frontend_loop()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01467">bet_dcv_frontend_loop()</a>.</p>
 
 </div>
 </div>
@@ -1975,7 +1974,7 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00075">75</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01554">bet_dcv_backend_loop()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01413">bet_dcv_backend_loop()</a>.</p>
 
 </div>
 </div>
@@ -1991,9 +1990,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00046">46</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00047">47</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01013">bet_dcv_force_reset()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00952">bet_dcv_reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00902">bet_dcv_force_reset()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00841">bet_dcv_reset()</a>.</p>
 
 </div>
 </div>
@@ -2009,9 +2008,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00046">46</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00047">47</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01013">bet_dcv_force_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00952">bet_dcv_reset()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00832">bet_receive_card()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00902">bet_dcv_force_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00841">bet_dcv_reset()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00743">bet_receive_card()</a>.</p>
 
 </div>
 </div>
@@ -2027,9 +2026,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00046">46</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00047">47</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01013">bet_dcv_force_reset()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00952">bet_dcv_reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00902">bet_dcv_force_reset()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00841">bet_dcv_reset()</a>.</p>
 
 </div>
 </div>
@@ -2047,7 +2046,25 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00071">71</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>.</p>
+
+</div>
+</div>
+<a id="ad987737d22beba5af09be0b024f0dab7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad987737d22beba5af09be0b024f0dab7">&#9670;&nbsp;</a></span>no_of_txs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t no_of_txs = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00077">77</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00720">check_if_tx_exists()</a>.</p>
 
 </div>
 </div>
@@ -2063,7 +2080,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00058">58</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00059">59</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
 </div>
 </div>
@@ -2079,9 +2096,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00051">51</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00052">52</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00819">bet_check_player_ready()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01554">bet_dcv_backend_loop()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01013">bet_dcv_force_reset()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00952">bet_dcv_reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00730">bet_check_player_ready()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01413">bet_dcv_backend_loop()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00902">bet_dcv_force_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00841">bet_dcv_reset()</a>, and <a class="el" href="../../dd/d93/client_8c_source.html#l00977">bet_player_ready()</a>.</p>
 
 </div>
 </div>
@@ -2097,9 +2114,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00057">57</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00058">58</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01666">bet_dcv_live_loop()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l01640">bet_send_status()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l01521">bet_dcv_live_loop()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l01496">bet_live_status()</a>.</p>
 
 </div>
 </div>
@@ -2115,9 +2132,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00045">45</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00046">46</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01013">bet_dcv_force_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00952">bet_dcv_reset()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00462">bet_player_join_req()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00902">bet_dcv_force_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00841">bet_dcv_reset()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00436">bet_player_join_req()</a>.</p>
 
 </div>
 </div>
@@ -2140,11 +2157,11 @@ Variables</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= {</div><div class="line">        { <span class="stringliteral">&quot;http&quot;</span>, <a class="code" href="../../df/da9/host_8c.html#a107bec281a1ddc6b98e44b556f95e7bf">lws_callback_http_dummy</a>, 0, 0 },</div><div class="line">        { NULL, NULL, 0, 0 } </div><div class="line">}</div><div class="ttc" id="host_8c_html_a107bec281a1ddc6b98e44b556f95e7bf"><div class="ttname"><a href="../../df/da9/host_8c.html#a107bec281a1ddc6b98e44b556f95e7bf">lws_callback_http_dummy</a></div><div class="ttdeci">int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)</div><div class="ttdef"><b>Definition:</b> <a href="../../df/da9/host_8c_source.html#l00194">host.c:194</a></div></div>
+<b>Initial value:</b><div class="fragment"><div class="line">= {</div><div class="line">        { <span class="stringliteral">&quot;http&quot;</span>, <a class="code" href="../../df/da9/host_8c.html#a107bec281a1ddc6b98e44b556f95e7bf">lws_callback_http_dummy</a>, 0, 0 },</div><div class="line">        { NULL, NULL, 0, 0 } </div><div class="line">}</div><div class="ttc" id="host_8c_html_a107bec281a1ddc6b98e44b556f95e7bf"><div class="ttname"><a href="../../df/da9/host_8c.html#a107bec281a1ddc6b98e44b556f95e7bf">lws_callback_http_dummy</a></div><div class="ttdeci">int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)</div><div class="ttdef"><b>Definition:</b> <a href="../../df/da9/host_8c_source.html#l00195">host.c:195</a></div></div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00228">228</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00226">226</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01609">bet_dcv_frontend_loop()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01467">bet_dcv_frontend_loop()</a>.</p>
 
 </div>
 </div>
@@ -2160,9 +2177,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00053">53</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00054">54</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01013">bet_dcv_force_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00952">bet_dcv_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00552">bet_dcv_turn()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00832">bet_receive_card()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00902">bet_dcv_force_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00841">bet_dcv_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00515">bet_dcv_turn()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00743">bet_receive_card()</a>.</p>
 
 </div>
 </div>
@@ -2178,9 +2195,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00062">62</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00063">63</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01066">bet_evaluate_hand()</a>, <a class="el" href="../../db/dd5/poker_8c_source.html#l00072">cardstr()</a>, and <a class="el" href="../../dd/d93/client_8c_source.html#l02247">rest_display_cards()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../db/dd5/poker_8c_source.html#l00066">cardstr()</a>, and <a class="el" href="../../dd/d93/client_8c_source.html#l02041">rest_display_cards()</a>.</p>
 
 </div>
 </div>
@@ -2196,9 +2213,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00046">46</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00047">47</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01013">bet_dcv_force_reset()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00952">bet_dcv_reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00902">bet_dcv_force_reset()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00841">bet_dcv_reset()</a>.</p>
 
 </div>
 </div>
@@ -2216,7 +2233,25 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00053">53</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01013">bet_dcv_force_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00952">bet_dcv_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00552">bet_dcv_turn()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00832">bet_receive_card()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00902">bet_dcv_force_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00841">bet_dcv_reset()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00515">bet_dcv_turn()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00743">bet_receive_card()</a>.</p>
+
+</div>
+</div>
+<a id="afb5e882209b8e93041295e0ebd9376ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb5e882209b8e93041295e0ebd9376ef">&#9670;&nbsp;</a></span>tx_ids</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char tx_ids[<a class="el" href="../../dc/d54/common_8h.html#a97d6188fd175f4ea7268e9445107a7c0">CARDS777_MAXPLAYERS</a>][100]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00078">78</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>.</p>
 
 </div>
 </div>
@@ -2232,9 +2267,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00040">40</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/da9/host_8c_source.html#l00041">41</a> of file <a class="el" href="../../df/da9/host_8c_source.html">host.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01066">bet_evaluate_hand()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00078">dcv_lws_write()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00194">lws_callback_http_dummy()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l00954">bet_evaluate_hand()</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00080">dcv_lws_write()</a>, and <a class="el" href="../../df/da9/host_8c_source.html#l00195">lws_callback_http_dummy()</a>.</p>
 
 </div>
 </div>
@@ -2244,7 +2279,7 @@ Variables</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../dir_6533845711e9597c85a5594888097196.html">privatebet</a></li><li class="navelem"><a class="el" href="../../df/da9/host_8c.html">host.c</a></li>
-    <li class="footer">Generated on Tue Dec 31 2019 11:12:16 for Bet by
+    <li class="footer">Generated on Wed Jan 8 2020 09:05:04 for Bet by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>
