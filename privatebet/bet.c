@@ -211,15 +211,14 @@ static void bet_dcv_deinitialize()
 
 static void bet_dcv_thrd(char *dcv_ip, const int32_t port)
 {
-	pthread_t /*live_thrd,*/ dcv_backend, dcv_thrd;
+	pthread_t live_thrd, dcv_backend, dcv_thrd;
 
 	bet_dcv_initialize(dcv_ip, port);
-	/*
+	
 	if (OS_thread_create(&live_thrd, NULL, (void *)bet_dcv_live_loop, (void *)bet_dcv) != 0) {
 		printf("error launching bet_dcv_live_loop]n");
 		exit(-1);
 	}
-	*/
 	if (OS_thread_create(&dcv_backend, NULL, (void *)bet_dcv_backend_loop, (void *)bet_dcv) != 0) {
 		printf("error launching bet_dcv_backend_loop\n");
 		exit(-1);
@@ -228,11 +227,9 @@ static void bet_dcv_thrd(char *dcv_ip, const int32_t port)
 		printf("error launching bet_dcv_frontend_loop\n");
 		exit(-1);
 	}
-	/*
 	if (pthread_join(live_thrd, NULL)) {
 		printf("\nError in joining the main thread for live_thrd");
 	}
-	*/
 	if (pthread_join(dcv_backend, NULL)) {
 		printf("\nError in joining the main thread for dcv_backend");
 	}
