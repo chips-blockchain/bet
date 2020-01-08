@@ -125,7 +125,7 @@ void make_command(int argc, char **argv, cJSON **argjson)
 		strcat(data, buf);
 		memset(buf, 0x00, 200);
 	}
-	data[sizeof(data)-1] = '\0';
+	data[sizeof(data) - 1] = '\0';
 	if (strlen(data) == 0) {
 		cJSON_AddStringToObject(*argjson, "error", "command failed");
 		cJSON_AddStringToObject(*argjson, "command", command);
