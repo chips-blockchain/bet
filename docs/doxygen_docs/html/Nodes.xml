@@ -6,6 +6,18 @@
       <Path>index.html</Path>
       <Subnodes>
        <Node>
+        <Name>Usage guide of the bet-api&apos;s</Name>
+        <Path>db/d97/md__root_bet_bet-api.html</Path>
+       </Node>
+       <Node>
+        <Name>Cashier Protocol</Name>
+        <Path>dc/d33/md__root_bet_cashier_protocol.html</Path>
+       </Node>
+       <Node>
+        <Name>Steps to compile</Name>
+        <Path>de/df3/md__root_bet_compile.html</Path>
+       </Node>
+       <Node>
         <Name>Pangea-Bet</Name>
         <Path>d9/da3/md__root_bet__r_e_a_d_m_e.html</Path>
        </Node>
@@ -79,14 +91,24 @@
               <Anchor>ac1cabcc8e9aad13e98becac8c3effccb</Anchor>
              </Node>
              <Node>
-              <Name>pubsock</Name>
+              <Name>c_pubsock</Name>
               <Path>da/d77/structcashier.html</Path>
-              <Anchor>a446347ed86dea33ee1b83be7b78fe4c9</Anchor>
+              <Anchor>aeff03d6f79d5d7908c8f8d77de2265b2</Anchor>
              </Node>
              <Node>
-              <Name>pullsock</Name>
+              <Name>c_pullsock</Name>
               <Path>da/d77/structcashier.html</Path>
-              <Anchor>a0b5bb840a70a75c97b3a2ea956e38d74</Anchor>
+              <Anchor>a0a43e10afc008c60f57b3e4341061d83</Anchor>
+             </Node>
+             <Node>
+              <Name>c_pushsock</Name>
+              <Path>da/d77/structcashier.html</Path>
+              <Anchor>a577492f5cb062491ea96145ab56fcacb</Anchor>
+             </Node>
+             <Node>
+              <Name>c_subsock</Name>
+              <Path>da/d77/structcashier.html</Path>
+              <Anchor>a083158d9583aa41f8b92c8de3502d60d</Anchor>
              </Node>
             </Subnodes>
            </Node>
@@ -275,7 +297,7 @@
              <Node>
               <Name>bytes</Name>
               <Path>d0/d0d/structenc__share.html</Path>
-              <Anchor>a4bac0ffac6bcc7a207ef17db51b8c471</Anchor>
+              <Anchor>ae6113029fd5982c537b79d4169d1255d</Anchor>
              </Node>
             </Subnodes>
            </Node>
@@ -750,19 +772,74 @@
               <Path>dd/d53/bet_8c.html</Path>
               <Subnodes>
                <Node>
+                <Name>bet_bvv_deinitialize</Name>
+                <Path>dd/d53/bet_8c.html</Path>
+                <Anchor>aeebf318c0558fb16e78578f9090cce82</Anchor>
+               </Node>
+               <Node>
                 <Name>bet_bvv_initialize</Name>
                 <Path>dd/d53/bet_8c.html</Path>
-                <Anchor>abb41d56704e5ba1aea3c7c97e67cee9a</Anchor>
+                <Anchor>a475994d3b8d287f74d9bcf83eab44595</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_bvv_thrd</Name>
+                <Path>dd/d53/bet_8c.html</Path>
+                <Anchor>a87cc06af265d08f36e1c40cee836f87a</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_cashier_client_initialize</Name>
+                <Path>dd/d53/bet_8c.html</Path>
+                <Anchor>ad1c0d680cfa5542409a5a81e83866c27</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_cashier_deinitialize</Name>
+                <Path>dd/d53/bet_8c.html</Path>
+                <Anchor>a5e9110c489c33d2d85488e3f068ccbdc</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_cashier_server_initialize</Name>
+                <Path>dd/d53/bet_8c.html</Path>
+                <Anchor>a53c0e03ace1222a4603e870100d409c7</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_cashier_server_thrd</Name>
+                <Path>dd/d53/bet_8c.html</Path>
+                <Anchor>a2ffe5af3c560b2846ce9aaa4f900ea3a</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_dcv_deinitialize</Name>
+                <Path>dd/d53/bet_8c.html</Path>
+                <Anchor>adb7af14559d9153b3b7ab2e7354d7a28</Anchor>
                </Node>
                <Node>
                 <Name>bet_dcv_initialize</Name>
                 <Path>dd/d53/bet_8c.html</Path>
-                <Anchor>aaee466e723c622115fa30a49a699e97e</Anchor>
+                <Anchor>aa860977a7c9179f036b66390138b971b</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_dcv_thrd</Name>
+                <Path>dd/d53/bet_8c.html</Path>
+                <Anchor>afcdca9e81e58ca60c65b7adb4a84a625</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_display_usage</Name>
+                <Path>dd/d53/bet_8c.html</Path>
+                <Anchor>a9e4edbcf57620d008703d803b40c271e</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_player_deinitialize</Name>
+                <Path>dd/d53/bet_8c.html</Path>
+                <Anchor>a5d80e638baeaa54929d22baf244f1347</Anchor>
                </Node>
                <Node>
                 <Name>bet_player_initialize</Name>
                 <Path>dd/d53/bet_8c.html</Path>
-                <Anchor>a1fb0766f6a7a21ce0bf73b4a3cbb4a02</Anchor>
+                <Anchor>af4e09e4bf901fa7d49b97644bf97e7c1</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_player_thrd</Name>
+                <Path>dd/d53/bet_8c.html</Path>
+                <Anchor>ac2a6862edb31366c4d1a6da680f85241</Anchor>
                </Node>
                <Node>
                 <Name>card_rand256</Name>
@@ -853,11 +930,6 @@
                 <Name>poker_deck_size</Name>
                 <Path>dd/d53/bet_8c.html</Path>
                 <Anchor>a72cf71d5ef0640767677fd54d4729359</Anchor>
-               </Node>
-               <Node>
-                <Name>rootAddress</Name>
-                <Path>dd/d53/bet_8c.html</Path>
-                <Anchor>a538351e3178156bc6cc8e6156c6d88ba</Anchor>
                </Node>
                <Node>
                 <Name>sharenrs</Name>
@@ -1350,7 +1422,7 @@
                  <Node>
                   <Name>bytes</Name>
                   <Path>d0/d0d/structenc__share.html</Path>
-                  <Anchor>a4bac0ffac6bcc7a207ef17db51b8c471</Anchor>
+                  <Anchor>ae6113029fd5982c537b79d4169d1255d</Anchor>
                  </Node>
                 </Subnodes>
                </Node>
@@ -1542,14 +1614,24 @@
                   <Anchor>ac1cabcc8e9aad13e98becac8c3effccb</Anchor>
                  </Node>
                  <Node>
-                  <Name>pubsock</Name>
+                  <Name>c_pubsock</Name>
                   <Path>da/d77/structcashier.html</Path>
-                  <Anchor>a446347ed86dea33ee1b83be7b78fe4c9</Anchor>
+                  <Anchor>aeff03d6f79d5d7908c8f8d77de2265b2</Anchor>
                  </Node>
                  <Node>
-                  <Name>pullsock</Name>
+                  <Name>c_pullsock</Name>
                   <Path>da/d77/structcashier.html</Path>
-                  <Anchor>a0b5bb840a70a75c97b3a2ea956e38d74</Anchor>
+                  <Anchor>a0a43e10afc008c60f57b3e4341061d83</Anchor>
+                 </Node>
+                 <Node>
+                  <Name>c_pushsock</Name>
+                  <Path>da/d77/structcashier.html</Path>
+                  <Anchor>a577492f5cb062491ea96145ab56fcacb</Anchor>
+                 </Node>
+                 <Node>
+                  <Name>c_subsock</Name>
+                  <Path>da/d77/structcashier.html</Path>
+                  <Anchor>a083158d9583aa41f8b92c8de3502d60d</Anchor>
                  </Node>
                 </Subnodes>
                </Node>
@@ -1756,9 +1838,114 @@
               <Path>de/d4f/cashier_8c.html</Path>
               <Subnodes>
                <Node>
+                <Name>bet_cashier_backend</Name>
+                <Path>de/d4f/cashier_8c.html</Path>
+                <Anchor>ae91ed2f8e60cdf9fa8fe63b71c59e799</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_cashier_client_backend</Name>
+                <Path>de/d4f/cashier_8c.html</Path>
+                <Anchor>a81d7f8bb3895b9406551318fdcc0c0a7</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_cashier_client_loop</Name>
+                <Path>de/d4f/cashier_8c.html</Path>
+                <Anchor>a153db704ece479884f8f1ae335b151f3</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_cashier_server_loop</Name>
+                <Path>de/d4f/cashier_8c.html</Path>
+                <Anchor>ad514f45748e5a23f2439928c5c74b513</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_cashier_status_loop</Name>
+                <Path>de/d4f/cashier_8c.html</Path>
+                <Anchor>abbe73a37ad2cabc7da5678391c24b3de</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_check_notary_status</Name>
+                <Path>de/d4f/cashier_8c.html</Path>
+                <Anchor>a47d4ed0ac34a97667697f86114f5ea86</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_send_status</Name>
+                <Path>de/d4f/cashier_8c.html</Path>
+                <Anchor>a59e8c83495ad55c3bb636c03ef7d302c</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_submit_msig_raw_tx</Name>
+                <Path>de/d4f/cashier_8c.html</Path>
+                <Anchor>a7ef58bce91f2ca7bd38410e99cea3473</Anchor>
+               </Node>
+               <Node>
                 <Name>cashier_info</Name>
                 <Path>de/d4f/cashier_8c.html</Path>
                 <Anchor>a28b711b1a0ece6b40a95e022e13c7425</Anchor>
+               </Node>
+               <Node>
+                <Name>chips_tx_fee</Name>
+                <Path>de/d4f/cashier_8c.html</Path>
+                <Anchor>a1b42019ee77457af36b1483e3b544f42</Anchor>
+               </Node>
+               <Node>
+                <Name>dev_fund_addr</Name>
+                <Path>de/d4f/cashier_8c.html</Path>
+                <Anchor>a61d463cada52b05618af0347c85a51ca</Anchor>
+               </Node>
+               <Node>
+                <Name>legacy_2_of_3_msig_addr</Name>
+                <Path>de/d4f/cashier_8c.html</Path>
+                <Anchor>a56167dfefcb43ce757ddf6cb29c8f46f</Anchor>
+               </Node>
+               <Node>
+                <Name>legacy_2_of_4_msig_Addr</Name>
+                <Path>de/d4f/cashier_8c.html</Path>
+                <Anchor>a9326b598f59f86371697fe7d21303a13</Anchor>
+               </Node>
+               <Node>
+                <Name>live_notaries</Name>
+                <Path>de/d4f/cashier_8c.html</Path>
+                <Anchor>a3b9b497be13fd2b7e2acdcad4f666e44</Anchor>
+               </Node>
+               <Node>
+                <Name>msig_addr</Name>
+                <Path>de/d4f/cashier_8c.html</Path>
+                <Anchor>a48f0ea139a8e96bd78037cebeb11289a</Anchor>
+               </Node>
+               <Node>
+                <Name>no_of_notaries</Name>
+                <Path>de/d4f/cashier_8c.html</Path>
+                <Anchor>ad4c489d7e10c84b3fb4128c32974384b</Anchor>
+               </Node>
+               <Node>
+                <Name>notary_node_addrs</Name>
+                <Path>de/d4f/cashier_8c.html</Path>
+                <Anchor>acce57cb05b34126f8bee8dc393c9f6bc</Anchor>
+               </Node>
+               <Node>
+                <Name>notary_node_ips</Name>
+                <Path>de/d4f/cashier_8c.html</Path>
+                <Anchor>ae13e194f7c4d647e50a0e3c0c90d5c87</Anchor>
+               </Node>
+               <Node>
+                <Name>notary_node_pubkeys</Name>
+                <Path>de/d4f/cashier_8c.html</Path>
+                <Anchor>a8e2be7606a52ec9af92f64e4f31bb313</Anchor>
+               </Node>
+               <Node>
+                <Name>notary_status</Name>
+                <Path>de/d4f/cashier_8c.html</Path>
+                <Anchor>aae51076507dc6010d747e0357dd270ea</Anchor>
+               </Node>
+               <Node>
+                <Name>table_stack_in_chips</Name>
+                <Path>de/d4f/cashier_8c.html</Path>
+                <Anchor>a64f97fd05dc38d4a760b501c15539760</Anchor>
+               </Node>
+               <Node>
+                <Name>threshold_value</Name>
+                <Path>de/d4f/cashier_8c.html</Path>
+                <Anchor>a35959cfbb47e64ffdf370d41ed67c884</Anchor>
                </Node>
               </Subnodes>
              </Node>
@@ -1767,9 +1954,39 @@
               <Path>d5/d3a/cashier_8h.html</Path>
               <Subnodes>
                <Node>
-                <Name>bet_cashier_loop</Name>
+                <Name>bet_cashier_backend</Name>
                 <Path>d5/d3a/cashier_8h.html</Path>
-                <Anchor>a58481d6501f0921ac04c5e279dd52a5d</Anchor>
+                <Anchor>ae91ed2f8e60cdf9fa8fe63b71c59e799</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_cashier_client_loop</Name>
+                <Path>d5/d3a/cashier_8h.html</Path>
+                <Anchor>a153db704ece479884f8f1ae335b151f3</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_cashier_server_loop</Name>
+                <Path>d5/d3a/cashier_8h.html</Path>
+                <Anchor>ad514f45748e5a23f2439928c5c74b513</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_cashier_status_loop</Name>
+                <Path>d5/d3a/cashier_8h.html</Path>
+                <Anchor>abbe73a37ad2cabc7da5678391c24b3de</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_check_notary_status</Name>
+                <Path>d5/d3a/cashier_8h.html</Path>
+                <Anchor>a47d4ed0ac34a97667697f86114f5ea86</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_send_status</Name>
+                <Path>d5/d3a/cashier_8h.html</Path>
+                <Anchor>a59e8c83495ad55c3bb636c03ef7d302c</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_submit_msig_raw_tx</Name>
+                <Path>d5/d3a/cashier_8h.html</Path>
+                <Anchor>a7ef58bce91f2ca7bd38410e99cea3473</Anchor>
                </Node>
               </Subnodes>
              </Node>
@@ -1890,7 +2107,7 @@
                <Node>
                 <Name>bet_get_deckid</Name>
                 <Path>dd/d93/client_8c.html</Path>
-                <Anchor>ae96e125f8a557913057f5a9ba24422af</Anchor>
+                <Anchor>adad564e6033d90720a95b391a53631fb</Anchor>
                </Node>
                <Node>
                 <Name>bet_get_own_share</Name>
@@ -2485,19 +2702,39 @@
               <Path>de/d21/commands_8c.html</Path>
               <Subnodes>
                <Node>
+                <Name>check_if_tx_exists</Name>
+                <Path>de/d21/commands_8c.html</Path>
+                <Anchor>ab6358ab4420c86f6b3504af03826b194</Anchor>
+               </Node>
+               <Node>
                 <Name>check_ln_chips_sync</Name>
                 <Path>de/d21/commands_8c.html</Path>
                 <Anchor>af32277231a4357cbc4743ce3f8361fc9</Anchor>
                </Node>
                <Node>
+                <Name>chips_add_multisig_address</Name>
+                <Path>de/d21/commands_8c.html</Path>
+                <Anchor>aa692af3de118f4480a647ab50748b650</Anchor>
+               </Node>
+               <Node>
+                <Name>chips_check_if_tx_unspent</Name>
+                <Path>de/d21/commands_8c.html</Path>
+                <Anchor>ae3df3196342fe482cc2f9f7b6e6f4c97</Anchor>
+               </Node>
+               <Node>
                 <Name>chips_create_raw_multi_sig_tx</Name>
                 <Path>de/d21/commands_8c.html</Path>
-                <Anchor>a127e79ac6db1ec54d970d46b0c24516d</Anchor>
+                <Anchor>a9c93a3bc94008fc99aa2fe822d731b88</Anchor>
                </Node>
                <Node>
                 <Name>chips_create_raw_tx</Name>
                 <Path>de/d21/commands_8c.html</Path>
                 <Anchor>accffaa855b618cd9a7e274a3ea3d3e38</Anchor>
+               </Node>
+               <Node>
+                <Name>chips_create_tx_from_tx_list</Name>
+                <Path>de/d21/commands_8c.html</Path>
+                <Anchor>a5cef295e6e4b10eb23fdcf5e003ebdcf</Anchor>
                </Node>
                <Node>
                 <Name>chips_get_balance</Name>
@@ -2508,6 +2745,16 @@
                 <Name>chips_get_block_count</Name>
                 <Path>de/d21/commands_8c.html</Path>
                 <Anchor>aa536c2d22ecb79268d31956d7ec4f36d</Anchor>
+               </Node>
+               <Node>
+                <Name>chips_get_block_hash_from_txid</Name>
+                <Path>de/d21/commands_8c.html</Path>
+                <Anchor>a0abdad86f933c8cf6fae976a16aab289</Anchor>
+               </Node>
+               <Node>
+                <Name>chips_get_block_height_from_block_hash</Name>
+                <Path>de/d21/commands_8c.html</Path>
+                <Anchor>a28cdbbebc122c4217c11cf58ec989fed</Anchor>
                </Node>
                <Node>
                 <Name>chips_get_new_address</Name>
@@ -2537,7 +2784,7 @@
                <Node>
                 <Name>chips_lock_transaction</Name>
                 <Path>de/d21/commands_8c.html</Path>
-                <Anchor>a8f35ff6c18f2b0a991c3fc583615c2b0</Anchor>
+                <Anchor>add7b9d88dce327785de2c95f3f6a696a</Anchor>
                </Node>
                <Node>
                 <Name>chips_publish_multisig_tx</Name>
@@ -2547,12 +2794,22 @@
                <Node>
                 <Name>chips_send_raw_tx</Name>
                 <Path>de/d21/commands_8c.html</Path>
-                <Anchor>a12e5cfa7bc2b417750b9b3394f93f95a</Anchor>
+                <Anchor>aa6d1dc7b96872592c1687aadb5248b9b</Anchor>
+               </Node>
+               <Node>
+                <Name>chips_sign_msig_tx</Name>
+                <Path>de/d21/commands_8c.html</Path>
+                <Anchor>a98ea77e19785809a75b781c38f898a2e</Anchor>
                </Node>
                <Node>
                 <Name>chips_sign_raw_tx_with_wallet</Name>
                 <Path>de/d21/commands_8c.html</Path>
-                <Anchor>a651c6b1b8725fb048acb5cf321dc249a</Anchor>
+                <Anchor>ab74f6f5c30d61b06af6fb6efc602c7a0</Anchor>
+               </Node>
+               <Node>
+                <Name>chips_spend_msig_txs</Name>
+                <Path>de/d21/commands_8c.html</Path>
+                <Anchor>a8f23bc2eff0a786d4e94fef0ac4044c1</Anchor>
                </Node>
                <Node>
                 <Name>chips_spend_multi_sig_address</Name>
@@ -2591,14 +2848,29 @@
                 <Anchor>af32277231a4357cbc4743ce3f8361fc9</Anchor>
                </Node>
                <Node>
+                <Name>chips_add_multisig_address</Name>
+                <Path>d5/d90/commands_8h.html</Path>
+                <Anchor>aa692af3de118f4480a647ab50748b650</Anchor>
+               </Node>
+               <Node>
+                <Name>chips_check_if_tx_unspent</Name>
+                <Path>d5/d90/commands_8h.html</Path>
+                <Anchor>ae3df3196342fe482cc2f9f7b6e6f4c97</Anchor>
+               </Node>
+               <Node>
                 <Name>chips_create_raw_multi_sig_tx</Name>
                 <Path>d5/d90/commands_8h.html</Path>
-                <Anchor>a127e79ac6db1ec54d970d46b0c24516d</Anchor>
+                <Anchor>a9c93a3bc94008fc99aa2fe822d731b88</Anchor>
                </Node>
                <Node>
                 <Name>chips_create_raw_tx</Name>
                 <Path>d5/d90/commands_8h.html</Path>
                 <Anchor>accffaa855b618cd9a7e274a3ea3d3e38</Anchor>
+               </Node>
+               <Node>
+                <Name>chips_create_tx_from_tx_list</Name>
+                <Path>d5/d90/commands_8h.html</Path>
+                <Anchor>a5cef295e6e4b10eb23fdcf5e003ebdcf</Anchor>
                </Node>
                <Node>
                 <Name>chips_get_balance</Name>
@@ -2609,6 +2881,16 @@
                 <Name>chips_get_block_count</Name>
                 <Path>d5/d90/commands_8h.html</Path>
                 <Anchor>aa536c2d22ecb79268d31956d7ec4f36d</Anchor>
+               </Node>
+               <Node>
+                <Name>chips_get_block_hash_from_txid</Name>
+                <Path>d5/d90/commands_8h.html</Path>
+                <Anchor>a0abdad86f933c8cf6fae976a16aab289</Anchor>
+               </Node>
+               <Node>
+                <Name>chips_get_block_height_from_block_hash</Name>
+                <Path>d5/d90/commands_8h.html</Path>
+                <Anchor>a28cdbbebc122c4217c11cf58ec989fed</Anchor>
                </Node>
                <Node>
                 <Name>chips_get_new_address</Name>
@@ -2638,7 +2920,7 @@
                <Node>
                 <Name>chips_lock_transaction</Name>
                 <Path>d5/d90/commands_8h.html</Path>
-                <Anchor>a8f35ff6c18f2b0a991c3fc583615c2b0</Anchor>
+                <Anchor>add7b9d88dce327785de2c95f3f6a696a</Anchor>
                </Node>
                <Node>
                 <Name>chips_publish_multisig_tx</Name>
@@ -2648,12 +2930,22 @@
                <Node>
                 <Name>chips_send_raw_tx</Name>
                 <Path>d5/d90/commands_8h.html</Path>
-                <Anchor>a12e5cfa7bc2b417750b9b3394f93f95a</Anchor>
+                <Anchor>aa6d1dc7b96872592c1687aadb5248b9b</Anchor>
+               </Node>
+               <Node>
+                <Name>chips_sign_msig_tx</Name>
+                <Path>d5/d90/commands_8h.html</Path>
+                <Anchor>a98ea77e19785809a75b781c38f898a2e</Anchor>
                </Node>
                <Node>
                 <Name>chips_sign_raw_tx_with_wallet</Name>
                 <Path>d5/d90/commands_8h.html</Path>
-                <Anchor>a651c6b1b8725fb048acb5cf321dc249a</Anchor>
+                <Anchor>ab74f6f5c30d61b06af6fb6efc602c7a0</Anchor>
+               </Node>
+               <Node>
+                <Name>chips_spend_msig_txs</Name>
+                <Path>d5/d90/commands_8h.html</Path>
+                <Anchor>a8f23bc2eff0a786d4e94fef0ac4044c1</Anchor>
                </Node>
                <Node>
                 <Name>chips_spend_multi_sig_address</Name>
@@ -2857,6 +3149,11 @@
                 <Anchor>a28b711b1a0ece6b40a95e022e13c7425</Anchor>
                </Node>
                <Node>
+                <Name>chips_tx_fee</Name>
+                <Path>dc/d54/common_8h.html</Path>
+                <Anchor>a1b42019ee77457af36b1483e3b544f42</Anchor>
+               </Node>
+               <Node>
                 <Name>dcv_vars</Name>
                 <Path>dc/d54/common_8h.html</Path>
                 <Anchor>ab98cf25f28f49f78a9431fcc11bda58e</Anchor>
@@ -2865,6 +3162,11 @@
                 <Name>deckid</Name>
                 <Path>dc/d54/common_8h.html</Path>
                 <Anchor>acab83b0ae8f9771b03b3a9a1d51eeffe</Anchor>
+               </Node>
+               <Node>
+                <Name>dev_fund_addr</Name>
+                <Path>dc/d54/common_8h.html</Path>
+                <Anchor>a61d463cada52b05618af0347c85a51ca</Anchor>
                </Node>
                <Node>
                 <Name>g_hash</Name>
@@ -2877,6 +3179,16 @@
                 <Anchor>ae56653403779513733fee433ef0b6aab</Anchor>
                </Node>
                <Node>
+                <Name>legacy_2_of_3_msig_addr</Name>
+                <Path>dc/d54/common_8h.html</Path>
+                <Anchor>a56167dfefcb43ce757ddf6cb29c8f46f</Anchor>
+               </Node>
+               <Node>
+                <Name>legacy_2_of_4_msig_Addr</Name>
+                <Path>dc/d54/common_8h.html</Path>
+                <Anchor>a9326b598f59f86371697fe7d21303a13</Anchor>
+               </Node>
+               <Node>
                 <Name>max_no_of_signers</Name>
                 <Path>dc/d54/common_8h.html</Path>
                 <Anchor>afc2fd24df5d82cbedddde3b28245f46a</Anchor>
@@ -2887,9 +3199,44 @@
                 <Anchor>a097028f2c20ab139a38e5c621193f223</Anchor>
                </Node>
                <Node>
+                <Name>msig_addr</Name>
+                <Path>dc/d54/common_8h.html</Path>
+                <Anchor>a48f0ea139a8e96bd78037cebeb11289a</Anchor>
+               </Node>
+               <Node>
+                <Name>no_of_notaries</Name>
+                <Path>dc/d54/common_8h.html</Path>
+                <Anchor>ad4c489d7e10c84b3fb4128c32974384b</Anchor>
+               </Node>
+               <Node>
                 <Name>no_of_signers</Name>
                 <Path>dc/d54/common_8h.html</Path>
                 <Anchor>a79d6b450d204447564e6deee2bc97d82</Anchor>
+               </Node>
+               <Node>
+                <Name>no_of_txs</Name>
+                <Path>dc/d54/common_8h.html</Path>
+                <Anchor>ad987737d22beba5af09be0b024f0dab7</Anchor>
+               </Node>
+               <Node>
+                <Name>notary_node_addrs</Name>
+                <Path>dc/d54/common_8h.html</Path>
+                <Anchor>acce57cb05b34126f8bee8dc393c9f6bc</Anchor>
+               </Node>
+               <Node>
+                <Name>notary_node_ips</Name>
+                <Path>dc/d54/common_8h.html</Path>
+                <Anchor>ae13e194f7c4d647e50a0e3c0c90d5c87</Anchor>
+               </Node>
+               <Node>
+                <Name>notary_node_pubkeys</Name>
+                <Path>dc/d54/common_8h.html</Path>
+                <Anchor>a8e2be7606a52ec9af92f64e4f31bb313</Anchor>
+               </Node>
+               <Node>
+                <Name>notary_status</Name>
+                <Path>dc/d54/common_8h.html</Path>
+                <Anchor>aae51076507dc6010d747e0357dd270ea</Anchor>
                </Node>
                <Node>
                 <Name>permis_b</Name>
@@ -2910,6 +3257,21 @@
                 <Name>sharenrs</Name>
                 <Path>dc/d54/common_8h.html</Path>
                 <Anchor>ad0579cac3407f0f0cb742891f36d6e56</Anchor>
+               </Node>
+               <Node>
+                <Name>table_stack_in_chips</Name>
+                <Path>dc/d54/common_8h.html</Path>
+                <Anchor>a64f97fd05dc38d4a760b501c15539760</Anchor>
+               </Node>
+               <Node>
+                <Name>threshold_value</Name>
+                <Path>dc/d54/common_8h.html</Path>
+                <Anchor>a35959cfbb47e64ffdf370d41ed67c884</Anchor>
+               </Node>
+               <Node>
+                <Name>tx_ids</Name>
+                <Path>dc/d54/common_8h.html</Path>
+                <Anchor>afb5e882209b8e93041295e0ebd9376ef</Anchor>
                </Node>
                <Node>
                 <Name>v_hash</Name>
@@ -3122,7 +3484,7 @@
                <Node>
                 <Name>bet_chat</Name>
                 <Path>df/da9/host_8c.html</Path>
-                <Anchor>af23d0c2074c632617629fce0775356d1</Anchor>
+                <Anchor>a9152403ddbd79001c781d0de09331e7d</Anchor>
                </Node>
                <Node>
                 <Name>bet_check_bvv_ready</Name>
@@ -3132,7 +3494,7 @@
                <Node>
                 <Name>bet_check_player_ready</Name>
                 <Path>df/da9/host_8c.html</Path>
-                <Anchor>a45f715b215f34d6b44c72a56a65b6e0e</Anchor>
+                <Anchor>afe80f062f19af185693a2749515c2419</Anchor>
                </Node>
                <Node>
                 <Name>bet_create_betting_invoice</Name>
@@ -3207,12 +3569,17 @@
                <Node>
                 <Name>bet_evaluate_hand</Name>
                 <Path>df/da9/host_8c.html</Path>
-                <Anchor>a464a280df03afc8add329418712e5ee5</Anchor>
+                <Anchor>a3cd8c62791775e9d8daf81350df54fb5</Anchor>
                </Node>
                <Node>
                 <Name>bet_game</Name>
                 <Path>df/da9/host_8c.html</Path>
                 <Anchor>adbe3ab77bc01747b60c29a13f7cd8690</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_live_status</Name>
+                <Path>df/da9/host_8c.html</Path>
+                <Anchor>a588e9e27e5d13eccaf10fa2fc8413e47</Anchor>
                </Node>
                <Node>
                 <Name>bet_ln_check</Name>
@@ -3237,7 +3604,7 @@
                <Node>
                 <Name>bet_receive_card</Name>
                 <Path>df/da9/host_8c.html</Path>
-                <Anchor>a8f77d2616f3863fe0fb744607ba48a15</Anchor>
+                <Anchor>aa5c738304b1ab17cc29f305141338cd8</Anchor>
                </Node>
                <Node>
                 <Name>bet_relay</Name>
@@ -3248,11 +3615,6 @@
                 <Name>bet_seats</Name>
                 <Path>df/da9/host_8c.html</Path>
                 <Anchor>a0766fcd2997389e70a025bb3437716ce</Anchor>
-               </Node>
-               <Node>
-                <Name>bet_send_status</Name>
-                <Path>df/da9/host_8c.html</Path>
-                <Anchor>a68d581d035d443e0076a177bee2f4985</Anchor>
                </Node>
                <Node>
                 <Name>bet_send_turn_info</Name>
@@ -3267,7 +3629,7 @@
                <Node>
                 <Name>initialize_seat</Name>
                 <Path>df/da9/host_8c.html</Path>
-                <Anchor>aeff84950c67efc57eee0d08ea771874d</Anchor>
+                <Anchor>ac3047df011ab8dc8ce2d0dd06e822eb6</Anchor>
                </Node>
                <Node>
                 <Name>lws_callback_http_dummy</Name>
@@ -3315,6 +3677,16 @@
                 <Anchor>a9291cd79c30f9d5e6158e9f0e17a4ce3</Anchor>
                </Node>
                <Node>
+                <Name>dcv_data_exists</Name>
+                <Path>df/da9/host_8c.html</Path>
+                <Anchor>a3a2b593abf90f15466d2c23a5f9dae95</Anchor>
+               </Node>
+               <Node>
+                <Name>dcv_data_to_write</Name>
+                <Path>df/da9/host_8c.html</Path>
+                <Anchor>a827aa558b4a4b13001b7350ce60244a3</Anchor>
+               </Node>
+               <Node>
                 <Name>dcv_info</Name>
                 <Path>df/da9/host_8c.html</Path>
                 <Anchor>ad4f60484e62e04a86ab82adf508155ac</Anchor>
@@ -3323,16 +3695,6 @@
                 <Name>dcv_vars</Name>
                 <Path>df/da9/host_8c.html</Path>
                 <Anchor>ab98cf25f28f49f78a9431fcc11bda58e</Anchor>
-               </Node>
-               <Node>
-                <Name>dcvDataExists</Name>
-                <Path>df/da9/host_8c.html</Path>
-                <Anchor>a2fbd79df5e5b5ce8fe30354a12438913</Anchor>
-               </Node>
-               <Node>
-                <Name>dcvDataToWrite</Name>
-                <Path>df/da9/host_8c.html</Path>
-                <Anchor>ac05c3f04dded9e82101c72a9f50b382c</Anchor>
                </Node>
                <Node>
                 <Name>dealerPosition</Name>
@@ -3425,6 +3787,11 @@
                 <Anchor>a79d6b450d204447564e6deee2bc97d82</Anchor>
                </Node>
                <Node>
+                <Name>no_of_txs</Name>
+                <Path>df/da9/host_8c.html</Path>
+                <Anchor>ad987737d22beba5af09be0b024f0dab7</Anchor>
+               </Node>
+               <Node>
                 <Name>player_chips_address</Name>
                 <Path>df/da9/host_8c.html</Path>
                 <Anchor>adbcd807d45eb5eab19a770d733173623</Anchor>
@@ -3470,6 +3837,11 @@
                 <Anchor>a8d7ceed4310192c3e202c3d66ac1c2ad</Anchor>
                </Node>
                <Node>
+                <Name>tx_ids</Name>
+                <Path>df/da9/host_8c.html</Path>
+                <Anchor>afb5e882209b8e93041295e0ebd9376ef</Anchor>
+               </Node>
+               <Node>
                 <Name>wsi_global_host</Name>
                 <Path>df/da9/host_8c.html</Path>
                 <Anchor>abb636672d53a20859277b4ee50d048f2</Anchor>
@@ -3483,7 +3855,7 @@
                <Node>
                 <Name>bet_chat</Name>
                 <Path>df/ded/host_8h.html</Path>
-                <Anchor>af23d0c2074c632617629fce0775356d1</Anchor>
+                <Anchor>a9152403ddbd79001c781d0de09331e7d</Anchor>
                </Node>
                <Node>
                 <Name>bet_check_player_ready</Name>
@@ -3548,7 +3920,7 @@
                <Node>
                 <Name>bet_evaluate_hand</Name>
                 <Path>df/ded/host_8h.html</Path>
-                <Anchor>a464a280df03afc8add329418712e5ee5</Anchor>
+                <Anchor>a3cd8c62791775e9d8daf81350df54fb5</Anchor>
                </Node>
                <Node>
                 <Name>bet_game</Name>
@@ -3592,6 +3964,16 @@
               <Path>d6/d6e/network_8c.html</Path>
               <Subnodes>
                <Node>
+                <Name>_DEFAULT_SOURCE</Name>
+                <Path>d6/d6e/network_8c.html</Path>
+                <Anchor>a8fb447618db946a9e2a596d9ea18763f</Anchor>
+               </Node>
+               <Node>
+                <Name>bet_get_etho_ip</Name>
+                <Path>d6/d6e/network_8c.html</Path>
+                <Anchor>a63cefd5dcc58b67fb1f1e2b30aa3c74a</Anchor>
+               </Node>
+               <Node>
                 <Name>bet_nanosock</Name>
                 <Path>d6/d6e/network_8c.html</Path>
                 <Anchor>a50664af8ed090a6916f103dfa3d62200</Anchor>
@@ -3607,6 +3989,11 @@
               <Name>network.h</Name>
               <Path>d9/d94/network_8h.html</Path>
               <Subnodes>
+               <Node>
+                <Name>bet_get_etho_ip</Name>
+                <Path>d9/d94/network_8h.html</Path>
+                <Anchor>a63cefd5dcc58b67fb1f1e2b30aa3c74a</Anchor>
+               </Node>
                <Node>
                 <Name>bet_nanosock</Name>
                 <Path>d9/d94/network_8h.html</Path>

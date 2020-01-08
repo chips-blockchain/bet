@@ -1,6 +1,9 @@
 var NAVTREE =
 [
   [ "Bet", "index.html", [
+    [ "Usage guide of the bet-api's", "db/d97/md__root_bet_bet-api.html", null ],
+    [ "Cashier Protocol", "dc/d33/md__root_bet_cashier_protocol.html", null ],
+    [ "Steps to compile", "de/df3/md__root_bet_compile.html", null ],
     [ "Pangea-Bet", "d9/da3/md__root_bet__r_e_a_d_m_e.html", null ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
@@ -28,9 +31,9 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"d9/d0c/structdeck__bvv__info.html#ab8b8de70d12f184c0ac81af66ca5c083",
-"dd/d93/client_8c.html#ac49dcdcdce0afba5b6d3966d1ee9aa2a",
-"globals_s.html"
+"d9/d0a/gfshare_8c.html#a7137856a8a64316ff96b8e6dae47c5a9",
+"dd/d93/client_8c.html#a392754f34bd754272a4557a1d01e1de5",
+"df/da9/host_8c.html#adbe3ab77bc01747b60c29a13f7cd8690"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

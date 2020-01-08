@@ -1,8 +1,19 @@
 var bet_8c =
 [
-    [ "bet_bvv_initialize", "dd/d53/bet_8c.html#abb41d56704e5ba1aea3c7c97e67cee9a", null ],
-    [ "bet_dcv_initialize", "dd/d53/bet_8c.html#aaee466e723c622115fa30a49a699e97e", null ],
-    [ "bet_player_initialize", "dd/d53/bet_8c.html#a1fb0766f6a7a21ce0bf73b4a3cbb4a02", null ],
+    [ "bet_bvv_deinitialize", "dd/d53/bet_8c.html#aeebf318c0558fb16e78578f9090cce82", null ],
+    [ "bet_bvv_initialize", "dd/d53/bet_8c.html#a475994d3b8d287f74d9bcf83eab44595", null ],
+    [ "bet_bvv_thrd", "dd/d53/bet_8c.html#a87cc06af265d08f36e1c40cee836f87a", null ],
+    [ "bet_cashier_client_initialize", "dd/d53/bet_8c.html#ad1c0d680cfa5542409a5a81e83866c27", null ],
+    [ "bet_cashier_deinitialize", "dd/d53/bet_8c.html#a5e9110c489c33d2d85488e3f068ccbdc", null ],
+    [ "bet_cashier_server_initialize", "dd/d53/bet_8c.html#a53c0e03ace1222a4603e870100d409c7", null ],
+    [ "bet_cashier_server_thrd", "dd/d53/bet_8c.html#a2ffe5af3c560b2846ce9aaa4f900ea3a", null ],
+    [ "bet_dcv_deinitialize", "dd/d53/bet_8c.html#adb7af14559d9153b3b7ab2e7354d7a28", null ],
+    [ "bet_dcv_initialize", "dd/d53/bet_8c.html#aa860977a7c9179f036b66390138b971b", null ],
+    [ "bet_dcv_thrd", "dd/d53/bet_8c.html#afcdca9e81e58ca60c65b7adb4a84a625", null ],
+    [ "bet_display_usage", "dd/d53/bet_8c.html#a9e4edbcf57620d008703d803b40c271e", null ],
+    [ "bet_player_deinitialize", "dd/d53/bet_8c.html#a5d80e638baeaa54929d22baf244f1347", null ],
+    [ "bet_player_initialize", "dd/d53/bet_8c.html#af4e09e4bf901fa7d49b97644bf97e7c1", null ],
+    [ "bet_player_thrd", "dd/d53/bet_8c.html#ac2a6862edb31366c4d1a6da680f85241", null ],
     [ "card_rand256", "dd/d53/bet_8c.html#a639f0e80f94d1ce9adf7bb0d52f8f77b", null ],
     [ "curve25519_fieldelement", "dd/d53/bet_8c.html#a486c8d59b898af86c8e498798a3d500a", null ],
     [ "deckgen_common", "dd/d53/bet_8c.html#af1caf4bd39a77add770c8e9a9b859c25", null ],
@@ -21,7 +32,6 @@ var bet_8c =
     [ "player_vars", "dd/d53/bet_8c.html#abe20de78a27f415da1e9437e26fd2061", null ],
     [ "playershares", "dd/d53/bet_8c.html#a4f81cce59752f55ccee614846f8dfec8", null ],
     [ "poker_deck_size", "dd/d53/bet_8c.html#a72cf71d5ef0640767677fd54d4729359", null ],
-    [ "rootAddress", "dd/d53/bet_8c.html#a538351e3178156bc6cc8e6156c6d88ba", null ],
     [ "sharenrs", "dd/d53/bet_8c.html#ad0579cac3407f0f0cb742891f36d6e56", null ],
     [ "v_hash", "dd/d53/bet_8c.html#ad6edd7e1c4d864d80357255a938dd8b9", null ]
 ];

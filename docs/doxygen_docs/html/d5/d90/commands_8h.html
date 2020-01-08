@@ -109,14 +109,14 @@ Functions</h2></td></tr>
 <tr class="separator:afae8e5b50da7091be7b91d5e112c25ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa2f5924aa180ba7f7340d699a6f77027"><td class="memItemLeft" align="right" valign="top">cJSON *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d90/commands_8h.html#aa2f5924aa180ba7f7340d699a6f77027">chips_transfer_funds</a> (double amount, char *address)</td></tr>
 <tr class="separator:aa2f5924aa180ba7f7340d699a6f77027"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a12e5cfa7bc2b417750b9b3394f93f95a"><td class="memItemLeft" align="right" valign="top">cJSON *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d90/commands_8h.html#a12e5cfa7bc2b417750b9b3394f93f95a">chips_send_raw_tx</a> (cJSON *signedTransaction)</td></tr>
-<tr class="separator:a12e5cfa7bc2b417750b9b3394f93f95a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a651c6b1b8725fb048acb5cf321dc249a"><td class="memItemLeft" align="right" valign="top">cJSON *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d90/commands_8h.html#a651c6b1b8725fb048acb5cf321dc249a">chips_sign_raw_tx_with_wallet</a> (char *rawtransaction)</td></tr>
-<tr class="separator:a651c6b1b8725fb048acb5cf321dc249a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6d1dc7b96872592c1687aadb5248b9b"><td class="memItemLeft" align="right" valign="top">cJSON *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d90/commands_8h.html#aa6d1dc7b96872592c1687aadb5248b9b">chips_send_raw_tx</a> (cJSON *signed_tx)</td></tr>
+<tr class="separator:aa6d1dc7b96872592c1687aadb5248b9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab74f6f5c30d61b06af6fb6efc602c7a0"><td class="memItemLeft" align="right" valign="top">cJSON *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d90/commands_8h.html#ab74f6f5c30d61b06af6fb6efc602c7a0">chips_sign_raw_tx_with_wallet</a> (char *raw_tx)</td></tr>
+<tr class="separator:ab74f6f5c30d61b06af6fb6efc602c7a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a14a4f38a09aa381473cbd43357582d"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d90/commands_8h.html#a0a14a4f38a09aa381473cbd43357582d">chips_publish_multisig_tx</a> (char *tx)</td></tr>
 <tr class="separator:a0a14a4f38a09aa381473cbd43357582d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a127e79ac6db1ec54d970d46b0c24516d"><td class="memItemLeft" align="right" valign="top">cJSON *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d90/commands_8h.html#a127e79ac6db1ec54d970d46b0c24516d">chips_create_raw_multi_sig_tx</a> (double amount, char *toaddress, char *fromaddress)</td></tr>
-<tr class="separator:a127e79ac6db1ec54d970d46b0c24516d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c93a3bc94008fc99aa2fe822d731b88"><td class="memItemLeft" align="right" valign="top">cJSON *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d90/commands_8h.html#a9c93a3bc94008fc99aa2fe822d731b88">chips_create_raw_multi_sig_tx</a> (double amount, char *to_addr, char *from_addr)</td></tr>
+<tr class="separator:a9c93a3bc94008fc99aa2fe822d731b88"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:accffaa855b618cd9a7e274a3ea3d3e38"><td class="memItemLeft" align="right" valign="top">cJSON *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d90/commands_8h.html#accffaa855b618cd9a7e274a3ea3d3e38">chips_create_raw_tx</a> (double amount, char *address)</td></tr>
 <tr class="separator:accffaa855b618cd9a7e274a3ea3d3e38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adbd1855ec50eecc1c799ef803d64f202"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d90/commands_8h.html#adbd1855ec50eecc1c799ef803d64f202">chips_list_unspent</a> ()</td></tr>
@@ -129,8 +129,22 @@ Functions</h2></td></tr>
 <tr class="separator:af32277231a4357cbc4743ce3f8361fc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17c5067dbb627fd8f2eca1461a012e03"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d90/commands_8h.html#a17c5067dbb627fd8f2eca1461a012e03">chips_get_balance</a> ()</td></tr>
 <tr class="separator:a17c5067dbb627fd8f2eca1461a012e03"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f35ff6c18f2b0a991c3fc583615c2b0"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d90/commands_8h.html#a8f35ff6c18f2b0a991c3fc583615c2b0">chips_lock_transaction</a> (int32_t fundAmount)</td></tr>
-<tr class="separator:a8f35ff6c18f2b0a991c3fc583615c2b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add7b9d88dce327785de2c95f3f6a696a"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d90/commands_8h.html#add7b9d88dce327785de2c95f3f6a696a">chips_lock_transaction</a> (int32_t fund_amount)</td></tr>
+<tr class="separator:add7b9d88dce327785de2c95f3f6a696a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa692af3de118f4480a647ab50748b650"><td class="memItemLeft" align="right" valign="top">cJSON *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d90/commands_8h.html#aa692af3de118f4480a647ab50748b650">chips_add_multisig_address</a> ()</td></tr>
+<tr class="separator:aa692af3de118f4480a647ab50748b650"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3df3196342fe482cc2f9f7b6e6f4c97"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d90/commands_8h.html#ae3df3196342fe482cc2f9f7b6e6f4c97">chips_check_if_tx_unspent</a> (char *input_tx)</td></tr>
+<tr class="separator:ae3df3196342fe482cc2f9f7b6e6f4c97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0abdad86f933c8cf6fae976a16aab289"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d90/commands_8h.html#a0abdad86f933c8cf6fae976a16aab289">chips_get_block_hash_from_txid</a> (char *txid)</td></tr>
+<tr class="separator:a0abdad86f933c8cf6fae976a16aab289"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28cdbbebc122c4217c11cf58ec989fed"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d90/commands_8h.html#a28cdbbebc122c4217c11cf58ec989fed">chips_get_block_height_from_block_hash</a> (char *block_hash)</td></tr>
+<tr class="separator:a28cdbbebc122c4217c11cf58ec989fed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cef295e6e4b10eb23fdcf5e003ebdcf"><td class="memItemLeft" align="right" valign="top">cJSON *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d90/commands_8h.html#a5cef295e6e4b10eb23fdcf5e003ebdcf">chips_create_tx_from_tx_list</a> (char *to_addr, int32_t <a class="el" href="../../df/da9/host_8c.html#ad987737d22beba5af09be0b024f0dab7">no_of_txs</a>, char <a class="el" href="../../df/da9/host_8c.html#afb5e882209b8e93041295e0ebd9376ef">tx_ids</a>[][100])</td></tr>
+<tr class="separator:a5cef295e6e4b10eb23fdcf5e003ebdcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98ea77e19785809a75b781c38f898a2e"><td class="memItemLeft" align="right" valign="top">cJSON *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d90/commands_8h.html#a98ea77e19785809a75b781c38f898a2e">chips_sign_msig_tx</a> (char *ip, cJSON *raw_tx)</td></tr>
+<tr class="separator:a98ea77e19785809a75b781c38f898a2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f23bc2eff0a786d4e94fef0ac4044c1"><td class="memItemLeft" align="right" valign="top">cJSON *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d90/commands_8h.html#a8f23bc2eff0a786d4e94fef0ac4044c1">chips_spend_msig_txs</a> (char *to_addr, int <a class="el" href="../../df/da9/host_8c.html#ad987737d22beba5af09be0b024f0dab7">no_of_txs</a>, char <a class="el" href="../../df/da9/host_8c.html#afb5e882209b8e93041295e0ebd9376ef">tx_ids</a>[][100])</td></tr>
+<tr class="separator:a8f23bc2eff0a786d4e94fef0ac4044c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="af32277231a4357cbc4743ce3f8361fc9"></a>
@@ -148,16 +162,61 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00540">540</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00506">506</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/d21/commands_8c_source.html#l00474">chips_get_block_count()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00509">ln_dev_block_height()</a>.</p>
+<p class="reference">References <a class="el" href="../../de/d21/commands_8c_source.html#l00440">chips_get_block_count()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00475">ln_dev_block_height()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../dd/d53/bet_8c_source.html#l00128">main()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../dd/d53/bet_8c_source.html#l00283">main()</a>.</p>
 
 </div>
 </div>
-<a id="a127e79ac6db1ec54d970d46b0c24516d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a127e79ac6db1ec54d970d46b0c24516d">&#9670;&nbsp;</a></span>chips_create_raw_multi_sig_tx()</h2>
+<a id="aa692af3de118f4480a647ab50748b650"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa692af3de118f4480a647ab50748b650">&#9670;&nbsp;</a></span>chips_add_multisig_address()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">cJSON* chips_add_multisig_address </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00589">589</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+
+<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>, <a class="el" href="../../de/d4f/cashier_8c_source.html#l00007">no_of_notaries</a>, <a class="el" href="../../de/d4f/cashier_8c_source.html#l00015">notary_node_pubkeys</a>, and <a class="el" href="../../de/d4f/cashier_8c_source.html#l00008">threshold_value</a>.</p>
+
+</div>
+</div>
+<a id="ae3df3196342fe482cc2f9f7b6e6f4c97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3df3196342fe482cc2f9f7b6e6f4c97">&#9670;&nbsp;</a></span>chips_check_if_tx_unspent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t chips_check_if_tx_unspent </td>
+          <td>(</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>input_tx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00625">625</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+
+<p class="reference">References <a class="el" href="../../de/d4f/cashier_8c_source.html#l00030">legacy_2_of_4_msig_Addr</a>, and <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>.</p>
+
+</div>
+</div>
+<a id="a9c93a3bc94008fc99aa2fe822d731b88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c93a3bc94008fc99aa2fe822d731b88">&#9670;&nbsp;</a></span>chips_create_raw_multi_sig_tx()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -172,13 +231,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">char *&#160;</td>
-          <td class="paramname"><em>toaddress</em>, </td>
+          <td class="paramname"><em>to_addr</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">char *&#160;</td>
-          <td class="paramname"><em>fromaddress</em>&#160;</td>
+          <td class="paramname"><em>from_addr</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -188,9 +247,9 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00258">258</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00256">256</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/d21/commands_8c_source.html#l00563">chips_get_balance()</a>, and <a class="el" href="../../dd/d93/client_8c_source.html#l00102">make_command()</a>.</p>
+<p class="reference">References <a class="el" href="../../de/d21/commands_8c_source.html#l00528">chips_get_balance()</a>, and <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>.</p>
 
 </div>
 </div>
@@ -220,11 +279,51 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00347">347</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00330">330</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/d21/commands_8c_source.html#l00563">chips_get_balance()</a>, <a class="el" href="../../dd/d93/client_8c_source.html#l00102">make_command()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00021">multisigAddress</a>.</p>
+<p class="reference">References <a class="el" href="../../de/d21/commands_8c_source.html#l00528">chips_get_balance()</a>, <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00023">multisigAddress</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../de/d21/commands_8c_source.html#l00046">chips_spend_multi_sig_address()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00170">chips_transfer_funds()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../de/d21/commands_8c_source.html#l00048">chips_spend_multi_sig_address()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00169">chips_transfer_funds()</a>.</p>
+
+</div>
+</div>
+<a id="a5cef295e6e4b10eb23fdcf5e003ebdcf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cef295e6e4b10eb23fdcf5e003ebdcf">&#9670;&nbsp;</a></span>chips_create_tx_from_tx_list()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">cJSON* chips_create_tx_from_tx_list </td>
+          <td>(</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>to_addr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&#160;</td>
+          <td class="paramname"><em>no_of_txs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>tx_ids</em>[][100]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00732">732</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+
+<p class="reference">References <a class="el" href="../../de/d21/commands_8c_source.html#l00720">check_if_tx_exists()</a>, <a class="el" href="../../de/d4f/cashier_8c_source.html#l00025">chips_tx_fee</a>, and <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00825">chips_spend_msig_txs()</a>.</p>
 
 </div>
 </div>
@@ -243,11 +342,11 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00563">563</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00528">528</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00102">make_command()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../de/d21/commands_8c_source.html#l00258">chips_create_raw_multi_sig_tx()</a>, <a class="el" href="../../de/d21/commands_8c_source.html#l00347">chips_create_raw_tx()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00593">chips_lock_transaction()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../dd/d93/client_8c_source.html#l01677">bet_player_backend()</a>, <a class="el" href="../../de/d21/commands_8c_source.html#l00256">chips_create_raw_multi_sig_tx()</a>, <a class="el" href="../../de/d21/commands_8c_source.html#l00330">chips_create_raw_tx()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00558">chips_lock_transaction()</a>.</p>
 
 </div>
 </div>
@@ -266,11 +365,59 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00474">474</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00440">440</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00102">make_command()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../de/d21/commands_8c_source.html#l00540">check_ln_chips_sync()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00506">check_ln_chips_sync()</a>.</p>
+
+</div>
+</div>
+<a id="a0abdad86f933c8cf6fae976a16aab289"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0abdad86f933c8cf6fae976a16aab289">&#9670;&nbsp;</a></span>chips_get_block_hash_from_txid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char* chips_get_block_hash_from_txid </td>
+          <td>(</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>txid</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00662">662</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+
+<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../dd/d93/client_8c_source.html#l01677">bet_player_backend()</a>.</p>
+
+</div>
+</div>
+<a id="a28cdbbebc122c4217c11cf58ec989fed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28cdbbebc122c4217c11cf58ec989fed">&#9670;&nbsp;</a></span>chips_get_block_height_from_block_hash()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t chips_get_block_height_from_block_hash </td>
+          <td>(</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>block_hash</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00692">692</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+
+<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../dd/d93/client_8c_source.html#l01677">bet_player_backend()</a>.</p>
 
 </div>
 </div>
@@ -289,9 +436,9 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00078">78</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00080">80</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00102">make_command()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>.</p>
 
 </div>
 </div>
@@ -311,11 +458,11 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00058">58</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00060">60</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00102">make_command()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../de/d21/commands_8c_source.html#l00046">chips_spend_multi_sig_address()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../de/d21/commands_8c_source.html#l00048">chips_spend_multi_sig_address()</a>.</p>
 
 </div>
 </div>
@@ -335,11 +482,11 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00023">23</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00025">25</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00102">make_command()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../de/d21/commands_8c_source.html#l00046">chips_spend_multi_sig_address()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../de/d21/commands_8c_source.html#l00048">chips_spend_multi_sig_address()</a>.</p>
 
 </div>
 </div>
@@ -358,9 +505,9 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00131">131</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00132">132</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/d21/commands_8c_source.html#l00108">chips_validate_address()</a>, and <a class="el" href="../../dd/d93/client_8c_source.html#l00102">make_command()</a>.</p>
+<p class="reference">References <a class="el" href="../../de/d21/commands_8c_source.html#l00109">chips_validate_address()</a>, and <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>.</p>
 
 </div>
 </div>
@@ -379,14 +526,14 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00440">440</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00408">408</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00102">make_command()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>.</p>
 
 </div>
 </div>
-<a id="a8f35ff6c18f2b0a991c3fc583615c2b0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8f35ff6c18f2b0a991c3fc583615c2b0">&#9670;&nbsp;</a></span>chips_lock_transaction()</h2>
+<a id="add7b9d88dce327785de2c95f3f6a696a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add7b9d88dce327785de2c95f3f6a696a">&#9670;&nbsp;</a></span>chips_lock_transaction()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -395,15 +542,15 @@ Functions</h2></td></tr>
           <td class="memname">int32_t chips_lock_transaction </td>
           <td>(</td>
           <td class="paramtype">int32_t&#160;</td>
-          <td class="paramname"><em>fundAmount</em></td><td>)</td>
+          <td class="paramname"><em>fund_amount</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00593">593</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00558">558</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/d21/commands_8c_source.html#l00563">chips_get_balance()</a>, and <a class="el" href="../../dd/d93/client_8c_source.html#l00102">make_command()</a>.</p>
+<p class="reference">References <a class="el" href="../../de/d21/commands_8c_source.html#l00528">chips_get_balance()</a>, and <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>.</p>
 
 </div>
 </div>
@@ -423,16 +570,16 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00233">233</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00232">232</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00067">bet_dcv</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00135">enc_share::bytes</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00071">is_signed</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00084">privatebet_info::numplayers</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00086">privatebet_info::pubsock</a>.</p>
+<p class="reference">References <a class="el" href="../../df/da9/host_8c_source.html#l00067">bet_dcv</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00115">enc_share::bytes</a>, <a class="el" href="../../df/da9/host_8c_source.html#l00071">is_signed</a>, <a class="el" href="../../df/d5a/bet_8h_source.html#l00067">privatebet_info::numplayers</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00068">privatebet_info::pubsock</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>.</p>
 
 </div>
 </div>
-<a id="a12e5cfa7bc2b417750b9b3394f93f95a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a12e5cfa7bc2b417750b9b3394f93f95a">&#9670;&nbsp;</a></span>chips_send_raw_tx()</h2>
+<a id="aa6d1dc7b96872592c1687aadb5248b9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6d1dc7b96872592c1687aadb5248b9b">&#9670;&nbsp;</a></span>chips_send_raw_tx()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -441,22 +588,56 @@ Functions</h2></td></tr>
           <td class="memname">cJSON* chips_send_raw_tx </td>
           <td>(</td>
           <td class="paramtype">cJSON *&#160;</td>
-          <td class="paramname"><em>signedTransaction</em></td><td>)</td>
+          <td class="paramname"><em>signed_tx</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00179">179</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00178">178</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00102">make_command()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01433">bet_dcv_backend()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00170">chips_transfer_funds()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/da9/host_8c_source.html#l01279">bet_dcv_backend()</a>, <a class="el" href="../../de/d21/commands_8c_source.html#l00825">chips_spend_msig_txs()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00169">chips_transfer_funds()</a>.</p>
 
 </div>
 </div>
-<a id="a651c6b1b8725fb048acb5cf321dc249a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a651c6b1b8725fb048acb5cf321dc249a">&#9670;&nbsp;</a></span>chips_sign_raw_tx_with_wallet()</h2>
+<a id="a98ea77e19785809a75b781c38f898a2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98ea77e19785809a75b781c38f898a2e">&#9670;&nbsp;</a></span>chips_sign_msig_tx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">cJSON* chips_sign_msig_tx </td>
+          <td>(</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>ip</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">cJSON *&#160;</td>
+          <td class="paramname"><em>raw_tx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00787">787</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+
+<p class="reference">References <a class="el" href="../../d6/d6e/network_8c_source.html#l00057">bet_nanosock()</a>, <a class="el" href="../../d6/d6e/network_8c_source.html#l00050">bet_tcp_sock_address()</a>, and <a class="el" href="../../df/d5a/bet_8h_source.html#l00115">enc_share::bytes</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../de/d21/commands_8c_source.html#l00825">chips_spend_msig_txs()</a>.</p>
+
+</div>
+</div>
+<a id="ab74f6f5c30d61b06af6fb6efc602c7a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab74f6f5c30d61b06af6fb6efc602c7a0">&#9670;&nbsp;</a></span>chips_sign_raw_tx_with_wallet()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -465,17 +646,55 @@ Functions</h2></td></tr>
           <td class="memname">cJSON* chips_sign_raw_tx_with_wallet </td>
           <td>(</td>
           <td class="paramtype">char *&#160;</td>
-          <td class="paramname"><em>rawtransaction</em></td><td>)</td>
+          <td class="paramname"><em>raw_tx</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00206">206</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00205">205</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00102">make_command()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../dd/d93/client_8c_source.html#l01874">bet_player_backend()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00170">chips_transfer_funds()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../de/d4f/cashier_8c_source.html#l00107">bet_cashier_backend()</a>, <a class="el" href="../../dd/d93/client_8c_source.html#l01677">bet_player_backend()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00169">chips_transfer_funds()</a>.</p>
+
+</div>
+</div>
+<a id="a8f23bc2eff0a786d4e94fef0ac4044c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f23bc2eff0a786d4e94fef0ac4044c1">&#9670;&nbsp;</a></span>chips_spend_msig_txs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">cJSON* chips_spend_msig_txs </td>
+          <td>(</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>to_addr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>no_of_txs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>tx_ids</em>[][100]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00825">825</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+
+<p class="reference">References <a class="el" href="../../de/d4f/cashier_8c_source.html#l00032">bet_check_notary_status()</a>, <a class="el" href="../../de/d21/commands_8c_source.html#l00732">chips_create_tx_from_tx_list()</a>, <a class="el" href="../../de/d21/commands_8c_source.html#l00178">chips_send_raw_tx()</a>, <a class="el" href="../../de/d21/commands_8c_source.html#l00787">chips_sign_msig_tx()</a>, <a class="el" href="../../de/d4f/cashier_8c_source.html#l00007">no_of_notaries</a>, <a class="el" href="../../de/d4f/cashier_8c_source.html#l00012">notary_node_ips</a>, and <a class="el" href="../../de/d4f/cashier_8c_source.html#l00022">notary_status</a>.</p>
 
 </div>
 </div>
@@ -505,9 +724,9 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00046">46</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00048">48</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/d21/commands_8c_source.html#l00347">chips_create_raw_tx()</a>, <a class="el" href="../../de/d21/commands_8c_source.html#l00058">chips_import_address()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00023">chips_iswatchonly()</a>.</p>
+<p class="reference">References <a class="el" href="../../de/d21/commands_8c_source.html#l00330">chips_create_raw_tx()</a>, <a class="el" href="../../de/d21/commands_8c_source.html#l00060">chips_import_address()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00025">chips_iswatchonly()</a>.</p>
 
 </div>
 </div>
@@ -537,9 +756,11 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00170">170</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00169">169</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/d21/commands_8c_source.html#l00347">chips_create_raw_tx()</a>, <a class="el" href="../../de/d21/commands_8c_source.html#l00179">chips_send_raw_tx()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00206">chips_sign_raw_tx_with_wallet()</a>.</p>
+<p class="reference">References <a class="el" href="../../de/d21/commands_8c_source.html#l00330">chips_create_raw_tx()</a>, <a class="el" href="../../de/d21/commands_8c_source.html#l00178">chips_send_raw_tx()</a>, and <a class="el" href="../../de/d21/commands_8c_source.html#l00205">chips_sign_raw_tx_with_wallet()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../dd/d93/client_8c_source.html#l01677">bet_player_backend()</a>.</p>
 
 </div>
 </div>
@@ -559,11 +780,11 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00108">108</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00109">109</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00102">make_command()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../de/d21/commands_8c_source.html#l00131">chips_list_address_groupings()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../de/d21/commands_8c_source.html#l00132">chips_list_address_groupings()</a>.</p>
 
 </div>
 </div>
@@ -582,11 +803,11 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00509">509</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d21/commands_8c_source.html#l00475">475</a> of file <a class="el" href="../../de/d21/commands_8c_source.html">commands.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00102">make_command()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/d93/client_8c_source.html#l00099">make_command()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../de/d21/commands_8c_source.html#l00540">check_ln_chips_sync()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../de/d21/commands_8c_source.html#l00506">check_ln_chips_sync()</a>.</p>
 
 </div>
 </div>
@@ -596,7 +817,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../dir_6533845711e9597c85a5594888097196.html">privatebet</a></li><li class="navelem"><a class="el" href="../../d5/d90/commands_8h.html">commands.h</a></li>
-    <li class="footer">Generated on Tue Dec 31 2019 11:12:16 for Bet by
+    <li class="footer">Generated on Wed Jan 8 2020 09:05:04 for Bet by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

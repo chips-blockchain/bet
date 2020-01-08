@@ -22,7 +22,7 @@ var client_8c =
     [ "bet_client_turn", "dd/d93/client_8c.html#a4b45c2e90c46014b31d84ce3ee77c88d", null ],
     [ "bet_decode_card", "dd/d93/client_8c.html#a58c2f54c3708d866c6de95b89c8fa640", null ],
     [ "bet_find_channel_balance", "dd/d93/client_8c.html#aa8658785cefc47b902f9739f4c057ecd", null ],
-    [ "bet_get_deckid", "dd/d93/client_8c.html#ae96e125f8a557913057f5a9ba24422af", null ],
+    [ "bet_get_deckid", "dd/d93/client_8c.html#adad564e6033d90720a95b391a53631fb", null ],
     [ "bet_get_own_share", "dd/d93/client_8c.html#ad17fc99fd42e30c571716a302724f681", null ],
     [ "bet_live_response", "dd/d93/client_8c.html#adcf149d4c18c9fe19e76d4700de8ec46", null ],
     [ "bet_player_ask_share", "dd/d93/client_8c.html#ae41060baf8bf1f8a80b49ddbfb85d334", null ],
