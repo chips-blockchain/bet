@@ -98,7 +98,7 @@ void player_lws_write(cJSON *data)
 
 void make_command(int argc, char **argv, cJSON **argjson)
 {
-	char command[4096];
+	char command[16384];
 	FILE *fp = NULL;
 	char data[262144];
 	char *buf = NULL;
@@ -131,7 +131,7 @@ void make_command(int argc, char **argv, cJSON **argjson)
 		cJSON_AddStringToObject(*argjson, "command", command);
 	} else {
 		if ((strcmp(argv[1], "createrawtransaction") == 0) || (strcmp(argv[1], "sendrawtransaction") == 0) ||
-		    (strcmp(argv[1], "getnewaddress") == 0)) {
+		    (strcmp(argv[1], "getnewaddress") == 0) || (strcmp(argv[1], "getrawtransaction") == 0)) {
 			if (data[strlen(data) - 1] == '\n')
 				data[strlen(data) - 1] = '\0';
 			*argjson = cJSON_CreateString(data);
@@ -1674,6 +1674,7 @@ static void bet_push_join_info(int32_t playerid)
 	cJSON_AddNumberToObject(join_info, "playerid", playerid);
 	player_lws_write(join_info);
 }
+
 int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int32_t retval = 1, bytes;
@@ -1759,9 +1760,12 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 				retval = -1;
 			} else {
 				cJSON *tx_info = cJSON_CreateObject();
-				cJSON *txid = chips_transfer_funds(funds_needed, legacy_2_of_4_msig_Addr);
+				char *data = jstr(argjson,"rand_str");
+				cJSON *txid = chips_transfer_funds_with_data(funds_needed, legacy_2_of_4_msig_Addr,data);
 				cJSON_AddStringToObject(tx_info, "method", "tx");
 				cJSON_AddItemToObject(tx_info, "tx_info", txid);
+				printf("tx_info::%s\n",cJSON_Print(tx_info));
+				
 				while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
 					sleep(2);
 				}

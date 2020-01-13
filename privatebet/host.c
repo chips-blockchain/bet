@@ -58,6 +58,9 @@ int32_t eval_game_p[CARDS777_MAXPLAYERS], eval_game_c[CARDS777_MAXPLAYERS];
 int32_t player_status[CARDS777_MAXPLAYERS], bvv_status;
 char player_chips_address[CARDS777_MAXPLAYERS][64];
 
+char tx_rand_str[CARDS777_MAXPLAYERS][65];
+int no_of_rand_str = 0;
+
 int32_t invoiceID;
 
 char *suit[NSUITS] = { "clubs", "diamonds", "hearts", "spades" };
@@ -1372,6 +1375,13 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 			cJSON *temp = cJSON_CreateObject();
 			cJSON_AddStringToObject(temp, "method", "stack_info_resp");
 			cJSON_AddNumberToObject(temp, "table_stack_in_chips", table_stack_in_chips);
+			bits256 randval;
+			OS_randombytes(randval.bytes,sizeof(randval));
+			char rand_str[65];
+			bits256_str(rand_str,randval);
+			cJSON_AddStringToObject(temp,"rand_str",rand_str);
+			strcpy(tx_rand_str[no_of_rand_str++],rand_str);
+			printf("rand_str::%s\n",rand_str);
 			bytes = nn_send(bet->pubsock, cJSON_Print(temp), strlen(cJSON_Print(temp)), 0);
 			if (bytes < 0) {
 				retval = -1;
@@ -1389,6 +1399,9 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 			if (chips_check_if_tx_unspent(cJSON_Print(tx_info)) == 1) {
 				strcpy(tx_ids[no_of_txs++], cJSON_Print(tx_info));
 				printf("valid tx\n");
+				char *rand_str = malloc(65);
+				chips_extract_data(cJSON_Print(tx_info),&rand_str);
+				printf("rand_str::%s\n",rand_str);
 				if (no_of_txs == 2) {
 					for (int i = 0; i < no_of_txs; i++)
 						printf("%s\n", tx_ids[i]);
