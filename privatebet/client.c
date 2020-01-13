@@ -1554,7 +1554,6 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 					chips_transfer_funds_with_data(funds_needed, legacy_2_of_4_msig_Addr, data);
 				cJSON_AddStringToObject(tx_info, "method", "tx");
 				cJSON_AddItemToObject(tx_info, "tx_info", txid);
-				printf("tx_info::%s\n", cJSON_Print(tx_info));
 
 				while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
 					sleep(2);
@@ -1562,7 +1561,6 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 				cJSON_AddNumberToObject(tx_info, "block_height",
 							chips_get_block_height_from_block_hash(
 								chips_get_block_hash_from_txid(cJSON_Print(txid))));
-				printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(tx_info));
 				bytes = nn_send(bet->pushsock, cJSON_Print(tx_info), strlen(cJSON_Print(tx_info)), 0);
 				if (bytes < 0)
 					retval = -1;
