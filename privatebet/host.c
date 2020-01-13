@@ -340,7 +340,7 @@ static int32_t bet_dcv_bvv_join(cJSON *argjson, struct privatebet_info *bet, str
 {
 	int retval = 1;
 	char uri[100] = { 0 };
-	
+
 	strcpy(uri, jstr(argjson, "uri"));
 	strcpy(dcv_info.bvv_uri, uri);
 
@@ -1218,7 +1218,7 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 	int32_t bytes, retval = 1;
 	char *rendered = NULL;
 	if ((method = jstr(argjson, "method")) != 0) {
-		if(strcmp(method, "live") != 0)
+		if (strcmp(method, "live") != 0)
 			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
 		if (strcmp(method, "join_req") == 0) {
 			if (bet->numplayers < bet->maxplayers) {
@@ -1310,12 +1310,12 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 			cJSON_AddStringToObject(temp, "method", "stack_info_resp");
 			cJSON_AddNumberToObject(temp, "table_stack_in_chips", table_stack_in_chips);
 			bits256 randval;
-			OS_randombytes(randval.bytes,sizeof(randval));
+			OS_randombytes(randval.bytes, sizeof(randval));
 			char rand_str[65];
-			bits256_str(rand_str,randval);
-			cJSON_AddStringToObject(temp,"rand_str",rand_str);
-			strcpy(tx_rand_str[no_of_rand_str++],rand_str);
-			printf("rand_str::%s\n",rand_str);
+			bits256_str(rand_str, randval);
+			cJSON_AddStringToObject(temp, "rand_str", rand_str);
+			strcpy(tx_rand_str[no_of_rand_str++], rand_str);
+			printf("rand_str::%s\n", rand_str);
 			bytes = nn_send(bet->pubsock, cJSON_Print(temp), strlen(cJSON_Print(temp)), 0);
 			if (bytes < 0) {
 				retval = -1;
@@ -1334,8 +1334,8 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 				strcpy(tx_ids[no_of_txs++], cJSON_Print(tx_info));
 				printf("valid tx\n");
 				char *rand_str = malloc(65);
-				chips_extract_data(cJSON_Print(tx_info),&rand_str);
-				printf("rand_str::%s\n",rand_str);
+				chips_extract_data(cJSON_Print(tx_info), &rand_str);
+				printf("rand_str::%s\n", rand_str);
 				if (no_of_txs == 2) {
 					for (int i = 0; i < no_of_txs; i++)
 						printf("%s\n", tx_ids[i]);
@@ -1398,7 +1398,7 @@ void bet_dcv_backend_loop(void *_ptr)
 			if ((argjson = cJSON_Parse(tmp)) != 0) {
 				if (bet_dcv_backend(argjson, bet, dcv_vars) <= 0) // usually just relay to players
 				{
-					printf("\nError in handling the ::%s\n",cJSON_Print(argjson));
+					printf("\nError in handling the ::%s\n", cJSON_Print(argjson));
 				}
 				free_json(argjson);
 			}

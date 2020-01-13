@@ -1085,14 +1085,12 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 		strcpy(uri, jstr(argjson, "uri"));
 		strcpy(channel_id, strtok(jstr(argjson, "uri"), "@"));
 		channel_state = ln_get_channel_status(channel_id);
-		if ((channel_state != CHANNELD_AWAITING_LOCKIN) &&
-		    (channel_state != CHANNELD_NORMAL)) 
-		{
+		if ((channel_state != CHANNELD_AWAITING_LOCKIN) && (channel_state != CHANNELD_NORMAL)) {
 			retval = ln_establish_channel(uri);
-			if(retval == 1)
+			if (retval == 1)
 				printf("Channel Established\n");
 			else
-				printf("Channel Didn't Established\n");			
+				printf("Channel Didn't Established\n");
 		} else {
 			strcpy(uri, jstr(argjson, "uri"));
 			ln_check_peer_and_connect(uri);
@@ -1551,12 +1549,13 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 				retval = -1;
 			} else {
 				cJSON *tx_info = cJSON_CreateObject();
-				char *data = jstr(argjson,"rand_str");
-				cJSON *txid = chips_transfer_funds_with_data(funds_needed, legacy_2_of_4_msig_Addr,data);
+				char *data = jstr(argjson, "rand_str");
+				cJSON *txid =
+					chips_transfer_funds_with_data(funds_needed, legacy_2_of_4_msig_Addr, data);
 				cJSON_AddStringToObject(tx_info, "method", "tx");
 				cJSON_AddItemToObject(tx_info, "tx_info", txid);
-				printf("tx_info::%s\n",cJSON_Print(tx_info));
-				
+				printf("tx_info::%s\n", cJSON_Print(tx_info));
+
 				while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
 					sleep(2);
 				}
@@ -1582,7 +1581,7 @@ void bet_player_backend_loop(void *_ptr)
 	uint8_t flag = 1;
 	cJSON *funds_info = NULL;
 	int32_t bytes;
-	
+
 	funds_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(funds_info, "method", "stack_info_req");
 	bytes = nn_send(bet->pushsock, cJSON_Print(funds_info), strlen(cJSON_Print(funds_info)), 0);

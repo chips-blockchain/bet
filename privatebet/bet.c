@@ -214,12 +214,12 @@ static void bet_dcv_thrd(char *dcv_ip, const int32_t port)
 	pthread_t /*live_thrd,*/ dcv_backend, dcv_thrd;
 
 	bet_dcv_initialize(dcv_ip, port);
-	#if 0
+#if 0
 	if (OS_thread_create(&live_thrd, NULL, (void *)bet_dcv_live_loop, (void *)bet_dcv) != 0) {
 		printf("error launching bet_dcv_live_loop]n");
 		exit(-1);
 	}
-	#endif
+#endif
 	if (OS_thread_create(&dcv_backend, NULL, (void *)bet_dcv_backend_loop, (void *)bet_dcv) != 0) {
 		printf("error launching bet_dcv_backend_loop\n");
 		exit(-1);
@@ -228,11 +228,11 @@ static void bet_dcv_thrd(char *dcv_ip, const int32_t port)
 		printf("error launching bet_dcv_frontend_loop\n");
 		exit(-1);
 	}
-	#if 0
+#if 0
 	if (pthread_join(live_thrd, NULL)) {
 		printf("\nError in joining the main thread for live_thrd");
 	}
-	#endif
+#endif
 	if (pthread_join(dcv_backend, NULL)) {
 		printf("\nError in joining the main thread for dcv_backend");
 	}
@@ -288,16 +288,16 @@ static void common_init()
 	OS_init();
 	libgfshare_init();
 	check_ln_chips_sync();
-	
+
 	chips_add_multisig_address();
-	printf("Importing msig address::%s\n",legacy_2_of_4_msig_Addr);
+	printf("Importing msig address::%s\n", legacy_2_of_4_msig_Addr);
 	chips_import_address(legacy_2_of_4_msig_Addr);
 }
 int main(int argc, char **argv)
 {
 	uint16_t port = 7797 + 1, cashier_pub_sub_port = 7901;
 	char dcv_ip[20];
-	
+
 	common_init();
 	if (argc == 3) {
 		strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
