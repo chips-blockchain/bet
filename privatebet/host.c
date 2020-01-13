@@ -338,84 +338,17 @@ int32_t bet_dcv_init(cJSON *argjson, struct privatebet_info *bet, struct private
 
 static int32_t bet_dcv_bvv_join(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int argc, retval = 1, state, buf_size = 100;
-	char **argv = NULL, uri[100] = { 0 }, buf[100] = { 0 };
-	cJSON *connect_info = NULL, *fund_channel_info = NULL;
-
+	int retval = 1;
+	char uri[100] = { 0 };
+	
 	strcpy(uri, jstr(argjson, "uri"));
 	strcpy(dcv_info.bvv_uri, uri);
-	if ((ln_get_channel_status(strtok(jstr(argjson, "uri"), "@")) !=
-	     3)) // 3 means channel is already established with the peer
-	{
-		argc = 5;
-		argv = (char **)malloc(argc * sizeof(char *));
-		if (argv == NULL) {
-			printf("%s::%d::Memory allocation failed\n", __FUNCTION__, __LINE__);
-			goto end;
-		}
-		memset(argv, 0x00, (argc * sizeof(char *)));
-		for (int i = 0; i < argc; i++) {
-			argv[i] = (char *)malloc(buf_size * sizeof(char));
-			if (argv[i] == NULL) {
-				printf("%s::%d::Memory allocation failed\n", __FUNCTION__, __LINE__);
-				goto end;
-			}
-		}
-		argc = 3;
-		strcpy(argv[0], "lightning-cli");
-		strcpy(argv[1], "connect");
-		strcpy(argv[2], uri);
-		connect_info = cJSON_CreateObject();
-		make_command(argc, argv, &connect_info);
-		cJSON_Print(connect_info);
 
-		if (jint(connect_info, "code") != 0) {
-			retval = -1;
-			printf("\n%s:%d: Message:%s", __FUNCTION__, __LINE__, jstr(connect_info, "message"));
-			goto end;
-		}
-
-		argc = 5;
-		for (int i = 0; i < argc; i++) {
-			memset(argv[i], 0x00, buf_size);
-		}
-		strcpy(argv[0], "lightning-cli");
-		strcpy(argv[1], "fundchannel");
-		strcpy(argv[2], jstr(connect_info, "id"));
-		sprintf(buf, "%d", channel_fund_satoshis);
-		strcpy(argv[3], buf);
-		argc = 4;
-		fund_channel_info = cJSON_CreateObject();
-		make_command(argc, argv, &fund_channel_info);
-
-		cJSON_Print(fund_channel_info);
-		if (jint(fund_channel_info, "code") != 0) {
-			retval = -1;
-			printf("\n%s:%d: Message:%s", __FUNCTION__, __LINE__, jstr(fund_channel_info, "message"));
-			goto end;
-		}
-		while ((state = ln_get_channel_status(jstr(connect_info, "id"))) != 3) {
-			if (state == 2) {
-				printf("CHANNELD_AWAITING_LOCKIN\r");
-				fflush(stdout);
-			} else if (state == 8) {
-				printf("\nONCHAIN");
-			} else
-				printf("\n%s:%d:channel-state:%d\n", __FUNCTION__, __LINE__, state);
-
-			sleep(2);
-		}
-		printf("DCV-->BVV LN Channel established\n");
-	}
-
-end:
-	if (argv) {
-		for (int i = 0; i < 5; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
+	retval = ln_establish_channel(uri);
+	if (retval == 1)
+		printf("Channel Established\n");
+	else
+		printf("Channel Didn't Established\n");
 	return retval;
 }
 
@@ -1285,7 +1218,8 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 	int32_t bytes, retval = 1;
 	char *rendered = NULL;
 	if ((method = jstr(argjson, "method")) != 0) {
-		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
+		if(strcmp(method, "live") != 0)
+			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
 		if (strcmp(method, "join_req") == 0) {
 			if (bet->numplayers < bet->maxplayers) {
 				retval = bet_player_join_req(argjson, bet, vars);
@@ -1462,9 +1396,9 @@ void bet_dcv_backend_loop(void *_ptr)
 		if ((recvlen = nn_recv(bet->pullsock, &ptr, NN_MSG, 0)) > 0) {
 			char *tmp = clonestr(ptr);
 			if ((argjson = cJSON_Parse(tmp)) != 0) {
-				if (bet_dcv_backend(argjson, bet, dcv_vars) != 0) // usually just relay to players
+				if (bet_dcv_backend(argjson, bet, dcv_vars) <= 0) // usually just relay to players
 				{
-					// Do Something
+					printf("\nError in handling the ::%s\n",cJSON_Print(argjson));
 				}
 				free_json(argjson);
 			}

@@ -1,7 +1,7 @@
 #include "bet.h"
 int32_t chips_iswatchonly(char *address);
 void chips_spend_multi_sig_address(char *address, double amount);
-void chips_import_address(char *address);
+cJSON* chips_import_address(char *address);
 char *chips_get_new_address();
 int chips_validate_address(char *address);
 void chips_list_address_groupings();
@@ -13,7 +13,6 @@ cJSON *chips_create_raw_multi_sig_tx(double amount, char *to_addr, char *from_ad
 cJSON *chips_create_raw_tx(double amount, char *address);
 void chips_list_unspent();
 int32_t chips_get_block_count();
-int32_t ln_dev_block_height();
 void check_ln_chips_sync();
 double chips_get_balance();
 int32_t chips_lock_transaction(int32_t fund_amount);
@@ -30,3 +29,18 @@ int32_t chips_validate_tx(char *tx);
 void chips_extract_data(char *tx, char **rand_str);
 cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data);
 cJSON *chips_transfer_funds_with_data(double amount, char *address, char *data);
+cJSON* chips_deposit_to_ln_wallet(double channel_chips);
+
+int32_t make_command(int argc, char **argv, cJSON **argjson);
+
+int32_t ln_dev_block_height();
+int32_t ln_listfunds();
+int32_t ln_get_uri(char **uri);
+int32_t ln_connect_uri(char *uri);
+cJSON* ln_fund_channel(char *channel_id,int32_t channel_fund_satoshi);
+int32_t ln_pay(char *bolt11);
+cJSON* ln_connect(char *id);
+void ln_check_peer_and_connect(char *id);
+int32_t ln_get_channel_status(char *id);
+int32_t ln_wait_for_tx_block_height(int32_t block_height);
+int32_t ln_establish_channel(char *uri);
