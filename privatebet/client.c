@@ -96,60 +96,6 @@ void player_lws_write(cJSON *data)
 	}
 }
 
-void make_command(int argc, char **argv, cJSON **argjson)
-{
-	char command[16384];
-	FILE *fp = NULL;
-	char data[262144];
-	char *buf = NULL;
-
-	memset(command, 0x00, sizeof(command));
-	memset(data, 0x00, sizeof(data));
-	for (int i = 0; i < argc; i++) {
-		strcat(command, argv[i]);
-		strcat(command, " ");
-	}
-	/* Open the command for reading. */
-	fp = popen(command, "r");
-	if (fp == NULL) {
-		printf("Failed to run command\n");
-		exit(1);
-	}
-
-	buf = (char *)malloc(200);
-	if (!buf) {
-		printf("%s::%d::Malloc failed\n", __FUNCTION__, __LINE__);
-		goto end;
-	}
-	while (fgets(buf, 200, fp) != NULL) {
-		strcat(data, buf);
-		memset(buf, 0x00, 200);
-	}
-	data[sizeof(data) - 1] = '\0';
-	if (strlen(data) == 0) {
-		cJSON_AddStringToObject(*argjson, "error", "command failed");
-		cJSON_AddStringToObject(*argjson, "command", command);
-	} else {
-		if ((strcmp(argv[1], "createrawtransaction") == 0) || (strcmp(argv[1], "sendrawtransaction") == 0) ||
-		    (strcmp(argv[1], "getnewaddress") == 0) || (strcmp(argv[1], "getrawtransaction") == 0)) {
-			if (data[strlen(data) - 1] == '\n')
-				data[strlen(data) - 1] = '\0';
-			*argjson = cJSON_CreateString(data);
-		} else if (strcmp(argv[1], "importaddress") == 0) {
-			*argjson = cJSON_CreateObject();
-			cJSON_AddNumberToObject(*argjson, "code", 0);
-
-		} else {
-			*argjson = cJSON_Parse(data);
-			cJSON_AddNumberToObject(*argjson, "code", 0);
-		}
-	}
-end:
-	if (buf)
-		free(buf);
-	pclose(fp);
-}
-
 char *enc_share_str(char hexstr[177], struct enc_share x)
 {
 	init_hexbytes_noT(hexstr, x.bytes, sizeof(x));
@@ -1084,104 +1030,6 @@ end:
 	return retval;
 }
 
-void ln_connect(char *id)
-{
-	int argc, maxsize = 100;
-	char **argv = NULL;
-	cJSON *connect_info = NULL;
-
-	argc = 3;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(maxsize * sizeof(char));
-	}
-
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "connect");
-	strcpy(argv[2], id);
-	make_command(argc, argv, &connect_info);
-}
-
-void ln_check_peer_and_connect(char *id)
-{
-	int argc, maxsize = 100;
-	char **argv = NULL;
-	cJSON *list_peers_info = NULL;
-	cJSON *peers_info = NULL;
-	int32_t connected = 0;
-
-	argc = 2;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(maxsize * sizeof(char));
-	}
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "listpeers");
-	make_command(argc, argv, &list_peers_info);
-
-	peers_info = cJSON_GetObjectItem(list_peers_info, "peers");
-
-	for (int i = 0; i < cJSON_GetArraySize(peers_info); i++) {
-		cJSON *peer = cJSON_GetArrayItem(peers_info, i);
-
-		if (strcmp(jstr(peer, "id"), id) == 0) {
-			cJSON *state = cJSON_GetObjectItem(peer, "connected");
-			if (strcmp(cJSON_Print(state), "true") == 0) {
-				connected = 1;
-				break;
-			}
-		}
-	}
-	if (connected == 0) {
-		ln_connect(id);
-	}
-	if (argv) {
-		for (int32_t i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-}
-
-int32_t ln_get_channel_status(char *id)
-{
-	int argc, channel_state = 0;
-	char **argv = NULL;
-	cJSON *channel_state_info = NULL, *channel_states = NULL, *channelState = NULL;
-
-	argc = 3;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(100 * sizeof(char));
-	}
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "peer-channel-state");
-	strcpy(argv[2], id);
-	make_command(argc, argv, &channel_state_info);
-
-	channel_states = cJSON_GetObjectItem(channel_state_info, "channel-states");
-
-	for (int i = 0; i < cJSON_GetArraySize(channel_states); i++) {
-		channelState = cJSON_GetArrayItem(channel_states, i);
-		channel_state = jint(channelState, "channel-state");
-		if (channel_state <= 3) {
-			break;
-		}
-	}
-
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-	if (channel_state_info)
-		cJSON_Delete(channel_state_info);
-	return channel_state;
-}
-
 static int32_t bet_find_channel_balance(char *uri)
 {
 	int argc = 2, buf_size = 100;
@@ -1226,86 +1074,29 @@ static int32_t bet_check_player_stack(char *uri)
 int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	char uri[100], *rendered = NULL;
-	int argc, retval = 1, channel_state, buf_size = 100, balance, bytes;
-	char **argv = NULL, channel_id[100], buf[100];
-	cJSON *connect_info = NULL, *fund_channel_info = NULL;
+	int argc, retval = 1, channel_state, balance, bytes;
+	char **argv = NULL, channel_id[100];
 	cJSON *init_card_info = NULL, *hole_card_info = NULL, *init_info = NULL, *stack_info = NULL;
 
 	if (0 == bits256_cmp(player_info.player_key.prod, jbits256(argjson, "pubkey"))) {
 		bet_player->myplayerid = jint(argjson, "peerid");
 		bet->myplayerid = jint(argjson, "peerid");
+
 		strcpy(uri, jstr(argjson, "uri"));
 		strcpy(channel_id, strtok(jstr(argjson, "uri"), "@"));
 		channel_state = ln_get_channel_status(channel_id);
-		if ((channel_state != 2) &&
-		    (channel_state != 3)) // 3 means channel is already established with the peer
+		if ((channel_state != CHANNELD_AWAITING_LOCKIN) &&
+		    (channel_state != CHANNELD_NORMAL)) 
 		{
-			argc = 5;
-			argv = (char **)malloc(argc * sizeof(char *));
-			for (int i = 0; i < argc; i++) {
-				argv[i] = (char *)malloc(buf_size * sizeof(char));
-			}
-			argc = 3;
-			strcpy(argv[0], "lightning-cli");
-			strcpy(argv[1], "connect");
-			strcpy(argv[2], uri);
-			connect_info = cJSON_CreateObject();
-			make_command(argc, argv, &connect_info);
-
-			cJSON_Print(connect_info);
-
-			if (jint(connect_info, "code") != 0) {
-				retval = -1;
-				printf("%s:%d:Message:%s\n", __FUNCTION__, __LINE__, jstr(connect_info, "method"));
-				goto end;
-			}
-
-			argc = 5;
-			for (int i = 0; i < argc; i++) {
-				memset(argv[i], 0x00, buf_size);
-			}
-
-			argc = 4;
-			strcpy(argv[0], "lightning-cli");
-			strcpy(argv[1], "fundchannel");
-			strcpy(argv[2], jstr(connect_info, "id"));
-			sprintf(buf, "%d", channel_fund_satoshis);
-			strcpy(argv[3], buf);
-
-			fund_channel_info = cJSON_CreateObject();
-			make_command(argc, argv, &fund_channel_info);
-
-			cJSON_Print(fund_channel_info);
-
-			if (jint(fund_channel_info, "code") != 0) {
-				retval = -1;
-				printf("%s::%d::Message:%s\n", __FUNCTION__, __LINE__,
-				       jstr(fund_channel_info, "message"));
-				printf("%s::%d::Existing balance::%d, Needed::%d\n", __FUNCTION__, __LINE__,
-				       bet_check_player_stack(jstr(argjson, "uri")),
-				       ((int)channel_fund_satoshis / 100000));
-				goto end;
-			}
+			retval = ln_establish_channel(uri);
+			if(retval == 1)
+				printf("Channel Established\n");
+			else
+				printf("Channel Didn't Established\n");			
 		} else {
 			strcpy(uri, jstr(argjson, "uri"));
 			ln_check_peer_and_connect(uri);
 		}
-
-		int state;
-		while ((state = ln_get_channel_status(channel_id)) != 3) {
-			if (state == 2) {
-				printf("CHANNELD_AWAITING_LOCKIN\r");
-				fflush(stdout);
-			} else {
-				retval = -1;
-				printf("\n%s:%d:Channel establishment with DCV is not happening, "
-				       "please check the connectivity with the DCV node\n",
-				       __FUNCTION__, __LINE__);
-				// goto end;
-			}
-			sleep(2);
-		}
-
 		init_card_info = cJSON_CreateObject();
 		cJSON_AddNumberToObject(init_card_info, "dealer", jint(argjson, "dealer"));
 		balance = bet_check_player_stack(jstr(argjson, "uri"));
@@ -1791,7 +1582,7 @@ void bet_player_backend_loop(void *_ptr)
 	uint8_t flag = 1;
 	cJSON *funds_info = NULL;
 	int32_t bytes;
-
+	
 	funds_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(funds_info, "method", "stack_info_req");
 	bytes = nn_send(bet->pushsock, cJSON_Print(funds_info), strlen(cJSON_Print(funds_info)), 0);
@@ -1823,188 +1614,9 @@ void bet_player_backend_loop(void *_ptr)
 	}
 }
 
-int32_t ln_listfunds()
-{
-	cJSON *list_funds = NULL, *outputs = NULL;
-	int argc;
-	char **argv = NULL;
-	int32_t value = 0;
-	argc = 2;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++)
-		argv[i] = (char *)malloc(100 * sizeof(char));
-
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "listfunds");
-
-	list_funds = cJSON_CreateObject();
-	make_command(argc, argv, &list_funds);
-
-	if (jint(list_funds, "code") != 0) {
-		value = -1;
-		printf("\n%s:%d: Message:%s", __FUNCTION__, __LINE__, jstr(list_funds, "message"));
-		goto end;
-	}
-
-	outputs = cJSON_GetObjectItem(list_funds, "outputs");
-	for (int32_t i = 0; i < cJSON_GetArraySize(outputs); i++) {
-		value += jint(cJSON_GetArrayItem(outputs, i), "value");
-	}
-
-end:
-
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-
-	free_json(list_funds);
-
-	return value;
-}
-
-int32_t ln_get_uri(char **uri)
-{
-	cJSON *channel_info = NULL, *addresses = NULL, *address = NULL;
-	int argc, retval = 1;
-	char **argv = NULL;
-
-	argc = 2;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++)
-		argv[i] = (char *)malloc(100 * sizeof(char));
-
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "getinfo");
-	channel_info = cJSON_CreateObject();
-	make_command(argc, argv, &channel_info);
-
-	if (jint(channel_info, "code") != 0) {
-		retval = -1;
-		printf("\n%s:%d: Message:%s", __FUNCTION__, __LINE__, jstr(channel_info, "message"));
-		goto end;
-	}
-
-	strcpy(*uri, jstr(channel_info, "id"));
-	strcat(*uri, "@");
-	addresses = cJSON_GetObjectItem(channel_info, "address");
-	address = cJSON_GetArrayItem(addresses, 0);
-	strcat(*uri, jstr(address, "address"));
-
-end:
-
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-	return retval;
-}
-
 bits256 bet_get_deckid(int32_t player_id)
 {
 	return all_players_info[player_id].deckid;
-}
-
-int32_t ln_fundChannel(char *channel_id)
-{
-	int argc, maxsize = 100, retval = 1, channel_state;
-	char **argv = NULL;
-	cJSON *fund_channel_info = NULL;
-
-	argc = 4;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(maxsize * sizeof(char));
-	}
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "fundchannel");
-	strcpy(argv[2], channel_id);
-	strcpy(argv[3], "500000");
-
-	fund_channel_info = cJSON_CreateObject();
-	make_command(argc, argv, &fund_channel_info);
-
-	printf("%s:%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(fund_channel_info));
-
-	if (jint(fund_channel_info, "code") != 0) {
-		retval = -1;
-		printf("Message:%s", jstr(fund_channel_info, "message"));
-		goto end;
-	}
-
-	while ((channel_state = ln_get_channel_status(channel_id)) != 3) {
-		if (channel_state == 2) {
-			printf("\nCHANNELD_AWAITING_LOCKIN");
-		} else {
-			retval = -1;
-			printf("\n%s:%d:Channel establishment with DCV is not happening, "
-			       "please "
-			       "check the connectivity with the DCV node\n",
-			       __FUNCTION__, __LINE__);
-			goto end;
-		}
-		printf("%s::%d::%d\n", __FUNCTION__, __LINE__, channel_state);
-		sleep(10);
-	}
-	printf("%s::%d::%d\n", __FUNCTION__, __LINE__, channel_state);
-end:
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-
-	return retval;
-}
-
-int32_t ln_connect_uri(char *uri)
-{
-	int argc, maxsize = 100, retval = 1, channel_state;
-	char **argv = NULL, channel_id[100];
-	cJSON *connect_info = NULL;
-	char temp[200];
-
-	strncpy(temp, uri, strlen(uri));
-	strcpy(channel_id, strtok(temp, "@"));
-
-	channel_state = ln_get_channel_status(channel_id);
-	if ((channel_state != 2) && (channel_state != 3)) // 3 means channel is already established with the peer
-	{
-		argc = 3;
-		argv = (char **)malloc(argc * sizeof(char *));
-		for (int i = 0; i < argc; i++) {
-			argv[i] = (char *)malloc(maxsize * sizeof(char));
-		}
-		strcpy(argv[0], "lightning-cli");
-		strcpy(argv[1], "connect");
-		strcpy(argv[2], uri);
-
-		connect_info = cJSON_CreateObject();
-		make_command(argc, argv, &connect_info);
-
-		if (jint(connect_info, "code") != 0) {
-			retval = -1;
-			printf("\n%s:%d:Message:%s", __FUNCTION__, __LINE__, jstr(connect_info, "method"));
-			goto end;
-		}
-	}
-end:
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-	return retval;
 }
 
 void rest_push_cards(struct lws *wsi, cJSON *argjson, int32_t this_playerID)
@@ -2087,48 +1699,4 @@ void rest_display_cards(cJSON *argjson, int32_t this_playerID)
 		}
 		printf("\n");
 	}
-}
-
-int32_t ln_pay(char *bolt11)
-{
-	cJSON *pay_response = NULL;
-	int argc, maxsize = 10000, retval = 1;
-	char **argv = NULL, *buf = NULL;
-	argv = (char **)malloc(4 * sizeof(char *));
-	buf = malloc(maxsize);
-	argc = 3;
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(sizeof(char) * 1000);
-	}
-
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "pay");
-	strcpy(argv[2], bolt11);
-
-	pay_response = cJSON_CreateObject();
-	make_command(argc, argv, &pay_response);
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(pay_response));
-
-	if (jint(pay_response, "code") != 0) {
-		retval = -1;
-		printf("\n%s:%d: Message:%s", __FUNCTION__, __LINE__, jstr(pay_response, "message"));
-		goto end;
-	}
-
-	if (strcmp(jstr(pay_response, "status"), "complete") == 0)
-		printf("\nPayment Success");
-	else
-		retval = -1;
-end:
-	if (buf)
-		free(buf);
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-
-	return retval;
 }
