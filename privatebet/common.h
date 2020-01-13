@@ -4,7 +4,6 @@
 #define CHANNELD_AWAITING_LOCKIN 2
 #define CHANNELD_NORMAL 3
 
-
 #define hand_size 7
 #define no_of_hole_cards 2
 #define no_of_flop_cards 3
