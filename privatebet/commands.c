@@ -70,25 +70,21 @@ static char **bet_copy_args(int argc, ...)
 
 int32_t chips_iswatchonly(char *address)
 {
-	int argc, maxsize = 100;
+	int argc, retval = 0;
 	char **argv = NULL;
 	cJSON *is_watch_only = NULL;
-	argc = 3;
 
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(maxsize * sizeof(char));
-	}
-	strcpy(argv[0], "chips-cli");
-	strcpy(argv[1], "validateaddress");
-	strcpy(argv[2], address);
+	argc = 3;
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, "chips-cli", "validateaddress", address);
+	is_watch_only = cJSON_CreateObject();
 	make_command(argc, argv, &is_watch_only);
 
 	cJSON *temp = cJSON_GetObjectItem(is_watch_only, "iswatchonly");
-	if (strcmp(cJSON_Print(temp), "true") == 0) {
-		return 1;
-	} else
-		return 0;
+	if (strcmp(cJSON_Print(temp), "true") == 0)
+		retval = 1;
+	bet_dealloc_args(argc, &argv);
+	return retval;
 }
 
 void chips_spend_multi_sig_address(char *address, double amount)
@@ -120,70 +116,47 @@ cJSON *chips_import_address(char *address)
 
 char *chips_get_new_address()
 {
-	int argc, maxsize = 100;
+	int argc;
 	char **argv = NULL;
 	cJSON *new_address = NULL;
+
 	argc = 2;
-
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(maxsize * sizeof(char));
-	}
-	strcpy(argv[0], "chips-cli");
-	strcpy(argv[1], "getnewaddress");
-
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, "chips-cli", "getnewaddress");
+	new_address = cJSON_CreateObject();
 	make_command(argc, argv, &new_address);
-
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(new_address));
-
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-
+	bet_dealloc_args(argc, &argv);
 	return cJSON_Print(new_address);
 }
 
 int chips_validate_address(char *address)
 {
-	int argc, maxsize = 1000;
+	int argc, retval = 0;
 	char **argv = NULL;
 	cJSON *address_info = NULL;
+
 	argc = 3;
-
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(maxsize * sizeof(char));
-	}
-	strcpy(argv[0], "chips-cli");
-	strcpy(argv[1], "validateaddress");
-	strcpy(argv[2], address);
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, "chips-cli", "validateaddress", address);
+	address_info = cJSON_CreateObject();
 	make_command(argc, argv, &address_info);
-
 	cJSON *temp = cJSON_GetObjectItem(address_info, "ismine");
-	if (strcmp(cJSON_Print(temp), "true") == 0) {
-		return 1;
-	} else
-		return 0;
+	if (strcmp(cJSON_Print(temp), "true") == 0)
+		retval = 1;
+	bet_dealloc_args(argc, &argv);
+	return retval;
 }
 
 void chips_list_address_groupings()
 {
-	int argc, maxsize = 1000;
+	int argc;
 	char **argv = NULL;
 	cJSON *list_address_groupings = NULL;
 
-	argc = 3;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(maxsize * sizeof(char));
-	}
 	argc = 2;
-	strcpy(argv[0], "chips-cli");
-	strcpy(argv[1], "listaddressgroupings");
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, "chips-cli", "listaddressgroupings");
+	list_address_groupings = cJSON_CreateObject();
 	make_command(argc, argv, &list_address_groupings);
 
 	for (int i = 0; i < cJSON_GetArraySize(list_address_groupings); i++) {
@@ -198,14 +171,7 @@ void chips_list_address_groupings()
 			}
 		}
 	}
-
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
+	bet_dealloc_args(argc, &argv);
 }
 
 cJSON *chips_transfer_funds_with_data(double amount, char *address, char *data)
@@ -227,65 +193,45 @@ cJSON *chips_transfer_funds(double amount, char *address)
 	tx_info = chips_send_raw_tx(signed_tx);
 	return tx_info;
 }
+
 cJSON *chips_send_raw_tx(cJSON *signed_tx)
 {
-	int argc, maxsize = 2048;
+	int argc;
 	char **argv = NULL;
 	cJSON *tx_info = NULL;
 
 	argc = 3;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(maxsize * sizeof(char));
-	}
-	strcpy(argv[0], "chips-cli");
-	strcpy(argv[1], "sendrawtransaction");
-	strcpy(argv[2], jstr(signed_tx, "hex"));
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, "chips-cli", "sendrawtransaction", jstr(signed_tx, "hex"));
+	tx_info = cJSON_CreateObject();
 	make_command(argc, argv, &tx_info);
-
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
+	bet_dealloc_args(argc, &argv);
 
 	return tx_info;
 }
 
 cJSON *chips_sign_raw_tx_with_wallet(char *raw_tx)
 {
-	int argc, maxsize = 2048;
+	int argc;
 	char **argv = NULL;
 	cJSON *signed_tx = NULL;
 
 	argc = 3;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(maxsize * sizeof(char));
-	}
-	strcpy(argv[0], "chips-cli");
-	strcpy(argv[1], "signrawtransactionwithwallet");
-	strcpy(argv[2], raw_tx);
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, "chips-cli", "signrawtransactionwithwallet", raw_tx);
+	signed_tx = cJSON_CreateObject();
 	make_command(argc, argv, &signed_tx);
-
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-
+	bet_dealloc_args(argc, &argv);
 	return signed_tx;
 }
 
 int32_t chips_publish_multisig_tx(char *tx)
 {
 	int32_t flag = 0, bytes, retval = 0;
-	cJSON *tx_info = cJSON_CreateObject();
+	cJSON *tx_info = NULL;
 	char *rendered = NULL;
+
+	tx_info = cJSON_CreateObject();
 	for (int i = 0; i < bet_dcv->numplayers; i++) {
 		if (is_signed[i] == 0) {
 			cJSON_AddNumberToObject(tx_info, "playerid", i);
@@ -307,32 +253,26 @@ int32_t chips_publish_multisig_tx(char *tx)
 
 cJSON *chips_create_raw_multi_sig_tx(double amount, char *to_addr, char *from_addr)
 {
-	char **argv = NULL, *changeAddress = NULL;
-	int argc, maxsize = 1024;
+	char **argv = NULL, *changeAddress = NULL, params[2][2048] = { 0 };
+	int argc;
 	cJSON *listunspent_info = NULL, *address_info = NULL, *tx_list = NULL, *tx = NULL;
-	double balance, change, temp_balance = 0, fee = 0.0005;
+	double balance, change, temp_balance = 0;
 
 	balance = chips_get_balance();
 	tx_list = cJSON_CreateArray();
 	address_info = cJSON_CreateObject();
 
-	printf("%s::%d::toaddress::%s::fromaddress::%s\n", __FUNCTION__, __LINE__, to_addr, from_addr);
-
-	if ((balance + fee) < amount) {
-		printf("%s::%d::Insufficient Funds\n", __FUNCTION__, __LINE__);
+	if ((balance + chips_tx_fee) < amount) {
+		return NULL;
 	} else {
 		cJSON_AddNumberToObject(address_info, to_addr, amount);
-		amount += fee;
+		amount += chips_tx_fee;
 
-		argc = 4;
-		argv = (char **)malloc(argc * sizeof(char *));
-		for (int i = 0; i < argc; i++) {
-			argv[i] = (char *)malloc(maxsize * sizeof(char));
-		}
-		strcpy(argv[0], "chips-cli");
-		strcpy(argv[1], "listunspent");
 		argc = 2;
+		bet_alloc_args(argc, &argv);
+		argv = bet_copy_args(argc, "chips-cli", "listunspent");
 		make_command(argc, argv, &listunspent_info);
+		bet_dealloc_args(argc, &argv);
 
 		for (int i = 0; i < cJSON_GetArraySize(listunspent_info) - 1; i++) {
 			cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
@@ -358,33 +298,22 @@ cJSON *chips_create_raw_multi_sig_tx(double amount, char *to_addr, char *from_ad
 			cJSON_AddNumberToObject(address_info, changeAddress, change);
 		}
 		argc = 4;
-		for (int i = 0; i < argc; i++)
-			memset(argv[i], 0x00, maxsize);
-
-		strcpy(argv[0], "chips-cli");
-		strcpy(argv[1], "createrawtransaction");
-		sprintf(argv[2], "\'%s\'", cJSON_Print(tx_list));
-		sprintf(argv[3], "\'%s\'", cJSON_Print(address_info));
+		bet_alloc_args(argc, &argv);
+		sprintf(params[0], "\'%s\'", cJSON_Print(tx_list));
+		sprintf(params[1], "\'%s\'", cJSON_Print(address_info));
+		argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
 		make_command(argc, argv, &tx);
-
-		if (argv) {
-			for (int i = 0; i < argc; i++) {
-				if (argv[i])
-					free(argv[i]);
-			}
-			free(argv);
-		}
-
+		bet_dealloc_args(argc, &argv);
 		return tx;
 	}
 }
 
 cJSON *chips_create_raw_tx(double amount, char *address)
 {
-	char **argv = NULL, *changeAddress = NULL;
-	int argc, maxsize = 1024;
+	char **argv = NULL, *changeAddress = NULL, params[2][2048] = { 0 };
+	int argc;
 	cJSON *listunspent_info = NULL, *address_info = NULL, *tx_list = NULL, *tx = NULL;
-	double balance, change, temp_balance = 0, fee = 0.0005;
+	double balance, change, temp_balance = 0;
 
 	balance = chips_get_balance();
 	tx_list = cJSON_CreateArray();
@@ -395,23 +324,17 @@ cJSON *chips_create_raw_tx(double amount, char *address)
 		strcpy(address, multisigAddress);
 	}
 
-	printf("%s::%d::address::%s\n", __FUNCTION__, __LINE__, address);
-
-	if ((balance + fee) < amount) {
-		printf("%s::%d::Insufficient Funds\n", __FUNCTION__, __LINE__);
+	if ((balance + chips_tx_fee) < amount) {
+		return NULL;
 	} else {
 		cJSON_AddNumberToObject(address_info, address, amount);
-		amount += fee;
+		amount += chips_tx_fee;
 
-		argc = 4;
-		argv = (char **)malloc(argc * sizeof(char *));
-		for (int i = 0; i < argc; i++) {
-			argv[i] = (char *)malloc(maxsize * sizeof(char));
-		}
-		strcpy(argv[0], "chips-cli");
-		strcpy(argv[1], "listunspent");
 		argc = 2;
+		bet_alloc_args(argc, &argv);
+		argv = bet_copy_args(argc, "chips-cli", "listunspent");
 		make_command(argc, argv, &listunspent_info);
+		bet_dealloc_args(argc, &argv);
 
 		for (int i = 0; i < cJSON_GetArraySize(listunspent_info) - 1; i++) {
 			cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
@@ -436,33 +359,22 @@ cJSON *chips_create_raw_tx(double amount, char *address)
 			cJSON_AddNumberToObject(address_info, changeAddress, change);
 		}
 		argc = 4;
-		for (int i = 0; i < argc; i++)
-			memset(argv[i], 0x00, maxsize);
-
-		strcpy(argv[0], "chips-cli");
-		strcpy(argv[1], "createrawtransaction");
-		sprintf(argv[2], "\'%s\'", cJSON_Print(tx_list));
-		sprintf(argv[3], "\'%s\'", cJSON_Print(address_info));
+		bet_alloc_args(argc, &argv);
+		sprintf(params[0], "\'%s\'", cJSON_Print(tx_list));
+		sprintf(params[1], "\'%s\'", cJSON_Print(address_info));
+		argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
 		make_command(argc, argv, &tx);
-
-		if (argv) {
-			for (int i = 0; i < argc; i++) {
-				if (argv[i])
-					free(argv[i]);
-			}
-			free(argv);
-		}
-
+		bet_dealloc_args(argc, &argv);
 		return tx;
 	}
 }
 
 cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 {
-	char **argv = NULL, *changeAddress = NULL;
-	int argc, maxsize = 1024;
+	char **argv = NULL, *changeAddress = NULL, params[2][2048] = { 0 };
+	int argc;
 	cJSON *listunspent_info = NULL, *address_info = NULL, *tx_list = NULL, *tx = NULL;
-	double balance, change, temp_balance = 0, fee = 0.0005;
+	double balance, change, temp_balance = 0;
 
 	balance = chips_get_balance();
 	tx_list = cJSON_CreateArray();
@@ -472,24 +384,17 @@ cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 		address = (char *)malloc(64 * sizeof(char));
 		strcpy(address, multisigAddress);
 	}
-
-	printf("%s::%d::address::%s\n", __FUNCTION__, __LINE__, address);
-
-	if ((balance + fee) < amount) {
-		printf("%s::%d::Insufficient Funds\n", __FUNCTION__, __LINE__);
+	if ((balance + chips_tx_fee) < amount) {
+		return NULL;
 	} else {
 		cJSON_AddNumberToObject(address_info, address, amount);
-		amount += fee;
+		amount += chips_tx_fee;
 
-		argc = 4;
-		argv = (char **)malloc(argc * sizeof(char *));
-		for (int i = 0; i < argc; i++) {
-			argv[i] = (char *)malloc(maxsize * sizeof(char));
-		}
-		strcpy(argv[0], "chips-cli");
-		strcpy(argv[1], "listunspent");
 		argc = 2;
+		bet_alloc_args(argc, &argv);
+		argv = bet_copy_args(argc, "chips-cli", "listunspent");
 		make_command(argc, argv, &listunspent_info);
+		bet_dealloc_args(argc, &argv);
 
 		for (int i = 0; i < cJSON_GetArraySize(listunspent_info) - 1; i++) {
 			cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
@@ -515,23 +420,12 @@ cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 		}
 		cJSON_AddStringToObject(address_info, "data", data);
 		argc = 4;
-		for (int i = 0; i < argc; i++)
-			memset(argv[i], 0x00, maxsize);
-
-		strcpy(argv[0], "chips-cli");
-		strcpy(argv[1], "createrawtransaction");
-		sprintf(argv[2], "\'%s\'", cJSON_Print(tx_list));
-		sprintf(argv[3], "\'%s\'", cJSON_Print(address_info));
+		bet_alloc_args(argc, &argv);
+		sprintf(params[0], "\'%s\'", cJSON_Print(tx_list));
+		sprintf(params[1], "\'%s\'", cJSON_Print(address_info));
+		argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
 		make_command(argc, argv, &tx);
-
-		if (argv) {
-			for (int i = 0; i < argc; i++) {
-				if (argv[i])
-					free(argv[i]);
-			}
-			free(argv);
-		}
-
+		bet_dealloc_args(argc, &argv);
 		return tx;
 	}
 }
@@ -543,12 +437,8 @@ void chips_list_unspent()
 	cJSON *listunspent_info = NULL;
 
 	argc = 2;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(100 * sizeof(char));
-	}
-	strcpy(argv[0], "chips-cli");
-	strcpy(argv[1], "listunspent");
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, "chips-cli", "listunspent");
 	make_command(argc, argv, &listunspent_info);
 
 	for (int i = 0; i < cJSON_GetArraySize(listunspent_info) - 1; i++) {
@@ -558,48 +448,23 @@ void chips_list_unspent()
 			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
 		}
 	}
-
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
+	bet_dealloc_args(argc, &argv);
 }
 
 int32_t chips_get_block_count()
 {
 	char **argv = NULL, *rendered = NULL;
 	int argc, height;
-	cJSON *blockHeightInfo = NULL;
+	cJSON *block_height = NULL;
 
 	argc = 2;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(100 * sizeof(char));
-	}
-	strcpy(argv[0], "chips-cli");
-	strcpy(argv[1], "getblockcount");
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, "chips-cli", "getblockcount");
+	make_command(argc, argv, &block_height);
 
-	make_command(argc, argv, &blockHeightInfo);
-
-	rendered = cJSON_Print(blockHeightInfo);
+	rendered = cJSON_Print(block_height);
 	height = atoi(rendered);
-
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-
-	if (rendered)
-		free(rendered);
-	if (blockHeightInfo)
-		free(blockHeightInfo);
-
+	bet_dealloc_args(argc, &argv);
 	return height;
 }
 
@@ -631,94 +496,35 @@ double chips_get_balance()
 	int argc;
 	double balance = 0;
 	cJSON *getbalanceInfo = NULL;
+	
 	argc = 2;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(100 * sizeof(char));
-	}
-	strcpy(argv[0], "chips-cli");
-	strcpy(argv[1], "getbalance");
+	bet_alloc_args(argc,&argv);
+	argv = bet_copy_args(argc, "chips-cli", "getbalance");
 	make_command(argc, argv, &getbalanceInfo);
 	balance = atof(cJSON_Print(getbalanceInfo));
-
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-
-	if (getbalanceInfo)
-		free(getbalanceInfo);
-
+	bet_dealloc_args(argc,&argv);
 	return balance;
-}
-
-int32_t chips_lock_transaction(int32_t fund_amount)
-{
-	int argc, balance;
-	char **argv = NULL;
-	cJSON *listunspent_info = NULL;
-	double fee = 0.0005;
-
-	balance = chips_get_balance();
-	if ((fund_amount + fee) >= balance) {
-		argc = 2;
-		argv = (char **)malloc(argc * sizeof(char *));
-		for (int i = 0; i < argc; i++) {
-			argv[i] = (char *)malloc(100 * sizeof(char));
-		}
-		strcpy(argv[0], "chips-cli");
-		strcpy(argv[1], "listunspent");
-		make_command(argc, argv, &listunspent_info);
-
-		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(listunspent_info));
-
-		for (int i = 0; i < cJSON_GetArraySize(listunspent_info) - 1; i++) {
-			cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
-
-			if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "spendable")), "true") == 0) {
-				printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
-			}
-		}
-	}
-	return 0;
 }
 
 cJSON *chips_add_multisig_address()
 {
 	int argc;
-	char **argv = NULL;
+	char **argv = NULL, param[2048];
 	cJSON *addr_list = NULL;
 	cJSON *msig_address = NULL;
 
 	argc = 5;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(1000 * sizeof(char));
-	}
-	strcpy(argv[0], "chips-cli");
-	strcpy(argv[1], "addmultisigaddress");
-	sprintf(argv[2], "%d", threshold_value);
+	bet_alloc_args(argc,&argv);
+	sprintf(param, "%d", threshold_value);
+	
 	addr_list = cJSON_CreateArray();
-
 	for (int i = 0; i < no_of_notaries; i++)
 		cJSON_AddItemToArray(addr_list, cJSON_CreateString_Length(notary_node_pubkeys[i], 67));
 
-	strcpy(argv[3], cJSON_Print(cJSON_CreateString(cJSON_Print(addr_list))));
-	strcpy(argv[4], "-addresstype legacy");
-
+	argv = bet_copy_args(argc, "chips-cli", "addmultisigaddress", param, cJSON_Print(cJSON_CreateString(cJSON_Print(addr_list))), "-addresstype legacy");
 	msig_address = cJSON_CreateObject();
 	make_command(argc, argv, &msig_address);
-
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
+	bet_dealloc_args(argc,&argv);
 	return msig_address;
 }
 
@@ -729,14 +535,9 @@ int32_t chips_check_if_tx_unspent(char *input_tx)
 	cJSON *listunspent_info = NULL;
 	int32_t spendable = 0;
 
-	printf("%s::%d::%s ", __FUNCTION__, __LINE__, input_tx);
 	argc = 2;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(100 * sizeof(char));
-	}
-	strcpy(argv[0], "chips-cli");
-	strcpy(argv[1], "listunspent");
+	bet_alloc_args(argc,&argv);
+	argv = bet_copy_args(argc, "chips-cli", "listunspent");
 	listunspent_info = cJSON_CreateObject();
 	make_command(argc, argv, &listunspent_info);
 
@@ -752,73 +553,41 @@ int32_t chips_check_if_tx_unspent(char *input_tx)
 			}
 		}
 	}
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
+	bet_dealloc_args(argc,&argv);
 	return spendable;
 }
 
 char *chips_get_block_hash_from_txid(char *txid)
 {
-	int argc, arg_size = 1024;
+	int argc;
 	char **argv = NULL;
 	cJSON *raw_tx_info = NULL;
 	char *block_hash = NULL;
 
 	argc = 4;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(arg_size * sizeof(char));
-	}
-	strcpy(argv[0], "chips-cli");
-	strcpy(argv[1], "getrawtransaction");
-	strcpy(argv[2], txid);
-	strcpy(argv[3], "1");
-
+	bet_alloc_args(argc,&argv);
+	argv = bet_copy_args(argc, "chips-cli", "getrawtransaction", txid, "1");
 	raw_tx_info = cJSON_CreateObject();
 	make_command(argc, argv, &raw_tx_info);
 	if (raw_tx_info)
 		block_hash = jstr(cJSON_Parse(unstringify(cJSON_Print(raw_tx_info))), "blockhash");
-	printf("block_hash::%s\n", block_hash);
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
+	bet_dealloc_args(argc,&argv);
 	return block_hash;
 }
 
 int32_t chips_get_block_height_from_block_hash(char *block_hash)
 {
-	int argc, arg_size = 1024, block_height;
+	int argc, block_height;
 	char **argv = NULL;
 	cJSON *block_info = NULL;
 
 	argc = 3;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(arg_size * sizeof(char));
-	}
-	strcpy(argv[0], "chips-cli");
-	strcpy(argv[1], "getblock");
-	strcpy(argv[2], block_hash);
+	bet_alloc_args(argc,&argv);
+	argv = bet_copy_args(argc, "chips-cli", "getblock", block_hash);
 	block_info = cJSON_CreateObject();
 	make_command(argc, argv, &block_info);
 	block_height = jint(block_info, "height");
-
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
+	bet_dealloc_args(argc,&argv);
 	return block_height;
 }
 
@@ -836,25 +605,21 @@ static int32_t check_if_tx_exists(char *txid, int32_t no_of_txs, char tx_ids[][1
 
 cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_ids[][100])
 {
-	int argc, arg_size = 2048;
-	char **argv = NULL;
+	int argc;
+	char **argv = NULL, params[2][2048] = {0};
 	cJSON *listunspent_info = NULL;
 	double amount = 0;
 	cJSON *tx_list = NULL, *to_addr_info = NULL, *tx = NULL;
 
 	to_addr_info = cJSON_CreateObject();
 	tx_list = cJSON_CreateArray();
-	argc = 4;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(arg_size * sizeof(char));
-	}
-	strcpy(argv[0], "chips-cli");
-	strcpy(argv[1], "listunspent");
-	listunspent_info = cJSON_CreateObject();
 	argc = 2;
+	bet_alloc_args(argc,&argv);
+	argv = bet_copy_args(argc, "chips-cli", "listunspent");
+	listunspent_info = cJSON_CreateObject();
 	make_command(argc, argv, &listunspent_info);
-
+	bet_dealloc_args(argc,&argv);
+	
 	for (int i = 0; i < cJSON_GetArraySize(listunspent_info) - 1; i++) {
 		cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
 		if (temp) {
@@ -869,23 +634,13 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 	}
 	cJSON_AddNumberToObject(to_addr_info, to_addr, (amount - chips_tx_fee));
 	argc = 4;
-	for (int i = 0; i < argc; i++)
-		memset(argv[i], 0x00, arg_size);
-
-	strcpy(argv[0], "chips-cli");
-	strcpy(argv[1], "createrawtransaction");
-	sprintf(argv[2], "\'%s\'", cJSON_Print(tx_list));
-	sprintf(argv[3], "\'%s\'", cJSON_Print(to_addr_info));
+	bet_alloc_args(argc,&argv);
+	sprintf(params[0], "\'%s\'", cJSON_Print(tx_list));
+	sprintf(params[1], "\'%s\'", cJSON_Print(to_addr_info));
+	argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
 	tx = cJSON_CreateObject();
 	make_command(argc, argv, &tx);
-
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
+	bet_dealloc_args(argc,&argv);
 	return tx;
 }
 
@@ -962,11 +717,11 @@ cJSON *chips_get_raw_tx(char *tx)
 	cJSON *raw_tx = NULL;
 
 	argc = 3;
+	bet_alloc_args(argc,&argv);
 	argv = bet_copy_args(argc, "chips-cli", "getrawtransaction", tx);
 	raw_tx = cJSON_CreateObject();
 	make_command(argc, argv, &raw_tx);
 	bet_dealloc_args(argc, &argv);
-
 	return raw_tx;
 }
 
@@ -977,10 +732,11 @@ cJSON *chips_decode_raw_tx(cJSON *raw_tx)
 	cJSON *decoded_raw_tx = NULL;
 
 	argc = 3;
+	bet_alloc_args(argc,&argv);
 	argv = bet_copy_args(argc, "chips-cli", "decoderawtransaction", cJSON_Print(raw_tx));
 	decoded_raw_tx = cJSON_CreateObject();
 	make_command(argc, argv, &decoded_raw_tx);
-
+	bet_dealloc_args(argc,&argv);
 	return decoded_raw_tx;
 }
 
@@ -1110,30 +866,15 @@ int32_t ln_dev_block_height()
 {
 	char **argv = NULL;
 	int argc, block_height;
-	cJSON *blockHeightInfo = NULL;
+	cJSON *bh_info = NULL;
 
 	argc = 2;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(100 * sizeof(char));
-	}
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "dev-blockheight");
-
-	make_command(argc, argv, &blockHeightInfo);
-	block_height = jint(blockHeightInfo, "blockheight");
-
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-
-	if (blockHeightInfo)
-		free(blockHeightInfo);
-
+	bet_alloc_args(argc,&argv);
+	argv = bet_copy_args(argc, "lightning-cli", "dev-blockheight");
+	bh_info= cJSON_CreateObject();
+	make_command(argc, argv, &bh_info);
+	block_height = jint(bh_info, "blockheight");
+	bet_dealloc_args(argc,&argv);
 	return block_height;
 }
 
@@ -1175,12 +916,8 @@ int32_t ln_get_uri(char **uri)
 	char **argv = NULL;
 
 	argc = 2;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++)
-		argv[i] = (char *)malloc(100 * sizeof(char));
-
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "getinfo");
+	bet_alloc_args(argc,&argv);
+	argv = bet_copy_args(argc, "lightning-cli", "getinfo");
 	channel_info = cJSON_CreateObject();
 	make_command(argc, argv, &channel_info);
 
@@ -1197,20 +934,13 @@ int32_t ln_get_uri(char **uri)
 	strcat(*uri, jstr(address, "address"));
 
 end:
-
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
+	bet_dealloc_args(argc,&argv);
 	return retval;
 }
 
 int32_t ln_connect_uri(char *uri)
 {
-	int argc, maxsize = 100, retval = 1, channel_state;
+	int argc, retval = 1, channel_state;
 	char **argv = NULL, channel_id[100];
 	cJSON *connect_info = NULL;
 	char temp[200];
@@ -1219,17 +949,11 @@ int32_t ln_connect_uri(char *uri)
 	strcpy(channel_id, strtok(temp, "@"));
 
 	channel_state = ln_get_channel_status(channel_id);
-	if ((channel_state != 2) && (channel_state != 3)) // 3 means channel is already established with the peer
+	if ((channel_state != CHANNELD_AWAITING_LOCKIN) && (channel_state != CHANNELD_NORMAL))
 	{
 		argc = 3;
-		argv = (char **)malloc(argc * sizeof(char *));
-		for (int i = 0; i < argc; i++) {
-			argv[i] = (char *)malloc(maxsize * sizeof(char));
-		}
-		strcpy(argv[0], "lightning-cli");
-		strcpy(argv[1], "connect");
-		strcpy(argv[2], uri);
-
+		bet_alloc_args(argc,&argv);
+		argv = bet_copy_args(argc, "lightning-cli", "connect", uri);
 		connect_info = cJSON_CreateObject();
 		make_command(argc, argv, &connect_info);
 
@@ -1240,13 +964,7 @@ int32_t ln_connect_uri(char *uri)
 		}
 	}
 end:
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
+	bet_dealloc_args(argc,&argv);
 	return retval;
 }
 
@@ -1271,22 +989,14 @@ cJSON *ln_fund_channel(char *channel_id, int32_t channel_fund_satoshi)
 int32_t ln_pay(char *bolt11)
 {
 	cJSON *pay_response = NULL;
-	int argc, maxsize = 10000, retval = 1;
-	char **argv = NULL, *buf = NULL;
-	argv = (char **)malloc(4 * sizeof(char *));
-	buf = malloc(maxsize);
+	int argc, retval = 1;
+	char **argv = NULL;
+
 	argc = 3;
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(sizeof(char) * 1000);
-	}
-
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "pay");
-	strcpy(argv[2], bolt11);
-
+	bet_alloc_args(argc,&argv);
+	argv = bet_copy_args(argc, "lightning-cli", "pay", bolt11);
 	pay_response = cJSON_CreateObject();
 	make_command(argc, argv, &pay_response);
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(pay_response));
 
 	if (jint(pay_response, "code") != 0) {
 		retval = -1;
@@ -1299,16 +1009,7 @@ int32_t ln_pay(char *bolt11)
 	else
 		retval = -1;
 end:
-	if (buf)
-		free(buf);
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-
+	bet_dealloc_args(argc,&argv);
 	return retval;
 }
 
@@ -1328,23 +1029,18 @@ cJSON *ln_connect(char *id)
 
 void ln_check_peer_and_connect(char *id)
 {
-	int argc, maxsize = 100;
+	int argc;
 	char **argv = NULL;
 	cJSON *list_peers_info = NULL;
 	cJSON *peers_info = NULL;
 	int32_t connected = 0;
 
 	argc = 2;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(maxsize * sizeof(char));
-	}
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "listpeers");
+	bet_alloc_args(argc,&argv);
+	argv = bet_copy_args(argc, "lightning-cli", "listpeers");
 	make_command(argc, argv, &list_peers_info);
 
 	peers_info = cJSON_GetObjectItem(list_peers_info, "peers");
-
 	for (int i = 0; i < cJSON_GetArraySize(peers_info); i++) {
 		cJSON *peer = cJSON_GetArrayItem(peers_info, i);
 
@@ -1359,13 +1055,7 @@ void ln_check_peer_and_connect(char *id)
 	if (connected == 0) {
 		ln_connect(id);
 	}
-	if (argv) {
-		for (int32_t i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
+	bet_dealloc_args(argc,&argv);
 }
 
 int32_t ln_get_channel_status(char *id)
@@ -1375,13 +1065,8 @@ int32_t ln_get_channel_status(char *id)
 	cJSON *channel_state_info = NULL, *channel_states = NULL, *channelState = NULL;
 
 	argc = 3;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(100 * sizeof(char));
-	}
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "peer-channel-state");
-	strcpy(argv[2], id);
+	bet_alloc_args(argc,&argv);
+	argv = bet_copy_args(argc, "lightning-cli", "peer-channel-state", id);
 	make_command(argc, argv, &channel_state_info);
 
 	channel_states = cJSON_GetObjectItem(channel_state_info, "channel-states");
@@ -1393,14 +1078,7 @@ int32_t ln_get_channel_status(char *id)
 			break;
 		}
 	}
-
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
+	bet_dealloc_args(argc,&argv);
 	if (channel_state_info)
 		cJSON_Delete(channel_state_info);
 	return channel_state;

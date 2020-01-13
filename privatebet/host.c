@@ -1325,8 +1325,6 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 			cJSON *tx_info = cJSON_CreateObject();
 			int32_t block_height = jint(argjson, "block_height");
 			tx_info = cJSON_GetObjectItem(argjson, "tx_info");
-			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
-
 			while (block_height < chips_get_block_count()) {
 				sleep(2);
 			}
