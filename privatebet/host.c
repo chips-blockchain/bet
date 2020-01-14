@@ -1297,7 +1297,7 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 			} else {
 				cJSON *temp = cJSON_CreateObject();
 				cJSON_AddStringToObject(temp, "hex", jstr(argjson, "tx"));
-				 chips_send_raw_tx(temp);
+				chips_send_raw_tx(temp);
 			}
 
 		} else if (strcmp(method, "live") == 0) {
@@ -1334,7 +1334,7 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 			} else {
 				retval = 0;
 				goto end;
-			}	
+			}
 
 		} else {
 			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
@@ -1444,9 +1444,9 @@ static int32_t bet_live_status(struct privatebet_info *bet)
 
 	cJSON_AddNumberToObject(status_info, "no_of_players", bet->maxplayers);
 	cJSON_AddItemToObject(status_info, "players_status", temp = cJSON_CreateArray());
-	for (int i = 0; i < bet->maxplayers; i++) 
-		cJSON_AddItemToArray(temp,cJSON_CreateNumber(player_status[i]));
-	
+	for (int i = 0; i < bet->maxplayers; i++)
+		cJSON_AddItemToArray(temp, cJSON_CreateNumber(player_status[i]));
+
 	bytes = nn_send(bet->pubsock, cJSON_Print(status_info), strlen(cJSON_Print(status_info)), 0);
 	if (bytes < 0)
 		retval = -1;
@@ -1460,7 +1460,7 @@ void bet_dcv_live_loop(void *_ptr)
 	cJSON *live_info = NULL;
 	int32_t retval = 1;
 
-	while(bet->maxplayers != players_joined) {
+	while (bet->maxplayers != players_joined) {
 		sleep(2);
 	}
 	live_info = cJSON_CreateObject();
