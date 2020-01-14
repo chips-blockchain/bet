@@ -841,7 +841,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 		strcat(data, buf);
 		memset(buf, 0x00, buf_size);
 	}
-	data[sizeof(data) - 1] = '\0';
+	data[data_size-1] = '\0';
 	if ((strcmp(argv[0], "lightning-cli") == 0) && (strncmp("error", data, strlen("error")) == 0)) {
 		char temp[1024];
 		memset(temp, 0x00, sizeof(temp));
