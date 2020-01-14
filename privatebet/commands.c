@@ -25,11 +25,12 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
+#define arg_size 8192
+
 char *multisigAddress = "bGmKoyJEz4ESuJCTjhVkgEb2Qkt8QuiQzQ";
 
 static int32_t bet_alloc_args(int argc, char ***argv)
 {
-	int arg_size = 8192;
 	int ret = 1;
 
 	*argv = (char **)malloc(argc * sizeof(char *));
@@ -253,7 +254,7 @@ int32_t chips_publish_multisig_tx(char *tx)
 
 cJSON *chips_create_raw_multi_sig_tx(double amount, char *to_addr, char *from_addr)
 {
-	char **argv = NULL, *changeAddress = NULL, params[2][2048] = { 0 };
+	char **argv = NULL, *changeAddress = NULL, params[2][arg_size] = { 0 };
 	int argc;
 	cJSON *listunspent_info = NULL, *address_info = NULL, *tx_list = NULL, *tx = NULL;
 	double balance, change, temp_balance = 0;
@@ -310,7 +311,7 @@ cJSON *chips_create_raw_multi_sig_tx(double amount, char *to_addr, char *from_ad
 
 cJSON *chips_create_raw_tx(double amount, char *address)
 {
-	char **argv = NULL, *changeAddress = NULL, params[2][2048] = { 0 };
+	char **argv = NULL, *changeAddress = NULL, params[2][arg_size] = { 0 };
 	int argc;
 	cJSON *listunspent_info = NULL, *address_info = NULL, *tx_list = NULL, *tx = NULL;
 	double balance, change, temp_balance = 0;
@@ -371,7 +372,7 @@ cJSON *chips_create_raw_tx(double amount, char *address)
 
 cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 {
-	char **argv = NULL, *changeAddress = NULL, params[2][2048] = { 0 };
+	char **argv = NULL, *changeAddress = NULL, params[2][arg_size] = { 0 };
 	int argc;
 	cJSON *listunspent_info = NULL, *address_info = NULL, *tx_list = NULL, *tx = NULL;
 	double balance, change, temp_balance = 0;
@@ -383,6 +384,7 @@ cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 	if (address == NULL) {
 		address = (char *)malloc(64 * sizeof(char));
 		strcpy(address, multisigAddress);
+		address[63] = '\0';
 	}
 	if ((balance + chips_tx_fee) < amount) {
 		return NULL;
@@ -509,7 +511,7 @@ double chips_get_balance()
 cJSON *chips_add_multisig_address()
 {
 	int argc;
-	char **argv = NULL, param[2048];
+	char **argv = NULL, param[arg_size];
 	cJSON *addr_list = NULL;
 	cJSON *msig_address = NULL;
 
@@ -577,7 +579,7 @@ char *chips_get_block_hash_from_txid(char *txid)
 
 int32_t chips_get_block_height_from_block_hash(char *block_hash)
 {
-	int argc, block_height;
+	int32_t argc, block_height;
 	char **argv = NULL;
 	cJSON *block_info = NULL;
 
@@ -606,7 +608,7 @@ static int32_t check_if_tx_exists(char *txid, int32_t no_of_txs, char tx_ids[][1
 cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_ids[][100])
 {
 	int argc;
-	char **argv = NULL, params[2][2048] = {0};
+	char **argv = NULL, params[2][arg_size] = {0};
 	cJSON *listunspent_info = NULL;
 	double amount = 0;
 	cJSON *tx_list = NULL, *to_addr_info = NULL, *tx = NULL;
@@ -833,7 +835,6 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 		memset(temp, 0x00, sizeof(temp));
 		strncpy(temp, data + strlen("error"), (strlen(data) - strlen("error")));
 		*argjson = cJSON_Parse(temp);
-		printf("%s\n", cJSON_Print(*argjson));
 		ret = 0;
 
 	} else if (strlen(data) == 0) {
@@ -865,7 +866,7 @@ end:
 int32_t ln_dev_block_height()
 {
 	char **argv = NULL;
-	int argc, block_height;
+	int32_t argc, block_height;
 	cJSON *bh_info = NULL;
 
 	argc = 2;
