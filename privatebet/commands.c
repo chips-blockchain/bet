@@ -806,14 +806,20 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 	int32_t ret = 1, command_size = 16384, data_size = 262144, buf_size = 1024;
 
 	command = calloc(command_size, sizeof(char));
-	if(!command)
-		return 0;
+	if(!command) {
+		ret = 0;
+		goto end;
+	}
 	data = calloc(data_size, sizeof(char));
-	if(!data)
-		return 0;
+	if(!data) {
+		ret = 0;
+		goto end;
+	}
 	buf = calloc(buf_size, sizeof(char));
-	if(!buf)
-		return 0;	
+	if(!buf) {
+		ret = 0;
+		goto end;
+	}
 	
 	for (int i = 0; i < argc; i++) {
 		strcat(command, argv[i]);
@@ -864,7 +870,12 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 end:
 	if (buf)
 		free(buf);
+	if (data)
+		free(data);
+	if (command)
+		free(command);
 	pclose(fp);
+	
 	return ret;
 }
 
