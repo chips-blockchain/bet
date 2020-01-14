@@ -498,13 +498,13 @@ double chips_get_balance()
 	int argc;
 	double balance = 0;
 	cJSON *getbalanceInfo = NULL;
-	
+
 	argc = 2;
-	bet_alloc_args(argc,&argv);
+	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "chips-cli", "getbalance");
 	make_command(argc, argv, &getbalanceInfo);
 	balance = atof(cJSON_Print(getbalanceInfo));
-	bet_dealloc_args(argc,&argv);
+	bet_dealloc_args(argc, &argv);
 	return balance;
 }
 
@@ -516,17 +516,18 @@ cJSON *chips_add_multisig_address()
 	cJSON *msig_address = NULL;
 
 	argc = 5;
-	bet_alloc_args(argc,&argv);
+	bet_alloc_args(argc, &argv);
 	snprintf(param, arg_size, "%d", threshold_value);
-	
+
 	addr_list = cJSON_CreateArray();
 	for (int i = 0; i < no_of_notaries; i++)
 		cJSON_AddItemToArray(addr_list, cJSON_CreateString_Length(notary_node_pubkeys[i], 67));
 
-	argv = bet_copy_args(argc, "chips-cli", "addmultisigaddress", param, cJSON_Print(cJSON_CreateString(cJSON_Print(addr_list))), "-addresstype legacy");
+	argv = bet_copy_args(argc, "chips-cli", "addmultisigaddress", param,
+			     cJSON_Print(cJSON_CreateString(cJSON_Print(addr_list))), "-addresstype legacy");
 	msig_address = cJSON_CreateObject();
 	make_command(argc, argv, &msig_address);
-	bet_dealloc_args(argc,&argv);
+	bet_dealloc_args(argc, &argv);
 	return msig_address;
 }
 
@@ -538,7 +539,7 @@ int32_t chips_check_if_tx_unspent(char *input_tx)
 	int32_t spendable = 0;
 
 	argc = 2;
-	bet_alloc_args(argc,&argv);
+	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "chips-cli", "listunspent");
 	listunspent_info = cJSON_CreateObject();
 	make_command(argc, argv, &listunspent_info);
@@ -555,7 +556,7 @@ int32_t chips_check_if_tx_unspent(char *input_tx)
 			}
 		}
 	}
-	bet_dealloc_args(argc,&argv);
+	bet_dealloc_args(argc, &argv);
 	return spendable;
 }
 
@@ -567,13 +568,13 @@ char *chips_get_block_hash_from_txid(char *txid)
 	char *block_hash = NULL;
 
 	argc = 4;
-	bet_alloc_args(argc,&argv);
+	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "chips-cli", "getrawtransaction", txid, "1");
 	raw_tx_info = cJSON_CreateObject();
 	make_command(argc, argv, &raw_tx_info);
 	if (raw_tx_info)
 		block_hash = jstr(cJSON_Parse(unstringify(cJSON_Print(raw_tx_info))), "blockhash");
-	bet_dealloc_args(argc,&argv);
+	bet_dealloc_args(argc, &argv);
 	return block_hash;
 }
 
@@ -584,12 +585,12 @@ int32_t chips_get_block_height_from_block_hash(char *block_hash)
 	cJSON *block_info = NULL;
 
 	argc = 3;
-	bet_alloc_args(argc,&argv);
+	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "chips-cli", "getblock", block_hash);
 	block_info = cJSON_CreateObject();
 	make_command(argc, argv, &block_info);
 	block_height = jint(block_info, "height");
-	bet_dealloc_args(argc,&argv);
+	bet_dealloc_args(argc, &argv);
 	return block_height;
 }
 
@@ -608,7 +609,7 @@ static int32_t check_if_tx_exists(char *txid, int32_t no_of_txs, char tx_ids[][1
 cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_ids[][100])
 {
 	int argc;
-	char **argv = NULL, params[2][arg_size] = {0};
+	char **argv = NULL, params[2][arg_size] = { 0 };
 	cJSON *listunspent_info = NULL;
 	double amount = 0;
 	cJSON *tx_list = NULL, *to_addr_info = NULL, *tx = NULL;
@@ -616,12 +617,12 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 	to_addr_info = cJSON_CreateObject();
 	tx_list = cJSON_CreateArray();
 	argc = 2;
-	bet_alloc_args(argc,&argv);
+	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "chips-cli", "listunspent");
 	listunspent_info = cJSON_CreateObject();
 	make_command(argc, argv, &listunspent_info);
-	bet_dealloc_args(argc,&argv);
-	
+	bet_dealloc_args(argc, &argv);
+
 	for (int i = 0; i < cJSON_GetArraySize(listunspent_info) - 1; i++) {
 		cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
 		if (temp) {
@@ -636,13 +637,13 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 	}
 	cJSON_AddNumberToObject(to_addr_info, to_addr, (amount - chips_tx_fee));
 	argc = 4;
-	bet_alloc_args(argc,&argv);
+	bet_alloc_args(argc, &argv);
 	sprintf(params[0], "\'%s\'", cJSON_Print(tx_list));
 	sprintf(params[1], "\'%s\'", cJSON_Print(to_addr_info));
 	argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
 	tx = cJSON_CreateObject();
 	make_command(argc, argv, &tx);
-	bet_dealloc_args(argc,&argv);
+	bet_dealloc_args(argc, &argv);
 	return tx;
 }
 
@@ -719,7 +720,7 @@ cJSON *chips_get_raw_tx(char *tx)
 	cJSON *raw_tx = NULL;
 
 	argc = 3;
-	bet_alloc_args(argc,&argv);
+	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "chips-cli", "getrawtransaction", tx);
 	raw_tx = cJSON_CreateObject();
 	make_command(argc, argv, &raw_tx);
@@ -734,11 +735,11 @@ cJSON *chips_decode_raw_tx(cJSON *raw_tx)
 	cJSON *decoded_raw_tx = NULL;
 
 	argc = 3;
-	bet_alloc_args(argc,&argv);
+	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "chips-cli", "decoderawtransaction", cJSON_Print(raw_tx));
 	decoded_raw_tx = cJSON_CreateObject();
 	make_command(argc, argv, &decoded_raw_tx);
-	bet_dealloc_args(argc,&argv);
+	bet_dealloc_args(argc, &argv);
 	return decoded_raw_tx;
 }
 
@@ -806,21 +807,21 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 	int32_t ret = 1, command_size = 16384, data_size = 262144, buf_size = 1024;
 
 	command = calloc(command_size, sizeof(char));
-	if(!command) {
+	if (!command) {
 		ret = 0;
 		goto end;
 	}
 	data = calloc(data_size, sizeof(char));
-	if(!data) {
+	if (!data) {
 		ret = 0;
 		goto end;
 	}
 	buf = calloc(buf_size, sizeof(char));
-	if(!buf) {
+	if (!buf) {
 		ret = 0;
 		goto end;
 	}
-	
+
 	for (int i = 0; i < argc; i++) {
 		strcat(command, argv[i]);
 		strcat(command, " ");
@@ -875,7 +876,7 @@ end:
 	if (command)
 		free(command);
 	pclose(fp);
-	
+
 	return ret;
 }
 
@@ -886,12 +887,12 @@ int32_t ln_dev_block_height()
 	cJSON *bh_info = NULL;
 
 	argc = 2;
-	bet_alloc_args(argc,&argv);
+	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "lightning-cli", "dev-blockheight");
-	bh_info= cJSON_CreateObject();
+	bh_info = cJSON_CreateObject();
 	make_command(argc, argv, &bh_info);
 	block_height = jint(bh_info, "blockheight");
-	bet_dealloc_args(argc,&argv);
+	bet_dealloc_args(argc, &argv);
 	return block_height;
 }
 
@@ -933,7 +934,7 @@ int32_t ln_get_uri(char **uri)
 	char **argv = NULL;
 
 	argc = 2;
-	bet_alloc_args(argc,&argv);
+	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "lightning-cli", "getinfo");
 	channel_info = cJSON_CreateObject();
 	make_command(argc, argv, &channel_info);
@@ -951,7 +952,7 @@ int32_t ln_get_uri(char **uri)
 	strcat(*uri, jstr(address, "address"));
 
 end:
-	bet_dealloc_args(argc,&argv);
+	bet_dealloc_args(argc, &argv);
 	return retval;
 }
 
@@ -966,10 +967,9 @@ int32_t ln_connect_uri(char *uri)
 	strcpy(channel_id, strtok(temp, "@"));
 
 	channel_state = ln_get_channel_status(channel_id);
-	if ((channel_state != CHANNELD_AWAITING_LOCKIN) && (channel_state != CHANNELD_NORMAL))
-	{
+	if ((channel_state != CHANNELD_AWAITING_LOCKIN) && (channel_state != CHANNELD_NORMAL)) {
 		argc = 3;
-		bet_alloc_args(argc,&argv);
+		bet_alloc_args(argc, &argv);
 		argv = bet_copy_args(argc, "lightning-cli", "connect", uri);
 		connect_info = cJSON_CreateObject();
 		make_command(argc, argv, &connect_info);
@@ -981,7 +981,7 @@ int32_t ln_connect_uri(char *uri)
 		}
 	}
 end:
-	bet_dealloc_args(argc,&argv);
+	bet_dealloc_args(argc, &argv);
 	return retval;
 }
 
@@ -994,7 +994,7 @@ cJSON *ln_fund_channel(char *channel_id, int32_t channel_fund_satoshi)
 
 	argc = 4;
 	bet_alloc_args(argc, &argv);
-	sprintf(channel_satoshis, "%d", channel_fund_satoshi);
+	snprintf(channel_satoshis, 20, "%d", channel_fund_satoshi);
 	argv = bet_copy_args(argc, "lightning-cli", "fundchannel", channel_id, channel_satoshis);
 	fund_channel_info = cJSON_CreateObject();
 	make_command(argc, argv, &fund_channel_info);
@@ -1010,7 +1010,7 @@ int32_t ln_pay(char *bolt11)
 	char **argv = NULL;
 
 	argc = 3;
-	bet_alloc_args(argc,&argv);
+	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "lightning-cli", "pay", bolt11);
 	pay_response = cJSON_CreateObject();
 	make_command(argc, argv, &pay_response);
@@ -1026,7 +1026,7 @@ int32_t ln_pay(char *bolt11)
 	else
 		retval = -1;
 end:
-	bet_dealloc_args(argc,&argv);
+	bet_dealloc_args(argc, &argv);
 	return retval;
 }
 
@@ -1053,7 +1053,7 @@ void ln_check_peer_and_connect(char *id)
 	int32_t connected = 0;
 
 	argc = 2;
-	bet_alloc_args(argc,&argv);
+	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "lightning-cli", "listpeers");
 	make_command(argc, argv, &list_peers_info);
 
@@ -1072,7 +1072,7 @@ void ln_check_peer_and_connect(char *id)
 	if (connected == 0) {
 		ln_connect(id);
 	}
-	bet_dealloc_args(argc,&argv);
+	bet_dealloc_args(argc, &argv);
 }
 
 int32_t ln_get_channel_status(char *id)
@@ -1082,7 +1082,7 @@ int32_t ln_get_channel_status(char *id)
 	cJSON *channel_state_info = NULL, *channel_states = NULL, *channelState = NULL;
 
 	argc = 3;
-	bet_alloc_args(argc,&argv);
+	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "lightning-cli", "peer-channel-state", id);
 	make_command(argc, argv, &channel_state_info);
 
@@ -1095,7 +1095,7 @@ int32_t ln_get_channel_status(char *id)
 			break;
 		}
 	}
-	bet_dealloc_args(argc,&argv);
+	bet_dealloc_args(argc, &argv);
 	if (channel_state_info)
 		cJSON_Delete(channel_state_info);
 	return channel_state;
