@@ -1297,7 +1297,7 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 			} else {
 				cJSON *temp = cJSON_CreateObject();
 				cJSON_AddStringToObject(temp, "hex", jstr(argjson, "tx"));
-				cJSON *finaltx = chips_send_raw_tx(temp);
+				 chips_send_raw_tx(temp);
 			}
 
 		} else if (strcmp(method, "live") == 0) {
