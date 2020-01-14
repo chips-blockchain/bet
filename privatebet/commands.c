@@ -801,14 +801,20 @@ cJSON *chips_deposit_to_ln_wallet(double channel_chips)
 
 int32_t make_command(int argc, char **argv, cJSON **argjson)
 {
-	char command[16384];
 	FILE *fp = NULL;
-	char data[262144];
-	char *buf = NULL;
-	int32_t ret = 1;
+	char *data = NULL, *command = NULL, *buf = NULL;
+	int32_t ret = 1, command_size = 16384, data_size = 262144, buf_size = 1024;
 
-	memset(command, 0x00, sizeof(command));
-	memset(data, 0x00, sizeof(data));
+	command = calloc(command_size, sizeof(char));
+	if(!command)
+		return 0;
+	data = calloc(data_size, sizeof(char));
+	if(!data)
+		return 0;
+	buf = calloc(buf_size, sizeof(char));
+	if(!buf)
+		return 0;	
+	
 	for (int i = 0; i < argc; i++) {
 		strcat(command, argv[i]);
 		strcat(command, " ");
@@ -820,14 +826,13 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 		exit(1);
 	}
 
-	buf = (char *)malloc(200);
 	if (!buf) {
 		printf("%s::%d::Malloc failed\n", __FUNCTION__, __LINE__);
 		goto end;
 	}
-	while (fgets(buf, 200, fp) != NULL) {
+	while (fgets(buf, buf_size, fp) != NULL) {
 		strcat(data, buf);
-		memset(buf, 0x00, 200);
+		memset(buf, 0x00, buf_size);
 	}
 	data[sizeof(data) - 1] = '\0';
 	if ((strcmp(argv[0], "lightning-cli") == 0) && (strncmp("error", data, strlen("error")) == 0)) {
