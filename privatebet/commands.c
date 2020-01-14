@@ -300,8 +300,8 @@ cJSON *chips_create_raw_multi_sig_tx(double amount, char *to_addr, char *from_ad
 		}
 		argc = 4;
 		bet_alloc_args(argc, &argv);
-		sprintf(params[0], "\'%s\'", cJSON_Print(tx_list));
-		sprintf(params[1], "\'%s\'", cJSON_Print(address_info));
+		snprintf(params[0], arg_size, "\'%s\'", cJSON_Print(tx_list));
+		snprintf(params[1], arg_size, "\'%s\'", cJSON_Print(address_info));
 		argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
 		make_command(argc, argv, &tx);
 		bet_dealloc_args(argc, &argv);
@@ -361,8 +361,8 @@ cJSON *chips_create_raw_tx(double amount, char *address)
 		}
 		argc = 4;
 		bet_alloc_args(argc, &argv);
-		sprintf(params[0], "\'%s\'", cJSON_Print(tx_list));
-		sprintf(params[1], "\'%s\'", cJSON_Print(address_info));
+		snprintf(params[0], arg_size, "\'%s\'", cJSON_Print(tx_list));
+		snprintf(params[1], arg_size, "\'%s\'", cJSON_Print(address_info));
 		argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
 		make_command(argc, argv, &tx);
 		bet_dealloc_args(argc, &argv);
@@ -423,8 +423,8 @@ cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 		cJSON_AddStringToObject(address_info, "data", data);
 		argc = 4;
 		bet_alloc_args(argc, &argv);
-		sprintf(params[0], "\'%s\'", cJSON_Print(tx_list));
-		sprintf(params[1], "\'%s\'", cJSON_Print(address_info));
+		snprintf(params[0], arg_size, "\'%s\'", cJSON_Print(tx_list));
+		snprintf(params[1], arg_size, "\'%s\'", cJSON_Print(address_info));
 		argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
 		make_command(argc, argv, &tx);
 		bet_dealloc_args(argc, &argv);
@@ -517,7 +517,7 @@ cJSON *chips_add_multisig_address()
 
 	argc = 5;
 	bet_alloc_args(argc,&argv);
-	sprintf(param, "%d", threshold_value);
+	snprintf(param, arg_size, "%d", threshold_value);
 	
 	addr_list = cJSON_CreateArray();
 	for (int i = 0; i < no_of_notaries; i++)
