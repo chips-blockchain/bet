@@ -80,6 +80,8 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 int32_t no_of_txs = 0;
 char tx_ids[CARDS777_MAXPLAYERS][100];
 
+int32_t threshold_time = 30; /* Time to send the beacon*/
+
 void dcv_lws_write(cJSON *data)
 {
 	if (!dcv_data_to_write)
@@ -1218,8 +1220,7 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 	int32_t bytes, retval = 1;
 	char *rendered = NULL;
 	if ((method = jstr(argjson, "method")) != 0) {
-		if (strcmp(method, "live") != 0)
-			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
+		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
 		if (strcmp(method, "join_req") == 0) {
 			if (bet->numplayers < bet->maxplayers) {
 				retval = bet_player_join_req(argjson, bet, vars);
@@ -1297,7 +1298,6 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 				cJSON *temp = cJSON_CreateObject();
 				cJSON_AddStringToObject(temp, "hex", jstr(argjson, "tx"));
 				cJSON *finaltx = chips_send_raw_tx(temp);
-				printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(finaltx));
 			}
 
 		} else if (strcmp(method, "live") == 0) {
@@ -1315,7 +1315,6 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 			bits256_str(rand_str, randval);
 			cJSON_AddStringToObject(temp, "rand_str", rand_str);
 			strcpy(tx_rand_str[no_of_rand_str++], rand_str);
-			printf("rand_str::%s\n", rand_str);
 			bytes = nn_send(bet->pubsock, cJSON_Print(temp), strlen(cJSON_Print(temp)), 0);
 			if (bytes < 0) {
 				retval = -1;
@@ -1330,17 +1329,12 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 			}
 			if (chips_check_if_tx_unspent(cJSON_Print(tx_info)) == 1) {
 				strcpy(tx_ids[no_of_txs++], cJSON_Print(tx_info));
-				printf("valid tx\n");
 				char *rand_str = malloc(65);
 				chips_extract_data(cJSON_Print(tx_info), &rand_str);
-				printf("rand_str::%s\n", rand_str);
-				if (no_of_txs == 2) {
-					for (int i = 0; i < no_of_txs; i++)
-						printf("%s\n", tx_ids[i]);
-					chips_create_tx_from_tx_list(notary_node_addrs[1], no_of_txs, tx_ids);
-				}
-			} else
-				printf("invalid tx\n");
+			} else {
+				retval = 0;
+				goto end;
+			}	
 
 		} else {
 			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
@@ -1440,8 +1434,7 @@ void bet_dcv_frontend_loop(void *_ptr)
 
 static int32_t bet_live_status(struct privatebet_info *bet)
 {
-	char name[10];
-	cJSON *status_info = NULL;
+	cJSON *status_info = NULL, *temp = NULL;
 	int bytes;
 	int retval = 1;
 
@@ -1449,14 +1442,12 @@ static int32_t bet_live_status(struct privatebet_info *bet)
 	cJSON_AddStringToObject(status_info, "method", "status_info");
 	cJSON_AddNumberToObject(status_info, "bvv_status", bvv_status);
 
-	for (int i = 0; i < bet->maxplayers; i++) {
-		memset(name, 0x00, sizeof(name));
-		snprintf(name, sizeof(name), "player_%d", i);
-		cJSON_AddNumberToObject(status_info, name, player_status[i]);
-	}
-
+	cJSON_AddNumberToObject(status_info, "no_of_players", bet->maxplayers);
+	cJSON_AddItemToObject(status_info, "players_status", temp = cJSON_CreateArray());
+	for (int i = 0; i < bet->maxplayers; i++) 
+		cJSON_AddItemToArray(temp,cJSON_CreateNumber(player_status[i]));
+	
 	bytes = nn_send(bet->pubsock, cJSON_Print(status_info), strlen(cJSON_Print(status_info)), 0);
-
 	if (bytes < 0)
 		retval = -1;
 
@@ -1469,6 +1460,9 @@ void bet_dcv_live_loop(void *_ptr)
 	cJSON *live_info = NULL;
 	int32_t retval = 1;
 
+	while(bet->maxplayers != players_joined) {
+		sleep(2);
+	}
 	live_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(live_info, "method", "live");
 	while (1) {
@@ -1480,7 +1474,7 @@ void bet_dcv_live_loop(void *_ptr)
 		if (bytes < 0)
 			retval = -1;
 
-		sleep(10);
+		sleep(threshold_time);
 		retval = bet_live_status(bet);
 
 		if (retval < 0)
