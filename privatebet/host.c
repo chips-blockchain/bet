@@ -1237,6 +1237,21 @@ static int32_t bet_dcv_stack_info_resp(struct privatebet_info *bet)
 	return retval;
 }
 
+static void bet_dcv_process_signed_raw_tx(cJSON *argjson)
+{
+	cJSON *raw_tx = NULL;
+	
+	no_of_signers++;
+	if (no_of_signers < max_no_of_signers) {
+		is_signed[jint(argjson, "playerid")] = 1;
+		chips_publish_multisig_tx(jstr(argjson, "tx"));
+	} else {
+		raw_tx = cJSON_CreateObject();
+		cJSON_AddStringToObject(raw_tx, "hex", jstr(argjson, "tx"));
+		chips_send_raw_tx(raw_tx);
+	}
+}
+
 int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	char *method;
@@ -1312,17 +1327,7 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 			vars->funds[jint(argjson, "playerid")] = jint(argjson, "stack_value");
 			retval = bet_relay(argjson, bet, vars);
 		} else if (strcmp(method, "signedrawtransaction") == 0) {
-			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
-			no_of_signers++;
-			if (no_of_signers < max_no_of_signers) {
-				is_signed[jint(argjson, "playerid")] = 1;
-				chips_publish_multisig_tx(jstr(argjson, "tx"));
-			} else {
-				cJSON *temp = cJSON_CreateObject();
-				cJSON_AddStringToObject(temp, "hex", jstr(argjson, "tx"));
-				chips_send_raw_tx(temp);
-			}
-
+			bet_dcv_process_signed_raw_tx(argjson);
 		} else if (strcmp(method, "live") == 0) {
 			if (strcmp(jstr(argjson, "node_type"), "bvv") == 0)
 				bvv_status = 1;
