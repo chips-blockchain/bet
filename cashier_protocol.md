@@ -44,20 +44,20 @@ When the game starts since all the trusted notary nodes and the corresponding pu
 
 Dealer then verifies whether the `tx` is legitimate or not as mentioned below:
 ```
-1. Player sends the joining request, along with it's {public_key}.
-2. Dealer sends the {stack_size, random_number} to the player.
+1. Player sends the stack_info_req message, along with it's {public_key}, in order to know how much funds does player need in order to join the table.
+2. Dealer sends the {stack_size, rand_str} to the player, where rand_str is the 65 bytes random data which the dealer generates and in unique for stack_info_resp message.
 3. Player checks if it has sufficient funds to join the table, 
   3.1 if yes,
-    a. check the status of the notary nodes and deposit stack_size amount to the msig_address
-    b. generates the signature for the random_number
-    c. send {signature(random_number), tx} to the dealer
+    a. check the status of the notary nodes and creates a tx of the amount equal to stack_size along with that in the data part of the tx the player keeps the 65 bytes string which it received in step 2. The reason for this is to mitigate the replay attacks.
+    b. player node publishes the tx created in step a, and sends the tx id to the dealer.
   3.2 if no, exit, refill the funds(which is done manually to the address in the chips wallet) and join again if the player wants to play.
-4. Dealaer verifies the signature(random_number), if yes it verifies the tx as mentioned in step 5 else discard the message.
-5. Steps to verify the tx.
-  5.1 check if it's unspent.
-  5.2 check if it's sent to the already preconfigured msig_address
-  5.3 check if the amount in tx is equals to stack_size
-6. if all checks passed in step 5, dealer sends the join_res  
+4. Dealaer verifies the tx, if the tx is valid delaer allows the player to join the table, else player joining request will be rejected. The steps to verify the tx are as follows:
+  4.1 check if the tx is unspent or not, if yes goto next step else exit.
+  4.2 check if the tx is sent to the already preconfigured msig_address, if yes goto next step else exit.
+  4.3 check if the amount in tx is equals to stack_size, if yes goto next step else exit.
+  4.4 getrawtransaction from the tx, then decode the rawtransaction and extract the public key and check if that matches to what player sent in the stack_info_req message, if yes goto next step else exit.
+  4.5 extract the rand_str from the data part of the tx, and this rand_str is matches with the rand_str that dealer sents to the player in stack_info_resp message, if yes goto next step else exit. 
+6. If all the above checks passed then delaer allows the player to join the table else rejects the player. 
 ```
 
 Like this dealer keeps track of the joining players along with lock-in transaction as shown below:
