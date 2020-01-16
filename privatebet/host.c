@@ -1261,6 +1261,29 @@ static void bet_dcv_process_live(cJSON *argjson)
 		
 }
 
+static int32_t bet_dcv_verify_tx(cJSON *argjson)
+{
+	
+	cJSON *tx_info = NULL;
+	int32_t block_height, retval = 1;
+	char *rand_str = NULL;
+	
+	tx_info = cJSON_CreateObject();
+	tx_info = cJSON_GetObjectItem(argjson, "tx_info");
+	block_height = jint(argjson, "block_height")
+	while (block_height < chips_get_block_count()) {
+		sleep(2);
+	}
+	if (chips_check_if_tx_unspent(cJSON_Print(tx_info)) == 1) {
+		strcpy(tx_ids[no_of_txs++], cJSON_Print(tx_info));
+		rand_str = calloc(65,sizeof(char));
+		chips_extract_data(cJSON_Print(tx_info), &rand_str);
+	} else 
+		retval = 0;
+	
+	return retval;	
+}
+
 int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	char *method;
@@ -1291,8 +1314,6 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 		} else if (strcmp(method, "init_p") == 0) {
 			retval = bet_dcv_init(argjson, bet, vars);
 			if (dcv_info.numplayers == dcv_info.maxplayers) {
-				printf("%s::%d::dcv_info.numplayers::%d\n", __FUNCTION__, __LINE__,
-				       dcv_info.numplayers);
 				retval = bet_dcv_deck_init_info(argjson, bet, vars);
 			}
 		} else if (strcmp(method, "bvv_join") == 0) {
@@ -1342,21 +1363,7 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 		} else if (strcmp(method, "stack_info_req") == 0) {
 			retval = bet_dcv_stack_info_resp(bet);
 		} else if (strcmp(method, "tx") == 0) {
-			cJSON *tx_info = cJSON_CreateObject();
-			int32_t block_height = jint(argjson, "block_height");
-			tx_info = cJSON_GetObjectItem(argjson, "tx_info");
-			while (block_height < chips_get_block_count()) {
-				sleep(2);
-			}
-			if (chips_check_if_tx_unspent(cJSON_Print(tx_info)) == 1) {
-				strcpy(tx_ids[no_of_txs++], cJSON_Print(tx_info));
-				char *rand_str = malloc(65);
-				chips_extract_data(cJSON_Print(tx_info), &rand_str);
-			} else {
-				retval = 0;
-				goto end;
-			}
-
+			retval = bet_dcv_verify_tx(argjson);
 		} else {
 			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
 			if (bytes < 0) {
