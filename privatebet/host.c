@@ -1284,6 +1284,26 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson)
 	return retval;	
 }
 
+static void bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
+{
+	int32_t retval = 1;
+	
+	if (bet->numplayers < bet->maxplayers) {
+		retval = bet_player_join_req(argjson, bet, vars);
+		if (retval < 0)
+			return retval;
+		
+		bet_push_joinInfo(argjson, bet->numplayers);
+		if (bet->numplayers == bet->maxplayers) {
+			retval = bet_ln_check(bet);
+			if (retval < 0)
+				return retval;
+			
+			bet_check_bvv_ready(bet);
+		}
+	}
+}
+
 int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	char *method;
@@ -1292,23 +1312,7 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 	if ((method = jstr(argjson, "method")) != 0) {
 		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
 		if (strcmp(method, "join_req") == 0) {
-			if (bet->numplayers < bet->maxplayers) {
-				retval = bet_player_join_req(argjson, bet, vars);
-				if (retval < 0)
-					goto end;
-				bet_push_joinInfo(argjson, bet->numplayers);
-				if (bet->numplayers == bet->maxplayers) {
-					printf("Table is filled\n");
-					retval = bet_ln_check(bet);
-					if (retval < 0) {
-						printf("%s::%d::something wrong with bet_ln_check\n", __FUNCTION__,
-						       __LINE__);
-						goto end;
-					}
-					bet_check_bvv_ready(bet);
-				}
-			}
-
+			retval = bet_dcv_process_join_req(argjson, bet, vars);
 		} else if (strcmp(method, "bvv_ready") == 0) {
 			retval = bet_dcv_start(bet, 0);
 		} else if (strcmp(method, "init_p") == 0) {
