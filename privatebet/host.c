@@ -1261,6 +1261,18 @@ static void bet_dcv_process_live(cJSON *argjson)
 		
 }
 
+static int32_t bet_dcv_verify_rand_str(char *rand_str)
+{
+	int32_t retval = 0;
+	
+	for(int i = 0; i < no_of_rand_str; i++) {
+		if(strcmp(tx_rand_str[i],rand_str) == 0) {
+			retval = 1;
+			break;
+			}
+	}
+	return retval;	
+}
 static int32_t bet_dcv_verify_tx(cJSON *argjson)
 {
 	
@@ -1278,6 +1290,7 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson)
 		strcpy(tx_ids[no_of_txs++], cJSON_Print(tx_info));
 		rand_str = calloc(65,sizeof(char));
 		chips_extract_data(cJSON_Print(tx_info), &rand_str);
+		retval = bet_dcv_verify_rand_str(rand_str);
 	} else 
 		retval = 0;
 	
@@ -1368,6 +1381,8 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 			retval = bet_dcv_stack_info_resp(bet);
 		} else if (strcmp(method, "tx") == 0) {
 			retval = bet_dcv_verify_tx(argjson);
+			if(retval == 1)
+				printf("%s::%d::Tx is Valid\n",__FUNCTION__,__LINE__);
 		} else {
 			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
 			if (bytes < 0) {
