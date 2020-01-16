@@ -57,7 +57,7 @@ Dealer then verifies whether the `tx` is legitimate or not as mentioned below:
   4.3 check if the amount in tx is equals to stack_size, if yes goto next step else exit.
   4.4 getrawtransaction from the tx, then decode the rawtransaction and extract the public key and check if that matches to what player sent in the stack_info_req message, if yes goto next step else exit.
   4.5 extract the rand_str from the data part of the tx, and this rand_str is matches with the rand_str that dealer sents to the player in stack_info_resp message, if yes goto next step else exit. 
-6. If all the above checks passed then delaer allows the player to join the table else rejects the player. 
+5. If all the above checks passed then delaer allows the player to join the table else rejects the player. 
 ```
 
 Like this dealer keeps track of the joining players along with lock-in transaction as shown below:
