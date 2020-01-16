@@ -1270,7 +1270,7 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson)
 	
 	tx_info = cJSON_CreateObject();
 	tx_info = cJSON_GetObjectItem(argjson, "tx_info");
-	block_height = jint(argjson, "block_height")
+	block_height = jint(argjson, "block_height");
 	while (block_height < chips_get_block_count()) {
 		sleep(2);
 	}
@@ -1284,7 +1284,7 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson)
 	return retval;	
 }
 
-static void bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
+static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int32_t retval = 1;
 	
