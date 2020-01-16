@@ -1464,6 +1464,37 @@ static void bet_push_join_info(int32_t playerid)
 	player_lws_write(join_info);
 }
 
+static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privatebet_info *bet)
+{
+	cJSON *tx_info = NULL, *txid = NULL;
+	double funds_needed;
+	int32_t retval = 1, bytes;
+	char *data = NULL;
+
+	funds_needed = jdouble(argjson, "table_stack_in_chips");
+	if (chips_get_balance() < (funds_needed + chips_tx_fee)) {
+		printf("%s::%d::Insufficient funds\n", __FUNCTION__, __LINE__);
+		retval = -1;
+	} else {
+		tx_info = cJSON_CreateObject();
+		data = jstr(argjson, "rand_str");
+		txid = chips_transfer_funds_with_data(funds_needed, legacy_2_of_4_msig_Addr, data);
+		cJSON_AddStringToObject(tx_info, "method", "tx");
+		cJSON_AddItemToObject(tx_info, "tx_info", txid);
+
+		while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
+			sleep(2);
+		}
+		cJSON_AddNumberToObject(
+			tx_info, "block_height",
+			chips_get_block_height_from_block_hash(chips_get_block_hash_from_txid(cJSON_Print(txid))));
+		bytes = nn_send(bet->pushsock, cJSON_Print(tx_info), strlen(cJSON_Print(tx_info)), 0);
+		if (bytes < 0)
+			retval = -1;
+	}
+	return retval;
+}
+
 int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int32_t retval = 1, bytes;
@@ -1543,28 +1574,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		} else if (strcmp(method, "status_info") == 0) {
 			player_lws_write(argjson);
 		} else if (strcmp(method, "stack_info_resp") == 0) {
-			double funds_needed = jdouble(argjson, "table_stack_in_chips");
-			if (chips_get_balance() < (funds_needed + chips_tx_fee)) {
-				printf("%s::%d::Insufficient funds\n", __FUNCTION__, __LINE__);
-				retval = -1;
-			} else {
-				cJSON *tx_info = cJSON_CreateObject();
-				char *data = jstr(argjson, "rand_str");
-				cJSON *txid =
-					chips_transfer_funds_with_data(funds_needed, legacy_2_of_4_msig_Addr, data);
-				cJSON_AddStringToObject(tx_info, "method", "tx");
-				cJSON_AddItemToObject(tx_info, "tx_info", txid);
-
-				while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
-					sleep(2);
-				}
-				cJSON_AddNumberToObject(tx_info, "block_height",
-							chips_get_block_height_from_block_hash(
-								chips_get_block_hash_from_txid(cJSON_Print(txid))));
-				bytes = nn_send(bet->pushsock, cJSON_Print(tx_info), strlen(cJSON_Print(tx_info)), 0);
-				if (bytes < 0)
-					retval = -1;
-			}
+			retval = bet_player_handle_stack_info_resp(argjson, bet);
 		}
 	}
 	return retval;

@@ -1214,6 +1214,29 @@ static void bet_push_joinInfo(cJSON *argjson, int32_t numplayers)
 	cJSON_AddNumberToObject(join_info, "tot_players_joined", numplayers);
 	dcv_lws_write(join_info);
 }
+
+static int32_t bet_dcv_stack_info_resp(struct privatebet_info *bet)
+{
+	int32_t bytes, retval = 1;
+	cJSON *stack_info_resp = NULL;
+	char rand_str[65] = { 0 };
+	bits256 randval;
+
+	stack_info_resp = cJSON_CreateObject();
+	cJSON_AddStringToObject(stack_info_resp, "method", "stack_info_resp");
+	cJSON_AddNumberToObject(stack_info_resp, "table_stack_in_chips", table_stack_in_chips);
+	OS_randombytes(randval.bytes, sizeof(randval));
+	bits256_str(rand_str, randval);
+	cJSON_AddStringToObject(stack_info_resp, "rand_str", rand_str);
+	strcpy(tx_rand_str[no_of_rand_str++], rand_str);
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(stack_info_resp));
+	bytes = nn_send(bet->pubsock, cJSON_Print(stack_info_resp), strlen(cJSON_Print(stack_info_resp)), 0);
+	if (bytes < 0)
+		retval = -1;
+
+	return retval;
+}
+
 int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	char *method;
@@ -1306,20 +1329,7 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 			else if (strcmp(jstr(argjson, "node_type"), "player") == 0)
 				player_status[jint(argjson, "playerid")] = 1;
 		} else if (strcmp(method, "stack_info_req") == 0) {
-			cJSON *temp = cJSON_CreateObject();
-			cJSON_AddStringToObject(temp, "method", "stack_info_resp");
-			cJSON_AddNumberToObject(temp, "table_stack_in_chips", table_stack_in_chips);
-			bits256 randval;
-			OS_randombytes(randval.bytes, sizeof(randval));
-			char rand_str[65];
-			bits256_str(rand_str, randval);
-			cJSON_AddStringToObject(temp, "rand_str", rand_str);
-			strcpy(tx_rand_str[no_of_rand_str++], rand_str);
-			bytes = nn_send(bet->pubsock, cJSON_Print(temp), strlen(cJSON_Print(temp)), 0);
-			if (bytes < 0) {
-				retval = -1;
-				goto end;
-			}
+			retval = bet_dcv_stack_info_resp(bet);
 		} else if (strcmp(method, "tx") == 0) {
 			cJSON *tx_info = cJSON_CreateObject();
 			int32_t block_height = jint(argjson, "block_height");
