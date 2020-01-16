@@ -1252,6 +1252,15 @@ static void bet_dcv_process_signed_raw_tx(cJSON *argjson)
 	}
 }
 
+static void bet_dcv_process_live(cJSON *argjson)
+{
+	if (strcmp(jstr(argjson, "node_type"), "bvv") == 0)
+		bvv_status = 1;
+	else if (strcmp(jstr(argjson, "node_type"), "player") == 0)
+		player_status[jint(argjson, "playerid")] = 1;
+		
+}
+
 int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	char *method;
@@ -1329,10 +1338,7 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 		} else if (strcmp(method, "signedrawtransaction") == 0) {
 			bet_dcv_process_signed_raw_tx(argjson);
 		} else if (strcmp(method, "live") == 0) {
-			if (strcmp(jstr(argjson, "node_type"), "bvv") == 0)
-				bvv_status = 1;
-			else if (strcmp(jstr(argjson, "node_type"), "player") == 0)
-				player_status[jint(argjson, "playerid")] = 1;
+			bet_dcv_process_live(argjson);
 		} else if (strcmp(method, "stack_info_req") == 0) {
 			retval = bet_dcv_stack_info_resp(bet);
 		} else if (strcmp(method, "tx") == 0) {
