@@ -288,7 +288,8 @@ static void common_init()
 
 	chips_add_multisig_address();
 	printf("Importing msig address::%s\n", legacy_2_of_4_msig_Addr);
-	chips_import_address(legacy_2_of_4_msig_Addr);
+	if (chips_iswatchonly(legacy_2_of_4_msig_Addr) == 0)
+		chips_import_address(legacy_2_of_4_msig_Addr);
 }
 int main(int argc, char **argv)
 {
