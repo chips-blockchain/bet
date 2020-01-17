@@ -1215,7 +1215,7 @@ static void bet_push_joinInfo(cJSON *argjson, int32_t numplayers)
 	dcv_lws_write(join_info);
 }
 
-static int32_t bet_dcv_stack_info_resp(struct privatebet_info *bet)
+static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *bet)
 {
 	int32_t bytes, retval = 1;
 	cJSON *stack_info_resp = NULL;
@@ -1228,6 +1228,7 @@ static int32_t bet_dcv_stack_info_resp(struct privatebet_info *bet)
 	OS_randombytes(randval.bytes, sizeof(randval));
 	bits256_str(rand_str, randval);
 	cJSON_AddStringToObject(stack_info_resp, "rand_str", rand_str);
+	cJSON_AddStringToObject(stack_info_resp,"req_identifier",jstr(argjson,"req_identifier"));
 	strcpy(tx_rand_str[no_of_rand_str++], rand_str);
 	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(stack_info_resp));
 	bytes = nn_send(bet->pubsock, cJSON_Print(stack_info_resp), strlen(cJSON_Print(stack_info_resp)), 0);
@@ -1378,7 +1379,7 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 		} else if (strcmp(method, "live") == 0) {
 			bet_dcv_process_live(argjson);
 		} else if (strcmp(method, "stack_info_req") == 0) {
-			retval = bet_dcv_stack_info_resp(bet);
+			retval = bet_dcv_stack_info_resp(argjson, bet);
 		} else if (strcmp(method, "tx") == 0) {
 			retval = bet_dcv_verify_tx(argjson);
 			if(retval == 1)
