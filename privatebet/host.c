@@ -220,8 +220,11 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason, v
 		break;
 	case LWS_CALLBACK_SERVER_WRITEABLE:
 		if (dcv_data_exists == 1) {
-			lws_write(wsi, cJSON_Print(dcv_data_to_write), strlen(cJSON_Print(dcv_data_to_write)), 0);
-			dcv_data_exists = 0;
+			if(dcv_data_to_write) {
+				printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(dcv_data_to_write));
+				lws_write(wsi, cJSON_Print(dcv_data_to_write), strlen(cJSON_Print(dcv_data_to_write)), 0);
+				dcv_data_exists = 0;
+			}
 		}
 		break;
 	}
