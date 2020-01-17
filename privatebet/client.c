@@ -1347,8 +1347,6 @@ void bet_player_frontend_loop(void *_ptr)
 	while (n >= 0 && !interrupted1) {
 		n = lws_service(player_context, 1000);
 	}
-	if (player_context)
-		lws_context_destroy(player_context);
 }
 
 int lws_callback_http_bvv(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
@@ -1422,7 +1420,6 @@ void bet_bvv_frontend_loop(void *_ptr)
 	while (n >= 0 && !interrupted_bvv) {
 		n = lws_service(bvv_context, 1000);
 	}
-	lws_context_destroy(bvv_context);
 }
 
 void bet_push_client(cJSON *argjson)

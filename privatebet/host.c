@@ -1457,11 +1457,9 @@ void bet_dcv_frontend_loop(void *_ptr)
 	struct lws_context *dcv_context = NULL;
 	int n = 0, logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE;
 
-	printf("\n%s::%d", __FUNCTION__, __LINE__);
 	lws_set_log_level(logs, NULL);
 	lwsl_user("LWS minimal ws broker | visit http://localhost:1234\n");
 
-	// for DCV
 	memset(&dcv_info, 0, sizeof dcv_info); /* otherwise uninitialized garbage */
 	dcv_info.port = 9000;
 	dcv_info.mounts = &mount;
@@ -1477,7 +1475,6 @@ void bet_dcv_frontend_loop(void *_ptr)
 	while (n >= 0 && !interrupted) {
 		n = lws_service(dcv_context, 1000);
 	}
-	lws_context_destroy(dcv_context);
 }
 
 static int32_t bet_live_status(struct privatebet_info *bet)
