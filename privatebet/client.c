@@ -1611,16 +1611,9 @@ void bet_player_backend_loop(void *_ptr)
 	cJSON *msgjson = NULL;
 	struct privatebet_info *bet = _ptr;
 	uint8_t flag = 1;
-	cJSON *funds_info = NULL;
-	int32_t bytes;
 
-	funds_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(funds_info, "method", "stack_info_req");
-	bytes = nn_send(bet->pushsock, cJSON_Print(funds_info), strlen(cJSON_Print(funds_info)), 0);
-	if (bytes < 0) {
-		printf("%s::%d::Failed to send data\n", __FUNCTION__, __LINE__);
-		flag = 0;
-	}
+	flag = bet_player_stack_info_req(bet);
+
 	while (flag) {
 		if (bet->subsock >= 0 && bet->pushsock >= 0) {
 			ptr = 0;
