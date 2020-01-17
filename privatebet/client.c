@@ -293,7 +293,7 @@ static cJSON *bet_player_fundchannel(char *channel_id)
 int32_t bet_check_bvv_ready(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int retval = 0, channel_state, bytes;
-	cJSON *uri_info = NULL, *fund_channel_info = NULL, *bvv_ready = NULL;
+	cJSON *uri_info = NULL, *bvv_ready = NULL;
 	char uri[100], channel_id[100], *rendered = NULL;
 
 	uri_info = cJSON_GetObjectItem(argjson, "uri_info");
@@ -301,38 +301,19 @@ int32_t bet_check_bvv_ready(cJSON *argjson, struct privatebet_info *bet, struct 
 		strcpy(uri, jstri(uri_info, i));
 		strcpy(channel_id, strtok(uri, "@"));
 		channel_state = ln_get_channel_status(channel_id);
-		if ((channel_state != 2) && (channel_state != 3)) {
-			bet_bvv_connect(jstri(uri_info, i));
-			fund_channel_info = cJSON_CreateObject();
-			fund_channel_info = bet_player_fundchannel(channel_id);
-
-			if (jint(fund_channel_info, "code") == -1) {
-				retval = -1;
-				printf("%s::%d::%s", __FUNCTION__, __LINE__, cJSON_Print(fund_channel_info));
-				goto end;
-			}
+		
+		if ((channel_state != CHANNELD_AWAITING_LOCKIN) && (channel_state != CHANNELD_NORMAL)) {
+			retval = ln_establish_channel(uri);
+			if (retval == 1)
+				printf("Channel Established\n");
+			else
+				printf("Channel Didn't Established\n");
+		} else {
+			strcpy(uri, jstr(argjson, "uri"));
+			ln_check_peer_and_connect(uri);
 		}
 	}
-	for (int i = 0; i < cJSON_GetArraySize(uri_info); i++) {
-		strcpy(uri, jstri(uri_info, i));
-		strcpy(channel_id, strtok(uri, "@"));
-		while ((channel_state = ln_get_channel_status(channel_id)) != 3) {
-			if (channel_state == 2) {
-				printf("CHANNELD AWAITING LOCKIN\r");
-				fflush(stdout);
-				sleep(2);
-			} else {
-				retval = -1;
-				printf("\n%s:%d: BVV is failed to establish the channel with "
-				       "Player: %d",
-				       __FUNCTION__, __LINE__, i);
-				break;
-			}
-		}
-
-		printf("BVV  --> Player %d channel ready\n", i);
-	}
-
+	
 	bvv_ready = cJSON_CreateObject();
 	cJSON_AddStringToObject(bvv_ready, "method", "bvv_ready");
 
