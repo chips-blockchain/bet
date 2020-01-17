@@ -47,7 +47,7 @@ int32_t number_cards_drawn = 0;
 int32_t sharesflag[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 
 int32_t data_exists = 0;
-char player_gui_data[1024];
+char player_gui_data[8196];
 
 struct deck_player_info player_info;
 struct deck_bvv_info bvv_info;

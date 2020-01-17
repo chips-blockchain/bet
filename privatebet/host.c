@@ -40,9 +40,6 @@
 
 struct lws *wsi_global_host = NULL;
 
-cJSON *dcv_data_to_write = NULL;
-int32_t dcv_data_exists = 0;
-
 int32_t players_joined = 0;
 int32_t turn = 0, no_of_cards = 0, no_of_rounds = 0, no_of_bets = 0;
 int32_t card_matrix[CARDS777_MAXPLAYERS][hand_size];
@@ -82,15 +79,23 @@ char tx_ids[CARDS777_MAXPLAYERS][100];
 
 int32_t threshold_time = 30; /* Time to send the beacon*/
 
-void dcv_lws_write(cJSON *data)
-{
-	if (!dcv_data_to_write)
-		dcv_data_to_write = cJSON_CreateObject();
+int32_t dcv_data_exists = 0;
+char dcv_gui_data[8196];
+int ws_dcv_connection_status = 0;
 
-	memset(dcv_data_to_write, 0, sizeof(struct cJSON));
-	dcv_data_to_write = data;
-	dcv_data_exists = 1;
-	lws_callback_on_writable(wsi_global_host);
+void bet_dcv_lws_write(cJSON *data)
+{
+	if (ws_dcv_connection_status == 1) {
+		if (dcv_data_exists == 1) {
+			printf("%s::%d::There is more data\n", __FUNCTION__, __LINE__);
+			while (dcv_data_exists == 1)
+				sleep(1);
+		}
+		memset(dcv_gui_data, 0, sizeof(dcv_gui_data));
+		strncpy(dcv_gui_data, cJSON_Print(data), strlen(cJSON_Print(data)));
+		dcv_data_exists = 1;
+		lws_callback_on_writable(wsi_global_host);
+	}
 }
 
 void bet_chat(struct lws *wsi, cJSON *argjson)
@@ -217,12 +222,13 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason, v
 	case LWS_CALLBACK_ESTABLISHED:
 		wsi_global_host = wsi;
 		printf("%s::%d::LWS_CALLBACK_ESTABLISHED\n", __FUNCTION__, __LINE__);
+		ws_dcv_connection_status = 1;
 		break;
 	case LWS_CALLBACK_SERVER_WRITEABLE:
-		if (dcv_data_exists == 1) {
-			if(dcv_data_to_write) {
-				printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(dcv_data_to_write));
-				lws_write(wsi, cJSON_Print(dcv_data_to_write), strlen(cJSON_Print(dcv_data_to_write)), 0);
+		
+		if (dcv_data_exists) {
+			if (dcv_gui_data) {
+				lws_write(wsi, dcv_gui_data, strlen(dcv_gui_data), 0);
 				dcv_data_exists = 0;
 			}
 		}
@@ -266,7 +272,7 @@ void sigint_handler(int sig)
 void bet_push_dcv_to_gui(cJSON *argjson)
 {
 	if (argjson) {
-		dcv_lws_write(argjson);
+		bet_dcv_lws_write(argjson);
 	}
 }
 
@@ -1215,7 +1221,7 @@ static void bet_push_joinInfo(cJSON *argjson, int32_t numplayers)
 	cJSON_AddStringToObject(join_info, "method", "join_info");
 	cJSON_AddNumberToObject(join_info, "joined_playerid", jint(argjson, "gui_playerID"));
 	cJSON_AddNumberToObject(join_info, "tot_players_joined", numplayers);
-	dcv_lws_write(join_info);
+	bet_push_dcv_to_gui(join_info);
 }
 
 static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *bet)
