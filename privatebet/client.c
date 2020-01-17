@@ -292,9 +292,13 @@ static cJSON *bet_player_fundchannel(char *channel_id)
 
 int32_t bet_check_bvv_ready(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int retval = 0, channel_state, bytes;
-	cJSON *uri_info = NULL, *bvv_ready = NULL;
-	char uri[100], channel_id[100], *rendered = NULL;
+	cJSON *bvv_ready = NULL;
+	int32_t retval = 0, bytes;
+	char *rendered = NULL;
+	#if 0
+	int32_t channel_state;
+	cJSON *uri_info = NULL;
+	char uri[100], channel_id[100];
 
 	uri_info = cJSON_GetObjectItem(argjson, "uri_info");
 	for (int i = 0; i < cJSON_GetArraySize(uri_info); i++) {
@@ -313,7 +317,7 @@ int32_t bet_check_bvv_ready(cJSON *argjson, struct privatebet_info *bet, struct 
 			ln_check_peer_and_connect(uri);
 		}
 	}
-	
+	#endif
 	bvv_ready = cJSON_CreateObject();
 	cJSON_AddStringToObject(bvv_ready, "method", "bvv_ready");
 
