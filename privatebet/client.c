@@ -1327,28 +1327,28 @@ void player_sigint_handler(int sig)
 
 void bet_player_frontend_loop(void *_ptr)
 {
-	struct lws_context_creation_info dcv_info;
-	struct lws_context *dcv_context = NULL;
+	struct lws_context_creation_info player_info;
+	struct lws_context *player_context = NULL;
 	int n = 0, logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE;
 
 	// signal(SIGINT,player_sigint_handler);
 	lws_set_log_level(logs, NULL);
 
-	memset(&dcv_info, 0, sizeof dcv_info); /* otherwise uninitialized garbage */
-	dcv_info.port = 9000;
-	dcv_info.mounts = &lws_http_mount_player;
-	dcv_info.protocols = player_http_protocol;
-	dcv_info.options = LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
+	memset(&player_info, 0, sizeof player_info); /* otherwise uninitialized garbage */
+	player_info.port = 9000;
+	player_info.mounts = &lws_http_mount_player;
+	player_info.protocols = player_http_protocol;
+	player_info.options = LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
 
-	dcv_context = lws_create_context(&dcv_info);
-	if (!dcv_context) {
+	player_context = lws_create_context(&player_info);
+	if (!player_context) {
 		printf("lws init failed\n");
 	}
 	while (n >= 0 && !interrupted1) {
-		n = lws_service(dcv_context, 1000);
+		n = lws_service(player_context, 1000);
 	}
-	if (dcv_context)
-		lws_context_destroy(dcv_context);
+	if (player_context)
+		lws_context_destroy(player_context);
 }
 
 int lws_callback_http_bvv(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
@@ -1403,26 +1403,26 @@ static const struct lws_http_mount mount_bvv = {
 
 void bet_bvv_frontend_loop(void *_ptr)
 {
-	struct lws_context_creation_info dcv_info;
-	struct lws_context *dcv_context = NULL;
+	struct lws_context_creation_info bvv_info;
+	struct lws_context *bvv_context = NULL;
 	int n = 0, logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE;
 
 	lws_set_log_level(logs, NULL);
 	lwsl_user("LWS minimal ws broker | visit http://localhost:7681\n");
-	memset(&dcv_info, 0, sizeof dcv_info); /* otherwise uninitialized garbage */
-	dcv_info.port = 9000;
-	dcv_info.mounts = &mount_bvv;
-	dcv_info.protocols = protocols_bvv;
-	dcv_info.options = LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
+	memset(&bvv_info, 0, sizeof bvv_info); /* otherwise uninitialized garbage */
+	bvv_info.port = 9000;
+	bvv_info.mounts = &mount_bvv;
+	bvv_info.protocols = protocols_bvv;
+	bvv_info.options = LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
 
-	dcv_context = lws_create_context(&dcv_info);
-	if (!dcv_context) {
+	bvv_context = lws_create_context(&bvv_info);
+	if (!bvv_context) {
 		printf("lws init failed\n");
 	}
 	while (n >= 0 && !interrupted_bvv) {
-		n = lws_service(dcv_context, 1000);
+		n = lws_service(bvv_context, 1000);
 	}
-	lws_context_destroy(dcv_context);
+	lws_context_destroy(bvv_context);
 }
 
 void bet_push_client(cJSON *argjson)
