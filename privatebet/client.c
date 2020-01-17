@@ -81,6 +81,8 @@ int32_t lws_buf_length_1 = 0;
 char lws_buf_bvv[2000];
 int32_t lws_buf_length_bvv = 0;
 
+char req_identifier[65];
+
 void player_lws_write(cJSON *data)
 {
 	if (ws_connection_status == 1) {
@@ -1574,9 +1576,31 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		} else if (strcmp(method, "status_info") == 0) {
 			player_lws_write(argjson);
 		} else if (strcmp(method, "stack_info_resp") == 0) {
-			retval = bet_player_handle_stack_info_resp(argjson, bet);
+			if(strcmp(req_identifier,jstr(argjson,"req_identifier")) == 0)
+				retval = bet_player_handle_stack_info_resp(argjson, bet);
 		}
 	}
+	return retval;
+}
+
+static int32_t bet_player_stack_info_req(struct privatebet_info *bet)
+{
+	
+	int32_t bytes, retval = 1;
+	cJSON *stack_info_req = NULL;
+	char rand_str[65] = { 0 };
+	bits256 randval;
+
+	stack_info_req = cJSON_CreateObject();
+	cJSON_AddStringToObject(stack_info_req, "method", "stack_info_req");
+	OS_randombytes(randval.bytes, sizeof(randval));
+	bits256_str(rand_str, randval);
+	strncpy(req_identifier,rand_str,sizeof(req_identifier));
+	cJSON_AddStringToObject(stack_info_req, "req_identifier", rand_str);
+	bytes = nn_send(bet->pushsock, cJSON_Print(stack_info_req), strlen(cJSON_Print(stack_info_req)), 0);
+	if (bytes < 0)
+		retval = -1;
+
 	return retval;
 }
 
