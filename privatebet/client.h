@@ -20,7 +20,7 @@ void bet_player_backend_loop(void *_ptr);
 
 int32_t bet_player_ready(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
 void bet_table_info(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
-void display_cards(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
+void display_cards();
 int32_t bet_player_reset(struct privatebet_info *bet, struct privatebet_vars *vars);
 
 void bet_player_frontend_loop();

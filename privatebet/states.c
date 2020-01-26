@@ -453,12 +453,12 @@ int32_t bet_player_betting_statemachine(cJSON *argjson, struct privatebet_info *
 	if ((action = jstr(argjson, "action")) != 0) {
 		if (strcmp(action, "small_blind") == 0) {
 			if (jint(argjson, "playerid") == bet->myplayerid) {
-				display_cards(argjson, bet, vars);
+				display_cards();
 				retval = bet_player_small_blind(argjson, bet, vars);
 			}
 		} else if (strcmp(action, "big_blind") == 0) {
 			if (jint(argjson, "playerid") == bet->myplayerid) {
-				display_cards(argjson, bet, vars);
+				display_cards();
 				retval = bet_player_big_blind(argjson, bet, vars);
 			}
 		} else if (strcmp(action, "small_blind_bet") == 0) {
@@ -477,7 +477,7 @@ int32_t bet_player_betting_statemachine(cJSON *argjson, struct privatebet_info *
 			}
 
 		} else if (strcmp(action, "round_betting") == 0) {
-			display_cards(argjson, bet, vars);
+			display_cards();
 
 			cJSON *player_funds = NULL;
 			cJSON_AddItemToObject(argjson, "player_funds", player_funds = cJSON_CreateArray());
