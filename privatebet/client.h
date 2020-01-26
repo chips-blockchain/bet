@@ -15,7 +15,7 @@ int32_t bet_client_bvv_init(cJSON *argjson, struct privatebet_info *bet, struct 
 int32_t bet_client_dcv_init(cJSON *dcv_info, struct privatebet_info *bet, struct privatebet_vars *vars);
 int32_t bet_client_init(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
 int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
-int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
+int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet);
 void bet_player_backend_loop(void *_ptr);
 
 int32_t bet_player_ready(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);

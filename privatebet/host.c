@@ -225,7 +225,7 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason, v
 		ws_dcv_connection_status = 1;
 		break;
 	case LWS_CALLBACK_SERVER_WRITEABLE:
-		
+
 		if (dcv_data_exists) {
 			if (dcv_gui_data) {
 				lws_write(wsi, dcv_gui_data, strlen(dcv_gui_data), 0);
@@ -1228,18 +1228,15 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 {
 	int32_t bytes, retval = 1;
 	cJSON *stack_info_resp = NULL;
-	char rand_str[65] = { 0 };
-	bits256 randval;
 
 	stack_info_resp = cJSON_CreateObject();
 	cJSON_AddStringToObject(stack_info_resp, "method", "stack_info_resp");
 	cJSON_AddNumberToObject(stack_info_resp, "table_stack_in_chips", table_stack_in_chips);
-	OS_randombytes(randval.bytes, sizeof(randval));
-	bits256_str(rand_str, randval);
-	cJSON_AddStringToObject(stack_info_resp, "rand_str", rand_str);
-	cJSON_AddStringToObject(stack_info_resp,"req_identifier",jstr(argjson,"req_identifier"));
-	strcpy(tx_rand_str[no_of_rand_str++], rand_str);
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(stack_info_resp));
+
+	cJSON_AddStringToObject(stack_info_resp, "rand_str", jstr(argjson, "req_identifier"));
+	cJSON_AddStringToObject(stack_info_resp, "req_identifier", jstr(argjson, "req_identifier"));
+
+	strcpy(tx_rand_str[no_of_rand_str++], jstr(argjson, "req_identifier"));
 	bytes = nn_send(bet->pubsock, cJSON_Print(stack_info_resp), strlen(cJSON_Print(stack_info_resp)), 0);
 	if (bytes < 0)
 		retval = -1;
@@ -1250,7 +1247,7 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 static void bet_dcv_process_signed_raw_tx(cJSON *argjson)
 {
 	cJSON *raw_tx = NULL;
-	
+
 	no_of_signers++;
 	if (no_of_signers < max_no_of_signers) {
 		is_signed[jint(argjson, "playerid")] = 1;
@@ -1268,28 +1265,26 @@ static void bet_dcv_process_live(cJSON *argjson)
 		bvv_status = 1;
 	else if (strcmp(jstr(argjson, "node_type"), "player") == 0)
 		player_status[jint(argjson, "playerid")] = 1;
-		
 }
 
 static int32_t bet_dcv_verify_rand_str(char *rand_str)
 {
 	int32_t retval = 0;
-	
-	for(int i = 0; i < no_of_rand_str; i++) {
-		if(strcmp(tx_rand_str[i],rand_str) == 0) {
+
+	for (int i = 0; i < no_of_rand_str; i++) {
+		if (strcmp(tx_rand_str[i], rand_str) == 0) {
 			retval = 1;
 			break;
-			}
+		}
 	}
-	return retval;	
+	return retval;
 }
 static int32_t bet_dcv_verify_tx(cJSON *argjson)
 {
-	
 	cJSON *tx_info = NULL;
 	int32_t block_height, retval = 1;
 	char *rand_str = NULL;
-	
+
 	tx_info = cJSON_CreateObject();
 	tx_info = cJSON_GetObjectItem(argjson, "tx_info");
 	block_height = jint(argjson, "block_height");
@@ -1298,30 +1293,30 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson)
 	}
 	if (chips_check_if_tx_unspent(cJSON_Print(tx_info)) == 1) {
 		strcpy(tx_ids[no_of_txs++], cJSON_Print(tx_info));
-		rand_str = calloc(65,sizeof(char));
+		rand_str = calloc(65, sizeof(char));
 		chips_extract_data(cJSON_Print(tx_info), &rand_str);
 		retval = bet_dcv_verify_rand_str(rand_str);
-	} else 
+	} else
 		retval = 0;
-	
-	return retval;	
+
+	return retval;
 }
 
 static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int32_t retval = 1;
-	
+
 	if (bet->numplayers < bet->maxplayers) {
 		retval = bet_player_join_req(argjson, bet, vars);
 		if (retval < 0)
 			return retval;
-		
+
 		bet_push_joinInfo(argjson, bet->numplayers);
 		if (bet->numplayers == bet->maxplayers) {
 			retval = bet_ln_check(bet);
 			if (retval < 0)
 				return retval;
-			
+
 			bet_check_bvv_ready(bet);
 		}
 	}
@@ -1391,8 +1386,12 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 			retval = bet_dcv_stack_info_resp(argjson, bet);
 		} else if (strcmp(method, "tx") == 0) {
 			retval = bet_dcv_verify_tx(argjson);
-			if(retval == 1)
-				printf("%s::%d::Tx is Valid\n",__FUNCTION__,__LINE__);
+
+			cJSON *tx_status = cJSON_CreateObject();
+			cJSON_AddStringToObject(tx_status, "method", "tx_status");
+			cJSON_AddStringToObject(tx_status, "rand_str", jstr(argjson, "rand_str"));
+			cJSON_AddNumberToObject(tx_status, "tx_validity", retval);
+			bytes = nn_send(bet->pubsock, cJSON_Print(tx_status), strlen(cJSON_Print(tx_status)), 0);
 		} else {
 			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
 			if (bytes < 0) {

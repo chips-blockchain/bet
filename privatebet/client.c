@@ -82,6 +82,7 @@ char lws_buf_bvv[2000];
 int32_t lws_buf_length_bvv = 0;
 
 char req_identifier[65];
+int32_t backend_status = 0;
 
 void player_lws_write(cJSON *data)
 {
@@ -295,7 +296,7 @@ int32_t bet_check_bvv_ready(cJSON *argjson, struct privatebet_info *bet, struct 
 	cJSON *bvv_ready = NULL;
 	int32_t retval = 0, bytes;
 	char *rendered = NULL;
-	#if 0
+#if 0
 	int32_t channel_state;
 	cJSON *uri_info = NULL;
 	char uri[100], channel_id[100];
@@ -317,7 +318,7 @@ int32_t bet_check_bvv_ready(cJSON *argjson, struct privatebet_info *bet, struct 
 			ln_check_peer_and_connect(uri);
 		}
 	}
-	#endif
+#endif
 	bvv_ready = cJSON_CreateObject();
 	cJSON_AddStringToObject(bvv_ready, "method", "bvv_ready");
 
@@ -1127,7 +1128,7 @@ end:
 	return retval;
 }
 
-int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
+int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 {
 	int32_t bytes, argc, retval = -1;
 	cJSON *joininfo = NULL, *channel_info = NULL, *addresses = NULL, *address = NULL;
@@ -1234,25 +1235,52 @@ int32_t bet_player_reset(struct privatebet_info *bet, struct privatebet_vars *va
 	return retval;
 }
 
+static int32_t bet_player_process_player_join(cJSON *argjson)
+{
+	int32_t retval = 1;
+	cJSON *info = NULL;
+
+	if (player_joined == 0) {
+		if (backend_status == 1) {
+			retval = bet_client_join(argjson, bet_player);
+		} else {
+			info = cJSON_CreateObject();
+			cJSON_AddStringToObject(info, "method", "info");
+			cJSON_AddStringToObject(info, "response_to", "player_join");
+			cJSON_AddNumberToObject(info, "backend_status", backend_status);
+			player_lws_write(info);
+		}
+	}
+	return retval;
+}
+
+static void bet_player_handle_invalid_method(char *method)
+{
+	cJSON *error_info = NULL;
+	char error_msg[2048];
+
+	error_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(error_info, "method", "error");
+	snprintf(error_msg, sizeof(error_msg), "Method::%s is not handled", method);
+	cJSON_AddStringToObject(error_info, "msg", error_msg);
+	player_lws_write(error_info);
+}
+
 int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 {
 	int32_t retval = 1;
 	char *method = NULL;
-	struct privatebet_vars *vars = NULL;
-	struct privatebet_info *bet = NULL;
+
 	if ((method = jstr(argjson, "method")) != 0) {
 		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 		if (strcmp(method, "player_join") == 0) {
-			if (player_joined == 0)
-				retval = bet_client_join(argjson, bet_player, vars);
-			else
-				printf("%s::%d::Player is already joined\n", __FUNCTION__, __LINE__);
+			bet_player_process_player_join(argjson);
 		} else if (strcmp(method, "betting") == 0) {
 			retval = bet_player_round_betting(argjson, bet_player, player_vars);
 		} else if (strcmp(method, "reset") == 0) {
-			retval = bet_player_reset(bet, vars);
+			retval = bet_player_reset(bet_player, player_vars);
 		} else {
-			printf("%s::%d::Method::%s is not handled\n", __FUNCTION__, __LINE__, method);
+			bet_player_handle_invalid_method(method);
 		}
 	}
 	return retval;
@@ -1464,6 +1492,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		data = jstr(argjson, "rand_str");
 		txid = chips_transfer_funds_with_data(funds_needed, legacy_2_of_4_msig_Addr, data);
 		cJSON_AddStringToObject(tx_info, "method", "tx");
+		cJSON_AddStringToObject(tx_info, "rand_str", data);
 		cJSON_AddItemToObject(tx_info, "tx_info", txid);
 
 		while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
@@ -1489,7 +1518,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
 
 		if (strcmp(method, "join") == 0) {
-			retval = bet_client_join(argjson, bet, vars);
+			retval = bet_client_join(argjson, bet);
 
 		} else if (strcmp(method, "join_res") == 0) {
 			bet_push_join_info(jint(argjson, "peerid"));
@@ -1558,8 +1587,18 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		} else if (strcmp(method, "status_info") == 0) {
 			player_lws_write(argjson);
 		} else if (strcmp(method, "stack_info_resp") == 0) {
-			if(strcmp(req_identifier,jstr(argjson,"req_identifier")) == 0)
+			if (strcmp(req_identifier, jstr(argjson, "req_identifier")) == 0)
 				retval = bet_player_handle_stack_info_resp(argjson, bet);
+		} else if (strcmp(method, "tx_status") == 0) {
+			if (strcmp(req_identifier, jstr(argjson, "rand_str")) == 0) {
+				if (jint(argjson, "tx_validity") == 1) {
+					backend_status = 1;
+					cJSON *info = cJSON_CreateObject();
+					cJSON_AddStringToObject(info, "method", "backend_status");
+					cJSON_AddNumberToObject(info, "backend_status", backend_status);
+					player_lws_write(info);
+				}
+			}
 		}
 	}
 	return retval;
@@ -1567,7 +1606,6 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 
 static int32_t bet_player_stack_info_req(struct privatebet_info *bet)
 {
-	
 	int32_t bytes, retval = 1;
 	cJSON *stack_info_req = NULL;
 	char rand_str[65] = { 0 };
@@ -1577,7 +1615,7 @@ static int32_t bet_player_stack_info_req(struct privatebet_info *bet)
 	cJSON_AddStringToObject(stack_info_req, "method", "stack_info_req");
 	OS_randombytes(randval.bytes, sizeof(randval));
 	bits256_str(rand_str, randval);
-	strncpy(req_identifier,rand_str,sizeof(req_identifier));
+	strncpy(req_identifier, rand_str, sizeof(req_identifier));
 	cJSON_AddStringToObject(stack_info_req, "req_identifier", rand_str);
 	bytes = nn_send(bet->pushsock, cJSON_Print(stack_info_req), strlen(cJSON_Print(stack_info_req)), 0);
 	if (bytes < 0)
