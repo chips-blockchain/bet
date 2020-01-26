@@ -29,6 +29,7 @@ void chips_extract_data(char *tx, char **rand_str);
 cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data);
 cJSON *chips_transfer_funds_with_data(double amount, char *address, char *data);
 cJSON *chips_deposit_to_ln_wallet(double channel_chips);
+double chips_get_balance_on_address_from_tx(char* address, char* tx);
 
 int32_t make_command(int argc, char **argv, cJSON **argjson);
 

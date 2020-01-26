@@ -1386,7 +1386,7 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 			retval = bet_dcv_stack_info_resp(argjson, bet);
 		} else if (strcmp(method, "tx") == 0) {
 			retval = bet_dcv_verify_tx(argjson);
-
+			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 			cJSON *tx_status = cJSON_CreateObject();
 			cJSON_AddStringToObject(tx_status, "method", "tx_status");
 			cJSON_AddStringToObject(tx_status, "rand_str", jstr(argjson, "rand_str"));

@@ -44,7 +44,7 @@ static int32_t bet_alloc_args(int argc, char ***argv)
 	return ret;
 }
 
-static int32_t bet_dealloc_args(int argc, char ***argv)
+static void bet_dealloc_args(int argc, char ***argv)
 {
 	if (*argv) {
 		for (int i = 0; i < argc; i++) {
@@ -52,6 +52,16 @@ static int32_t bet_dealloc_args(int argc, char ***argv)
 				free((*argv)[i]);
 		}
 		free(*argv);
+	}
+}
+
+static void bet_memset_args(int argc, char ***argv)
+{
+	if (*argv) {
+		for (int i = 0; i < argc; i++) {
+			if ((*argv)[i])
+				memset((*argv)[i],0x00,arg_size);
+		}
 	}
 }
 
@@ -800,6 +810,50 @@ cJSON *chips_deposit_to_ln_wallet(double channel_chips)
 	return tx;
 }
 
+static int32_t find_address_in_addresses(char *address, cJSON *argjson)
+{
+	cJSON *addresses = NULL, *script_pub_key = NULL;
+	int32_t retval = 0;
+	
+	script_pub_key = cJSON_GetObjectItem(argjson,"scriptPubKey");
+	addresses = cJSON_GetObjectItem(script_pub_key,"addresses");
+	for(int i = 0; i < cJSON_GetArraySize(addresses); i++) {
+		if(strcmp(unstringify(cJSON_Print(cJSON_GetArrayItem(addresses,i))),address) == 0) {
+			retval = 1;
+			return retval;
+		}	
+	}
+	return retval;
+}
+
+double chips_get_balance_on_address_from_tx(char* address, char* tx)
+{
+	int argc;
+	char **argv = NULL;
+	cJSON *raw_tx = NULL, *decoded_raw_tx = NULL , *vout = NULL;
+	double balance = 0;
+	
+	argc = 3;
+	bet_alloc_args(argc,&argv);
+	argv = bet_copy_args(argc, "chips-cli", "getrawtransaction", tx);
+	raw_tx = cJSON_CreateObject();
+	make_command(argc,argv,&raw_tx);
+
+	bet_memset_args(argc,&argv);
+
+	argv = bet_copy_args(argc, "chips-cli", "decoderawtransaction", cJSON_Print(raw_tx));
+	decoded_raw_tx = cJSON_CreateObject();
+	make_command(argc,argv,&decoded_raw_tx);
+
+	vout = cJSON_GetObjectItem(decoded_raw_tx,"vout");
+
+	for(int i = 0; i < cJSON_GetArraySize(vout); i++) {
+		if(find_address_in_addresses(address,cJSON_GetArrayItem(vout,i)) == 1) {
+			balance += jdouble(cJSON_GetArrayItem(vout,i),"value");
+		}
+	}
+	return balance;
+}
 int32_t make_command(int argc, char **argv, cJSON **argjson)
 {
 	FILE *fp = NULL;
