@@ -26,6 +26,8 @@
 #define mchips_msatoshichips 1000000 // 0.01mCHIPS
 #define channel_fund_satoshis 25000000 // 0.25CHIPS or 250 mCHIPS
 #define satoshis 100000000 //10^8 satoshis for 1 COIN
+#define satoshis_per_unit 1000
+#define normalization_factor 100
 
 #define CARDS777_MAXCARDS 52 // 52    //
 #define CARDS777_MAXPLAYERS 10 // 9   //

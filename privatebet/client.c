@@ -1062,7 +1062,7 @@ static int32_t bet_check_player_stack(char *uri)
 int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	char uri[100], *rendered = NULL;
-	int argc, retval = 1, channel_state, balance, bytes;
+	int argc, retval = 1, channel_state, /* balance,*/ bytes;
 	char **argv = NULL, channel_id[100];
 	cJSON *init_card_info = NULL, *hole_card_info = NULL, *init_info = NULL, *stack_info = NULL;
 
@@ -1085,12 +1085,15 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 		}
 		init_card_info = cJSON_CreateObject();
 		cJSON_AddNumberToObject(init_card_info, "dealer", jint(argjson, "dealer"));
-		balance = bet_check_player_stack(jstr(argjson, "uri"));
 
-		if (vars->player_funds == 0) // refill the player stack only if it
+		/*
+		balance = bet_check_player_stack(jstr(argjson, "uri"));
+		if (vars->player_funds == 0) {
+			// refill the player stack only if it
 			// becomes zero and funds are available
 			vars->player_funds = balance;
-
+		}
+		*/
 		// Here if the balance is not table_stack it should wait for the refill
 		cJSON_AddNumberToObject(init_card_info, "balance", vars->player_funds);
 
@@ -1489,10 +1492,10 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		retval = -1;
 	} else {
 		tx_info = cJSON_CreateObject();
-		data = jstr(argjson, "rand_str");
+		data = jstr(argjson, "req_identifier");
 		txid = chips_transfer_funds_with_data(funds_needed, legacy_2_of_4_msig_Addr, data);
 		cJSON_AddStringToObject(tx_info, "method", "tx");
-		cJSON_AddStringToObject(tx_info, "rand_str", data);
+		cJSON_AddStringToObject(tx_info, "req_identifier", data);
 		cJSON_AddItemToObject(tx_info, "tx_info", txid);
 
 		while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
@@ -1587,10 +1590,11 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		} else if (strcmp(method, "status_info") == 0) {
 			player_lws_write(argjson);
 		} else if (strcmp(method, "stack_info_resp") == 0) {
-			if (strcmp(req_identifier, jstr(argjson, "req_identifier")) == 0)
+			if (strncmp(req_identifier, jstr(argjson, "req_identifier"), sizeof(req_identifier)) == 0)
 				retval = bet_player_handle_stack_info_resp(argjson, bet);
 		} else if (strcmp(method, "tx_status") == 0) {
-			if (strcmp(req_identifier, jstr(argjson, "rand_str")) == 0) {
+			if (strcmp(req_identifier, jstr(argjson, "req_identifier")) == 0) {
+				vars->player_funds = jint(argjson, "player_funds");
 				if (jint(argjson, "tx_validity") == 1) {
 					backend_status = 1;
 					cJSON *info = cJSON_CreateObject();
@@ -1617,6 +1621,7 @@ static int32_t bet_player_stack_info_req(struct privatebet_info *bet)
 	bits256_str(rand_str, randval);
 	strncpy(req_identifier, rand_str, sizeof(req_identifier));
 	cJSON_AddStringToObject(stack_info_req, "req_identifier", rand_str);
+	cJSON_AddStringToObject(stack_info_req, "chips_addr", chips_get_wallet_address());
 	bytes = nn_send(bet->pushsock, cJSON_Print(stack_info_req), strlen(cJSON_Print(stack_info_req)), 0);
 	if (bytes < 0)
 		retval = -1;

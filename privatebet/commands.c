@@ -60,7 +60,7 @@ static void bet_memset_args(int argc, char ***argv)
 	if (*argv) {
 		for (int i = 0; i < argc; i++) {
 			if ((*argv)[i])
-				memset((*argv)[i],0x00,arg_size);
+				memset((*argv)[i], 0x00, arg_size);
 		}
 	}
 }
@@ -188,9 +188,13 @@ void chips_list_address_groupings()
 cJSON *chips_transfer_funds_with_data(double amount, char *address, char *data)
 {
 	cJSON *tx_info = NULL, *signed_tx = NULL;
-	char *raw_tx = cJSON_str(chips_create_raw_tx_with_data(amount, address, data));
+	char *raw_tx = NULL;
 
+	raw_tx = calloc(arg_size, sizeof(char));
+	strncpy(raw_tx, cJSON_str(chips_create_raw_tx_with_data(amount, address, data)), arg_size);
+	signed_tx = cJSON_CreateObject();
 	signed_tx = chips_sign_raw_tx_with_wallet(raw_tx);
+	tx_info = cJSON_CreateObject();
 	tx_info = chips_send_raw_tx(signed_tx);
 	return tx_info;
 }
@@ -405,13 +409,15 @@ cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 		argc = 2;
 		bet_alloc_args(argc, &argv);
 		argv = bet_copy_args(argc, "chips-cli", "listunspent");
+		listunspent_info = cJSON_CreateArray();
 		make_command(argc, argv, &listunspent_info);
 		bet_dealloc_args(argc, &argv);
 
 		for (int i = 0; i < cJSON_GetArraySize(listunspent_info) - 1; i++) {
 			cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
 			cJSON *tx_info = cJSON_CreateObject();
-			if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "spendable")), "true") == 0) {
+			char *state = cJSON_Print(cJSON_GetObjectItem(temp, "spendable"));
+			if (strcmp(state, "true") == 0) {
 				temp_balance += jdouble(temp, "amount");
 				if (temp_balance >= amount) {
 					changeAddress = jstr(temp, "address");
@@ -436,6 +442,7 @@ cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 		snprintf(params[0], arg_size, "\'%s\'", cJSON_Print(tx_list));
 		snprintf(params[1], arg_size, "\'%s\'", cJSON_Print(address_info));
 		argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
+		tx = cJSON_CreateObject();
 		make_command(argc, argv, &tx);
 		bet_dealloc_args(argc, &argv);
 		return tx;
@@ -814,51 +821,89 @@ static int32_t find_address_in_addresses(char *address, cJSON *argjson)
 {
 	cJSON *addresses = NULL, *script_pub_key = NULL;
 	int32_t retval = 0;
-	
-	script_pub_key = cJSON_GetObjectItem(argjson,"scriptPubKey");
-	addresses = cJSON_GetObjectItem(script_pub_key,"addresses");
-	for(int i = 0; i < cJSON_GetArraySize(addresses); i++) {
-		if(strcmp(unstringify(cJSON_Print(cJSON_GetArrayItem(addresses,i))),address) == 0) {
+
+	script_pub_key = cJSON_GetObjectItem(argjson, "scriptPubKey");
+	addresses = cJSON_GetObjectItem(script_pub_key, "addresses");
+	for (int i = 0; i < cJSON_GetArraySize(addresses); i++) {
+		if (strcmp(unstringify(cJSON_Print(cJSON_GetArrayItem(addresses, i))), address) == 0) {
 			retval = 1;
 			return retval;
-		}	
+		}
 	}
 	return retval;
 }
 
-double chips_get_balance_on_address_from_tx(char* address, char* tx)
+static char *get_address_in_addresses(cJSON *argjson)
+{
+	cJSON *addresses = NULL, *script_pub_key = NULL;
+
+	script_pub_key = cJSON_GetObjectItem(argjson, "scriptPubKey");
+	addresses = cJSON_GetObjectItem(script_pub_key, "addresses");
+	for (int i = 0; i < cJSON_GetArraySize(addresses); i++) {
+		return (unstringify(cJSON_Print(cJSON_GetArrayItem(addresses, i))));
+	}
+	return NULL;
+}
+
+double chips_get_balance_on_address_from_tx(char *address, char *tx)
 {
 	int argc;
 	char **argv = NULL;
-	cJSON *raw_tx = NULL, *decoded_raw_tx = NULL , *vout = NULL;
+	cJSON *raw_tx = NULL, *decoded_raw_tx = NULL, *vout = NULL;
 	double balance = 0;
-	
+
 	argc = 3;
-	bet_alloc_args(argc,&argv);
+	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "chips-cli", "getrawtransaction", tx);
 	raw_tx = cJSON_CreateObject();
-	make_command(argc,argv,&raw_tx);
+	make_command(argc, argv, &raw_tx);
 
-	bet_memset_args(argc,&argv);
+	bet_memset_args(argc, &argv);
 
 	argv = bet_copy_args(argc, "chips-cli", "decoderawtransaction", cJSON_Print(raw_tx));
 	decoded_raw_tx = cJSON_CreateObject();
-	make_command(argc,argv,&decoded_raw_tx);
+	make_command(argc, argv, &decoded_raw_tx);
 
-	vout = cJSON_GetObjectItem(decoded_raw_tx,"vout");
+	vout = cJSON_GetObjectItem(decoded_raw_tx, "vout");
 
-	for(int i = 0; i < cJSON_GetArraySize(vout); i++) {
-		if(find_address_in_addresses(address,cJSON_GetArrayItem(vout,i)) == 1) {
-			balance += jdouble(cJSON_GetArrayItem(vout,i),"value");
+	for (int i = 0; i < cJSON_GetArraySize(vout); i++) {
+		if (find_address_in_addresses(address, cJSON_GetArrayItem(vout, i)) == 1) {
+			balance += jdouble(cJSON_GetArrayItem(vout, i), "value");
 		}
 	}
 	return balance;
 }
+
+char *chips_get_wallet_address()
+{
+	int argc;
+	char **argv = NULL;
+	cJSON *addresses = NULL;
+
+	argc = 2;
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, "chips-cli", "listaddressgroupings");
+	make_command(argc, argv, &addresses);
+
+	for (int32_t i = 0; i < cJSON_GetArraySize(addresses); i++) {
+		cJSON *temp = cJSON_GetArrayItem(addresses, i);
+		for (int32_t j = 0; j < cJSON_GetArraySize(temp); j++) {
+			cJSON *temp1 = cJSON_GetArrayItem(temp, j);
+
+			if (chips_validate_address(unstringify(cJSON_Print(cJSON_GetArrayItem(temp1, 0)))))
+				return (unstringify(cJSON_Print(cJSON_GetArrayItem(temp1, 0))));
+		}
+	}
+	bet_dealloc_args(argc, &argv);
+	return chips_get_new_address();
+}
+
 int32_t make_command(int argc, char **argv, cJSON **argjson)
 {
 	FILE *fp = NULL;
 	char *data = NULL, *command = NULL, *buf = NULL;
-	int32_t ret = 1, command_size = 16384, data_size = 262144, buf_size = 1024;
+	int32_t ret = 1;
+	unsigned long command_size = 16384, data_size = 262144, buf_size = 1024;
 
 	command = calloc(command_size, sizeof(char));
 	if (!command) {
@@ -891,11 +936,24 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 		printf("%s::%d::Malloc failed\n", __FUNCTION__, __LINE__);
 		goto end;
 	}
+	unsigned long temp_size = 0;
+	unsigned long new_size = data_size;
 	while (fgets(buf, buf_size, fp) != NULL) {
+		temp_size = temp_size + strlen(buf);
+		if (temp_size >= new_size) {
+			char *temp = calloc(new_size, sizeof(char));
+			strncpy(temp, data, strlen(data));
+			free(data);
+			new_size = new_size * 2;
+			data = calloc(new_size, sizeof(char));
+			strncpy(data, temp, strlen(temp));
+			free(temp);
+			printf("MEMORY DOUBLED:: SEEMS LIKE THE METHOD :: %s :: NEEDING MORE MEMORY\n", argv[1]);
+		}
 		strcat(data, buf);
 		memset(buf, 0x00, buf_size);
 	}
-	data[data_size - 1] = '\0';
+	data[new_size - 1] = '\0';
 	if ((strcmp(argv[0], "lightning-cli") == 0) && (strncmp("error", data, strlen("error")) == 0)) {
 		char temp[1024];
 		memset(temp, 0x00, sizeof(temp));
