@@ -1224,7 +1224,7 @@ static void bet_push_joinInfo(cJSON *argjson, int32_t numplayers)
 	bet_push_dcv_to_gui(join_info);
 }
 
-static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *bet)
+static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int32_t bytes, retval = 1;
 	cJSON *stack_info_resp = NULL;
@@ -1233,9 +1233,8 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 	cJSON_AddStringToObject(stack_info_resp, "method", "stack_info_resp");
 	cJSON_AddNumberToObject(stack_info_resp, "table_stack_in_chips", table_stack_in_chips);
 
-	cJSON_AddStringToObject(stack_info_resp, "rand_str", jstr(argjson, "req_identifier"));
 	cJSON_AddStringToObject(stack_info_resp, "req_identifier", jstr(argjson, "req_identifier"));
-
+	strcpy(vars->player_chips_addrs[no_of_rand_str], jstr(argjson, "chips_addr"));
 	strcpy(tx_rand_str[no_of_rand_str++], jstr(argjson, "req_identifier"));
 	bytes = nn_send(bet->pubsock, cJSON_Print(stack_info_resp), strlen(cJSON_Print(stack_info_resp)), 0);
 	if (bytes < 0)
@@ -1288,14 +1287,17 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson)
 	tx_info = cJSON_CreateObject();
 	tx_info = cJSON_GetObjectItem(argjson, "tx_info");
 	block_height = jint(argjson, "block_height");
-	while (block_height < chips_get_block_count()) {
+	printf("Waiting for the blocks to sync\n");
+	while (chips_get_block_count() < block_height) {
 		sleep(2);
 	}
+	printf("Blocks synced\n");
 	if (chips_check_if_tx_unspent(cJSON_Print(tx_info)) == 1) {
-		strcpy(tx_ids[no_of_txs++], cJSON_Print(tx_info));
 		rand_str = calloc(65, sizeof(char));
 		chips_extract_data(cJSON_Print(tx_info), &rand_str);
 		retval = bet_dcv_verify_rand_str(rand_str);
+		if (retval == 1)
+			strcpy(tx_ids[no_of_txs++], cJSON_Print(tx_info));
 	} else
 		retval = 0;
 
@@ -1320,6 +1322,36 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 			bet_check_bvv_ready(bet);
 		}
 	}
+}
+
+static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
+{
+	int32_t funds = 0, bytes, retval;
+	cJSON *tx_status = NULL;
+
+	retval = bet_dcv_verify_tx(argjson);
+
+	if (retval == 1) {
+		double balance =
+			chips_get_balance_on_address_from_tx(legacy_2_of_4_msig_Addr, jstr(argjson, "tx_info"));
+		funds = (balance * satoshis) / (satoshis_per_unit * normalization_factor);
+
+		char *rand_str = jstr(argjson, "req_identifier");
+		for (int i = 0; i < no_of_rand_str; i++) {
+			if (strcmp(tx_rand_str[i], rand_str) == 0)
+				vars->funds[i] = funds;
+		}
+	}
+
+	tx_status = cJSON_CreateObject();
+	cJSON_AddStringToObject(tx_status, "method", "tx_status");
+	cJSON_AddStringToObject(tx_status, "req_identifier", jstr(argjson, "req_identifier"));
+	cJSON_AddNumberToObject(tx_status, "tx_validity", retval);
+	cJSON_AddNumberToObject(tx_status, "player_funds", funds);
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(tx_status));
+	bytes = nn_send(bet->pubsock, cJSON_Print(tx_status), strlen(cJSON_Print(tx_status)), 0);
+
+	return retval;
 }
 
 int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
@@ -1383,15 +1415,11 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 		} else if (strcmp(method, "live") == 0) {
 			bet_dcv_process_live(argjson);
 		} else if (strcmp(method, "stack_info_req") == 0) {
-			retval = bet_dcv_stack_info_resp(argjson, bet);
+			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
+			retval = bet_dcv_stack_info_resp(argjson, bet, vars);
 		} else if (strcmp(method, "tx") == 0) {
-			retval = bet_dcv_verify_tx(argjson);
-			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-			cJSON *tx_status = cJSON_CreateObject();
-			cJSON_AddStringToObject(tx_status, "method", "tx_status");
-			cJSON_AddStringToObject(tx_status, "rand_str", jstr(argjson, "rand_str"));
-			cJSON_AddNumberToObject(tx_status, "tx_validity", retval);
-			bytes = nn_send(bet->pubsock, cJSON_Print(tx_status), strlen(cJSON_Print(tx_status)), 0);
+			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
+			retval = bet_dcv_process_tx(argjson, bet, vars);
 		} else {
 			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
 			if (bytes < 0) {
