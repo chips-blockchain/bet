@@ -898,6 +898,25 @@ char *chips_get_wallet_address()
 	return chips_get_new_address();
 }
 
+void chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids[][100])
+{
+	double payout_amount = 0, amount_in_txs = 0;
+
+	for(int32_t i = 0; i < cJSON_GetArraySize(payout_addr); i++) {
+		cJSON *addr_info = cJSON_GetArrayItem(payout_addr,i);
+		payout_amount += jdouble(addr_info,"amount");
+	}
+	for(int32_t i = 0; i < no_of_txs; i++) {
+		amount_in_txs += chips_get_balance_on_address_from_tx(legacy_2_of_4_msig_Addr, tx_ids[i]);
+	}
+	if((payout_amount + chips_tx_fee) <= amount_in_txs) {
+		printf("%f::%f\n",payout_amount,amount_in_txs);
+		for(int32_t i = 0; i < no_of_txs; i++) {
+			printf("%s\n",tx_ids[i]);
+		}
+	}
+}
+
 int32_t make_command(int argc, char **argv, cJSON **argjson)
 {
 	FILE *fp = NULL;
