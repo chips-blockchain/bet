@@ -1176,7 +1176,7 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 		strcat(uri, jstr(address, "address"));
 		cJSON_AddStringToObject(joininfo, "uri", uri);
 		cJSON_AddNumberToObject(joininfo, "gui_playerID", jint(argjson, "gui_playerID"));
-		cJSON_AddStringToObject(joininfo,"req_identifier",req_identifier);
+		cJSON_AddStringToObject(joininfo, "req_identifier", req_identifier);
 		rendered = cJSON_Print(joininfo);
 		bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 		if (bytes < 0) {
@@ -1274,10 +1274,10 @@ static void bet_player_withdraw_request()
 	cJSON *withdraw_response_info = NULL;
 
 	withdraw_response_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(withdraw_response_info,"method","withdrawResponse");
-	cJSON_AddNumberToObject(withdraw_response_info,"balance",chips_get_balance());
-	cJSON_AddNumberToObject(withdraw_response_info,"tx_fee",chips_tx_fee);
-	cJSON_AddItemToObject(withdraw_response_info,"addrs",chips_list_address_groupings());
+	cJSON_AddStringToObject(withdraw_response_info, "method", "withdrawResponse");
+	cJSON_AddNumberToObject(withdraw_response_info, "balance", chips_get_balance());
+	cJSON_AddNumberToObject(withdraw_response_info, "tx_fee", chips_tx_fee);
+	cJSON_AddItemToObject(withdraw_response_info, "addrs", chips_list_address_groupings());
 	player_lws_write(withdraw_response_info);
 }
 
@@ -1287,11 +1287,11 @@ static void bet_player_withdraw(cJSON *argjson)
 	double amount = 0.0;
 	char *addr = NULL;
 
-	amount = jdouble(argjson,"amount");
-	addr = jstr(argjson,"addr");
+	amount = jdouble(argjson, "amount");
+	addr = jstr(argjson, "addr");
 	withdraw_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(withdraw_info,"method","withdrawInfo");
-	cJSON_AddItemToObject(withdraw_info,"tx",chips_transfer_funds(amount,addr));
+	cJSON_AddStringToObject(withdraw_info, "method", "withdrawInfo");
+	cJSON_AddItemToObject(withdraw_info, "tx", chips_transfer_funds(amount, addr));
 	player_lws_write(withdraw_info);
 }
 
@@ -1324,9 +1324,9 @@ static void bet_player_wallet_info()
 	cJSON *wallet_info = NULL;
 
 	wallet_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(wallet_info,"method","walletInfo");
-	cJSON_AddStringToObject(wallet_info,"addr",chips_get_wallet_address());
-	cJSON_AddNumberToObject(wallet_info,"balance",chips_get_balance());
+	cJSON_AddStringToObject(wallet_info, "method", "walletInfo");
+	cJSON_AddStringToObject(wallet_info, "addr", chips_get_wallet_address());
+	cJSON_AddNumberToObject(wallet_info, "balance", chips_get_balance());
 	player_lws_write(wallet_info);
 }
 
