@@ -179,7 +179,7 @@ cJSON* chips_list_address_groupings()
 			temp = cJSON_GetArrayItem(address_info, j);
 			cJSON *address = cJSON_GetArrayItem(temp, 0);
 			if (chips_validate_address(cJSON_Print(address)) == 1) {
-				cJSON_AddItemToArray(addr_info,address);
+				cJSON_AddItemToArray(addr_info,cJSON_CreateString(unstringify(cJSON_Print(address))));
 				printf("%s::%f\n", cJSON_Print(address),
 				       atof(cJSON_Print(cJSON_GetArrayItem(temp, 1))));
 			}
