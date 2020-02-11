@@ -1289,6 +1289,17 @@ int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 	return retval;
 }
 
+static void bet_player_wallet_info()
+{
+	cJSON *wallet_info = NULL;
+
+	wallet_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(wallet_info,"method","walletInfo");
+	cJSON_AddStringToObject(wallet_info,"addr",chips_get_wallet_address());
+	cJSON_AddNumberToObject(wallet_info,"balance",chips_get_balance());
+	player_lws_write(wallet_info);
+}
+
 int lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
 {
 	cJSON *argjson = NULL;
@@ -1510,17 +1521,6 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 			retval = -1;
 	}
 	return retval;
-}
-
-static void bet_player_wallet_info()
-{
-	cJSON *wallet_info = NULL;
-
-	wallet_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(wallet_info,"method","walletInfo");
-	cJSON_AddStringToObject(wallet_info,"addr",chips_get_wallet_address());
-	cJSON_AddNumberToObject(wallet_info,"balance",chips_get_balance());
-	player_lws_write(wallet_info);
 }
 
 int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
