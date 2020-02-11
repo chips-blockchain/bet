@@ -4,7 +4,7 @@ void chips_spend_multi_sig_address(char *address, double amount);
 cJSON *chips_import_address(char *address);
 char *chips_get_new_address();
 int chips_validate_address(char *address);
-void chips_list_address_groupings();
+cJSON* chips_list_address_groupings();
 cJSON *chips_transfer_funds(double amount, char *address);
 cJSON *chips_send_raw_tx(cJSON *signed_tx);
 cJSON *chips_sign_raw_tx_with_wallet(char *raw_tx);

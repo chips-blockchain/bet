@@ -158,18 +158,20 @@ int chips_validate_address(char *address)
 	return retval;
 }
 
-void chips_list_address_groupings()
+cJSON* chips_list_address_groupings()
 {
 	int argc;
 	char **argv = NULL;
 	cJSON *list_address_groupings = NULL;
-
+	cJSON *addr_info = NULL;
+	
 	argc = 2;
 	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "chips-cli", "listaddressgroupings");
 	list_address_groupings = cJSON_CreateObject();
 	make_command(argc, argv, &list_address_groupings);
 
+	addr_info = cJSON_CreateArray();
 	for (int i = 0; i < cJSON_GetArraySize(list_address_groupings); i++) {
 		cJSON *address_info = cJSON_GetArrayItem(list_address_groupings, i);
 		for (int j = 0; j < cJSON_GetArraySize(address_info); j++) {
@@ -177,12 +179,14 @@ void chips_list_address_groupings()
 			temp = cJSON_GetArrayItem(address_info, j);
 			cJSON *address = cJSON_GetArrayItem(temp, 0);
 			if (chips_validate_address(cJSON_Print(address)) == 1) {
+				cJSON_AddItemToArray(addr_info,address);
 				printf("%s::%f\n", cJSON_Print(address),
 				       atof(cJSON_Print(cJSON_GetArrayItem(temp, 1))));
 			}
 		}
 	}
 	bet_dealloc_args(argc, &argv);
+	return addr_info;
 }
 
 cJSON *chips_transfer_funds_with_data(double amount, char *address, char *data)
