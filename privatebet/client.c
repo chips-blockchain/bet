@@ -1269,6 +1269,32 @@ static void bet_player_handle_invalid_method(char *method)
 	player_lws_write(error_info);
 }
 
+static void bet_player_withdraw_request()
+{
+	cJSON *withdraw_response_info = NULL;
+
+	withdraw_response_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(withdraw_response_info,"method","withdrawResponse");
+	cJSON_AddNumberToObject(withdraw_response_info,"balance",chips_get_balance());
+	cJSON_AddNumberToObject(withdraw_response_info,"tx_fee",chips_tx_fee);
+	cJSON_AddItemToObject(withdraw_response_info,"addrs",chips_list_address_groupings());
+	player_lws_write(withdraw_response_info);
+}
+
+static void bet_player_withdraw(cJSON *argjson)
+{
+	cJSON *withdraw_info = NULL;
+	double amount = 0.0;
+	char *addr = NULL;
+
+	amount = jdouble(argjson,"amount");
+	addr = jstr(argjson,"addr");
+	withdraw_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(withdraw_info,"method","withdrawInfo");
+	cJSON_AddItemToObject(withdraw_info,"tx",chips_transfer_funds(amount,addr));
+	player_lws_write(withdraw_info);
+}
+
 int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 {
 	int32_t retval = 1;
@@ -1282,6 +1308,10 @@ int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 			retval = bet_player_round_betting(argjson, bet_player, player_vars);
 		} else if (strcmp(method, "reset") == 0) {
 			retval = bet_player_reset(bet_player, player_vars);
+		} else if (strcmp(method, "withdrawRequest") == 0) {
+			bet_player_withdraw_request();
+		} else if (strcmp(method, "withdraw") == 0) {
+			bet_player_withdraw(argjson);
 		} else {
 			bet_player_handle_invalid_method(method);
 		}
