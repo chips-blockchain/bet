@@ -68,4 +68,6 @@ That's it, so now the wallet in the GUI and backend node knows the privkey of th
 
 # Security Concerns
 
-From the above discussion it's clear that funds can't be moved out of the players wallet. But one may think, what if the attacker spends the funds, i.e is by losing the game against 
+From the above discussion it's clear that funds can't be moved out of the players wallet. 
+
+Any concerns related to the security will be discussed here.
