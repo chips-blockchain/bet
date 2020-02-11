@@ -158,13 +158,13 @@ int chips_validate_address(char *address)
 	return retval;
 }
 
-cJSON* chips_list_address_groupings()
+cJSON *chips_list_address_groupings()
 {
 	int argc;
 	char **argv = NULL;
 	cJSON *list_address_groupings = NULL;
 	cJSON *addr_info = NULL;
-	
+
 	argc = 2;
 	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "chips-cli", "listaddressgroupings");
@@ -179,7 +179,7 @@ cJSON* chips_list_address_groupings()
 			temp = cJSON_GetArrayItem(address_info, j);
 			cJSON *address = cJSON_GetArrayItem(temp, 0);
 			if (chips_validate_address(cJSON_Print(address)) == 1) {
-				cJSON_AddItemToArray(addr_info,cJSON_CreateString(unstringify(cJSON_Print(address))));
+				cJSON_AddItemToArray(addr_info, cJSON_CreateString(unstringify(cJSON_Print(address))));
 				printf("%s::%f\n", cJSON_Print(address),
 				       atof(cJSON_Print(cJSON_GetArrayItem(temp, 1))));
 			}
@@ -906,17 +906,17 @@ void chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids[]
 {
 	double payout_amount = 0, amount_in_txs = 0;
 
-	for(int32_t i = 0; i < cJSON_GetArraySize(payout_addr); i++) {
-		cJSON *addr_info = cJSON_GetArrayItem(payout_addr,i);
-		payout_amount += jdouble(addr_info,"amount");
+	for (int32_t i = 0; i < cJSON_GetArraySize(payout_addr); i++) {
+		cJSON *addr_info = cJSON_GetArrayItem(payout_addr, i);
+		payout_amount += jdouble(addr_info, "amount");
 	}
-	for(int32_t i = 0; i < no_of_txs; i++) {
+	for (int32_t i = 0; i < no_of_txs; i++) {
 		amount_in_txs += chips_get_balance_on_address_from_tx(legacy_2_of_4_msig_Addr, tx_ids[i]);
 	}
-	if((payout_amount + chips_tx_fee) <= amount_in_txs) {
-		printf("%f::%f\n",payout_amount,amount_in_txs);
-		for(int32_t i = 0; i < no_of_txs; i++) {
-			printf("%s\n",tx_ids[i]);
+	if ((payout_amount + chips_tx_fee) <= amount_in_txs) {
+		printf("%f::%f\n", payout_amount, amount_in_txs);
+		for (int32_t i = 0; i < no_of_txs; i++) {
+			printf("%s\n", tx_ids[i]);
 		}
 	}
 }

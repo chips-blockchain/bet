@@ -906,45 +906,45 @@ void bet_dcv_force_reset(struct privatebet_info *bet, struct privatebet_vars *va
 static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privatebet_vars *vars, int winners[], int pot)
 {
 	int32_t no_of_winners = 0, retval = 1;
-	double dcv_commission = 0, dev_commission = 0,winning_pot = 0, chips_conversion_factor = 0.001;
+	double dcv_commission = 0, dev_commission = 0, winning_pot = 0, chips_conversion_factor = 0.001;
 	cJSON *payout_info = NULL, *dev_info = NULL, *dcv_info = NULL;
-	
-	for(int i = 0; i < bet->maxplayers; i++) {
-		if(winners[i] == 1)
+
+	for (int i = 0; i < bet->maxplayers; i++) {
+		if (winners[i] == 1)
 			no_of_winners++;
 	}
 	dcv_commission = ((dcv_commission_percentage * pot) / 100);
 	dev_commission = ((dev_fund_percentage * pot) / 100);
 	winning_pot = pot - (dcv_commission + dev_commission);
-	winning_pot = (winning_pot - chips_tx_fee)/ no_of_winners;
+	winning_pot = (winning_pot - chips_tx_fee) / no_of_winners;
 
 	payout_info = cJSON_CreateArray();
 
 	dev_info = cJSON_CreateObject();
 	dcv_info = cJSON_CreateObject();
 
-	cJSON_AddStringToObject(dcv_info,"address",chips_get_new_address());
-	cJSON_AddNumberToObject(dcv_info,"amount",(dcv_commission*chips_conversion_factor));
-	
-	cJSON_AddStringToObject(dev_info,"address","bQepVNtzfjMaBJdaaCq68trQDAPDgKnwrD");
-	cJSON_AddNumberToObject(dev_info,"amount",(dev_commission*chips_conversion_factor));
+	cJSON_AddStringToObject(dcv_info, "address", chips_get_new_address());
+	cJSON_AddNumberToObject(dcv_info, "amount", (dcv_commission * chips_conversion_factor));
 
-	cJSON_AddItemToArray(payout_info,dev_info);
-	cJSON_AddItemToArray(payout_info,dcv_info);
-		
-	for(int32_t i = 0; i < bet->maxplayers; i++) {
+	cJSON_AddStringToObject(dev_info, "address", "bQepVNtzfjMaBJdaaCq68trQDAPDgKnwrD");
+	cJSON_AddNumberToObject(dev_info, "amount", (dev_commission * chips_conversion_factor));
+
+	cJSON_AddItemToArray(payout_info, dev_info);
+	cJSON_AddItemToArray(payout_info, dcv_info);
+
+	for (int32_t i = 0; i < bet->maxplayers; i++) {
 		cJSON *temp = cJSON_CreateObject();
-		if(winners[i] == 1) {
-			printf("Winning Address:: %s\n",vars->player_chips_addrs[req_id_to_player_id_mapping[i]]);
-			cJSON_AddStringToObject(temp,"address",vars->player_chips_addrs[req_id_to_player_id_mapping[i]]);
-			cJSON_AddNumberToObject(temp,"amount",(winning_pot*chips_conversion_factor));
-			cJSON_AddItemToArray(payout_info,temp);
+		if (winners[i] == 1) {
+			printf("Winning Address:: %s\n", vars->player_chips_addrs[req_id_to_player_id_mapping[i]]);
+			cJSON_AddStringToObject(temp, "address",
+						vars->player_chips_addrs[req_id_to_player_id_mapping[i]]);
+			cJSON_AddNumberToObject(temp, "amount", (winning_pot * chips_conversion_factor));
+			cJSON_AddItemToArray(payout_info, temp);
 		}
 	}
-	printf("%s::%d::payout_info::%s\n",__FUNCTION__,__LINE__,cJSON_Print(payout_info));
-	chips_create_payout_tx(payout_info,no_of_txs,tx_ids);
+	printf("%s::%d::payout_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(payout_info));
+	chips_create_payout_tx(payout_info, no_of_txs, tx_ids);
 	return retval;
-		
 }
 
 int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *vars)
@@ -1015,7 +1015,7 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 		for (int i = 0; i < bet->maxplayers; i++) {
 			if (winners[i] == 1) {
 				//retval = bet_dcv_invoice_pay(bet, vars, i, (vars->pot / no_of_winners));
-				retval = bet_dcv_poker_winner(bet, vars, winners,vars->pot);
+				retval = bet_dcv_poker_winner(bet, vars, winners, vars->pot);
 				printf("%d\t", i);
 				if (retval == -1)
 					goto end;
@@ -1360,10 +1360,10 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 	int32_t retval = 1;
 
 	if (bet->numplayers < bet->maxplayers) {
-		char *req_id = jstr(argjson,"req_identifier");
-		for(int32_t i = 0; i < no_of_rand_str; i++) {
-			if(strcmp(tx_rand_str[i],req_id) == 0) {
-				req_id_to_player_id_mapping[i] = jint(argjson,"gui_playerID");
+		char *req_id = jstr(argjson, "req_identifier");
+		for (int32_t i = 0; i < no_of_rand_str; i++) {
+			if (strcmp(tx_rand_str[i], req_id) == 0) {
+				req_id_to_player_id_mapping[i] = jint(argjson, "gui_playerID");
 			}
 		}
 		retval = bet_player_join_req(argjson, bet, vars);
