@@ -206,8 +206,10 @@ cJSON *chips_transfer_funds_with_data(double amount, char *address, char *data)
 cJSON *chips_transfer_funds(double amount, char *address)
 {
 	cJSON *tx_info = NULL, *signed_tx = NULL;
-	char *raw_tx = cJSON_str(chips_create_raw_tx(amount, address));
+	char *raw_tx = NULL;
 
+	
+	raw_tx = cJSON_str(chips_create_raw_tx(amount, address));
 	signed_tx = chips_sign_raw_tx_with_wallet(raw_tx);
 	tx_info = chips_send_raw_tx(signed_tx);
 	return tx_info;

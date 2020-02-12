@@ -313,7 +313,7 @@ int main(int argc, char **argv)
 		bet_cashier_server_thrd(bet_get_etho_ip(), cashier_pub_sub_port);
 	} else if ((strcmp(argv[1], "withdraw") == 0) && (argc == 4)){
 		cJSON *tx = NULL;
-		tx = chips_transfer_funds(argv[2],argv[3]);
+		tx = chips_transfer_funds(atof(argv[2]),argv[3]);
 		printf("tx details::%s\n",cJSON_Print(tx));
 	} else {
 		bet_display_usage();
