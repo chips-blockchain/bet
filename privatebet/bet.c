@@ -280,6 +280,7 @@ static void bet_display_usage()
 	printf("\nFor BVV: ./bet bvv <dcv_ip_address>");
 	printf("\nFor Player: ./bet player <dcv_ip_address>");
 	printf("\nFor Cashier: ./bet cashier");
+	printf("\nFor Withdraw: ./bet withdraw amount addr");
 }
 
 static void common_init()
@@ -310,6 +311,10 @@ int main(int argc, char **argv)
 		}
 	} else if ((argc == 2) && (strcmp(argv[1], "cashier") == 0)) {
 		bet_cashier_server_thrd(bet_get_etho_ip(), cashier_pub_sub_port);
+	} else if ((strcmp(argv[1], "withdraw") == 0) && (argc == 4)){
+		cJSON *tx = NULL;
+		tx = chips_transfer_funds(argv[2],argv[3]);
+		printf("tx details::%s\n",cJSON_Print(tx));
 	} else {
 		bet_display_usage();
 	}
