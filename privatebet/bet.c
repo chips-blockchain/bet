@@ -299,8 +299,8 @@ int main(int argc, char **argv)
 	uint16_t port = 7797, cashier_pub_sub_port = 7901;
 	char dcv_ip[20];
 
-	common_init();
 	if (argc == 3) {
+		common_init();
 		strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
 		if (strcmp(argv[1], "dcv") == 0) {
 			bet_dcv_thrd(dcv_ip, port);
@@ -310,6 +310,7 @@ int main(int argc, char **argv)
 			bet_player_thrd(dcv_ip, port);
 		}
 	} else if ((argc == 2) && (strcmp(argv[1], "cashier") == 0)) {
+		common_init();
 		bet_cashier_server_thrd(bet_get_etho_ip(), cashier_pub_sub_port);
 	} else if ((argc == 4) && (strcmp(argv[1], "withdraw") == 0)){
 		cJSON *tx = NULL;
