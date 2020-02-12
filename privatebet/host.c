@@ -913,17 +913,22 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 		if (winners[i] == 1)
 			no_of_winners++;
 	}
+	if(chips_tx_fee >= pot) {
+		printf("%s::%d::Winning pot amount is too small\n",__FUNCTION__,__LINE__);
+		return -1;
+	}
+	pot = pot - chips_tx_fee;
 	dcv_commission = ((dcv_commission_percentage * pot) / 100);
 	dev_commission = ((dev_fund_percentage * pot) / 100);
 	winning_pot = pot - (dcv_commission + dev_commission);
-	winning_pot = (winning_pot - chips_tx_fee) / no_of_winners;
+	winning_pot = winning_pot / no_of_winners;
 
 	payout_info = cJSON_CreateArray();
 
 	dev_info = cJSON_CreateObject();
 	dcv_info = cJSON_CreateObject();
 
-	cJSON_AddStringToObject(dcv_info, "address", chips_get_new_address());
+	cJSON_AddStringToObject(dcv_info, "address", chips_get_wallet_address());
 	cJSON_AddNumberToObject(dcv_info, "amount", (dcv_commission * chips_conversion_factor));
 
 	cJSON_AddStringToObject(dev_info, "address", "bQepVNtzfjMaBJdaaCq68trQDAPDgKnwrD");
