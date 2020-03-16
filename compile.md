@@ -80,3 +80,10 @@ $ git clone https://github.com/sg777/bet.git
 $ cd bet
 $ make
 ```
+## Running uisng Docker
+
+All the above repos are already been cloned in the docker container, use the following command to to start the Docker container:
+```
+docker run --net=host -t -i -v /root/.chips:/root/.chips:rw  -v /root/.chipsln:/root/.chipsln:rw  norbertdragan/pangea-poker
+```
+Note: When you run this docker container, since we are sharing the host network with the docker container, so make sure to stop the chips and ln nodes in the host node.
