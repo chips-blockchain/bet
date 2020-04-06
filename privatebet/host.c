@@ -906,21 +906,37 @@ void bet_dcv_force_reset(struct privatebet_info *bet, struct privatebet_vars *va
 static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privatebet_vars *vars, int winners[], int pot)
 {
 	int32_t no_of_winners = 0, retval = 1;
-	double dcv_commission = 0, dev_commission = 0, winning_pot = 0, chips_conversion_factor = 0.001;
+	double dcv_commission = 0, dev_commission = 0, winning_pot = 0, chips_conversion_factor = 0.001, 
+		amount_in_txs = 0.0, player_amounts[bet->maxplayers],pot_in_chips = 0.0;
 	cJSON *payout_info = NULL, *dev_info = NULL, *dcv_info = NULL;
 
 	for (int i = 0; i < bet->maxplayers; i++) {
 		if (winners[i] == 1)
 			no_of_winners++;
 	}
-	if(chips_tx_fee >= pot) {
-		printf("%s::%d::Winning pot amount is too small\n",__FUNCTION__,__LINE__);
-		return -1;
+	
+	for (int32_t i = 0; i < no_of_txs; i++) {
+		amount_in_txs += chips_get_balance_on_address_from_tx(legacy_2_of_4_msig_Addr, tx_ids[i]);
 	}
-	pot = pot - chips_tx_fee;
-	dcv_commission = ((dcv_commission_percentage * pot) / 100);
-	dev_commission = ((dev_fund_percentage * pot) / 100);
-	winning_pot = pot - (dcv_commission + dev_commission);
+	
+	pot_in_chips = pot * chips_conversion_factor;
+	amount_in_txs = amount_in_txs - pot_in_chips;
+
+	if(pot_in_chips > chips_tx_fee) {
+		pot_in_chips = pot_in_chips - chips_tx_fee;
+	}
+	else {
+		amount_in_txs = amount_in_txs - chips_tx_fee;		
+	}
+		
+	amount_in_txs = amount_in_txs / bet->numplayers;
+		
+	printf("amount_in_txs::%lf,pot::%d,pot_in_chips::%lf",amount_in_txs,pot,pot_in_chips);
+	
+
+	dcv_commission = ((dcv_commission_percentage * pot_in_chips) / 100);
+	dev_commission = ((dev_fund_percentage * pot_in_chips) / 100);
+	winning_pot = pot_in_chips- (dcv_commission + dev_commission);
 	winning_pot = winning_pot / no_of_winners;
 
 	payout_info = cJSON_CreateArray();
@@ -929,21 +945,35 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 	dcv_info = cJSON_CreateObject();
 
 	cJSON_AddStringToObject(dcv_info, "address", chips_get_wallet_address());
-	cJSON_AddNumberToObject(dcv_info, "amount", (dcv_commission * chips_conversion_factor));
+	cJSON_AddNumberToObject(dcv_info, "amount", dcv_commission);
 
-	cJSON_AddStringToObject(dev_info, "address", "bQepVNtzfjMaBJdaaCq68trQDAPDgKnwrD");
-	cJSON_AddNumberToObject(dev_info, "amount", (dev_commission * chips_conversion_factor));
+	cJSON_AddStringToObject(dev_info, "address", "bR7BXnWT1yVSP9aB57pq22XN2WYNpGgDrD");
+	cJSON_AddNumberToObject(dev_info, "amount", dev_commission);
 
 	cJSON_AddItemToArray(payout_info, dev_info);
 	cJSON_AddItemToArray(payout_info, dcv_info);
 
+	for(int32_t i = 0; i < bet->maxplayers; i++) {
+		player_amounts[i] = amount_in_txs;
+		if(winners[i] == 1)
+			player_amounts[i] += winning_pot;
+	}
+
 	for (int32_t i = 0; i < bet->maxplayers; i++) {
 		cJSON *temp = cJSON_CreateObject();
+		/*
 		if (winners[i] == 1) {
 			printf("Winning Address:: %s\n", vars->player_chips_addrs[req_id_to_player_id_mapping[i]]);
 			cJSON_AddStringToObject(temp, "address",
 						vars->player_chips_addrs[req_id_to_player_id_mapping[i]]);
 			cJSON_AddNumberToObject(temp, "amount", (winning_pot * chips_conversion_factor));
+			cJSON_AddItemToArray(payout_info, temp);
+		}
+		*/
+		if(player_amounts[i] > 0) {
+			cJSON_AddStringToObject(temp, "address",
+						vars->player_chips_addrs[req_id_to_player_id_mapping[i]]);
+			cJSON_AddNumberToObject(temp, "amount", player_amounts[i]);
 			cJSON_AddItemToArray(payout_info, temp);
 		}
 	}
