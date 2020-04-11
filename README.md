@@ -1,9 +1,16 @@
 # Pangea-Bet
+
 The aim of this project is to provide the necessary bet API's which are sufficient to play poker from the command line. The initial draft of the game written by jl777 is [here](./docs/BET_Initial_Draft.md).
 
 Bet is the implementation of the Pangea protocol which nees LN and CHIPS. The installation of [LN](https://github.com/sg777/lightning) and [CHIPS](https://github.com/sg777/chips3) must be done before proceeding to play with bet.
 
-Steps to compile this repo is mentioned in [compile.md](./compile.md).
+## Compilation Guidelines
+
+Steps to compile this repo is mentioned in [compile.md](./compile.md). 
+
+## Docker Setup
+The node set up can also be done using the docker, steps to setup the docker has been mentioned [here](./docker_setup.md).
+
 ## Usage of this repo
 
 The usage of this repo varies from branch to branch. Each branch has a different gaming logic and their intended gameplays are different.
