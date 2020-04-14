@@ -45,7 +45,6 @@ struct enc_share *g_shares = NULL;
 int32_t max_players = 2;
 static const int32_t poker_deck_size = 52;
 
-
 static void bet_cashier_client_initialize(char *node_ip, const int32_t port)
 {
 	int32_t subsock = -1, pushsock = -1;

@@ -33,18 +33,17 @@ void bet_check_notaries()
 {
 	bet_check_notary_status();
 
-	if(live_notaries < 2) {
+	if (live_notaries < 2) {
 		printf("Not enough notaries are available, if you continue you lose funds\n");
 		exit(0);
-	}
-	else {
-			printf("Notary node status\n");
-			for (int i = 0; i < no_of_notaries; i++) {
-				if (notary_status[i] == 1)
-					printf("%d. %s active\n", i+1, notary_node_ips[i]);
-				else
-					printf("%d. %s not active\n", i+1, notary_node_ips[i]);
-			}
+	} else {
+		printf("Notary node status\n");
+		for (int i = 0; i < no_of_notaries; i++) {
+			if (notary_status[i] == 1)
+				printf("%d. %s active\n", i + 1, notary_node_ips[i]);
+			else
+				printf("%d. %s not active\n", i + 1, notary_node_ips[i]);
+		}
 	}
 }
 
@@ -58,11 +57,11 @@ char *bet_check_notary_status()
 
 	cashier_info = calloc(1, sizeof(struct cashier));
 
-	live_notaries=0;
-	for(int i = 0; i < no_of_notaries; i++) {
+	live_notaries = 0;
+	for (int i = 0; i < no_of_notaries; i++) {
 		notary_status[i] = 0;
 	}
-	
+
 	for (int i = 0; i < no_of_notaries; i++) {
 		int temp = live_notaries;
 		memset(cashier_info, 0x00, sizeof(struct cashier));
