@@ -275,7 +275,6 @@ static void bet_cashier_server_thrd(char *node_ip, const int32_t port)
 
 static void bet_display_usage()
 {
-	printf("\nInvalid Usage");
 	printf("\nFor DCV: ./bet dcv <dcv_ip_address>");
 	printf("\nFor BVV: ./bet bvv <dcv_ip_address>");
 	printf("\nFor Player: ./bet player <dcv_ip_address>");
@@ -312,11 +311,15 @@ int main(int argc, char **argv)
 	} else if ((argc == 2) && (strcmp(argv[1], "cashier") == 0)) {
 		common_init();
 		bet_cashier_server_thrd(bet_get_etho_ip(), cashier_pub_sub_port);
-	} else if ((argc == 4) && (strcmp(argv[1], "withdraw") == 0)){
+	} else if ((argc == 4) && (strcmp(argv[1], "withdraw") == 0)) {
 		cJSON *tx = NULL;
-		tx = chips_transfer_funds(atof(argv[2]),argv[3]);
-		printf("tx details::%s\n",cJSON_Print(tx));
+		tx = chips_transfer_funds(atof(argv[2]), argv[3]);
+		printf("tx details::%s\n", cJSON_Print(tx));
+	} else if ((argc == 2) && ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "h") == 0) ||
+				   (strcmp(argv[1], "--help") == 0) || (strcmp(argv[1], "help") == 0))) {
+		bet_display_usage();
 	} else {
+		printf("\nInvalid Usage, use the flag -h or --help to get more usage details\n");
 		bet_display_usage();
 	}
 	return 0;

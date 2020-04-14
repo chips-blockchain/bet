@@ -69,14 +69,14 @@ char *bet_check_notary_status()
 		if ((temp + 1) == live_notaries)
 			notary_status[i] = 1;
 	}
-#if 0
+#if 1
 	if (live_notaries > 0) {
 		printf("Below notaries are live, you can choose one\n");
 		for (int i = 0; i < no_of_notaries; i++) {
 			if (notary_status[i] == 1)
 				printf("%d. %s\n", i, notary_node_ips[i]);
 		}
-
+#if 0
 		int choice;
 	top:
 		printf("Enter your choice::\n");
@@ -85,6 +85,7 @@ char *bet_check_notary_status()
 			return notary_node_ips[choice];
 		} else
 			goto top;
+#endif
 	}
 #endif
 	return NULL;
