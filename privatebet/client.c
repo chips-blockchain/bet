@@ -1205,39 +1205,6 @@ void bet_table_info(cJSON *argjson, struct privatebet_info *bet, struct privateb
 	printf("\nTable Info:%s", cJSON_Print(argjson));
 }
 
-int32_t bet_player_reset(struct privatebet_info *bet, struct privatebet_vars *vars)
-{
-	int32_t retval = 1;
-	cJSON *reset_info = NULL;
-
-	player_joined = 0;
-	no_of_shares = 0;
-	no_of_player_cards = 0;
-	for (int i = 0; i < bet->range; i++) {
-		for (int j = 0; j < bet->numplayers; j++) {
-			sharesflag[i][j] = 0;
-		}
-	}
-	number_cards_drawn = 0;
-	for (int i = 0; i < hand_size; i++) {
-		player_card_matrix[i] = 0;
-		player_card_values[i] = -1;
-	}
-
-	vars->pot = 0;
-	for (int i = 0; i < bet->maxplayers; i++) {
-		for (int j = 0; j < CARDS777_MAXROUNDS; j++) {
-			vars->bet_actions[i][j] = 0;
-			vars->betamount[i][j] = 0;
-		}
-	}
-
-	reset_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(reset_info, "method", "reset");
-	player_lws_write(reset_info);
-	return retval;
-}
-
 static int32_t bet_player_process_player_join(cJSON *argjson)
 {
 	int32_t retval = 1;
@@ -1553,6 +1520,27 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 	return retval;
 }
 
+static int32_t bet_player_stack_info_req(struct privatebet_info *bet)
+{
+	int32_t bytes, retval = 1;
+	cJSON *stack_info_req = NULL;
+	char rand_str[65] = { 0 };
+	bits256 randval;
+
+	stack_info_req = cJSON_CreateObject();
+	cJSON_AddStringToObject(stack_info_req, "method", "stack_info_req");
+	OS_randombytes(randval.bytes, sizeof(randval));
+	bits256_str(rand_str, randval);
+	strncpy(req_identifier, rand_str, sizeof(req_identifier));
+	cJSON_AddStringToObject(stack_info_req, "req_identifier", rand_str);
+	cJSON_AddStringToObject(stack_info_req, "chips_addr", chips_get_wallet_address());
+	bytes = nn_send(bet->pushsock, cJSON_Print(stack_info_req), strlen(cJSON_Print(stack_info_req)), 0);
+	if (bytes < 0)
+		retval = -1;
+
+	return retval;
+}
+
 int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int32_t retval = 1, bytes;
@@ -1638,6 +1626,11 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			if (strcmp(req_identifier, jstr(argjson, "req_identifier")) == 0) {
 				vars->player_funds = jint(argjson, "player_funds");
 				if (jint(argjson, "tx_validity") == 1) {
+					if(backend_status == 1) { /* This snippet is added to handle the reset scenario after the initial hand got played*/
+						cJSON *reset_info = cJSON_CreateObject();
+						cJSON_AddStringToObject(reset_info, "method", "reset");
+						player_lws_write(reset_info);
+					}
 					backend_status = 1;
 					cJSON *info = cJSON_CreateObject();
 					cJSON_AddStringToObject(info, "method", "backend_status");
@@ -1650,26 +1643,6 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 	return retval;
 }
 
-static int32_t bet_player_stack_info_req(struct privatebet_info *bet)
-{
-	int32_t bytes, retval = 1;
-	cJSON *stack_info_req = NULL;
-	char rand_str[65] = { 0 };
-	bits256 randval;
-
-	stack_info_req = cJSON_CreateObject();
-	cJSON_AddStringToObject(stack_info_req, "method", "stack_info_req");
-	OS_randombytes(randval.bytes, sizeof(randval));
-	bits256_str(rand_str, randval);
-	strncpy(req_identifier, rand_str, sizeof(req_identifier));
-	cJSON_AddStringToObject(stack_info_req, "req_identifier", rand_str);
-	cJSON_AddStringToObject(stack_info_req, "chips_addr", chips_get_wallet_address());
-	bytes = nn_send(bet->pushsock, cJSON_Print(stack_info_req), strlen(cJSON_Print(stack_info_req)), 0);
-	if (bytes < 0)
-		retval = -1;
-
-	return retval;
-}
 
 void bet_player_backend_loop(void *_ptr)
 {
@@ -1703,6 +1676,43 @@ void bet_player_backend_loop(void *_ptr)
 			}
 		}
 	}
+}
+
+int32_t bet_player_reset(struct privatebet_info *bet, struct privatebet_vars *vars)
+{
+	int32_t retval = 1;
+	//cJSON *reset_info = NULL;
+
+	player_joined = 0;
+	no_of_shares = 0;
+	no_of_player_cards = 0;
+	for (int i = 0; i < bet->range; i++) {
+		for (int j = 0; j < bet->numplayers; j++) {
+			sharesflag[i][j] = 0;
+		}
+	}
+	number_cards_drawn = 0;
+	for (int i = 0; i < hand_size; i++) {
+		player_card_matrix[i] = 0;
+		player_card_values[i] = -1;
+	}
+
+	vars->pot = 0;
+	for (int i = 0; i < bet->maxplayers; i++) {
+		for (int j = 0; j < CARDS777_MAXROUNDS; j++) {
+			vars->bet_actions[i][j] = 0;
+			vars->betamount[i][j] = 0;
+		}
+	}
+
+	memset(req_identifier,0x00,sizeof(req_identifier));
+	bet_player_stack_info_req(bet);
+	#if 0
+	reset_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(reset_info, "method", "reset");
+	player_lws_write(reset_info);
+	#endif
+	return retval;
 }
 
 bits256 bet_get_deckid(int32_t player_id)
