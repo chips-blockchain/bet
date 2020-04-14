@@ -83,7 +83,7 @@ int32_t dcv_data_exists = 0;
 char dcv_gui_data[8196];
 int ws_dcv_connection_status = 0;
 
-double dcv_commission_percentage = 0.25;
+double dcv_commission_percentage = 0.75;
 double dev_fund_percentage = 0.25;
 
 int32_t req_id_to_player_id_mapping[CARDS777_MAXPLAYERS];
@@ -945,7 +945,7 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 	cJSON_AddStringToObject(dcv_info, "address", chips_get_wallet_address());
 	cJSON_AddNumberToObject(dcv_info, "amount", dcv_commission);
 
-	cJSON_AddStringToObject(dev_info, "address", "bR7BXnWT1yVSP9aB57pq22XN2WYNpGgDrD");
+	cJSON_AddStringToObject(dev_info, "address", dev_fund_addr);
 	cJSON_AddNumberToObject(dev_info, "amount", dev_commission);
 
 	cJSON_AddItemToArray(payout_info, dev_info);
