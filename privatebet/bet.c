@@ -45,6 +45,7 @@ struct enc_share *g_shares = NULL;
 int32_t max_players = 2;
 static const int32_t poker_deck_size = 52;
 
+
 static void bet_cashier_client_initialize(char *node_ip, const int32_t port)
 {
 	int32_t subsock = -1, pushsock = -1;
@@ -299,6 +300,7 @@ int main(int argc, char **argv)
 	char dcv_ip[20];
 
 	if (argc == 3) {
+		bet_check_notaries();
 		common_init();
 		strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
 		if (strcmp(argv[1], "dcv") == 0) {

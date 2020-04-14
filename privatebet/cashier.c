@@ -29,6 +29,25 @@ char dev_fund_addr[64] = { "RSdMRYeeouw3hepxNgUzHn34qFhn1tsubb" }; // donation A
 char legacy_2_of_3_msig_addr[64] = { "bQJTo8knsbSoU7k9oGADa6qfWGWyJtxC3o" };
 char legacy_2_of_4_msig_Addr[64] = { "bRCUpox55j6sFJBuEn9E1fwNLFKFvRvo9W" };
 
+void bet_check_notaries()
+{
+	bet_check_notary_status();
+
+	if(live_notaries < 2) {
+		printf("Not enough notaries are available, if you continue you lose funds\n");
+		exit(0);
+	}
+	else {
+			printf("Notary node status\n");
+			for (int i = 0; i < no_of_notaries; i++) {
+				if (notary_status[i] == 1)
+					printf("%d. %s active\n", i+1, notary_node_ips[i]);
+				else
+					printf("%d. %s not active\n", i+1, notary_node_ips[i]);
+			}
+	}
+}
+
 char *bet_check_notary_status()
 {
 	int32_t c_subsock, c_pushsock;
@@ -74,12 +93,14 @@ char *bet_check_notary_status()
 		if ((temp + 1) == live_notaries)
 			notary_status[i] = 1;
 	}
-#if 1
+#if 0
 	if (live_notaries > 0) {
-		printf("Below notaries are live, you can choose one\n");
+		printf("Notary node status\n");
 		for (int i = 0; i < no_of_notaries; i++) {
 			if (notary_status[i] == 1)
-				printf("%d. %s\n", i, notary_node_ips[i]);
+				printf("%d. %s active\n", i+1, notary_node_ips[i]);
+			else
+				printf("%d. %s not active\n", i+1, notary_node_ips[i]);
 		}
 #if 0
 		int choice;
