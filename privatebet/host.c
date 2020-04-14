@@ -846,16 +846,16 @@ void bet_dcv_reset(struct privatebet_info *bet, struct privatebet_vars *vars)
 	bet->turni = -1;
 	bet->no_of_turns = 0;
 
-	for(int32_t i = 0; i<no_of_txs; i++){
+	for (int32_t i = 0; i < no_of_txs; i++) {
 		memset(tx_ids[i], 0x00, sizeof(tx_ids[i]));
 	}
 	no_of_txs = 0;
-	
-	for(int32_t i = 0; i < no_of_rand_str; i++){
+
+	for (int32_t i = 0; i < no_of_rand_str; i++) {
 		memset(tx_rand_str[i], 0x00, sizeof(tx_rand_str[i]));
 	}
 	no_of_rand_str = 0;
-	
+
 	reset_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(reset_info, "method", "reset");
 	bet_push_dcv_to_gui(reset_info);

@@ -1626,7 +1626,8 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			if (strcmp(req_identifier, jstr(argjson, "req_identifier")) == 0) {
 				vars->player_funds = jint(argjson, "player_funds");
 				if (jint(argjson, "tx_validity") == 1) {
-					if(backend_status == 1) { /* This snippet is added to handle the reset scenario after the initial hand got played*/
+					if (backend_status ==
+					    1) { /* This snippet is added to handle the reset scenario after the initial hand got played*/
 						cJSON *reset_info = cJSON_CreateObject();
 						cJSON_AddStringToObject(reset_info, "method", "reset");
 						player_lws_write(reset_info);
@@ -1642,7 +1643,6 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 	}
 	return retval;
 }
-
 
 void bet_player_backend_loop(void *_ptr)
 {
@@ -1705,13 +1705,13 @@ int32_t bet_player_reset(struct privatebet_info *bet, struct privatebet_vars *va
 		}
 	}
 
-	memset(req_identifier,0x00,sizeof(req_identifier));
+	memset(req_identifier, 0x00, sizeof(req_identifier));
 	bet_player_stack_info_req(bet);
-	#if 0
+#if 0
 	reset_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(reset_info, "method", "reset");
 	player_lws_write(reset_info);
-	#endif
+#endif
 	return retval;
 }
 
