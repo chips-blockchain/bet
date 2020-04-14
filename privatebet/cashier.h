@@ -1,3 +1,4 @@
+void bet_check_notaries();
 char *bet_check_notary_status();
 int32_t bet_send_status(struct cashier *cashier_info);
 int32_t bet_cashier_backend(cJSON *argjson, struct cashier *cashier_info);
