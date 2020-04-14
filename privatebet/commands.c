@@ -28,6 +28,7 @@
 #define arg_size 8192
 
 char *multisigAddress = "bGmKoyJEz4ESuJCTjhVkgEb2Qkt8QuiQzQ";
+double epsilon = 0.000000001;
 
 static int32_t bet_alloc_args(int argc, char ***argv)
 {
@@ -208,7 +209,6 @@ cJSON *chips_transfer_funds(double amount, char *address)
 	cJSON *tx_info = NULL, *signed_tx = NULL;
 	char *raw_tx = NULL;
 
-	
 	raw_tx = cJSON_str(chips_create_raw_tx(amount, address));
 	signed_tx = chips_sign_raw_tx_with_wallet(raw_tx);
 	tx_info = chips_send_raw_tx(signed_tx);
@@ -736,6 +736,33 @@ cJSON *chips_spend_msig_txs(char *to_addr, int no_of_txs, char tx_ids[][100])
 	return tx;
 }
 
+static cJSON *chips_spend_msig_tx(cJSON *raw_tx)
+{
+	int signers = 0;
+	cJSON *hex = NULL, *tx = NULL;
+
+	bet_check_notary_status();
+	for (int i = 0; i < no_of_notaries; i++) {
+		if (notary_status[i] == 1) {
+			if (signers == 0) {
+				cJSON *temp = chips_sign_msig_tx(notary_node_ips[i], raw_tx);
+				hex = cJSON_GetObjectItem(cJSON_GetObjectItem(temp, "signed_tx"), "hex");
+				signers++;
+			} else if (signers == 1) {
+				cJSON *temp1 = chips_sign_msig_tx(notary_node_ips[i], hex);
+				cJSON *status =
+					cJSON_GetObjectItem(cJSON_GetObjectItem(temp1, "signed_tx"), "complete");
+				if (strcmp(cJSON_Print(status), "true") == 0) {
+					tx = chips_send_raw_tx(cJSON_GetObjectItem(temp1, "signed_tx"));
+					signers++;
+					break;
+				}
+			}
+		}
+	}
+	return tx;
+}
+
 cJSON *chips_get_raw_tx(char *tx)
 {
 	int argc;
@@ -904,9 +931,40 @@ char *chips_get_wallet_address()
 	return chips_get_new_address();
 }
 
+static int32_t chips_get_vout_from_tx(char *tx_id)
+{
+	cJSON *raw_tx_info = NULL, *decode_raw_tx_info = NULL, *vout = NULL;
+	int argc, retval = -1;
+	char **argv = NULL;
+	double value = 0.01;
+
+	argc = 3;
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, "chips-cli", "getrawtransaction", tx_id);
+	make_command(argc, argv, &raw_tx_info);
+
+	bet_memset_args(argc, &argv);
+	argv = bet_copy_args(argc, "chips-cli", "decoderawtransaction", cJSON_Print(raw_tx_info));
+	make_command(argc, argv, &decode_raw_tx_info);
+
+	vout = cJSON_GetObjectItem(decode_raw_tx_info, "vout");
+	for (int i = 0; i < cJSON_GetArraySize(vout); i++) {
+		cJSON *temp = cJSON_GetArrayItem(vout, i);
+		if (abs(value - jdouble(temp, "value") < epsilon)) {
+			retval = jint(temp, "n");
+			break;
+		}
+	}
+	bet_dealloc_args(argc, &argv);
+	return retval;
+}
+
 void chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids[][100])
 {
 	double payout_amount = 0, amount_in_txs = 0;
+	cJSON *tx_list = NULL, *addr_info = NULL, *tx_details = NULL;
+	int argc, vout;
+	char **argv = NULL, params[2][arg_size] = { 0 };
 
 	for (int32_t i = 0; i < cJSON_GetArraySize(payout_addr); i++) {
 		cJSON *addr_info = cJSON_GetArrayItem(payout_addr, i);
@@ -915,12 +973,39 @@ void chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids[]
 	for (int32_t i = 0; i < no_of_txs; i++) {
 		amount_in_txs += chips_get_balance_on_address_from_tx(legacy_2_of_4_msig_Addr, tx_ids[i]);
 	}
-	if ((payout_amount + chips_tx_fee) <= amount_in_txs) {
+	if (abs((payout_amount + chips_tx_fee) - amount_in_txs) < epsilon) {
 		printf("%f::%f\n", payout_amount, amount_in_txs);
 		for (int32_t i = 0; i < no_of_txs; i++) {
 			printf("%s\n", tx_ids[i]);
 		}
 	}
+	tx_list = cJSON_CreateArray();
+	for (int32_t i = 0; i < no_of_txs; i++) {
+		if ((vout = chips_get_vout_from_tx(tx_ids[i])) >= 0) {
+			cJSON *tx_info = cJSON_CreateObject();
+			cJSON_AddStringToObject(tx_info, "txid", tx_ids[i]);
+			cJSON_AddNumberToObject(tx_info, "vout", vout);
+			cJSON_AddItemToArray(tx_list, tx_info);
+		}
+	}
+
+	addr_info = cJSON_CreateObject();
+	for (int32_t i = 0; i < cJSON_GetArraySize(payout_addr); i++) {
+		cJSON *temp = cJSON_GetArrayItem(payout_addr, i);
+		cJSON_AddNumberToObject(addr_info, jstr(temp, "address"), jdouble(temp, "amount"));
+	}
+
+	argc = 4;
+	bet_alloc_args(argc, &argv);
+
+	sprintf(params[0], "\'%s\'", cJSON_Print(tx_list));
+	sprintf(params[1], "\'%s\'", cJSON_Print(addr_info));
+
+	argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
+	make_command(argc, argv, &tx_details);
+	cJSON *tx = chips_spend_msig_tx(tx_details);
+	printf("%s::%d::tx::%s\n", __FUNCTION__, __LINE__, cJSON_Print(tx));
+	bet_dealloc_args(argc, &argv);
 }
 
 int32_t make_command(int argc, char **argv, cJSON **argjson)
