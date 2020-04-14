@@ -39,6 +39,11 @@ char *bet_check_notary_status()
 
 	cashier_info = calloc(1, sizeof(struct cashier));
 
+	live_notaries=0;
+	for(int i = 0; i < no_of_notaries; i++) {
+		notary_status[i] = 0;
+	}
+	
 	for (int i = 0; i < no_of_notaries; i++) {
 		int temp = live_notaries;
 		memset(cashier_info, 0x00, sizeof(struct cashier));
