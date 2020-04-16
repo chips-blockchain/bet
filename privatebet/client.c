@@ -448,6 +448,11 @@ int32_t bet_bvv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 		} else if (strcmp(method, "live") == 0) {
 			retval = bet_live_response(bet, "bvv", -1);
 		} else if (strcmp(method, "status_info") == 0) {
+			max_players = jint(argjson, "max_players");
+			chips_tx_fee = jdouble(argjson, "chips_tx_fee");
+			table_stack_in_chips = jdouble(argjson, "table_stack_in_chips");
+			bet->maxplayers = max_players;
+		} else if (strcmp(method, "status_info") == 0) {
 			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 		}
 	}
@@ -1500,6 +1505,10 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		printf("%s::%d::Insufficient funds\n", __FUNCTION__, __LINE__);
 		retval = -1;
 	} else {
+		max_players = jint(argjson, "max_players");
+		table_stack_in_chips = jdouble(argjson, "table_stack_in_chips");
+		chips_tx_fee = jdouble(argjson, "chips_tx_fee");
+		bet->maxplayers = max_players;
 		tx_info = cJSON_CreateObject();
 		data = jstr(argjson, "req_identifier");
 		txid = chips_transfer_funds_with_data(funds_needed, legacy_2_of_4_msig_Addr, data);
