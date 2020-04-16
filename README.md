@@ -53,6 +53,10 @@ $ cd
 $ cd bet/privatebet
 $ ./bet dcv ipaddress_of_dcv
 ```
+### Configuring the Table
+
+The dealer can configure the table parameters, the steps to configure the table parameters are mentioned [here](./configure_dealer.md).
+
 ## Command to run BVV
 ```
 $ cd
