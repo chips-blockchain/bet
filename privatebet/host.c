@@ -354,8 +354,10 @@ int32_t bet_dcv_init(cJSON *argjson, struct privatebet_info *bet, struct private
 
 static int32_t bet_dcv_bvv_join(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int retval = 1;
+	int retval = 1, bytes;
 	char uri[100] = { 0 };
+	cJSON *config_info = NULL;
+	char *rendered = NULL;
 
 	strcpy(uri, jstr(argjson, "uri"));
 	strcpy(dcv_info.bvv_uri, uri);
@@ -365,6 +367,18 @@ static int32_t bet_dcv_bvv_join(cJSON *argjson, struct privatebet_info *bet, str
 		printf("Channel Established\n");
 	else
 		printf("Channel Didn't Established\n");
+
+	config_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(config_info, "method", "config_data");
+	cJSON_AddNumberToObject(config_info, "max_players", max_players);
+	cJSON_AddNumberToObject(config_info, "table_stack_in_chips", table_stack_in_chips);
+	cJSON_AddNumberToObject(config_info, "chips_tx_fee", chips_tx_fee);
+
+	rendered = cJSON_Print(config_info);
+	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
+	if (bytes < 0)
+		retval = -1;
+
 	return retval;
 }
 
@@ -1327,10 +1341,14 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 	stack_info_resp = cJSON_CreateObject();
 	cJSON_AddStringToObject(stack_info_resp, "method", "stack_info_resp");
 	cJSON_AddNumberToObject(stack_info_resp, "table_stack_in_chips", table_stack_in_chips);
-
 	cJSON_AddStringToObject(stack_info_resp, "req_identifier", jstr(argjson, "req_identifier"));
 	strcpy(vars->player_chips_addrs[no_of_rand_str], jstr(argjson, "chips_addr"));
 	strcpy(tx_rand_str[no_of_rand_str++], jstr(argjson, "req_identifier"));
+
+	cJSON_AddNumberToObject(stack_info_resp, "max_players", max_players);
+	cJSON_AddNumberToObject(stack_info_resp, "table_stack_in_chips", table_stack_in_chips);
+	cJSON_AddNumberToObject(stack_info_resp, "chips_tx_fee", chips_tx_fee);
+
 	bytes = nn_send(bet->pubsock, cJSON_Print(stack_info_resp), strlen(cJSON_Print(stack_info_resp)), 0);
 	if (bytes < 0)
 		retval = -1;

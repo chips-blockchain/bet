@@ -176,5 +176,6 @@ struct pair256 p2p_bvv_init(bits256 *keys, struct pair256 b_key, bits256 *blindi
 			    bits256 deckid);
 
 bits256 curve25519_fieldelement(bits256 hash);
+int32_t bet_parse_config_file();
 
 #endif

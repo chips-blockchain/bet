@@ -45,6 +45,8 @@ struct enc_share *g_shares = NULL;
 int32_t max_players = 2;
 static const int32_t poker_deck_size = 52;
 
+char *dealer_config_file = "dealer_config.json";
+
 static void bet_cashier_client_initialize(char *node_ip, const int32_t port)
 {
 	int32_t subsock = -1, pushsock = -1;
@@ -303,6 +305,7 @@ int main(int argc, char **argv)
 		common_init();
 		strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
 		if (strcmp(argv[1], "dcv") == 0) {
+			bet_parse_config_file();
 			bet_dcv_thrd(dcv_ip, port);
 		} else if (strcmp(argv[1], "bvv") == 0) {
 			bet_bvv_thrd(dcv_ip, port);
@@ -435,4 +438,55 @@ struct pair256 p2p_bvv_init(bits256 *keys, struct pair256 b_key, bits256 *blindi
 		}
 	}
 	return b_key;
+}
+
+int32_t bet_parse_config_file()
+{
+	FILE *fp = NULL;
+	cJSON *config_data = NULL;
+	char *data = NULL, buf[256];
+	unsigned long data_size = 1024, buf_size = 256, temp_size = 0;
+	unsigned long new_size = data_size;
+	int ret = 1;
+	data = calloc(data_size, sizeof(char));
+	if (!data) {
+		goto end;
+	}
+
+	fp = fopen(dealer_config_file, "r");
+	if (fp == NULL) {
+		printf("%s::%d::Failed to open %s\n", __FUNCTION__, __LINE__, dealer_config_file);
+		ret = 0;
+		goto end;
+	} else {
+		while (fgets(buf, buf_size, fp) != NULL) {
+			temp_size = temp_size + strlen(buf);
+			if (temp_size >= new_size) {
+				char *temp = calloc(new_size, sizeof(char));
+				strncpy(temp, data, strlen(data));
+				free(data);
+				new_size = new_size * 2;
+				data = calloc(new_size, sizeof(char));
+				strncpy(data, temp, strlen(temp));
+				free(temp);
+				printf("MEMORY DOUBLED:: IN READING :: %s :: NEEDING MORE MEMORY\n",
+				       dealer_config_file);
+			}
+			strcat(data, buf);
+			memset(buf, 0x00, buf_size);
+		}
+		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, data);
+		config_data = cJSON_CreateObject();
+		config_data = cJSON_Parse(data);
+		max_players = jint(config_data, "max_players");
+		table_stack_in_chips = jdouble(config_data, "table_stack_in_chips");
+		chips_tx_fee = jdouble(config_data, "chips_tx_fee");
+	}
+end:
+	if (data)
+		free(data);
+	printf("The configuration values set are::\n");
+	printf("max_players::%d\t,table_stack_in_chips::%lf\t,chips_tx_fee::%lf\n", max_players, table_stack_in_chips,
+	       chips_tx_fee);
+	return ret;
 }
