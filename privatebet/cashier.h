@@ -1,3 +1,4 @@
+void bet_compute_m_of_n_msig_addr();
 void bet_check_notaries();
 char *bet_check_notary_status();
 int32_t bet_send_status(struct cashier *cashier_info);

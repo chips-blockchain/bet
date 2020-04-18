@@ -1511,7 +1511,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		bet->maxplayers = max_players;
 		tx_info = cJSON_CreateObject();
 		data = jstr(argjson, "req_identifier");
-		txid = chips_transfer_funds_with_data(funds_needed, legacy_2_of_4_msig_Addr, data);
+		txid = chips_transfer_funds_with_data(funds_needed, legacy_2_of_4_msig_addr, data);
 		cJSON_AddStringToObject(tx_info, "method", "tx");
 		cJSON_AddStringToObject(tx_info, "req_identifier", data);
 		cJSON_AddItemToObject(tx_info, "tx_info", txid);

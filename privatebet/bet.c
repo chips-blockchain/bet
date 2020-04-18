@@ -292,19 +292,18 @@ static void common_init()
 	check_ln_chips_sync();
 
 	chips_add_multisig_address();
-	printf("Importing msig address::%s\n", legacy_2_of_4_msig_Addr);
-	if (chips_iswatchonly(legacy_2_of_4_msig_Addr) == 0)
-		chips_import_address(legacy_2_of_4_msig_Addr);
+	printf("Importing msig address::%s\n", legacy_2_of_4_msig_addr);
+	if (chips_iswatchonly(legacy_2_of_4_msig_addr) == 0)
+		chips_import_address(legacy_2_of_4_msig_addr);
 }
 int main(int argc, char **argv)
 {
 	uint16_t port = 7797, cashier_pub_sub_port = 7901;
 	char dcv_ip[20];
-
 	bet_parse_notary_file();
-
 	if (argc == 3) {
 		bet_check_notaries();
+		bet_compute_m_of_n_msig_addr();
 		common_init();
 		strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
 		if (strcmp(argv[1], "dcv") == 0) {
@@ -506,11 +505,20 @@ void bet_parse_notary_file()
 	if (notaries_info) {
 		no_of_notaries = cJSON_GetArraySize(notaries_info);
 		notary_node_ips = (char **)malloc(no_of_notaries * sizeof(char *));
+		notary_node_pubkeys = (char **)malloc(no_of_notaries * sizeof(char *));
+
 		for (int32_t i = 0; i < no_of_notaries; i++) {
-			cJSON *temp = cJSON_GetArrayItem(notaries_info, i);
-			int32_t length = strlen(cJSON_Print(temp));
-			notary_node_ips[i] = (char *)malloc(length * sizeof(char));
-			strncpy(notary_node_ips[i], cJSON_Print(temp), length);
+			cJSON *node_info = cJSON_CreateObject();
+			node_info = cJSON_GetArrayItem(notaries_info, i);
+
+			notary_node_ips[i] = (char *)malloc(strlen(jstr(node_info, "ip")) + 1);
+			memset(notary_node_ips[i], 0x00, strlen(jstr(node_info, "ip")) + 1);
+
+			notary_node_pubkeys[i] = (char *)malloc(strlen(jstr(node_info, "pubkey")) + 1);
+			memset(notary_node_pubkeys[i], 0x00, strlen(jstr(node_info, "pubkey")) + 1);
+
+			strncpy(notary_node_ips[i], jstr(node_info, "ip"), strlen(jstr(node_info, "ip")));
+			strncpy(notary_node_pubkeys[i], jstr(node_info, "pubkey"), strlen(jstr(node_info, "pubkey")));
 		}
 	}
 }

@@ -538,13 +538,20 @@ cJSON *chips_add_multisig_address()
 	cJSON *addr_list = NULL;
 	cJSON *msig_address = NULL;
 
+	if (threshold_value > live_notaries) {
+		printf("Not enough trust exists in the system\n");
+		return NULL;
+	}
+
 	argc = 5;
 	bet_alloc_args(argc, &argv);
 	snprintf(param, arg_size, "%d", threshold_value);
 
 	addr_list = cJSON_CreateArray();
-	for (int i = 0; i < no_of_notaries; i++)
-		cJSON_AddItemToArray(addr_list, cJSON_CreateString_Length(notary_node_pubkeys[i], 67));
+	for (int i = 0; i < no_of_notaries; i++) {
+		if (notary_status[i] == 1)
+			cJSON_AddItemToArray(addr_list, cJSON_CreateString_Length(notary_node_pubkeys[i], 67));
+	}
 
 	argv = bet_copy_args(argc, "chips-cli", "addmultisigaddress", param,
 			     cJSON_Print(cJSON_CreateString(cJSON_Print(addr_list))), "-addresstype legacy");
@@ -572,7 +579,7 @@ int32_t chips_check_if_tx_unspent(char *input_tx)
 		temp = cJSON_GetArrayItem(listunspent_info, i);
 		if (temp) {
 			if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "txid")), input_tx) == 0) {
-				if (strcmp(jstr(temp, "address"), legacy_2_of_4_msig_Addr) == 0) {
+				if (strcmp(jstr(temp, "address"), legacy_2_of_4_msig_addr) == 0) {
 					spendable = 1;
 					break;
 				}
@@ -971,7 +978,7 @@ void chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids[]
 		payout_amount += jdouble(addr_info, "amount");
 	}
 	for (int32_t i = 0; i < no_of_txs; i++) {
-		amount_in_txs += chips_get_balance_on_address_from_tx(legacy_2_of_4_msig_Addr, tx_ids[i]);
+		amount_in_txs += chips_get_balance_on_address_from_tx(legacy_2_of_4_msig_addr, tx_ids[i]);
 	}
 	if (abs((payout_amount + chips_tx_fee) - amount_in_txs) < epsilon) {
 		printf("%f::%f\n", payout_amount, amount_in_txs);
