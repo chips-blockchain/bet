@@ -46,6 +46,7 @@ int32_t max_players = 2;
 static const int32_t poker_deck_size = 52;
 
 char *dealer_config_file = "dealer_config.json";
+char *notaries_file = "notaries.json";
 
 static void bet_cashier_client_initialize(char *node_ip, const int32_t port)
 {
@@ -300,6 +301,8 @@ int main(int argc, char **argv)
 	uint16_t port = 7797, cashier_pub_sub_port = 7901;
 	char dcv_ip[20];
 
+	bet_parse_notary_file();
+
 	if (argc == 3) {
 		bet_check_notaries();
 		common_init();
@@ -440,23 +443,22 @@ struct pair256 p2p_bvv_init(bits256 *keys, struct pair256 b_key, bits256 *blindi
 	return b_key;
 }
 
-int32_t bet_parse_config_file()
+cJSON *bet_read_json_file(char *file_name)
 {
 	FILE *fp = NULL;
-	cJSON *config_data = NULL;
+	cJSON *json_data = NULL;
 	char *data = NULL, buf[256];
 	unsigned long data_size = 1024, buf_size = 256, temp_size = 0;
 	unsigned long new_size = data_size;
-	int ret = 1;
+
 	data = calloc(data_size, sizeof(char));
 	if (!data) {
 		goto end;
 	}
 
-	fp = fopen(dealer_config_file, "r");
+	fp = fopen(file_name, "r");
 	if (fp == NULL) {
-		printf("%s::%d::Failed to open %s\n", __FUNCTION__, __LINE__, dealer_config_file);
-		ret = 0;
+		printf("%s::%d::Failed to open %s\n", __FUNCTION__, __LINE__, file_name);
 		goto end;
 	} else {
 		while (fgets(buf, buf_size, fp) != NULL) {
@@ -469,24 +471,46 @@ int32_t bet_parse_config_file()
 				data = calloc(new_size, sizeof(char));
 				strncpy(data, temp, strlen(temp));
 				free(temp);
-				printf("MEMORY DOUBLED:: IN READING :: %s :: NEEDING MORE MEMORY\n",
-				       dealer_config_file);
+				printf("MEMORY DOUBLED:: IN READING :: %s :: NEEDING MORE MEMORY\n", file_name);
 			}
 			strcat(data, buf);
 			memset(buf, 0x00, buf_size);
 		}
 		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, data);
-		config_data = cJSON_CreateObject();
-		config_data = cJSON_Parse(data);
-		max_players = jint(config_data, "max_players");
-		table_stack_in_chips = jdouble(config_data, "table_stack_in_chips");
-		chips_tx_fee = jdouble(config_data, "chips_tx_fee");
+		json_data = cJSON_CreateObject();
+		json_data = cJSON_Parse(data);
 	}
 end:
 	if (data)
 		free(data);
-	printf("The configuration values set are::\n");
-	printf("max_players::%d\t,table_stack_in_chips::%lf\t,chips_tx_fee::%lf\n", max_players, table_stack_in_chips,
-	       chips_tx_fee);
-	return ret;
+	return json_data;
+}
+
+void bet_parse_config_file()
+{
+	cJSON *config_info = NULL;
+
+	config_info = bet_read_json_file(dealer_config_file);
+	if (config_info) {
+		max_players = jint(config_info, "max_players");
+		table_stack_in_chips = jdouble(config_info, "table_stack_in_chips");
+		chips_tx_fee = jdouble(config_info, "chips_tx_fee");
+	}
+}
+
+void bet_parse_notary_file()
+{
+	cJSON *notaries_info = NULL;
+
+	notaries_info = bet_read_json_file(notaries_file);
+	if (notaries_info) {
+		no_of_notaries = cJSON_GetArraySize(notaries_info);
+		notary_node_ips = (char **)malloc(no_of_notaries * sizeof(char *));
+		for (int32_t i = 0; i < no_of_notaries; i++) {
+			cJSON *temp = cJSON_GetArrayItem(notaries_info, i);
+			int32_t length = strlen(cJSON_Print(temp));
+			notary_node_ips[i] = (char *)malloc(length * sizeof(char));
+			strncpy(notary_node_ips[i], cJSON_Print(temp), length);
+		}
+	}
 }
