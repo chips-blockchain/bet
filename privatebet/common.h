@@ -80,17 +80,19 @@ extern int32_t threshold_value;
 extern char notary_node_addrs[][64];
 extern char **notary_node_ips;
 extern char msig_addr[64];
-extern char notary_node_pubkeys[][67];
+extern char **notary_node_pubkeys;
 
 extern double table_stack_in_chips;
 extern double chips_tx_fee;
 
 extern char dev_fund_addr[64];
 extern char legacy_2_of_3_msig_addr[64];
-extern char legacy_2_of_4_msig_Addr[64];
+extern char legacy_2_of_4_msig_addr[64];
+extern char *legacy_m_of_n_msig_addr;
 
 extern int32_t no_of_txs;
 extern char tx_ids[CARDS777_MAXPLAYERS][100];
-extern int32_t notary_status[4];
+extern int32_t *notary_status;
+extern int32_t live_notaries;
 
 #endif

@@ -940,7 +940,7 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 	}
 
 	for (int32_t i = 0; i < no_of_txs; i++) {
-		amount_in_txs += chips_get_balance_on_address_from_tx(legacy_2_of_4_msig_Addr, tx_ids[i]);
+		amount_in_txs += chips_get_balance_on_address_from_tx(legacy_2_of_4_msig_addr, tx_ids[i]);
 	}
 
 	pot_in_chips = pot * chips_conversion_factor;
@@ -1457,7 +1457,7 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 
 	if (retval == 1) {
 		double balance =
-			chips_get_balance_on_address_from_tx(legacy_2_of_4_msig_Addr, jstr(argjson, "tx_info"));
+			chips_get_balance_on_address_from_tx(legacy_2_of_4_msig_addr, jstr(argjson, "tx_info"));
 		funds = (balance * satoshis) / (satoshis_per_unit * normalization_factor);
 
 		char *rand_str = jstr(argjson, "req_identifier");

@@ -12,14 +12,14 @@ char notary_node_addrs[][64] = { "bQepVNtzfjMaBJdaaCq68trQDAPDgKnwrD", "bSa7CrTX
 char **notary_node_ips = NULL; //{ "159.69.23.28", "159.69.23.29", "159.69.23.30", "159.69.23.31" };
 char msig_addr[64] = { "bQJTo8knsbSoU7k9oGADa6qfWGWyJtxC3o" };
 
-char notary_node_pubkeys[][67] = { "034d2b213240cfb4efcc24cc21a237a2313c0c734a4f0efc30087c095fd010385f",
+char **notary_node_pubkeys = NULL; /*{ "034d2b213240cfb4efcc24cc21a237a2313c0c734a4f0efc30087c095fd010385f",
 				   "02137b5400ace827c225238765d4661a1b4fe589b9b625b10469c69f0867f7bc53",
 				   "03b020866c9efae106e3c086a640e8b50cce7ae91cb30996ecf0f8816ce5ed8f49",
-				   "0274ae1ce244bd0f9c52edfb6b9e60dc5d22f001dd74af95d1297edbcc8ae39568" };
+				   "0274ae1ce244bd0f9c52edfb6b9e60dc5d22f001dd74af95d1297edbcc8ae39568" };*/
 
 struct cashier *cashier_info = NULL;
 int32_t live_notaries = 0;
-int32_t notary_status[4] = { 0 };
+int32_t *notary_status = NULL;
 
 double table_stack_in_chips = 0.01;
 double chips_tx_fee = 0.0005;
@@ -27,7 +27,21 @@ double chips_tx_fee = 0.0005;
 char dev_fund_addr[64] = { "RSdMRYeeouw3hepxNgUzHn34qFhn1tsubb" }; // donation Address
 
 char legacy_2_of_3_msig_addr[64] = { "bQJTo8knsbSoU7k9oGADa6qfWGWyJtxC3o" };
-char legacy_2_of_4_msig_Addr[64] = { "bRCUpox55j6sFJBuEn9E1fwNLFKFvRvo9W" };
+char legacy_2_of_4_msig_addr[64] = { "bRCUpox55j6sFJBuEn9E1fwNLFKFvRvo9W" };
+char *legacy_m_of_n_msig_addr = NULL;
+
+void bet_compute_m_of_n_msig_addr()
+{
+	cJSON *msig_addr = NULL;
+	msig_addr = chips_add_multisig_address();
+	if (msig_addr) {
+		legacy_m_of_n_msig_addr = (char *)malloc(strlen(jstr(msig_addr, "address")) + 1);
+		memset(legacy_m_of_n_msig_addr, 0x00, strlen(jstr(msig_addr, "address")) + 1);
+		strncpy(legacy_m_of_n_msig_addr, jstr(msig_addr, "address"), strlen(jstr(msig_addr, "address")));
+		if (chips_iswatchonly(legacy_m_of_n_msig_addr) == 0)
+			chips_import_address(legacy_m_of_n_msig_addr);
+	}
+}
 
 void bet_check_notaries()
 {
@@ -58,6 +72,7 @@ char *bet_check_notary_status()
 	cashier_info = calloc(1, sizeof(struct cashier));
 
 	live_notaries = 0;
+	notary_status = (int *)malloc(no_of_notaries * sizeof(int));
 	for (int i = 0; i < no_of_notaries; i++) {
 		notary_status[i] = 0;
 	}
