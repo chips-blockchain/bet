@@ -579,7 +579,7 @@ int32_t chips_check_if_tx_unspent(char *input_tx)
 		temp = cJSON_GetArrayItem(listunspent_info, i);
 		if (temp) {
 			if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "txid")), input_tx) == 0) {
-				if (strcmp(jstr(temp, "address"), legacy_2_of_4_msig_addr) == 0) {
+				if (strcmp(jstr(temp, "address"), legacy_m_of_n_msig_addr) == 0) {
 					spendable = 1;
 					break;
 				}
@@ -978,7 +978,7 @@ void chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids[]
 		payout_amount += jdouble(addr_info, "amount");
 	}
 	for (int32_t i = 0; i < no_of_txs; i++) {
-		amount_in_txs += chips_get_balance_on_address_from_tx(legacy_2_of_4_msig_addr, tx_ids[i]);
+		amount_in_txs += chips_get_balance_on_address_from_tx(legacy_m_of_n_msig_addr, tx_ids[i]);
 	}
 	if (abs((payout_amount + chips_tx_fee) - amount_in_txs) < epsilon) {
 		printf("%f::%f\n", payout_amount, amount_in_txs);

@@ -1508,10 +1508,14 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		max_players = jint(argjson, "max_players");
 		table_stack_in_chips = jdouble(argjson, "table_stack_in_chips");
 		chips_tx_fee = jdouble(argjson, "chips_tx_fee");
+		legacy_m_of_n_msig_addr = (char *)malloc(strlen(jstr(argjson, "legacy_m_of_n_msig_addr")) + 1);
+		memset(legacy_m_of_n_msig_addr, 0x00, strlen(jstr(argjson, "legacy_m_of_n_msig_addr")) + 1);
+		strncpy(legacy_m_of_n_msig_addr, jstr(argjson, "legacy_m_of_n_msig_addr"),
+			strlen(jstr(argjson, "legacy_m_of_n_msig_addr")));
 		bet->maxplayers = max_players;
 		tx_info = cJSON_CreateObject();
 		data = jstr(argjson, "req_identifier");
-		txid = chips_transfer_funds_with_data(funds_needed, legacy_2_of_4_msig_addr, data);
+		txid = chips_transfer_funds_with_data(funds_needed, legacy_m_of_n_msig_addr, data);
 		cJSON_AddStringToObject(tx_info, "method", "tx");
 		cJSON_AddStringToObject(tx_info, "req_identifier", data);
 		cJSON_AddItemToObject(tx_info, "tx_info", txid);
