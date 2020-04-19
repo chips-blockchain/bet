@@ -291,10 +291,8 @@ static void common_init()
 	libgfshare_init();
 	check_ln_chips_sync();
 
-	chips_add_multisig_address();
-	printf("Importing msig address::%s\n", legacy_2_of_4_msig_addr);
-	if (chips_iswatchonly(legacy_2_of_4_msig_addr) == 0)
-		chips_import_address(legacy_2_of_4_msig_addr);
+	bet_check_notaries();
+	bet_compute_m_of_n_msig_addr();
 }
 int main(int argc, char **argv)
 {
@@ -302,8 +300,6 @@ int main(int argc, char **argv)
 	char dcv_ip[20];
 	bet_parse_notary_file();
 	if (argc == 3) {
-		bet_check_notaries();
-		bet_compute_m_of_n_msig_addr();
 		common_init();
 		strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
 		if (strcmp(argv[1], "dcv") == 0) {

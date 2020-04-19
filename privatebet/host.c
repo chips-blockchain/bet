@@ -940,7 +940,7 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 	}
 
 	for (int32_t i = 0; i < no_of_txs; i++) {
-		amount_in_txs += chips_get_balance_on_address_from_tx(legacy_2_of_4_msig_addr, tx_ids[i]);
+		amount_in_txs += chips_get_balance_on_address_from_tx(legacy_m_of_n_msig_addr, tx_ids[i]);
 	}
 
 	pot_in_chips = pot * chips_conversion_factor;
@@ -1337,6 +1337,7 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 {
 	int32_t bytes, retval = 1;
 	cJSON *stack_info_resp = NULL;
+	cJSON *msig_addr_nodes = NULL;
 
 	stack_info_resp = cJSON_CreateObject();
 	cJSON_AddStringToObject(stack_info_resp, "method", "stack_info_resp");
@@ -1348,7 +1349,14 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 	cJSON_AddNumberToObject(stack_info_resp, "max_players", max_players);
 	cJSON_AddNumberToObject(stack_info_resp, "table_stack_in_chips", table_stack_in_chips);
 	cJSON_AddNumberToObject(stack_info_resp, "chips_tx_fee", chips_tx_fee);
-
+	cJSON_AddStringToObject(stack_info_resp, "legacy_m_of_n_msig_addr", legacy_m_of_n_msig_addr);
+	msig_addr_nodes = cJSON_CreateArray();
+	for (int32_t i = 0; i < no_of_notaries; i++) {
+		if (notary_status[i] == 1) {
+			cJSON_AddItemToArray(msig_addr_nodes, cJSON_CreateString(notary_node_ips[i]));
+		}
+	}
+	cJSON_AddItemToObject(stack_info_resp, "msig_addr_nodes", msig_addr_nodes);
 	bytes = nn_send(bet->pubsock, cJSON_Print(stack_info_resp), strlen(cJSON_Print(stack_info_resp)), 0);
 	if (bytes < 0)
 		retval = -1;
@@ -1444,7 +1452,7 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 	}
 }
 
-static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
+static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars, char *addr)
 {
 	int32_t funds = 0, bytes, retval;
 	cJSON *tx_status = NULL;
@@ -1456,8 +1464,7 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 	}
 
 	if (retval == 1) {
-		double balance =
-			chips_get_balance_on_address_from_tx(legacy_2_of_4_msig_addr, jstr(argjson, "tx_info"));
+		double balance = chips_get_balance_on_address_from_tx(addr, jstr(argjson, "tx_info"));
 		funds = (balance * satoshis) / (satoshis_per_unit * normalization_factor);
 
 		char *rand_str = jstr(argjson, "req_identifier");
@@ -1543,7 +1550,7 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 			retval = bet_dcv_stack_info_resp(argjson, bet, vars);
 		} else if (strcmp(method, "tx") == 0) {
 			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
-			retval = bet_dcv_process_tx(argjson, bet, vars);
+			retval = bet_dcv_process_tx(argjson, bet, vars, legacy_m_of_n_msig_addr);
 		} else {
 			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
 			if (bytes < 0) {
