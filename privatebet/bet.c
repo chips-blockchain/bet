@@ -24,6 +24,7 @@
 #include "host.h"
 #include "network.h"
 #include "table.h"
+#include "storage.h"
 
 #include <netinet/in.h>
 #include <stdio.h>
@@ -45,8 +46,19 @@ struct enc_share *g_shares = NULL;
 int32_t max_players = 2;
 static const int32_t poker_deck_size = 52;
 
-char *dealer_config_file = "dealer_config.json";
-char *notaries_file = "notaries.json";
+char *dealer_config_file = "./config/dealer_config.json";
+char *notaries_file = "./config/notaries.json";
+
+char table_id[65];
+
+void bet_set_table_id()
+{
+	bits256 randval;
+	memset(table_id, 0x00, sizeof(table_id));
+	OS_randombytes(randval.bytes, sizeof(randval));
+	bits256_str(table_id, randval);
+	printf("%s::%d::table_id::%s\n", __FUNCTION__, __LINE__, table_id);
+}
 
 static void bet_cashier_client_initialize(char *node_ip, const int32_t port)
 {
@@ -293,12 +305,15 @@ static void common_init()
 
 	bet_check_notaries();
 	bet_compute_m_of_n_msig_addr();
+	bet_set_table_id();
+	bet_sqlite3_init();
 }
 int main(int argc, char **argv)
 {
 	uint16_t port = 7797, cashier_pub_sub_port = 7901;
 	char dcv_ip[20];
-	bet_parse_notary_file();
+	bet_get_db_instance();
+	//bet_parse_notary_file();
 	if (argc == 3) {
 		common_init();
 		strncpy(dcv_ip, argv[2], sizeof(dcv_ip));

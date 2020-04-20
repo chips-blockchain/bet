@@ -9,8 +9,10 @@ int32_t threshold_value = 2;
 
 char notary_node_addrs[][64] = { "bQepVNtzfjMaBJdaaCq68trQDAPDgKnwrD", "bSa7CrTXykfPZ6yhThjXAoQ8r4H7muiPPC",
 				 "bGmKoyJEz4ESuJCTjhVkgEb2Qkt8QuiQzQ", "bR7BXnWT1yVSP9aB57pq22XN2WYNpGgDrD" };
+/*
+
+*/
 char **notary_node_ips = NULL; //{ "159.69.23.28", "159.69.23.29", "159.69.23.30", "159.69.23.31" };
-char msig_addr[64] = { "bQJTo8knsbSoU7k9oGADa6qfWGWyJtxC3o" };
 
 char **notary_node_pubkeys = NULL; /*{ "034d2b213240cfb4efcc24cc21a237a2313c0c734a4f0efc30087c095fd010385f",
 				   "02137b5400ace827c225238765d4661a1b4fe589b9b625b10469c69f0867f7bc53",

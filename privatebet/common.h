@@ -79,7 +79,6 @@ extern int32_t threshold_value;
 
 extern char notary_node_addrs[][64];
 extern char **notary_node_ips;
-extern char msig_addr[64];
 extern char **notary_node_pubkeys;
 
 extern double table_stack_in_chips;
@@ -94,5 +93,7 @@ extern int32_t no_of_txs;
 extern char tx_ids[CARDS777_MAXPLAYERS][100];
 extern int32_t *notary_status;
 extern int32_t live_notaries;
+
+extern char table_id[65];
 
 #endif
