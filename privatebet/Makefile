@@ -1,6 +1,6 @@
 PROJNAME := bet
 LIB := libbet
-SRCFILES := cards777.c  client.c  commands.c  gfshare.c  host.c  network.c  oracle.c  payment.c  states.c  table.c poker.c cashier.c storage.c
+SRCFILES := cards777.c  client.c  commands.c  gfshare.c  host.c  network.c  oracle.c  payment.c  states.c  table.c poker.c cashier.c storage.c config.c
 OBJFILES := $(patsubst %.c,%.o,$(SRCFILES))
 CC := gcc
 WARNINGS := -Werror -Wunused-variable

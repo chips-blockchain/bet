@@ -89,6 +89,16 @@ double dev_fund_percentage = 0.25;
 
 int32_t req_id_to_player_id_mapping[CARDS777_MAXPLAYERS];
 
+char table_id[65];
+
+void bet_set_table_id()
+{
+	bits256 randval;
+	memset(table_id, 0x00, sizeof(table_id));
+	OS_randombytes(randval.bytes, sizeof(randval));
+	bits256_str(table_id, randval);
+}
+
 void bet_dcv_lws_write(cJSON *data)
 {
 	if (ws_dcv_connection_status == 1) {
