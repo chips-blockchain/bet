@@ -31,6 +31,7 @@
 #include "payment.h"
 #include "states.h"
 #include "table.h"
+#include "storage.h"
 
 #define LWS_PLUGIN_STATIC
 
@@ -1498,7 +1499,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 	cJSON *tx_info = NULL, *txid = NULL;
 	double funds_needed;
 	int32_t retval = 1, bytes;
-	char *data = NULL;
+	char *data = NULL, *sql_query = NULL;
 
 	funds_needed = jdouble(argjson, "table_stack_in_chips");
 	if (chips_get_balance() < (funds_needed + chips_tx_fee)) {
@@ -1512,10 +1513,22 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		memset(legacy_m_of_n_msig_addr, 0x00, strlen(jstr(argjson, "legacy_m_of_n_msig_addr")) + 1);
 		strncpy(legacy_m_of_n_msig_addr, jstr(argjson, "legacy_m_of_n_msig_addr"),
 			strlen(jstr(argjson, "legacy_m_of_n_msig_addr")));
+
+		memset(table_id, 0x00, sizeof(table_id));
+		strncpy(table_id, jstr(argjson, "table_id"), strlen(jstr(argjson, "table_id")));
+
 		bet->maxplayers = max_players;
 		tx_info = cJSON_CreateObject();
 		data = jstr(argjson, "req_identifier");
 		txid = chips_transfer_funds_with_data(funds_needed, legacy_m_of_n_msig_addr, data);
+
+		if (txid) {
+			sql_query = calloc(1, 400);
+			sprintf(sql_query, "INSERT INTO player_tx_mapping values(%s,\"%s\",1);", cJSON_Print(txid),
+				table_id);
+			bet_run_query(sql_query);
+		}
+
 		cJSON_AddStringToObject(tx_info, "method", "tx");
 		cJSON_AddStringToObject(tx_info, "req_identifier", data);
 		cJSON_AddItemToObject(tx_info, "tx_info", txid);
@@ -1530,6 +1543,9 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		if (bytes < 0)
 			retval = -1;
 	}
+	if (sql_query)
+		free(sql_query);
+
 	return retval;
 }
 

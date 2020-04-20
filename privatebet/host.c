@@ -26,6 +26,7 @@
 #include "states.h"
 #include "table.h"
 #include "cashier.h"
+#include "storage.h"
 
 #include <errno.h>
 #include <netinet/in.h>
@@ -1350,6 +1351,7 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 	cJSON_AddNumberToObject(stack_info_resp, "table_stack_in_chips", table_stack_in_chips);
 	cJSON_AddNumberToObject(stack_info_resp, "chips_tx_fee", chips_tx_fee);
 	cJSON_AddStringToObject(stack_info_resp, "legacy_m_of_n_msig_addr", legacy_m_of_n_msig_addr);
+	cJSON_AddStringToObject(stack_info_resp, "table_id", table_id);
 	msig_addr_nodes = cJSON_CreateArray();
 	for (int32_t i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1) {
@@ -1456,6 +1458,7 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 {
 	int32_t funds = 0, bytes, retval;
 	cJSON *tx_status = NULL;
+	char *sql_stmt = NULL;
 
 	retval = bet_dcv_verify_tx(argjson);
 
@@ -1472,6 +1475,11 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 			if (strcmp(tx_rand_str[i], rand_str) == 0)
 				vars->funds[i] = funds;
 		}
+		sql_stmt = calloc(1, 200);
+		sprintf(sql_stmt, "INSERT INTO dcv_tx_mapping values(\"%s\",\"%s\",%d);", jstr(argjson, "tx_info"),
+			table_id, 1);
+		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, sql_stmt);
+		bet_run_query(sql_stmt);
 	}
 
 	tx_status = cJSON_CreateObject();
@@ -1482,6 +1490,8 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(tx_status));
 	bytes = nn_send(bet->pubsock, cJSON_Print(tx_status), strlen(cJSON_Print(tx_status)), 0);
 
+	if (sql_stmt)
+		free(sql_stmt);
 	return retval;
 }
 

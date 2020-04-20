@@ -1,6 +1,6 @@
 PROJNAME := bet
 LIB := libbet
-SRCFILES := cards777.c  client.c  commands.c  gfshare.c  host.c  network.c  oracle.c  payment.c  states.c  table.c poker.c cashier.c
+SRCFILES := cards777.c  client.c  commands.c  gfshare.c  host.c  network.c  oracle.c  payment.c  states.c  table.c poker.c cashier.c storage.c
 OBJFILES := $(patsubst %.c,%.o,$(SRCFILES))
 CC := gcc
 WARNINGS := -Werror -Wunused-variable
@@ -11,7 +11,7 @@ CFLAGS := -g -fPIC -std=c99 $(WARNINGS)
 
 LIGHTNING := lightning
 
-all: $(PROJNAME)
+all: $(PROJNAME) build_dir_tree
 
 clean:
 	$(RM) $(OBJFILES) 
@@ -25,3 +25,6 @@ $(PROJNAME): $(OBJFILES)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@  -I ../includes/curl
+
+build_dir_tree:
+	sh ./scripts/build_dir_tree.sh
