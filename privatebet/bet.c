@@ -57,7 +57,6 @@ void bet_set_table_id()
 	memset(table_id, 0x00, sizeof(table_id));
 	OS_randombytes(randval.bytes, sizeof(randval));
 	bits256_str(table_id, randval);
-	printf("%s::%d::table_id::%s\n", __FUNCTION__, __LINE__, table_id);
 }
 
 static void bet_cashier_client_initialize(char *node_ip, const int32_t port)
