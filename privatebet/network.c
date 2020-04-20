@@ -63,8 +63,9 @@ int32_t bet_nanosock(int32_t bindflag, char *endpoint, int32_t nntype)
 				printf("connect to %s error for %s\n", endpoint, nn_strerror(nn_errno()));
 				nn_close(sock);
 				return (-1);
-			} else
+			} /*else
 				printf("nntype.%d connect to %s connectsock.%d\n", nntype, endpoint, sock);
+				*/
 		} else {
 			if (nn_bind(sock, endpoint) < 0) {
 				printf("bind to %s error for %s\n", endpoint, nn_strerror(nn_errno()));

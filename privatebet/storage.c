@@ -57,8 +57,6 @@ sqlite3 *bet_get_db_instance()
 	sqlite3 *db = NULL;
 	int rc;
 
-	sqlite3_init_db_name();
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, db_name);
 	rc = sqlite3_open(db_name, &db);
 	if (rc) {
 		fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
@@ -111,5 +109,7 @@ void bet_create_schema()
 
 void bet_sqlite3_init()
 {
+	
+	sqlite3_init_db_name();
 	bet_create_schema();
 }
