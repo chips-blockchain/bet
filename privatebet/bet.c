@@ -312,8 +312,7 @@ int main(int argc, char **argv)
 {
 	uint16_t port = 7797, cashier_pub_sub_port = 7901;
 	char dcv_ip[20];
-	bet_get_db_instance();
-	//bet_parse_notary_file();
+	bet_parse_notary_file();
 	if (argc == 3) {
 		common_init();
 		strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
