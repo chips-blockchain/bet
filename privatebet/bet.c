@@ -299,13 +299,12 @@ static void playing_nodes_init()
 	bet_check_notaries();
 	bet_compute_m_of_n_msig_addr();
 	bet_set_table_id();
-
 }
 int main(int argc, char **argv)
 {
 	uint16_t port = 7797, cashier_pub_sub_port = 7901;
 	char dcv_ip[20];
-	
+
 	if (argc == 3) {
 		playing_nodes_init();
 		strncpy(dcv_ip, argv[2], sizeof(dcv_ip));

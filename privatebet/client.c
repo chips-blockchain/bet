@@ -1502,7 +1502,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 	int32_t retval = 1, bytes;
 	char *data = NULL, *sql_query = NULL;
 
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 	funds_needed = jdouble(argjson, "table_stack_in_chips");
 	if (chips_get_balance() < (funds_needed + chips_tx_fee)) {
 		printf("%s::%d::Insufficient funds\n", __FUNCTION__, __LINE__);
@@ -1529,28 +1529,22 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 			sprintf(sql_query, "INSERT INTO player_tx_mapping values(%s,\"%s\",1);", cJSON_Print(txid),
 				table_id);
 			bet_run_query(sql_query);
-			
-			cJSON *msig_addr_nodes = cJSON_CreateArray();
-			msig_addr_nodes = cJSON_GetObjectItem(argjson,"msig_addr_nodes");
 
-			
-			memset(sql_query,0x00,400);
-			sprintf(sql_query, "INSERT INTO c_tx_addr_mapping values(%s,\"%s\",%d,\'%s\');", cJSON_Print(txid),
-				legacy_m_of_n_msig_addr,threshold_value,unstringify(cJSON_Print(cJSON_GetObjectItem(argjson,"msig_addr_nodes"))));
-			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,sql_query);
-			
+			cJSON *msig_addr_nodes = cJSON_CreateArray();
+			msig_addr_nodes = cJSON_GetObjectItem(argjson, "msig_addr_nodes");
+
+			memset(sql_query, 0x00, 400);
+			sprintf(sql_query, "INSERT INTO c_tx_addr_mapping values(%s,\"%s\",%d,\'%s\');",
+				cJSON_Print(txid), legacy_m_of_n_msig_addr, threshold_value,
+				unstringify(cJSON_Print(cJSON_GetObjectItem(argjson, "msig_addr_nodes"))));
+
 			cJSON *temp = cJSON_CreateObject();
-			cJSON_AddStringToObject(temp,"method","lock_in_tx");
-			cJSON_AddStringToObject(temp,"sql_query",sql_query);
-			for(int32_t i=0;i<cJSON_GetArraySize(msig_addr_nodes);i++) {
-				printf("%s::%d::%s\n",__FUNCTION__,__LINE__,unstringify(cJSON_Print(cJSON_GetArrayItem(msig_addr_nodes,i))));
-				bet_send_message_to_notary(temp,unstringify(cJSON_Print(cJSON_GetArrayItem(msig_addr_nodes,i))));
+			cJSON_AddStringToObject(temp, "method", "lock_in_tx");
+			cJSON_AddStringToObject(temp, "sql_query", sql_query);
+			for (int32_t i = 0; i < cJSON_GetArraySize(msig_addr_nodes); i++) {
+				bet_send_message_to_notary(
+					temp, unstringify(cJSON_Print(cJSON_GetArrayItem(msig_addr_nodes, i))));
 			}
-			/*
-			memset(sql_query,0x00,400);
-			sprintf(sql_query, "INSERT INTO c_tx_addr_mapping values(%s,\"%s\",%d,%s);", cJSON_Print(txid),
-				legacy_m_of_n_msig_addr,threshold_value,cJSON_Print(cJSON_GetObjectItem(argjson,"msig_addr_nodes")));
-			*/	
 		}
 
 		cJSON_AddStringToObject(tx_info, "method", "tx");
