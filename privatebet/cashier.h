@@ -7,3 +7,6 @@ void bet_cashier_server_loop(void *_ptr);
 void bet_cashier_client_loop(void *_ptr);
 void bet_cashier_status_loop(void *_ptr);
 int32_t bet_submit_msig_raw_tx(cJSON *tx);
+void notary_test();
+char *bet_send_message_to_notary(cJSON *argjson, char *notary_node_ip);
+

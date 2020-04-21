@@ -3,6 +3,7 @@
 #include "network.h"
 #include "common.h"
 #include "commands.h"
+#include "storage.h"
 
 int32_t no_of_notaries = 4;
 int32_t threshold_value = 2;
@@ -22,6 +23,7 @@ char **notary_node_pubkeys = NULL; /*{ "034d2b213240cfb4efcc24cc21a237a2313c0c73
 struct cashier *cashier_info = NULL;
 int32_t live_notaries = 0;
 int32_t *notary_status = NULL;
+int32_t notary_response = 0;
 
 double table_stack_in_chips = 0.01;
 double chips_tx_fee = 0.0005;
@@ -70,7 +72,8 @@ char *bet_check_notary_status()
 	char bind_sub_addr[128] = { 0 }, bind_push_addr[128] = { 0 };
 	pthread_t cashier_thrd[no_of_notaries];
 	struct cashier *cashier_info = NULL;
-
+	cJSON *live_info = NULL;
+	
 	cashier_info = calloc(1, sizeof(struct cashier));
 
 	live_notaries = 0;
@@ -96,6 +99,10 @@ char *bet_check_notary_status()
 		cashier_info->c_subsock = c_subsock;
 		cashier_info->c_pushsock = c_pushsock;
 
+		live_info = cJSON_CreateObject();
+		cJSON_AddStringToObject(live_info, "method", "live");
+		cashier_info->msg = live_info;
+	
 		if (OS_thread_create(&cashier_thrd[i], NULL, (void *)bet_cashier_status_loop, (void *)cashier_info) !=
 		    0) {
 			printf("\nerror in launching cashier");
@@ -147,6 +154,19 @@ int32_t bet_send_status(struct cashier *cashier_info)
 	return retval;
 }
 
+void bet_process_lock_in_tx(cJSON *argjson, struct cashier *cashier_info)
+{
+	int32_t rc;
+	cJSON *status = NULL;
+	
+	rc = bet_run_query(jstr(argjson,"sql_query"));
+	status = cJSON_CreateObject();
+	cJSON_AddStringToObject(status,"method","query_status");
+	cJSON_AddNumberToObject(status,"status",rc);
+	nn_send(cashier_info->c_pubsock, cJSON_Print(status),
+				strlen(cJSON_Print(status)), 0);
+}
+
 int32_t bet_cashier_backend(cJSON *argjson, struct cashier *cashier_info)
 {
 	char *method = NULL;
@@ -167,6 +187,8 @@ int32_t bet_cashier_backend(cJSON *argjson, struct cashier *cashier_info)
 					    strlen(cJSON_Print(signed_tx)), 0);
 			if (bytes < 0)
 				retval = -1;
+		} else if(strcmp(method, "lock_in_tx") == 0) {
+			bet_process_lock_in_tx(argjson,cashier_info);
 		}
 	}
 	return retval;
@@ -194,11 +216,10 @@ void bet_cashier_status_loop(void *_ptr)
 	void *ptr = NULL;
 	cJSON *argjson = NULL;
 	struct cashier *cashier_info = _ptr;
-	cJSON *live_info = NULL;
 
-	live_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(live_info, "method", "live");
-	bytes = nn_send(cashier_info->c_pushsock, cJSON_Print(live_info), strlen(cJSON_Print(live_info)), 0);
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(cashier_info->msg));
+	
+	bytes = nn_send(cashier_info->c_pushsock, cJSON_Print(cashier_info->msg), strlen(cJSON_Print(cashier_info->msg)), 0);
 
 	if (bytes < 0)
 		printf("%s::%d::Failed to send data\n", __FUNCTION__, __LINE__);
@@ -210,6 +231,8 @@ void bet_cashier_status_loop(void *_ptr)
 				if ((argjson = cJSON_Parse(tmp)) != 0) {
 					if (strcmp(jstr(argjson, "method"), "live") == 0)
 						live_notaries++;
+					
+					printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 
 					free_json(argjson);
 					break;
@@ -299,3 +322,49 @@ int32_t bet_submit_msig_raw_tx(cJSON *tx)
 	}
 	return retval;
 }
+
+void notary_test()
+{
+	cJSON *test = NULL;
+	test = cJSON_CreateObject();
+	cJSON_AddStringToObject(test, "method", "lock_in_tx");
+	bet_send_message_to_notary(test,"159.69.23.28");
+}
+
+char *bet_send_message_to_notary(cJSON *argjson, char *notary_node_ip)
+{
+	int32_t c_subsock, c_pushsock;
+	uint16_t cashier_pubsub_port = 7901, cashier_pushpull_port = 7902;
+	char bind_sub_addr[128] = { 0 }, bind_push_addr[128] = { 0 };
+	pthread_t cashier_thrd;
+	struct cashier *cashier_info = NULL;
+
+	cashier_info = calloc(1, sizeof(struct cashier));
+
+	memset(cashier_info, 0x00, sizeof(struct cashier));
+	memset(bind_sub_addr, 0x00, sizeof(bind_sub_addr));
+	memset(bind_push_addr, 0x00, sizeof(bind_push_addr));
+
+	bet_tcp_sock_address(0, bind_sub_addr, notary_node_ip, cashier_pubsub_port);
+	c_subsock = bet_nanosock(0, bind_sub_addr, NN_SUB);
+
+	bet_tcp_sock_address(0, bind_push_addr, notary_node_ip, cashier_pushpull_port);
+	c_pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
+
+	cashier_info->c_subsock = c_subsock;
+	cashier_info->c_pushsock = c_pushsock;
+	cashier_info->msg = argjson;
+	
+	if (OS_thread_create(&cashier_thrd, NULL, (void *)bet_cashier_status_loop, (void *)cashier_info) !=
+	    0) {
+		printf("\nerror in launching cashier");
+		exit(-1);
+	}
+
+	if (pthread_join(cashier_thrd, NULL)) {
+		printf("\nError in joining the main thread for cashier");
+	}
+
+	return NULL;
+}
+
