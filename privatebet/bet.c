@@ -289,19 +289,25 @@ static void common_init()
 	OS_init();
 	libgfshare_init();
 	check_ln_chips_sync();
+	bet_sqlite3_init();
+	bet_parse_notary_file();
+}
 
+static void playing_nodes_init()
+{
+	common_init();
 	bet_check_notaries();
 	bet_compute_m_of_n_msig_addr();
 	bet_set_table_id();
-	bet_sqlite3_init();
+
 }
 int main(int argc, char **argv)
 {
 	uint16_t port = 7797, cashier_pub_sub_port = 7901;
 	char dcv_ip[20];
-	bet_parse_notary_file();
+	
 	if (argc == 3) {
-		common_init();
+		playing_nodes_init();
 		strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
 		if (strcmp(argv[1], "dcv") == 0) {
 			bet_parse_config_file();

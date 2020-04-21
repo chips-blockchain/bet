@@ -37,7 +37,6 @@ cJSON *bet_read_json_file(char *file_name)
 			strcat(data, buf);
 			memset(buf, 0x00, buf_size);
 		}
-		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, data);
 		json_data = cJSON_CreateObject();
 		json_data = cJSON_Parse(data);
 	}

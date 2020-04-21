@@ -157,6 +157,7 @@ struct deck_bvv_info {
 struct cashier {
 	int32_t c_pullsock, c_pubsock, c_subsock, c_pushsock;
 	char addr[67];
+	cJSON *msg;
 };
 
 extern struct privatebet_info *bet_player;
