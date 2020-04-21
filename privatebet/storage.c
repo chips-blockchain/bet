@@ -10,12 +10,15 @@
 
 char *db_name = NULL;
 
-const char *table_names[no_of_tables] = { "dcv_tx_mapping", "player_tx_mapping", "cashier_tx_mapping", "c_tx_addr_mapping" };
+const char *table_names[no_of_tables] = { "dcv_tx_mapping", "player_tx_mapping", "cashier_tx_mapping",
+					  "c_tx_addr_mapping" };
 
-const char *schemas[no_of_tables] = { "(tx_id varchar(100) primary key,table_id varchar(100), status bool)",
-				      "(tx_id varchar(100) primary key,table_id varchar(100), status bool)",
-				      "(tx_id varchar(100) primary key,table_id varchar(100), status bool)",
-				      "(tx_id varchar(100) primary key,msig_addr varchar(100), int m_value, msig_addr_nodes varchar(100))" };
+const char *schemas[no_of_tables] = {
+	"(tx_id varchar(100) primary key,table_id varchar(100), status bool)",
+	"(tx_id varchar(100) primary key,table_id varchar(100), status bool)",
+	"(tx_id varchar(100) primary key,table_id varchar(100), status bool)",
+	"(tx_id varchar(100) primary key,msig_addr varchar(100), int m_value, msig_addr_nodes varchar(100))"
+};
 
 void sqlite3_init_db_name()
 {
@@ -81,7 +84,7 @@ int32_t bet_run_query(char *sql_query)
 		sqlite3_free(err_msg);
 	}
 	sqlite3_close(db);
-	
+
 	return rc;
 }
 
@@ -112,7 +115,6 @@ void bet_create_schema()
 
 void bet_sqlite3_init()
 {
-	
 	sqlite3_init_db_name();
 	bet_create_schema();
 }

@@ -83,4 +83,3 @@ void bet_parse_notary_file()
 		}
 	}
 }
-

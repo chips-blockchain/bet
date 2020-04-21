@@ -5,20 +5,44 @@
 #include "commands.h"
 #include "storage.h"
 
-int32_t no_of_notaries = 4;
+int32_t no_of_notaries;
+
+/***********************************************************************************************************
+At the moment it was defined as, atleast there should exist two cashier/notary nodes in order to play the 
+game. As the number of notary nodes gets increased this value will be increased in the future. More 
+threshold_value means more trust.
+***********************************************************************************************************/
+
 int32_t threshold_value = 2;
 
-char notary_node_addrs[][64] = { "bQepVNtzfjMaBJdaaCq68trQDAPDgKnwrD", "bSa7CrTXykfPZ6yhThjXAoQ8r4H7muiPPC",
-				 "bGmKoyJEz4ESuJCTjhVkgEb2Qkt8QuiQzQ", "bR7BXnWT1yVSP9aB57pq22XN2WYNpGgDrD" };
-/*
+/***********************************************************************************************************
+The notary_node_ips and notary_node_pubkeys values are read from the config file named notaries.json. Since 
+the sg777's nodes are trusted cashier nodes, the information regarding them configured into the notaries.json 
+file as follow:
 
-*/
-char **notary_node_ips = NULL; //{ "159.69.23.28", "159.69.23.29", "159.69.23.30", "159.69.23.31" };
+[{
+    "pubkey":       "034d2b213240cfb4efcc24cc21a237a2313c0c734a4f0efc30087c095fd010385f",
+    "ip":   "159.69.23.28"
+}, {
+    "pubkey":       "02137b5400ace827c225238765d4661a1b4fe589b9b625b10469c69f0867f7bc53",
+    "ip":   "159.69.23.29"
+}, {
+    "pubkey":       "03b020866c9efae106e3c086a640e8b50cce7ae91cb30996ecf0f8816ce5ed8f49",
+    "ip":   "159.69.23.30"
+}, {
+    "pubkey":       "0274ae1ce244bd0f9c52edfb6b9e60dc5d22f001dd74af95d1297edbcc8ae39568",
+    "ip":   "159.69.23.31"
+}]
+***********************************************************************************************************/
 
-char **notary_node_pubkeys = NULL; /*{ "034d2b213240cfb4efcc24cc21a237a2313c0c734a4f0efc30087c095fd010385f",
-				   "02137b5400ace827c225238765d4661a1b4fe589b9b625b10469c69f0867f7bc53",
-				   "03b020866c9efae106e3c086a640e8b50cce7ae91cb30996ecf0f8816ce5ed8f49",
-				   "0274ae1ce244bd0f9c52edfb6b9e60dc5d22f001dd74af95d1297edbcc8ae39568" };*/
+char **notary_node_ips = NULL;
+char **notary_node_pubkeys = NULL;
+
+/***********************************************************************************************************
+This address has been given by jl777, 0.25% of every pot will go to this address. These funds are used for 
+development purpose.
+***********************************************************************************************************/
+char dev_fund_addr[64] = { "RSdMRYeeouw3hepxNgUzHn34qFhn1tsubb" };
 
 struct cashier *cashier_info = NULL;
 int32_t live_notaries = 0;
@@ -27,8 +51,6 @@ int32_t notary_response = 0;
 
 double table_stack_in_chips = 0.01;
 double chips_tx_fee = 0.0005;
-
-char dev_fund_addr[64] = { "RSdMRYeeouw3hepxNgUzHn34qFhn1tsubb" }; // donation Address
 
 char legacy_2_of_3_msig_addr[64] = { "bQJTo8knsbSoU7k9oGADa6qfWGWyJtxC3o" };
 char legacy_2_of_4_msig_addr[64] = { "bRCUpox55j6sFJBuEn9E1fwNLFKFvRvo9W" };
@@ -73,7 +95,7 @@ char *bet_check_notary_status()
 	pthread_t cashier_thrd[no_of_notaries];
 	struct cashier *cashier_info = NULL;
 	cJSON *live_info = NULL;
-	
+
 	cashier_info = calloc(1, sizeof(struct cashier));
 
 	live_notaries = 0;
@@ -102,7 +124,7 @@ char *bet_check_notary_status()
 		live_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(live_info, "method", "live");
 		cashier_info->msg = live_info;
-	
+
 		if (OS_thread_create(&cashier_thrd[i], NULL, (void *)bet_cashier_status_loop, (void *)cashier_info) !=
 		    0) {
 			printf("\nerror in launching cashier");
@@ -158,13 +180,12 @@ void bet_process_lock_in_tx(cJSON *argjson, struct cashier *cashier_info)
 {
 	int32_t rc;
 	cJSON *status = NULL;
-	
-	rc = bet_run_query(jstr(argjson,"sql_query"));
+
+	rc = bet_run_query(jstr(argjson, "sql_query"));
 	status = cJSON_CreateObject();
-	cJSON_AddStringToObject(status,"method","query_status");
-	cJSON_AddNumberToObject(status,"status",rc);
-	nn_send(cashier_info->c_pubsock, cJSON_Print(status),
-				strlen(cJSON_Print(status)), 0);
+	cJSON_AddStringToObject(status, "method", "query_status");
+	cJSON_AddNumberToObject(status, "status", rc);
+	nn_send(cashier_info->c_pubsock, cJSON_Print(status), strlen(cJSON_Print(status)), 0);
 }
 
 int32_t bet_cashier_backend(cJSON *argjson, struct cashier *cashier_info)
@@ -187,8 +208,8 @@ int32_t bet_cashier_backend(cJSON *argjson, struct cashier *cashier_info)
 					    strlen(cJSON_Print(signed_tx)), 0);
 			if (bytes < 0)
 				retval = -1;
-		} else if(strcmp(method, "lock_in_tx") == 0) {
-			bet_process_lock_in_tx(argjson,cashier_info);
+		} else if (strcmp(method, "lock_in_tx") == 0) {
+			bet_process_lock_in_tx(argjson, cashier_info);
 		}
 	}
 	return retval;
@@ -217,9 +238,10 @@ void bet_cashier_status_loop(void *_ptr)
 	cJSON *argjson = NULL;
 	struct cashier *cashier_info = _ptr;
 
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(cashier_info->msg));
-	
-	bytes = nn_send(cashier_info->c_pushsock, cJSON_Print(cashier_info->msg), strlen(cJSON_Print(cashier_info->msg)), 0);
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(cashier_info->msg));
+
+	bytes = nn_send(cashier_info->c_pushsock, cJSON_Print(cashier_info->msg),
+			strlen(cJSON_Print(cashier_info->msg)), 0);
 
 	if (bytes < 0)
 		printf("%s::%d::Failed to send data\n", __FUNCTION__, __LINE__);
@@ -231,8 +253,8 @@ void bet_cashier_status_loop(void *_ptr)
 				if ((argjson = cJSON_Parse(tmp)) != 0) {
 					if (strcmp(jstr(argjson, "method"), "live") == 0)
 						live_notaries++;
-					
-					printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+
+					printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 
 					free_json(argjson);
 					break;
@@ -328,7 +350,7 @@ void notary_test()
 	cJSON *test = NULL;
 	test = cJSON_CreateObject();
 	cJSON_AddStringToObject(test, "method", "lock_in_tx");
-	bet_send_message_to_notary(test,"159.69.23.28");
+	bet_send_message_to_notary(test, "159.69.23.28");
 }
 
 char *bet_send_message_to_notary(cJSON *argjson, char *notary_node_ip)
@@ -354,9 +376,8 @@ char *bet_send_message_to_notary(cJSON *argjson, char *notary_node_ip)
 	cashier_info->c_subsock = c_subsock;
 	cashier_info->c_pushsock = c_pushsock;
 	cashier_info->msg = argjson;
-	
-	if (OS_thread_create(&cashier_thrd, NULL, (void *)bet_cashier_status_loop, (void *)cashier_info) !=
-	    0) {
+
+	if (OS_thread_create(&cashier_thrd, NULL, (void *)bet_cashier_status_loop, (void *)cashier_info) != 0) {
 		printf("\nerror in launching cashier");
 		exit(-1);
 	}
@@ -367,4 +388,3 @@ char *bet_send_message_to_notary(cJSON *argjson, char *notary_node_ip)
 
 	return NULL;
 }
-
