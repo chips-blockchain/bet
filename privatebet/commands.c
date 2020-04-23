@@ -21,6 +21,7 @@
 #include "oracle.h"
 #include "network.h"
 #include "cashier.h"
+#include "storage.h"
 
 #include <stdarg.h>
 #include <stdlib.h>
@@ -679,40 +680,15 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 
 cJSON *chips_sign_msig_tx(char *ip, cJSON *raw_tx)
 {
-	int32_t c_subsock, c_pushsock, bytes, recvlen;
-	uint16_t cashier_pubsub_port = 7901, cashier_pushpull_port = 7902;
-	char bind_sub_addr[128] = { 0 }, bind_push_addr[128] = { 0 };
-	void *ptr;
-	cJSON *argjson = NULL, *msig_raw_tx = NULL;
-
-	bet_tcp_sock_address(0, bind_sub_addr, ip, cashier_pubsub_port);
-	c_subsock = bet_nanosock(0, bind_sub_addr, NN_SUB);
-
-	bet_tcp_sock_address(0, bind_push_addr, ip, cashier_pushpull_port);
-	c_pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
+	cJSON *msig_raw_tx = NULL, *tx = NULL;
 
 	msig_raw_tx = cJSON_CreateObject();
 	cJSON_AddStringToObject(msig_raw_tx, "method", "raw_msig_tx");
 	cJSON_AddItemToObject(msig_raw_tx, "tx", raw_tx);
-	bytes = nn_send(c_pushsock, cJSON_Print(msig_raw_tx), strlen(cJSON_Print(msig_raw_tx)), 0);
-	if (bytes < 0)
-		return NULL;
+	cJSON_AddStringToObject(msig_raw_tx, "table_id", table_id);
+	tx = bet_send_single_message_to_notary(msig_raw_tx, ip);
 
-	while (c_pushsock >= 0 && c_subsock >= 0) {
-		ptr = 0;
-		if ((recvlen = nn_recv(c_subsock, &ptr, NN_MSG, 0)) > 0) {
-			char *tmp = clonestr(ptr);
-			if ((argjson = cJSON_Parse(tmp)) != 0) {
-				printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
-				return argjson;
-			}
-			if (tmp)
-				free(tmp);
-			if (ptr)
-				nn_freemsg(ptr);
-		}
-	}
-	return NULL;
+	return tx;
 }
 
 cJSON *chips_spend_msig_txs(char *to_addr, int no_of_txs, char tx_ids[][100])
@@ -753,16 +729,26 @@ static cJSON *chips_spend_msig_tx(cJSON *raw_tx)
 		if (notary_status[i] == 1) {
 			if (signers == 0) {
 				cJSON *temp = chips_sign_msig_tx(notary_node_ips[i], raw_tx);
-				hex = cJSON_GetObjectItem(cJSON_GetObjectItem(temp, "signed_tx"), "hex");
-				signers++;
+				if (cJSON_GetObjectItem(temp, "signed_tx") != NULL) {
+					hex = cJSON_GetObjectItem(cJSON_GetObjectItem(temp, "signed_tx"), "hex");
+					signers++;
+				} else {
+					printf("%s::%d::%s\n", __FUNCTION__, __LINE__, jstr(temp, "err_str"));
+					return NULL;
+				}
 			} else if (signers == 1) {
 				cJSON *temp1 = chips_sign_msig_tx(notary_node_ips[i], hex);
-				cJSON *status =
-					cJSON_GetObjectItem(cJSON_GetObjectItem(temp1, "signed_tx"), "complete");
-				if (strcmp(cJSON_Print(status), "true") == 0) {
-					tx = chips_send_raw_tx(cJSON_GetObjectItem(temp1, "signed_tx"));
-					signers++;
-					break;
+				if (cJSON_GetObjectItem(temp1, "signed_tx") != NULL) {
+					cJSON *status = cJSON_GetObjectItem(cJSON_GetObjectItem(temp1, "signed_tx"),
+									    "complete");
+					if (strcmp(cJSON_Print(status), "true") == 0) {
+						tx = chips_send_raw_tx(cJSON_GetObjectItem(temp1, "signed_tx"));
+						signers++;
+						break;
+					}
+				} else {
+					printf("%s::%d::%s\n", __FUNCTION__, __LINE__, jstr(temp1, "err_str"));
+					return NULL;
 				}
 			}
 		}
@@ -966,12 +952,12 @@ static int32_t chips_get_vout_from_tx(char *tx_id)
 	return retval;
 }
 
-void chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids[][100])
+cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids[][100])
 {
 	double payout_amount = 0, amount_in_txs = 0;
-	cJSON *tx_list = NULL, *addr_info = NULL, *tx_details = NULL;
+	cJSON *tx_list = NULL, *addr_info = NULL, *tx_details = NULL, *payout_tx_info = NULL;
 	int argc, vout;
-	char **argv = NULL, params[2][arg_size] = { 0 };
+	char **argv = NULL, params[2][arg_size] = { 0 }, *sql_query = NULL;
 
 	for (int32_t i = 0; i < cJSON_GetArraySize(payout_addr); i++) {
 		cJSON *addr_info = cJSON_GetArrayItem(payout_addr, i);
@@ -1011,8 +997,29 @@ void chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids[]
 	argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
 	make_command(argc, argv, &tx_details);
 	cJSON *tx = chips_spend_msig_tx(tx_details);
-	printf("%s::%d::tx::%s\n", __FUNCTION__, __LINE__, cJSON_Print(tx));
+	if (tx) {
+		printf("%s::%d::tx::%s\n", __FUNCTION__, __LINE__, cJSON_Print(tx));
+		sql_query = calloc(1, 400);
+		sprintf(sql_query, "UPDATE dcv_tx_mapping set status = 0 where table_id = \"%s\";", table_id);
+		bet_run_query(sql_query);
+
+		payout_tx_info = cJSON_CreateObject();
+		cJSON_AddStringToObject(payout_tx_info, "method", "payout_tx");
+		cJSON_AddStringToObject(payout_tx_info, "table_id", table_id);
+		cJSON_AddItemToObject(payout_tx_info, "tx_info", tx);
+		for (int32_t i = 0; i < no_of_notaries; i++) {
+			if (notary_status[i] == 1) {
+				bet_send_single_message_to_notary(payout_tx_info, notary_node_ips[i]);
+			}
+		}
+	} else {
+		printf("%s::%d::Error occured in processing the payout tx ::%s\n", __FUNCTION__, __LINE__,
+		       cJSON_Print(tx_details));
+	}
+	if (sql_query)
+		free(sql_query);
 	bet_dealloc_args(argc, &argv);
+	return payout_tx_info;
 }
 
 int32_t make_command(int argc, char **argv, cJSON **argjson)

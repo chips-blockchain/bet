@@ -297,9 +297,15 @@ static void playing_nodes_init()
 {
 	common_init();
 	bet_check_notaries();
-	bet_compute_m_of_n_msig_addr();
-	bet_set_table_id();
 }
+
+static void dealer_node_init()
+{
+	bet_parse_config_file();
+	bet_set_table_id();
+	bet_compute_m_of_n_msig_addr();
+}
+
 int main(int argc, char **argv)
 {
 	uint16_t port = 7797, cashier_pub_sub_port = 7901;
@@ -309,7 +315,7 @@ int main(int argc, char **argv)
 		playing_nodes_init();
 		strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
 		if (strcmp(argv[1], "dcv") == 0) {
-			bet_parse_config_file();
+			dealer_node_init();
 			bet_dcv_thrd(dcv_ip, port);
 		} else if (strcmp(argv[1], "bvv") == 0) {
 			bet_bvv_thrd(dcv_ip, port);

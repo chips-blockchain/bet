@@ -17,7 +17,7 @@ const char *schemas[no_of_tables] = {
 	"(tx_id varchar(100) primary key,table_id varchar(100), status bool)",
 	"(tx_id varchar(100) primary key,table_id varchar(100), status bool)",
 	"(tx_id varchar(100) primary key,table_id varchar(100), status bool)",
-	"(tx_id varchar(100) primary key,msig_addr varchar(100), int m_value, msig_addr_nodes varchar(100))"
+	"(payin_tx_id varchar(100) primary key,msig_addr varchar(100), min_notaries int, table_id varchar(100), msig_addr_nodes varchar(100), payin_tx_id_status int, payout_tx_id varchar(100))"
 };
 
 void sqlite3_init_db_name()
@@ -27,6 +27,37 @@ void sqlite3_init_db_name()
 	db_name = calloc(1, 200);
 	sprintf(db_name, "%s/.bet/db/pangea.db", homedir);
 }
+
+int32_t sqlite3_check_if_table_id_exists(const char *table_id)
+{
+	sqlite3_stmt *stmt = NULL;
+	sqlite3 *db = NULL;
+	char *sql_query = NULL;
+	int32_t rc, retval = 0;
+
+	db = bet_get_db_instance();
+	sql_query = calloc(1, 200);
+
+	sprintf(sql_query, "select count(table_id) from c_tx_addr_mapping where table_id = \"%s\";", table_id);
+	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
+	if (rc != SQLITE_OK) {
+		printf("error: %s::%s", sqlite3_errmsg(db), sql_query);
+		goto end;
+	}
+	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+		const int count = sqlite3_column_int(stmt, 0);
+		if (count > 0) {
+			retval = 1;
+			break;
+		}
+	}
+	sqlite3_finalize(stmt);
+end:
+	if (sql_query)
+		free(sql_query);
+	return retval;
+}
+
 int32_t sqlite3_check_if_table_exists(sqlite3 *db, const char *table_name)
 {
 	sqlite3_stmt *stmt = NULL;
@@ -73,18 +104,21 @@ int32_t bet_run_query(char *sql_query)
 {
 	sqlite3 *db;
 	char *err_msg = NULL;
-	int32_t rc;
+	int32_t rc = -1;
 
-	db = bet_get_db_instance();
-	/* Execute SQL statement */
-	rc = sqlite3_exec(db, sql_query, NULL, 0, &err_msg);
+	if (sql_query == NULL)
+		return rc;
+	else {
+		db = bet_get_db_instance();
+		/* Execute SQL statement */
+		rc = sqlite3_exec(db, sql_query, NULL, 0, &err_msg);
 
-	if (rc != SQLITE_OK) {
-		fprintf(stderr, "SQL error: %s::%s\n", err_msg, sql_query);
-		sqlite3_free(err_msg);
+		if (rc != SQLITE_OK) {
+			fprintf(stderr, "SQL error: %s::%s\n", err_msg, sql_query);
+			sqlite3_free(err_msg);
+		}
+		sqlite3_close(db);
 	}
-	sqlite3_close(db);
-
 	return rc;
 }
 

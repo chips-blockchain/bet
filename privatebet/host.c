@@ -881,6 +881,8 @@ void bet_dcv_reset(struct privatebet_info *bet, struct privatebet_vars *vars)
 	}
 	no_of_rand_str = 0;
 
+	bet_set_table_id();
+
 	reset_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(reset_info, "method", "reset");
 	bet_push_dcv_to_gui(reset_info);
@@ -936,14 +938,26 @@ void bet_dcv_force_reset(struct privatebet_info *bet, struct privatebet_vars *va
 	bet->cardid = -1;
 	bet->turni = -1;
 	bet->no_of_turns = 0;
+
+	for (int32_t i = 0; i < no_of_txs; i++) {
+		memset(tx_ids[i], 0x00, sizeof(tx_ids[i]));
+	}
+	no_of_txs = 0;
+
+	for (int32_t i = 0; i < no_of_rand_str; i++) {
+		memset(tx_rand_str[i], 0x00, sizeof(tx_rand_str[i]));
+	}
+	no_of_rand_str = 0;
+
+	bet_set_table_id();
 }
 
 static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privatebet_vars *vars, int winners[], int pot)
 {
-	int32_t no_of_winners = 0, retval = 1;
+	int32_t no_of_winners = 0, retval = 1, bytes;
 	double dcv_commission = 0, dev_commission = 0, winning_pot = 0, chips_conversion_factor = 0.001,
 	       amount_in_txs = 0.0, player_amounts[bet->maxplayers], pot_in_chips = 0.0;
-	cJSON *payout_info = NULL, *dev_info = NULL, *dcv_info = NULL;
+	cJSON *payout_info = NULL, *dev_info = NULL, *dcv_info = NULL, *payout_tx_info = NULL;
 
 	for (int i = 0; i < bet->maxplayers; i++) {
 		if (winners[i] == 1)
@@ -1011,7 +1025,11 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 		}
 	}
 	printf("%s::%d::payout_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(payout_info));
-	chips_create_payout_tx(payout_info, no_of_txs, tx_ids);
+	payout_tx_info = chips_create_payout_tx(payout_info, no_of_txs, tx_ids);
+
+	bytes = nn_send(bet->pubsock, cJSON_Print(payout_tx_info), strlen(cJSON_Print(payout_tx_info)), 0);
+	if (bytes < 0)
+		retval = -1;
 	return retval;
 }
 
@@ -1150,7 +1168,6 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 	sleep(5);
 	lws_write(wsi_global_host, cJSON_Print(final_info), strlen(cJSON_Print(final_info)), 0);
 end:
-
 	if (retval != -1) {
 		reset_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(reset_info, "method", "reset");
