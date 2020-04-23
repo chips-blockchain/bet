@@ -1532,12 +1532,10 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 
 			cJSON *msig_addr_nodes = cJSON_CreateArray();
 			msig_addr_nodes = cJSON_GetObjectItem(argjson, "msig_addr_nodes");
-
-			memset(sql_query, 0x00, 400);
-			sprintf(sql_query, "INSERT INTO c_tx_addr_mapping values(%s,\"%s\",%d,\'%s\');",
-				cJSON_Print(txid), legacy_m_of_n_msig_addr, threshold_value,
+			sprintf(sql_query, "INSERT INTO c_tx_addr_mapping values(%s,\"%s\",%d,\"%s\",\'%s\',1,NULL);",
+				cJSON_Print(txid), legacy_m_of_n_msig_addr, threshold_value, table_id,
 				unstringify(cJSON_Print(cJSON_GetObjectItem(argjson, "msig_addr_nodes"))));
-
+			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, sql_query);
 			cJSON *temp = cJSON_CreateObject();
 			cJSON_AddStringToObject(temp, "method", "lock_in_tx");
 			cJSON_AddStringToObject(temp, "sql_query", sql_query);
@@ -1588,6 +1586,19 @@ static int32_t bet_player_stack_info_req(struct privatebet_info *bet)
 	return retval;
 }
 
+static int32_t bet_player_process_payout_tx(cJSON *argjson)
+{
+	char *sql_query = NULL;
+	int32_t rc;
+
+	sql_query = calloc(1, 400);
+	sprintf(sql_query, "UPDATE player_tx_mapping set status = 0 where table_id = \"%s\"",
+		jstr(argjson, "table_id"));
+	rc = bet_run_query(sql_query);
+	if (sql_query)
+		free(sql_query);
+	return rc;
+}
 int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int32_t retval = 1, bytes;
@@ -1686,6 +1697,8 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 					player_lws_write(info);
 				}
 			}
+		} else if (strcmp(method, "payout_tx") == 0) {
+			retval = bet_player_process_payout_tx(argjson);
 		}
 	}
 	return retval;
