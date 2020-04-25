@@ -16,9 +16,9 @@ threshold_value means more trust.
 int32_t threshold_value = 2;
 
 /***********************************************************************************************************
-The notary_node_ips and notary_node_pubkeys values are read from the config file named notaries.json. Since 
-the sg777's nodes are trusted cashier nodes, the information regarding them configured into the notaries.json 
-file as follow:
+The notary_node_ips and notary_node_pubkeys values are read from the config file named cashier_nodes.json. 
+Since the sg777's nodes are trusted cashier nodes, the information regarding them configured into the 
+cashier_nodes.json file as follow:
 
 [{
     "pubkey":       "034d2b213240cfb4efcc24cc21a237a2313c0c734a4f0efc30087c095fd010385f",
