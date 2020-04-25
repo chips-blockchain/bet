@@ -2,7 +2,7 @@
 #include "common.h"
 
 char *dealer_config_file = "./config/dealer_config.json";
-char *notaries_file = "./config/notaries.json";
+char *notaries_file = "./config/cashier_nodes.json";
 
 cJSON *bet_read_json_file(char *file_name)
 {
