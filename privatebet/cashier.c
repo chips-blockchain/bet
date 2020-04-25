@@ -256,15 +256,16 @@ int32_t bet_process_payout_tx(cJSON *argjson, struct cashier *cashier_info)
 int32_t bet_process_game_info(cJSON *argjson, struct cashier *cashier_info)
 {
 	char *sql_query = NULL;
-	cJSON *game_state =  NULL, *game_info_resp = NULL;
-	int32_t rc,bytes;
-	
+	cJSON *game_state = NULL, *game_info_resp = NULL;
+	int32_t rc, bytes;
+
 	sql_query = calloc(1, 2000);
-	
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-	game_state = cJSON_GetObjectItem(argjson,"game_state");
-	sprintf(sql_query, "INSERT into cashier_game_state values(\"%s\", \'%s\');",jstr(argjson,"table_id"),cJSON_Print(game_state));
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,sql_query);
+
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
+	game_state = cJSON_GetObjectItem(argjson, "game_state");
+	sprintf(sql_query, "INSERT into cashier_game_state values(\"%s\", \'%s\');", jstr(argjson, "table_id"),
+		cJSON_Print(game_state));
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, sql_query);
 	rc = bet_run_query(sql_query);
 
 	game_info_resp = cJSON_CreateObject();
@@ -273,12 +274,11 @@ int32_t bet_process_game_info(cJSON *argjson, struct cashier *cashier_info)
 	bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(game_info_resp), strlen(cJSON_Print(game_info_resp)), 0);
 
 	if (bytes < 0)
-		rc = -1;		
-	if(sql_query)
+		rc = -1;
+	if (sql_query)
 		free(sql_query);
-	
+
 	return rc;
-	
 }
 
 int32_t bet_cashier_backend(cJSON *argjson, struct cashier *cashier_info)
@@ -516,9 +516,9 @@ cJSON *bet_send_single_message_to_notary(cJSON *argjson, char *notary_node_ip)
 
 cJSON *bet_send_message_to_all_active_notaries(cJSON *argjson)
 {
-	for(int32_t i = 0; i < no_of_notaries; i++) {
-		if(notary_status[i] == 1) {
-			bet_send_single_message_to_notary(argjson,notary_node_ips[i]);
+	for (int32_t i = 0; i < no_of_notaries; i++) {
+		if (notary_status[i] == 1) {
+			bet_send_single_message_to_notary(argjson, notary_node_ips[i]);
 		}
 	}
 }

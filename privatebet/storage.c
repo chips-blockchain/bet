@@ -10,8 +10,9 @@
 
 char *db_name = NULL;
 
-const char *table_names[no_of_tables] = { "dcv_tx_mapping", "player_tx_mapping", "cashier_tx_mapping",
-					  "c_tx_addr_mapping", "dcv_game_state", "player_game_state", "cashier_game_state"};
+const char *table_names[no_of_tables] = { "dcv_tx_mapping",    "player_tx_mapping", "cashier_tx_mapping",
+					  "c_tx_addr_mapping", "dcv_game_state",    "player_game_state",
+					  "cashier_game_state" };
 
 const char *schemas[no_of_tables] = {
 	"(tx_id varchar(100) primary key,table_id varchar(100), status bool)",
@@ -105,14 +106,13 @@ sqlite3 *bet_get_db_instance()
 
 void bet_make_insert_query(int argc, char **argv, char **sql_query)
 {
-	
-	sprintf(*sql_query, "INSERT INTO %s values(",argv[0]);
-	for(int32_t i = 1; i < argc; i++) {
-		strcat(*sql_query,argv[i]);
-		if((i+1) < argc)
-			strcat(*sql_query,",");
+	sprintf(*sql_query, "INSERT INTO %s values(", argv[0]);
+	for (int32_t i = 1; i < argc; i++) {
+		strcat(*sql_query, argv[i]);
+		if ((i + 1) < argc)
+			strcat(*sql_query, ",");
 		else
-			strcat(*sql_query,");");
+			strcat(*sql_query, ");");
 	}
 }
 
