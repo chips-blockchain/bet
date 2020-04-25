@@ -210,7 +210,7 @@ static void bet_dcv_initialize(char *dcv_ip, const int32_t port)
 	bet_info_set(bet_dcv, "demo", poker_deck_size, 0, max_players);
 
 	dcv_vars = calloc(1, sizeof(struct privatebet_vars));
-	
+
 	dcv_vars->turni = 0;
 	dcv_vars->round = 0;
 	dcv_vars->pot = 0;
