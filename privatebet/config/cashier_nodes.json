@@ -1,0 +1,14 @@
+[{
+		"pubkey":	"034d2b213240cfb4efcc24cc21a237a2313c0c734a4f0efc30087c095fd010385f",
+		"ip":	"159.69.23.28"
+}, {
+		"pubkey":	"02137b5400ace827c225238765d4661a1b4fe589b9b625b10469c69f0867f7bc53",
+		"ip":	"159.69.23.29"
+}, {
+		"pubkey":	"03b020866c9efae106e3c086a640e8b50cce7ae91cb30996ecf0f8816ce5ed8f49",
+		"ip":	"159.69.23.30"
+}, {
+		"pubkey":	"0274ae1ce244bd0f9c52edfb6b9e60dc5d22f001dd74af95d1297edbcc8ae39568",
+		"ip":	"159.69.23.31"
+}]
+
