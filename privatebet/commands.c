@@ -26,12 +26,10 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
-#define arg_size 8192
-
 char *multisigAddress = "bGmKoyJEz4ESuJCTjhVkgEb2Qkt8QuiQzQ";
 double epsilon = 0.000000001;
 
-static int32_t bet_alloc_args(int argc, char ***argv)
+int32_t bet_alloc_args(int argc, char ***argv)
 {
 	int ret = 1;
 
@@ -46,7 +44,7 @@ static int32_t bet_alloc_args(int argc, char ***argv)
 	return ret;
 }
 
-static void bet_dealloc_args(int argc, char ***argv)
+void bet_dealloc_args(int argc, char ***argv)
 {
 	if (*argv) {
 		for (int i = 0; i < argc; i++) {

@@ -6,18 +6,21 @@
 
 #include "storage.h"
 
-#define no_of_tables 4
+#define no_of_tables 7
 
 char *db_name = NULL;
 
 const char *table_names[no_of_tables] = { "dcv_tx_mapping", "player_tx_mapping", "cashier_tx_mapping",
-					  "c_tx_addr_mapping" };
+					  "c_tx_addr_mapping", "dcv_game_state", "player_game_state", "cashier_game_state"};
 
 const char *schemas[no_of_tables] = {
 	"(tx_id varchar(100) primary key,table_id varchar(100), status bool)",
 	"(tx_id varchar(100) primary key,table_id varchar(100), status bool)",
 	"(tx_id varchar(100) primary key,table_id varchar(100), status bool)",
-	"(payin_tx_id varchar(100) primary key,msig_addr varchar(100), min_notaries int, table_id varchar(100), msig_addr_nodes varchar(100), payin_tx_id_status int, payout_tx_id varchar(100))"
+	"(payin_tx_id varchar(100) primary key,msig_addr varchar(100), min_notaries int, table_id varchar(100), msig_addr_nodes varchar(100), payin_tx_id_status int, payout_tx_id varchar(100))",
+	"(table_id varchar(100) primary key,game_state varchar(1000))",
+	"(table_id varchar(100) primary key,game_state varchar(1000))",
+	"(table_id varchar(100) primary key,game_state varchar(1000))"
 };
 
 void sqlite3_init_db_name()
@@ -98,6 +101,19 @@ sqlite3 *bet_get_db_instance()
 		return (0);
 	}
 	return db;
+}
+
+void bet_make_insert_query(int argc, char **argv, char **sql_query)
+{
+	
+	sprintf(*sql_query, "INSERT INTO %s values(",argv[0]);
+	for(int32_t i = 1; i < argc; i++) {
+		strcat(*sql_query,argv[i]);
+		if((i+1) < argc)
+			strcat(*sql_query,",");
+		else
+			strcat(*sql_query,");");
+	}
 }
 
 int32_t bet_run_query(char *sql_query)

@@ -1033,6 +1033,70 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 	return retval;
 }
 
+char* get_quoted_string(char *str)
+{
+	
+}
+
+void bet_game_info(struct privatebet_info *bet, struct privatebet_vars *vars)
+{
+	cJSON *game_info = NULL, *game_details =  NULL, *game_state =  NULL;
+
+	printf("%s::%d\n",__FUNCTION__,__LINE__);
+
+	game_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(game_info,"method","game_info");
+	cJSON_AddStringToObject(game_info,"table_id",table_id);
+	
+	game_state = cJSON_CreateObject();
+	cJSON_AddNumberToObject(game_state,"maxplayers",bet->maxplayers);
+	cJSON_AddNumberToObject(game_state,"rounds",vars->round);
+	
+	game_details = cJSON_CreateArray();
+	for(int32_t i = 0; i < bet->maxplayers; i++) {
+		cJSON *temp = cJSON_CreateObject();
+
+		cJSON *player_action_info = cJSON_CreateArray();
+		
+		for(int32_t j = 0; j <= vars->round; j++)
+			cJSON_AddItemToArray(player_action_info,cJSON_CreateNumber(vars->bet_actions[i][j]));
+		
+		cJSON *player_card_info = cJSON_CreateArray();
+		for(int32_t j = 0; j < hand_size; j++)
+			cJSON_AddItemToArray(player_card_info,cJSON_CreateNumber(card_values[i][j]));
+		
+		cJSON_AddItemToObject(temp,"bet_actions",player_action_info);
+		cJSON_AddItemToObject(temp,"player_cards",player_card_info);
+		cJSON_AddItemToArray(game_details,temp);		
+
+	}
+	cJSON_AddItemToObject(game_state,"game_details",game_details);
+	cJSON_AddItemToObject(game_info,"game_state",game_state);
+	printf("%s::%d::game_info::\n::%s::\n",__FUNCTION__,__LINE__,cJSON_Print(game_info));	
+	bet_send_message_to_all_active_notaries(game_info);
+
+	
+	int argc = 3;
+	char **argv = NULL;
+	char *sql_query = calloc(1,arg_size);
+	bet_alloc_args(argc,&argv);
+	strcpy(argv[0], "dcv_game_state");
+	sprintf(argv[1],"\'%s\'",table_id);
+	sprintf(argv[2],"\'%s\'",cJSON_Print(game_state));
+	
+	bet_make_insert_query(argc,argv,&sql_query);
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,sql_query);
+	bet_run_query(sql_query);
+	bet_dealloc_args(argc,&argv);
+	if(sql_query)
+		free(sql_query);
+
+	int bytes = nn_send(bet->pubsock,cJSON_Print(game_info),strlen(cJSON_Print(game_info)),0);
+	if(bytes < 0)
+		printf("%s::%d::problem in sending the data\n",__FUNCTION__,__LINE__);
+	
+}
+
 int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int retval = 1, max_score = 0, no_of_winners = 0, bytes;
@@ -1050,6 +1114,8 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 			    "2H", "3H", "4H", "5H", "6H", "7H", "8H", "9H", "10H", "JH", "QH", "KH", "AH",
 			    "2S", "3S", "4S", "5S", "6S", "7S", "8S", "9S", "10S", "JS", "QS", "KS", "AS" };
 
+	bet_game_info(bet,vars);
+	
 	for (int i = 0; i < bet->maxplayers; i++) {
 		p[i] = vars->bet_actions[i][(vars->round)];
 
@@ -1172,10 +1238,12 @@ end:
 		reset_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(reset_info, "method", "reset");
 		rendered = cJSON_Print(reset_info);
+		/*
 		bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 		if (bytes < 0)
 			retval = -1;
 		bet_dcv_reset(bet, vars);
+		*/
 	}
 	return retval;
 }
