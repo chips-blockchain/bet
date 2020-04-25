@@ -97,6 +97,7 @@ void bet_set_table_id()
 	memset(table_id, 0x00, sizeof(table_id));
 	OS_randombytes(randval.bytes, sizeof(randval));
 	bits256_str(table_id, randval);
+	printf("table_id::%s\n",table_id);
 }
 
 void bet_dcv_lws_write(cJSON *data)
@@ -979,8 +980,6 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 
 	amount_in_txs = amount_in_txs / bet->numplayers;
 
-	printf("amount_in_txs::%lf,pot::%d,pot_in_chips::%lf", amount_in_txs, pot, pot_in_chips);
-
 	dcv_commission = ((dcv_commission_percentage * pot_in_chips) / 100);
 	dev_commission = ((dev_fund_percentage * pot_in_chips) / 100);
 	winning_pot = pot_in_chips - (dcv_commission + dev_commission);
@@ -1024,7 +1023,6 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 			cJSON_AddItemToArray(payout_info, temp);
 		}
 	}
-	printf("%s::%d::payout_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(payout_info));
 	payout_tx_info = chips_create_payout_tx(payout_info, no_of_txs, tx_ids);
 
 	bytes = nn_send(bet->pubsock, cJSON_Print(payout_tx_info), strlen(cJSON_Print(payout_tx_info)), 0);
@@ -1033,15 +1031,9 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 	return retval;
 }
 
-char *get_quoted_string(char *str)
-{
-}
-
 void bet_game_info(struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	cJSON *game_info = NULL, *game_details = NULL, *game_state = NULL;
-
-	printf("%s::%d\n", __FUNCTION__, __LINE__);
 
 	game_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(game_info, "method", "game_info");
@@ -1070,7 +1062,6 @@ void bet_game_info(struct privatebet_info *bet, struct privatebet_vars *vars)
 	}
 	cJSON_AddItemToObject(game_state, "game_details", game_details);
 	cJSON_AddItemToObject(game_info, "game_state", game_state);
-	printf("%s::%d::game_info::\n::%s::\n", __FUNCTION__, __LINE__, cJSON_Print(game_info));
 	bet_send_message_to_all_active_notaries(game_info);
 
 	int argc = 3;
@@ -1082,7 +1073,6 @@ void bet_game_info(struct privatebet_info *bet, struct privatebet_vars *vars)
 	sprintf(argv[2], "\'%s\'", cJSON_Print(game_state));
 
 	bet_make_insert_query(argc, argv, &sql_query);
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, sql_query);
 	bet_run_query(sql_query);
 	bet_dealloc_args(argc, &argv);
 	if (sql_query)
@@ -1647,10 +1637,8 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 		} else if (strcmp(method, "live") == 0) {
 			bet_dcv_process_live(argjson);
 		} else if (strcmp(method, "stack_info_req") == 0) {
-			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 			retval = bet_dcv_stack_info_resp(argjson, bet, vars);
 		} else if (strcmp(method, "tx") == 0) {
-			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 			retval = bet_dcv_process_tx(argjson, bet, vars, legacy_m_of_n_msig_addr);
 		} else {
 			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);

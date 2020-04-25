@@ -1502,7 +1502,6 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 	int32_t retval = 1, bytes;
 	char *data = NULL, *sql_query = NULL;
 
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 	funds_needed = jdouble(argjson, "table_stack_in_chips");
 	if (chips_get_balance() < (funds_needed + chips_tx_fee)) {
 		printf("%s::%d::Insufficient funds\n", __FUNCTION__, __LINE__);
@@ -1535,7 +1534,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 			sprintf(sql_query, "INSERT INTO c_tx_addr_mapping values(%s,\"%s\",%d,\"%s\",\'%s\',1,NULL);",
 				cJSON_Print(txid), legacy_m_of_n_msig_addr, threshold_value, table_id,
 				unstringify(cJSON_Print(cJSON_GetObjectItem(argjson, "msig_addr_nodes"))));
-			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, sql_query);
+
 			cJSON *temp = cJSON_CreateObject();
 			cJSON_AddStringToObject(temp, "method", "lock_in_tx");
 			cJSON_AddStringToObject(temp, "sql_query", sql_query);
@@ -1602,7 +1601,7 @@ static int32_t bet_player_process_payout_tx(cJSON *argjson)
 
 static int32_t bet_player_process_game_info(cJSON *argjson)
 {
-	int argc = 3;
+	int argc = 3,rc;
 	char **argv = NULL;
 	char *sql_query = calloc(1, arg_size);
 
@@ -1612,11 +1611,11 @@ static int32_t bet_player_process_game_info(cJSON *argjson)
 	sprintf(argv[2], "\'%s\'", cJSON_Print(cJSON_GetObjectItem(argjson, "game_state")));
 
 	bet_make_insert_query(argc, argv, &sql_query);
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, sql_query);
-	bet_run_query(sql_query);
+	rc = bet_run_query(sql_query);
 	bet_dealloc_args(argc, &argv);
 	if (sql_query)
 		free(sql_query);
+	return rc;
 }
 
 int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
