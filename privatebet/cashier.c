@@ -49,6 +49,15 @@ int32_t live_notaries = 0;
 int32_t *notary_status = NULL;
 int32_t notary_response = 0;
 
+/***********************************************************************************************************
+The values table_stack_in_chips and  chips_tx_fee are read from dealer_config.json file, table_stack_in_chips
+is the amount of chips that are needed by the player in order to play the game, chips_tx_fee is chips n/w 
+tx_fee set by the dealer.
+Incase if these values are not mentioned in the dealer_config.json file, the default values read as
+	table_stack_in_chips = 0.01;
+	chips_tx_fee = 0.0005;
+***********************************************************************************************************/
+
 double table_stack_in_chips = 0.01;
 double chips_tx_fee = 0.0005;
 
@@ -244,6 +253,34 @@ int32_t bet_process_payout_tx(cJSON *argjson, struct cashier *cashier_info)
 	return retval;
 }
 
+int32_t bet_process_game_info(cJSON *argjson, struct cashier *cashier_info)
+{
+	char *sql_query = NULL;
+	cJSON *game_state =  NULL, *game_info_resp = NULL;
+	int32_t rc,bytes;
+	
+	sql_query = calloc(1, 2000);
+	
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+	game_state = cJSON_GetObjectItem(argjson,"game_state");
+	sprintf(sql_query, "INSERT into cashier_game_state values(\"%s\", \'%s\');",jstr(argjson,"table_id"),cJSON_Print(game_state));
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,sql_query);
+	rc = bet_run_query(sql_query);
+
+	game_info_resp = cJSON_CreateObject();
+	cJSON_AddStringToObject(game_info_resp, "method", "game_info_resp");
+	cJSON_AddNumberToObject(game_info_resp, "status", rc);
+	bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(game_info_resp), strlen(cJSON_Print(game_info_resp)), 0);
+
+	if (bytes < 0)
+		rc = -1;		
+	if(sql_query)
+		free(sql_query);
+	
+	return rc;
+	
+}
+
 int32_t bet_cashier_backend(cJSON *argjson, struct cashier *cashier_info)
 {
 	char *method = NULL;
@@ -259,6 +296,8 @@ int32_t bet_cashier_backend(cJSON *argjson, struct cashier *cashier_info)
 			retval = bet_process_lock_in_tx(argjson, cashier_info);
 		} else if (strcmp(method, "payout_tx") == 0) {
 			retval = bet_process_payout_tx(argjson, cashier_info);
+		} else if (strcmp(method, "game_info") == 0) {
+			retval = bet_process_game_info(argjson, cashier_info);
 		}
 	}
 	return retval;
@@ -451,7 +490,6 @@ cJSON *bet_send_single_message_to_notary(cJSON *argjson, char *notary_node_ip)
 	bet_tcp_sock_address(0, bind_push_addr, notary_node_ip, cashier_pushpull_port);
 	c_pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
 
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 	bytes = nn_send(c_pushsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
 	if (bytes < 0) {
 		printf("%s::%d::There is a problem in sending the data\n", __FUNCTION__, __LINE__);
@@ -463,7 +501,6 @@ cJSON *bet_send_single_message_to_notary(cJSON *argjson, char *notary_node_ip)
 		if ((recvlen = nn_recv(c_subsock, &ptr, NN_MSG, 0)) > 0) {
 			char *tmp = clonestr(ptr);
 			if ((response_info = cJSON_Parse(tmp)) != 0) {
-				printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(response_info));
 				break;
 			}
 			if (tmp)
@@ -472,5 +509,16 @@ cJSON *bet_send_single_message_to_notary(cJSON *argjson, char *notary_node_ip)
 				nn_freemsg(ptr);
 		}
 	}
+	nn_close(c_pushsock);
+	nn_close(c_subsock);
 	return response_info;
+}
+
+cJSON *bet_send_message_to_all_active_notaries(cJSON *argjson)
+{
+	for(int32_t i = 0; i < no_of_notaries; i++) {
+		if(notary_status[i] == 1) {
+			bet_send_single_message_to_notary(argjson,notary_node_ips[i]);
+		}
+	}
 }

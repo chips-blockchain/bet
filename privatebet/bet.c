@@ -44,7 +44,15 @@ int32_t permis_d[CARDS777_MAXCARDS], permis_b[CARDS777_MAXCARDS];
 bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 struct enc_share *g_shares = NULL;
+
+/**************************************************************************************************
+This value is read from dealer_config.json file, it defines the exact number of players that needs
+be joined in order to play the game.
+The default value is 2, i.e as atleast two players are required to play the game.
+***************************************************************************************************/
+
 int32_t max_players = 2;
+
 static const int32_t poker_deck_size = 52;
 
 static void bet_cashier_client_initialize(char *node_ip, const int32_t port)
@@ -189,8 +197,6 @@ static void bet_dcv_initialize(char *dcv_ip, const int32_t port)
 	pullsock = bet_nanosock(1, bind_pull_addr, NN_PULL);
 
 	bet_dcv = calloc(1, sizeof(struct privatebet_info));
-	dcv_vars = calloc(1, sizeof(struct privatebet_vars));
-
 	bet_dcv->pubsock = pubsock;
 	bet_dcv->pullsock = pullsock;
 	bet_dcv->maxplayers = (max_players < CARDS777_MAXPLAYERS) ? max_players : CARDS777_MAXPLAYERS;
@@ -202,6 +208,21 @@ static void bet_dcv_initialize(char *dcv_ip, const int32_t port)
 	bet_dcv->turni = -1;
 	bet_dcv->no_of_turns = 0;
 	bet_info_set(bet_dcv, "demo", poker_deck_size, 0, max_players);
+
+	dcv_vars = calloc(1, sizeof(struct privatebet_vars));
+	
+	dcv_vars->turni = 0;
+	dcv_vars->round = 0;
+	dcv_vars->pot = 0;
+	dcv_vars->last_turn = 0;
+	dcv_vars->last_raise = 0;
+	for (int i = 0; i < CARDS777_MAXPLAYERS; i++) {
+		dcv_vars->funds[i] = 0;
+		for (int j = 0; j < CARDS777_MAXROUNDS; j++) {
+			dcv_vars->bet_actions[i][j] = 0;
+			dcv_vars->betamount[i][j] = 0;
+		}
+	}
 }
 
 static void bet_dcv_deinitialize()

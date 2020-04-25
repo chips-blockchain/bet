@@ -1599,6 +1599,26 @@ static int32_t bet_player_process_payout_tx(cJSON *argjson)
 		free(sql_query);
 	return rc;
 }
+
+static int32_t bet_player_process_game_info(cJSON *argjson)
+{
+	int argc = 3;
+	char **argv = NULL;
+	char *sql_query = calloc(1,arg_size);
+
+	bet_alloc_args(argc,&argv);
+	strcpy(argv[0], "player_game_state");
+	sprintf(argv[1],"\'%s\'",table_id);
+	sprintf(argv[2],"\'%s\'",cJSON_Print(cJSON_GetObjectItem(argjson,"game_state")));
+	
+	bet_make_insert_query(argc,argv,&sql_query);
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,sql_query);
+	bet_run_query(sql_query);
+	bet_dealloc_args(argc,&argv);
+	if(sql_query)
+		free(sql_query);
+}
+	
 int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int32_t retval = 1, bytes;
@@ -1699,6 +1719,8 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			}
 		} else if (strcmp(method, "payout_tx") == 0) {
 			retval = bet_player_process_payout_tx(argjson);
+		} else if(strcmp(method, "game_info") == 0) {
+			retval = bet_player_process_game_info(argjson);
 		}
 	}
 	return retval;
