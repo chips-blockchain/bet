@@ -1070,7 +1070,6 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 			data = calloc(new_size, sizeof(char));
 			strncpy(data, temp, strlen(temp));
 			free(temp);
-			printf("MEMORY DOUBLED:: SEEMS LIKE THE METHOD :: %s :: NEEDING MORE MEMORY\n", argv[1]);
 		}
 		strcat(data, buf);
 		memset(buf, 0x00, buf_size);

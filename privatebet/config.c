@@ -32,7 +32,6 @@ cJSON *bet_read_json_file(char *file_name)
 				data = calloc(new_size, sizeof(char));
 				strncpy(data, temp, strlen(temp));
 				free(temp);
-				printf("MEMORY DOUBLED:: IN READING :: %s :: NEEDING MORE MEMORY\n", file_name);
 			}
 			strcat(data, buf);
 			memset(buf, 0x00, buf_size);

@@ -39,6 +39,9 @@
 #define BET_RESERVERATE 1.025
 #define LN_FUNDINGERROR "\"Cannot afford funding transaction\""
 
+#define tx_spent 0
+#define tx_unspent 1
+
 extern bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 extern bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 

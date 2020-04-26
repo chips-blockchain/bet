@@ -1556,9 +1556,9 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 			if (strcmp(tx_rand_str[i], rand_str) == 0)
 				vars->funds[i] = funds;
 		}
-		sql_stmt = calloc(1, 200);
-		sprintf(sql_stmt, "INSERT INTO dcv_tx_mapping values(\"%s\",\"%s\",%d);", jstr(argjson, "tx_info"),
-			table_id, 1);
+		sql_stmt = calloc(1, sql_query_size);
+		sprintf(sql_stmt, "INSERT INTO dcv_tx_mapping values(\'%s\',\'%s\',\'%s\',%d);", jstr(argjson, "tx_info"),
+			table_id, rand_str, tx_unspent);
 		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, sql_stmt);
 		bet_run_query(sql_stmt);
 	}
@@ -1568,7 +1568,6 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 	cJSON_AddStringToObject(tx_status, "req_identifier", jstr(argjson, "req_identifier"));
 	cJSON_AddNumberToObject(tx_status, "tx_validity", retval);
 	cJSON_AddNumberToObject(tx_status, "player_funds", funds);
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(tx_status));
 	bytes = nn_send(bet->pubsock, cJSON_Print(tx_status), strlen(cJSON_Print(tx_status)), 0);
 
 	if (sql_stmt)

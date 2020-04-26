@@ -1,6 +1,8 @@
 #include "bet.h"
 #include <sqlite3.h>
 
+#define sql_query_size 1024
+
 void sqlite3_init_db_name();
 int32_t sqlite3_check_if_table_id_exists(const char *table_id);
 int32_t sqlite3_check_if_table_exists(sqlite3 *db, const char *table_name);
