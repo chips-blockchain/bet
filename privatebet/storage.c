@@ -15,9 +15,9 @@ const char *table_names[no_of_tables] = { "dcv_tx_mapping",    "player_tx_mappin
 					  "cashier_game_state" };
 
 const char *schemas[no_of_tables] = {
-	"(tx_id varchar(100) primary key,table_id varchar(100), status bool)",
-	"(tx_id varchar(100) primary key,table_id varchar(100), status bool)",
-	"(tx_id varchar(100) primary key,table_id varchar(100), status bool)",
+	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), status bool)",
+	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), status bool)",
+	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), status bool)",
 	"(payin_tx_id varchar(100) primary key,msig_addr varchar(100), min_notaries int, table_id varchar(100), msig_addr_nodes varchar(100), payin_tx_id_status int, payout_tx_id varchar(100))",
 	"(table_id varchar(100) primary key,game_state varchar(1000))",
 	"(table_id varchar(100) primary key,game_state varchar(1000))",

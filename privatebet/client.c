@@ -86,6 +86,7 @@ int32_t lws_buf_length_bvv = 0;
 char req_identifier[65];
 int32_t backend_status = 0;
 
+
 void player_lws_write(cJSON *data)
 {
 	if (ws_connection_status == 1) {
@@ -1524,9 +1525,9 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		txid = chips_transfer_funds_with_data(funds_needed, legacy_m_of_n_msig_addr, data);
 
 		if (txid) {
-			sql_query = calloc(1, 400);
-			sprintf(sql_query, "INSERT INTO player_tx_mapping values(%s,\"%s\",1);", cJSON_Print(txid),
-				table_id);
+			sql_query = calloc(1, sql_query_size);
+			sprintf(sql_query, "INSERT INTO player_tx_mapping values(%s,\'%s\',\'%s\',%d);", cJSON_Print(txid),
+				table_id,req_identifier,tx_unspent);
 			bet_run_query(sql_query);
 
 			cJSON *msig_addr_nodes = cJSON_CreateArray();
