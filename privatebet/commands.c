@@ -494,24 +494,21 @@ int32_t chips_get_block_count()
 
 void check_ln_chips_sync()
 {
-	int32_t chips_bh, ln_bh, flag = 1;
+	int32_t chips_bh, ln_bh;
 	int32_t threshold_diff = 1000;
 
 	chips_bh = chips_get_block_count();
 	ln_bh = ln_dev_block_height();
-
-	while (flag) {
+	while (1) {
 		if ((chips_bh - ln_bh) > threshold_diff) {
 			printf("\rln is %d blocks behind chips network", (chips_bh - ln_bh));
 			fflush(stdout);
-		} else {
-			flag = 0;
-			printf("ln is in sync with chips\n");
-		}
-
+		} else 
+			break;
 		chips_bh = chips_get_block_count();
 		ln_bh = ln_dev_block_height();
 	}
+	printf("ln is in sync with chips\n");
 }
 
 double chips_get_balance()

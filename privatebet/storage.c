@@ -69,7 +69,7 @@ int32_t sqlite3_check_if_table_exists(sqlite3 *db, const char *table_name)
 	int rc, retval = 0;
 
 	db = bet_get_db_instance();
-	sql_query = calloc(1, 200);
+	sql_query = calloc(1, sql_query_size);
 
 	sprintf(sql_query, "select name from sqlite_master where type = \"table\" and name =\"%s\";", table_name);
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
@@ -167,4 +167,72 @@ void bet_sqlite3_init()
 {
 	sqlite3_init_db_name();
 	bet_create_schema();
+}
+
+int32_t sqlite3_get_game_details(int32_t opt)
+{
+	sqlite3_stmt *stmt = NULL, *sub_stmt = NULL;
+	char *sql_query = NULL, *sql_sub_query = NULL;
+	int rc;
+	sqlite3 *db;
+	cJSON *game_info = NULL;
+
+	game_info = cJSON_CreateObject();
+	db = bet_get_db_instance();
+	sql_query = calloc(1, sql_query_size);
+	sql_sub_query = calloc(1, sql_query_size);
+	if(opt == -1)
+		sprintf(sql_query, "select * from player_tx_mapping;");
+	else
+		sprintf(sql_query, "select * from player_tx_mapping where status = %d;",opt);
+	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
+	if (rc != SQLITE_OK) {
+		printf("error: %s::%s", sqlite3_errmsg(db), sql_query);
+		goto end;
+	}
+	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+		cJSON *game_obj = cJSON_CreateObject();
+		cJSON_AddStringToObject(game_obj, "table_id", sqlite3_column_text(stmt, 1));
+		cJSON_AddStringToObject(game_obj, "tx_id", sqlite3_column_text(stmt, 0));
+		cJSON_AddStringToObject(game_obj, "player_id", sqlite3_column_text(stmt, 2));
+		cJSON_AddNumberToObject(game_obj, "status", sqlite3_column_int(stmt, 3));
+		sprintf(sql_sub_query, "select * from player_game_state where table_id = \'%s\';",sqlite3_column_text(stmt, 1));
+	
+		rc = sqlite3_prepare_v2(db, sql_sub_query, -1, &sub_stmt, NULL);
+		if (rc != SQLITE_OK) {
+			printf("error: %s::%s", sqlite3_errmsg(db), sql_sub_query);
+			goto end;
+		}
+		while ((rc = sqlite3_step(sub_stmt)) == SQLITE_ROW) {
+			cJSON_AddItemToObject(game_obj, "game_state", cJSON_Parse(sqlite3_column_text(sub_stmt, 1)));
+		}
+		sqlite3_finalize(sub_stmt);
+		memset(sql_sub_query, 0x00, sql_query_size);
+		cJSON_AddItemToArray(game_info, game_obj);
+	}
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(game_info));
+	sqlite3_finalize(stmt);
+end:
+	if (sql_query)
+		free(sql_query);
+	if (sql_sub_query)
+		free(sql_sub_query);
+	sqlite3_close(db);
+	return rc;
+}
+
+void bet_handle_game(int argc, char **argv)
+{
+	if (argc > 2) {
+		if (strcmp(argv[2], "info") == 0) {
+			int32_t opt = -1;
+			if (argc == 4) {
+				if ((strcmp(argv[3], "success") == 0) || (strcmp(argv[3], "0") == 0))
+					opt = 0;
+				else if ((strcmp(argv[3], "fail") == 0) || (strcmp(argv[3], "1") == 0))
+					opt = 1;
+			}
+			sqlite3_get_game_details(opt);
+		}
+	}
 }
