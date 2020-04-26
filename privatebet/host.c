@@ -62,8 +62,8 @@ int no_of_rand_str = 0;
 int32_t invoiceID;
 
 char *suit[NSUITS] = { "clubs", "diamonds", "hearts", "spades" };
-char *face[NFACES] = { "two",  "three", "four", "five",	 "six",	 "seven", "eight",
-		       "nine", "ten",	"jack", "queen", "king", "ace" };
+char *face[NFACES] = { "two",  "three", "four", "five",  "six",  "seven", "eight",
+		       "nine", "ten",   "jack", "queen", "king", "ace" };
 
 struct privatebet_info *bet_dcv = NULL;
 struct privatebet_vars *dcv_vars = NULL;
@@ -97,7 +97,7 @@ void bet_set_table_id()
 	memset(table_id, 0x00, sizeof(table_id));
 	OS_randombytes(randval.bytes, sizeof(randval));
 	bits256_str(table_id, randval);
-	printf("table_id::%s\n",table_id);
+	printf("table_id::%s\n", table_id);
 }
 
 void bet_dcv_lws_write(cJSON *data)
@@ -1557,8 +1557,8 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 				vars->funds[i] = funds;
 		}
 		sql_stmt = calloc(1, sql_query_size);
-		sprintf(sql_stmt, "INSERT INTO dcv_tx_mapping values(\'%s\',\'%s\',\'%s\',%d);", jstr(argjson, "tx_info"),
-			table_id, rand_str, tx_unspent);
+		sprintf(sql_stmt, "INSERT INTO dcv_tx_mapping values(\'%s\',\'%s\',\'%s\',%d);",
+			jstr(argjson, "tx_info"), table_id, rand_str, tx_unspent);
 		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, sql_stmt);
 		bet_run_query(sql_stmt);
 	}

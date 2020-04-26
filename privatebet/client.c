@@ -86,7 +86,6 @@ int32_t lws_buf_length_bvv = 0;
 char req_identifier[65];
 int32_t backend_status = 0;
 
-
 void player_lws_write(cJSON *data)
 {
 	if (ws_connection_status == 1) {
@@ -1526,8 +1525,8 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 
 		if (txid) {
 			sql_query = calloc(1, sql_query_size);
-			sprintf(sql_query, "INSERT INTO player_tx_mapping values(%s,\'%s\',\'%s\',%d);", cJSON_Print(txid),
-				table_id,req_identifier,tx_unspent);
+			sprintf(sql_query, "INSERT INTO player_tx_mapping values(%s,\'%s\',\'%s\',%d);",
+				cJSON_Print(txid), table_id, req_identifier, tx_unspent);
 			bet_run_query(sql_query);
 
 			cJSON *msig_addr_nodes = cJSON_CreateArray();
@@ -1602,7 +1601,7 @@ static int32_t bet_player_process_payout_tx(cJSON *argjson)
 
 static int32_t bet_player_process_game_info(cJSON *argjson)
 {
-	int argc = 3,rc;
+	int argc = 3, rc;
 	char **argv = NULL;
 	char *sql_query = calloc(1, arg_size);
 
@@ -1840,8 +1839,8 @@ void rest_push_cards(struct lws *wsi, cJSON *argjson, int32_t this_playerID)
 void rest_display_cards(cJSON *argjson, int32_t this_playerID)
 {
 	char *suit[NSUITS] = { "clubs", "diamonds", "hearts", "spades" };
-	char *face[NFACES] = { "two",  "three", "four", "five",	 "six",	 "seven", "eight",
-			       "nine", "ten",	"jack", "queen", "king", "ace" };
+	char *face[NFACES] = { "two",  "three", "four", "five",  "six",  "seven", "eight",
+			       "nine", "ten",   "jack", "queen", "king", "ace" };
 
 	char action_str[8][100] = { "", "small_blind", "big_blind", "check", "raise", "call", "allin", "fold" };
 	cJSON *actions = NULL;
