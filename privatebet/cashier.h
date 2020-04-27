@@ -1,6 +1,7 @@
 void bet_compute_m_of_n_msig_addr();
-void bet_check_notaries();
-char *bet_check_notary_status();
+void bet_check_cashier_nodes();
+int32_t bet_check_if_notary_is_active(char *notary_node_ip);
+char *bet_check_all_cashier_nodes_status();
 int32_t bet_send_status(struct cashier *cashier_info);
 int32_t bet_process_lock_in_tx(cJSON *argjson, struct cashier *cashier_info);
 int32_t bet_cashier_process_raw_msig_tx(cJSON *argjson, struct cashier *cashier_info);
@@ -14,3 +15,4 @@ int32_t bet_submit_msig_raw_tx(cJSON *tx);
 char *bet_send_message_to_notary(cJSON *argjson, char *notary_node_ip);
 cJSON *bet_send_single_message_to_notary(cJSON *argjson, char *notary_node_ip);
 cJSON *bet_send_message_to_all_active_notaries(cJSON *argjson);
+void bet_handle_game(int argc, char **argv);

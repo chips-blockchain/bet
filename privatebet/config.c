@@ -45,7 +45,7 @@ end:
 	return json_data;
 }
 
-void bet_parse_config_file()
+void bet_parse_dealer_config_file()
 {
 	cJSON *config_info = NULL;
 
@@ -57,7 +57,7 @@ void bet_parse_config_file()
 	}
 }
 
-void bet_parse_notary_file()
+void bet_parse_cashier_nodes_file()
 {
 	cJSON *notaries_info = NULL;
 
