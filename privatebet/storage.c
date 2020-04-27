@@ -15,9 +15,9 @@ const char *table_names[no_of_tables] = { "dcv_tx_mapping",    "player_tx_mappin
 					  "cashier_game_state" };
 
 const char *schemas[no_of_tables] = {
-	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), status bool)",
-	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), status bool)",
-	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), status bool)",
+	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), msig_addr varchar(100), status bool)",
+	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), msig_addr varchar(100), status bool)",
+	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), msig_addr varchar(100), status bool)",
 	"(payin_tx_id varchar(100) primary key,msig_addr varchar(100), min_notaries int, table_id varchar(100), msig_addr_nodes varchar(100), payin_tx_id_status int, payout_tx_id varchar(100))",
 	"(table_id varchar(100) primary key,game_state varchar(1000))",
 	"(table_id varchar(100) primary key,game_state varchar(1000))",
@@ -169,7 +169,7 @@ void bet_sqlite3_init()
 	bet_create_schema();
 }
 
-int32_t sqlite3_get_game_details(int32_t opt)
+cJSON *sqlite3_get_game_details(int32_t opt)
 {
 	sqlite3_stmt *stmt = NULL, *sub_stmt = NULL;
 	char *sql_query = NULL, *sql_sub_query = NULL;
@@ -181,10 +181,10 @@ int32_t sqlite3_get_game_details(int32_t opt)
 	db = bet_get_db_instance();
 	sql_query = calloc(1, sql_query_size);
 	sql_sub_query = calloc(1, sql_query_size);
-	if(opt == -1)
+	if (opt == -1)
 		sprintf(sql_query, "select * from player_tx_mapping;");
 	else
-		sprintf(sql_query, "select * from player_tx_mapping where status = %d;",opt);
+		sprintf(sql_query, "select * from player_tx_mapping where status = %d;", opt);
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
 		printf("error: %s::%s", sqlite3_errmsg(db), sql_query);
@@ -196,8 +196,9 @@ int32_t sqlite3_get_game_details(int32_t opt)
 		cJSON_AddStringToObject(game_obj, "tx_id", sqlite3_column_text(stmt, 0));
 		cJSON_AddStringToObject(game_obj, "player_id", sqlite3_column_text(stmt, 2));
 		cJSON_AddNumberToObject(game_obj, "status", sqlite3_column_int(stmt, 3));
-		sprintf(sql_sub_query, "select * from player_game_state where table_id = \'%s\';",sqlite3_column_text(stmt, 1));
-	
+		sprintf(sql_sub_query, "select * from player_game_state where table_id = \'%s\';",
+			sqlite3_column_text(stmt, 1));
+
 		rc = sqlite3_prepare_v2(db, sql_sub_query, -1, &sub_stmt, NULL);
 		if (rc != SQLITE_OK) {
 			printf("error: %s::%s", sqlite3_errmsg(db), sql_sub_query);
@@ -218,21 +219,5 @@ end:
 	if (sql_sub_query)
 		free(sql_sub_query);
 	sqlite3_close(db);
-	return rc;
-}
-
-void bet_handle_game(int argc, char **argv)
-{
-	if (argc > 2) {
-		if (strcmp(argv[2], "info") == 0) {
-			int32_t opt = -1;
-			if (argc == 4) {
-				if ((strcmp(argv[3], "success") == 0) || (strcmp(argv[3], "0") == 0))
-					opt = 0;
-				else if ((strcmp(argv[3], "fail") == 0) || (strcmp(argv[3], "1") == 0))
-					opt = 1;
-			}
-			sqlite3_get_game_details(opt);
-		}
-	}
+	return game_info;
 }

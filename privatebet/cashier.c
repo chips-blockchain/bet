@@ -78,9 +78,9 @@ void bet_compute_m_of_n_msig_addr()
 	}
 }
 
-void bet_check_notaries()
+void bet_check_cashier_nodes()
 {
-	bet_check_notary_status();
+	bet_check_all_cashier_nodes_status();
 
 	if (live_notaries < 2) {
 		printf("Not enough notaries are available, if you continue you lose funds\n");
@@ -96,7 +96,56 @@ void bet_check_notaries()
 	}
 }
 
-char *bet_check_notary_status()
+
+int32_t bet_check_if_notary_is_active(char *notary_node_ip)
+{
+	int32_t c_subsock, c_pushsock, bytes, recvlen, retval = 1;
+	uint16_t cashier_pubsub_port = 7901, cashier_pushpull_port = 7902;
+	char bind_sub_addr[128] = { 0 }, bind_push_addr[128] = { 0 };
+	void *ptr;
+	cJSON *response_info = NULL, *live_info = NULL;
+
+	memset(bind_sub_addr, 0x00, sizeof(bind_sub_addr));
+	memset(bind_push_addr, 0x00, sizeof(bind_push_addr));
+
+	bet_tcp_sock_address(0, bind_sub_addr, notary_node_ip, cashier_pubsub_port);
+	c_subsock = bet_nanosock(0, bind_sub_addr, NN_SUB);
+
+	bet_tcp_sock_address(0, bind_push_addr, notary_node_ip, cashier_pushpull_port);
+	c_pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
+
+	
+	live_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(live_info, "method", "live");
+
+	bytes = nn_send(c_pushsock, cJSON_Print(live_info), strlen(cJSON_Print(live_info)), 0);
+	if (bytes < 0) {
+		printf("%s::%d::There is a problem in sending the data\n", __FUNCTION__, __LINE__);
+		retval = 0;
+	}
+	else {
+		while (c_pushsock >= 0 && c_subsock >= 0) {
+			ptr = 0;
+			if ((recvlen = nn_recv(c_subsock, &ptr, NN_MSG, 0)) > 0) {
+				char *tmp = clonestr(ptr);
+				if ((response_info = cJSON_Parse(tmp)) != 0) {
+					printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(response_info));
+					break;
+				}
+				if (tmp)
+					free(tmp);
+				if (ptr)
+					nn_freemsg(ptr);
+			}
+		}
+	}
+	nn_close(c_pushsock);
+	nn_close(c_subsock);
+	return retval;
+}
+
+
+char *bet_check_all_cashier_nodes_status()
 {
 	int32_t c_subsock, c_pushsock;
 	uint16_t cashier_pubsub_port = 7901, cashier_pushpull_port = 7902;
@@ -298,7 +347,7 @@ int32_t bet_cashier_backend(cJSON *argjson, struct cashier *cashier_info)
 			retval = bet_process_payout_tx(argjson, cashier_info);
 		} else if (strcmp(method, "game_info") == 0) {
 			retval = bet_process_game_info(argjson, cashier_info);
-		}
+		} 
 	}
 	return retval;
 }
@@ -519,6 +568,46 @@ cJSON *bet_send_message_to_all_active_notaries(cJSON *argjson)
 	for (int32_t i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1) {
 			bet_send_single_message_to_notary(argjson, notary_node_ips[i]);
+		}
+	}
+}
+
+static void bet_resolve_disputed_tx()
+{
+	cJSON *disputed_game_info = NULL, *argjson = NULL;
+
+	argjson = cJSON_CreateObject();
+
+	cJSON_AddStringToObject(argjson,"method","solve");
+	disputed_game_info = sqlite3_get_game_details(0);
+	cJSON_AddItemToObject(argjson,"game_details",disputed_game_info);
+	
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
+
+
+	for(int32_t i = 0; i < no_of_notaries; i++) {
+		if(notary_status[i] == 1) {
+			bet_send_single_message_to_notary(argjson,notary_node_ips[i]);
+			break;
+		}
+	}
+}
+
+void bet_handle_game(int argc, char **argv)
+{
+	if (argc > 2) {
+		if (strcmp(argv[2], "info") == 0) {
+			int32_t opt = -1;
+			if (argc == 4) {
+				if ((strcmp(argv[3], "success") == 0) || (strcmp(argv[3], "0") == 0))
+					opt = 0;
+				else if ((strcmp(argv[3], "fail") == 0) || (strcmp(argv[3], "1") == 0))
+					opt = 1;
+			}
+			sqlite3_get_game_details(opt);
+		}
+		if (strcmp(argv[2], "solve") == 0) {
+			bet_resolve_disputed_tx();
 		}
 	}
 }

@@ -311,18 +311,13 @@ static void common_init()
 	libgfshare_init();
 	check_ln_chips_sync();
 	bet_sqlite3_init();
-	bet_parse_notary_file();
-}
-
-static void playing_nodes_init()
-{
-	common_init();
-	bet_check_notaries();
+	bet_parse_cashier_nodes_file();
+	bet_check_cashier_nodes();
 }
 
 static void dealer_node_init()
 {
-	bet_parse_config_file();
+	bet_parse_dealer_config_file();
 	bet_set_table_id();
 	bet_compute_m_of_n_msig_addr();
 }
@@ -332,17 +327,15 @@ int main(int argc, char **argv)
 	uint16_t port = 7797, cashier_pub_sub_port = 7901;
 	char dcv_ip[20];
 
+	common_init();
 	if ((argc == 3) && (strcmp(argv[1], "dcv") == 0)) {
-		playing_nodes_init();
 		strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
 		dealer_node_init();
 		bet_dcv_thrd(dcv_ip, port);
 	} else if ((argc == 3) && (strcmp(argv[1], "bvv") == 0)) {
-		playing_nodes_init();
 		strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
 		bet_bvv_thrd(dcv_ip, port);
 	} else if ((argc == 3) && (strcmp(argv[1], "player") == 0)) {
-		playing_nodes_init();
 		strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
 		bet_player_thrd(dcv_ip, port);
 	} else if ((argc == 2) && (strcmp(argv[1], "cashier") == 0)) {

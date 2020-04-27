@@ -503,7 +503,7 @@ void check_ln_chips_sync()
 		if ((chips_bh - ln_bh) > threshold_diff) {
 			printf("\rln is %d blocks behind chips network", (chips_bh - ln_bh));
 			fflush(stdout);
-		} else 
+		} else
 			break;
 		chips_bh = chips_get_block_count();
 		ln_bh = ln_dev_block_height();
@@ -691,7 +691,7 @@ cJSON *chips_spend_msig_txs(char *to_addr, int no_of_txs, char tx_ids[][100])
 	int signers = 0;
 	cJSON *hex = NULL, *tx = NULL;
 
-	bet_check_notary_status();
+	bet_check_all_cashier_nodes_status();
 	for (int i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1) {
 			if (signers == 0) {
@@ -719,7 +719,7 @@ static cJSON *chips_spend_msig_tx(cJSON *raw_tx)
 	int signers = 0;
 	cJSON *hex = NULL, *tx = NULL;
 
-	bet_check_notary_status();
+	bet_check_all_cashier_nodes_status();
 	for (int i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1) {
 			if (signers == 0) {

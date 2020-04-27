@@ -1525,13 +1525,14 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 
 		if (txid) {
 			sql_query = calloc(1, sql_query_size);
-			sprintf(sql_query, "INSERT INTO player_tx_mapping values(%s,\'%s\',\'%s\',%d);",
-				cJSON_Print(txid), table_id, req_identifier, tx_unspent);
+			sprintf(sql_query, "INSERT INTO player_tx_mapping values(%s,\'%s\',\'%s\',\'%s\',%d);",
+				cJSON_Print(txid), table_id, req_identifier,
+				unstringify(cJSON_Print(cJSON_GetObjectItem(argjson, "msig_addr_nodes"))), tx_unspent);
 			bet_run_query(sql_query);
 
 			cJSON *msig_addr_nodes = cJSON_CreateArray();
 			msig_addr_nodes = cJSON_GetObjectItem(argjson, "msig_addr_nodes");
-			sprintf(sql_query, "INSERT INTO c_tx_addr_mapping values(%s,\"%s\",%d,\"%s\",\'%s\',1,NULL);",
+			sprintf(sql_query, "INSERT INTO c_tx_addr_mapping values(%s,\'%s\',%d,\'%s\',\'%s\',1,NULL);",
 				cJSON_Print(txid), legacy_m_of_n_msig_addr, threshold_value, table_id,
 				unstringify(cJSON_Print(cJSON_GetObjectItem(argjson, "msig_addr_nodes"))));
 
@@ -1839,8 +1840,8 @@ void rest_push_cards(struct lws *wsi, cJSON *argjson, int32_t this_playerID)
 void rest_display_cards(cJSON *argjson, int32_t this_playerID)
 {
 	char *suit[NSUITS] = { "clubs", "diamonds", "hearts", "spades" };
-	char *face[NFACES] = { "two",  "three", "four", "five",  "six",  "seven", "eight",
-			       "nine", "ten",   "jack", "queen", "king", "ace" };
+	char *face[NFACES] = { "two",  "three", "four", "five",	 "six",	 "seven", "eight",
+			       "nine", "ten",	"jack", "queen", "king", "ace" };
 
 	char action_str[8][100] = { "", "small_blind", "big_blind", "check", "raise", "call", "allin", "fold" };
 	cJSON *actions = NULL;
