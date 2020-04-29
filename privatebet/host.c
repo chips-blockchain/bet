@@ -1433,6 +1433,7 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 	cJSON_AddNumberToObject(stack_info_resp, "chips_tx_fee", chips_tx_fee);
 	cJSON_AddStringToObject(stack_info_resp, "legacy_m_of_n_msig_addr", legacy_m_of_n_msig_addr);
 	cJSON_AddStringToObject(stack_info_resp, "table_id", table_id);
+	cJSON_AddNumberToObject(stack_info_resp, "threshold_value", threshold_value);
 	msig_addr_nodes = cJSON_CreateArray();
 	for (int32_t i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1) {
@@ -1540,6 +1541,7 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 	int32_t funds = 0, bytes, retval;
 	cJSON *tx_status = NULL;
 	char *sql_stmt = NULL;
+	cJSON *msig_addr_nodes = NULL;
 
 	retval = bet_dcv_verify_tx(argjson);
 
@@ -1557,9 +1559,17 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 				vars->funds[i] = funds;
 		}
 		sql_stmt = calloc(1, sql_query_size);
-		sprintf(sql_stmt, "INSERT INTO dcv_tx_mapping values(\'%s\',\'%s\',\'%s\',%d);",
-			jstr(argjson, "tx_info"), table_id, rand_str, tx_unspent);
-		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, sql_stmt);
+
+		msig_addr_nodes = cJSON_CreateArray();
+		for (int32_t i = 0; i < no_of_notaries; i++) {
+			if (notary_status[i] == 1) {
+				cJSON_AddItemToArray(msig_addr_nodes, cJSON_CreateString(notary_node_ips[i]));
+			}
+		}
+
+		sprintf(sql_stmt, "INSERT INTO dcv_tx_mapping values(\'%s\',\'%s\',\'%s\',\'%s\',%d,%d);",
+			jstr(argjson, "tx_info"), table_id, rand_str, cJSON_Print(msig_addr_nodes), tx_unspent,
+			threshold_value);
 		bet_run_query(sql_stmt);
 	}
 

@@ -1,10 +1,11 @@
+#include "commands.h"
+#include "storage.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
-
-#include "storage.h"
 
 #define no_of_tables 7
 
@@ -15,9 +16,9 @@ const char *table_names[no_of_tables] = { "dcv_tx_mapping",    "player_tx_mappin
 					  "cashier_game_state" };
 
 const char *schemas[no_of_tables] = {
-	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), msig_addr varchar(100), status bool)",
-	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), msig_addr varchar(100), status bool)",
-	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), msig_addr varchar(100), status bool)",
+	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), msig_addr varchar(100), status bool, min_cashiers int)",
+	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), msig_addr varchar(100), status bool, min_cashiers int)",
+	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), msig_addr varchar(100), status bool, min_cashiers int)",
 	"(payin_tx_id varchar(100) primary key,msig_addr varchar(100), min_notaries int, table_id varchar(100), msig_addr_nodes varchar(100), payin_tx_id_status int, payout_tx_id varchar(100))",
 	"(table_id varchar(100) primary key,game_state varchar(1000))",
 	"(table_id varchar(100) primary key,game_state varchar(1000))",
@@ -130,7 +131,7 @@ int32_t bet_run_query(char *sql_query)
 		rc = sqlite3_exec(db, sql_query, NULL, 0, &err_msg);
 
 		if (rc != SQLITE_OK) {
-			fprintf(stderr, "SQL error: %s::%s\n", err_msg, sql_query);
+			fprintf(stderr, "SQL error: %s::in running ::%s\n", err_msg, sql_query);
 			sqlite3_free(err_msg);
 		}
 		sqlite3_close(db);
@@ -177,7 +178,7 @@ cJSON *sqlite3_get_game_details(int32_t opt)
 	sqlite3 *db;
 	cJSON *game_info = NULL;
 
-	game_info = cJSON_CreateObject();
+	game_info = cJSON_CreateArray();
 	db = bet_get_db_instance();
 	sql_query = calloc(1, sql_query_size);
 	sql_sub_query = calloc(1, sql_query_size);
@@ -195,7 +196,10 @@ cJSON *sqlite3_get_game_details(int32_t opt)
 		cJSON_AddStringToObject(game_obj, "table_id", sqlite3_column_text(stmt, 1));
 		cJSON_AddStringToObject(game_obj, "tx_id", sqlite3_column_text(stmt, 0));
 		cJSON_AddStringToObject(game_obj, "player_id", sqlite3_column_text(stmt, 2));
-		cJSON_AddNumberToObject(game_obj, "status", sqlite3_column_int(stmt, 3));
+		cJSON_AddStringToObject(game_obj, "msig_addr_nodes", sqlite3_column_text(stmt, 3));
+		cJSON_AddNumberToObject(game_obj, "status", sqlite3_column_int(stmt, 4));
+		cJSON_AddNumberToObject(game_obj, "min_cashiers", sqlite3_column_int(stmt, 5));
+		cJSON_AddStringToObject(game_obj, "addr", chips_get_wallet_address());
 		sprintf(sql_sub_query, "select * from player_game_state where table_id = \'%s\';",
 			sqlite3_column_text(stmt, 1));
 
@@ -211,7 +215,6 @@ cJSON *sqlite3_get_game_details(int32_t opt)
 		memset(sql_sub_query, 0x00, sql_query_size);
 		cJSON_AddItemToArray(game_info, game_obj);
 	}
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(game_info));
 	sqlite3_finalize(stmt);
 end:
 	if (sql_query)

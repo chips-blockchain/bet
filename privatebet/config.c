@@ -66,6 +66,7 @@ void bet_parse_cashier_nodes_file()
 		no_of_notaries = cJSON_GetArraySize(notaries_info);
 		notary_node_ips = (char **)malloc(no_of_notaries * sizeof(char *));
 		notary_node_pubkeys = (char **)malloc(no_of_notaries * sizeof(char *));
+		notary_status = (int *)malloc(no_of_notaries * sizeof(int));
 
 		for (int32_t i = 0; i < no_of_notaries; i++) {
 			cJSON *node_info = cJSON_CreateObject();

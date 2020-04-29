@@ -22,6 +22,7 @@
 #include "network.h"
 #include "cashier.h"
 #include "storage.h"
+#include "commands.h"
 
 #include <stdarg.h>
 #include <stdlib.h>
@@ -670,6 +671,19 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 	tx = cJSON_CreateObject();
 	make_command(argc, argv, &tx);
 	bet_dealloc_args(argc, &argv);
+	return tx;
+}
+
+cJSON *chips_sign_msig_tx_of_table_id(char *ip, cJSON *raw_tx, char *table_id)
+{
+	cJSON *msig_raw_tx = NULL, *tx = NULL;
+
+	msig_raw_tx = cJSON_CreateObject();
+	cJSON_AddStringToObject(msig_raw_tx, "method", "raw_msig_tx");
+	cJSON_AddItemToObject(msig_raw_tx, "tx", raw_tx);
+	cJSON_AddStringToObject(msig_raw_tx, "table_id", table_id);
+	tx = bet_send_single_message_to_notary(msig_raw_tx, ip);
+
 	return tx;
 }
 
