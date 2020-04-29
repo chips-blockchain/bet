@@ -5,7 +5,7 @@ OBJFILES := $(patsubst %.c,%.o,$(SRCFILES))
 CC := gcc
 WARNINGS := -Werror -Wunused-variable
 
-CFLAGS := -g -fPIC -std=c99 $(WARNINGS)
+CFLAGS := -g -fPIC -std=c99
 
 .PHONY: all clean
 

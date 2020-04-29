@@ -25,6 +25,7 @@ int32_t chips_check_if_tx_unspent(char *input_tx);
 char *chips_get_block_hash_from_txid(char *txid);
 int32_t chips_get_block_height_from_block_hash(char *block_hash);
 cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_ids[][100]);
+cJSON *chips_sign_msig_tx_of_table_id(char *ip, cJSON *raw_tx, char *table_id);
 cJSON *chips_sign_msig_tx(char *ip, cJSON *raw_tx);
 cJSON *chips_spend_msig_txs(char *to_addr, int no_of_txs, char tx_ids[][100]);
 cJSON *chips_get_raw_tx(char *tx);

@@ -312,6 +312,11 @@ static void common_init()
 	check_ln_chips_sync();
 	bet_sqlite3_init();
 	bet_parse_cashier_nodes_file();
+}
+
+static void playing_nodes_init()
+{
+	common_init();
 	bet_check_cashier_nodes();
 }
 
@@ -327,31 +332,38 @@ int main(int argc, char **argv)
 	uint16_t port = 7797, cashier_pub_sub_port = 7901;
 	char dcv_ip[20];
 
-	common_init();
-	if ((argc == 3) && (strcmp(argv[1], "dcv") == 0)) {
-		strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
-		dealer_node_init();
-		bet_dcv_thrd(dcv_ip, port);
-	} else if ((argc == 3) && (strcmp(argv[1], "bvv") == 0)) {
-		strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
-		bet_bvv_thrd(dcv_ip, port);
-	} else if ((argc == 3) && (strcmp(argv[1], "player") == 0)) {
-		strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
-		bet_player_thrd(dcv_ip, port);
-	} else if ((argc == 2) && (strcmp(argv[1], "cashier") == 0)) {
-		common_init();
-		bet_cashier_server_thrd(bet_get_etho_ip(), cashier_pub_sub_port);
-	} else if ((argc == 4) && (strcmp(argv[1], "withdraw") == 0)) {
-		cJSON *tx = NULL;
-		tx = chips_transfer_funds(atof(argv[2]), argv[3]);
-		printf("tx details::%s\n", cJSON_Print(tx));
-	} else if ((argc == 2) && ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "h") == 0) ||
-				   (strcmp(argv[1], "--help") == 0) || (strcmp(argv[1], "help") == 0))) {
-		bet_display_usage();
-	} else if ((argc > 2) && (strcmp(argv[1], "game") == 0)) {
-		bet_sqlite3_init();
-		bet_handle_game(argc, argv);
+	if (argc > 2) {
+		playing_nodes_init();
+		if (strcmp(argv[1], "dcv") == 0) {
+			strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
+			dealer_node_init();
+			bet_dcv_thrd(dcv_ip, port);
+		} else if (strcmp(argv[1], "bvv") == 0) {
+			strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
+			bet_bvv_thrd(dcv_ip, port);
+		} else if (strcmp(argv[1], "player") == 0) {
+			strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
+			bet_player_thrd(dcv_ip, port);
+		} else if (strcmp(argv[1], "withdraw") == 0) {
+			if (argc == 4) {
+				cJSON *tx = NULL;
+				tx = chips_transfer_funds(atof(argv[2]), argv[3]);
+				printf("tx details::%s\n", cJSON_Print(tx));
+			} else
+				goto usage;
+		} else if ((argc > 2) && (strcmp(argv[1], "game") == 0)) {
+			bet_handle_game(argc, argv);
+		}
+	} else if (argc == 2) {
+		if (strcmp(argv[1], "cashier") == 0) {
+			common_init();
+			bet_cashier_server_thrd(bet_get_etho_ip(), cashier_pub_sub_port);
+		} else if ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "h") == 0) ||
+			   (strcmp(argv[1], "--help") == 0) || (strcmp(argv[1], "help") == 0)) {
+			bet_display_usage();
+		}
 	} else {
+	usage:
 		printf("\nInvalid Usage, use the flag -h or --help to get more usage details\n");
 		bet_display_usage();
 	}

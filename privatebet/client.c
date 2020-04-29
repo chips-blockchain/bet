@@ -1514,7 +1514,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		memset(legacy_m_of_n_msig_addr, 0x00, strlen(jstr(argjson, "legacy_m_of_n_msig_addr")) + 1);
 		strncpy(legacy_m_of_n_msig_addr, jstr(argjson, "legacy_m_of_n_msig_addr"),
 			strlen(jstr(argjson, "legacy_m_of_n_msig_addr")));
-
+		threshold_value = jint(argjson, "threshold_value");
 		memset(table_id, 0x00, sizeof(table_id));
 		strncpy(table_id, jstr(argjson, "table_id"), strlen(jstr(argjson, "table_id")));
 
@@ -1525,9 +1525,10 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 
 		if (txid) {
 			sql_query = calloc(1, sql_query_size);
-			sprintf(sql_query, "INSERT INTO player_tx_mapping values(%s,\'%s\',\'%s\',\'%s\',%d);",
+			sprintf(sql_query, "INSERT INTO player_tx_mapping values(%s,\'%s\',\'%s\',\'%s\',%d,%d);",
 				cJSON_Print(txid), table_id, req_identifier,
-				unstringify(cJSON_Print(cJSON_GetObjectItem(argjson, "msig_addr_nodes"))), tx_unspent);
+				cJSON_Print(cJSON_GetObjectItem(argjson, "msig_addr_nodes")), tx_unspent,
+				threshold_value);
 			bet_run_query(sql_query);
 
 			cJSON *msig_addr_nodes = cJSON_CreateArray();
