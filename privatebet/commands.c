@@ -828,7 +828,7 @@ void chips_extract_data(char *tx, char **rand_str)
 			script_pubkey = cJSON_GetObjectItem(temp, "scriptPubKey");
 			if (script_pubkey) {
 				char *data = jstr(script_pubkey, "hex");
-				strcpy((*rand_str), data + 4);
+				strcpy((*rand_str), data + 8); // first 4 bytes contains OP_RETURN hex code so we are skipping them
 				break;
 			}
 		}
