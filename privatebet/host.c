@@ -27,6 +27,7 @@
 #include "table.h"
 #include "cashier.h"
 #include "storage.h"
+#include "misc.h"
 
 #include <errno.h>
 #include <netinet/in.h>
@@ -1486,9 +1487,10 @@ static int32_t bet_dcv_verify_rand_str(char *rand_str)
 static int32_t bet_dcv_verify_tx(cJSON *argjson)
 {
 	cJSON *tx_info = NULL;
-	int32_t block_height, retval = 1;
-	char *rand_str = NULL;
-
+	int32_t block_height, retval = 0;
+	char *hex_data = NULL, *data = NULL;
+	cJSON *data_info = NULL;
+	
 	tx_info = cJSON_CreateObject();
 	tx_info = cJSON_GetObjectItem(argjson, "tx_info");
 	block_height = jint(argjson, "block_height");
@@ -1498,15 +1500,26 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson)
 	}
 	printf("Blocks synced\n");
 	if (chips_check_if_tx_unspent(cJSON_Print(tx_info)) == 1) {
-		rand_str = calloc(65, sizeof(char));
-		chips_extract_data(cJSON_Print(tx_info), &rand_str);
-		retval = bet_dcv_verify_rand_str(rand_str);
+		hex_data = calloc(1, tx_data_size*2);
+		chips_extract_data(cJSON_Print(tx_info), &hex_data);
+		data = calloc(1, tx_data_size);
+		hexstr_to_str(hex_data,data);
+		data_info = cJSON_CreateObject();
+		data_info = cJSON_Parse(data);
+		if(strcmp(table_id,jstr(data_info,"table_id")) == 0) {
+			retval = bet_dcv_verify_rand_str(jstr(data_info,"player_id"));
+			if (retval == 1)
+				strcpy(tx_ids[no_of_txs++], unstringify(cJSON_Print(tx_info)));
+		}
+		
 
-		if (retval == 1)
-			strcpy(tx_ids[no_of_txs++], unstringify(cJSON_Print(tx_info)));
-	} else
-		retval = 0;
-
+	} 
+	if(!retval)
+		printf("%s::%d::tx_verification failed\n",__FUNCTION__,__LINE__);
+	if(data)
+		free(data);
+	if(hex_data)
+		free(hex_data);
 	return retval;
 }
 
