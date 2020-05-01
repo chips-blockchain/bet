@@ -1502,7 +1502,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 	double funds_needed;
 	int32_t retval = 1, bytes;
 	char *data = NULL, *sql_query = NULL;
-		
+
 	funds_needed = jdouble(argjson, "table_stack_in_chips");
 	if (chips_get_balance() < (funds_needed + chips_tx_fee)) {
 		printf("%s::%d::Insufficient funds\n", __FUNCTION__, __LINE__);
@@ -1523,18 +1523,19 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		tx_info = cJSON_CreateObject();
 		cJSON *data_info = NULL;
 		data_info = cJSON_CreateObject();
-		cJSON_AddStringToObject(data_info,"table_id",table_id);
-		cJSON_AddStringToObject(data_info,"msig_addr_nodes",cJSON_Print(cJSON_GetObjectItem(argjson, "msig_addr_nodes")));
-		cJSON_AddNumberToObject(data_info,"min_cashiers",threshold_value);
-		cJSON_AddStringToObject(data_info,"player_id",req_identifier);
-		cJSON_AddStringToObject(data_info,"dispute_addr",chips_get_new_address());
+		cJSON_AddStringToObject(data_info, "table_id", table_id);
+		cJSON_AddStringToObject(data_info, "msig_addr_nodes",
+					cJSON_Print(cJSON_GetObjectItem(argjson, "msig_addr_nodes")));
+		cJSON_AddNumberToObject(data_info, "min_cashiers", threshold_value);
+		cJSON_AddStringToObject(data_info, "player_id", req_identifier);
+		cJSON_AddStringToObject(data_info, "dispute_addr", chips_get_new_address());
 
-		data = calloc(1,(2*strlen(cJSON_Print(data_info))+1));
-		str_to_hexstr(cJSON_Print(data_info),data);
-		
+		data = calloc(1, (2 * strlen(cJSON_Print(data_info)) + 1));
+		str_to_hexstr(cJSON_Print(data_info), data);
+
 		txid = chips_transfer_funds_with_data(funds_needed, legacy_m_of_n_msig_addr, data);
-		
-		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(txid));
+
+		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(txid));
 		if (txid) {
 			sql_query = calloc(1, sql_query_size);
 			sprintf(sql_query, "INSERT INTO player_tx_mapping values(%s,\'%s\',\'%s\',\'%s\',%d,%d);",
@@ -1574,7 +1575,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 	}
 	if (sql_query)
 		free(sql_query);
-	if(data)
+	if (data)
 		free(data);
 	return retval;
 }

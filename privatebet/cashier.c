@@ -4,6 +4,7 @@
 #include "common.h"
 #include "commands.h"
 #include "storage.h"
+#include "misc.h"
 
 int32_t no_of_notaries;
 
@@ -236,6 +237,10 @@ int32_t bet_cashier_process_raw_msig_tx(cJSON *argjson, struct cashier *cashier_
 	signed_tx = cJSON_CreateObject();
 	cJSON_AddStringToObject(signed_tx, "method", "signed_tx");
 
+	tx = cJSON_Print(cJSON_GetObjectItem(argjson, "tx"));
+	cJSON_AddItemToObject(signed_tx, "signed_tx", chips_sign_raw_tx_with_wallet(tx));
+
+	/*
 	if (sqlite3_check_if_table_id_exists(jstr(argjson, "table_id")) == 1) {
 		tx = cJSON_Print(cJSON_GetObjectItem(argjson, "tx"));
 		cJSON_AddItemToObject(signed_tx, "signed_tx", chips_sign_raw_tx_with_wallet(tx));
@@ -244,7 +249,7 @@ int32_t bet_cashier_process_raw_msig_tx(cJSON *argjson, struct cashier *cashier_
 		cJSON_AddStringToObject(signed_tx, "err_str",
 					"the cashier node doesn't have the record of the table_id");
 	}
-
+	*/
 	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(signed_tx));
 	bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(signed_tx), strlen(cJSON_Print(signed_tx)), 0);
 	if (bytes < 0)
@@ -453,32 +458,6 @@ int32_t bet_validate_game_details(cJSON *argjson, struct cashier *cashier_info)
 	return rc;
 }
 
-int32_t bet_cashier_backend(cJSON *argjson, struct cashier *cashier_info)
-{
-	char *method = NULL;
-	int32_t retval = 1;
-
-	if ((method = jstr(argjson, "method")) != 0) {
-		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
-		if (strcmp(method, "live") == 0) {
-			retval = bet_send_status(cashier_info);
-		} else if (strcmp(method, "raw_msig_tx") == 0) {
-			retval = bet_cashier_process_raw_msig_tx(argjson, cashier_info);
-		} else if (strcmp(method, "lock_in_tx") == 0) {
-			retval = bet_process_lock_in_tx(argjson, cashier_info);
-		} else if (strcmp(method, "payout_tx") == 0) {
-			retval = bet_process_payout_tx(argjson, cashier_info);
-		} else if (strcmp(method, "game_info") == 0) {
-			retval = bet_process_game_info(argjson, cashier_info);
-		} else if (strcmp(method, "solve") == 0) {
-			retval = bet_process_solve(argjson, cashier_info);
-		} else if (strcmp(method, "validate_game_details") == 0) {
-			retval = bet_validate_game_details(argjson, cashier_info);
-		}
-	}
-	return retval;
-}
-
 static int32_t bet_cashier_client_backend(cJSON *argjson, struct cashier *cashier_info)
 {
 	char *method = NULL;
@@ -572,6 +551,119 @@ static int32_t bet_update_tx_spent(cJSON *argjson)
 	return rc;
 }
 
+static cJSON *bet_reverse_disputed_tx(cJSON *game_info)
+{
+	cJSON *msig_addr_nodes = NULL;
+	int min_cashiers, active_cashiers = 0;
+	int *cashier_node_status = NULL;
+	char **cashier_node_ips = NULL;
+	int32_t no_of_cashier_nodes;
+	cJSON *tx = NULL;
+
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(game_info));
+
+	msig_addr_nodes = cJSON_CreateArray();
+	msig_addr_nodes = cJSON_Parse(jstr(game_info, "msig_addr_nodes"));
+
+	no_of_cashier_nodes = cJSON_GetArraySize(msig_addr_nodes);
+	cashier_node_status = (int *)malloc(no_of_cashier_nodes * sizeof(int));
+	cashier_node_ips = (char **)malloc(no_of_cashier_nodes * sizeof(int *));
+
+	min_cashiers = jint(game_info, "min_cashiers");
+
+	for (int32_t i = 0; i < cJSON_GetArraySize(msig_addr_nodes); i++) {
+		cashier_node_status[i] = 0;
+		cashier_node_ips[i] = calloc(1, 20);
+		strcpy(cashier_node_ips[i], unstringify(cJSON_Print(cJSON_GetArrayItem(msig_addr_nodes, i))));
+		for (int32_t j = 0; j < no_of_notaries; j++) {
+			if (notary_status[j] == 1) {
+				if (strcmp(notary_node_ips[j], cashier_node_ips[i]) == 0) {
+					cashier_node_status[i] = 1;
+					active_cashiers++;
+					break;
+				}
+			}
+		}
+	}
+	if (active_cashiers >= min_cashiers) {
+		char tx_ids[1][100];
+		int no_of_in_txs = 1;
+		cJSON *raw_tx = NULL;
+		int signers = 0;
+		cJSON *hex = NULL;
+
+		strcpy(tx_ids[0], jstr(game_info, "tx_id"));
+		raw_tx = chips_create_tx_from_tx_list(unstringify(jstr(game_info, "dispute_addr")), no_of_in_txs,
+						      tx_ids);
+		for (int i = 0; i < no_of_cashier_nodes; i++) {
+			if (cashier_node_status[i] == 1) {
+				if (signers == 0) {
+					cJSON *temp = chips_sign_msig_tx(cashier_node_ips[i], raw_tx);
+					if (cJSON_GetObjectItem(temp, "signed_tx") != NULL) {
+						hex = cJSON_GetObjectItem(cJSON_GetObjectItem(temp, "signed_tx"),
+									  "hex");
+						signers++;
+					} else {
+						printf("%s::%d::error in signing at %s happened\n", __FUNCTION__,
+						       __LINE__, cashier_node_ips[i]);
+						goto end;
+					}
+				} else if (signers == 1) {
+					cJSON *temp1 = chips_sign_msig_tx(cashier_node_ips[i], hex);
+					if (cJSON_GetObjectItem(temp1, "signed_tx") != NULL) {
+						cJSON *status = cJSON_GetObjectItem(
+							cJSON_GetObjectItem(temp1, "signed_tx"), "complete");
+						if (strcmp(cJSON_Print(status), "true") == 0) {
+							tx = chips_send_raw_tx(cJSON_GetObjectItem(temp1, "signed_tx"));
+							signers++;
+							break;
+						}
+					} else {
+						printf("%s::%d::error in signing at %s happened\n", __FUNCTION__,
+						       __LINE__, cashier_node_ips[i]);
+						goto end;
+					}
+				}
+			}
+		}
+		if (tx) {
+			printf("Final payout tx::%s\n", cJSON_Print(tx));
+		}
+	}
+
+end:
+	return tx;
+}
+
+int32_t bet_process_dispute(cJSON *argjson, struct cashier *cashier_info)
+{
+	int rc = 1, bytes;
+	char *hex_data = NULL, *data = NULL;
+	cJSON *player_info = NULL, *tx = NULL;
+	cJSON *dispute_response = NULL;
+
+	hex_data = calloc(1, tx_data_size * 2);
+	chips_extract_data(jstr(argjson, "tx_id"), &hex_data);
+	data = calloc(1, tx_data_size);
+	hexstr_to_str(hex_data, data);
+	player_info = cJSON_CreateObject();
+	player_info = cJSON_Parse(data);
+	cJSON_AddStringToObject(player_info, "tx_id", jstr(argjson, "tx_id"));
+	bet_check_all_cashier_nodes_status();
+
+	tx = bet_reverse_disputed_tx(player_info);
+
+	dispute_response = cJSON_CreateObject();
+	cJSON_AddStringToObject(dispute_response, "method", "dispute_response");
+	cJSON_AddItemToObject(dispute_response, "payout_tx", tx);
+
+	bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(dispute_response), strlen(cJSON_Print(dispute_response)),
+			0);
+	if (bytes < 0)
+		rc = -1;
+	return rc;
+}
+
 void bet_cashier_backend_thrd(void *_ptr)
 {
 	struct cashier *cashier_info = _ptr;
@@ -598,6 +690,8 @@ void bet_cashier_backend_thrd(void *_ptr)
 			retval = bet_validate_game_details(argjson, cashier_info);
 		} else if (strcmp(method, "tx_spent") == 0) {
 			retval = bet_update_tx_spent(argjson);
+		} else if (strcmp(method, "dispute") == 0) {
+			retval = bet_process_dispute(argjson, cashier_info);
 		}
 	}
 }
@@ -629,11 +723,6 @@ void bet_cashier_server_loop(void *_ptr)
 				/*
 				if (pthread_join(server_thrd, NULL)) {
 					printf("\nError in joining the main thread for live_thrd");
-				}
-				*/
-				/*
-				if (bet_cashier_backend(msgjson, cashier_info) < 0) {
-					printf("\nFailed to process the receied message::%s\n",cJSON_Print(msgjson));
 				}
 				*/
 				if (tmp)
@@ -869,6 +958,23 @@ void bet_resolve_disputed_tx()
 	}
 }
 
+void bet_raise_dispute(char *tx_id)
+{
+	cJSON *dispute_info = NULL;
+	cJSON *response_info = NULL;
+
+	dispute_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(dispute_info, "method", "dispute");
+	cJSON_AddStringToObject(dispute_info, "tx_id", tx_id);
+	for (int32_t i = 0; i < no_of_notaries; i++) {
+		if (notary_status[i] == 1) {
+			response_info = bet_msg_cashier_with_response(dispute_info, notary_node_ips[i]);
+			break;
+		}
+	}
+	printf("%s::%d::response_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(response_info));
+}
+
 void bet_handle_game(int argc, char **argv)
 {
 	if (argc > 2) {
@@ -882,9 +988,12 @@ void bet_handle_game(int argc, char **argv)
 			}
 			cJSON *info = sqlite3_get_game_details(opt);
 			printf("%s::%d::info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(info));
-		}
-		if (strcmp(argv[2], "solve") == 0) {
+		} else if (strcmp(argv[2], "solve") == 0) {
 			bet_resolve_disputed_tx();
+		} else if (strcmp(argv[2], "dispute") == 0) {
+			if (argc == 4) {
+				bet_raise_dispute(argv[3]);
+			}
 		}
 	}
 }
