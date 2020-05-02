@@ -673,7 +673,7 @@ void bet_cashier_backend_thrd(void *_ptr)
 
 	argjson = cashier_info->msg;
 	if ((method = jstr(argjson, "method")) != 0) {
-		printf("%s::%d::%s::thread_id::%lu\n", __FUNCTION__, __LINE__, method, pthread_self());
+		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
 		if (strcmp(method, "live") == 0) {
 			retval = bet_send_status(cashier_info);
 		} else if (strcmp(method, "raw_msig_tx") == 0) {

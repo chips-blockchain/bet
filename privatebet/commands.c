@@ -733,6 +733,8 @@ static cJSON *chips_spend_msig_tx(cJSON *raw_tx)
 	int signers = 0;
 	cJSON *hex = NULL, *tx = NULL;
 
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(raw_tx));
+
 	bet_check_all_cashier_nodes_status();
 	for (int i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1) {
@@ -962,7 +964,7 @@ static int32_t chips_get_vout_from_tx(char *tx_id)
 	return retval;
 }
 
-cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids[][100])
+cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids[][100], char *data)
 {
 	double payout_amount = 0, amount_in_txs = 0;
 	cJSON *tx_list = NULL, *addr_info = NULL, *tx_details = NULL, *payout_tx_info = NULL;
@@ -997,6 +999,8 @@ cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids
 		cJSON *temp = cJSON_GetArrayItem(payout_addr, i);
 		cJSON_AddNumberToObject(addr_info, jstr(temp, "address"), jdouble(temp, "amount"));
 	}
+	if (data)
+		cJSON_AddStringToObject(addr_info, "data", data);
 
 	argc = 4;
 	bet_alloc_args(argc, &argv);
@@ -1059,7 +1063,6 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 		strcat(command, argv[i]);
 		strcat(command, " ");
 	}
-	printf("%s::%d::command::%s\n", __FUNCTION__, __LINE__, command);
 	/* Open the command for reading. */
 	fp = popen(command, "r");
 	if (fp == NULL) {
