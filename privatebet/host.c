@@ -954,6 +954,107 @@ void bet_dcv_force_reset(struct privatebet_info *bet, struct privatebet_vars *va
 	bet_set_table_id();
 }
 
+void bet_game_info(struct privatebet_info *bet, struct privatebet_vars *vars)
+{
+	cJSON *game_info = NULL, *game_details = NULL, *game_state = NULL;
+
+	game_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(game_info, "method", "game_info");
+	cJSON_AddStringToObject(game_info, "table_id", table_id);
+
+	game_state = cJSON_CreateObject();
+	cJSON_AddNumberToObject(game_state, "maxplayers", bet->maxplayers);
+	cJSON_AddNumberToObject(game_state, "rounds", vars->round);
+
+	game_details = cJSON_CreateArray();
+	for (int32_t i = 0; i < bet->maxplayers; i++) {
+		cJSON *temp = cJSON_CreateObject();
+
+		cJSON *player_action_info = cJSON_CreateArray();
+
+		for (int32_t j = 0; j <= vars->round; j++)
+			cJSON_AddItemToArray(player_action_info, cJSON_CreateNumber(vars->bet_actions[i][j]));
+
+		cJSON *player_card_info = cJSON_CreateArray();
+		for (int32_t j = 0; j < hand_size; j++)
+			cJSON_AddItemToArray(player_card_info, cJSON_CreateNumber(card_values[i][j]));
+
+		cJSON_AddItemToObject(temp, "bet_actions", player_action_info);
+		cJSON_AddItemToObject(temp, "player_cards", player_card_info);
+		cJSON_AddItemToArray(game_details, temp);
+	}
+	cJSON_AddItemToObject(game_state, "game_details", game_details);
+	cJSON_AddItemToObject(game_info, "game_state", game_state);
+	bet_send_message_to_all_active_notaries(game_info);
+
+	int argc = 3;
+	char **argv = NULL;
+	char *sql_query = calloc(1, arg_size);
+	bet_alloc_args(argc, &argv);
+	strcpy(argv[0], "dcv_game_state");
+	sprintf(argv[1], "\'%s\'", table_id);
+	sprintf(argv[2], "\'%s\'", cJSON_Print(game_state));
+
+	bet_make_insert_query(argc, argv, &sql_query);
+	bet_run_query(sql_query);
+	bet_dealloc_args(argc, &argv);
+	if (sql_query)
+		free(sql_query);
+
+	int bytes = nn_send(bet->pubsock, cJSON_Print(game_info), strlen(cJSON_Print(game_info)), 0);
+	if (bytes < 0)
+		printf("%s::%d::problem in sending the data\n", __FUNCTION__, __LINE__);
+}
+
+static cJSON *payout_tx_data_info(struct privatebet_info *bet, struct privatebet_vars *vars)
+{
+	cJSON *game_info = NULL, *game_details = NULL, *game_state = NULL;
+	cJSON *player_ids_info = NULL;
+
+	game_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(game_info, "table_id", table_id);
+
+	game_state = cJSON_CreateObject();
+	cJSON_AddNumberToObject(game_state, "maxplayers", bet->maxplayers);
+	cJSON_AddNumberToObject(game_state, "rounds", vars->round);
+
+	game_details = cJSON_CreateArray();
+	for (int32_t i = 0; i < bet->maxplayers; i++) {
+		cJSON *temp = cJSON_CreateObject();
+
+		cJSON *player_action_info = cJSON_CreateArray();
+
+		for (int32_t j = 0; j <= vars->round; j++)
+			cJSON_AddItemToArray(player_action_info, cJSON_CreateNumber(vars->bet_actions[i][j]));
+
+		cJSON *player_card_info = cJSON_CreateArray();
+		for (int32_t j = 0; j < hand_size; j++)
+			cJSON_AddItemToArray(player_card_info, cJSON_CreateNumber(card_values[i][j]));
+
+		cJSON_AddItemToObject(temp, "bet_actions", player_action_info);
+		cJSON_AddItemToObject(temp, "player_cards", player_card_info);
+		cJSON_AddItemToArray(game_details, temp);
+	}
+	cJSON_AddItemToObject(game_state, "game_details", game_details);
+	cJSON_AddItemToObject(game_info, "game_state", game_state);
+
+	player_ids_info = cJSON_CreateObject();
+	for (int32_t i = 0; i < no_of_rand_str; i++) {
+		cJSON_AddItemToArray(player_ids_info, cJSON_CreateString(tx_rand_str[i]));
+	}
+	cJSON_AddItemToObject(game_info, "player_ids", player_ids_info);
+
+	cJSON_AddNumberToObject(game_info, "threshold_value", threshold_value);
+	cJSON *msig_addr_nodes = cJSON_CreateArray();
+	for (int32_t i = 0; i < no_of_notaries; i++) {
+		if (notary_status[i] == 1) {
+			cJSON_AddItemToArray(msig_addr_nodes, cJSON_CreateString(notary_node_ips[i]));
+		}
+	}
+	cJSON_AddItemToObject(game_info, "msig_addr_nodes", msig_addr_nodes);
+	return game_info;
+}
+
 static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privatebet_vars *vars, int winners[], int pot)
 {
 	int32_t no_of_winners = 0, retval = 1, bytes;
@@ -1008,15 +1109,6 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 
 	for (int32_t i = 0; i < bet->maxplayers; i++) {
 		cJSON *temp = cJSON_CreateObject();
-		/*
-		if (winners[i] == 1) {
-			printf("Winning Address:: %s\n", vars->player_chips_addrs[req_id_to_player_id_mapping[i]]);
-			cJSON_AddStringToObject(temp, "address",
-						vars->player_chips_addrs[req_id_to_player_id_mapping[i]]);
-			cJSON_AddNumberToObject(temp, "amount", (winning_pot * chips_conversion_factor));
-			cJSON_AddItemToArray(payout_info, temp);
-		}
-		*/
 		if (player_amounts[i] > 0) {
 			cJSON_AddStringToObject(temp, "address",
 						vars->player_chips_addrs[req_id_to_player_id_mapping[i]]);
@@ -1024,64 +1116,20 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 			cJSON_AddItemToArray(payout_info, temp);
 		}
 	}
-	payout_tx_info = chips_create_payout_tx(payout_info, no_of_txs, tx_ids);
+	cJSON *data_info = payout_tx_data_info(bet, vars);
+	char *hex_str = NULL;
 
+	hex_str = calloc(1, tx_data_size);
+	str_to_hexstr(cJSON_Print(data_info), hex_str);
+
+	payout_tx_info = chips_create_payout_tx(payout_info, no_of_txs, tx_ids, hex_str);
+	printf("%s::%d::payout_tx_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(payout_tx_info));
 	bytes = nn_send(bet->pubsock, cJSON_Print(payout_tx_info), strlen(cJSON_Print(payout_tx_info)), 0);
 	if (bytes < 0)
 		retval = -1;
+	if (hex_str)
+		free(hex_str);
 	return retval;
-}
-
-void bet_game_info(struct privatebet_info *bet, struct privatebet_vars *vars)
-{
-	cJSON *game_info = NULL, *game_details = NULL, *game_state = NULL;
-
-	game_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(game_info, "method", "game_info");
-	cJSON_AddStringToObject(game_info, "table_id", table_id);
-
-	game_state = cJSON_CreateObject();
-	cJSON_AddNumberToObject(game_state, "maxplayers", bet->maxplayers);
-	cJSON_AddNumberToObject(game_state, "rounds", vars->round);
-
-	game_details = cJSON_CreateArray();
-	for (int32_t i = 0; i < bet->maxplayers; i++) {
-		cJSON *temp = cJSON_CreateObject();
-
-		cJSON *player_action_info = cJSON_CreateArray();
-
-		for (int32_t j = 0; j <= vars->round; j++)
-			cJSON_AddItemToArray(player_action_info, cJSON_CreateNumber(vars->bet_actions[i][j]));
-
-		cJSON *player_card_info = cJSON_CreateArray();
-		for (int32_t j = 0; j < hand_size; j++)
-			cJSON_AddItemToArray(player_card_info, cJSON_CreateNumber(card_values[i][j]));
-
-		cJSON_AddItemToObject(temp, "bet_actions", player_action_info);
-		cJSON_AddItemToObject(temp, "player_cards", player_card_info);
-		cJSON_AddItemToArray(game_details, temp);
-	}
-	cJSON_AddItemToObject(game_state, "game_details", game_details);
-	cJSON_AddItemToObject(game_info, "game_state", game_state);
-	bet_send_message_to_all_active_notaries(game_info);
-
-	int argc = 3;
-	char **argv = NULL;
-	char *sql_query = calloc(1, arg_size);
-	bet_alloc_args(argc, &argv);
-	strcpy(argv[0], "dcv_game_state");
-	sprintf(argv[1], "\'%s\'", table_id);
-	sprintf(argv[2], "\'%s\'", cJSON_Print(game_state));
-
-	bet_make_insert_query(argc, argv, &sql_query);
-	bet_run_query(sql_query);
-	bet_dealloc_args(argc, &argv);
-	if (sql_query)
-		free(sql_query);
-
-	int bytes = nn_send(bet->pubsock, cJSON_Print(game_info), strlen(cJSON_Print(game_info)), 0);
-	if (bytes < 0)
-		printf("%s::%d::problem in sending the data\n", __FUNCTION__, __LINE__);
 }
 
 int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *vars)
