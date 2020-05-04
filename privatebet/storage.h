@@ -12,3 +12,5 @@ int32_t bet_run_query(char *sql_query);
 void bet_create_schema();
 void bet_sqlite3_init();
 cJSON *sqlite3_get_game_details(int32_t opt);
+cJSON *bet_show_fail_history();
+cJSON *bet_show_success_history();

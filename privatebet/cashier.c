@@ -815,7 +815,6 @@ cJSON *bet_send_single_message_to_notary(cJSON *argjson, char *notary_node_ip)
 			if ((recvlen = nn_recv(c_subsock, &ptr, NN_MSG, 0)) > 0) {
 				char *tmp = clonestr(ptr);
 				if ((response_info = cJSON_Parse(tmp)) != 0) {
-					printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(response_info));
 					break;
 				}
 				if (tmp)
@@ -994,6 +993,12 @@ void bet_handle_game(int argc, char **argv)
 			if (argc == 4) {
 				bet_raise_dispute(argv[3]);
 			}
+		} else if (strcmp(argv[2], "history") == 0) {
+			cJSON *fail_info = bet_show_fail_history();
+			printf("Below hands played unsuccessfully, you can raise dispute using \'.\\bet game dispute tx_id\'::\n %s\n",
+			       cJSON_Print(fail_info));
+			cJSON *success_info = bet_show_success_history();
+			printf("Below hands are played successfully::\n%s\n", cJSON_Print(success_info));
 		}
 	}
 }

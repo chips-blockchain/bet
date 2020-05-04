@@ -1,5 +1,6 @@
 #include "commands.h"
 #include "storage.h"
+#include "misc.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -17,7 +18,7 @@ const char *table_names[no_of_tables] = { "dcv_tx_mapping",    "player_tx_mappin
 
 const char *schemas[no_of_tables] = {
 	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), msig_addr varchar(100), status bool, min_cashiers int)",
-	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), msig_addr varchar(100), status bool, min_cashiers int)",
+	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), msig_addr varchar(100), status bool, min_cashiers int,  payout_tx_id varchar(100))",
 	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), msig_addr varchar(100), status bool, min_cashiers int)",
 	"(payin_tx_id varchar(100) primary key,msig_addr varchar(100), min_notaries int, table_id varchar(100), msig_addr_nodes varchar(100), payin_tx_id_status int, payout_tx_id varchar(100))",
 	"(table_id varchar(100) primary key,game_state varchar(1000))",
@@ -223,4 +224,89 @@ end:
 		free(sql_sub_query);
 	sqlite3_close(db);
 	return game_info;
+}
+
+cJSON *bet_show_fail_history()
+{
+	sqlite3_stmt *stmt = NULL;
+	int rc;
+	sqlite3 *db;
+	char *sql_query = NULL;
+	cJSON *game_fail_info = NULL;
+
+	db = bet_get_db_instance();
+	sql_query = calloc(1, sql_query_size);
+	sprintf(sql_query, "SELECT table_id,tx_id FROM player_tx_mapping WHERE payout_tx_id is null");
+	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
+	if (rc != SQLITE_OK) {
+		printf("error: %s::%s", sqlite3_errmsg(db), sql_query);
+		goto end;
+	}
+
+	game_fail_info = cJSON_CreateArray();
+	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+		cJSON *game_obj = cJSON_CreateObject();
+		cJSON_AddStringToObject(game_obj, "table_id", sqlite3_column_text(stmt, 0));
+		cJSON_AddStringToObject(game_obj, "tx_id", sqlite3_column_text(stmt, 1));
+		cJSON_AddItemToArray(game_fail_info, game_obj);
+	}
+	sqlite3_finalize(stmt);
+end:
+	if (sql_query)
+		free(sql_query);
+	sqlite3_close(db);
+
+	return game_fail_info;
+}
+
+cJSON *bet_show_success_history()
+{
+	sqlite3_stmt *stmt = NULL;
+	int rc;
+	sqlite3 *db;
+	char *sql_query = NULL;
+	cJSON *game_success_info = NULL;
+	char *hex_data = NULL, *data = NULL;
+
+	db = bet_get_db_instance();
+	sql_query = calloc(1, sql_query_size);
+	sprintf(sql_query, "SELECT table_id,payout_tx_id FROM player_tx_mapping WHERE payout_tx_id is not null");
+
+	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
+	if (rc != SQLITE_OK) {
+		printf("error: %s::%s", sqlite3_errmsg(db), sql_query);
+		goto end;
+	}
+
+	game_success_info = cJSON_CreateArray();
+
+	hex_data = calloc(1, tx_data_size * 2);
+	data = calloc(1, tx_data_size);
+
+	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+		cJSON *game_obj = cJSON_CreateObject();
+		cJSON_AddStringToObject(game_obj, "table_id", sqlite3_column_text(stmt, 0));
+		cJSON_AddStringToObject(game_obj, "payout_tx_id", sqlite3_column_text(stmt, 1));
+
+		memset(hex_data, 0x00, 2 * tx_data_size);
+		memset(data, 0x00, tx_data_size);
+
+		chips_extract_data(jstr(game_obj, "payout_tx_id"), &hex_data);
+		hexstr_to_str(hex_data, data);
+		cJSON *temp = cJSON_CreateObject();
+		temp = cJSON_Parse(data);
+		cJSON_AddItemToObject(game_obj, "game_state", cJSON_Parse(data));
+		cJSON_AddItemToArray(game_success_info, game_obj);
+	}
+	sqlite3_finalize(stmt);
+end:
+	if (sql_query)
+		free(sql_query);
+	if (data)
+		free(data);
+	if (hex_data)
+		free(hex_data);
+	sqlite3_close(db);
+
+	return game_success_info;
 }

@@ -1538,7 +1538,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(txid));
 		if (txid) {
 			sql_query = calloc(1, sql_query_size);
-			sprintf(sql_query, "INSERT INTO player_tx_mapping values(%s,\'%s\',\'%s\',\'%s\',%d,%d);",
+			sprintf(sql_query, "INSERT INTO player_tx_mapping values(%s,\'%s\',\'%s\',\'%s\',%d,%d, NULL);",
 				cJSON_Print(txid), table_id, req_identifier,
 				cJSON_Print(cJSON_GetObjectItem(argjson, "msig_addr_nodes")), tx_unspent,
 				threshold_value);
@@ -1606,9 +1606,10 @@ static int32_t bet_player_process_payout_tx(cJSON *argjson)
 	char *sql_query = NULL;
 	int32_t rc;
 
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 	sql_query = calloc(1, 400);
-	sprintf(sql_query, "UPDATE player_tx_mapping set status = 0 where table_id = \"%s\"",
-		jstr(argjson, "table_id"));
+	sprintf(sql_query, "UPDATE player_tx_mapping set status = 0,payout_tx_id = \'%s\' where table_id = \'%s\'",
+		jstr(argjson, "tx_info"), jstr(argjson, "table_id"));
 	rc = bet_run_query(sql_query);
 	if (sql_query)
 		free(sql_query);

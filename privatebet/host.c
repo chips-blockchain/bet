@@ -1008,15 +1008,14 @@ void bet_game_info(struct privatebet_info *bet, struct privatebet_vars *vars)
 
 static cJSON *payout_tx_data_info(struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	cJSON *game_info = NULL, *game_details = NULL, *game_state = NULL;
+	cJSON *game_info = NULL, *game_details = NULL;
 	cJSON *player_ids_info = NULL;
 
 	game_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(game_info, "table_id", table_id);
 
-	game_state = cJSON_CreateObject();
-	cJSON_AddNumberToObject(game_state, "maxplayers", bet->maxplayers);
-	cJSON_AddNumberToObject(game_state, "rounds", vars->round);
+	cJSON_AddNumberToObject(game_info, "maxplayers", bet->maxplayers);
+	cJSON_AddNumberToObject(game_info, "rounds", vars->round);
 
 	game_details = cJSON_CreateArray();
 	for (int32_t i = 0; i < bet->maxplayers; i++) {
@@ -1035,10 +1034,10 @@ static cJSON *payout_tx_data_info(struct privatebet_info *bet, struct privatebet
 		cJSON_AddItemToObject(temp, "player_cards", player_card_info);
 		cJSON_AddItemToArray(game_details, temp);
 	}
-	cJSON_AddItemToObject(game_state, "game_details", game_details);
-	cJSON_AddItemToObject(game_info, "game_state", game_state);
 
-	player_ids_info = cJSON_CreateObject();
+	cJSON_AddItemToObject(game_info, "game_state", game_details);
+
+	player_ids_info = cJSON_CreateArray();
 	for (int32_t i = 0; i < no_of_rand_str; i++) {
 		cJSON_AddItemToArray(player_ids_info, cJSON_CreateString(tx_rand_str[i]));
 	}
@@ -1060,8 +1059,8 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 	int32_t no_of_winners = 0, retval = 1, bytes;
 	double dcv_commission = 0, dev_commission = 0, winning_pot = 0, chips_conversion_factor = 0.001,
 	       amount_in_txs = 0.0, player_amounts[bet->maxplayers], pot_in_chips = 0.0;
-	cJSON *payout_info = NULL, *dev_info = NULL, *dcv_info = NULL, *payout_tx_info = NULL;
-
+	cJSON *payout_info = NULL, *dev_info = NULL, *dcv_info = NULL, *payout_tx_info = NULL, *data_info = NULL;
+	char *hex_str = NULL;
 	for (int i = 0; i < bet->maxplayers; i++) {
 		if (winners[i] == 1)
 			no_of_winners++;
@@ -1116,10 +1115,8 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 			cJSON_AddItemToArray(payout_info, temp);
 		}
 	}
-	cJSON *data_info = payout_tx_data_info(bet, vars);
-	char *hex_str = NULL;
-
-	hex_str = calloc(1, tx_data_size);
+	data_info = payout_tx_data_info(bet, vars);
+	hex_str = calloc(1, 2 * tx_data_size);
 	str_to_hexstr(cJSON_Print(data_info), hex_str);
 
 	payout_tx_info = chips_create_payout_tx(payout_info, no_of_txs, tx_ids, hex_str);
