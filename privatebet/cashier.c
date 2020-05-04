@@ -875,8 +875,6 @@ cJSON *bet_msg_cashier_with_response(cJSON *argjson, char *cashier_ip)
 	return response_info;
 }
 
-
-
 cJSON *bet_msg_cashier_with_response_id(cJSON *argjson, char *cashier_ip, char *method_name)
 {
 	int32_t c_subsock, c_pushsock, bytes, recvlen;
@@ -904,10 +902,9 @@ cJSON *bet_msg_cashier_with_response_id(cJSON *argjson, char *cashier_ip, char *
 			if ((recvlen = nn_recv(c_subsock, &ptr, NN_MSG, 0)) > 0) {
 				char *tmp = clonestr(ptr);
 				if ((response_info = cJSON_Parse(tmp)) != 0) {
-					if(strcmp(jstr(response_info,"method"),method_name) == 0) {
+					if (strcmp(jstr(response_info, "method"), method_name) == 0) {
 						break;
 					}
-					
 				}
 				if (tmp)
 					free(tmp);
@@ -922,7 +919,6 @@ cJSON *bet_msg_cashier_with_response_id(cJSON *argjson, char *cashier_ip, char *
 
 	return response_info;
 }
-
 
 cJSON *bet_msg_multiple_cashiers_with_response(cJSON *argjson, char **cashier_ips, int no_of_cashiers)
 {
@@ -1016,7 +1012,8 @@ void bet_raise_dispute(char *tx_id)
 	cJSON_AddStringToObject(dispute_info, "tx_id", tx_id);
 	for (int32_t i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1) {
-			response_info = bet_msg_cashier_with_response_id(dispute_info, notary_node_ips[i],"dispute_response");
+			response_info =
+				bet_msg_cashier_with_response_id(dispute_info, notary_node_ips[i], "dispute_response");
 			break;
 		}
 	}
