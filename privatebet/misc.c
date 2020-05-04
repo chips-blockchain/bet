@@ -42,7 +42,7 @@ void str_to_hexstr(char *input, char *output)
 	loop = 0;
 
 	while (input[loop] != '\0') {
-		sprintf((char *)(output + i), "%02X", input[loop]);
+		sprintf((char *)(output + i), "%02x", input[loop]);
 		loop++;
 		i += 2;
 	}

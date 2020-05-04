@@ -17,6 +17,7 @@ int32_t bet_submit_msig_raw_tx(cJSON *tx);
 char *bet_send_message_to_notary(cJSON *argjson, char *notary_node_ip);
 cJSON *bet_send_single_message_to_notary(cJSON *argjson, char *notary_node_ip);
 cJSON *bet_msg_cashier_with_response(cJSON *argjson, char *cashier_ip);
+cJSON *bet_msg_cashier_with_response_id(cJSON *argjson, char *cashier_ip, char *method_name);
 cJSON *bet_msg_multiple_cashiers_with_response(cJSON *argjson, char **cashier_ips, int no_of_cashiers);
 int32_t bet_msg_cashier(cJSON *argjson, char *cashier_ip);
 int32_t *bet_msg_multiple_cashiers(cJSON *argjson, char **cashier_ips, int no_of_cashiers);

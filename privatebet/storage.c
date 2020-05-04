@@ -259,18 +259,17 @@ cJSON *bet_show_fail_history()
 
 		chips_extract_data(jstr(game_obj, "tx_id"), &hex_data);
 		hexstr_to_str(hex_data, data);
-		cJSON *temp = cJSON_CreateObject();
-		temp = cJSON_Parse(data);
 		cJSON_AddItemToObject(game_obj, "game_details", cJSON_Parse(data));
-		cJSON_AddItemToArray(game_fail_info, game_obj);
-
-		
 		cJSON_AddItemToArray(game_fail_info, game_obj);
 	}
 	sqlite3_finalize(stmt);
 end:
 	if (sql_query)
 		free(sql_query);
+	if (data)
+		free(data);
+	if (hex_data)
+		free(hex_data);
 	sqlite3_close(db);
 
 	return game_fail_info;

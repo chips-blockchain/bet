@@ -875,6 +875,55 @@ cJSON *bet_msg_cashier_with_response(cJSON *argjson, char *cashier_ip)
 	return response_info;
 }
 
+
+
+cJSON *bet_msg_cashier_with_response_id(cJSON *argjson, char *cashier_ip, char *method_name)
+{
+	int32_t c_subsock, c_pushsock, bytes, recvlen;
+	uint16_t cashier_pubsub_port = 7901, cashier_pushpull_port = 7902;
+	char bind_sub_addr[128] = { 0 }, bind_push_addr[128] = { 0 };
+	void *ptr;
+	cJSON *response_info = NULL;
+
+	memset(bind_sub_addr, 0x00, sizeof(bind_sub_addr));
+	memset(bind_push_addr, 0x00, sizeof(bind_push_addr));
+
+	bet_tcp_sock_address(0, bind_sub_addr, cashier_ip, cashier_pubsub_port);
+	c_subsock = bet_nanosock(0, bind_sub_addr, NN_SUB);
+
+	bet_tcp_sock_address(0, bind_push_addr, cashier_ip, cashier_pushpull_port);
+	c_pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
+
+	bytes = nn_send(c_pushsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
+	if (bytes < 0) {
+		printf("%s::%d::There is a problem in sending the data to cashier ::%s\n", __FUNCTION__, __LINE__,
+		       cashier_ip);
+	} else {
+		while (c_pushsock >= 0 && c_subsock >= 0) {
+			ptr = 0;
+			if ((recvlen = nn_recv(c_subsock, &ptr, NN_MSG, 0)) > 0) {
+				char *tmp = clonestr(ptr);
+				if ((response_info = cJSON_Parse(tmp)) != 0) {
+					if(strcmp(jstr(response_info,"method"),method_name) == 0) {
+						break;
+					}
+					
+				}
+				if (tmp)
+					free(tmp);
+				if (ptr)
+					nn_freemsg(ptr);
+			}
+		}
+	}
+
+	nn_close(c_pushsock);
+	nn_close(c_subsock);
+
+	return response_info;
+}
+
+
 cJSON *bet_msg_multiple_cashiers_with_response(cJSON *argjson, char **cashier_ips, int no_of_cashiers)
 {
 	cJSON *response_info = NULL;
@@ -967,7 +1016,7 @@ void bet_raise_dispute(char *tx_id)
 	cJSON_AddStringToObject(dispute_info, "tx_id", tx_id);
 	for (int32_t i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1) {
-			response_info = bet_msg_cashier_with_response(dispute_info, notary_node_ips[i]);
+			response_info = bet_msg_cashier_with_response_id(dispute_info, notary_node_ips[i],"dispute_response");
 			break;
 		}
 	}
