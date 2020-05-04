@@ -231,7 +231,7 @@ cJSON *bet_show_fail_history()
 	sqlite3_stmt *stmt = NULL;
 	int rc;
 	sqlite3 *db;
-	char *sql_query = NULL;
+	char *sql_query = NULL, *data = NULL, *hex_data = NULL;
 	cJSON *game_fail_info = NULL;
 
 	db = bet_get_db_instance();
@@ -242,12 +242,29 @@ cJSON *bet_show_fail_history()
 		printf("error: %s::%s", sqlite3_errmsg(db), sql_query);
 		goto end;
 	}
-
+	
 	game_fail_info = cJSON_CreateArray();
+
+	hex_data = calloc(1, tx_data_size * 2);
+	data = calloc(1, tx_data_size);
+
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
 		cJSON *game_obj = cJSON_CreateObject();
 		cJSON_AddStringToObject(game_obj, "table_id", sqlite3_column_text(stmt, 0));
 		cJSON_AddStringToObject(game_obj, "tx_id", sqlite3_column_text(stmt, 1));
+
+		
+		memset(hex_data, 0x00, 2 * tx_data_size);
+		memset(data, 0x00, tx_data_size);
+
+		chips_extract_data(jstr(game_obj, "tx_id"), &hex_data);
+		hexstr_to_str(hex_data, data);
+		cJSON *temp = cJSON_CreateObject();
+		temp = cJSON_Parse(data);
+		cJSON_AddItemToObject(game_obj, "game_details", cJSON_Parse(data));
+		cJSON_AddItemToArray(game_fail_info, game_obj);
+
+		
 		cJSON_AddItemToArray(game_fail_info, game_obj);
 	}
 	sqlite3_finalize(stmt);
@@ -295,7 +312,7 @@ cJSON *bet_show_success_history()
 		hexstr_to_str(hex_data, data);
 		cJSON *temp = cJSON_CreateObject();
 		temp = cJSON_Parse(data);
-		cJSON_AddItemToObject(game_obj, "game_state", cJSON_Parse(data));
+		cJSON_AddItemToObject(game_obj, "game_details", cJSON_Parse(data));
 		cJSON_AddItemToArray(game_success_info, game_obj);
 	}
 	sqlite3_finalize(stmt);
