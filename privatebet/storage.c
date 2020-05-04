@@ -242,7 +242,7 @@ cJSON *bet_show_fail_history()
 		printf("error: %s::%s", sqlite3_errmsg(db), sql_query);
 		goto end;
 	}
-	
+
 	game_fail_info = cJSON_CreateArray();
 
 	hex_data = calloc(1, tx_data_size * 2);
@@ -253,7 +253,6 @@ cJSON *bet_show_fail_history()
 		cJSON_AddStringToObject(game_obj, "table_id", sqlite3_column_text(stmt, 0));
 		cJSON_AddStringToObject(game_obj, "tx_id", sqlite3_column_text(stmt, 1));
 
-		
 		memset(hex_data, 0x00, 2 * tx_data_size);
 		memset(data, 0x00, tx_data_size);
 
