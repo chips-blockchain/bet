@@ -664,6 +664,19 @@ int32_t bet_process_dispute(cJSON *argjson, struct cashier *cashier_info)
 	return rc;
 }
 
+static int32_t bet_process_dealer_info(cJSON *argjson)
+{
+	char *sql_query = NULL;
+	int rc;
+	
+	sql_query = calloc(1,sql_query_size);
+	sprintf(sql_query,"INSERT into dealer_info values(\'%s\');",jstr(argjson,"ip"));
+	rc = bet_run_query(sql_query);
+	if(sql_query)
+		free(sql_query);
+	return rc;
+}
+
 void bet_cashier_backend_thrd(void *_ptr)
 {
 	struct cashier *cashier_info = _ptr;
@@ -692,6 +705,8 @@ void bet_cashier_backend_thrd(void *_ptr)
 			retval = bet_update_tx_spent(argjson);
 		} else if (strcmp(method, "dispute") == 0) {
 			retval = bet_process_dispute(argjson, cashier_info);
+		} else if (strcmp(method, "dealer_info") == 0) {
+			retval = bet_process_dealer_info(argjson);
 		}
 	}
 }
