@@ -327,6 +327,21 @@ static void dealer_node_init()
 	bet_compute_m_of_n_msig_addr();
 }
 
+static void bet_send_dealer_info_to_cashier()
+{
+	cJSON *dealer_info = NULL;
+	
+	dealer_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(dealer_info,"method","dealer_info");
+	cJSON_AddStringToObject(dealer_info,"ip",bet_get_etho_ip());
+	
+	for (int32_t i = 0; i < no_of_notaries; i++) {
+		if (notary_status[i] == 1) {
+			bet_msg_cashier(dealer_info,notary_node_ips[i]);
+		}
+	}
+}
+
 int main(int argc, char **argv)
 {
 	uint16_t port = 7797, cashier_pub_sub_port = 7901;
@@ -335,6 +350,7 @@ int main(int argc, char **argv)
 	if (argc > 2) {
 		playing_nodes_init();
 		if (strcmp(argv[1], "dcv") == 0) {
+			bet_send_dealer_info_to_cashier();
 			strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
 			dealer_node_init();
 			bet_dcv_thrd(dcv_ip, port);
