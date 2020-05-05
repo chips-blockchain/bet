@@ -12,9 +12,9 @@
 
 char *db_name = NULL;
 
-const char *table_names[no_of_tables] = { "dcv_tx_mapping",    "player_tx_mapping", "cashier_tx_mapping",
-					  "c_tx_addr_mapping", "dcv_game_state",    "player_game_state",
-					  "cashier_game_state", "dealer_info" };
+const char *table_names[no_of_tables] = { "dcv_tx_mapping",	"player_tx_mapping", "cashier_tx_mapping",
+					  "c_tx_addr_mapping",	"dcv_game_state",    "player_game_state",
+					  "cashier_game_state", "dealers_info" };
 
 const char *schemas[no_of_tables] = {
 	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), msig_addr varchar(100), status bool, min_cashiers int)",
@@ -172,6 +172,35 @@ void bet_sqlite3_init()
 	bet_create_schema();
 }
 
+cJSON *sqlite3_get_dealer_info_details()
+{
+	sqlite3_stmt *stmt = NULL;
+	int rc;
+	sqlite3 *db;
+	char *sql_query = NULL;
+	cJSON *dealers_info = NULL;
+
+	db = bet_get_db_instance();
+	sql_query = calloc(1, sql_query_size);
+	sprintf(sql_query, "SELECT dealer_ip FROM dealers_info;");
+	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
+	if (rc != SQLITE_OK) {
+		printf("error: %s::%s", sqlite3_errmsg(db), sql_query);
+		goto end;
+	}
+	dealers_info = cJSON_CreateArray();
+	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+		cJSON_AddItemToArray(dealers_info, cJSON_CreateString(sqlite3_column_text(stmt, 0)));
+	}
+	sqlite3_finalize(stmt);
+end:
+	if (sql_query)
+		free(sql_query);
+	sqlite3_close(db);
+
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(dealers_info));
+	return dealers_info;
+}
 cJSON *sqlite3_get_game_details(int32_t opt)
 {
 	sqlite3_stmt *stmt = NULL, *sub_stmt = NULL;
@@ -237,7 +266,7 @@ cJSON *bet_show_fail_history()
 
 	db = bet_get_db_instance();
 	sql_query = calloc(1, sql_query_size);
-	sprintf(sql_query, "SELECT table_id,tx_id FROM player_tx_mapping WHERE payout_tx_id is null");
+	sprintf(sql_query, "SELECT table_id,tx_id FROM player_tx_mapping WHERE payout_tx_id is null;");
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
 		printf("error: %s::%s", sqlite3_errmsg(db), sql_query);
@@ -286,7 +315,7 @@ cJSON *bet_show_success_history()
 
 	db = bet_get_db_instance();
 	sql_query = calloc(1, sql_query_size);
-	sprintf(sql_query, "SELECT table_id,payout_tx_id FROM player_tx_mapping WHERE payout_tx_id is not null");
+	sprintf(sql_query, "SELECT table_id,payout_tx_id FROM player_tx_mapping WHERE payout_tx_id is not null;");
 
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {

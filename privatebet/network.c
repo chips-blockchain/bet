@@ -85,3 +85,49 @@ int32_t bet_nanosock(int32_t bindflag, char *endpoint, int32_t nntype)
 	}
 	return (sock);
 }
+
+cJSON *bet_msg_dealer_with_response_id(cJSON *argjson, char *dealer_ip, char *message)
+{
+	int32_t c_subsock, c_pushsock, bytes, recvlen;
+	uint16_t dealer_pubsub_port = 7797, dealer_pushpull_port = 7797 + 1;
+	char bind_sub_addr[128] = { 0 }, bind_push_addr[128] = { 0 };
+	void *ptr;
+	cJSON *response_info = NULL;
+
+	memset(bind_sub_addr, 0x00, sizeof(bind_sub_addr));
+	memset(bind_push_addr, 0x00, sizeof(bind_push_addr));
+
+	bet_tcp_sock_address(0, bind_sub_addr, dealer_ip, dealer_pubsub_port);
+	c_subsock = bet_nanosock(0, bind_sub_addr, NN_SUB);
+
+	bet_tcp_sock_address(0, bind_push_addr, dealer_ip, dealer_pushpull_port);
+	c_pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
+
+	bytes = nn_send(c_pushsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
+	if (bytes < 0) {
+		printf("%s::%d::There is a problem in sending the data to cashier ::%s\n", __FUNCTION__, __LINE__,
+		       dealer_ip);
+	} else {
+		while (c_pushsock >= 0 && c_subsock >= 0) {
+			ptr = 0;
+			if ((recvlen = nn_recv(c_subsock, &ptr, NN_MSG, 0)) > 0) {
+				char *tmp = clonestr(ptr);
+				if ((response_info = cJSON_Parse(tmp)) != 0) {
+					printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(response_info));
+					if (strcmp(jstr(argjson, "method"), message) == 0) {
+						break;
+					}
+				}
+				if (tmp)
+					free(tmp);
+				if (ptr)
+					nn_freemsg(ptr);
+			}
+		}
+	}
+
+	nn_close(c_pushsock);
+	nn_close(c_subsock);
+
+	return response_info;
+}

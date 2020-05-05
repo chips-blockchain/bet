@@ -408,25 +408,6 @@ void bet_bvv_backend_loop(void *_ptr)
 	}
 }
 
-static int32_t bet_live_response(struct privatebet_info *bet, char *node_type, int32_t playerid)
-{
-	cJSON *live_info = NULL;
-	int retval = 1;
-
-	live_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(live_info, "method", "live");
-	cJSON_AddStringToObject(live_info, "node_type", node_type);
-
-	if (strcmp(node_type, "player") == 0)
-		cJSON_AddNumberToObject(live_info, "playerid", playerid);
-
-	int bytes = nn_send(bet->pushsock, cJSON_Print(live_info), strlen(cJSON_Print(live_info)), 0);
-	if (bytes < 0)
-		retval = -1;
-
-	return retval;
-}
-
 int32_t bet_bvv_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	char *method;
@@ -448,8 +429,6 @@ int32_t bet_bvv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 			retval = bet_bvv_join_init(argjson, bet_bvv, vars);
 		} else if (strcmp(method, "seats") == 0) {
 			retval = bet_bvv_join_init(argjson, bet, vars);
-		} else if (strcmp(method, "live") == 0) {
-			retval = bet_live_response(bet, "bvv", -1);
 		} else if (strcmp(method, "status_info") == 0) {
 			max_players = jint(argjson, "max_players");
 			chips_tx_fee = jdouble(argjson, "chips_tx_fee");
@@ -1708,8 +1687,6 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 				if (bytes < 0)
 					retval = -1;
 			}
-		} else if (strcmp(method, "live") == 0) {
-			retval = bet_live_response(bet, "player", bet->myplayerid);
 		} else if (strcmp(method, "status_info") == 0) {
 			player_lws_write(argjson);
 		} else if (strcmp(method, "stack_info_resp") == 0) {
