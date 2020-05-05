@@ -246,15 +246,6 @@ static void bet_dcv_thrd(char *dcv_ip, const int32_t port)
 		printf("error launching bet_dcv_frontend_loop\n");
 		exit(-1);
 	}
-#if 0
-	if (OS_thread_create(&live_thrd, NULL, (void *)bet_dcv_live_loop, (void *)bet_dcv) != 0) {
-		printf("error launching bet_dcv_live_loop]n");
-		exit(-1);
-	}
-	if (pthread_join(live_thrd, NULL)) {
-		printf("\nError in joining the main thread for live_thrd");
-	}
-#endif
 	if (pthread_join(dcv_backend, NULL)) {
 		printf("\nError in joining the main thread for dcv_backend");
 	}
@@ -330,54 +321,90 @@ static void dealer_node_init()
 static void bet_send_dealer_info_to_cashier()
 {
 	cJSON *dealer_info = NULL;
-	
+
 	dealer_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(dealer_info,"method","dealer_info");
-	cJSON_AddStringToObject(dealer_info,"ip",bet_get_etho_ip());
-	
+	cJSON_AddStringToObject(dealer_info, "method", "dealer_info");
+	cJSON_AddStringToObject(dealer_info, "ip", bet_get_etho_ip());
+
 	for (int32_t i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1) {
-			bet_msg_cashier(dealer_info,notary_node_ips[i]);
+			bet_msg_cashier(dealer_info, notary_node_ips[i]);
 		}
 	}
+}
+
+static char *bet_get_available_dealers()
+{
+	cJSON *rqst_dealer_info = NULL, *cashier_response_info = NULL, *dealer_response_info = NULL;
+	cJSON *dealers_ip_info = NULL, *live_info = NULL;
+
+	rqst_dealer_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(rqst_dealer_info, "method", "rqst_dealer_info");
+
+	for (int32_t i = 0; i < no_of_notaries; i++) {
+		if (notary_status[i] == 1) {
+			cashier_response_info = bet_msg_cashier_with_response_id(rqst_dealer_info, notary_node_ips[i],
+										 "rqst_dealer_info_response");
+			break;
+		}
+	}
+
+	live_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(live_info, "method", "live");
+
+	dealers_ip_info = cJSON_CreateArray();
+	dealers_ip_info = cJSON_GetObjectItem(cashier_response_info, "dealer_ips");
+
+	for (int32_t i = 0; i < cJSON_GetArraySize(dealers_ip_info); i++) {
+		dealer_response_info = bet_msg_dealer_with_response_id(
+			live_info, unstringify(cJSON_Print(cJSON_GetArrayItem(dealers_ip_info, i))), "live");
+		if (dealer_response_info) {
+			if (strcmp(jstr(dealer_response_info, "method"), "live") == 0) {
+				return unstringify(cJSON_Print(cJSON_GetArrayItem(dealers_ip_info, i)));
+			}
+		}
+	}
+	return NULL;
 }
 
 int main(int argc, char **argv)
 {
 	uint16_t port = 7797, cashier_pub_sub_port = 7901;
-	char dcv_ip[20];
+	char *ip = NULL;
 
-	if (argc > 2) {
-		playing_nodes_init();
+	if (argc == 2) {
 		if (strcmp(argv[1], "dcv") == 0) {
+			playing_nodes_init();
 			bet_send_dealer_info_to_cashier();
-			strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
 			dealer_node_init();
-			bet_dcv_thrd(dcv_ip, port);
+			bet_dcv_thrd(bet_get_etho_ip(), port);
 		} else if (strcmp(argv[1], "bvv") == 0) {
-			strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
-			bet_bvv_thrd(dcv_ip, port);
+			playing_nodes_init();
+			ip = bet_get_available_dealers();
+			if (ip) {
+				printf("The dealer is :: %s\n", ip);
+				bet_bvv_thrd(ip, port);
+			}
 		} else if (strcmp(argv[1], "player") == 0) {
-			strncpy(dcv_ip, argv[2], sizeof(dcv_ip));
-			bet_player_thrd(dcv_ip, port);
-		} else if (strcmp(argv[1], "withdraw") == 0) {
-			if (argc == 4) {
-				cJSON *tx = NULL;
-				tx = chips_transfer_funds(atof(argv[2]), argv[3]);
-				printf("tx details::%s\n", cJSON_Print(tx));
-			} else
-				goto usage;
-		} else if ((argc > 2) && (strcmp(argv[1], "game") == 0)) {
-			bet_handle_game(argc, argv);
-		}
-	} else if (argc == 2) {
-		if (strcmp(argv[1], "cashier") == 0) {
+			playing_nodes_init();
+			ip = bet_get_available_dealers();
+			if (ip) {
+				printf("The dealer is :: %s\n", ip);
+				bet_player_thrd(ip, port);
+			}
+		} else if (strcmp(argv[1], "cashier") == 0) {
 			common_init();
 			bet_cashier_server_thrd(bet_get_etho_ip(), cashier_pub_sub_port);
 		} else if ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "h") == 0) ||
 			   (strcmp(argv[1], "--help") == 0) || (strcmp(argv[1], "help") == 0)) {
 			bet_display_usage();
 		}
+	} else if ((argc == 4) && (strcmp(argv[1], "withdraw") == 0)) {
+		cJSON *tx = NULL;
+		tx = chips_transfer_funds(atof(argv[2]), argv[3]);
+		printf("tx details::%s\n", cJSON_Print(tx));
+	} else if ((argc > 2) && (strcmp(argv[1], "game") == 0)) {
+		bet_handle_game(argc, argv);
 	} else {
 	usage:
 		printf("\nInvalid Usage, use the flag -h or --help to get more usage details\n");
