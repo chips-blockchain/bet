@@ -36,3 +36,4 @@ void rest_push_cards(struct lws *wsi, cJSON *argjson, int32_t this_playerID);
 int32_t ln_pay_invoice(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
 void player_lws_write(cJSON *data);
 void rest_display_cards(cJSON *argjson, int32_t this_playerID);
+cJSON *bet_get_available_dealers();

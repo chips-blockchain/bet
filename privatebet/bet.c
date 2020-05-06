@@ -333,36 +333,15 @@ static void bet_send_dealer_info_to_cashier()
 	}
 }
 
-static char *bet_get_available_dealers()
+static char *bet_pick_dealer()
 {
-	cJSON *rqst_dealer_info = NULL, *cashier_response_info = NULL, *dealer_response_info = NULL;
-	cJSON *dealers_ip_info = NULL, *live_info = NULL;
+	cJSON *available_dealers = NULL;
 
-	rqst_dealer_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(rqst_dealer_info, "method", "rqst_dealer_info");
-
-	for (int32_t i = 0; i < no_of_notaries; i++) {
-		if (notary_status[i] == 1) {
-			cashier_response_info = bet_msg_cashier_with_response_id(rqst_dealer_info, notary_node_ips[i],
-										 "rqst_dealer_info_response");
-			break;
-		}
-	}
-
-	live_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(live_info, "method", "live");
-
-	dealers_ip_info = cJSON_CreateArray();
-	dealers_ip_info = cJSON_GetObjectItem(cashier_response_info, "dealer_ips");
-
-	for (int32_t i = 0; i < cJSON_GetArraySize(dealers_ip_info); i++) {
-		dealer_response_info = bet_msg_dealer_with_response_id(
-			live_info, unstringify(cJSON_Print(cJSON_GetArrayItem(dealers_ip_info, i))), "live");
-		if (dealer_response_info) {
-			if (strcmp(jstr(dealer_response_info, "method"), "live") == 0) {
-				return unstringify(cJSON_Print(cJSON_GetArrayItem(dealers_ip_info, i)));
-			}
-		}
+	available_dealers = bet_get_available_dealers();
+	if (available_dealers) {
+		printf("Here is the list of dealers available::%s\n", cJSON_Print(available_dealers));
+		return unstringify(
+			cJSON_Print(cJSON_GetArrayItem(available_dealers, 0))); //be default choosing the first one
 	}
 	return NULL;
 }
@@ -380,14 +359,14 @@ int main(int argc, char **argv)
 			bet_dcv_thrd(bet_get_etho_ip(), port);
 		} else if (strcmp(argv[1], "bvv") == 0) {
 			playing_nodes_init();
-			ip = bet_get_available_dealers();
+			ip = bet_pick_dealer();
 			if (ip) {
 				printf("The dealer is :: %s\n", ip);
 				bet_bvv_thrd(ip, port);
 			}
 		} else if (strcmp(argv[1], "player") == 0) {
 			playing_nodes_init();
-			ip = bet_get_available_dealers();
+			ip = bet_pick_dealer();
 			if (ip) {
 				printf("The dealer is :: %s\n", ip);
 				bet_player_thrd(ip, port);
