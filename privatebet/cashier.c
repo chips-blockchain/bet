@@ -677,15 +677,47 @@ static int32_t bet_process_dealer_info(cJSON *argjson)
 	return rc;
 }
 
+static int32_t bet_check_dealer_status(char *dealer_ip)
+{
+	cJSON *live_info = NULL;
+	cJSON *response = NULL;
+	int32_t rc = 0;
+
+	live_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(live_info, "method", "live");
+	response = bet_msg_dealer_with_response_id(live_info, dealer_ip, "live");
+
+	if (response) {
+		rc = 1;
+	} else {
+		char *sql_query = NULL;
+		sql_query = calloc(1, sql_query_size);
+		sprintf(sql_query, "DELETE FROM dealers_info WHERE dealer_ip = \'%s\';", dealer_ip);
+		bet_run_query(sql_query);
+		if (sql_query)
+			free(sql_query);
+	}
+	return rc;
+}
 static int32_t bet_process_rqst_dealer_info(cJSON *argjson, struct cashier *cashier_info)
 {
 	cJSON *response_info = NULL;
 	int32_t bytes, rc;
+	cJSON *dealer_ips = NULL;
+	cJSON *active_dealers_info = NULL;
 
 	response_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(response_info, "method", "rqst_dealer_info_response");
-	cJSON_AddItemToObject(response_info, "dealer_ips", sqlite3_get_dealer_info_details());
+	dealer_ips = sqlite3_get_dealer_info_details();
 
+	active_dealers_info = cJSON_CreateArray();
+	for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ips); i++) {
+		if (bet_check_dealer_status(unstringify(cJSON_Print(cJSON_GetArrayItem(dealer_ips, i)))) == 1) {
+			cJSON_AddItemToArray(active_dealers_info, cJSON_GetArrayItem(dealer_ips, i));
+		}
+	}
+
+	cJSON_AddItemToObject(response_info, "dealer_ips", active_dealers_info);
 	bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(response_info), strlen(cJSON_Print(response_info)), 0);
 	if (bytes < 0)
 		rc = -1;

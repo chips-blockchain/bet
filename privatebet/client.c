@@ -1875,3 +1875,35 @@ void rest_display_cards(cJSON *argjson, int32_t this_playerID)
 		printf("\n");
 	}
 }
+
+cJSON *bet_get_available_dealers()
+{
+	cJSON *rqst_dealer_info = NULL, *cashier_response_info = NULL;
+	cJSON *dealers_ip_info = NULL, *all_dealers_info = NULL;
+
+	rqst_dealer_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(rqst_dealer_info, "method", "rqst_dealer_info");
+	all_dealers_info = cJSON_CreateArray();
+	for (int32_t i = 0; i < no_of_notaries; i++) {
+		if (notary_status[i] == 1) {
+			cashier_response_info = bet_msg_cashier_with_response_id(rqst_dealer_info, notary_node_ips[i],
+										 "rqst_dealer_info_response");
+			dealers_ip_info = cJSON_CreateArray();
+			dealers_ip_info = cJSON_GetObjectItem(cashier_response_info, "dealer_ips");
+
+			for (int32_t j = 0; j < cJSON_GetArraySize(dealers_ip_info); j++) {
+				int flag = 1;
+				for (int32_t k = 0; k < cJSON_GetArraySize(all_dealers_info); k++) {
+					if (strcmp(cJSON_Print(cJSON_GetArrayItem(all_dealers_info, k)),
+						   cJSON_Print(cJSON_GetArrayItem(dealers_ip_info, j))) == 0) {
+						flag = 0;
+						break;
+					}
+				}
+				if (flag)
+					cJSON_AddItemToArray(all_dealers_info, cJSON_GetArrayItem(dealers_ip_info, j));
+			}
+		}
+	}
+	return all_dealers_info;
+}
