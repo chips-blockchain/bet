@@ -13,12 +13,13 @@ The node set up can also be done using the docker, steps to setup the docker has
 
 ## Ports to be used and open
 Below are the list of the ports used and should be remained open incase if you have any firewall configurations.
-1. 7797 - This port is used to have pub-sub communication between Dealer and player nodes.
-2. 7798 - This port is used to have pull-push communication between Dealer and player nodes.
-3. 7901 - This port is used to have pub-sub communication between Cashier and any other{player,dealer} nodes.
-4. 7902 - This port is used to have push-pull communication between Cashier and any other{player,dealer} nodes.
-5. 9000 - This port is used to have websocket communication between GUI and {player,dealer} nodes.
-
+```
+* 7797 - This port is used to have pub-sub communication between Dealer and player nodes.
+* 7798 - This port is used to have pull-push communication between Dealer and player nodes.
+* 7901 - This port is used to have pub-sub communication between Cashier and any other{player,dealer} nodes.
+* 7902 - This port is used to have push-pull communication between Cashier and any other{player,dealer} nodes.
+* 9000 - This port is used to have websocket communication between GUI and {player,dealer} nodes.
+```
 ## Command to run DCV
 ```
 $ cd
