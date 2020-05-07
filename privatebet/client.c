@@ -299,29 +299,6 @@ int32_t bet_check_bvv_ready(cJSON *argjson, struct privatebet_info *bet, struct 
 	cJSON *bvv_ready = NULL;
 	int32_t retval = 0, bytes;
 	char *rendered = NULL;
-#if 0
-	int32_t channel_state;
-	cJSON *uri_info = NULL;
-	char uri[100], channel_id[100];
-
-	uri_info = cJSON_GetObjectItem(argjson, "uri_info");
-	for (int i = 0; i < cJSON_GetArraySize(uri_info); i++) {
-		strcpy(uri, jstri(uri_info, i));
-		strcpy(channel_id, strtok(uri, "@"));
-		channel_state = ln_get_channel_status(channel_id);
-		
-		if ((channel_state != CHANNELD_AWAITING_LOCKIN) && (channel_state != CHANNELD_NORMAL)) {
-			retval = ln_establish_channel(uri);
-			if (retval == 1)
-				printf("Channel Established\n");
-			else
-				printf("Channel Didn't Established\n");
-		} else {
-			strcpy(uri, jstr(argjson, "uri"));
-			ln_check_peer_and_connect(uri);
-		}
-	}
-#endif
 	bvv_ready = cJSON_CreateObject();
 	cJSON_AddStringToObject(bvv_ready, "method", "bvv_ready");
 
@@ -352,9 +329,7 @@ int32_t bet_bvv_frontend(struct lws *wsi, cJSON *argjson)
 	struct privatebet_vars *vars = NULL;
 
 	if ((method = jstr(argjson, "method")) != 0) {
-		if (strcmp(method, "TableInfo") == 0) {
-			bet_table_info(argjson, bet_bvv, vars);
-		} else if (strcmp(method, "init_d") == 0) {
+		if (strcmp(method, "init_d") == 0) {
 			bet_bvv_init(argjson, bet_bvv, vars);
 		} else if (strcmp(method, "bvv_join") == 0) {
 			bet_bvv_join_init(argjson, bet_bvv, vars);
@@ -413,29 +388,31 @@ int32_t bet_bvv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 	char *method;
 	int32_t retval = 0;
 
-	if ((method = jstr(argjson, "method")) != 0) {
-		if (strcmp(method, "TableInfo") == 0) {
-			bet_table_info(argjson, bet, vars);
-
-		} else if (strcmp(method, "init_d") == 0) {
+	if ((method = jstr(argjson, "method")) != 0) {		
+		if (strcmp(method, "init_d") == 0) {
+			printf("%s::%d::%s\n", __FUNCTION__, __LINE__,method);
 			retval = bet_bvv_init(argjson, bet, vars);
 		} else if (strcmp(method, "bvv_join") == 0) {
-			printf("%s::%d::bvv_join\n", __FUNCTION__, __LINE__);
+			printf("%s::%d::%s\n", __FUNCTION__, __LINE__,method);
 			retval = bet_bvv_join_init(argjson, bet, vars);
 		} else if (strcmp(method, "check_bvv_ready") == 0) {
+			printf("%s::%d::%s\n", __FUNCTION__, __LINE__,method);
 			retval = bet_check_bvv_ready(argjson, bet, vars);
 		} else if (strcmp(method, "reset") == 0) {
+			printf("%s::%d::%s\n", __FUNCTION__, __LINE__,method);
 			bet_bvv_reset(bet, vars);
 			retval = bet_bvv_join_init(argjson, bet_bvv, vars);
 		} else if (strcmp(method, "seats") == 0) {
+			printf("%s::%d::%s\n", __FUNCTION__, __LINE__,method);
 			retval = bet_bvv_join_init(argjson, bet, vars);
-		} else if (strcmp(method, "status_info") == 0) {
+		} else if (strcmp(method, "config_data") == 0) {
+			printf("%s::%d::%s\n", __FUNCTION__, __LINE__,method);
 			max_players = jint(argjson, "max_players");
 			chips_tx_fee = jdouble(argjson, "chips_tx_fee");
 			table_stack_in_chips = jdouble(argjson, "table_stack_in_chips");
 			bet->maxplayers = max_players;
-		} else if (strcmp(method, "status_info") == 0) {
-			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
+		} else {
+			printf("%s::%d::Not related to bvv::%s\n", __FUNCTION__, __LINE__,method);
 		}
 	}
 	return retval;
@@ -1187,11 +1164,6 @@ end:
 	return retval;
 }
 
-void bet_table_info(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
-{
-	printf("\nTable Info:%s", cJSON_Print(argjson));
-}
-
 static int32_t bet_player_process_player_join(cJSON *argjson)
 {
 	int32_t retval = 1;
@@ -1628,8 +1600,6 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		} else if (strcmp(method, "join_res") == 0) {
 			bet_push_join_info(jint(argjson, "peerid"));
 			retval = bet_client_join_res(argjson, bet, vars);
-		} else if (strcmp(method, "TableInfo") == 0) {
-			bet_table_info(argjson, bet, vars);
 		} else if (strcmp(method, "init") == 0) {
 			if (jint(argjson, "peerid") == bet->myplayerid) {
 				bet_player_blinds_info();
@@ -1687,8 +1657,6 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 				if (bytes < 0)
 					retval = -1;
 			}
-		} else if (strcmp(method, "status_info") == 0) {
-			player_lws_write(argjson);
 		} else if (strcmp(method, "stack_info_resp") == 0) {
 			if (strncmp(req_identifier, jstr(argjson, "req_identifier"), sizeof(req_identifier)) == 0)
 				retval = bet_player_handle_stack_info_resp(argjson, bet);
