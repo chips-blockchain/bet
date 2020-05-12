@@ -1150,7 +1150,7 @@ void find_bvv()
 	bvv_rqst_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(bvv_rqst_info, "method", "find_bvv");
 	for (int32_t i = 0; i < no_of_notaries; i++) {
-		if ((notary_status[i] == 1) && (strcmp("159.69.23.31", notary_node_ips[i]) == 0)) {
+		if (notary_status[i] == 1) {
 			response_info = bet_msg_cashier_with_response(bvv_rqst_info, notary_node_ips[i]);
 			if (jint(response_info, "bvv_state") == 0) {
 				cJSON *bvv_info = NULL;
