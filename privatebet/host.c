@@ -1266,6 +1266,7 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 	lws_write(wsi_global_host, cJSON_Print(final_info), strlen(cJSON_Print(final_info)), 0);
 end:
 	if (retval != -1) {
+		while(1); //sg777: just pausing the hand for debugging purposes
 		reset_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(reset_info, "method", "reset");
 		rendered = cJSON_Print(reset_info);
