@@ -163,23 +163,25 @@ static void bet_bvv_deinitialize()
 		free(bvv_vars);
 }
 
-static void bet_bvv_thrd(char *dcv_ip, const int32_t port)
+void bet_bvv_thrd(char *dcv_ip, const int32_t port)
 {
-	pthread_t bvv_thrd, bvv_backend;
+	pthread_t bvv_backend/*, bvv_frontend*/;
 
 	bet_bvv_initialize(dcv_ip, port);
-	if (OS_thread_create(&bvv_thrd, NULL, (void *)bet_bvv_backend_loop, (void *)bet_bvv) != 0) {
+	if (OS_thread_create(&bvv_backend, NULL, (void *)bet_bvv_backend_loop, (void *)bet_bvv) != 0) {
 		printf("error launching bet_bvv_backend_loop\n");
 		exit(-1);
 	}
-	if (OS_thread_create(&bvv_backend, NULL, (void *)bet_bvv_frontend_loop, NULL) != 0) {
+	/*
+	if (OS_thread_create(&bvv_frontend, NULL, (void *)bet_bvv_frontend_loop, NULL) != 0) {
 		printf("error launching bet_bvv_frontend_loop\n");
 		exit(-1);
 	}
-	if (pthread_join(bvv_backend, NULL)) {
+	if (pthread_join(bvv_frontend, NULL)) {
 		printf("\nError in joining the main thread for bvv_backend");
 	}
-	if (pthread_join(bvv_thrd, NULL)) {
+	*/
+	if (pthread_join(bvv_backend, NULL)) {
 		printf("\nError in joining the main thread for bvv_thrd");
 	}
 	bet_bvv_deinitialize();
@@ -356,6 +358,7 @@ int main(int argc, char **argv)
 			playing_nodes_init();
 			bet_send_dealer_info_to_cashier();
 			dealer_node_init();
+			find_bvv();
 			bet_dcv_thrd(bet_get_etho_ip(), port);
 		} else if (strcmp(argv[1], "bvv") == 0) {
 			playing_nodes_init();
