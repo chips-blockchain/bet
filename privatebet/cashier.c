@@ -1156,7 +1156,7 @@ void find_bvv()
 				cJSON *bvv_info = NULL;
 				bvv_info = cJSON_CreateObject();
 				cJSON_AddStringToObject(bvv_info, "method", "add_bvv");
-				cJSON_AddStringToObject(bvv_info, "dealer_ip", bet_get_etho_ip());
+				cJSON_AddStringToObject(bvv_info, "dealer_ip", dealer_ip);
 				bet_msg_cashier(bvv_info, notary_node_ips[i]);
 				printf("%s::%d::bvv is::%s\n", __FUNCTION__, __LINE__, notary_node_ips[i]);
 				break;

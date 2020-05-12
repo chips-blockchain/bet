@@ -99,4 +99,7 @@ extern int32_t live_notaries;
 extern char table_id[65];
 extern int32_t bvv_state;
 
+extern char dealer_ip[20];
+extern char cashier_ip[20];
+
 #endif
