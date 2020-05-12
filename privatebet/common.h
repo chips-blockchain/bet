@@ -97,5 +97,6 @@ extern int32_t *notary_status;
 extern int32_t live_notaries;
 
 extern char table_id[65];
+extern int32_t bvv_state;
 
 #endif

@@ -66,6 +66,8 @@ char legacy_2_of_3_msig_addr[64] = { "bQJTo8knsbSoU7k9oGADa6qfWGWyJtxC3o" };
 char legacy_2_of_4_msig_addr[64] = { "bRCUpox55j6sFJBuEn9E1fwNLFKFvRvo9W" };
 char *legacy_m_of_n_msig_addr = NULL;
 
+int32_t bvv_state = 0;
+
 void bet_compute_m_of_n_msig_addr()
 {
 	cJSON *msig_addr = NULL;
@@ -723,6 +725,32 @@ static int32_t bet_process_rqst_dealer_info(cJSON *argjson, struct cashier *cash
 		rc = -1;
 	return rc;
 }
+
+static int32_t bet_process_find_bvv(cJSON *argjson, struct cashier *cashier_info)
+{
+	int32_t bytes, rc;
+	cJSON *bvv_status = NULL;
+
+	bvv_status = cJSON_CreateObject();
+	cJSON_AddStringToObject(bvv_status,"method","bvv_status");
+	cJSON_AddNumberToObject(bvv_status,"bvv_state",bvv_state);
+	bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(bvv_status), strlen(cJSON_Print(bvv_status)), 0);
+	if (bytes < 0)
+		rc = -1;
+	return rc;
+		
+}
+
+static void bet_process_add_bvv(cJSON *argjson, struct cashier *cashier_info) 
+{
+	uint16_t port = 7797;
+	if(bvv_state == 0) {
+		bvv_state = 1;
+		bet_bvv_thrd(jstr(argjson,"dealer_ip"), port);
+	}
+}
+
+
 void bet_cashier_backend_thrd(void *_ptr)
 {
 	struct cashier *cashier_info = _ptr;
@@ -755,6 +783,10 @@ void bet_cashier_backend_thrd(void *_ptr)
 			retval = bet_process_dealer_info(argjson);
 		} else if (strcmp(method, "rqst_dealer_info") == 0) {
 			retval = bet_process_rqst_dealer_info(argjson, cashier_info);
+		} else if (strcmp(method, "find_bvv") == 0) {
+			retval = bet_process_find_bvv(argjson, cashier_info);
+		} else if (strcmp(method, "add_bvv") == 0) {
+			bet_process_add_bvv(argjson, cashier_info);
 		}
 	}
 }
@@ -1111,3 +1143,28 @@ void bet_handle_game(int argc, char **argv)
 		}
 	}
 }
+
+void find_bvv()
+{
+	cJSON *bvv_rqst_info = NULL;
+	cJSON *response_info = NULL;
+	
+	bvv_rqst_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(bvv_rqst_info,"method","find_bvv");
+	for(int32_t i = 0; i < no_of_notaries; i++) {
+		if((notary_status[i] == 1) && (strcmp("159.69.23.31",notary_node_ips[i]) == 0)){
+			response_info = bet_msg_cashier_with_response(bvv_rqst_info,notary_node_ips[i]);
+			if(jint(response_info,"bvv_state") == 0) {				
+				cJSON *bvv_info = NULL;
+				bvv_info = cJSON_CreateObject();
+				cJSON_AddStringToObject(bvv_info,"method","add_bvv");
+				cJSON_AddStringToObject(bvv_info,"dealer_ip",bet_get_etho_ip());
+				bet_msg_cashier(bvv_info,notary_node_ips[i]);
+				printf("%s::%d::bvv is::%s\n",__FUNCTION__,__LINE__,notary_node_ips[i]);
+				break;
+			}
+		}
+	}
+	
+}
+
