@@ -346,7 +346,7 @@ int32_t bet_bvv_frontend(struct lws *wsi, cJSON *argjson)
 
 void bet_bvv_backend_loop(void *_ptr)
 {
-	int32_t recvlen,retval = 0;
+	int32_t recvlen, retval = 0;
 	cJSON *argjson = NULL;
 	void *ptr = NULL;
 	struct privatebet_info *bet = _ptr;
@@ -369,13 +369,14 @@ void bet_bvv_backend_loop(void *_ptr)
 		if ((recvlen = nn_recv(bet->subsock, &ptr, NN_MSG, 0)) > 0) {
 			char *tmp = clonestr(ptr);
 			if ((argjson = cJSON_Parse(tmp)) != 0) {
-				if ((retval = bet_bvv_backend(argjson, bet, bvv_vars)) < 0) // usually just relay to players
+				if ((retval = bet_bvv_backend(argjson, bet, bvv_vars)) <
+				    0) // usually just relay to players
 				{
 					printf("%s::%d::Failed to send data\n", __FUNCTION__, __LINE__);
-				}
-				else if (retval == 2) {
-					bet_bvv_reset(bet,bvv_vars);
-					printf("%s::%d::The role of bvv is done for this hand\n",__FUNCTION__,__LINE__);					
+				} else if (retval == 2) {
+					bet_bvv_reset(bet, bvv_vars);
+					printf("%s::%d::The role of bvv is done for this hand\n", __FUNCTION__,
+					       __LINE__);
 					break;
 				}
 				free_json(argjson);
@@ -393,11 +394,11 @@ int32_t bet_bvv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 	char *method;
 	int32_t retval = 0;
 
-	if ((method = jstr(argjson, "method")) != 0) {		
+	if ((method = jstr(argjson, "method")) != 0) {
 		if (strcmp(method, "init_d") == 0) {
-			retval = bet_bvv_init(argjson, bet, vars);	
-			if(retval == 2)
-				bvv_state = 0;			
+			retval = bet_bvv_init(argjson, bet, vars);
+			if (retval == 2)
+				bvv_state = 0;
 		} else if (strcmp(method, "bvv_join") == 0) {
 			retval = bet_bvv_join_init(argjson, bet, vars);
 		} else if (strcmp(method, "check_bvv_ready") == 0) {

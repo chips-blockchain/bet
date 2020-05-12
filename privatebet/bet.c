@@ -165,7 +165,7 @@ static void bet_bvv_deinitialize()
 
 void bet_bvv_thrd(char *dcv_ip, const int32_t port)
 {
-	pthread_t bvv_backend/*, bvv_frontend*/;
+	pthread_t bvv_backend /*, bvv_frontend*/;
 
 	bet_bvv_initialize(dcv_ip, port);
 	if (OS_thread_create(&bvv_backend, NULL, (void *)bet_bvv_backend_loop, (void *)bet_bvv) != 0) {

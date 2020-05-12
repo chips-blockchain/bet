@@ -1269,11 +1269,11 @@ end:
 		reset_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(reset_info, "method", "reset");
 		rendered = cJSON_Print(reset_info);
-		find_bvv();		
+		find_bvv();
 		bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 		if (bytes < 0)
 			retval = -1;
-		bet_dcv_reset(bet, vars);		
+		bet_dcv_reset(bet, vars);
 	}
 	return retval;
 }
