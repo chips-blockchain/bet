@@ -45,6 +45,9 @@ bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 struct enc_share *g_shares = NULL;
 
+char dealer_ip[20];
+char cashier_ip[20];
+
 /**************************************************************************************************
 This value is read from dealer_config.json file, it defines the exact number of players that needs
 be joined in order to play the game.
@@ -320,13 +323,13 @@ static void dealer_node_init()
 	bet_compute_m_of_n_msig_addr();
 }
 
-static void bet_send_dealer_info_to_cashier()
+static void bet_send_dealer_info_to_cashier(char *dealer_ip)
 {
 	cJSON *dealer_info = NULL;
 
 	dealer_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(dealer_info, "method", "dealer_info");
-	cJSON_AddStringToObject(dealer_info, "ip", bet_get_etho_ip());
+	cJSON_AddStringToObject(dealer_info, "ip", dealer_ip);
 
 	for (int32_t i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1) {
@@ -354,13 +357,7 @@ int main(int argc, char **argv)
 	char *ip = NULL;
 
 	if (argc == 2) {
-		if (strcmp(argv[1], "dcv") == 0) {
-			playing_nodes_init();
-			bet_send_dealer_info_to_cashier();
-			dealer_node_init();
-			find_bvv();
-			bet_dcv_thrd(bet_get_etho_ip(), port);
-		} else if (strcmp(argv[1], "bvv") == 0) {
+		if (strcmp(argv[1], "bvv") == 0) {
 			playing_nodes_init();
 			ip = bet_pick_dealer();
 			if (ip) {
@@ -374,13 +371,23 @@ int main(int argc, char **argv)
 				printf("The dealer is :: %s\n", ip);
 				bet_player_thrd(ip, port);
 			}
-		} else if (strcmp(argv[1], "cashier") == 0) {
-			common_init();
-			bet_cashier_server_thrd(bet_get_etho_ip(), cashier_pub_sub_port);
 		} else if ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "h") == 0) ||
 			   (strcmp(argv[1], "--help") == 0) || (strcmp(argv[1], "help") == 0)) {
 			bet_display_usage();
 		}
+	} else if(argc == 3) {
+			if (strcmp(argv[1], "dcv") == 0) {
+				strcpy(dealer_ip,argv[2]);
+				playing_nodes_init();
+				bet_send_dealer_info_to_cashier(dealer_ip);
+				dealer_node_init();
+				find_bvv();
+				bet_dcv_thrd(dealer_ip, port);
+			} else if (strcmp(argv[1], "cashier") == 0) {
+				strcpy(cashier_ip,argv[2]);
+				common_init();
+				bet_cashier_server_thrd(cashier_ip, cashier_pub_sub_port);
+			} 
 	} else if ((argc == 4) && (strcmp(argv[1], "withdraw") == 0)) {
 		cJSON *tx = NULL;
 		tx = chips_transfer_funds(atof(argv[2]), argv[3]);
