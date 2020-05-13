@@ -24,13 +24,16 @@ Below are the list of the ports used and should be remained open incase if you h
 ```
 $ cd
 $ cd bet/privatebet
-$ ./bet dcv
+$ ./bet dcv dealer_ip
 ```
+This `dealer_ip` should be `static public ip` of a machine on which one wants to run the dealer.
+
 ### Configuring the Table
 
 The dealer can configure the table parameters, the steps to configure the table parameters are mentioned [here](./configure_dealer.md).
 
 ## Command to run BVV
+Now BVV is part of the Cashier node, so no need to start the BVV node explicitly. Dealer will choose any of the cashier nodes to act as a BVV. As we know the role of BVV is for deck shuffling.
 ```
 $ cd
 $ cd bet/privatebet
@@ -46,9 +49,11 @@ $ ./bet player
 ```
 $ cd
 $ cd bet/privatebet
-$ ./bet cashier
+$ ./bet cashier cashier_ip
 ```
-The detailed description of the cashier protocol is mentioned [here](./cashier_protocol.md)
+This `cashier_ip` should be `static public ip` of a machine on which one wants to run the cashier. The cashier nodes are the trusted nodes in the network and are elcted and chosen by the community. The set of trusted nodes at the moment are [here](./privatebet/config/cashier_nodes.json).
+
+The detailed description of the cashier protocol is mentioned [here](./cashier_protocol.md).
 
 ## Usage of this repo
 
