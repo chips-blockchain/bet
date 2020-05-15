@@ -47,6 +47,7 @@ struct enc_share *g_shares = NULL;
 
 char dealer_ip[20];
 char cashier_ip[20];
+char unique_id[65];
 
 /**************************************************************************************************
 This value is read from dealer_config.json file, it defines the exact number of players that needs
@@ -300,6 +301,14 @@ static void bet_display_usage()
 	printf("\nFor Withdraw: ./bet withdraw amount addr");
 }
 
+static void bet_set_unique_id()
+{
+	bits256 randval;
+	memset(unique_id, 0x00, sizeof(unique_id));
+	OS_randombytes(randval.bytes, sizeof(randval));
+	bits256_str(unique_id, randval);
+}
+
 static void common_init()
 {
 	OS_init();
@@ -355,6 +364,7 @@ int main(int argc, char **argv)
 	uint16_t port = 7797, cashier_pub_sub_port = 7901;
 	char *ip = NULL;
 
+	bet_set_unique_id();
 	if (argc == 2) {
 		if (strcmp(argv[1], "bvv") == 0) {
 			playing_nodes_init();
