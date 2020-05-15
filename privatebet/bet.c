@@ -294,10 +294,9 @@ static void bet_cashier_server_thrd(char *node_ip, const int32_t port)
 
 static void bet_display_usage()
 {
-	printf("\nFor DCV: ./bet dcv <dcv_ip_address>");
-	printf("\nFor BVV: ./bet bvv <dcv_ip_address>");
-	printf("\nFor Player: ./bet player <dcv_ip_address>");
-	printf("\nFor Cashier: ./bet cashier");
+	printf("\nFor DCV: ./bet dcv dcv_ip_address");
+	printf("\nFor Player: ./bet player");
+	printf("\nFor Cashier: ./bet cashier cashier_ip_address");
 	printf("\nFor Withdraw: ./bet withdraw amount addr");
 }
 
