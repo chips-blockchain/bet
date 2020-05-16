@@ -101,5 +101,6 @@ extern int32_t bvv_state;
 
 extern char dealer_ip[20];
 extern char cashier_ip[20];
+extern char unique_id[65];
 
 #endif

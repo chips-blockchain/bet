@@ -180,6 +180,7 @@ char *bet_check_all_cashier_nodes_status()
 
 		live_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(live_info, "method", "live");
+		cJSON_AddStringToObject(live_info, "id", unique_id);
 		cashier_info->msg = live_info;
 
 		if (OS_thread_create(&cashier_thrd[i], NULL, (void *)bet_cashier_status_loop, (void *)cashier_info) !=
@@ -200,13 +201,15 @@ char *bet_check_all_cashier_nodes_status()
 	return NULL;
 }
 
-int32_t bet_send_status(struct cashier *cashier_info)
+int32_t bet_send_status(struct cashier *cashier_info, char *id)
 {
 	int32_t retval = 1, bytes;
 	cJSON *live_info = NULL;
 
 	live_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(live_info, "method", "live");
+	cJSON_AddStringToObject(live_info, "id", id);
+	printf("%s::%d::sending::%s\n", __FUNCTION__, __LINE__, cJSON_Print(live_info));
 	bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(live_info), strlen(cJSON_Print(live_info)), 0);
 	if (bytes < 0)
 		retval = -1;
@@ -460,22 +463,6 @@ int32_t bet_validate_game_details(cJSON *argjson, struct cashier *cashier_info)
 	return rc;
 }
 
-static int32_t bet_cashier_client_backend(cJSON *argjson, struct cashier *cashier_info)
-{
-	char *method = NULL;
-	int retval = 1;
-
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
-	if ((method = jstr(argjson, "method")) != 0) {
-		if (strcmp(method, "live") == 0) {
-			retval = bet_send_status(cashier_info);
-		} else if (strcmp(method, "signed_tx") == 0) {
-			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
-		}
-	}
-	return retval;
-}
-
 void bet_cashier_status_loop(void *_ptr)
 {
 	int32_t recvlen = 0, bytes;
@@ -494,11 +481,13 @@ void bet_cashier_status_loop(void *_ptr)
 			if ((recvlen = nn_recv(cashier_info->c_subsock, &ptr, NN_MSG, 0)) > 0) {
 				char *tmp = clonestr(ptr);
 				if ((argjson = cJSON_Parse(tmp)) != 0) {
-					if (strcmp(jstr(argjson, "method"), "live") == 0)
-						live_notaries++;
-
+					printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
+					if (strcmp(jstr(argjson, "id"), unique_id) == 0) {
+						if (strcmp(jstr(argjson, "method"), "live") == 0)
+							live_notaries++;
+						break;
+					}
 					free_json(argjson);
-					break;
 				}
 				if (tmp)
 					free(tmp);
@@ -507,35 +496,6 @@ void bet_cashier_status_loop(void *_ptr)
 			}
 		}
 	}
-}
-
-void bet_cashier_client_loop(void *_ptr)
-{
-	int32_t recvlen = 0;
-	void *ptr = NULL;
-	cJSON *argjson = NULL;
-	struct cashier *cashier_info = _ptr;
-
-	while (cashier_info->c_pushsock >= 0 && cashier_info->c_subsock >= 0) {
-		ptr = 0;
-		if ((recvlen = nn_recv(cashier_info->c_subsock, &ptr, NN_MSG, 0)) > 0) {
-			char *tmp = clonestr(ptr);
-			if ((argjson = cJSON_Parse(tmp)) != 0) {
-				if (bet_cashier_client_backend(argjson, cashier_info) < 0) {
-					printf("\nFAILURE\n");
-					// do something here, possibly this could be because unknown commnad or because of encountering a special case which state machine fails to handle
-				}
-
-				free_json(argjson);
-			}
-			if (tmp)
-				free(tmp);
-			if (ptr)
-				nn_freemsg(ptr);
-		}
-	}
-end:
-	printf("\nThere is a problem in sending data::%s::%d\n", __FUNCTION__, __LINE__);
 }
 
 static int32_t bet_update_tx_spent(cJSON *argjson)
@@ -710,6 +670,7 @@ static int32_t bet_process_rqst_dealer_info(cJSON *argjson, struct cashier *cash
 
 	response_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(response_info, "method", "rqst_dealer_info_response");
+	cJSON_AddStringToObject(response_info, "id", jstr(argjson, "id"));
 	dealer_ips = sqlite3_get_dealer_info_details();
 
 	active_dealers_info = cJSON_CreateArray();
@@ -734,6 +695,7 @@ static int32_t bet_process_find_bvv(cJSON *argjson, struct cashier *cashier_info
 	bvv_status = cJSON_CreateObject();
 	cJSON_AddStringToObject(bvv_status, "method", "bvv_status");
 	cJSON_AddNumberToObject(bvv_status, "bvv_state", bvv_state);
+	cJSON_AddStringToObject(bvv_status, "id", jstr(argjson, "id"));
 	bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(bvv_status), strlen(cJSON_Print(bvv_status)), 0);
 	if (bytes < 0)
 		rc = -1;
@@ -758,9 +720,9 @@ void bet_cashier_backend_thrd(void *_ptr)
 
 	argjson = cashier_info->msg;
 	if ((method = jstr(argjson, "method")) != 0) {
-		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
+		printf("%s::%d::receiving::%s\n", __FUNCTION__, __LINE__, method);
 		if (strcmp(method, "live") == 0) {
-			retval = bet_send_status(cashier_info);
+			retval = bet_send_status(cashier_info, jstr(argjson, "id"));
 		} else if (strcmp(method, "raw_msig_tx") == 0) {
 			retval = bet_cashier_process_raw_msig_tx(argjson, cashier_info);
 		} else if (strcmp(method, "lock_in_tx") == 0) {
@@ -951,8 +913,12 @@ cJSON *bet_msg_cashier_with_response(cJSON *argjson, char *cashier_ip)
 			if ((recvlen = nn_recv(c_subsock, &ptr, NN_MSG, 0)) > 0) {
 				char *tmp = clonestr(ptr);
 				if ((response_info = cJSON_Parse(tmp)) != 0) {
-					printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(response_info));
-					break;
+					if (strcmp(jstr(response_info, "id"), unique_id) == 0) {
+						printf("%s::%d::%s\n", __FUNCTION__, __LINE__,
+						       cJSON_Print(response_info));
+						break;
+					} else
+						response_info = NULL;
 				}
 				if (tmp)
 					free(tmp);
@@ -995,7 +961,9 @@ cJSON *bet_msg_cashier_with_response_id(cJSON *argjson, char *cashier_ip, char *
 			if ((recvlen = nn_recv(c_subsock, &ptr, NN_MSG, 0)) > 0) {
 				char *tmp = clonestr(ptr);
 				if ((response_info = cJSON_Parse(tmp)) != 0) {
-					if (strcmp(jstr(response_info, "method"), method_name) == 0) {
+					printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(response_info));
+					if ((strcmp(jstr(response_info, "method"), method_name) == 0) &&
+					    (strcmp(jstr(response_info, "id"), unique_id) == 0)) {
 						break;
 					}
 				}
@@ -1146,14 +1114,16 @@ void find_bvv()
 {
 	cJSON *bvv_rqst_info = NULL;
 	cJSON *response_info = NULL;
+	cJSON *bvv_info = NULL;
 
 	bvv_rqst_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(bvv_rqst_info, "method", "find_bvv");
+	cJSON_AddStringToObject(bvv_rqst_info, "id", unique_id);
+
 	for (int32_t i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1) {
 			response_info = bet_msg_cashier_with_response(bvv_rqst_info, notary_node_ips[i]);
 			if (jint(response_info, "bvv_state") == 0) {
-				cJSON *bvv_info = NULL;
 				bvv_info = cJSON_CreateObject();
 				cJSON_AddStringToObject(bvv_info, "method", "add_bvv");
 				cJSON_AddStringToObject(bvv_info, "dealer_ip", dealer_ip);
