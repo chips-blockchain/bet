@@ -1484,7 +1484,17 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		hex_data = calloc(1, 2 * tx_data_size);
 		str_to_hexstr(cJSON_Print(data_info), hex_data);
 		txid = chips_transfer_funds_with_data(funds_needed, legacy_m_of_n_msig_addr, hex_data);
-
+		/*
+		if(txid) {
+			while(chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
+				if(bal > chips_get_balance()) {
+					printf("%s::%d::Tx is made but couldn't fetch the details\n",__FUNCTION__,__LINE__);
+				}
+				txid = chips_transfer_funds_with_data(funds_needed, legacy_m_of_n_msig_addr, hex_data);
+				bal = chips_get_balance();
+			}
+		}
+		*/
 		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(txid));
 		if (txid) {
 			sql_query = calloc(1, sql_query_size);
@@ -1504,21 +1514,27 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 			cJSON_AddStringToObject(temp, "method", "lock_in_tx");
 			cJSON_AddStringToObject(temp, "sql_query", sql_query);
 			for (int32_t i = 0; i < cJSON_GetArraySize(msig_addr_nodes); i++) {
+				bet_msg_cashier(temp, unstringify(cJSON_Print(cJSON_GetArrayItem(msig_addr_nodes, i))));
+				/*
 				bet_send_message_to_notary(
 					temp, unstringify(cJSON_Print(cJSON_GetArrayItem(msig_addr_nodes, i))));
+				*/
 			}
 		}
 
 		cJSON_AddStringToObject(tx_info, "method", "tx");
 		cJSON_AddStringToObject(tx_info, "req_identifier", req_identifier);
 		cJSON_AddItemToObject(tx_info, "tx_info", txid);
-
-		while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
-			sleep(2);
+		if (txid) {
+			while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
+				sleep(2);
+			}
+			cJSON_AddNumberToObject(tx_info, "block_height",
+						chips_get_block_height_from_block_hash(
+							chips_get_block_hash_from_txid(cJSON_Print(txid))));
+		} else {
+			cJSON_AddNumberToObject(tx_info, "block_height", -1);
 		}
-		cJSON_AddNumberToObject(
-			tx_info, "block_height",
-			chips_get_block_height_from_block_hash(chips_get_block_hash_from_txid(cJSON_Print(txid))));
 		bytes = nn_send(bet->pushsock, cJSON_Print(tx_info), strlen(cJSON_Print(tx_info)), 0);
 		if (bytes < 0)
 			retval = -1;
@@ -1543,7 +1559,8 @@ static int32_t bet_player_stack_info_req(struct privatebet_info *bet)
 	bits256_str(rand_str, randval);
 	strncpy(req_identifier, rand_str, sizeof(req_identifier));
 	cJSON_AddStringToObject(stack_info_req, "req_identifier", rand_str);
-	cJSON_AddStringToObject(stack_info_req, "chips_addr", chips_get_wallet_address());
+	cJSON_AddStringToObject(stack_info_req, "chips_addr", chips_get_new_address());
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(stack_info_req));
 	bytes = nn_send(bet->pushsock, cJSON_Print(stack_info_req), strlen(cJSON_Print(stack_info_req)), 0);
 	if (bytes < 0)
 		retval = -1;
@@ -1675,6 +1692,10 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 					cJSON_AddStringToObject(info, "method", "backend_status");
 					cJSON_AddNumberToObject(info, "backend_status", backend_status);
 					player_lws_write(info);
+				} else {
+					printf("%s::%d::%s\n", __FUNCTION__, __LINE__,
+					       "unable make lock_in transaction");
+					retval = 0;
 				}
 			}
 		} else if (strcmp(method, "payout_tx") == 0) {
@@ -1851,6 +1872,7 @@ cJSON *bet_get_available_dealers()
 
 	rqst_dealer_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(rqst_dealer_info, "method", "rqst_dealer_info");
+	cJSON_AddStringToObject(rqst_dealer_info, "id", unique_id);
 	all_dealers_info = cJSON_CreateArray();
 	for (int32_t i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1) {

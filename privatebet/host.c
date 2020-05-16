@@ -578,7 +578,7 @@ end:
 
 static int32_t bet_check_bvv_ready(struct privatebet_info *bet)
 {
-	int32_t bytes, retval = -1;
+	int32_t bytes, retval = 1;
 	char *rendered = NULL;
 	cJSON *bvv_ready = NULL, *uri_info = NULL;
 
@@ -1109,7 +1109,7 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 		cJSON *temp = cJSON_CreateObject();
 		if (player_amounts[i] > 0) {
 			cJSON_AddStringToObject(temp, "address",
-						vars->player_chips_addrs[req_id_to_player_id_mapping[i]]);
+						vars->player_chips_addrs[req_id_to_player_id_mapping[i]]); //req_id_to_player_id_mapping[i]
 			cJSON_AddNumberToObject(temp, "amount", player_amounts[i]);
 			cJSON_AddItemToArray(payout_info, temp);
 		}
@@ -1280,11 +1280,15 @@ end:
 
 int32_t bet_ln_check(struct privatebet_info *bet)
 {
-	char channel_id[100], channel_state;
-	int argc, retval = 1;
-	char **argv = NULL, uri[100];
-	cJSON *fund_channel_info = NULL, *connect_info = NULL;
+	char channel_id[100];
+	//int argc;
+	int retval = 1, channel_state;
+	//char **argv = NULL;
+	char uri[100];
+	//cJSON *fund_channel_info = NULL, *connect_info = NULL;
 
+	printf("%s::%d\n",__FUNCTION__,__LINE__);
+	/*
 	argc = 6;
 	argv = (char **)malloc(argc * sizeof(char *));
 	for (int i = 0; i < argc; i++)
@@ -1335,7 +1339,7 @@ int32_t bet_ln_check(struct privatebet_info *bet)
 		}
 	}
 	printf("DCV-->BVV channel ready\n");
-
+  */
 	for (int i = 0; i < bet_dcv->maxplayers; i++) {
 		strcpy(uri, dcv_info.uri[i]);
 		strcpy(channel_id, strtok(uri, "@"));
@@ -1360,6 +1364,7 @@ int32_t bet_ln_check(struct privatebet_info *bet)
 	}
 	retval = 1;
 end:
+	/*
 	if (argv) {
 		for (int i = 0; i < 6; i++) {
 			if (argv[i])
@@ -1367,6 +1372,7 @@ end:
 		}
 		free(argv);
 	}
+	*/
 	return retval;
 }
 
@@ -1472,6 +1478,8 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 	strcpy(vars->player_chips_addrs[no_of_rand_str], jstr(argjson, "chips_addr"));
 	strcpy(tx_rand_str[no_of_rand_str++], jstr(argjson, "req_identifier"));
 
+	printf("%s::%d::%d::%s\n",__FUNCTION__,__LINE__,no_of_rand_str,jstr(argjson, "chips_addr"));
+	
 	cJSON_AddNumberToObject(stack_info_resp, "max_players", max_players);
 	cJSON_AddNumberToObject(stack_info_resp, "table_stack_in_chips", table_stack_in_chips);
 	cJSON_AddNumberToObject(stack_info_resp, "chips_tx_fee", chips_tx_fee);
@@ -1528,12 +1536,14 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson)
 
 	tx_info = cJSON_CreateObject();
 	tx_info = cJSON_GetObjectItem(argjson, "tx_info");
+	if (tx_info == NULL)
+		return retval;
+
 	block_height = jint(argjson, "block_height");
-	printf("Waiting for the blocks to sync\n");
 	while (chips_get_block_count() < block_height) {
 		sleep(2);
 	}
-	printf("Blocks synced\n");
+
 	if (chips_check_if_tx_unspent(cJSON_Print(tx_info)) == 1) {
 		hex_data = calloc(1, tx_data_size * 2);
 		chips_extract_data(cJSON_Print(tx_info), &hex_data);
@@ -1547,12 +1557,11 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson)
 				strcpy(tx_ids[no_of_txs++], unstringify(cJSON_Print(tx_info)));
 		}
 	}
-	if (!retval)
-		printf("%s::%d::tx_verification failed\n", __FUNCTION__, __LINE__);
 	if (data)
 		free(data);
 	if (hex_data)
 		free(hex_data);
+
 	return retval;
 }
 
@@ -1564,7 +1573,9 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 		char *req_id = jstr(argjson, "req_identifier");
 		for (int32_t i = 0; i < no_of_rand_str; i++) {
 			if (strcmp(tx_rand_str[i], req_id) == 0) {
-				req_id_to_player_id_mapping[i] = jint(argjson, "gui_playerID");
+				//req_id_to_player_id_mapping[i] = jint(argjson, "gui_playerID");
+				req_id_to_player_id_mapping[jint(argjson, "gui_playerID")] = i;
+				break;
 			}
 		}
 		retval = bet_player_join_req(argjson, bet, vars);
@@ -1572,14 +1583,20 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 			return retval;
 
 		bet_push_joinInfo(argjson, bet->numplayers);
-		if (bet->numplayers == bet->maxplayers) {
+		
+		if (bet->numplayers == bet->maxplayers) {			
+			printf("%s::%d\n",__FUNCTION__,__LINE__);
+			for(int32_t i = 0; i < bet->maxplayers; i++) {
+				printf("%d::%s\n",req_id_to_player_id_mapping[i],vars->player_chips_addrs[i]);
+			}
 			retval = bet_ln_check(bet);
 			if (retval < 0)
 				return retval;
-
-			bet_check_bvv_ready(bet);
+			retval = bet_check_bvv_ready(bet);
+			
 		}
 	}
+	return retval;
 }
 
 static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars, char *addr)

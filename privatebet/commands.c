@@ -138,7 +138,7 @@ char *chips_get_new_address()
 	new_address = cJSON_CreateObject();
 	make_command(argc, argv, &new_address);
 	bet_dealloc_args(argc, &argv);
-	return cJSON_Print(new_address);
+	return unstringify(cJSON_Print(new_address));
 }
 
 int chips_validate_address(char *address)
@@ -197,11 +197,24 @@ cJSON *chips_transfer_funds_with_data(double amount, char *address, char *data)
 
 	raw_tx = calloc(arg_size, sizeof(char));
 	strncpy(raw_tx, cJSON_str(chips_create_raw_tx_with_data(amount, address, data)), arg_size);
+	printf("%s::%d::raw_tx::%s\n",__FUNCTION__,__LINE__,raw_tx);
 	signed_tx = cJSON_CreateObject();
 	signed_tx = chips_sign_raw_tx_with_wallet(raw_tx);
-	tx_info = cJSON_CreateObject();
-	tx_info = chips_send_raw_tx(signed_tx);
-	return tx_info;
+
+	if (jstr(signed_tx, "error") == NULL) {
+		tx_info = cJSON_CreateObject();
+		tx_info = chips_send_raw_tx(signed_tx);
+		printf("%s::%d::tx_info::%s\n",__FUNCTION__,__LINE__,cJSON_Print(tx_info));
+		if (jstr(tx_info, "error") == NULL) {
+			return tx_info;
+		} else {
+			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(tx_info));
+			return NULL;
+		}
+	} else {
+		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(signed_tx));
+		return NULL;
+	}
 }
 
 cJSON *chips_transfer_funds(double amount, char *address)
@@ -599,6 +612,12 @@ char *chips_get_block_hash_from_txid(char *txid)
 	argv = bet_copy_args(argc, "chips-cli", "getrawtransaction", txid, "1");
 	raw_tx_info = cJSON_CreateObject();
 	make_command(argc, argv, &raw_tx_info);
+
+	if(jstr(raw_tx_info,"error code") != 0) {
+		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(raw_tx_info));
+		return NULL;
+	}
+	
 	if (raw_tx_info)
 		block_hash = jstr(cJSON_Parse(unstringify(cJSON_Print(raw_tx_info))), "blockhash");
 	bet_dealloc_args(argc, &argv);
@@ -979,10 +998,14 @@ cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids
 		amount_in_txs += chips_get_balance_on_address_from_tx(legacy_m_of_n_msig_addr, tx_ids[i]);
 	}
 	if (abs((payout_amount + chips_tx_fee) - amount_in_txs) < epsilon) {
-		printf("%f::%f\n", payout_amount, amount_in_txs);
+		printf("%s::%d::%f::%f\n", __FUNCTION__,__LINE__,payout_amount, amount_in_txs);
 		for (int32_t i = 0; i < no_of_txs; i++) {
 			printf("%s\n", tx_ids[i]);
 		}
+	}
+	else {
+		printf("%s::%d::Amount mismatch between the payout tx and payin tx\n",__FUNCTION__,__LINE__);
+		return NULL;
 	}
 	tx_list = cJSON_CreateArray();
 	for (int32_t i = 0; i < no_of_txs; i++) {
@@ -993,7 +1016,7 @@ cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids
 			cJSON_AddItemToArray(tx_list, tx_info);
 		}
 	}
-
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(payout_addr));
 	addr_info = cJSON_CreateObject();
 	for (int32_t i = 0; i < cJSON_GetArraySize(payout_addr); i++) {
 		cJSON *temp = cJSON_GetArrayItem(payout_addr, i);
@@ -1004,12 +1027,15 @@ cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids
 
 	argc = 4;
 	bet_alloc_args(argc, &argv);
-
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(addr_info));
 	sprintf(params[0], "\'%s\'", cJSON_Print(tx_list));
 	sprintf(params[1], "\'%s\'", cJSON_Print(addr_info));
 
 	argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
 	make_command(argc, argv, &tx_details);
+
+	printf("%s::%d::raw_tx::%s\n",__FUNCTION__,__LINE__,cJSON_Print(tx_details));
+	
 	cJSON *tx = chips_spend_msig_tx(tx_details);
 	if (tx) {
 		printf("%s::%d::tx::%s\n", __FUNCTION__, __LINE__, cJSON_Print(tx));
