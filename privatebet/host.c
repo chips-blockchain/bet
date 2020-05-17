@@ -1108,8 +1108,9 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 	for (int32_t i = 0; i < bet->maxplayers; i++) {
 		cJSON *temp = cJSON_CreateObject();
 		if (player_amounts[i] > 0) {
-			cJSON_AddStringToObject(temp, "address",
-						vars->player_chips_addrs[req_id_to_player_id_mapping[i]]); //req_id_to_player_id_mapping[i]
+			cJSON_AddStringToObject(
+				temp, "address",
+				vars->player_chips_addrs[req_id_to_player_id_mapping[i]]); //req_id_to_player_id_mapping[i]
 			cJSON_AddNumberToObject(temp, "amount", player_amounts[i]);
 			cJSON_AddItemToArray(payout_info, temp);
 		}
@@ -1281,98 +1282,28 @@ end:
 int32_t bet_ln_check(struct privatebet_info *bet)
 {
 	char channel_id[100];
-	//int argc;
-	int retval = 1, channel_state;
-	//char **argv = NULL;
+	int32_t retval = 1, channel_state;
 	char uri[100];
-	//cJSON *fund_channel_info = NULL, *connect_info = NULL;
 
-	printf("%s::%d\n",__FUNCTION__,__LINE__);
-	/*
-	argc = 6;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++)
-		argv[i] = (char *)malloc(100);
-	strncpy(uri, dcv_info.bvv_uri, sizeof(uri));
-	strncpy(channel_id, strtok(uri, "@"), sizeof(channel_id));
-	channel_state = ln_get_channel_status(channel_id);
-	if ((channel_state != 2) && (channel_state != 3)) {
-		argc = 6;
-		for (int i = 0; i < argc; i++)
-			memset(argv[i], 0x00, sizeof(argv[i]));
-		strcpy(argv[0], "lightning-cli");
-		strcpy(argv[1], "connect");
-		strcpy(argv[2], dcv_info.bvv_uri);
-		argc = 3;
-
-		connect_info = cJSON_CreateObject();
-		make_command(argc, argv, &connect_info);
-
-		argc = 6;
-		for (int i = 0; i < argc; i++)
-			memset(argv[i], 0x00, sizeof(argv[i]));
-		strcpy(argv[0], "lightning-cli");
-		strcpy(argv[1], "fundchannel");
-		strcpy(argv[2], channel_id);
-		strcpy(argv[3], "500000");
-		argc = 4;
-
-		fund_channel_info = cJSON_CreateObject();
-		make_command(argc, argv, &fund_channel_info);
-
-		if (jint(fund_channel_info, "code") == -1) {
-			retval = -1;
-			printf("\n%s:%d: Message: %s", __FUNCTION__, __LINE__, jstr(fund_channel_info, "message"));
-			goto end;
-		}
-	}
-
-	while ((channel_state = ln_get_channel_status(channel_id)) != 3) {
-		if (channel_state == 2) {
-			printf("CHANNELD AWAITING LOCKIN\r");
-			fflush(stdout);
-			sleep(2);
-		} else {
-			retval = -1;
-			printf("\n%s:%d: DCV is failed to establish the channel with BVV", __FUNCTION__, __LINE__);
-			goto end;
-		}
-	}
-	printf("DCV-->BVV channel ready\n");
-  */
-	for (int i = 0; i < bet_dcv->maxplayers; i++) {
+	printf("%s::%d\n", __FUNCTION__, __LINE__);
+	for (int32_t i = 0; i < bet_dcv->maxplayers; i++) {
 		strcpy(uri, dcv_info.uri[i]);
 		strcpy(channel_id, strtok(uri, "@"));
-
 		while ((channel_state = ln_get_channel_status(channel_id)) != 3) {
 			if (channel_state == 2) {
 				printf("CHANNELD AWAITING LOCKIN\r");
 				fflush(stdout);
-				sleep(2);
+				sleep(1);
 			} else if ((channel_state != 2) && (channel_state != 3)) {
-				retval = -1;
-				printf("\n%s:%d: Player: %d is failed to establish the channel "
-				       "with "
-				       "DCV, channel_state=%d, JUST WAIT\n",
+				printf("\n%s:%d: Player: %d -> DCV LN Channel failed,channel_state=%d, JUST WAIT\n",
 				       __FUNCTION__, __LINE__, i, channel_state);
-				sleep(2);
-				// break;
+				sleep(1);
 			}
 		}
-
 		printf("Player %d --> DCV channel ready\n", i);
 	}
 	retval = 1;
 end:
-	/*
-	if (argv) {
-		for (int i = 0; i < 6; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-	*/
 	return retval;
 }
 
@@ -1478,8 +1409,8 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 	strcpy(vars->player_chips_addrs[no_of_rand_str], jstr(argjson, "chips_addr"));
 	strcpy(tx_rand_str[no_of_rand_str++], jstr(argjson, "req_identifier"));
 
-	printf("%s::%d::%d::%s\n",__FUNCTION__,__LINE__,no_of_rand_str,jstr(argjson, "chips_addr"));
-	
+	printf("%s::%d::%d::%s\n", __FUNCTION__, __LINE__, no_of_rand_str, jstr(argjson, "chips_addr"));
+
 	cJSON_AddNumberToObject(stack_info_resp, "max_players", max_players);
 	cJSON_AddNumberToObject(stack_info_resp, "table_stack_in_chips", table_stack_in_chips);
 	cJSON_AddNumberToObject(stack_info_resp, "chips_tx_fee", chips_tx_fee);
@@ -1534,6 +1465,8 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson)
 	char *hex_data = NULL, *data = NULL;
 	cJSON *data_info = NULL;
 
+	printf("%s::%d\n", __FUNCTION__, __LINE__);
+
 	tx_info = cJSON_CreateObject();
 	tx_info = cJSON_GetObjectItem(argjson, "tx_info");
 	if (tx_info == NULL)
@@ -1541,7 +1474,7 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson)
 
 	block_height = jint(argjson, "block_height");
 	while (chips_get_block_count() < block_height) {
-		sleep(2);
+		sleep(1);
 	}
 
 	if (chips_check_if_tx_unspent(cJSON_Print(tx_info)) == 1) {
@@ -1583,17 +1516,19 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 			return retval;
 
 		bet_push_joinInfo(argjson, bet->numplayers);
-		
-		if (bet->numplayers == bet->maxplayers) {			
-			printf("%s::%d\n",__FUNCTION__,__LINE__);
-			for(int32_t i = 0; i < bet->maxplayers; i++) {
-				printf("%d::%s\n",req_id_to_player_id_mapping[i],vars->player_chips_addrs[i]);
+
+		if (bet->numplayers == bet->maxplayers) {
+			printf("%s::%d\n", __FUNCTION__, __LINE__);
+			for (int32_t i = 0; i < bet->maxplayers; i++) {
+				printf("%d::%s\n", req_id_to_player_id_mapping[i], vars->player_chips_addrs[i]);
 			}
 			retval = bet_ln_check(bet);
-			if (retval < 0)
+			if (retval < 0) {
+				printf("%s::%d::Problem occured in establishing the LN channels", __FUNCTION__,
+				       __LINE__);
 				return retval;
+			}
 			retval = bet_check_bvv_ready(bet);
-			
 		}
 	}
 	return retval;
@@ -1609,7 +1544,7 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 	retval = bet_dcv_verify_tx(argjson);
 
 	for (int32_t i = 0; i < no_of_txs; i++) {
-		printf("tx_id::%s\n", tx_ids[i]);
+		printf("%s::%d::tx_id::%s\n", __FUNCTION__, __LINE__, tx_ids[i]);
 	}
 
 	if (retval == 1) {
