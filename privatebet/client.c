@@ -377,6 +377,7 @@ void bet_bvv_backend_loop(void *_ptr)
 					bet_bvv_reset(bet, bvv_vars);
 					printf("%s::%d::The role of bvv is done for this hand\n", __FUNCTION__,
 					       __LINE__);
+					bvv_state = 0;
 					break;
 				}
 				free_json(argjson);
@@ -1483,19 +1484,10 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 
 		hex_data = calloc(1, 2 * tx_data_size);
 		str_to_hexstr(cJSON_Print(data_info), hex_data);
+		txid = cJSON_CreateObject();
 		txid = chips_transfer_funds_with_data(funds_needed, legacy_m_of_n_msig_addr, hex_data);
-		/*
-		if(txid) {
-			while(chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
-				if(bal > chips_get_balance()) {
-					printf("%s::%d::Tx is made but couldn't fetch the details\n",__FUNCTION__,__LINE__);
-				}
-				txid = chips_transfer_funds_with_data(funds_needed, legacy_m_of_n_msig_addr, hex_data);
-				bal = chips_get_balance();
-			}
-		}
-		*/
-		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(txid));
+
+		printf("%s::%d::After::%s\n", __FUNCTION__, __LINE__, cJSON_Print(txid));
 		if (txid) {
 			sql_query = calloc(1, sql_query_size);
 			sprintf(sql_query, "INSERT INTO player_tx_mapping values(%s,\'%s\',\'%s\',\'%s\',%d,%d, NULL);",
@@ -1527,8 +1519,9 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		cJSON_AddItemToObject(tx_info, "tx_info", txid);
 		if (txid) {
 			while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
-				sleep(2);
+				sleep(1);
 			}
+
 			cJSON_AddNumberToObject(tx_info, "block_height",
 						chips_get_block_height_from_block_hash(
 							chips_get_block_hash_from_txid(cJSON_Print(txid))));
@@ -1560,7 +1553,6 @@ static int32_t bet_player_stack_info_req(struct privatebet_info *bet)
 	strncpy(req_identifier, rand_str, sizeof(req_identifier));
 	cJSON_AddStringToObject(stack_info_req, "req_identifier", rand_str);
 	cJSON_AddStringToObject(stack_info_req, "chips_addr", chips_get_new_address());
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(stack_info_req));
 	bytes = nn_send(bet->pushsock, cJSON_Print(stack_info_req), strlen(cJSON_Print(stack_info_req)), 0);
 	if (bytes < 0)
 		retval = -1;
