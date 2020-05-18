@@ -481,7 +481,6 @@ void bet_cashier_status_loop(void *_ptr)
 			if ((recvlen = nn_recv(cashier_info->c_subsock, &ptr, NN_MSG, 0)) > 0) {
 				char *tmp = clonestr(ptr);
 				if ((argjson = cJSON_Parse(tmp)) != 0) {
-					printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 					if (strcmp(jstr(argjson, "id"), unique_id) == 0) {
 						if (strcmp(jstr(argjson, "method"), "live") == 0)
 							live_notaries++;
@@ -647,6 +646,7 @@ static int32_t bet_check_dealer_status(char *dealer_ip)
 
 	live_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(live_info, "method", "live");
+	cJSON_AddStringToObject(live_info, "id", unique_id);
 	response = bet_msg_dealer_with_response_id(live_info, dealer_ip, "live");
 
 	if (response) {
@@ -914,8 +914,6 @@ cJSON *bet_msg_cashier_with_response(cJSON *argjson, char *cashier_ip)
 				char *tmp = clonestr(ptr);
 				if ((response_info = cJSON_Parse(tmp)) != 0) {
 					if (strcmp(jstr(response_info, "id"), unique_id) == 0) {
-						printf("%s::%d::%s\n", __FUNCTION__, __LINE__,
-						       cJSON_Print(response_info));
 						break;
 					} else
 						response_info = NULL;

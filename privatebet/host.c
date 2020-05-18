@@ -1409,8 +1409,6 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 	strcpy(vars->player_chips_addrs[no_of_rand_str], jstr(argjson, "chips_addr"));
 	strcpy(tx_rand_str[no_of_rand_str++], jstr(argjson, "req_identifier"));
 
-	printf("%s::%d::%d::%s\n", __FUNCTION__, __LINE__, no_of_rand_str, jstr(argjson, "chips_addr"));
-
 	cJSON_AddNumberToObject(stack_info_resp, "max_players", max_players);
 	cJSON_AddNumberToObject(stack_info_resp, "table_stack_in_chips", table_stack_in_chips);
 	cJSON_AddNumberToObject(stack_info_resp, "chips_tx_fee", chips_tx_fee);
@@ -1649,6 +1647,7 @@ int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 		} else if (strcmp(method, "live") == 0) {
 			cJSON *live_info = cJSON_CreateObject();
 			cJSON_AddStringToObject(live_info, "method", "live");
+			cJSON_AddStringToObject(live_info, "id", jstr(argjson, "id"));
 			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(live_info));
 			bytes = nn_send(bet->pubsock, cJSON_Print(live_info), strlen(cJSON_Print(live_info)), 0);
 			if (bytes < 0) {
@@ -1707,9 +1706,9 @@ void bet_dcv_backend_loop(void *_ptr)
 		ptr = 0;
 		if ((recvlen = nn_recv(bet->pullsock, &ptr, NN_MSG, 0)) > 0) {
 			char *tmp = clonestr(ptr);
+			argjson = cJSON_CreateObject();
 			if ((argjson = cJSON_Parse(tmp)) != 0) {
-				if (bet_dcv_backend(argjson, bet, dcv_vars) <= 0) // usually just relay to players
-				{
+				if (bet_dcv_backend(argjson, bet, dcv_vars) <= 0) {
 					printf("\nError in handling the ::%s\n", cJSON_Print(argjson));
 				}
 				free_json(argjson);
