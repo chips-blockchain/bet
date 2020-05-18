@@ -1519,9 +1519,10 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		cJSON_AddItemToObject(tx_info, "tx_info", txid);
 		if (txid) {
 			while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
+				printf("%s::%d::Waiting for tx to confirm\r", __FUNCTION__, __LINE__);
 				sleep(1);
 			}
-
+			printf("\n");
 			cJSON_AddNumberToObject(tx_info, "block_height",
 						chips_get_block_height_from_block_hash(
 							chips_get_block_hash_from_txid(cJSON_Print(txid))));

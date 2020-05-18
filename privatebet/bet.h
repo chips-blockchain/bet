@@ -70,6 +70,7 @@ struct privatebet_info {
 	char peerids[CARDS777_MAXPLAYERS + 1][67];
 	int32_t cardid, turni;
 	int32_t no_of_turns;
+	cJSON *msg;
 };
 
 struct privatebet_rawpeerln {

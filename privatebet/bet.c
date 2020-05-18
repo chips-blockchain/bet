@@ -214,6 +214,7 @@ static void bet_dcv_initialize(char *dcv_ip, const int32_t port)
 	bet_dcv->turni = -1;
 	bet_dcv->no_of_turns = 0;
 	bet_info_set(bet_dcv, "demo", poker_deck_size, 0, max_players);
+	bet_dcv->msg = cJSON_CreateObject();
 
 	dcv_vars = calloc(1, sizeof(struct privatebet_vars));
 
