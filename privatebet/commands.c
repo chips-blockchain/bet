@@ -753,7 +753,6 @@ char *chips_get_block_hash_from_txid(char *txid)
 	char *block_hash = NULL;
 
 	argc = 4;
-	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "chips-cli", "getrawtransaction", txid, "1");
 	raw_tx_info = cJSON_CreateObject();
 	make_command(argc, argv, &raw_tx_info);
