@@ -390,7 +390,7 @@ static int32_t bet_dcv_bvv_join(cJSON *argjson, struct privatebet_info *bet, str
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 	if (bytes < 0)
 		retval = -1;
-
+	printf("%s::%d::retval::%d\n", __FUNCTION__, __LINE__, retval);
 	return retval;
 }
 
@@ -1406,8 +1406,11 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 	cJSON_AddStringToObject(stack_info_resp, "method", "stack_info_resp");
 	cJSON_AddNumberToObject(stack_info_resp, "table_stack_in_chips", table_stack_in_chips);
 	cJSON_AddStringToObject(stack_info_resp, "req_identifier", jstr(argjson, "req_identifier"));
+
+	pthread_mutex_lock(&mutex);
 	strcpy(vars->player_chips_addrs[no_of_rand_str], jstr(argjson, "chips_addr"));
 	strcpy(tx_rand_str[no_of_rand_str++], jstr(argjson, "req_identifier"));
+	pthread_mutex_unlock(&mutex);
 
 	cJSON_AddNumberToObject(stack_info_resp, "max_players", max_players);
 	cJSON_AddNumberToObject(stack_info_resp, "table_stack_in_chips", table_stack_in_chips);
@@ -1484,8 +1487,11 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson)
 		data_info = cJSON_Parse(data);
 		if (strcmp(table_id, jstr(data_info, "table_id")) == 0) {
 			retval = bet_dcv_verify_rand_str(jstr(data_info, "player_id"));
-			if (retval == 1)
+			if (retval == 1) {
+				pthread_mutex_lock(&mutex);
 				strcpy(tx_ids[no_of_txs++], unstringify(cJSON_Print(tx_info)));
+				pthread_mutex_unlock(&mutex);
+			}
 		}
 	}
 	if (data)
@@ -1504,7 +1510,6 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 		char *req_id = jstr(argjson, "req_identifier");
 		for (int32_t i = 0; i < no_of_rand_str; i++) {
 			if (strcmp(tx_rand_str[i], req_id) == 0) {
-				//req_id_to_player_id_mapping[i] = jint(argjson, "gui_playerID");
 				req_id_to_player_id_mapping[jint(argjson, "gui_playerID")] = i;
 				break;
 			}
@@ -1541,10 +1546,6 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 
 	retval = bet_dcv_verify_tx(argjson);
 
-	for (int32_t i = 0; i < no_of_txs; i++) {
-		printf("%s::%d::tx_id::%s\n", __FUNCTION__, __LINE__, tx_ids[i]);
-	}
-
 	if (retval == 1) {
 		double balance = chips_get_balance_on_address_from_tx(addr, jstr(argjson, "tx_info"));
 		funds = (balance * satoshis) / (satoshis_per_unit * normalization_factor);
@@ -1579,6 +1580,89 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 	if (sql_stmt)
 		free(sql_stmt);
 	return retval;
+}
+
+void bet_dcv_backend_thrd(void *_ptr)
+{
+	struct privatebet_info *bet = bet_dcv;
+	char *method = NULL;
+	int32_t bytes, retval = 1;
+	char *rendered = NULL;
+	cJSON *argjson = NULL;
+	struct privatebet_vars *vars = dcv_vars;
+
+	argjson = cJSON_Parse(_ptr);
+	if ((method = jstr(argjson, "method")) != 0) {
+		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
+		if (strcmp(method, "join_req") == 0) {
+			retval = bet_dcv_process_join_req(argjson, bet, vars);
+		} else if (strcmp(method, "bvv_ready") == 0) {
+			retval = bet_dcv_start(bet, 0);
+		} else if (strcmp(method, "init_p") == 0) {
+			retval = bet_dcv_init(argjson, bet, vars);
+			if (dcv_info.numplayers == dcv_info.maxplayers) {
+				retval = bet_dcv_deck_init_info(argjson, bet, vars);
+			}
+		} else if (strcmp(method, "bvv_join") == 0) {
+			retval = bet_dcv_bvv_join(argjson, bet, vars);
+		} else if ((strcmp(method, "init_b") == 0) || (strcmp(method, "next_turn") == 0)) {
+			if (strcmp(method, "init_b") == 0) {
+				retval = bet_relay(argjson, bet, vars);
+			}
+		} else if (strcmp(method, "player_ready") == 0) {
+			if (bet_check_player_ready(argjson, bet, vars)) {
+				retval = bet_initiate_statemachine(argjson, bet, vars);
+			}
+		} else if (strcmp(method, "dealer_ready") == 0) {
+			retval = bet_dcv_turn(argjson, bet, vars);
+
+		} else if (strcmp(method, "playerCardInfo") == 0) {
+			retval = bet_receive_card(argjson, bet, vars);
+		} else if (strcmp(method, "invoiceRequest") == 0) {
+			retval = bet_create_invoice(argjson, bet, vars);
+		} else if (strcmp(method, "bettingInvoiceRequest") == 0) {
+			retval = bet_create_betting_invoice(argjson, bet, vars);
+		} else if (strcmp(method, "claim") == 0) {
+			retval = bet_award_winner(argjson, bet, vars);
+		} else if (strcmp(method, "requestShare") == 0) {
+			rendered = cJSON_Print(argjson);
+			for (int i = 0; i < 2; i++) {
+				bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
+				if (bytes < 0) {
+					retval = -1;
+					printf("\nMehtod: %s Failed to send data", method);
+				}
+			}
+		} else if (strcmp(method, "betting") == 0) {
+			retval = bet_player_betting_statemachine(argjson, bet, vars);
+		} else if (strcmp(method, "display_current_state") == 0) {
+			retval = bet_display_current_state(argjson, bet, vars);
+		} else if (strcmp(method, "stack") == 0) {
+			vars->funds[jint(argjson, "playerid")] = jint(argjson, "stack_value");
+			retval = bet_relay(argjson, bet, vars);
+		} else if (strcmp(method, "signedrawtransaction") == 0) {
+			bet_dcv_process_signed_raw_tx(argjson);
+		} else if (strcmp(method, "stack_info_req") == 0) {
+			retval = bet_dcv_stack_info_resp(argjson, bet, vars);
+		} else if (strcmp(method, "tx") == 0) {
+			retval = bet_dcv_process_tx(argjson, bet, vars, legacy_m_of_n_msig_addr);
+		} else if (strcmp(method, "live") == 0) {
+			cJSON *live_info = cJSON_CreateObject();
+			cJSON_AddStringToObject(live_info, "method", "live");
+			cJSON_AddStringToObject(live_info, "id", jstr(argjson, "id"));
+			bytes = nn_send(bet->pubsock, cJSON_Print(live_info), strlen(cJSON_Print(live_info)), 0);
+			if (bytes < 0) {
+				retval = -1;
+				printf("\nMehtod: %s Failed to send data", method);
+			}
+		} else {
+			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
+			if (bytes < 0) {
+				retval = -1;
+				printf("\nMehtod: %s Failed to send data", method);
+			}
+		}
+	}
 }
 
 int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
@@ -1675,8 +1759,6 @@ void bet_dcv_backend_loop(void *_ptr)
 	void *ptr = NULL;
 	struct privatebet_info *bet = _ptr;
 
-	pthread_mutex_lock(&mutex);
-
 	dcv_info.numplayers = 0;
 	dcv_info.maxplayers = bet->maxplayers;
 	bet_permutation(dcv_info.permis, bet->range);
@@ -1708,9 +1790,17 @@ void bet_dcv_backend_loop(void *_ptr)
 			char *tmp = clonestr(ptr);
 			argjson = cJSON_CreateObject();
 			if ((argjson = cJSON_Parse(tmp)) != 0) {
+				pthread_t server_thrd;
+				if (OS_thread_create(&server_thrd, NULL, (void *)bet_dcv_backend_thrd,
+						     (void *)cJSON_Print(argjson)) != 0) {
+					printf("error in launching the bet_cashier_backend_thrd\n");
+					exit(-1);
+				}
+				/*
 				if (bet_dcv_backend(argjson, bet, dcv_vars) <= 0) {
 					printf("\nError in handling the ::%s\n", cJSON_Print(argjson));
 				}
+				*/
 				free_json(argjson);
 			}
 			if (tmp)
@@ -1719,7 +1809,6 @@ void bet_dcv_backend_loop(void *_ptr)
 				nn_freemsg(ptr);
 		}
 	}
-	pthread_mutex_unlock(&mutex);
 }
 
 void bet_dcv_frontend_loop(void *_ptr)
