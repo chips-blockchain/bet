@@ -959,7 +959,6 @@ cJSON *bet_msg_cashier_with_response_id(cJSON *argjson, char *cashier_ip, char *
 			if ((recvlen = nn_recv(c_subsock, &ptr, NN_MSG, 0)) > 0) {
 				char *tmp = clonestr(ptr);
 				if ((response_info = cJSON_Parse(tmp)) != 0) {
-					printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(response_info));
 					if ((strcmp(jstr(response_info, "method"), method_name) == 0) &&
 					    (strcmp(jstr(response_info, "id"), unique_id) == 0)) {
 						break;
