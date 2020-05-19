@@ -7,7 +7,6 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 int32_t bet_dcv_turn(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
 int32_t bet_relay(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
 int32_t bet_check_player_ready(cJSON *playerReady, struct privatebet_info *bet, struct privatebet_vars *vars);
-int32_t bet_dcv_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
 void bet_dcv_backend_loop(void *_ptr);
 int32_t bet_receive_card(cJSON *playerCardInfo, struct privatebet_info *bet, struct privatebet_vars *vars);
 void bet_dcv_reset(struct privatebet_info *bet, struct privatebet_vars *vars);

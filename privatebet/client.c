@@ -1514,7 +1514,8 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		}
 
 		cJSON_AddStringToObject(tx_info, "method", "tx");
-		cJSON_AddStringToObject(tx_info, "req_identifier", req_identifier);
+		cJSON_AddStringToObject(tx_info, "id", req_identifier);
+		cJSON_AddStringToObject(tx_info, "chips_addr", chips_get_new_address());
 		cJSON_AddItemToObject(tx_info, "tx_info", txid);
 		if (txid) {
 			while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
@@ -1551,7 +1552,7 @@ static int32_t bet_player_stack_info_req(struct privatebet_info *bet)
 	OS_randombytes(randval.bytes, sizeof(randval));
 	bits256_str(rand_str, randval);
 	strncpy(req_identifier, rand_str, sizeof(req_identifier));
-	cJSON_AddStringToObject(stack_info_req, "req_identifier", rand_str);
+	cJSON_AddStringToObject(stack_info_req, "id", rand_str);
 	cJSON_AddStringToObject(stack_info_req, "chips_addr", chips_get_new_address());
 	bytes = nn_send(bet->pushsock, cJSON_Print(stack_info_req), strlen(cJSON_Print(stack_info_req)), 0);
 	if (bytes < 0)
@@ -1592,115 +1593,6 @@ static int32_t bet_player_process_game_info(cJSON *argjson)
 	if (sql_query)
 		free(sql_query);
 	return rc;
-}
-
-void bet_player_backend_thrd(void *_ptr)
-{
-	struct privatebet_info *bet = bet_player;
-	struct privatebet_vars *vars = player_vars;
-	int32_t retval = 1, bytes;
-	char *method = NULL;
-	char hexstr[65], *rendered = NULL;
-	cJSON *argjson = NULL;
-
-	argjson = cJSON_Parse(_ptr);
-
-	if ((method = jstr(argjson, "method")) != 0) {
-		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
-
-		if (strcmp(method, "join") == 0) {
-			retval = bet_client_join(argjson, bet);
-
-		} else if (strcmp(method, "join_res") == 0) {
-			bet_push_join_info(jint(argjson, "peerid"));
-			retval = bet_client_join_res(argjson, bet, vars);
-		} else if (strcmp(method, "init") == 0) {
-			if (jint(argjson, "peerid") == bet->myplayerid) {
-				bet_player_blinds_info();
-				retval = bet_client_init(argjson, bet, vars);
-			}
-		} else if (strcmp(method, "init_d") == 0) {
-			retval = bet_client_dcv_init(argjson, bet, vars);
-		} else if (strcmp(method, "init_b") == 0) {
-			retval = bet_client_bvv_init(argjson, bet, vars);
-		} else if (strcmp(method, "turn") == 0) {
-			retval = bet_client_turn(argjson, bet, vars);
-		} else if (strcmp(method, "ask_share") == 0) {
-			retval = bet_client_give_share(argjson, bet, vars);
-		} else if (strcmp(method, "requestShare") == 0) {
-			retval = bet_client_give_share(argjson, bet, vars);
-		} else if (strcmp(method, "share_info") == 0) {
-			retval = bet_client_receive_share(argjson, bet, vars);
-		} else if (strcmp(method, "bet") == 0) {
-			retval = bet_player_bet_round(argjson, bet, vars);
-		} else if (strcmp(method, "invoice") == 0) {
-			retval = ln_pay_invoice(argjson, bet, vars);
-		} else if (strcmp(method, "bettingInvoice") == 0) {
-			retval = bet_player_betting_invoice(argjson, bet, vars);
-		} else if (strcmp(method, "winner") == 0) {
-			retval = bet_player_winner(argjson, bet, vars);
-		} else if (strcmp(method, "betting") == 0) {
-			retval = bet_player_betting_statemachine(argjson, bet, vars);
-		} else if (strcmp(method, "display_current_state") == 0) {
-			retval = bet_display_current_state(argjson, bet, vars);
-		} else if (strcmp(method, "dealer") == 0) {
-			retval = bet_player_dealer_info(argjson, bet, vars);
-		} else if (strcmp(method, "invoiceRequest_player") == 0) {
-			retval = bet_player_create_invoice(argjson, bet, vars, bits256_str(hexstr, player_info.deckid));
-		} else if (strcmp(method, "reset") == 0) {
-			retval = bet_player_reset(bet, vars);
-		} else if (strcmp(method, "seats") == 0) {
-			cJSON_AddNumberToObject(argjson, "playerFunds", ln_listfunds());
-			player_lws_write(argjson);
-		} else if (strcmp(method, "finalInfo") == 0) {
-			player_lws_write(argjson);
-		} else if (strcmp(method, "stack") == 0) {
-			vars->funds[jint(argjson, "playerid")] = jint(argjson, "stack_value");
-		} else if (strcmp(method, "signrawtransaction") == 0) {
-			if (jint(argjson, "playerid") == bet->myplayerid) {
-				cJSON *temp = cJSON_CreateObject();
-				temp = chips_sign_raw_tx_with_wallet(jstr(argjson, "tx"));
-				cJSON *signedTxInfo = cJSON_CreateObject();
-
-				cJSON_AddStringToObject(signedTxInfo, "method", "signedrawtransaction");
-				cJSON_AddStringToObject(signedTxInfo, "tx", jstr(temp, "hex"));
-				cJSON_AddNumberToObject(signedTxInfo, "playerid", bet->myplayerid);
-
-				rendered = cJSON_Print(signedTxInfo);
-				bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
-				if (bytes < 0)
-					retval = -1;
-			}
-		} else if (strcmp(method, "stack_info_resp") == 0) {
-			if (strncmp(req_identifier, jstr(argjson, "req_identifier"), sizeof(req_identifier)) == 0)
-				retval = bet_player_handle_stack_info_resp(argjson, bet);
-		} else if (strcmp(method, "tx_status") == 0) {
-			if (strcmp(req_identifier, jstr(argjson, "req_identifier")) == 0) {
-				vars->player_funds = jint(argjson, "player_funds");
-				if (jint(argjson, "tx_validity") == 1) {
-					if (backend_status ==
-					    1) { /* This snippet is added to handle the reset scenario after the initial hand got played*/
-						cJSON *reset_info = cJSON_CreateObject();
-						cJSON_AddStringToObject(reset_info, "method", "reset");
-						player_lws_write(reset_info);
-					}
-					backend_status = 1;
-					cJSON *info = cJSON_CreateObject();
-					cJSON_AddStringToObject(info, "method", "backend_status");
-					cJSON_AddNumberToObject(info, "backend_status", backend_status);
-					player_lws_write(info);
-				} else {
-					printf("%s::%d::%s\n", __FUNCTION__, __LINE__,
-					       "unable make lock_in transaction");
-					retval = 0;
-				}
-			}
-		} else if (strcmp(method, "payout_tx") == 0) {
-			retval = bet_player_process_payout_tx(argjson);
-		} else if (strcmp(method, "game_info") == 0) {
-			retval = bet_player_process_game_info(argjson);
-		}
-	}
 }
 
 int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
@@ -1776,10 +1668,10 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 					retval = -1;
 			}
 		} else if (strcmp(method, "stack_info_resp") == 0) {
-			if (strncmp(req_identifier, jstr(argjson, "req_identifier"), sizeof(req_identifier)) == 0)
+			if (strncmp(req_identifier, jstr(argjson, "id"), sizeof(req_identifier)) == 0)
 				retval = bet_player_handle_stack_info_resp(argjson, bet);
 		} else if (strcmp(method, "tx_status") == 0) {
-			if (strcmp(req_identifier, jstr(argjson, "req_identifier")) == 0) {
+			if (strcmp(req_identifier, jstr(argjson, "id")) == 0) {
 				vars->player_funds = jint(argjson, "player_funds");
 				if (jint(argjson, "tx_validity") == 1) {
 					if (backend_status ==
@@ -1803,6 +1695,21 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			retval = bet_player_process_payout_tx(argjson);
 		} else if (strcmp(method, "game_info") == 0) {
 			retval = bet_player_process_game_info(argjson);
+		} else if (strcmp(method, "dcv_state") == 0) {
+			if (strncmp(req_identifier, jstr(argjson, "id"), sizeof(req_identifier)) == 0) {
+				if (jint(argjson, "dcv_state") == 1) {
+					printf("DCV which you trying to connect is full\n");
+					printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
+					bet_player_reset(bet, vars);
+					retval = -1;
+				}
+			}
+		} else if (strcmp(method, "tx_reverse") == 0) {
+			if (strncmp(req_identifier, jstr(argjson, "id"), sizeof(req_identifier)) == 0) {
+				printf("%s::%d::The dealers table is already full, claim your tx back using dispute resolution protocol::%s\n",
+				       __FUNCTION__, __LINE__, cJSON_Print(argjson));
+				retval = -1;
+			}
 		}
 	}
 	return retval;
@@ -1826,21 +1733,12 @@ void bet_player_backend_loop(void *_ptr)
 			if (recvlen > 0)
 				tmp = clonestr(ptr);
 			if ((recvlen > 0) && ((msgjson = cJSON_Parse(tmp)) != 0)) {
-				/*
-				pthread_t server_thrd;
-				if (OS_thread_create(&server_thrd, NULL, (void *)bet_player_backend_thrd,
-						     (void *)cJSON_Print(msgjson)) != 0) {
-					printf("error in launching the bet_cashier_backend_thrd\n");
-					exit(-1);
-				}
-				*/
-
 				if (bet_player_backend(msgjson, bet, player_vars) < 0) {
-					printf("\nFAILURE\n");
 					// do something here, possibly this could be because unknown
 					// commnad or because of encountering a special case which
 					// state machine fails to handle
-					break;
+					//break;
+					exit(-1);
 				}
 
 				if (tmp)

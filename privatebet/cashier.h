@@ -1,6 +1,7 @@
 void bet_compute_m_of_n_msig_addr();
 void bet_check_cashier_nodes();
 int32_t bet_check_if_notary_is_active(char *notary_node_ip);
+void bet_check_cashiers_status();
 char *bet_check_all_cashier_nodes_status();
 int32_t bet_send_status(struct cashier *cashier_info, char *id);
 int32_t bet_process_lock_in_tx(cJSON *argjson, struct cashier *cashier_info);

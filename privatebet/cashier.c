@@ -83,7 +83,8 @@ void bet_compute_m_of_n_msig_addr()
 
 void bet_check_cashier_nodes()
 {
-	bet_check_all_cashier_nodes_status();
+	//bet_check_all_cashier_nodes_status();
+	bet_check_cashiers_status();
 
 	if (live_notaries < 2) {
 		printf("Not enough notaries are available, if you continue you lose funds\n");
@@ -141,6 +142,24 @@ int32_t bet_check_if_notary_is_active(char *notary_node_ip)
 	nn_close(c_pushsock);
 	nn_close(c_subsock);
 	return retval;
+}
+
+void bet_check_cashiers_status()
+{
+	cJSON *live_info = NULL;
+
+	live_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(live_info, "method", "live");
+	cJSON_AddStringToObject(live_info, "id", unique_id);
+
+	live_notaries = 0;
+	for (int32_t i = 0; i < no_of_notaries; i++) {
+		cJSON *temp = bet_msg_cashier_with_response_id(live_info, notary_node_ips[i], "live");
+		if (jstr(temp, "live") == 0) {
+			notary_status[i] = 1;
+			live_notaries++;
+		}
+	}
 }
 
 char *bet_check_all_cashier_nodes_status()
@@ -675,9 +694,12 @@ static int32_t bet_process_rqst_dealer_info(cJSON *argjson, struct cashier *cash
 
 	active_dealers_info = cJSON_CreateArray();
 	for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ips); i++) {
+		cJSON_AddItemToArray(active_dealers_info, cJSON_GetArrayItem(dealer_ips, i));
+		/*
 		if (bet_check_dealer_status(unstringify(cJSON_Print(cJSON_GetArrayItem(dealer_ips, i)))) == 1) {
 			cJSON_AddItemToArray(active_dealers_info, cJSON_GetArrayItem(dealer_ips, i));
 		}
+		*/
 	}
 
 	cJSON_AddItemToObject(response_info, "dealer_ips", active_dealers_info);
