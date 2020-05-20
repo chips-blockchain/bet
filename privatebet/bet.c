@@ -365,13 +365,6 @@ static char *bet_pick_dealer()
 			return unstringify(cJSON_Print(cJSON_GetArrayItem(available_dealers, i)));
 		}
 	}
-	/*
-	if (available_dealers) {
-		printf("Here is the list of dealers available::%s\n", cJSON_Print(available_dealers));
-		return unstringify(
-			cJSON_Print(cJSON_GetArrayItem(available_dealers, 0))); //be default choosing the first one
-	}
-	*/
 	return NULL;
 }
 

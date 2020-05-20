@@ -172,6 +172,19 @@ void bet_sqlite3_init()
 	bet_create_schema();
 }
 
+int32_t sqlite3_delete_dealer(char *dealer_ip)
+{
+	char *sql_query = NULL;
+	int rc;
+
+	sql_query = calloc(1, sql_query_size);
+	sprintf(sql_query, "DELETE FROM dealers_info where dealer_ip = \'%s\';", dealer_ip);
+	rc = bet_run_query(sql_query);
+
+	if (sql_query)
+		free(sql_query);
+	return rc;
+}
 cJSON *sqlite3_get_dealer_info_details()
 {
 	sqlite3_stmt *stmt = NULL;
@@ -197,7 +210,6 @@ end:
 	if (sql_query)
 		free(sql_query);
 	sqlite3_close(db);
-
 	return dealers_info;
 }
 cJSON *sqlite3_get_game_details(int32_t opt)
