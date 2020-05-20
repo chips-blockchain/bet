@@ -683,7 +683,7 @@ static int32_t bet_check_dealer_status(char *dealer_ip)
 static int32_t bet_process_rqst_dealer_info(cJSON *argjson, struct cashier *cashier_info)
 {
 	cJSON *response_info = NULL;
-	int32_t bytes, rc;
+	int32_t bytes, rc = 0;
 	cJSON *dealer_ips = NULL;
 	cJSON *active_dealers_info = NULL;
 
@@ -703,9 +703,12 @@ static int32_t bet_process_rqst_dealer_info(cJSON *argjson, struct cashier *cash
 	}
 
 	cJSON_AddItemToObject(response_info, "dealer_ips", active_dealers_info);
+	printf("%s::%d::data to send::%s\n",__FUNCTION__,__LINE__,cJSON_Print(response_info));
 	bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(response_info), strlen(cJSON_Print(response_info)), 0);
-	if (bytes < 0)
+	if (bytes < 0) {
+		printf("%s::%d::There is a problem in sending the %s\n",__FUNCTION__,__LINE__,cJSON_Print(response_info));
 		rc = -1;
+	}	
 	return rc;
 }
 
