@@ -670,25 +670,25 @@ void check_ln_chips_sync()
 	printf("ln is in sync with chips\n");
 }
 
-cJSON* bet_get_chips_ln_bal_info()
+cJSON *bet_get_chips_ln_bal_info()
 {
 	cJSON *bal_info = NULL;
 
 	bal_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(bal_info,"method","bal_info");
-	cJSON_AddNumberToObject(bal_info,"chips_bal",chips_get_balance());
-	cJSON_AddNumberToObject(bal_info,"ln_bal",(ln_listfunds()/satoshis));
+	cJSON_AddStringToObject(bal_info, "method", "bal_info");
+	cJSON_AddNumberToObject(bal_info, "chips_bal", chips_get_balance());
+	cJSON_AddNumberToObject(bal_info, "ln_bal", (ln_listfunds() / satoshis));
 	return bal_info;
 }
 
-cJSON* bet_get_chips_ln_addr_info()
+cJSON *bet_get_chips_ln_addr_info()
 {
 	cJSON *addr_info = NULL;
 
 	addr_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(addr_info,"method","addr_info");
-	cJSON_AddStringToObject(addr_info,"chips_addr",chips_get_new_address());
-	cJSON_AddStringToObject(addr_info,"ln_addr",ln_get_new_address());
+	cJSON_AddStringToObject(addr_info, "method", "addr_info");
+	cJSON_AddStringToObject(addr_info, "chips_addr", chips_get_new_address());
+	cJSON_AddStringToObject(addr_info, "ln_addr", ln_get_new_address());
 	return addr_info;
 }
 
@@ -1326,16 +1326,15 @@ char *ln_get_new_address()
 	int argc;
 	char **argv = NULL;
 	cJSON *addr_info = NULL;
-	
+
 	argc = 2;
-	argv = bet_copy_args(argc,"lightning-cli","newaddr");
+	argv = bet_copy_args(argc, "lightning-cli", "newaddr");
 	addr_info = cJSON_CreateObject();
-	make_command(argc,argv,&addr_info);
-	bet_dealloc_args(argc,&argv);
+	make_command(argc, argv, &addr_info);
+	bet_dealloc_args(argc, &argv);
 
 	return unstringify(cJSON_Print(addr_info));
 }
-
 
 int32_t ln_dev_block_height()
 {

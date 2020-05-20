@@ -230,8 +230,10 @@ int32_t bet_send_status(struct cashier *cashier_info, char *id)
 	cJSON_AddStringToObject(live_info, "id", id);
 	printf("%s::%d::sending::%s\n", __FUNCTION__, __LINE__, cJSON_Print(live_info));
 	bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(live_info), strlen(cJSON_Print(live_info)), 0);
-	if (bytes < 0)
+	if (bytes < 0) {
+		printf("%s::%d::Error occured in sending::%s\n", __FUNCTION__, __LINE__, cJSON_Print(live_info));
 		retval = -1;
+	}
 
 	return retval;
 }
@@ -685,30 +687,41 @@ static int32_t bet_process_rqst_dealer_info(cJSON *argjson, struct cashier *cash
 	cJSON *response_info = NULL;
 	int32_t bytes, rc = 0;
 	cJSON *dealer_ips = NULL;
-	cJSON *active_dealers_info = NULL;
+	cJSON *dcv_state_info = NULL;
+	cJSON *dcv_state_rqst = NULL;
+	cJSON *active_dealers = NULL;
 
+	dealer_ips = cJSON_CreateArray();
 	response_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(response_info, "method", "rqst_dealer_info_response");
 	cJSON_AddStringToObject(response_info, "id", jstr(argjson, "id"));
 	dealer_ips = sqlite3_get_dealer_info_details();
 
-	active_dealers_info = cJSON_CreateArray();
+	active_dealers = cJSON_CreateArray();
+
+	dcv_state_rqst = cJSON_CreateObject();
+	cJSON_AddStringToObject(dcv_state_rqst, "method", "dcv_state");
+	cJSON_AddStringToObject(dcv_state_rqst, "id", unique_id);
+
 	for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ips); i++) {
-		cJSON_AddItemToArray(active_dealers_info, cJSON_GetArrayItem(dealer_ips, i));
-		/*
-		if (bet_check_dealer_status(unstringify(cJSON_Print(cJSON_GetArrayItem(dealer_ips, i)))) == 1) {
-			cJSON_AddItemToArray(active_dealers_info, cJSON_GetArrayItem(dealer_ips, i));
+		dcv_state_info = bet_msg_dealer_with_response_id(
+			dcv_state_rqst, unstringify(cJSON_Print(cJSON_GetArrayItem(dealer_ips, i))), "dcv_state");
+		if ((dcv_state_info) && (jint(dcv_state_info, "dcv_state") == 0)) {
+			cJSON *temp = cJSON_CreateObject();
+			temp = cJSON_CreateString(unstringify(cJSON_Print(cJSON_GetArrayItem(dealer_ips, i))));
+			cJSON_AddItemToArray(active_dealers, temp);
+		} else {
+			rc = sqlite3_delete_dealer(unstringify(cJSON_Print(cJSON_GetArrayItem(dealer_ips, i))));
 		}
-		*/
 	}
 
-	cJSON_AddItemToObject(response_info, "dealer_ips", active_dealers_info);
-	printf("%s::%d::data to send::%s\n",__FUNCTION__,__LINE__,cJSON_Print(response_info));
+	cJSON_AddItemToObject(response_info, "dealer_ips", active_dealers);
 	bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(response_info), strlen(cJSON_Print(response_info)), 0);
 	if (bytes < 0) {
-		printf("%s::%d::There is a problem in sending the %s\n",__FUNCTION__,__LINE__,cJSON_Print(response_info));
+		printf("%s::%d::There is a problem in sending the %s\n", __FUNCTION__, __LINE__,
+		       cJSON_Print(response_info));
 		rc = -1;
-	}	
+	}
 	return rc;
 }
 

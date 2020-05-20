@@ -11,6 +11,7 @@ void bet_make_insert_query(int argc, char **argv, char **sql_query);
 int32_t bet_run_query(char *sql_query);
 void bet_create_schema();
 void bet_sqlite3_init();
+int32_t sqlite3_delete_dealer(char *dealer_ip);
 cJSON *sqlite3_get_dealer_info_details();
 cJSON *sqlite3_get_game_details(int32_t opt);
 cJSON *bet_show_fail_history();

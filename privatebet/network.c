@@ -105,15 +105,13 @@ cJSON *bet_msg_dealer_with_response_id(cJSON *argjson, char *dealer_ip, char *me
 
 	bytes = nn_send(c_pushsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
 	if (bytes < 0) {
-		printf("%s::%d::There is a problem in sending the data to cashier ::%s\n", __FUNCTION__, __LINE__,
-		       dealer_ip);
+		return NULL;
 	} else {
 		while (c_pushsock >= 0 && c_subsock >= 0) {
 			ptr = 0;
 			if ((recvlen = nn_recv(c_subsock, &ptr, NN_MSG, 0)) > 0) {
 				char *tmp = clonestr(ptr);
 				if ((response_info = cJSON_Parse(tmp)) != 0) {
-					printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(response_info));
 					if ((strcmp(jstr(argjson, "method"), message) == 0) &&
 					    (strcmp(jstr(argjson, "id"), unique_id) == 0)) {
 						break;
