@@ -672,13 +672,13 @@ void check_ln_chips_sync()
 
 cJSON* bet_get_chips_ln_bal_info()
 {
-	cJSON *balance_info = NULL;
+	cJSON *bal_info = NULL;
 
-	balance_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(balance_info,"method","balance_info");
-	cJSON_AddNumberToObject(balance_info,"chips_balance",chips_get_balance());
-	cJSON_AddNumberToObject(balance_info,"ln_balance",(ln_listfunds()/satoshis));
-	return balance_info;
+	bal_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(bal_info,"method","bal_info");
+	cJSON_AddNumberToObject(bal_info,"chips_bal",chips_get_balance());
+	cJSON_AddNumberToObject(bal_info,"ln_bal",(ln_listfunds()/satoshis));
+	return bal_info;
 }
 
 

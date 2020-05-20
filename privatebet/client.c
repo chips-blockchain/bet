@@ -1242,7 +1242,7 @@ int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 			bet_player_withdraw_request();
 		} else if (strcmp(method, "withdraw") == 0) {
 			bet_player_withdraw(argjson);
-		} else if (strcmp(method, "balance_info") == 0) {
+		} else if (strcmp(method, "get_bal_info") == 0) {
 			player_lws_write(bet_get_chips_ln_bal_info());
 		}
 		else {

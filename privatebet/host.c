@@ -213,7 +213,7 @@ int32_t bet_dcv_frontend(struct lws *wsi, cJSON *argjson)
 		bytes = nn_send(bet_dcv->pubsock, rendered, strlen(rendered), 0);
 		if (bytes < 0)
 			retval = -1;
-	} else if(strcmp(method, "balance_info") == 0) {
+	} else if(strcmp(method, "get_bal_info") == 0) {
 		cJSON *bal_info = cJSON_CreateObject();
 		bal_info = bet_get_chips_ln_bal_info();
 		lws_write(wsi,cJSON_Print(bal_info),strlen(cJSON_Print(bal_info)),0);
