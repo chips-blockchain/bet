@@ -198,7 +198,6 @@ end:
 		free(sql_query);
 	sqlite3_close(db);
 
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(dealers_info));
 	return dealers_info;
 }
 cJSON *sqlite3_get_game_details(int32_t opt)
