@@ -27,6 +27,7 @@ cJSON *chips_create_raw_tx(double amount, char *address);
 void chips_list_unspent();
 int32_t chips_get_block_count();
 void check_ln_chips_sync();
+cJSON* bet_get_chips_ln_bal_info();
 double chips_get_balance();
 cJSON *chips_add_multisig_address();
 int32_t chips_check_if_tx_unspent(char *input_tx);

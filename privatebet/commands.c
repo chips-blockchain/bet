@@ -670,6 +670,18 @@ void check_ln_chips_sync()
 	printf("ln is in sync with chips\n");
 }
 
+cJSON* bet_get_chips_ln_bal_info()
+{
+	cJSON *balance_info = NULL;
+
+	balance_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(balance_info,"method","balance_info");
+	cJSON_AddNumberToObject(balance_info,"chips_balance",chips_get_balance());
+	cJSON_AddNumberToObject(balance_info,"ln_balance",(ln_listfunds()/satoshis));
+	return balance_info;
+}
+
+
 double chips_get_balance()
 {
 	char **argv = NULL;
