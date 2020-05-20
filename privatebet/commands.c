@@ -681,6 +681,16 @@ cJSON* bet_get_chips_ln_bal_info()
 	return bal_info;
 }
 
+cJSON* bet_get_chips_ln_addr_info()
+{
+	cJSON *addr_info = NULL;
+
+	addr_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(addr_info,"method","addr_info");
+	cJSON_AddStringToObject(addr_info,"chips_addr",chips_get_new_address());
+	cJSON_AddStringToObject(addr_info,"ln_addr",ln_get_new_address());
+	return addr_info;
+}
 
 double chips_get_balance()
 {
@@ -1310,6 +1320,22 @@ end:
 
 	return ret;
 }
+
+char *ln_get_new_address()
+{
+	int argc;
+	char **argv = NULL;
+	cJSON *addr_info = NULL;
+	
+	argc = 2;
+	argv = bet_copy_args(argc,"lightning-cli","newaddr");
+	addr_info = cJSON_CreateObject();
+	make_command(argc,argv,&addr_info);
+	bet_dealloc_args(argc,&argv);
+
+	return unstringify(cJSON_Print(addr_info));
+}
+
 
 int32_t ln_dev_block_height()
 {

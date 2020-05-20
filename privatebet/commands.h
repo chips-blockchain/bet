@@ -29,6 +29,7 @@ int32_t chips_get_block_count();
 void check_ln_chips_sync();
 cJSON* bet_get_chips_ln_bal_info();
 double chips_get_balance();
+cJSON* bet_get_chips_ln_addr_info();
 cJSON *chips_add_multisig_address();
 int32_t chips_check_if_tx_unspent(char *input_tx);
 char *chips_get_block_hash_from_txid(char *txid);
@@ -50,6 +51,7 @@ cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids
 
 int32_t make_command(int argc, char **argv, cJSON **argjson);
 
+char *ln_get_new_address();
 int32_t ln_dev_block_height();
 int32_t ln_listfunds();
 int32_t ln_get_uri(char **uri);

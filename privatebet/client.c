@@ -1244,6 +1244,8 @@ int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 			bet_player_withdraw(argjson);
 		} else if (strcmp(method, "get_bal_info") == 0) {
 			player_lws_write(bet_get_chips_ln_bal_info());
+		} else if (strcmp(method, "get_addr_info") == 0) {
+			player_lws_write(bet_get_chips_ln_addr_info());
 		}
 		else {
 			bet_player_handle_invalid_method(method);
