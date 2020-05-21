@@ -376,18 +376,8 @@ int32_t bet_dcv_init(cJSON *argjson, struct privatebet_info *bet, struct private
 static int32_t bet_dcv_bvv_join(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int retval = 1, bytes;
-	char uri[100] = { 0 };
 	cJSON *config_info = NULL;
 	char *rendered = NULL;
-
-	strcpy(uri, jstr(argjson, "uri"));
-	strcpy(dcv_info.bvv_uri, uri);
-
-	retval = ln_establish_channel(uri);
-	if (retval == 1)
-		printf("Channel Established\n");
-	else
-		printf("Channel Didn't Established\n");
 
 	config_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(config_info, "method", "config_data");
@@ -399,7 +389,6 @@ static int32_t bet_dcv_bvv_join(cJSON *argjson, struct privatebet_info *bet, str
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 	if (bytes < 0)
 		retval = -1;
-	printf("%s::%d::retval::%d\n", __FUNCTION__, __LINE__, retval);
 	return retval;
 }
 
