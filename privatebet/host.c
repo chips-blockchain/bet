@@ -1573,7 +1573,6 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 		pthread_mutex_lock(&mutex);
 		strcpy(vars->player_chips_addrs[no_of_rand_str], jstr(argjson, "chips_addr"));
 		strcpy(tx_rand_str[no_of_rand_str++], jstr(argjson, "id"));
-		printf("%s:;%d::no_of_rand_str::%d\n", __FUNCTION__, __LINE__, no_of_rand_str);
 		pthread_mutex_unlock(&mutex);
 
 		double balance = chips_get_balance_on_address_from_tx(addr, jstr(argjson, "tx_info"));
@@ -1598,8 +1597,7 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 			threshold_value);
 		int32_t ret = bet_run_query(sql_stmt);
 		if (ret != 0)
-			printf("%s::%d::There is a prblem is running the query::%s\n", __FUNCTION__, __LINE__,
-			       sql_stmt);
+			printf("%s::%d::Error in running the query::%s\n", __FUNCTION__, __LINE__, sql_stmt);
 	}
 
 	tx_status = cJSON_CreateObject();
@@ -1689,8 +1687,6 @@ void bet_dcv_backend_thrd(void *_ptr)
 		} else if (strcmp(method, "signedrawtransaction") == 0) {
 			bet_dcv_process_signed_raw_tx(argjson);
 		} else if (strcmp(method, "stack_info_req") == 0) {
-			printf("%s::%d::no_of_rand_str::%d::maxplayers::%d\n", __FUNCTION__, __LINE__, no_of_rand_str,
-			       bet->maxplayers);
 			if (no_of_rand_str < bet->maxplayers) {
 				retval = bet_dcv_stack_info_resp(argjson, bet, vars);
 			} else {
