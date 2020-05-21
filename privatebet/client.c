@@ -184,43 +184,12 @@ int32_t bet_bvv_init(cJSON *argjson, struct privatebet_info *bet, struct private
 
 static int32_t bet_bvv_join_init(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	cJSON *channel_info = NULL, *addresses = NULL, *address = NULL, *bvv_response_info = NULL;
-	int argc, bytes, retval = 0;
-	char **argv = NULL, *uri = NULL, *rendered = NULL;
-
-	argc = 2;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++)
-		argv[i] = (char *)malloc(100 * sizeof(char));
-
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "getinfo");
-
-	channel_info = cJSON_CreateObject();
-	make_command(argc, argv, &channel_info);
-
-	cJSON_Print(channel_info);
-	if (jint(channel_info, "code") != 0) {
-		retval = -1;
-		printf("\n%s:%d: Message:%s", __FUNCTION__, __LINE__, jstr(channel_info, "message"));
-		goto end;
-	}
-
-	uri = (char *)malloc(sizeof(char) * 100);
-	if (!uri) {
-		retval = -1;
-		printf("%s::%d::malloc failed\n", __FUNCTION__, __LINE__);
-		goto end;
-	}
-	strcpy(uri, jstr(channel_info, "id"));
-	strcat(uri, "@");
-	addresses = cJSON_GetObjectItem(channel_info, "address");
-	address = cJSON_GetArrayItem(addresses, 0);
-	strcat(uri, jstr(address, "address"));
+	cJSON *bvv_response_info = NULL;
+	int bytes, retval = 0;
+	char *rendered = NULL;
 
 	bvv_response_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(bvv_response_info, "method", "bvv_join");
-	cJSON_AddStringToObject(bvv_response_info, "uri", uri);
 	rendered = cJSON_Print(bvv_response_info);
 	printf("%s::%d::sent::%s\n", __FUNCTION__, __LINE__, cJSON_Print(bvv_response_info));
 	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
@@ -228,42 +197,7 @@ static int32_t bet_bvv_join_init(cJSON *argjson, struct privatebet_info *bet, st
 	if (bytes < 0)
 		retval = -1;
 
-end:
-	if (uri)
-		free(uri);
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
 	return retval;
-}
-int32_t bet_bvv_connect(char *uri)
-{
-	char **argv = NULL;
-	int argc = 3;
-	cJSON *connect_info = NULL;
-
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++)
-		argv[i] = (char *)malloc(100 * sizeof(char));
-
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "connect");
-	strcpy(argv[2], uri);
-	connect_info = cJSON_CreateObject();
-	make_command(argc, argv, &connect_info);
-
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-	return 1;
 }
 
 static cJSON *bet_player_fundchannel(char *channel_id)
