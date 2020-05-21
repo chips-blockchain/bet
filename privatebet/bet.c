@@ -411,6 +411,7 @@ int main(int argc, char **argv)
 		tx = chips_transfer_funds(atof(argv[2]), argv[3]);
 		printf("tx details::%s\n", cJSON_Print(tx));
 	} else if ((argc > 2) && (strcmp(argv[1], "game") == 0)) {
+		common_init();
 		bet_handle_game(argc, argv);
 	} else {
 	usage:
