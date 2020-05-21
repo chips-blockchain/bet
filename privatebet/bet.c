@@ -374,47 +374,43 @@ int main(int argc, char **argv)
 	char *ip = NULL;
 
 	bet_set_unique_id();
-	if (argc == 2) {
-		if (strcmp(argv[1], "bvv") == 0) {
-			playing_nodes_init();
-			ip = bet_pick_dealer();
-			if (ip) {
-				printf("The dealer is :: %s\n", ip);
-				bet_bvv_thrd(ip, port);
-			}
-		} else if (strcmp(argv[1], "player") == 0) {
-			playing_nodes_init();
-			ip = bet_pick_dealer();
-			if (ip) {
-				printf("The dealer is :: %s\n", ip);
-				bet_player_thrd(ip, port);
-			}
-		} else if ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "h") == 0) ||
-			   (strcmp(argv[1], "--help") == 0) || (strcmp(argv[1], "help") == 0)) {
-			bet_display_usage();
+
+	if ((argc == 2) && (strcmp(argv[1], "bvv") == 0)) {
+		playing_nodes_init();
+		ip = bet_pick_dealer();
+		if (ip) {
+			printf("The dealer is :: %s\n", ip);
+			bet_bvv_thrd(ip, port);
 		}
-	} else if (argc == 3) {
-		if (strcmp(argv[1], "dcv") == 0) {
-			strcpy(dealer_ip, argv[2]);
-			playing_nodes_init();
-			bet_send_dealer_info_to_cashier(dealer_ip);
-			dealer_node_init();
-			find_bvv();
-			bet_dcv_thrd(dealer_ip, port);
-		} else if (strcmp(argv[1], "cashier") == 0) {
-			strcpy(cashier_ip, argv[2]);
-			common_init();
-			bet_cashier_server_thrd(cashier_ip, cashier_pub_sub_port);
+	} else if ((argc == 2) && (strcmp(argv[1], "player") == 0)) {
+		playing_nodes_init();
+		ip = bet_pick_dealer();
+		if (ip) {
+			printf("The dealer is :: %s\n", ip);
+			bet_player_thrd(ip, port);
 		}
+	} else if ((argc == 2) && ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "h") == 0) ||
+				   (strcmp(argv[1], "--help") == 0) || (strcmp(argv[1], "help") == 0))) {
+		bet_display_usage();
+	} else if ((argc == 3) && (strcmp(argv[1], "dcv") == 0)) {
+		strcpy(dealer_ip, argv[2]);
+		playing_nodes_init();
+		bet_send_dealer_info_to_cashier(dealer_ip);
+		dealer_node_init();
+		find_bvv();
+		bet_dcv_thrd(dealer_ip, port);
+	} else if ((argc == 3) && (strcmp(argv[1], "cashier") == 0)) {
+		strcpy(cashier_ip, argv[2]);
+		common_init();
+		bet_cashier_server_thrd(cashier_ip, cashier_pub_sub_port);
 	} else if ((argc == 4) && (strcmp(argv[1], "withdraw") == 0)) {
 		cJSON *tx = NULL;
 		tx = chips_transfer_funds(atof(argv[2]), argv[3]);
 		printf("tx details::%s\n", cJSON_Print(tx));
 	} else if ((argc > 2) && (strcmp(argv[1], "game") == 0)) {
-		common_init();
+		playing_nodes_init();
 		bet_handle_game(argc, argv);
 	} else {
-	usage:
 		printf("\nInvalid Usage, use the flag -h or --help to get more usage details\n");
 		bet_display_usage();
 	}

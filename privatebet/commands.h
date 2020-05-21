@@ -31,6 +31,7 @@ cJSON *bet_get_chips_ln_bal_info();
 double chips_get_balance();
 cJSON *bet_get_chips_ln_addr_info();
 cJSON *chips_add_multisig_address();
+cJSON *chips_add_multisig_address_from_list(int32_t threshold_value, cJSON *addr_list);
 int32_t chips_check_if_tx_unspent(char *input_tx);
 char *chips_get_block_hash_from_txid(char *txid);
 int32_t chips_get_block_height_from_block_hash(char *block_hash);

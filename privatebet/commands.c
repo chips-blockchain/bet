@@ -738,6 +738,23 @@ cJSON *chips_add_multisig_address()
 	return msig_address;
 }
 
+cJSON *chips_add_multisig_address_from_list(int32_t threshold_value, cJSON *addr_list)
+{
+	int argc;
+	char **argv = NULL, param[arg_size];
+	cJSON *msig_address = NULL;
+
+	argc = 5;
+	snprintf(param, arg_size, "%d", threshold_value);
+
+	argv = bet_copy_args(argc, "chips-cli", "addmultisigaddress", param,
+			     cJSON_Print(cJSON_CreateString(cJSON_Print(addr_list))), "-addresstype legacy");
+	msig_address = cJSON_CreateObject();
+	make_command(argc, argv, &msig_address);
+	bet_dealloc_args(argc, &argv);
+	return msig_address;
+}
+
 int32_t chips_check_if_tx_unspent(char *input_tx)
 {
 	char **argv = NULL;
@@ -826,10 +843,12 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 	double amount = 0;
 	cJSON *tx_list = NULL, *to_addr_info = NULL, *tx = NULL;
 
+	for (int32_t i = 0; i < no_of_txs; i++) {
+		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, tx_ids[i]);
+	}
 	to_addr_info = cJSON_CreateObject();
 	tx_list = cJSON_CreateArray();
 	argc = 2;
-	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "chips-cli", "listunspent");
 	listunspent_info = cJSON_CreateObject();
 	make_command(argc, argv, &listunspent_info);
@@ -847,11 +866,15 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 			}
 		}
 	}
+	if ((cJSON_GetArraySize(tx_list) == 0) || (amount < chips_tx_fee)) {
+		return NULL;
+	}
 	cJSON_AddNumberToObject(to_addr_info, to_addr, (amount - chips_tx_fee));
 	argc = 4;
-	bet_alloc_args(argc, &argv);
 	sprintf(params[0], "\'%s\'", cJSON_Print(tx_list));
 	sprintf(params[1], "\'%s\'", cJSON_Print(to_addr_info));
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, params[0]);
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, params[1]);
 	argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
 	tx = cJSON_CreateObject();
 	make_command(argc, argv, &tx);
@@ -880,7 +903,8 @@ cJSON *chips_sign_msig_tx(char *ip, cJSON *raw_tx)
 	cJSON_AddStringToObject(msig_raw_tx, "method", "raw_msig_tx");
 	cJSON_AddItemToObject(msig_raw_tx, "tx", raw_tx);
 	cJSON_AddStringToObject(msig_raw_tx, "table_id", table_id);
-	tx = bet_send_single_message_to_notary(msig_raw_tx, ip);
+	cJSON_AddStringToObject(msig_raw_tx, "id", unique_id);
+	tx = bet_msg_cashier_with_response_id(msig_raw_tx, ip, "signed_tx");
 
 	return tx;
 }

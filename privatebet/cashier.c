@@ -262,20 +262,9 @@ int32_t bet_cashier_process_raw_msig_tx(cJSON *argjson, struct cashier *cashier_
 
 	signed_tx = cJSON_CreateObject();
 	cJSON_AddStringToObject(signed_tx, "method", "signed_tx");
-
+	cJSON_AddStringToObject(signed_tx, "id", jstr(argjson, "id"));
 	tx = cJSON_Print(cJSON_GetObjectItem(argjson, "tx"));
 	cJSON_AddItemToObject(signed_tx, "signed_tx", chips_sign_raw_tx_with_wallet(tx));
-
-	/*
-	if (sqlite3_check_if_table_id_exists(jstr(argjson, "table_id")) == 1) {
-		tx = cJSON_Print(cJSON_GetObjectItem(argjson, "tx"));
-		cJSON_AddItemToObject(signed_tx, "signed_tx", chips_sign_raw_tx_with_wallet(tx));
-	} else {
-		cJSON_AddItemToObject(signed_tx, "signed_tx", NULL);
-		cJSON_AddStringToObject(signed_tx, "err_str",
-					"the cashier node doesn't have the record of the table_id");
-	}
-	*/
 	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(signed_tx));
 	bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(signed_tx), strlen(cJSON_Print(signed_tx)), 0);
 	if (bytes < 0)
@@ -567,6 +556,7 @@ static cJSON *bet_reverse_disputed_tx(cJSON *game_info)
 			}
 		}
 	}
+	printf("%s::%d::active_cashier::%d::min_cashiers::%d\n", __FUNCTION__, __LINE__, active_cashiers, min_cashiers);
 	if (active_cashiers >= min_cashiers) {
 		char tx_ids[1][100];
 		int no_of_in_txs = 1;
@@ -575,8 +565,16 @@ static cJSON *bet_reverse_disputed_tx(cJSON *game_info)
 		cJSON *hex = NULL;
 
 		strcpy(tx_ids[0], jstr(game_info, "tx_id"));
+		if (chips_iswatchonly(jstr(game_info, "msig_addr")) == 0) {
+			printf("%s::%d::Importing the msigaddress::%s\n", __FUNCTION__, __LINE__,
+			       jstr(game_info, "msig_addr"));
+			chips_import_address(jstr(game_info, "msig_addr"));
+		}
 		raw_tx = chips_create_tx_from_tx_list(unstringify(jstr(game_info, "dispute_addr")), no_of_in_txs,
 						      tx_ids);
+		if (raw_tx == NULL)
+			return NULL;
+		printf("%s::%d::raw_tx::%s\n", __FUNCTION__, __LINE__, cJSON_Print(raw_tx));
 		for (int i = 0; i < no_of_cashier_nodes; i++) {
 			if (cashier_node_status[i] == 1) {
 				if (signers == 0) {
@@ -630,15 +628,15 @@ int32_t bet_process_dispute(cJSON *argjson, struct cashier *cashier_info)
 	hexstr_to_str(hex_data, data);
 	player_info = cJSON_CreateObject();
 	player_info = cJSON_Parse(data);
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(player_info));
 	cJSON_AddStringToObject(player_info, "tx_id", jstr(argjson, "tx_id"));
-	bet_check_all_cashier_nodes_status();
-
+	bet_check_cashiers_status();
 	tx = bet_reverse_disputed_tx(player_info);
 
 	dispute_response = cJSON_CreateObject();
 	cJSON_AddStringToObject(dispute_response, "method", "dispute_response");
 	cJSON_AddItemToObject(dispute_response, "payout_tx", tx);
-
+	cJSON_AddStringToObject(dispute_response, "id", jstr(argjson, "id"));
 	bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(dispute_response), strlen(cJSON_Print(dispute_response)),
 			0);
 	if (bytes < 0)
@@ -1088,13 +1086,8 @@ void bet_resolve_disputed_tx()
 	disputed_games_info = sqlite3_get_game_details(1);
 	cJSON_AddItemToObject(argjson, "disputed_games_info", disputed_games_info);
 
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
-
-	for (int32_t i = 0; i < no_of_notaries; i++) {
-		if (notary_status[i] == 1) {
-			bet_send_single_message_to_notary(argjson, notary_node_ips[i]);
-			break;
-		}
+	for (int32_t i = 0; i < cJSON_GetArraySize(disputed_games_info); i++) {
+		bet_raise_dispute(unstringify(jstr(cJSON_GetArrayItem(disputed_games_info, i), "tx_id")));
 	}
 }
 
@@ -1102,10 +1095,12 @@ void bet_raise_dispute(char *tx_id)
 {
 	cJSON *dispute_info = NULL;
 	cJSON *response_info = NULL;
+	char *sql_query = NULL;
 
 	dispute_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(dispute_info, "method", "dispute");
 	cJSON_AddStringToObject(dispute_info, "tx_id", tx_id);
+	cJSON_AddStringToObject(dispute_info, "id", unique_id);
 	for (int32_t i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1) {
 			response_info =
@@ -1113,7 +1108,17 @@ void bet_raise_dispute(char *tx_id)
 			break;
 		}
 	}
+
 	printf("%s::%d::response_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(response_info));
+	if ((response_info) && (jstr(response_info, "payout_tx"))) {
+		sql_query = calloc(1, sql_query_size);
+		sprintf(sql_query,
+			"UPDATE player_tx_mapping set status = 0, payout_tx_id = \'%s\' where tx_id = \'%s\';",
+			(jstr(response_info, "payout_tx")), tx_id);
+		bet_run_query(sql_query);
+		if (sql_query)
+			free(sql_query);
+	}
 }
 
 void bet_handle_game(int argc, char **argv)

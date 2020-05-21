@@ -23,5 +23,6 @@ int32_t bet_msg_cashier(cJSON *argjson, char *cashier_ip);
 int32_t *bet_msg_multiple_cashiers(cJSON *argjson, char **cashier_ips, int no_of_cashiers);
 cJSON *bet_send_message_to_all_active_notaries(cJSON *argjson);
 void bet_resolve_disputed_tx();
+void bet_raise_dispute(char *tx_id);
 void bet_handle_game(int argc, char **argv);
 void find_bvv();
