@@ -890,7 +890,8 @@ cJSON *chips_sign_msig_tx_of_table_id(char *ip, cJSON *raw_tx, char *table_id)
 	cJSON_AddStringToObject(msig_raw_tx, "method", "raw_msig_tx");
 	cJSON_AddItemToObject(msig_raw_tx, "tx", raw_tx);
 	cJSON_AddStringToObject(msig_raw_tx, "table_id", table_id);
-	tx = bet_send_single_message_to_notary(msig_raw_tx, ip);
+	cJSON_AddStringToObject(msig_raw_tx, "id", unique_id);
+	tx = bet_msg_cashier_with_response_id(msig_raw_tx, ip, "signed_tx");
 
 	return tx;
 }
@@ -914,16 +915,22 @@ cJSON *chips_spend_msig_txs(char *to_addr, int no_of_txs, char tx_ids[][100])
 	int signers = 0;
 	cJSON *hex = NULL, *tx = NULL;
 
-	bet_check_all_cashier_nodes_status();
+	bet_check_cashiers_status();
 	for (int i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1) {
 			if (signers == 0) {
 				cJSON *temp = chips_sign_msig_tx(
 					notary_node_ips[i], chips_create_tx_from_tx_list(to_addr, no_of_txs, tx_ids));
+				if (temp == NULL) {
+					continue;
+				}
 				hex = cJSON_GetObjectItem(cJSON_GetObjectItem(temp, "signed_tx"), "hex");
 				signers++;
 			} else if (signers == 1) {
 				cJSON *temp1 = chips_sign_msig_tx(notary_node_ips[i], hex);
+				if (temp1 == NULL) {
+					continue;
+				}
 				cJSON *status =
 					cJSON_GetObjectItem(cJSON_GetObjectItem(temp1, "signed_tx"), "complete");
 				if (strcmp(cJSON_Print(status), "true") == 0) {
@@ -944,11 +951,14 @@ static cJSON *chips_spend_msig_tx(cJSON *raw_tx)
 
 	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(raw_tx));
 
-	bet_check_all_cashier_nodes_status();
+	bet_check_cashiers_status();
 	for (int i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1) {
 			if (signers == 0) {
 				cJSON *temp = chips_sign_msig_tx(notary_node_ips[i], raw_tx);
+				if (temp == NULL) {
+					continue;
+				}
 				if (cJSON_GetObjectItem(temp, "signed_tx") != NULL) {
 					hex = cJSON_GetObjectItem(cJSON_GetObjectItem(temp, "signed_tx"), "hex");
 					signers++;
@@ -958,6 +968,9 @@ static cJSON *chips_spend_msig_tx(cJSON *raw_tx)
 				}
 			} else if (signers == 1) {
 				cJSON *temp1 = chips_sign_msig_tx(notary_node_ips[i], hex);
+				if (temp1 == NULL) {
+					continue;
+				}
 				if (cJSON_GetObjectItem(temp1, "signed_tx") != NULL) {
 					cJSON *status = cJSON_GetObjectItem(cJSON_GetObjectItem(temp1, "signed_tx"),
 									    "complete");
@@ -983,11 +996,16 @@ cJSON *chips_get_raw_tx(char *tx)
 	cJSON *raw_tx = NULL;
 
 	argc = 3;
-	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "chips-cli", "getrawtransaction", tx);
 	raw_tx = cJSON_CreateObject();
 	make_command(argc, argv, &raw_tx);
 	bet_dealloc_args(argc, &argv);
+
+	if (jstr(raw_tx, "error") != 0) {
+		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(raw_tx));
+		return NULL;
+	}
+
 	return raw_tx;
 }
 
@@ -1024,13 +1042,20 @@ int32_t chips_validate_tx(char *tx)
 	}
 }
 
-void chips_extract_data(char *tx, char **rand_str)
+int32_t chips_extract_data(char *tx, char **rand_str)
 {
 	cJSON *raw_tx = NULL, *decoded_raw_tx = NULL, *vout = NULL, *script_pubkey = NULL;
 	double zero = 0.0, value;
+	int32_t retval = 0;
 
 	raw_tx = chips_get_raw_tx(tx);
+	if (raw_tx == NULL) {
+		return retval;
+	}
 	decoded_raw_tx = chips_decode_raw_tx(raw_tx);
+	if (decoded_raw_tx == NULL) {
+		return retval;
+	}
 	vout = cJSON_GetObjectItem(decoded_raw_tx, "vout");
 	for (int i = 0; i < cJSON_GetArraySize(vout); i++) {
 		cJSON *temp = cJSON_GetArrayItem(vout, i);
@@ -1045,6 +1070,9 @@ void chips_extract_data(char *tx, char **rand_str)
 			}
 		}
 	}
+	if (*rand_str)
+		retval = 1;
+	return retval;
 }
 
 cJSON *chips_deposit_to_ln_wallet(double channel_chips)
@@ -1226,19 +1254,20 @@ cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids
 	printf("%s::%d::raw_tx::%s\n", __FUNCTION__, __LINE__, cJSON_Print(tx_details));
 
 	cJSON *tx = chips_spend_msig_tx(tx_details);
+
+	payout_tx_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(payout_tx_info, "method", "payout_tx");
+	cJSON_AddStringToObject(payout_tx_info, "table_id", table_id);
+	cJSON_AddItemToObject(payout_tx_info, "tx_info", tx);
+
 	if (tx) {
 		printf("%s::%d::tx::%s\n", __FUNCTION__, __LINE__, cJSON_Print(tx));
 		sql_query = calloc(1, 400);
 		sprintf(sql_query, "UPDATE dcv_tx_mapping set status = 0 where table_id = \"%s\";", table_id);
 		bet_run_query(sql_query);
-
-		payout_tx_info = cJSON_CreateObject();
-		cJSON_AddStringToObject(payout_tx_info, "method", "payout_tx");
-		cJSON_AddStringToObject(payout_tx_info, "table_id", table_id);
-		cJSON_AddItemToObject(payout_tx_info, "tx_info", tx);
 		for (int32_t i = 0; i < no_of_notaries; i++) {
 			if (notary_status[i] == 1) {
-				bet_send_single_message_to_notary(payout_tx_info, notary_node_ips[i]);
+				bet_msg_cashier(payout_tx_info, notary_node_ips[i]);
 			}
 		}
 	} else {

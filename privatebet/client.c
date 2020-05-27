@@ -182,7 +182,7 @@ int32_t bet_bvv_init(cJSON *argjson, struct privatebet_info *bet, struct private
 	return retval;
 }
 
-static int32_t bet_bvv_join_init(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
+static int32_t bet_bvv_join_init(struct privatebet_info *bet)
 {
 	cJSON *bvv_response_info = NULL;
 	int bytes, retval = 0;
@@ -233,9 +233,11 @@ int32_t bet_check_bvv_ready(cJSON *argjson, struct privatebet_info *bet, struct 
 	cJSON *bvv_ready = NULL;
 	int32_t retval = 0, bytes;
 	char *rendered = NULL;
+
 	bvv_ready = cJSON_CreateObject();
 	cJSON_AddStringToObject(bvv_ready, "method", "bvv_ready");
 
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(bvv_ready));
 	rendered = cJSON_Print(bvv_ready);
 	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 	if (bytes < 0)
@@ -255,29 +257,6 @@ void bet_bvv_reset(struct privatebet_info *bet, struct privatebet_vars *vars)
 		free(g_shares);
 }
 
-int32_t bet_bvv_frontend(struct lws *wsi, cJSON *argjson)
-{
-	char *method = NULL;
-	int32_t retval = 0;
-	struct privatebet_info *bet = NULL;
-	struct privatebet_vars *vars = NULL;
-
-	if ((method = jstr(argjson, "method")) != 0) {
-		if (strcmp(method, "init_d") == 0) {
-			bet_bvv_init(argjson, bet_bvv, vars);
-		} else if (strcmp(method, "bvv_join") == 0) {
-			bet_bvv_join_init(argjson, bet_bvv, vars);
-		} else if (strcmp(method, "check_bvv_ready") == 0) {
-			bet_check_bvv_ready(argjson, bet_bvv, vars);
-		} else if (strcmp(method, "dealer") == 0) {
-			retval = bet_player_dealer_info(argjson, bet_bvv, vars);
-		} else if (strcmp(method, "reset") == 0) {
-			bet_bvv_reset(bet, vars);
-		}
-	}
-	return retval;
-}
-
 void bet_bvv_backend_loop(void *_ptr)
 {
 	int32_t recvlen, retval = 0;
@@ -285,27 +264,19 @@ void bet_bvv_backend_loop(void *_ptr)
 	void *ptr = NULL;
 	struct privatebet_info *bet = _ptr;
 	struct privatebet_vars *VARS = NULL;
-	cJSON *bvv_join_info = NULL;
 
 	VARS = calloc(1, sizeof(*VARS));
 	bet_permutation(bvv_info.permis, bet->range);
 	for (int i = 0; i < bet->range; i++) {
 		permis_b[i] = bvv_info.permis[i];
 	}
-
-	bvv_join_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(bvv_join_info, "method", "bvv_join");
-	if (bet_bvv_backend(bvv_join_info, bet, VARS) != 0) {
-		printf("\n%s:%d:BVV joining the table failed", __FUNCTION__, __LINE__);
-	}
-	while (bet->pushsock >= 0 && bet->subsock >= 0) {
+	bet_bvv_join_init(bet);
+	while ((bet->pushsock >= 0 && bet->subsock >= 0) && (bvv_state == 1)) {
 		ptr = 0;
 		if ((recvlen = nn_recv(bet->subsock, &ptr, NN_MSG, 0)) > 0) {
 			char *tmp = clonestr(ptr);
 			if ((argjson = cJSON_Parse(tmp)) != 0) {
-				if ((retval = bet_bvv_backend(argjson, bet, bvv_vars)) <
-				    0) // usually just relay to players
-				{
+				if ((retval = bet_bvv_backend(argjson, bet, bvv_vars)) < 0) {
 					printf("%s::%d::Failed to send data\n", __FUNCTION__, __LINE__);
 				} else if (retval == 2) {
 					bet_bvv_reset(bet, bvv_vars);
@@ -314,14 +285,7 @@ void bet_bvv_backend_loop(void *_ptr)
 					bvv_state = 0;
 					break;
 				}
-				//free_json(argjson);
 			}
-			/*
-			if (tmp)
-				free(tmp);
-			if (ptr)
-				nn_freemsg(ptr);
-			*/
 		}
 	}
 }
@@ -335,17 +299,13 @@ int32_t bet_bvv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 		printf("%s::%d::received::%s\n", __FUNCTION__, __LINE__, method);
 		if (strcmp(method, "init_d") == 0) {
 			retval = bet_bvv_init(argjson, bet, vars);
-			if (retval == 2)
-				bvv_state = 0;
 		} else if (strcmp(method, "bvv_join") == 0) {
-			retval = bet_bvv_join_init(argjson, bet, vars);
+			retval = bet_bvv_join_init(bet);
 		} else if (strcmp(method, "check_bvv_ready") == 0) {
 			retval = bet_check_bvv_ready(argjson, bet, vars);
 		} else if (strcmp(method, "reset") == 0) {
 			bet_bvv_reset(bet, vars);
-			retval = bet_bvv_join_init(argjson, bet_bvv, vars);
-		} else if (strcmp(method, "seats") == 0) {
-			retval = bet_bvv_join_init(argjson, bet, vars);
+			retval = bet_bvv_join_init(bet);
 		} else if (strcmp(method, "config_data") == 0) {
 			max_players = jint(argjson, "max_players");
 			chips_tx_fee = jdouble(argjson, "chips_tx_fee");
@@ -1290,79 +1250,6 @@ void bet_player_frontend_loop(void *_ptr)
 	}
 }
 
-int lws_callback_http_bvv(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
-{
-	cJSON *argjson = NULL;
-	switch (reason) {
-	case LWS_CALLBACK_RECEIVE:
-		memcpy(lws_buf_bvv + lws_buf_length_bvv, in, len);
-		lws_buf_length_bvv += len;
-		if (!lws_is_final_fragment(wsi))
-			break;
-		argjson = cJSON_Parse(lws_buf_bvv);
-		if (bet_bvv_frontend(wsi, argjson) != 0) {
-			printf("\n%s:%d:Failed to process the host command", __FUNCTION__, __LINE__);
-		}
-		memset(lws_buf_bvv, 0x00, sizeof(lws_buf_bvv));
-		lws_buf_length_bvv = 0;
-		break;
-	case LWS_CALLBACK_ESTABLISHED:
-		wsi_global_bvv = wsi;
-		break;
-	}
-	return 0;
-}
-
-static struct lws_protocols protocols_bvv[] = {
-	{ "http", lws_callback_http_bvv, 0, 0 },
-	{ NULL, NULL, 0, 0 } /* terminator */
-};
-
-static int interrupted_bvv;
-
-static const struct lws_http_mount mount_bvv = {
-	/* .mount_next */ NULL, /* linked-list "next" */
-	/* .mountpoint */ "/", /* mountpoint URL */
-	/* .origin */ "./mount-origin", /* serve from dir */
-	/* .def */ "index.html", /* default filename */
-	/* .protocol */ NULL,
-	/* .cgienv */ NULL,
-	/* .extra_mimetypes */ NULL,
-	/* .interpret */ NULL,
-	/* .cgi_timeout */ 0,
-	/* .cache_max_age */ 0,
-	/* .auth_mask */ 0,
-	/* .cache_reusable */ 0,
-	/* .cache_revalidate */ 0,
-	/* .cache_intermediaries */ 0,
-	/* .origin_protocol */ LWSMPRO_FILE, /* files in a dir */
-	/* .mountpoint_len */ 1, /* char count */
-	/* .basic_auth_login_file */ NULL,
-};
-
-void bet_bvv_frontend_loop(void *_ptr)
-{
-	struct lws_context_creation_info bvv_info;
-	struct lws_context *bvv_context = NULL;
-	int n = 0, logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE;
-
-	lws_set_log_level(logs, NULL);
-	lwsl_user("LWS minimal ws broker | visit http://localhost:7681\n");
-	memset(&bvv_info, 0, sizeof bvv_info); /* otherwise uninitialized garbage */
-	bvv_info.port = 9000;
-	bvv_info.mounts = &mount_bvv;
-	bvv_info.protocols = protocols_bvv;
-	bvv_info.options = LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
-
-	bvv_context = lws_create_context(&bvv_info);
-	if (!bvv_context) {
-		printf("lws init failed\n");
-	}
-	while (n >= 0 && !interrupted_bvv) {
-		n = lws_service(bvv_context, 1000);
-	}
-}
-
 void bet_push_client(cJSON *argjson)
 {
 	player_lws_write(argjson);
@@ -1826,6 +1713,9 @@ cJSON *bet_get_available_dealers()
 		if (notary_status[i] == 1) {
 			cashier_response_info = bet_msg_cashier_with_response_id(rqst_dealer_info, notary_node_ips[i],
 										 "rqst_dealer_info_response");
+			if (cashier_response_info == NULL) {
+				continue;
+			}
 			dealers_ip_info = cJSON_CreateArray();
 			dealers_ip_info = cJSON_GetObjectItem(cashier_response_info, "dealer_ips");
 			for (int32_t j = 0; j < cJSON_GetArraySize(dealers_ip_info); j++) {
