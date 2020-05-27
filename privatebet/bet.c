@@ -176,15 +176,6 @@ void bet_bvv_thrd(char *dcv_ip, const int32_t port)
 		printf("error launching bet_bvv_backend_loop\n");
 		exit(-1);
 	}
-	/*
-	if (OS_thread_create(&bvv_frontend, NULL, (void *)bet_bvv_frontend_loop, NULL) != 0) {
-		printf("error launching bet_bvv_frontend_loop\n");
-		exit(-1);
-	}
-	if (pthread_join(bvv_frontend, NULL)) {
-		printf("\nError in joining the main thread for bvv_backend");
-	}
-	*/
 	if (pthread_join(bvv_backend, NULL)) {
 		printf("\nError in joining the main thread for bvv_thrd");
 	}
@@ -375,14 +366,7 @@ int main(int argc, char **argv)
 
 	bet_set_unique_id();
 
-	if ((argc == 2) && (strcmp(argv[1], "bvv") == 0)) {
-		playing_nodes_init();
-		ip = bet_pick_dealer();
-		if (ip) {
-			printf("The dealer is :: %s\n", ip);
-			bet_bvv_thrd(ip, port);
-		}
-	} else if ((argc == 2) && (strcmp(argv[1], "player") == 0)) {
+	if ((argc == 2) && (strcmp(argv[1], "player") == 0)) {
 		playing_nodes_init();
 		ip = bet_pick_dealer();
 		if (ip) {

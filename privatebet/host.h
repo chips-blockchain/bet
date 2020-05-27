@@ -9,8 +9,8 @@ int32_t bet_relay(cJSON *argjson, struct privatebet_info *bet, struct privatebet
 int32_t bet_check_player_ready(cJSON *playerReady, struct privatebet_info *bet, struct privatebet_vars *vars);
 void bet_dcv_backend_loop(void *_ptr);
 int32_t bet_receive_card(cJSON *playerCardInfo, struct privatebet_info *bet, struct privatebet_vars *vars);
+void bet_reset_all_dcv_params(struct privatebet_info *bet, struct privatebet_vars *vars);
 void bet_dcv_reset(struct privatebet_info *bet, struct privatebet_vars *vars);
-void bet_dcv_force_reset(struct privatebet_info *bet, struct privatebet_vars *vars);
 void bet_dcv_frontend_loop(void *_ptr);
 void bet_chat(struct lws *wsi, cJSON *argjson);
 int32_t bet_seats(struct lws *wsi, cJSON *argjson);

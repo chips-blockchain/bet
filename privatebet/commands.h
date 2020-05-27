@@ -42,7 +42,7 @@ cJSON *chips_spend_msig_txs(char *to_addr, int no_of_txs, char tx_ids[][100]);
 cJSON *chips_get_raw_tx(char *tx);
 cJSON *chips_decode_raw_tx(cJSON *raw_tx);
 int32_t chips_validate_tx(char *tx);
-void chips_extract_data(char *tx, char **rand_str);
+int32_t chips_extract_data(char *tx, char **rand_str);
 cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data);
 cJSON *chips_transfer_funds_with_data(double amount, char *address, char *data);
 cJSON *chips_deposit_to_ln_wallet(double channel_chips);

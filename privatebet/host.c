@@ -208,7 +208,7 @@ int32_t bet_dcv_frontend(struct lws *wsi, cJSON *argjson)
 	} else if (strcmp(method, "chat") == 0) {
 		bet_chat(wsi, argjson);
 	} else if (strcmp(method, "reset") == 0) {
-		bet_dcv_force_reset(bet_dcv, dcv_vars);
+		bet_reset_all_dcv_params(bet_dcv, dcv_vars);
 		rendered = cJSON_Print(argjson);
 		bytes = nn_send(bet_dcv->pubsock, rendered, strlen(rendered), 0);
 		if (bytes < 0)
@@ -814,10 +814,8 @@ int32_t bet_receive_card(cJSON *player_card_info, struct privatebet_info *bet, s
 	return retval;
 }
 
-void bet_dcv_reset(struct privatebet_info *bet, struct privatebet_vars *vars)
+void bet_reset_all_dcv_params(struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	cJSON *reset_info = NULL;
-
 	players_joined = 0;
 	turn = 0;
 	no_of_cards = 0;
@@ -881,74 +879,16 @@ void bet_dcv_reset(struct privatebet_info *bet, struct privatebet_vars *vars)
 	no_of_rand_str = 0;
 	dcv_state = 0;
 	bet_set_table_id();
+}
+
+void bet_dcv_reset(struct privatebet_info *bet, struct privatebet_vars *vars)
+{
+	cJSON *reset_info = NULL;
+	bet_reset_all_dcv_params(bet, vars);
 
 	reset_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(reset_info, "method", "reset");
 	bet_push_dcv_to_gui(reset_info);
-}
-
-void bet_dcv_force_reset(struct privatebet_info *bet, struct privatebet_vars *vars)
-{
-	players_joined = 0;
-	turn = 0;
-	no_of_cards = 0;
-	no_of_rounds = 0;
-	no_of_bets = 0;
-	hole_cards_drawn = 0;
-	community_cards_drawn = 0;
-	flop_cards_drawn = 0;
-	turn_card_drawn = 0;
-	river_card_drawn = 0;
-	invoiceID = 0;
-
-	for (int i = 0; i < bet->maxplayers; i++)
-		player_ready[i] = 0;
-
-	for (int i = 0; i < hand_size; i++) {
-		for (int j = 0; j < bet->maxplayers; j++) {
-			card_matrix[j][i] = 0;
-			card_values[j][i] = -1;
-		}
-	}
-
-	dcv_info.numplayers = 0;
-	dcv_info.maxplayers = bet->maxplayers;
-	bet_permutation(dcv_info.permis, bet->range);
-	dcv_info.deckid = rand256(0);
-	dcv_info.dcv_key.priv = curve25519_keypair(&dcv_info.dcv_key.prod);
-	for (int i = 0; i < bet->range; i++) {
-		permis_d[i] = dcv_info.permis[i];
-	}
-
-	vars->turni = 0;
-	vars->round = 0;
-	vars->pot = 0;
-	vars->last_turn = 0;
-	vars->last_raise = 0;
-	for (int i = 0; i < bet->maxplayers; i++) {
-		vars->funds[i] = 0;
-		for (int j = 0; j < CARDS777_MAXROUNDS; j++) {
-			vars->bet_actions[i][j] = 0;
-			vars->betamount[i][j] = 0;
-		}
-	}
-
-	bet->numplayers = 0;
-	bet->cardid = -1;
-	bet->turni = -1;
-	bet->no_of_turns = 0;
-
-	for (int32_t i = 0; i < no_of_txs; i++) {
-		memset(tx_ids[i], 0x00, sizeof(tx_ids[i]));
-	}
-	no_of_txs = 0;
-
-	for (int32_t i = 0; i < no_of_rand_str; i++) {
-		memset(tx_rand_str[i], 0x00, sizeof(tx_rand_str[i]));
-	}
-	no_of_rand_str = 0;
-
-	bet_set_table_id();
 }
 
 void bet_game_info(struct privatebet_info *bet, struct privatebet_vars *vars)
@@ -982,7 +922,12 @@ void bet_game_info(struct privatebet_info *bet, struct privatebet_vars *vars)
 	}
 	cJSON_AddItemToObject(game_state, "game_details", game_details);
 	cJSON_AddItemToObject(game_info, "game_state", game_state);
-	bet_send_message_to_all_active_notaries(game_info);
+
+	for (int32_t i = 0; i < no_of_notaries; i++) {
+		if (notary_status[i] == 1) {
+			bet_msg_cashier(game_info, notary_node_ips[i]);
+		}
+	}
 
 	int argc = 3;
 	char **argv = NULL;

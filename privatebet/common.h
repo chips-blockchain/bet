@@ -87,8 +87,6 @@ extern double table_stack_in_chips;
 extern double chips_tx_fee;
 
 extern char dev_fund_addr[64];
-extern char legacy_2_of_3_msig_addr[64];
-extern char legacy_2_of_4_msig_addr[64];
 extern char *legacy_m_of_n_msig_addr;
 
 extern int32_t no_of_txs;

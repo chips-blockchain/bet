@@ -26,8 +26,6 @@ void bet_player_frontend_loop();
 int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
 int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson);
 void bet_bvv_backend_loop(void *_ptr);
-int32_t bet_bvv_frontend(struct lws *wsi, cJSON *argjson);
-void bet_bvv_frontend_loop(void *_ptr);
 bits256 bet_get_deckid(int32_t playerID);
 void bet_push_client(cJSON *argjson);
 
