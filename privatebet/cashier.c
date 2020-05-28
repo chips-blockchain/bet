@@ -86,7 +86,6 @@ void bet_compute_m_of_n_msig_addr()
 
 void bet_check_cashier_nodes()
 {
-	//bet_check_all_cashier_nodes_status();
 	bet_check_cashiers_status();
 
 	if (live_notaries < 2) {

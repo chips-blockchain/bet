@@ -368,8 +368,8 @@ int main(int argc, char **argv)
 
 	if ((argc == 2) && (strcmp(argv[1], "player") == 0)) {
 		playing_nodes_init();
+		printf("Finding the dealer\n");
 		do {
-			printf("Finding the dealer\r");
 			ip = bet_pick_dealer();
 			if(!ip)
 				sleep(2);
