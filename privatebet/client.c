@@ -1186,7 +1186,7 @@ static void bet_init_seat_info()
 	}
 
 	table_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(table_info, "method", "init_seat_info");
+	cJSON_AddStringToObject(table_info, "method", "seats");
 	cJSON_AddItemToObject(table_info, "seats", seats_info);
 	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(table_info));
 	player_lws_write(table_info);
