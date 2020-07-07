@@ -13,7 +13,7 @@ void bet_reset_all_dcv_params(struct privatebet_info *bet, struct privatebet_var
 void bet_dcv_reset(struct privatebet_info *bet, struct privatebet_vars *vars);
 void bet_dcv_frontend_loop(void *_ptr);
 void bet_chat(struct lws *wsi, cJSON *argjson);
-void initialize_seat(cJSON *seat_info, char *name, int32_t seat, int32_t stack, int32_t empty, int32_t playing);
+void initialize_seat(cJSON *seat_info, char *name, int32_t seat, int32_t chips, int32_t empty, int32_t playing);
 int32_t bet_seats(struct lws *wsi, cJSON *argjson);
 int32_t bet_game(struct lws *wsi, cJSON *argjson);
 int32_t bet_dcv_frontend(struct lws *wsi, cJSON *argjson);
