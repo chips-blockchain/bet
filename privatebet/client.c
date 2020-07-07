@@ -1120,6 +1120,18 @@ static void bet_player_withdraw(cJSON *argjson)
 	player_lws_write(withdraw_info);
 }
 
+static void bet_player_wallet_info()
+{
+	cJSON *wallet_info = NULL;
+
+	wallet_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(wallet_info, "method", "walletInfo");
+	cJSON_AddStringToObject(wallet_info, "addr", chips_get_wallet_address());
+	cJSON_AddNumberToObject(wallet_info, "balance", chips_get_balance());
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(wallet_info));
+	player_lws_write(wallet_info);
+}
+
 int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 {
 	int32_t retval = 1;
@@ -1141,22 +1153,14 @@ int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 			player_lws_write(bet_get_chips_ln_bal_info());
 		} else if (strcmp(method, "get_addr_info") == 0) {
 			player_lws_write(bet_get_chips_ln_addr_info());
-		} else {
+		} else if (strcmp(method, "walletInfo") == 0) {
+				bet_player_wallet_info();
+		}
+		else {
 			bet_player_handle_invalid_method(method);
 		}
 	}
 	return retval;
-}
-
-static void bet_player_wallet_info()
-{
-	cJSON *wallet_info = NULL;
-
-	wallet_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(wallet_info, "method", "walletInfo");
-	cJSON_AddStringToObject(wallet_info, "addr", chips_get_wallet_address());
-	cJSON_AddNumberToObject(wallet_info, "balance", chips_get_balance());
-	player_lws_write(wallet_info);
 }
 
 static void bet_init_player_seats_info()
@@ -1191,6 +1195,7 @@ static void bet_init_seat_info()
 	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(table_info));
 	player_lws_write(table_info);
 }
+
 int lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
 {
 	cJSON *argjson = NULL;
@@ -1213,10 +1218,10 @@ int lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason, 
 		wsi_global_client = wsi;
 		printf("%s:%d::LWS_CALLBACK_ESTABLISHED\n", __FUNCTION__, __LINE__);
 		ws_connection_status = 1;
-		//bet_player_wallet_info();
 		bet_init_seat_info();
 		break;
 	case LWS_CALLBACK_SERVER_WRITEABLE:
+		printf("%s::%d::\n",__FUNCTION__,__LINE__);
 		if (data_exists) {
 			if (player_gui_data) {
 				lws_write(wsi, player_gui_data, strlen(player_gui_data), 0);
