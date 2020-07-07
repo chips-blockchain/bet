@@ -1169,7 +1169,7 @@ static void bet_init_player_seats_info()
 	for (int i = 0; i < max_players; i++) {
 		sprintf(player_seats_info[i].seat_name, "player%d", i + 1);
 		player_seats_info[i].seat = i;
-		player_seats_info[i].stack = 0;
+		player_seats_info[i].chips = 0;
 		player_seats_info[i].empty = 1;
 		player_seats_info[i].playing = 0;
 	}
@@ -1185,7 +1185,7 @@ static void bet_init_seat_info()
 	for (int i = 0; i < max_players; i++) {
 		seat[i] = cJSON_CreateObject();
 		initialize_seat(seat[i], player_seats_info[i].seat_name, player_seats_info[i].seat,
-				player_seats_info[i].stack, player_seats_info[i].empty, player_seats_info[i].playing);
+				player_seats_info[i].chips, player_seats_info[i].empty, player_seats_info[i].playing);
 		cJSON_AddItemToArray(seats_info, seat[i]);
 	}
 

@@ -164,7 +164,7 @@ struct cashier {
 struct seat_info {
 	char seat_name[20];
 	int32_t seat;
-	int32_t stack;
+	int32_t chips;
 	int32_t empty;
 	int32_t playing;
 };

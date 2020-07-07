@@ -125,11 +125,11 @@ void bet_chat(struct lws *wsi, cJSON *argjson)
 	lws_write(wsi, cJSON_Print(chat_info), strlen(cJSON_Print(chat_info)), 0);
 }
 
-void initialize_seat(cJSON *seat_info, char *name, int32_t seat, int32_t stack, int32_t empty, int32_t playing)
+void initialize_seat(cJSON *seat_info, char *name, int32_t seat, int32_t chips, int32_t empty, int32_t playing)
 {
 	cJSON_AddStringToObject(seat_info, "name", name);
 	cJSON_AddNumberToObject(seat_info, "seat", seat);
-	cJSON_AddNumberToObject(seat_info, "stack", stack);
+	cJSON_AddNumberToObject(seat_info, "chips", chips);
 	cJSON_AddNumberToObject(seat_info, "empty", empty);
 	cJSON_AddNumberToObject(seat_info, "playing", playing);
 }
