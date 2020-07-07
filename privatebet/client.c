@@ -34,6 +34,7 @@
 #include "storage.h"
 #include "cashier.h"
 #include "misc.h"
+#include "host.h"
 
 #define LWS_PLUGIN_STATIC
 
@@ -1158,6 +1159,38 @@ static void bet_player_wallet_info()
 	player_lws_write(wallet_info);
 }
 
+static void bet_init_player_seats_info()
+{
+	printf("%s::%d::max_players::%d\n", __FUNCTION__, __LINE__, max_players);
+	for (int i = 0; i < max_players; i++) {
+		sprintf(player_seats_info[i].seat_name, "player%d", i + 1);
+		player_seats_info[i].seat = i;
+		player_seats_info[i].stack = 0;
+		player_seats_info[i].empty = 1;
+		player_seats_info[i].playing = 0;
+	}
+}
+
+static void bet_init_seat_info()
+{
+	cJSON *seats_info = NULL, *table_info = NULL;
+	cJSON *seat[max_players];
+
+	bet_init_player_seats_info();
+	seats_info = cJSON_CreateArray();
+	for (int i = 0; i < max_players; i++) {
+		seat[i] = cJSON_CreateObject();
+		initialize_seat(seat[i], player_seats_info[i].seat_name, player_seats_info[i].seat,
+				player_seats_info[i].stack, player_seats_info[i].empty, player_seats_info[i].playing);
+		cJSON_AddItemToArray(seats_info, seat[i]);
+	}
+
+	table_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(table_info, "method", "init_seat_info");
+	cJSON_AddItemToObject(table_info, "seats", seats_info);
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(table_info));
+	player_lws_write(table_info);
+}
 int lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
 {
 	cJSON *argjson = NULL;
@@ -1180,7 +1213,8 @@ int lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason, 
 		wsi_global_client = wsi;
 		printf("%s:%d::LWS_CALLBACK_ESTABLISHED\n", __FUNCTION__, __LINE__);
 		ws_connection_status = 1;
-		bet_player_wallet_info();
+		//bet_player_wallet_info();
+		bet_init_seat_info();
 		break;
 	case LWS_CALLBACK_SERVER_WRITEABLE:
 		if (data_exists) {

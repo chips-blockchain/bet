@@ -49,6 +49,8 @@ char dealer_ip[20];
 char cashier_ip[20];
 char unique_id[65];
 
+struct seat_info player_seats_info[CARDS777_MAXPLAYERS];
+
 /**************************************************************************************************
 This value is read from dealer_config.json file, it defines the exact number of players that needs
 be joined in order to play the game.
@@ -371,10 +373,10 @@ int main(int argc, char **argv)
 		printf("Finding the dealer\n");
 		do {
 			ip = bet_pick_dealer();
-			if(!ip)
+			if (!ip)
 				sleep(2);
-		} while(ip == NULL);
-		
+		} while (ip == NULL);
+
 		if (ip) {
 			printf("The dealer is :: %s\n", ip);
 			bet_player_thrd(ip, port);

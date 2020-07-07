@@ -161,6 +161,15 @@ struct cashier {
 	cJSON *msg;
 };
 
+struct seat_info {
+	char seat_name[20];
+	int32_t seat;
+	int32_t stack;
+	int32_t empty;
+	int32_t playing;
+};
+
+extern struct seat_info player_seats_info[CARDS777_MAXPLAYERS];
 extern struct privatebet_info *bet_player;
 extern struct privatebet_vars *player_vars;
 

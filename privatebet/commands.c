@@ -720,7 +720,7 @@ cJSON *chips_add_multisig_address()
 		return NULL;
 	}
 
-	argc = 5;
+	argc = 4;
 	bet_alloc_args(argc, &argv);
 	snprintf(param, arg_size, "%d", threshold_value);
 
@@ -731,7 +731,7 @@ cJSON *chips_add_multisig_address()
 	}
 
 	argv = bet_copy_args(argc, "chips-cli", "addmultisigaddress", param,
-			     cJSON_Print(cJSON_CreateString(cJSON_Print(addr_list))), "-addresstype legacy");
+			     cJSON_Print(cJSON_CreateString(cJSON_Print(addr_list)))); //"-addresstype legacy"
 	msig_address = cJSON_CreateObject();
 	make_command(argc, argv, &msig_address);
 	bet_dealloc_args(argc, &argv);
