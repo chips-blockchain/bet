@@ -125,8 +125,7 @@ void bet_chat(struct lws *wsi, cJSON *argjson)
 	lws_write(wsi, cJSON_Print(chat_info), strlen(cJSON_Print(chat_info)), 0);
 }
 
-static inline void initialize_seat(cJSON *seat_info, char *name, int32_t seat, int32_t stack, int32_t empty,
-				   int32_t playing)
+void initialize_seat(cJSON *seat_info, char *name, int32_t seat, int32_t stack, int32_t empty, int32_t playing)
 {
 	cJSON_AddStringToObject(seat_info, "name", name);
 	cJSON_AddNumberToObject(seat_info, "seat", seat);
@@ -200,6 +199,7 @@ int32_t bet_dcv_frontend(struct lws *wsi, cJSON *argjson)
 	int32_t bytes = 0;
 
 	method = jstr(argjson, "method");
+	printf("%s::%d::method::%s\n", __FUNCTION__, __LINE__, method);
 	if (strcmp(method, "game") == 0) {
 		retval = bet_game(wsi, argjson);
 	} else if (strcmp(method, "seats") == 0) {
