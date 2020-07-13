@@ -443,11 +443,11 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 	player_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(player_info, "method", "join_res");
 
-	cJSON_AddNumberToObject(player_info, "player_id", jint(argjson, "gui_playerID"));
+	cJSON_AddNumberToObject(player_info, "playerid", jint(argjson, "gui_playerID"));
 	jaddbits256(player_info, "pubkey", jbits256(argjson, "pubkey"));
 	cJSON_AddStringToObject(player_info, "uri", uri);
 	cJSON_AddNumberToObject(player_info, "dealer", dealerPosition);
-
+	cJSON_AddNumberToObject(player_info,"seat_taken",0);
 	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(player_info));
 	rendered = cJSON_Print(player_info);
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
@@ -1468,11 +1468,38 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson, struct privatebet_info *bet)
 	return retval;
 }
 
+static int32_t bet_dcv_check_pos_status(int32_t gui_playerID, struct privatebet_info *bet)
+{
+	cJSON *join_res = NULL;
+	char *rendered = NULL;
+	int32_t bytes, pos_status;
+
+	pos_status = player_pos[gui_playerID];
+	if(pos_status == 1) {
+		printf("%s::%d::seat taken\n",__FUNCTION__,__LINE__);
+		join_res = cJSON_CreateObject();
+		cJSON_AddStringToObject(join_res,"method","join_res");
+		cJSON_AddNumberToObject(join_res,"playerid",gui_playerID);
+		cJSON_AddNumberToObject(join_res,"seat_taken",player_pos[gui_playerID]);
+
+		rendered = cJSON_Print(join_res);
+		bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
+		if(bytes < 0) {
+			printf("There is a problem in sending the data at ::%s::%d\n",__FUNCTION__,__LINE__);
+		}
+	}
+	else {
+		player_pos[gui_playerID] = 1;		
+	}
+	return pos_status;
+}
+
 static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int32_t retval = 1;
-	
-	cJSON_AddNumberToObject(argjson,"gui_playerID",players_joined);
+
+	if(1 == bet_dcv_check_pos_status(jint(argjson,"gui_playerID"),bet))
+		return retval; // the seat is already taken just inform this to player.
 	
 	if (bet->numplayers < bet->maxplayers) {
 		char *req_id = jstr(argjson, "req_identifier");

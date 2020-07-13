@@ -930,8 +930,8 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 	cJSON *init_card_info = NULL, *hole_card_info = NULL, *init_info = NULL, *stack_info = NULL;
 
 	if (0 == bits256_cmp(player_info.player_key.prod, jbits256(argjson, "pubkey"))) {
-		bet_player->myplayerid = jint(argjson, "player_id");
-		bet->myplayerid = jint(argjson, "player_id");
+		bet_player->myplayerid = jint(argjson, "playerid");
+		bet->myplayerid = jint(argjson, "playerid");
 
 		strcpy(uri, jstr(argjson, "uri"));
 		strcpy(channel_id, strtok(jstr(argjson, "uri"), "@"));
@@ -1321,13 +1321,14 @@ static void bet_player_blinds_info()
 	player_lws_write(blinds_info);
 }
 
-static void bet_push_join_info(int32_t playerid)
+static void bet_push_join_info(cJSON *argjson)
 {
 	cJSON *join_info = NULL;
 
 	join_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(join_info, "method", "join_info");
-	cJSON_AddNumberToObject(join_info, "playerid", playerid);
+	cJSON_AddStringToObject(join_info, "method", "info"); //changed to join_info to info
+	cJSON_AddNumberToObject(join_info, "playerid", jint(argjson,"playerid"));
+	cJSON_AddNumberToObject(join_info,"seat_taken",jint(argjson,"seat_taken"));
 	printf("%s::%d::join_info::%s\n",__FUNCTION__,__LINE__,cJSON_Print(join_info));
 	player_lws_write(join_info);
 }
@@ -1490,8 +1491,10 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			retval = bet_client_join(argjson, bet);
 
 		} else if (strcmp(method, "join_res") == 0) {
-			bet_push_join_info(jint(argjson, "peerid"));
-			retval = bet_client_join_res(argjson, bet, vars);
+			bet_push_join_info(argjson);
+			if(jint(argjson,"seat_taken") == 0) { 
+				retval = bet_client_join_res(argjson, bet, vars);
+			}
 		} else if (strcmp(method, "init") == 0) {
 			if (jint(argjson, "peerid") == bet->myplayerid) {
 				bet_player_blinds_info();

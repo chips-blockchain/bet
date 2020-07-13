@@ -226,6 +226,10 @@ static void bet_dcv_initialize(char *dcv_ip, const int32_t port)
 			dcv_vars->betamount[i][j] = 0;
 		}
 	}
+
+	for(int32_t i = 0; i < CARDS777_MAXPLAYERS; i++) {
+		player_pos[i] = 0;
+	}
 }
 
 static void bet_dcv_deinitialize()
