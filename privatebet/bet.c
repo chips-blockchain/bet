@@ -51,6 +51,9 @@ char unique_id[65];
 
 struct seat_info player_seats_info[CARDS777_MAXPLAYERS];
 
+int32_t player_pos[CARDS777_MAXPLAYERS];
+
+
 /**************************************************************************************************
 This value is read from dealer_config.json file, it defines the exact number of players that needs
 be joined in order to play the game.
