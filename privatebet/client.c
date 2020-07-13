@@ -1131,6 +1131,7 @@ static void bet_player_wallet_info()
 	cJSON_AddStringToObject(wallet_info, "method", "walletInfo");
 	cJSON_AddStringToObject(wallet_info, "addr", chips_get_wallet_address());
 	cJSON_AddNumberToObject(wallet_info, "balance", chips_get_balance());
+	cJSON_AddNumberToObject(wallet_info, "backend_status", backend_status);
 	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(wallet_info));
 	player_lws_write(wallet_info);
 }
