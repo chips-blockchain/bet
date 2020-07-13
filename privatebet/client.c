@@ -1079,7 +1079,7 @@ static int32_t bet_player_process_player_join(cJSON *argjson)
 			cJSON_AddStringToObject(warning_info, "method", "warning");
 			//cJSON_AddStringToObject(info, "response_to", "player_join");
 			cJSON_AddNumberToObject(warning_info, "warning_num", backend_not_ready);
-			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print())
+			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(warning_info));
 			player_lws_write(warning_info);
 		}
 	}
