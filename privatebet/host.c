@@ -1480,7 +1480,7 @@ static int32_t bet_dcv_check_pos_status(int32_t gui_playerID, struct privatebet_
 		join_res = cJSON_CreateObject();
 		cJSON_AddStringToObject(join_res,"method","join_res");
 		cJSON_AddNumberToObject(join_res,"playerid",gui_playerID);
-		cJSON_AddStringToObject(join_res,"seat_taken",player_pos[gui_playerID]);
+		cJSON_AddNumberToObject(join_res,"seat_taken",player_pos[gui_playerID]);
 
 		rendered = cJSON_Print(join_res);
 		bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
