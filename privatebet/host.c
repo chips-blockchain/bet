@@ -443,7 +443,7 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 	player_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(player_info, "method", "join_res");
 
-	cJSON_AddNumberToObject(player_info, "player_id", jint(argjson, "gui_playerID"));
+	cJSON_AddNumberToObject(player_info, "playerid", jint(argjson, "gui_playerID"));
 	jaddbits256(player_info, "pubkey", jbits256(argjson, "pubkey"));
 	cJSON_AddStringToObject(player_info, "uri", uri);
 	cJSON_AddNumberToObject(player_info, "dealer", dealerPosition);
