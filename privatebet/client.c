@@ -1135,6 +1135,17 @@ static void bet_player_wallet_info()
 	player_lws_write(wallet_info);
 }
 
+
+static void bet_player_process_be_status()
+{
+	cJSON *be_info = NULL;
+
+	be_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(be_info,"method","backend_status");
+	cJSON_AddNumberToObject(be_info, "backend_status", backend_status);
+	player_lws_write(be_info);
+	
+}
 int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 {
 	int32_t retval = 1;
@@ -1158,6 +1169,8 @@ int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 			player_lws_write(bet_get_chips_ln_addr_info());
 		} else if (strcmp(method, "walletInfo") == 0) {
 				bet_player_wallet_info();
+		} else if  (strcmp(method, "backend_status") == 0) {
+			bet_player_process_be_status();
 		}
 		else {
 			bet_player_handle_invalid_method(method);
