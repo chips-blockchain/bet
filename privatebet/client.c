@@ -1069,17 +1069,18 @@ end:
 static int32_t bet_player_process_player_join(cJSON *argjson)
 {
 	int32_t retval = 1;
-	cJSON *info = NULL;
+	cJSON *warning_info = NULL;
 
 	if (player_joined == 0) {
 		if (backend_status == 1) {
 			retval = bet_client_join(argjson, bet_player);
 		} else {
-			info = cJSON_CreateObject();
-			cJSON_AddStringToObject(info, "method", "info");
-			cJSON_AddStringToObject(info, "response_to", "player_join");
-			cJSON_AddNumberToObject(info, "backend_status", backend_status);
-			player_lws_write(info);
+			warning_info = cJSON_CreateObject();
+			cJSON_AddStringToObject(warning_info, "method", "warning");
+			//cJSON_AddStringToObject(info, "response_to", "player_join");
+			cJSON_AddNumberToObject(warning_info, "warning_num", backend_not_ready);
+			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print())
+			player_lws_write(warning_info);
 		}
 	}
 	return retval;
