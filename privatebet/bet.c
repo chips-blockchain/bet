@@ -53,7 +53,6 @@ struct seat_info player_seats_info[CARDS777_MAXPLAYERS];
 
 int32_t player_pos[CARDS777_MAXPLAYERS];
 
-
 /**************************************************************************************************
 This value is read from dealer_config.json file, it defines the exact number of players that needs
 be joined in order to play the game.
@@ -227,7 +226,7 @@ static void bet_dcv_initialize(char *dcv_ip, const int32_t port)
 		}
 	}
 
-	for(int32_t i = 0; i < CARDS777_MAXPLAYERS; i++) {
+	for (int32_t i = 0; i < CARDS777_MAXPLAYERS; i++) {
 		player_pos[i] = 0;
 	}
 }

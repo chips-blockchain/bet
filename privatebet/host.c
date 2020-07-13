@@ -447,10 +447,10 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 	jaddbits256(player_info, "pubkey", jbits256(argjson, "pubkey"));
 	cJSON_AddStringToObject(player_info, "uri", uri);
 	cJSON_AddNumberToObject(player_info, "dealer", dealerPosition);
-	cJSON_AddNumberToObject(player_info,"seat_taken",0);
-	cJSON_AddStringToObject(player_info,"req_identifier",jstr(argjson,"req_identifier"));
-	
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(player_info));
+	cJSON_AddNumberToObject(player_info, "seat_taken", 0);
+	cJSON_AddStringToObject(player_info, "req_identifier", jstr(argjson, "req_identifier"));
+
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(player_info));
 	rendered = cJSON_Print(player_info);
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 
@@ -1476,23 +1476,22 @@ static int32_t bet_dcv_check_pos_status(cJSON *argjson, struct privatebet_info *
 	char *rendered = NULL;
 	int32_t bytes, pos_status, gui_playerID;
 
-	gui_playerID = jint(argjson,"gui_playerID");
+	gui_playerID = jint(argjson, "gui_playerID");
 	pos_status = player_pos[gui_playerID];
-	if(pos_status == 1) {
-		printf("%s::%d::seat taken\n",__FUNCTION__,__LINE__);
+	if (pos_status == 1) {
+		printf("%s::%d::seat taken\n", __FUNCTION__, __LINE__);
 		join_res = cJSON_CreateObject();
-		cJSON_AddStringToObject(join_res,"method","join_res");
-		cJSON_AddNumberToObject(join_res,"playerid",gui_playerID);
-		cJSON_AddNumberToObject(join_res,"seat_taken",player_pos[gui_playerID]);
-		cJSON_AddStringToObject(join_res,"req_identifier",jstr(argjson,"req_identifier"));
+		cJSON_AddStringToObject(join_res, "method", "join_res");
+		cJSON_AddNumberToObject(join_res, "playerid", gui_playerID);
+		cJSON_AddNumberToObject(join_res, "seat_taken", player_pos[gui_playerID]);
+		cJSON_AddStringToObject(join_res, "req_identifier", jstr(argjson, "req_identifier"));
 		rendered = cJSON_Print(join_res);
 		bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
-		if(bytes < 0) {
-			printf("There is a problem in sending the data at ::%s::%d\n",__FUNCTION__,__LINE__);
+		if (bytes < 0) {
+			printf("There is a problem in sending the data at ::%s::%d\n", __FUNCTION__, __LINE__);
 		}
-	}
-	else {
-		player_pos[gui_playerID] = 1;		
+	} else {
+		player_pos[gui_playerID] = 1;
 	}
 	return pos_status;
 }
@@ -1501,9 +1500,9 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 {
 	int32_t retval = 1;
 
-	if(1 == bet_dcv_check_pos_status(argjson,bet))
+	if (1 == bet_dcv_check_pos_status(argjson, bet))
 		return retval; // the seat is already taken just inform this to player.
-	
+
 	if (bet->numplayers < bet->maxplayers) {
 		char *req_id = jstr(argjson, "req_identifier");
 		for (int32_t i = 0; i < no_of_rand_str; i++) {
