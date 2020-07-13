@@ -1043,6 +1043,7 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 		cJSON_AddNumberToObject(joininfo, "gui_playerID", jint(argjson, "gui_playerID"));
 		cJSON_AddStringToObject(joininfo, "req_identifier", req_identifier);
 		rendered = cJSON_Print(joininfo);
+		printf("%s::%d::joininfo::%s\n",__FUNCTION__,__LINE__,cJSON_Print(joininfo));
 		bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 		if (bytes < 0) {
 			printf("\n%s:%d: Failed to send data", __FUNCTION__, __LINE__);

@@ -448,6 +448,7 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 	cJSON_AddStringToObject(player_info, "uri", uri);
 	cJSON_AddNumberToObject(player_info, "dealer", dealerPosition);
 
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(player_info));
 	rendered = cJSON_Print(player_info);
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 
