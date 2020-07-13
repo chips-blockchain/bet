@@ -1040,7 +1040,7 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 
 		strcat(uri, jstr(address, "address"));
 		cJSON_AddStringToObject(joininfo, "uri", uri);
-		//cJSON_AddNumberToObject(joininfo, "gui_playerID", jint(argjson, "gui_playerID"));
+		cJSON_AddNumberToObject(joininfo, "gui_playerID", (jint(argjson, "gui_playerID")-1));
 		cJSON_AddStringToObject(joininfo, "req_identifier", req_identifier);
 		rendered = cJSON_Print(joininfo);
 		printf("%s::%d::joininfo::%s\n",__FUNCTION__,__LINE__,cJSON_Print(joininfo));
@@ -1069,17 +1069,18 @@ end:
 static int32_t bet_player_process_player_join(cJSON *argjson)
 {
 	int32_t retval = 1;
-	cJSON *info = NULL;
+	cJSON *warning_info = NULL;
 
 	if (player_joined == 0) {
 		if (backend_status == 1) {
 			retval = bet_client_join(argjson, bet_player);
 		} else {
-			info = cJSON_CreateObject();
-			cJSON_AddStringToObject(info, "method", "info");
-			cJSON_AddStringToObject(info, "response_to", "player_join");
-			cJSON_AddNumberToObject(info, "backend_status", backend_status);
-			player_lws_write(info);
+			warning_info = cJSON_CreateObject();
+			cJSON_AddStringToObject(warning_info, "method", "warning");
+			//cJSON_AddStringToObject(info, "response_to", "player_join");
+			cJSON_AddNumberToObject(warning_info, "warning_num", backend_not_ready);
+			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(warning_info));
+			player_lws_write(warning_info);
 		}
 	}
 	return retval;
@@ -1492,10 +1493,12 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			retval = bet_client_join(argjson, bet);
 
 		} else if (strcmp(method, "join_res") == 0) {
-			bet_push_join_info(argjson);
-			if(jint(argjson,"seat_taken") == 0) { 
-				retval = bet_client_join_res(argjson, bet, vars);
-			}
+			if(strcmp(jstr(argjson,"req_identifier"), req_identifier) == 0) {
+				bet_push_join_info(argjson);
+				if(jint(argjson,"seat_taken") == 0) { 
+					retval = bet_client_join_res(argjson, bet, vars);
+				}
+			}			
 		} else if (strcmp(method, "init") == 0) {
 			if (jint(argjson, "peerid") == bet->myplayerid) {
 				bet_player_blinds_info();
