@@ -968,7 +968,8 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 		init_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(init_info, "method", "deal");
 		cJSON_AddItemToObject(init_info, "deal", init_card_info);
-
+			
+		printf("%s::%d::init_info::%s\n",__FUNCTION__,__LINE__,cJSON_Print(init_info));
 		player_lws_write(init_info);
 
 		stack_info = cJSON_CreateObject();
@@ -976,6 +977,7 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 		cJSON_AddNumberToObject(stack_info, "playerid", bet->myplayerid);
 		cJSON_AddNumberToObject(stack_info, "stack_value", vars->player_funds);
 
+		printf("%s::%d::stack_info::%s\n",__FUNCTION__,__LINE__,cJSON_Print(stack_info));
 		rendered = cJSON_Print(stack_info);
 		bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 		if (bytes < 0) {
@@ -1312,6 +1314,7 @@ static void bet_push_join_info(int32_t playerid)
 	join_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(join_info, "method", "join_info");
 	cJSON_AddNumberToObject(join_info, "playerid", playerid);
+	printf("%s::%d::join_info::%s\n",__FUNCTION__,__LINE__,cJSON_Print(join_info));
 	player_lws_write(join_info);
 }
 
