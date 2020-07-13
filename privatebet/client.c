@@ -1493,10 +1493,12 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			retval = bet_client_join(argjson, bet);
 
 		} else if (strcmp(method, "join_res") == 0) {
-			bet_push_join_info(argjson);
-			if(jint(argjson,"seat_taken") == 0) { 
-				retval = bet_client_join_res(argjson, bet, vars);
-			}
+			if(strcmp(jstr(argjson,"req_identifier"), req_identifier) == 0) {
+				bet_push_join_info(argjson);
+				if(jint(argjson,"seat_taken") == 0) { 
+					retval = bet_client_join_res(argjson, bet, vars);
+				}
+			}			
 		} else if (strcmp(method, "init") == 0) {
 			if (jint(argjson, "peerid") == bet->myplayerid) {
 				bet_player_blinds_info();
