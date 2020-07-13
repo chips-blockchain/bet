@@ -930,8 +930,8 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 	cJSON *init_card_info = NULL, *hole_card_info = NULL, *init_info = NULL, *stack_info = NULL;
 
 	if (0 == bits256_cmp(player_info.player_key.prod, jbits256(argjson, "pubkey"))) {
-		bet_player->myplayerid = jint(argjson, "peerid");
-		bet->myplayerid = jint(argjson, "peerid");
+		bet_player->myplayerid = jint(argjson, "player_id");
+		bet->myplayerid = jint(argjson, "player_id");
 
 		strcpy(uri, jstr(argjson, "uri"));
 		strcpy(channel_id, strtok(jstr(argjson, "uri"), "@"));
@@ -1040,7 +1040,7 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 
 		strcat(uri, jstr(address, "address"));
 		cJSON_AddStringToObject(joininfo, "uri", uri);
-		cJSON_AddNumberToObject(joininfo, "gui_playerID", jint(argjson, "gui_playerID"));
+		//cJSON_AddNumberToObject(joininfo, "gui_playerID", jint(argjson, "gui_playerID"));
 		cJSON_AddStringToObject(joininfo, "req_identifier", req_identifier);
 		rendered = cJSON_Print(joininfo);
 		printf("%s::%d::joininfo::%s\n",__FUNCTION__,__LINE__,cJSON_Print(joininfo));

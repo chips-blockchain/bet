@@ -443,7 +443,7 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 	player_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(player_info, "method", "join_res");
 
-	cJSON_AddNumberToObject(player_info, "peerid", jint(argjson, "gui_playerID"));
+	cJSON_AddNumberToObject(player_info, "player_id", jint(argjson, "gui_playerID"));
 	jaddbits256(player_info, "pubkey", jbits256(argjson, "pubkey"));
 	cJSON_AddStringToObject(player_info, "uri", uri);
 	cJSON_AddNumberToObject(player_info, "dealer", dealerPosition);
@@ -1471,7 +1471,9 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson, struct privatebet_info *bet)
 static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int32_t retval = 1;
-
+	
+	cJSON_AddNumberToObject(argjson,"gui_playerID",players_joined);
+	
 	if (bet->numplayers < bet->maxplayers) {
 		char *req_id = jstr(argjson, "req_identifier");
 		for (int32_t i = 0; i < no_of_rand_str; i++) {
