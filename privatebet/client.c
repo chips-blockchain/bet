@@ -1477,6 +1477,32 @@ static int32_t bet_player_process_game_info(cJSON *argjson)
 	return rc;
 }
 
+
+static void bet_update_seat_info(cJSON *argjson)
+{
+	cJSON *seats_info = NULL, *table_info = NULL;
+	cJSON *seat[max_players];
+	int32_t playerid;
+
+	if(jint(argjson,"seat_taken") == 0) {
+		playerid = jint(argjson,"playerid");
+		player_seats_info[playerid].empty = 0;
+	}
+	seats_info = cJSON_CreateArray();
+	for (int i = 0; i < max_players; i++) {
+		seat[i] = cJSON_CreateObject();
+		initialize_seat(seat[i], player_seats_info[i].seat_name, player_seats_info[i].seat,
+				player_seats_info[i].chips, player_seats_info[i].empty, player_seats_info[i].playing);
+		cJSON_AddItemToArray(seats_info, seat[i]);
+	}
+
+	table_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(table_info, "method", "seats");
+	cJSON_AddItemToObject(table_info, "seats", seats_info);
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(table_info));
+	//player_lws_write(table_info);
+}
+
 int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int32_t retval = 1, bytes;
@@ -1490,6 +1516,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			retval = bet_client_join(argjson, bet);
 
 		} else if (strcmp(method, "join_res") == 0) {
+			bet_update_seat_info(argjson);
 			if (strcmp(jstr(argjson, "req_identifier"), req_identifier) == 0) {
 				bet_push_join_info(argjson);
 				if (jint(argjson, "seat_taken") == 0) {
