@@ -1350,7 +1350,6 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 
 	stack_info_resp = cJSON_CreateObject();
 	cJSON_AddStringToObject(stack_info_resp, "method", "stack_info_resp");
-	cJSON_AddNumberToObject(stack_info_resp, "table_stack_in_chips", table_stack_in_chips);
 	cJSON_AddStringToObject(stack_info_resp, "id", jstr(argjson, "id"));
 	/*
 	pthread_mutex_lock(&mutex);
