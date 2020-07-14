@@ -1133,8 +1133,8 @@ static void bet_player_wallet_info()
 	cJSON_AddStringToObject(wallet_info, "addr", chips_get_wallet_address());
 	cJSON_AddNumberToObject(wallet_info, "balance", chips_get_balance());
 	cJSON_AddNumberToObject(wallet_info, "backend_status", backend_status);
-	cJSON_AddNumberToObject(wallet_info,"max_players",max_players);
-	cJSON_AddNumberToObject(wallet_info,"table_stack_in_chips",table_stack_in_chips*normalization_factor);
+	cJSON_AddNumberToObject(wallet_info,"max_players",max_players);	
+	cJSON_AddNumberToObject(wallet_info,"table_stack_in_chips",(table_stack_in_chips * satoshis) / (satoshis_per_unit * normalization_factor));
 	cJSON_AddStringToObject(wallet_info,"table_id",table_id);
 	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(wallet_info));
 	player_lws_write(wallet_info);
