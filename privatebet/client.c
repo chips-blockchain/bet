@@ -1581,6 +1581,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 					retval = -1;
 			}
 		} else if (strcmp(method, "stack_info_resp") == 0) {
+			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 			if (strncmp(req_identifier, jstr(argjson, "id"), sizeof(req_identifier)) == 0)
 				retval = bet_player_handle_stack_info_resp(argjson, bet);
 		} else if (strcmp(method, "tx_status") == 0) {
