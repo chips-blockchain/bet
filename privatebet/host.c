@@ -409,6 +409,23 @@ int32_t bet_dcv_start(struct privatebet_info *bet, int32_t peerid)
 
 	return retval;
 }
+
+cJSON* bet_get_seats_json(struct privatebet_info *bet)
+{
+	
+	cJSON *seats_info = NULL;
+	cJSON *seat[bet->maxplayers];
+	
+	seats_info = cJSON_CreateArray();
+	for (int i = 0; i < bet->maxplayers; i++) {
+		seat[i] = cJSON_CreateObject();
+		initialize_seat(seat[i], player_seats_info[i].seat_name, player_seats_info[i].seat,
+				player_seats_info[i].chips, player_seats_info[i].empty, player_seats_info[i].playing);
+		cJSON_AddItemToArray(seats_info, seat[i]);
+	}
+	return seats_info;
+}
+
 int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	cJSON *player_info = NULL, *get_info = NULL, *addresses = NULL, *address = NULL;
@@ -450,6 +467,14 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 	cJSON_AddNumberToObject(player_info, "seat_taken", 0);
 	cJSON_AddStringToObject(player_info, "req_identifier", jstr(argjson, "req_identifier"));
 
+	seat_info[jint(argjson, "gui_playerID")].empty = 0;
+	seat_info[jint(argjson, "gui_playerID")].chips =vars->funds[req_id_to_player_id_mapping[jint(argjson, "gui_playerID")]];
+
+	cJSON *seats_info = NULL;
+
+	seats_info = bet_get_seats_json(bet);
+	cJSON_AddItemToObject(player_info,"seats",seats_info);
+	
 	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(player_info));
 	rendered = cJSON_Print(player_info);
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
@@ -1469,6 +1494,7 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson, struct privatebet_info *bet)
 	return retval;
 }
 
+#if 0
 static int32_t bet_dcv_check_pos_status(cJSON *argjson, struct privatebet_info *bet)
 {
 	cJSON *join_res = NULL;
@@ -1492,6 +1518,36 @@ static int32_t bet_dcv_check_pos_status(cJSON *argjson, struct privatebet_info *
 	} else {
 		player_pos[gui_playerID] = 1;
 	}
+	return pos_status;
+}
+#endif
+
+
+static int32_t bet_dcv_check_pos_status(cJSON *argjson, struct privatebet_info *bet)
+{
+	cJSON *join_res = NULL;
+	char *rendered = NULL;
+	int32_t bytes, pos_status = 0, gui_playerID;
+
+	
+	gui_playerID = jint(argjson, "gui_playerID");
+
+	if(seat_info[gui_playerID].empty == 0)
+		pos_status =1;
+	
+	if (pos_status == 1) {
+		printf("%s::%d::seat taken\n", __FUNCTION__, __LINE__);
+		join_res = cJSON_CreateObject();
+		cJSON_AddStringToObject(join_res, "method", "join_res");
+		cJSON_AddNumberToObject(join_res, "playerid", gui_playerID);
+		cJSON_AddNumberToObject(join_res, "seat_taken", pos_status);
+		cJSON_AddStringToObject(join_res, "req_identifier", jstr(argjson, "req_identifier"));
+		rendered = cJSON_Print(join_res);
+		bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
+		if (bytes < 0) {
+			printf("There is a problem in sending the data at ::%s::%d\n", __FUNCTION__, __LINE__);
+		}
+	} 
 	return pos_status;
 }
 
