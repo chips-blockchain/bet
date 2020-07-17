@@ -67,6 +67,7 @@ char *legacy_m_of_n_msig_addr = NULL;
 
 int32_t bvv_state = 0;
 char dealer_ip_for_bvv[128];
+
 void bet_compute_m_of_n_msig_addr()
 {
 	cJSON *msig_addr = NULL;
