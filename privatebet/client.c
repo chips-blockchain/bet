@@ -1181,18 +1181,6 @@ int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 	return retval;
 }
 
-static void bet_init_player_seats_info()
-{
-	printf("%s::%d::max_players::%d\n", __FUNCTION__, __LINE__, max_players);
-	for (int i = 0; i < max_players; i++) {
-		sprintf(player_seats_info[i].seat_name, "player%d", i + 1);
-		player_seats_info[i].seat = i;
-		player_seats_info[i].chips = 0;
-		player_seats_info[i].empty = 1;
-		player_seats_info[i].playing = 0;
-	}
-}
-
 static void bet_init_seat_info()
 {
 	cJSON *seats_info = NULL, *table_info = NULL;
@@ -1214,6 +1202,24 @@ static void bet_init_seat_info()
 	player_lws_write(table_info);
 }
 
+static void bet_gui_init_message(struct privatebet_info *bet)
+{
+	cJSON *warning_info = NULL;
+	cJSON *req_seats_info = NULL;
+	
+	if(backend_status == 0){
+		warning_info = cJSON_CreateObject();
+		cJSON_AddStringToObject(warning_info, "method", "warning");
+		cJSON_AddNumberToObject(warning_info, "warning_num", backend_not_ready);
+		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(warning_info));
+		player_lws_write(warning_info);
+	} else {
+		req_seats_info = cJSON_CreateObject();
+		cJSON_AddStringToObject(req_seats_info,"method","req_seats_info");
+		printf("%s::%d::joininfo::%s\n", __FUNCTION__, __LINE__, cJSON_Print(req_seats_info));
+		nn_send(bet->pushsock, cJSON_Print(req_seats_info), strlen(cJSON_Print(req_seats_info)), 0);
+	}
+}
 int lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
 {
 	cJSON *argjson = NULL;
@@ -1236,7 +1242,7 @@ int lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason, 
 		wsi_global_client = wsi;
 		printf("%s:%d::LWS_CALLBACK_ESTABLISHED\n", __FUNCTION__, __LINE__);
 		ws_connection_status = 1;
-		bet_init_seat_info();
+		bet_gui_init_message(bet_player);
 		break;
 	case LWS_CALLBACK_SERVER_WRITEABLE:
 		printf("%s::%d::\n", __FUNCTION__, __LINE__);
@@ -1585,8 +1591,9 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			}
 		} else if (strcmp(method, "stack_info_resp") == 0) {
 			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
-			if (strncmp(req_identifier, jstr(argjson, "id"), sizeof(req_identifier)) == 0)
+			if (strncmp(req_identifier, jstr(argjson, "id"), sizeof(req_identifier)) == 0) {
 				retval = bet_player_handle_stack_info_resp(argjson, bet);
+			}	
 		} else if (strcmp(method, "tx_status") == 0) {
 			if (strcmp(req_identifier, jstr(argjson, "id")) == 0) {
 				vars->player_funds = jint(argjson, "player_funds");
@@ -1601,6 +1608,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 					cJSON *info = cJSON_CreateObject();
 					cJSON_AddStringToObject(info, "method", "backend_status");
 					cJSON_AddNumberToObject(info, "backend_status", backend_status);
+					cJSON_AddItemToObject(info,"seats",bet_get_seats_json(bet->maxplayers));
 					player_lws_write(info);
 				} else {
 					printf("%s::%d::%s\n", __FUNCTION__, __LINE__,
@@ -1627,6 +1635,11 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 				       __FUNCTION__, __LINE__, cJSON_Print(argjson));
 				retval = -1;
 			}
+		} else if (strcmp(method, "seats_info_resp") == 0) {
+			cJSON *seats_info = cJSON_CreateObject();
+			cJSON_AddStringToObject(seats_info,"method","seats");
+			cJSON_AddItemToObject(seats_info,"seats",cJSON_GetObjectItem(argjson,"seats"));
+			player_lws_write(seats_info);
 		}
 	}
 	return retval;

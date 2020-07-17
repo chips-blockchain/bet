@@ -20,3 +20,5 @@ int32_t bet_dcv_frontend(struct lws *wsi, cJSON *argjson);
 int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *vars);
 void bet_push_dcv_to_gui(cJSON *argjson);
 void bet_dcv_lws_write(cJSON *data);
+void bet_init_player_seats_info();
+cJSON* bet_get_seats_json(int32_t max_players);

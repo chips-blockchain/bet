@@ -329,6 +329,7 @@ static void dealer_node_init()
 	bet_parse_dealer_config_file();
 	bet_set_table_id();
 	bet_compute_m_of_n_msig_addr();
+	bet_init_player_seats_info();
 }
 
 static void bet_send_dealer_info_to_cashier(char *dealer_ip)
