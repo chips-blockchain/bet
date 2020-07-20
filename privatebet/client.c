@@ -1245,7 +1245,7 @@ int lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason, 
 		bet_gui_init_message(bet_player);
 		break;
 	case LWS_CALLBACK_SERVER_WRITEABLE:
-		printf("%s::%d::\n", __FUNCTION__, __LINE__);
+		printf("%s::%d::Writing data to the GUI\n", __FUNCTION__, __LINE__);
 		if (data_exists) {
 			if (player_gui_data) {
 				lws_write(wsi, player_gui_data, strlen(player_gui_data), 0);
@@ -1489,27 +1489,13 @@ static int32_t bet_player_process_game_info(cJSON *argjson)
 
 static void bet_update_seat_info(cJSON *argjson)
 {
-	cJSON *seats_info = NULL, *table_info = NULL;
-	cJSON *seat[max_players];
-	int32_t playerid;
+	cJSON *seats_info = NULL;
 
-	if(jint(argjson,"seat_taken") == 0) {
-		playerid = jint(argjson,"playerid");
-		player_seats_info[playerid].empty = 0;
-	}
-	seats_info = cJSON_CreateArray();
-	for (int i = 0; i < max_players; i++) {
-		seat[i] = cJSON_CreateObject();
-		initialize_seat(seat[i], player_seats_info[i].seat_name, player_seats_info[i].seat,
-				player_seats_info[i].chips, player_seats_info[i].empty, player_seats_info[i].playing);
-		cJSON_AddItemToArray(seats_info, seat[i]);
-	}
-
-	table_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(table_info, "method", "seats");
-	cJSON_AddItemToObject(table_info, "seats", seats_info);
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(table_info));
-	//player_lws_write(table_info);
+	seats_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(seats_info, "method", "seats");
+	cJSON_AddItemToObject(seats_info, "seats", cJSON_GetObjectItem(argjson,"seats"));
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(seats_info));
+	player_lws_write(seats_info);
 }
 
 int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
