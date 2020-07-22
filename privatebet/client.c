@@ -1594,7 +1594,6 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 					cJSON *info = cJSON_CreateObject();
 					cJSON_AddStringToObject(info, "method", "backend_status");
 					cJSON_AddNumberToObject(info, "backend_status", backend_status);
-					cJSON_AddItemToObject(info,"seats",bet_get_seats_json(bet->maxplayers));
 					player_lws_write(info);
 					cJSON *req_seats_info = NULL;					
 					req_seats_info = cJSON_CreateObject();
