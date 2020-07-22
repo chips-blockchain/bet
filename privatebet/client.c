@@ -1596,6 +1596,12 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 					cJSON_AddNumberToObject(info, "backend_status", backend_status);
 					cJSON_AddItemToObject(info,"seats",bet_get_seats_json(bet->maxplayers));
 					player_lws_write(info);
+					cJSON *req_seats_info = NULL;					
+					req_seats_info = cJSON_CreateObject();
+					cJSON_AddStringToObject(req_seats_info,"method","req_seats_info");
+					printf("%s::%d::joininfo::%s\n", __FUNCTION__, __LINE__, cJSON_Print(req_seats_info));
+					nn_send(bet->pushsock, cJSON_Print(req_seats_info), strlen(cJSON_Print(req_seats_info)), 0);
+
 				} else {
 					printf("%s::%d::%s\n", __FUNCTION__, __LINE__,
 					       "unable make lock_in transaction");
