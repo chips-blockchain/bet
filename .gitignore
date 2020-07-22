@@ -2,3 +2,5 @@
 privatebet/bet
 *.sisc
 *.a
+privatebet/cashierd
+privatebet/cron.sh
