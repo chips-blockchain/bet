@@ -65,13 +65,6 @@ This `dealer_ip` should be `static public ip` of a machine on which one wants to
 
 The dealer can configure the table parameters, the steps to configure the table parameters are mentioned [here](https://github.com/chips-blockchain/docker).
 
-### Command to run BVV
-Now BVV is part of the Cashier node, so no need to start the BVV node explicitly. Dealer will choose any of the cashier nodes to act as a BVV. As we know the role of BVV is for deck shuffling.
-```
-$ cd
-$ cd bet/privatebet
-$ ./bet bvv
-```
 ### Command to run Player
 ```
 $ cd
