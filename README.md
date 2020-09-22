@@ -10,13 +10,13 @@ If you would like to learn more please refer to the [Pangea Protocol Whitepaper]
 
 ### Terms
 
-`CHIPS` - game token and the name of the poker project.
+`CHIPS` - game token and the name of the poker project
 
 `DCV` - Deck Creating Vendor, the Dealer node
 
-`BVV` - Blinding Value Vendor, the component that helps securelt shuffle the deck
+`BVV` - Blinding Value Vendor, the component that helps securely shuffle the deck
 
-`Cashier` or `Notary` nodes - The trusted nodes in the network and are elcted and chosen by the community. The set of trusted nodes at the moment are [here](https://github.com/chips-blockchain/bet/blob/master/privatebet/config/cashier_nodes.json).
+`Cashier` or `Notary` nodes - Trusted nodes in the network that are elcted and chosen by the community. The set of trusted nodes at the moment are [here](https://github.com/chips-blockchain/bet/blob/master/privatebet/config/cashier_nodes.json).
 
 ### Node Communication
 
@@ -32,6 +32,8 @@ Source: Pangea Protocol Whitepaper (authors: [sg777](https://github.com/sg777), 
 
 
 ## Installation
+
+> Note: You will need an exposed IP to play the game
 
 ### Ports to be used and open
 
@@ -49,35 +51,38 @@ Below are the list of the ports used and should be remained open incase if you h
 Steps to compile this repo is mentioned in [compile.md](./compile.md). 
 
 ### Docker Setup
-The node set up can also be done using the docker, steps to setup the docker has been mentioned [here](./docker_setup.md).
+
+The node set up can also be done [using Docker](https://github.com/chips-blockchain/docker).
 
 ## Running the game
 
 ### Command to run DCV
 ```
-$ cd
-$ cd bet/privatebet
-$ ./bet dcv dealer_ip
+$ cd ~/bet/privatebet
+$ ./bet dcv <dealer_ip>
 ```
-This `dealer_ip` should be `static public ip` of a machine on which one wants to run the dealer.
+The `dealer_ip` should be a `static public ip` of a machine on which a dealer node runs.
 
 #### Configuring the Table
 
-The dealer can configure the table parameters, the steps to configure the table parameters are mentioned [here](https://github.com/chips-blockchain/docker).
+The dealer can configure the table parameters, the steps to configure the table parameters are mentioned [here](./configure_dealer.md).
 
 ### Command to run Player
+
 ```
 $ cd
 $ cd bet/privatebet
 $ ./bet player
 ```
+
 ### Command to run Cashier
+
 ```
 $ cd
 $ cd bet/privatebet
 $ ./bet cashier cashier_ip
 ```
-This `cashier_ip` should be `static public ip` of a machine on which one wants to run the cashier. The cashier nodes are the trusted nodes in the network and are elcted and chosen by the community. The set of trusted nodes at the moment are [here](./privatebet/config/cashier_nodes.json).
+The `cashier_ip` should be a `static public ip` of a machine on which a cashier node runs. The cashier nodes are the trusted nodes in the network and are elcted and chosen by the community. The set of trusted nodes at the moment are [here](./privatebet/config/cashier_nodes.json).
 
 The detailed description of the cashier protocol is mentioned [here](./cashier_protocol.md).
 
