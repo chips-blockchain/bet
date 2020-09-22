@@ -1,13 +1,34 @@
 ## Steps to compile
+
+Tested with Ubuntu 16.04 and Ubuntu 18.04
+
+### Dependencies Check 
+
 ```
-# Dependencies Check 
+$ sudo apt-get update
+$ sudo apt-get install software-properties-common autoconf git build-essential libtool libprotobuf-c-dev libgmp-dev libsqlite3-dev python python3 zip libevent-dev pkg-config libssl-dev libcurl4-gnutls-dev make libboost-all-dev automake jq wget ninja-build libsqlite3-dev libgmp3-dev valgrind libcli-dev libsecp256k1-dev libsodium-dev libbase58-dev nano tmux
 
-$ sudo apt-get install software-properties-common autoconf git build-essential libtool libprotobuf-c-dev libgmp-dev libsqlite3-dev python python3 zip jq libevent-dev pkg-config libssl-dev libcurl4-gnutls-dev cmake
+# nanomsg-next-generation requires cmake 3.13 or higher
+wget https://cmake.org/files/v3.16/cmake-3.16.1-Linux-x86_64.sh /cmake-3.16.1-Linux-x86_64.sh
+mkdir /opt/cmake
+sh /cmake-3.16.1-Linux-x86_64.sh --prefix=/opt/cmake --skip-license
+ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
 
-$ sudo apt install make ninja-build libsqlite3-dev libgmp3-dev
+# Installing Jsmn
+$ cd ~
+$ git clone https://github.com/zserge/jsmn.git
+$ cd jsmn && make
+
+# Installing Libwally
+$ cd ~
+$ git clone https://github.com/ElementsProject/libwally-core.git
+$ cd libwally-core
+$ ./tools/autogen.sh
+$ ./configure
+$ make
+$ make check
 
 # Install nanomsg-next-generation 
-
 $ cd ~
 $ git clone https://github.com/nanomsg/nng.git
 $ cd nng
@@ -19,7 +40,6 @@ $ ninja test
 $ sudo ninja install
 
 # Installing libwebsockets
-
 $ cd ~
 $ git clone https://github.com/sg777/libwebsockets.git
 $ cd libwebsockets
@@ -27,19 +47,22 @@ $ mkdir build
 $ cd build
 $ cmake -DLWS_WITH_HTTP2=1 ..
 $ make && sudo make install
+$ ldconfig /usr/local/lib
 
-# Install libwebsockets
-
-$ cd ~
-$ git clone https://github.com/sg777/libwebsockets.git
-$ mkdir build
-$ cmake ..
+# Install Berkeley 4.8 db libs
+$ mkdir ~/db-4.8.30 && cd ~/db-4.8.30
+$ wget http://download.oracle.com/berkeley-db/db-4.8.30.zip
+$ unzip db-4.8.30.zip
+$ cd db-4.8.30
+$ cd build_unix/
+$ ../dist/configure --prefix=/usr/local --enable-cxx
 $ make
-$ sudo make install
-$ ldconfig
+$ make install
 
-# Installing CHIPS
+```
 
+### Installing CHIPS
+```
 $ cd ~
 $ git clone https://github.com/sg777/chips3.git
 $ cd chips3
@@ -51,14 +74,23 @@ $ make chips-cli
 $ sudo cp chips-cli /usr/bin # just need to get chips-cli to work from command line
 # make -> will build everything, including QT wallet
 $ sudo ldconfig /usr/local/lib # thanks smaragda!
+
+# Bootstraping CHIPS
+$ cd ~/.chips && \
+$ wget http://bootstrap3rd.dexstats.info/CHIPS-bootstrap.tar.gz && \
+$ tar xvzf CHIPS-bootstrap.tar.gz && \
+$ rm CHIPS-bootstrap.tar.gz
+
 # Running CHIPS Daemon
+$ cd ~/chips
+$ ./autogen.sh
+$ ./configure LDFLAGS="-L/chips/db4/lib/" CPPFLAGS="-I/chips/db4/include/" -without-gui -without-miniupnpc --disable-tests --disable-bench --with-gui=no
+$ make -j2
+```
 
-$ cd ~
-$ cd chips/src
-$ ./chipsd -addnode=5.9.253.195 &
+### Installing Lightning Repo
 
-# Installing Lightning Repo
-
+```
 $ cd ~
 $ git clone https://github.com/sg777/lightning.git
 $ cd lightning
@@ -66,24 +98,25 @@ $ make
 $ cd src
 $ cp lightning-cli /usr/bin
 $ ldconfig
+```
 
-# Running Lightning Daemon
-
+### Running Lightning Daemon
+```
 $ cd ~
 $ cd lightning
 $ ./lightningd/lightningd --log-level=debug &
-
-#Installing Bet
-
+```
+### Installing Bet
+```
 $ cd ~
 $ git clone https://github.com/sg777/bet.git
 $ cd bet
 $ make
 ```
+
 ## Running uisng Docker
 
-All the above repos are already been cloned in the docker container, use the following command to to start the Docker container:
-```
-docker run --net=host -t -i -v /root/.chips:/root/.chips:rw  -v /root/.chipsln:/root/.chipsln:rw  norbertdragan/pangea-poker
-```
+All the above repos are already been cloned in the docker container. Please refer to 
+https://github.com/chips-blockchain/docs#docker for information on Docker.
+
 Note: When you run this docker container, since we are sharing the host network with the docker container, so make sure to stop the chips and ln nodes in the host node.
