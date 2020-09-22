@@ -4,3 +4,4 @@ privatebet/bet
 *.a
 privatebet/cashierd
 privatebet/cron.sh
+privatebet/listunspent.log

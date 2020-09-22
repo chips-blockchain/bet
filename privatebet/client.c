@@ -750,7 +750,9 @@ int32_t bet_client_turn(cJSON *argjson, struct privatebet_info *bet, struct priv
 {
 	int32_t retval = 1, playerid;
 
+	
 	playerid = jint(argjson, "playerid");
+	printf("%s::%d::playerid::%d::%s::\n",__FUNCTION__,__LINE__,playerid,cJSON_Print(argjson));
 
 	if (playerid == bet->myplayerid) {
 		no_of_shares = 1;
@@ -834,8 +836,11 @@ int32_t bet_client_dcv_init(cJSON *dcv_info, struct privatebet_info *bet, struct
 	int32_t retval = 1;
 	cJSON *cjson_card_prods, *cjsong_hash;
 
+	
 	player_info.deckid = jbits256(dcv_info, "deckid");
 	cjson_card_prods = cJSON_GetObjectItem(dcv_info, "cardprods");
+
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(cjson_card_prods));
 
 	for (int i = 0; i < bet->numplayers; i++) {
 		for (int j = 0; j < bet->range; j++) {
@@ -869,7 +874,7 @@ int32_t bet_client_init(cJSON *argjson, struct privatebet_info *bet, struct priv
 		cJSON_AddItemToArray(cjson_player_cards,
 				     cJSON_CreateString(bits256_str(str, player_info.cardpubkeys[i])));
 	}
-
+	printf("%s::%d::init_p::%s\n",__FUNCTION__,__LINE__,cJSON_Print(init_p));
 	rendered = cJSON_Print(init_p);
 	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 	if (bytes < 0) {
@@ -1245,7 +1250,7 @@ int lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason, 
 		bet_gui_init_message(bet_player);
 		break;
 	case LWS_CALLBACK_SERVER_WRITEABLE:
-		printf("%s::%d::Writing data to the GUI\n", __FUNCTION__, __LINE__);
+		//printf("%s::%d::Writing data to the GUI\n", __FUNCTION__, __LINE__);
 		if (data_exists) {
 			if (player_gui_data) {
 				lws_write(wsi, player_gui_data, strlen(player_gui_data), 0);
@@ -1494,7 +1499,6 @@ static void bet_update_seat_info(cJSON *argjson)
 	seats_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(seats_info, "method", "seats");
 	cJSON_AddItemToObject(seats_info, "seats", cJSON_GetObjectItem(argjson,"seats"));
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(seats_info));
 	player_lws_write(seats_info);
 }
 
@@ -1507,10 +1511,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 	if ((method = jstr(argjson, "method")) != 0) {
 		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
 
-		if (strcmp(method, "join") == 0) {
-			retval = bet_client_join(argjson, bet);
-
-		} else if (strcmp(method, "join_res") == 0) {
+		if (strcmp(method, "join_res") == 0) {
 			bet_update_seat_info(argjson);
 			if (strcmp(jstr(argjson, "req_identifier"), req_identifier) == 0) {
 				bet_push_join_info(argjson);
@@ -1521,6 +1522,8 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		} else if (strcmp(method, "init") == 0) {
 			if (jint(argjson, "peerid") == bet->myplayerid) {
 				bet_player_blinds_info();
+				printf("%s::%d::myplayerid::%d::init::%s\n",__FUNCTION__,__LINE__,
+					bet->myplayerid,cJSON_Print(argjson));
 				retval = bet_client_init(argjson, bet, vars);
 			}
 		} else if (strcmp(method, "init_d") == 0) {
@@ -1581,6 +1584,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 				retval = bet_player_handle_stack_info_resp(argjson, bet);
 			}	
 		} else if (strcmp(method, "tx_status") == 0) {
+			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 			if (strcmp(req_identifier, jstr(argjson, "id")) == 0) {
 				vars->player_funds = jint(argjson, "player_funds");
 				if (jint(argjson, "tx_validity") == 1) {
@@ -1630,7 +1634,12 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			cJSON *seats_info = cJSON_CreateObject();
 			cJSON_AddStringToObject(seats_info,"method","seats");
 			cJSON_AddItemToObject(seats_info,"seats",cJSON_GetObjectItem(argjson,"seats"));
+			//printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(seats_info));
 			player_lws_write(seats_info);
+		} else if (strcmp(method, "config_data") == 0) {
+			printf("%s::%d::config_data::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+		} else {
+			printf("%s::%d:: %s method is not handled in the backend\n",__FUNCTION__,__LINE__,method);
 		}
 	}
 	return retval;
