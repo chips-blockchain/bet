@@ -94,10 +94,7 @@ $ lightning-cli getinfo
 
 ### Installing Bet
 ```
-$ cd ~
-$ git clone https://github.com/sg777/bet.git
-$ cd bet
-$ make
+$ cd ~ && git clone https://github.com/chips-blockchain/bet && cd bet && make
 
 # Running Bet Dealer
 # e.g. Dealer node is at 45.77.139.155 (you will know this IP from someone who will be running a dealer node OR you can run the dealer node yourself)
