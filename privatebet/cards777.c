@@ -56,7 +56,7 @@ int32_t bet_permutation(int32_t *permi, int32_t numcards)
 			printf("%d ", permi[i]);
 		printf("PERMI.%d\n", numcards);
 	}
-	return (0);
+	return 0;
 }
 
 int32_t bet_cipher_create(bits256 privkey, bits256 destpub, uint8_t *cipher, uint8_t *data, int32_t datalen)

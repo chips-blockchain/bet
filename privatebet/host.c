@@ -1783,6 +1783,7 @@ void bet_dcv_backend_loop(void *_ptr)
 
 	dcv_info.numplayers = 0;
 	dcv_info.maxplayers = bet->maxplayers;
+	
 	bet_permutation(dcv_info.permis, bet->range);
 	dcv_info.deckid = rand256(0);
 	dcv_info.dcv_key.priv = curve25519_keypair(&dcv_info.dcv_key.prod);
