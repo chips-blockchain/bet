@@ -2,16 +2,39 @@
 
 The aim of this project is to provide the necessary bet API's which are sufficient to play poker from the command line. The initial draft of the game written by jl777 is [here](./docs/BET_Initial_Draft.md).
 
-Bet is the implementation of the Pangea protocol which nees LN and CHIPS. The installation of [LN](https://github.com/sg777/lightning) and [CHIPS](https://github.com/sg777/chips3) must be done before proceeding to play with bet.
+Bet is the implementation of the Pangea protocol which nees LN and CHIPS. The installation of [LN](https://github.com/chips-blockchain/lightning) and [CHIPS](https://github.com/chips-blockchain/chips) must be done before proceeding to play with bet.
 
-## Compilation Guidelines
+If you would like to learn more please refer to the [Pangea Protocol Whitepaper](https://cdn.discordapp.com/attachments/455737840668770315/456036359870611457/Unsolicited_PANGEA_WP.pdf)
 
-Steps to compile this repo is mentioned in [compile.md](./compile.md). 
+## The game
 
-## Docker Setup
-The node set up can also be done using the docker, steps to setup the docker has been mentioned [here](./docker_setup.md).
+### Terms
 
-## Ports to be used and open
+`CHIPS` - game token and the name of the poker project.
+
+`DCV` - Deck Creating Vendor, the Dealer node
+
+`BVV` - Blinding Value Vendor, the component that helps securelt shuffle the deck
+
+`Cashier` or `Notary` nodes - The trusted nodes in the network and are elcted and chosen by the community. The set of trusted nodes at the moment are [here](https://github.com/chips-blockchain/bet/blob/master/privatebet/config/cashier_nodes.json).
+
+### Node Communication
+
+All the communication in the game must happen though `DCV`. Pangea Protocol does not allow any direct communication between the Players and the `BVV`. Players and `BVV` connect to `DCV` via `NN_PUSH/NN_PULL` socket. If any entity in the game is willing to send a message, it sends it to `DCV` via `NN_PUSH`, and `DCV` receives it via `NN_PULL`.
+
+<img src="assets/PULL.png" width="500">
+
+Once the `DCV` receives the messages it publishes it via `NN_PUB` and since Players and `BVV` are subscribed to `DCV` via `NN_SUB` so whenever the `DCV` publishes messages the Players and `BVV` receive it.
+
+<img src="assets/Messages.png" width="500">
+
+Source: Pangea Protocol Whitepaper (authors: [sg777](https://github.com/sg777), [jl777](https://github.com/jl777/))
+
+
+## Installation
+
+### Ports to be used and open
+
 Below are the list of the ports used and should be remained open incase if you have any firewall configurations.
 ```
 * 7797 - This port is used to have pub-sub communication between Dealer and player nodes.
@@ -20,7 +43,17 @@ Below are the list of the ports used and should be remained open incase if you h
 * 7902 - This port is used to have push-pull communication between Cashier and any other{player,dealer} nodes.
 * 9000 - This port is used to have websocket communication between GUI and {player,dealer} nodes.
 ```
-## Command to run DCV
+
+### Compilation Guidelines
+
+Steps to compile this repo is mentioned in [compile.md](./compile.md). 
+
+### Docker Setup
+The node set up can also be done using the docker, steps to setup the docker has been mentioned [here](./docker_setup.md).
+
+## Running the game
+
+### Command to run DCV
 ```
 $ cd
 $ cd bet/privatebet
@@ -28,24 +61,24 @@ $ ./bet dcv dealer_ip
 ```
 This `dealer_ip` should be `static public ip` of a machine on which one wants to run the dealer.
 
-### Configuring the Table
+#### Configuring the Table
 
-The dealer can configure the table parameters, the steps to configure the table parameters are mentioned [here](./configure_dealer.md).
+The dealer can configure the table parameters, the steps to configure the table parameters are mentioned [here](https://github.com/chips-blockchain/docker).
 
-## Command to run BVV
+### Command to run BVV
 Now BVV is part of the Cashier node, so no need to start the BVV node explicitly. Dealer will choose any of the cashier nodes to act as a BVV. As we know the role of BVV is for deck shuffling.
 ```
 $ cd
 $ cd bet/privatebet
 $ ./bet bvv
 ```
-## Command to run Player
+### Command to run Player
 ```
 $ cd
 $ cd bet/privatebet
 $ ./bet player
 ```
-## Command to run cashier
+### Command to run Cashier
 ```
 $ cd
 $ cd bet/privatebet
