@@ -113,6 +113,7 @@ void bet_dcv_lws_write(cJSON *data)
 		strncpy(dcv_gui_data, cJSON_Print(data), strlen(cJSON_Print(data)));
 		dcv_data_exists = 1;
 		lws_callback_on_writable(wsi_global_host);
+		printf("%s::%d:: Data pushed to GUI\n",__FUNCTION__,__LINE__);
 	}
 }
 
@@ -340,7 +341,7 @@ int32_t bet_dcv_deck_init_info(cJSON *argjson, struct privatebet_info *bet, stru
 		cJSON_AddItemToArray(cjson_peer_pub_keys,
 				     cJSON_CreateString(bits256_str(str, dcv_info.peerpubkeys[i])));
 	}
-
+	printf("%s::%d::init_d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(deck_init_info));
 	rendered = cJSON_Print(deck_init_info);
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 
@@ -466,7 +467,7 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 	cJSON_AddNumberToObject(player_info, "dealer", dealerPosition);
 	cJSON_AddNumberToObject(player_info, "seat_taken", 0);
 	cJSON_AddStringToObject(player_info, "req_identifier", jstr(argjson, "req_identifier"));
-
+	
 	player_seats_info[jint(argjson, "gui_playerID")].empty = 0;
 	player_seats_info[jint(argjson, "gui_playerID")].chips =vars->funds[req_id_to_player_id_mapping[jint(argjson, "gui_playerID")]];
 
@@ -475,7 +476,6 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 	seats_info = bet_get_seats_json(bet->maxplayers);
 	cJSON_AddItemToObject(player_info,"seats",seats_info);
 	
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(player_info));
 	rendered = cJSON_Print(player_info);
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 
@@ -1364,7 +1364,8 @@ static void bet_push_joinInfo(cJSON *argjson, int32_t numplayers)
 	cJSON_AddStringToObject(join_info, "method", "join_info");
 	cJSON_AddNumberToObject(join_info, "joined_playerid", jint(argjson, "gui_playerID"));
 	cJSON_AddNumberToObject(join_info, "tot_players_joined", numplayers);
-	bet_push_dcv_to_gui(join_info);
+	//bet_push_dcv_to_gui(join_info);
+	bet_dcv_lws_write(join_info);
 }
 
 static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
@@ -1587,6 +1588,8 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 
 		bet_push_joinInfo(argjson, bet->numplayers);
 
+		
+		
 		if (bet->numplayers == bet->maxplayers) {
 			printf("%s::%d\n", __FUNCTION__, __LINE__);
 			for (int32_t i = 0; i < bet->maxplayers; i++) {

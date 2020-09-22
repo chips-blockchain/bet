@@ -61,7 +61,7 @@ The default value is 2, i.e as atleast two players are required to play the game
 
 int32_t max_players = 2;
 
-static const int32_t poker_deck_size = 52;
+static const int32_t poker_deck_size = 6;
 
 static void bet_cashier_client_initialize(char *node_ip, const int32_t port)
 {
@@ -455,11 +455,19 @@ struct pair256 deckgen_player(bits256 *playerprivs, bits256 *playercards, int32_
 {
 	int32_t i;
 	struct pair256 key, randcards[256];
+	char hexstr[65];
+		
 	key = deckgen_common(randcards, numcards);
 	bet_permutation(permis, numcards);
+	printf("%s::%d::The player key values\n",__FUNCTION__,__LINE__);
+	printf("priv key::%s\n",bits256_str(hexstr,key.priv));
+	printf("pub key::%s\n",bits256_str(hexstr,key.prod));
+
+	printf("%s::%d::The player private key card values\n",__FUNCTION__,__LINE__);
 	for (i = 0; i < numcards; i++) {
 		playerprivs[i] = randcards[i].priv; // permis[i]
 		playercards[i] = curve25519(playerprivs[i], key.prod);
+		printf("card ::%d::%s\n",i,bits256_str(hexstr,playercards[i]));
 	}
 	return (key);
 }
