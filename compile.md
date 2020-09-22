@@ -1,4 +1,15 @@
-## Steps to compile
+# Compilation Guidelines
+
+You can either compile the project manually or run it using Docker.
+
+## Docker
+
+All the dependencies have already been cloned/compiled in the docker container. Please refer to 
+https://github.com/chips-blockchain/docs#docker for information on Docker.
+
+> Note: When you run this docker container, since we are sharing the host network with the docker container, make sure to stop the chips and ln nodes in the host node.
+
+## Compilation steps
 
 Tested with Ubuntu 16.04 and Ubuntu 18.04
 
@@ -98,25 +109,25 @@ $ make
 $ cd src
 $ cp lightning-cli /usr/bin
 $ ldconfig
-```
 
-### Running Lightning Daemon
-```
+# Running Lightning Daemon
 $ cd ~
 $ cd lightning
 $ ./lightningd/lightningd --log-level=debug &
 ```
+
 ### Installing Bet
 ```
 $ cd ~
 $ git clone https://github.com/sg777/bet.git
 $ cd bet
 $ make
+
+# Running Bet Dealer
+# e.g. Dealer node is at 45.77.139.155
+$ cd ~/bet/privatebet && ./bet dcv 45.77.139.155
+
+# Running Bet Player
+# e.g. You need to specify the dealer node IP
+$ cd ~/bet/privatebet && ./bet player 45.77.139.155
 ```
-
-## Running uisng Docker
-
-All the above repos are already been cloned in the docker container. Please refer to 
-https://github.com/chips-blockchain/docs#docker for information on Docker.
-
-Note: When you run this docker container, since we are sharing the host network with the docker container, so make sure to stop the chips and ln nodes in the host node.
