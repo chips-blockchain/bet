@@ -23,26 +23,27 @@ $ sudo apt-get install software-properties-common autoconf git build-essential l
 $ cd ~ && wget https://cmake.org/files/v3.16/cmake-3.16.1-Linux-x86_64.sh
 $ mkdir /opt/cmake && sh ~/cmake-3.16.1-Linux-x86_64.sh --prefix=/opt/cmake --skip-license
 $ ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
+
 # check the cmake version
 $ cmake --version
 
-# Installing Jsmn
+# Installing Jsmn  (bet dependency)
 $ cd ~ && git clone https://github.com/zserge/jsmn.git && cd jsmn && make
 
-# Installing Libwally
+# Installing Libwally (bet dependency)
 $ cd ~ && git clone https://github.com/ElementsProject/libwally-core.git
 $ cd libwally-core && ./tools/autogen.sh && ./configure && make && make check
 
-# Install nanomsg-next-generation 
+# Install nanomsg-next-generation  (bet dependency)
 $ cd ~ && git clone https://github.com/nanomsg/nng.git
 $ cd nng && mkdir build && cd build && cmake -G Ninja .. && ninja && ninja install
 
-# Installing libwebsockets
+# Installing libwebsockets  (bet dependency)
 $ cd ~ && git clone https://github.com/sg777/libwebsockets.git
 $ cd libwebsockets && mkdir build && cd build && cmake -DLWS_WITH_HTTP2=1 .. && make && make install
 $ ldconfig /usr/local/lib
 
-# Install Berkeley 4.8 db libs
+# Install Berkeley 4.8 db libs (chips dependecy)
 # Source: https://cryptoandcoffee.com/mining-gems/install-berkeley-4-8-db-libs-on-ubuntu-16-04/
 $ mkdir ~/db-4.8.30 && cd ~/db-4.8.30 && wget http://download.oracle.com/berkeley-db/db-4.8.30.zip && unzip db-4.8.30.zip
 $ cd db-4.8.30 && cd build_unix/ && ../dist/configure --prefix=/usr/local --enable-cxx && make && make install
@@ -52,21 +53,25 @@ $ cd db-4.8.30 && cd build_unix/ && ../dist/configure --prefix=/usr/local --enab
 ### Installing CHIPS
 ```
 $ cd ~ && git clone https://github.com/chips-blockchain/chips && cd chips && ./autogen.sh
-# ./configure LDFLAGS="-L/chips/db4/lib/" CPPFLAGS="-I/chips/db4/include/" -without-gui -without-miniupnpc --disable-tests --disable-bench --with-gui=no
-# cd src && make -> will build everything, including QT wallet
+$ ./configure LDFLAGS="-L/chips/db4/lib/" CPPFLAGS="-I/chips/db4/include/" -without-gui -without-miniupnpc --disable-tests --disable-bench --with-gui=no
+$ cd src && make -> will build everything, including QT wallet
 $ sudo cp chips-cli /usr/bin # just need to get chips-cli to work from command line
 $ sudo ldconfig /usr/local/lib # thanks smaragda!
 
+--------------------
 # Bootstraping CHIPS
+--------------------
 $ mkdir ~/.chips && cd ~/.chips && wget http://bootstrap3rd.dexstats.info/CHIPS-bootstrap.tar.gz
 $ tar xvzf CHIPS-bootstrap.tar.gz
 $ rm CHIPS-bootstrap.tar.gz
 
+----------------------
 # Running CHIPS Daemon 
+----------------------
 # see https://github.com/chips-blockchain/chips#step-2-create-chips-data-dir-chipsconf-file-and-restrict-access-to-it
 ```
 
-### Installing Lightning Repo
+### Installing Lightning Network Node
 
 ```
 $ cd ~ && git clone https://github.com/sg777/lightning.git
@@ -81,26 +86,46 @@ $ cd /usr/bin/ &&  nano lightning-cli
 
 $ chmod +x /usr/bin/lightning-cli
 
+------------------------------
 # Running the Lightning Daemon
+------------------------------
+# LN will need a while to sync. It could take some time so its a good idea to run it in a tmux session. `Tmux cheatsheet <https://tmuxcheatsheet.com/>`_
+
 # Create a tmux session
 $ tmux new -s lightning
+
 # Then inside the tmux session you've just created
 $ ~/lightning/lightningd/lightningd --log-level=debug &
-# CTRL + B, then D to detach from the tmux session
-# to attach to the session again `tmux a -t lightning`
-# get chain info
+# CTRL + B, then D to detach from the tmux session, to attach to the session again `tmux a -t lightning`
+
+# Get chain info - If it returns your node’s id, you’re all set.
 $ lightning-cli getinfo
+
+# Get a new address to fund your Lightning Node
+# This returns an address, which needs to be funded first in order to open a channel with another node. Join the [CHIPS discord](https://discord.gg/bcSpzWb) to get a small amount of CHIPS
+$ lightning-cli newaddr
+
+# Run the following command to check if your node has funds
+$ lightning-cli listfunds
+
+# Optionally, using these two parameters, you can connect to a node visible on the LN explorer
+$ lightning-cli connect
+$ lightning-cli fundchannel
 ```
 
 ### Installing Bet
 ```
 $ cd ~ && git clone https://github.com/chips-blockchain/bet && cd bet && make
 
+--------------------
 # Running Bet Dealer
+--------------------
 # e.g. Dealer node is at 45.77.139.155 (you will know this IP from someone who will be running a dealer node OR you can run the dealer node yourself)
 $ cd ~/bet/privatebet && ./bet dcv 45.77.139.155
 
+--------------------
 # Running Bet Player
+--------------------
 # e.g. You need to specify the dealer node IP
 $ cd ~/bet/privatebet && ./bet player 45.77.139.155
 ```
