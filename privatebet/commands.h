@@ -22,9 +22,7 @@ cJSON *chips_transfer_funds(double amount, char *address);
 cJSON *chips_send_raw_tx(cJSON *signed_tx);
 cJSON *chips_sign_raw_tx_with_wallet(char *raw_tx);
 int32_t chips_publish_multisig_tx(char *tx);
-cJSON *chips_create_raw_multi_sig_tx(double amount, char *to_addr, char *from_addr);
 cJSON *chips_create_raw_tx(double amount, char *address);
-void chips_list_unspent();
 int32_t chips_get_block_count();
 void check_ln_chips_sync();
 cJSON *bet_get_chips_ln_bal_info();
@@ -50,6 +48,8 @@ double chips_get_balance_on_address_from_tx(char *address, char *tx);
 char *chips_get_wallet_address();
 cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids[][100], char *data);
 
+int32_t chips_check_tx_exists(char *tx_id);
+int32_t run_command(int argc, char **argv);
 int32_t make_command(int argc, char **argv, cJSON **argjson);
 
 char *ln_get_new_address();
@@ -64,3 +64,4 @@ void ln_check_peer_and_connect(char *id);
 int32_t ln_get_channel_status(char *id);
 int32_t ln_wait_for_tx_block_height(int32_t block_height);
 int32_t ln_establish_channel(char *uri);
+
