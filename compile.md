@@ -1,11 +1,12 @@
 # Compilation Guidelines
 
-You can either compile the project manually or run it using Docker.
+You can either compile the project manually or run it using Docker. Compilation is pretty lengthy :) 
 
 ## Docker
 
-All the dependencies have already been cloned/compiled in the docker container. Please refer to 
-https://github.com/chips-blockchain/docs#docker for information on Docker.
+All the dependencies have already been cloned/compiled in the docker container. 
+
+Please refer to https://github.com/chips-blockchain/docs for information on Docker.
 
 > Note: When you run this docker container, since we are sharing the host network with the docker container, make sure to stop the chips and ln nodes in the host node.
 
@@ -76,20 +77,20 @@ $ rm CHIPS-bootstrap.tar.gz
 ```
 $ cd ~ && git clone https://github.com/sg777/lightning.git
 $ cd lightning && make
-$ cd /usr/bin/ &&  nano lightning-cli
+$ cd /usr/bin/ && sudo nano lightning-cli
 # Insert the following into the newly created file
 
 #/bin/bash
 ~/lightning/cli/lightning-cli $1 $2 $3 $4 $5 $6 | jq .
 
-# ctrl + O and ctrl + X to exit nano editor
+# ctrl + O to save the output and ctrl + X to exit nano editor
 
 $ chmod +x /usr/bin/lightning-cli
 
 ------------------------------
 # Running the Lightning Daemon
 ------------------------------
-# LN will need a while to sync. It could take some time so its a good idea to run it in a tmux session. `Tmux cheatsheet <https://tmuxcheatsheet.com/>`_
+# LN will need a while to sync. It could take some time so its a good idea to run it in a tmux session.
 
 # Create a tmux session
 $ tmux new -s lightning
@@ -102,7 +103,7 @@ $ ~/lightning/lightningd/lightningd --log-level=debug &
 $ lightning-cli getinfo
 
 # Get a new address to fund your Lightning Node
-# This returns an address, which needs to be funded first in order to open a channel with another node. Join the [CHIPS discord](https://discord.gg/bcSpzWb) to get a small amount of CHIPS
+# This returns an address, which needs to be funded first in order to open a channel with another node.
 $ lightning-cli newaddr
 
 # Run the following command to check if your node has funds
@@ -112,6 +113,10 @@ $ lightning-cli listfunds
 $ lightning-cli connect
 $ lightning-cli fundchannel
 ```
+
+Join the [CHIPS discord](https://discord.gg/bcSpzWb) to get a small amount of CHIPS
+
+[Tmux cheatsheet](https://tmuxcheatsheet.com/)
 
 ### Installing Bet
 ```
