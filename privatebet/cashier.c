@@ -986,7 +986,7 @@ void find_bvv()
 	bvv_rqst_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(bvv_rqst_info, "method", "find_bvv");
 	cJSON_AddStringToObject(bvv_rqst_info, "id", unique_id);
-
+	printf("%s::%d::If its stuck here stop the node by pressing CTRL+C and start again\n",__FUNCTION__,__LINE__);
 	for (int32_t i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1) {
 			response_info =
