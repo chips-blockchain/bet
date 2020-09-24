@@ -88,19 +88,27 @@ int32_t lws_buf_length_bvv = 0;
 char req_identifier[65];
 int32_t backend_status = 0;
 
+#if 0
+if (ws_connection_status == 1) {		
+	if (data_exists == 1) {
+		printf("%s::%d::There is more data\n", __FUNCTION__, __LINE__);
+		while (data_exists == 1)
+			sleep(1);
+	}
+	memset(player_gui_data, 0, sizeof(player_gui_data));
+	strncpy(player_gui_data, cJSON_Print(data), strlen(cJSON_Print(data)));
+	data_exists = 1;
+	lws_callback_on_writable(wsi_global_client);
+}
+
+#endif
 void player_lws_write(cJSON *data)
 {
-	if (ws_connection_status == 1) {
-		if (data_exists == 1) {
-			printf("%s::%d::There is more data\n", __FUNCTION__, __LINE__);
-			while (data_exists == 1)
-				sleep(1);
+		if (ws_connection_status == 1) {		
+			memset(player_gui_data, 0, sizeof(player_gui_data));
+			strncpy(player_gui_data, cJSON_Print(data), strlen(cJSON_Print(data)));
+			lws_callback_on_writable(wsi_global_client);
 		}
-		memset(player_gui_data, 0, sizeof(player_gui_data));
-		strncpy(player_gui_data, cJSON_Print(data), strlen(cJSON_Print(data)));
-		data_exists = 1;
-		lws_callback_on_writable(wsi_global_client);
-	}
 }
 
 char *enc_share_str(char hexstr[177], struct enc_share x)
@@ -840,7 +848,7 @@ int32_t bet_client_dcv_init(cJSON *dcv_info, struct privatebet_info *bet, struct
 	player_info.deckid = jbits256(dcv_info, "deckid");
 	cjson_card_prods = cJSON_GetObjectItem(dcv_info, "cardprods");
 
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(cjson_card_prods));
+	//printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(cjson_card_prods));
 
 	for (int i = 0; i < bet->numplayers; i++) {
 		for (int j = 0; j < bet->range; j++) {
@@ -874,7 +882,7 @@ int32_t bet_client_init(cJSON *argjson, struct privatebet_info *bet, struct priv
 		cJSON_AddItemToArray(cjson_player_cards,
 				     cJSON_CreateString(bits256_str(str, player_info.cardpubkeys[i])));
 	}
-	printf("%s::%d::init_p::%s\n",__FUNCTION__,__LINE__,cJSON_Print(init_p));
+	//printf("%s::%d::init_p::%s\n",__FUNCTION__,__LINE__,cJSON_Print(init_p));
 	rendered = cJSON_Print(init_p);
 	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 	if (bytes < 0) {
@@ -1225,39 +1233,50 @@ static void bet_gui_init_message(struct privatebet_info *bet)
 		nn_send(bet->pushsock, cJSON_Print(req_seats_info), strlen(cJSON_Print(req_seats_info)), 0);
 	}
 }
+
+
 int lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
 {
 	cJSON *argjson = NULL;
+	
+	printf("%s::%d::callback code::%d\n",__FUNCTION__,__LINE__,(int)reason);
 	switch (reason) {
-	case LWS_CALLBACK_RECEIVE:
-		memcpy(lws_buf_1 + lws_buf_length_1, in, len);
-		lws_buf_length_1 += len;
-		if (!lws_is_final_fragment(wsi))
+		case LWS_CALLBACK_RECEIVE:
+			memcpy(lws_buf_1 + lws_buf_length_1, in, len);
+			lws_buf_length_1 += len;		
+			if (!lws_is_final_fragment(wsi))
+				break;
+			argjson = cJSON_Parse(lws_buf_1);
+
+			if (bet_player_frontend(wsi, argjson) != 1) {
+				printf("\n%s:%d:Failed to process the host command", __FUNCTION__, __LINE__);
+			}
+			memset(lws_buf_1, 0x00, sizeof(lws_buf_1));
+			lws_buf_length_1 = 0;
+
 			break;
-		argjson = cJSON_Parse(lws_buf_1);
-
-		if (bet_player_frontend(wsi, argjson) != 1) {
-			printf("\n%s:%d:Failed to process the host command", __FUNCTION__, __LINE__);
-		}
-		memset(lws_buf_1, 0x00, sizeof(lws_buf_1));
-		lws_buf_length_1 = 0;
-
-		break;
-	case LWS_CALLBACK_ESTABLISHED:
-		wsi_global_client = wsi;
-		printf("%s:%d::LWS_CALLBACK_ESTABLISHED\n", __FUNCTION__, __LINE__);
-		ws_connection_status = 1;
-		bet_gui_init_message(bet_player);
-		break;
-	case LWS_CALLBACK_SERVER_WRITEABLE:
-		//printf("%s::%d::Writing data to the GUI\n", __FUNCTION__, __LINE__);
-		if (data_exists) {
+		case LWS_CALLBACK_ESTABLISHED:
+			wsi_global_client = wsi;
+			printf("%s:%d::LWS_CALLBACK_ESTABLISHED\n", __FUNCTION__, __LINE__);
+			ws_connection_status = 1;
+			bet_gui_init_message(bet_player);
+			break;
+		case LWS_CALLBACK_SERVER_WRITEABLE:
+			printf("%s::%d::Writing data to the GUI\n", __FUNCTION__, __LINE__);
+			
 			if (player_gui_data) {
 				lws_write(wsi, player_gui_data, strlen(player_gui_data), 0);
-				data_exists = 0;
+				memset(player_gui_data,0x00,strlen(player_gui_data));
+			}	
+			/*
+			if (data_exists) {
+				if (player_gui_data) {
+					lws_write(wsi, player_gui_data, strlen(player_gui_data), 0);
+					data_exists = 0;
+				}
 			}
-		}
-		break;
+			*/
+			break;
 	}
 	return 0;
 }

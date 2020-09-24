@@ -463,11 +463,11 @@ struct pair256 deckgen_player(bits256 *playerprivs, bits256 *playercards, int32_
 	printf("priv key::%s\n",bits256_str(hexstr,key.priv));
 	printf("pub key::%s\n",bits256_str(hexstr,key.prod));
 
-	printf("%s::%d::The player private key card values\n",__FUNCTION__,__LINE__);
+	//printf("%s::%d::The player private key card values\n",__FUNCTION__,__LINE__);
 	for (i = 0; i < numcards; i++) {
 		playerprivs[i] = randcards[i].priv; // permis[i]
 		playercards[i] = curve25519(playerprivs[i], key.prod);
-		printf("card ::%d::%s\n",i,bits256_str(hexstr,playercards[i]));
+		//printf("card ::%d::%s\n",i,bits256_str(hexstr,playercards[i]));
 	}
 	return (key);
 }
