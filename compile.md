@@ -54,6 +54,7 @@ $ cd db-4.8.30 && cd build_unix/ && ../dist/configure --prefix=/usr/local --enab
 ### Installing CHIPS
 ```
 $ cd ~ && git clone https://github.com/chips-blockchain/chips && cd chips && ./build.sh
+$ cd ~/src && sudo cp chips-cli /usr/bin
 $ sudo ldconfig /usr/local/lib # thanks smaragda!
 
 --------------------
