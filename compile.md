@@ -53,10 +53,7 @@ $ cd db-4.8.30 && cd build_unix/ && ../dist/configure --prefix=/usr/local --enab
 
 ### Installing CHIPS
 ```
-$ cd ~ && git clone https://github.com/chips-blockchain/chips && cd chips && ./autogen.sh
-$ ./configure LDFLAGS="-L/chips/db4/lib/" CPPFLAGS="-I/chips/db4/include/" -without-gui -without-miniupnpc --disable-tests --disable-bench --with-gui=no
-$ cd src && make -> will build everything, including QT wallet
-$ sudo cp chips-cli /usr/bin # just need to get chips-cli to work from command line
+$ cd ~ && git clone https://github.com/chips-blockchain/chips && cd chips && ./build.sh
 $ sudo ldconfig /usr/local/lib # thanks smaragda!
 
 --------------------
