@@ -912,6 +912,8 @@ void bet_resolve_disputed_tx()
 	disputed_games_info = sqlite3_get_game_details(1);
 	cJSON_AddItemToObject(argjson, "disputed_games_info", disputed_games_info);
 
+	printf("%s::%d::disputed_games_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
+
 	for (int32_t i = 0; i < cJSON_GetArraySize(disputed_games_info); i++) {
 		bet_raise_dispute(unstringify(jstr(cJSON_GetArrayItem(disputed_games_info, i), "tx_id")));
 	}
@@ -950,6 +952,7 @@ void bet_raise_dispute(char *tx_id)
 
 void bet_handle_game(int argc, char **argv)
 {
+	printf("%s::%d\n", __FUNCTION__, __LINE__);
 	if (argc > 2) {
 		if (strcmp(argv[2], "info") == 0) {
 			int32_t opt = -1;
@@ -986,7 +989,7 @@ void find_bvv()
 	bvv_rqst_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(bvv_rqst_info, "method", "find_bvv");
 	cJSON_AddStringToObject(bvv_rqst_info, "id", unique_id);
-	printf("%s::%d::If its stuck here stop the node by pressing CTRL+C and start again\n",__FUNCTION__,__LINE__);
+	printf("%s::%d::If its stuck here stop the node by pressing CTRL+C and start again\n", __FUNCTION__, __LINE__);
 	for (int32_t i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1) {
 			response_info =

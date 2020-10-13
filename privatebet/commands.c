@@ -454,7 +454,7 @@ cJSON *chips_create_raw_tx(double amount, char *address)
 
 		argc = 3;
 		bet_alloc_args(argc, &argv);
-		argv = bet_copy_args(argc, "chips-cli", "listunspent"," > listunspent.log");
+		argv = bet_copy_args(argc, "chips-cli", "listunspent", " > listunspent.log");
 		make_command(argc, argv, &listunspent_info);
 		bet_dealloc_args(argc, &argv);
 
@@ -515,7 +515,7 @@ cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 
 		argc = 3;
 		bet_alloc_args(argc, &argv);
-		argv = bet_copy_args(argc, "chips-cli", "listunspent"," > listunspent.log");
+		argv = bet_copy_args(argc, "chips-cli", "listunspent", " > listunspent.log");
 		listunspent_info = cJSON_CreateArray();
 		make_command(argc, argv, &listunspent_info);
 		bet_dealloc_args(argc, &argv);
@@ -685,17 +685,15 @@ int32_t chips_check_if_tx_unspent(char *input_tx)
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "chips-cli", "listunspent"," > listunspent.log");
-	
+	argv = bet_copy_args(argc, "chips-cli", "listunspent", " > listunspent.log");
+
 	run_command(argc, argv);
-	printf("%s::%s\n",legacy_m_of_n_msig_addr,input_tx);
+	printf("%s::%s\n", legacy_m_of_n_msig_addr, input_tx);
 	tx_exists = chips_check_tx_exists(input_tx);
 	bet_dealloc_args(argc, &argv);
-	printf("%s::%d::%d\n",__FUNCTION__,__LINE__,tx_exists);
+	printf("%s::%d::%d\n", __FUNCTION__, __LINE__, tx_exists);
 	return tx_exists;
 }
-
-
 
 #if 0
 int32_t chips_check_if_tx_unspent(char *input_tx)
@@ -793,7 +791,7 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 	to_addr_info = cJSON_CreateObject();
 	tx_list = cJSON_CreateArray();
 	argc = 3;
-	argv = bet_copy_args(argc, "chips-cli", "listunspent"," > listunspent.log");
+	argv = bet_copy_args(argc, "chips-cli", "listunspent", " > listunspent.log");
 	listunspent_info = cJSON_CreateObject();
 	make_command(argc, argv, &listunspent_info);
 	bet_dealloc_args(argc, &argv);
@@ -1228,77 +1226,76 @@ static void chips_read_valid_unspent(cJSON **argjson)
 {
 	char *file_name = "listunspent.log";
 	FILE *fp = NULL;
-	char ch,buf[4196];
+	char ch, buf[4196];
 	int32_t len = 0;
 	cJSON *temp = NULL;
 
-	temp =cJSON_CreateObject();
+	temp = cJSON_CreateObject();
 	*argjson = cJSON_CreateArray();
-	fp = fopen(file_name,"r");
-	while((ch=fgetc(fp)) != EOF) {
-		if((ch != '[') || (ch != ']')) {
-			if(ch == '{') {				
+	fp = fopen(file_name, "r");
+	while ((ch = fgetc(fp)) != EOF) {
+		if ((ch != '[') || (ch != ']')) {
+			if (ch == '{') {
 				buf[len++] = ch;
 			} else {
-				if(len > 0) {
-					if(ch == '}') {
+				if (len > 0) {
+					if (ch == '}') {
 						buf[len++] = ch;
 						buf[len] = '\0';
 						temp = cJSON_Parse(buf);
 						//printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(cJSON_GetObjectItem(temp,"spendable")));
-						if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "spendable")), "true") == 0) {
-							cJSON_AddItemToArray(*argjson,temp);
+						if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "spendable")),
+							   "true") == 0) {
+							cJSON_AddItemToArray(*argjson, temp);
 						}
-						memset(buf,0x00,len);
+						memset(buf, 0x00, len);
 						len = 0;
 					} else {
 						buf[len++] = ch;
-					}	
-					
+					}
 				}
 			}
-			
 		}
 	}
 }
-
 
 int32_t chips_check_tx_exists(char *tx_id)
 {
 	char *file_name = "listunspent.log";
 	FILE *fp = NULL;
-	char ch,buf[4196];
+	char ch, buf[4196];
 	int32_t len = 0, tx_exists = 0;
 	cJSON *temp = NULL;
 
-	temp =cJSON_CreateObject();
-	fp = fopen(file_name,"r");
-	while((ch=fgetc(fp)) != EOF) {
-		if((ch != '[') || (ch != ']')) {
-			if(ch == '{') {				
+	temp = cJSON_CreateObject();
+	fp = fopen(file_name, "r");
+	while ((ch = fgetc(fp)) != EOF) {
+		if ((ch != '[') || (ch != ']')) {
+			if (ch == '{') {
 				buf[len++] = ch;
 			} else {
-				if(len > 0) {
-					if(ch == '}') {
+				if (len > 0) {
+					if (ch == '}') {
 						buf[len++] = ch;
 						buf[len] = '\0';
 						temp = cJSON_Parse(buf);
-						if (strcmp(unstringify(cJSON_Print(cJSON_GetObjectItem(temp, "txid"))), unstringify(tx_id)) == 0) {
-							printf("%s::%d::%s::%s\n",__FUNCTION__,__LINE__,jstr(temp, "address"), legacy_m_of_n_msig_addr);
-							if (strcmp(jstr(temp, "address"), legacy_m_of_n_msig_addr) == 0) {
+						if (strcmp(unstringify(cJSON_Print(cJSON_GetObjectItem(temp, "txid"))),
+							   unstringify(tx_id)) == 0) {
+							printf("%s::%d::%s::%s\n", __FUNCTION__, __LINE__,
+							       jstr(temp, "address"), legacy_m_of_n_msig_addr);
+							if (strcmp(jstr(temp, "address"), legacy_m_of_n_msig_addr) ==
+							    0) {
 								tx_exists = 1;
 								break;
 							}
 						}
-						memset(buf,0x00,len);
+						memset(buf, 0x00, len);
 						len = 0;
 					} else {
 						buf[len++] = ch;
-					}	
-					
+					}
 				}
 			}
-			
 		}
 	}
 	return tx_exists;
@@ -1310,7 +1307,7 @@ int32_t run_command(int argc, char **argv)
 	int32_t ret = 1;
 	unsigned long command_size = 16384;
 	FILE *fp = NULL;
-	
+
 	command = calloc(command_size, sizeof(char));
 	if (!command) {
 		ret = 0;
@@ -1322,7 +1319,7 @@ int32_t run_command(int argc, char **argv)
 		strcat(command, " ");
 	}
 	/* Open the command for reading. */
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,command);
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, command);
 	fp = popen(command, "r");
 	if (fp == NULL) {
 		printf("Failed to run command\n");
@@ -1413,10 +1410,10 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 		if ((strcmp(argv[1], "createrawtransaction") == 0) || (strcmp(argv[1], "sendrawtransaction") == 0) ||
 		    (strcmp(argv[1], "getnewaddress") == 0) || (strcmp(argv[1], "getrawtransaction") == 0) ||
 		    (strcmp(argv[1], "getblockhash") == 0)) {
-				if (data[strlen(data) - 1] == '\n')
-					data[strlen(data) - 1] = '\0';
+			if (data[strlen(data) - 1] == '\n')
+				data[strlen(data) - 1] = '\0';
 
-				*argjson = cJSON_CreateString(data);
+			*argjson = cJSON_CreateString(data);
 		} else {
 			*argjson = cJSON_Parse(data);
 			cJSON_AddNumberToObject(*argjson, "code", 0);
@@ -1744,4 +1741,3 @@ int32_t ln_establish_channel(char *uri)
 	}
 	return retval;
 }
-
