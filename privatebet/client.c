@@ -38,9 +38,9 @@
 
 #define LWS_PLUGIN_STATIC
 
-struct lws *wsi_global_client = NULL;
+struct lws *wsi_global_client = NULL, *wsi_global_client_write = NULL;
 
-int ws_connection_status = 0;
+int ws_connection_status = 0, ws_connection_status_write = 0;
 
 struct lws *wsi_global_bvv = NULL;
 
@@ -88,27 +88,55 @@ int32_t lws_buf_length_bvv = 0;
 char req_identifier[65];
 int32_t backend_status = 0;
 
-#if 0
-if (ws_connection_status == 1) {		
-	if (data_exists == 1) {
-		printf("%s::%d::There is more data\n", __FUNCTION__, __LINE__);
-		while (data_exists == 1)
-			sleep(1);
+struct lws_context_creation_info lws_player_info, lws_player_info_read, lws_player_info_write;
+struct lws_context *player_context = NULL, *player_context_read = NULL, *player_context_write = NULL;
+
+void write_to_GUI(void *ptr)
+{
+	cJSON *data = ptr;
+
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(data));
+#if 1
+	if (ws_connection_status == 1) {
+		memset(player_gui_data, 0, sizeof(player_gui_data));
+		strncpy(player_gui_data, cJSON_Print(data), strlen(cJSON_Print(data)));
+		data_exists = 1;
+		lws_callback_on_writable(wsi_global_client);
 	}
-	memset(player_gui_data, 0, sizeof(player_gui_data));
-	strncpy(player_gui_data, cJSON_Print(data), strlen(cJSON_Print(data)));
-	data_exists = 1;
-	lws_callback_on_writable(wsi_global_client);
+#endif
 }
 
-#endif
+void sg777_test(cJSON *data)
+{
+	pthread_t gui_thrd;
+
+	if (OS_thread_create(&gui_thrd, NULL, (void *)write_to_GUI, (void *)data) != 0) {
+		printf("error launching bet_dcv_live_loop]n");
+		exit(-1);
+	}
+	if (pthread_join(gui_thrd, NULL)) {
+		printf("\nError in joining the main thread for live_thrd");
+	}
+}
+
 void player_lws_write(cJSON *data)
 {
-		if (ws_connection_status == 1) {		
+	if(backend_status == 1) {
+		if (ws_connection_status_write == 1) {
+			if (data_exists == 1) {
+				printf("%s::%d::There is more data\n", __FUNCTION__, __LINE__);
+				while (data_exists == 1) {
+					printf("%s::%d::Inside while\n", __FUNCTION__, __LINE__);
+					sleep(1);
+				}
+			}
+			printf("%s::%d::Writing data::%s\n", __FUNCTION__, __LINE__,cJSON_Print(data));
 			memset(player_gui_data, 0, sizeof(player_gui_data));
 			strncpy(player_gui_data, cJSON_Print(data), strlen(cJSON_Print(data)));
-			lws_callback_on_writable(wsi_global_client);
+			data_exists = 1;
+			lws_callback_on_writable(wsi_global_client_write);
 		}
+	}
 }
 
 char *enc_share_str(char hexstr[177], struct enc_share x)
@@ -758,9 +786,8 @@ int32_t bet_client_turn(cJSON *argjson, struct privatebet_info *bet, struct priv
 {
 	int32_t retval = 1, playerid;
 
-	
 	playerid = jint(argjson, "playerid");
-	printf("%s::%d::playerid::%d::%s::\n",__FUNCTION__,__LINE__,playerid,cJSON_Print(argjson));
+	printf("%s::%d::playerid::%d::%s::\n", __FUNCTION__, __LINE__, playerid, cJSON_Print(argjson));
 
 	if (playerid == bet->myplayerid) {
 		no_of_shares = 1;
@@ -844,7 +871,6 @@ int32_t bet_client_dcv_init(cJSON *dcv_info, struct privatebet_info *bet, struct
 	int32_t retval = 1;
 	cJSON *cjson_card_prods, *cjsong_hash;
 
-	
 	player_info.deckid = jbits256(dcv_info, "deckid");
 	cjson_card_prods = cJSON_GetObjectItem(dcv_info, "cardprods");
 
@@ -1146,9 +1172,11 @@ static void bet_player_wallet_info()
 	cJSON_AddStringToObject(wallet_info, "addr", chips_get_wallet_address());
 	cJSON_AddNumberToObject(wallet_info, "balance", chips_get_balance());
 	cJSON_AddNumberToObject(wallet_info, "backend_status", backend_status);
-	cJSON_AddNumberToObject(wallet_info,"max_players",max_players);	
-	cJSON_AddNumberToObject(wallet_info,"table_stack_in_chips",(table_stack_in_chips * satoshis) / (satoshis_per_unit * normalization_factor));
-	cJSON_AddStringToObject(wallet_info,"table_id",table_id);
+	cJSON_AddNumberToObject(wallet_info, "max_players", max_players);
+	cJSON_AddNumberToObject(wallet_info, "table_stack_in_chips",
+				(table_stack_in_chips * satoshis) / (satoshis_per_unit * normalization_factor));
+	cJSON_AddStringToObject(wallet_info, "table_id", table_id);
+	cJSON_AddNumberToObject(wallet_info,"tx_fee",chips_tx_fee);
 	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(wallet_info));
 	player_lws_write(wallet_info);
 }
@@ -1162,11 +1190,13 @@ static void bet_player_process_be_status()
 	cJSON_AddNumberToObject(be_info, "backend_status", backend_status);
 	player_lws_write(be_info);
 }
+
 int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 {
 	int32_t retval = 1;
 	char *method = NULL;
-
+	
+	printf("%s::%d::method::%s\n",__FUNCTION__,__LINE__,jstr(argjson, "method"));
 	if ((method = jstr(argjson, "method")) != 0) {
 		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 		if (strcmp(method, "player_join") == 0) {
@@ -1194,6 +1224,7 @@ int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 	return retval;
 }
 
+#if 0
 static void bet_init_seat_info()
 {
 	cJSON *seats_info = NULL, *table_info = NULL;
@@ -1214,13 +1245,14 @@ static void bet_init_seat_info()
 	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(table_info));
 	player_lws_write(table_info);
 }
+#endif
 
 static void bet_gui_init_message(struct privatebet_info *bet)
 {
 	cJSON *warning_info = NULL;
 	cJSON *req_seats_info = NULL;
-	
-	if(backend_status == 0){
+
+	if (backend_status == 0) {
 		warning_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(warning_info, "method", "warning");
 		cJSON_AddNumberToObject(warning_info, "warning_num", backend_not_ready);
@@ -1228,55 +1260,128 @@ static void bet_gui_init_message(struct privatebet_info *bet)
 		player_lws_write(warning_info);
 	} else {
 		req_seats_info = cJSON_CreateObject();
-		cJSON_AddStringToObject(req_seats_info,"method","req_seats_info");
+		cJSON_AddStringToObject(req_seats_info, "method", "req_seats_info");
+		cJSON_AddStringToObject(req_seats_info, "req_identifier", req_identifier);
 		printf("%s::%d::joininfo::%s\n", __FUNCTION__, __LINE__, cJSON_Print(req_seats_info));
 		nn_send(bet->pushsock, cJSON_Print(req_seats_info), strlen(cJSON_Print(req_seats_info)), 0);
 	}
 }
 
+int lws_callback_http_player_write(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
+{
+	cJSON *argjson = NULL;
+
+	printf("%s::%d::In write callback code::%d\n", __FUNCTION__, __LINE__, (int)reason);
+	switch (reason) {
+	case LWS_CALLBACK_RECEIVE:
+		memcpy(lws_buf_1 + lws_buf_length_1, in, len);
+		lws_buf_length_1 += len;
+		if (!lws_is_final_fragment(wsi))
+			break;
+		argjson = cJSON_Parse(lws_buf_1);
+
+		if (bet_player_frontend(wsi, argjson) != 1) {
+			printf("\n%s:%d:Failed to process the host command", __FUNCTION__, __LINE__);
+		}
+		memset(lws_buf_1, 0x00, sizeof(lws_buf_1));
+		lws_buf_length_1 = 0;
+
+		break;
+	case LWS_CALLBACK_ESTABLISHED:
+		wsi_global_client_write = wsi;
+		printf("%s:%d::Write::LWS_CALLBACK_ESTABLISHED\n", __FUNCTION__, __LINE__);
+		ws_connection_status_write = 1;
+		bet_gui_init_message(bet_player);
+		break;
+	case LWS_CALLBACK_SERVER_WRITEABLE:
+		printf("%s::%d::LWS_CALLBACK_SERVER_WRITEABLE triggered\n", __FUNCTION__, __LINE__);
+		if (data_exists) {
+			if (player_gui_data) {
+				lws_write(wsi, player_gui_data, strlen(player_gui_data), 0);
+				data_exists = 0;
+			}
+		}
+		break;
+	}
+	return 0;
+}
+
+int lws_callback_http_player_read(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
+{
+	cJSON *argjson = NULL;
+
+	printf("%s::%d::In read callback code::%d\n", __FUNCTION__, __LINE__, (int)reason);
+	switch (reason) {
+	case LWS_CALLBACK_RECEIVE:
+		memcpy(lws_buf_1 + lws_buf_length_1, in, len);
+		lws_buf_length_1 += len;		
+		if (!lws_is_final_fragment(wsi))
+			break;
+		
+		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,unstringify(lws_buf_1));
+		argjson = cJSON_Parse(unstringify(lws_buf_1));
+		printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+		if (bet_player_frontend(wsi, argjson) != 1) {
+			printf("\n%s:%d:Failed to process the host command", __FUNCTION__, __LINE__);
+		}
+		memset(lws_buf_1, 0x00, sizeof(lws_buf_1));
+		lws_buf_length_1 = 0;
+
+		break;
+	case LWS_CALLBACK_ESTABLISHED:
+		wsi_global_client = wsi;
+		printf("%s:%d::Read::LWS_CALLBACK_ESTABLISHED\n", __FUNCTION__, __LINE__);
+		ws_connection_status = 1;
+		//bet_gui_init_message(bet_player);
+		break;
+	case LWS_CALLBACK_SERVER_WRITEABLE:
+		printf("%s::%d::LWS_CALLBACK_SERVER_WRITEABLE triggered\n", __FUNCTION__, __LINE__);
+		if (data_exists) {
+			if (player_gui_data) {
+				lws_write(wsi, player_gui_data, strlen(player_gui_data), 0);
+				data_exists = 0;
+			}
+		}
+		break;
+	}
+	return 0;
+}
 
 int lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
 {
 	cJSON *argjson = NULL;
-	
-	printf("%s::%d::callback code::%d\n",__FUNCTION__,__LINE__,(int)reason);
+
+	printf("%s::%d::callback code::%d\n", __FUNCTION__, __LINE__, (int)reason);
 	switch (reason) {
-		case LWS_CALLBACK_RECEIVE:
-			memcpy(lws_buf_1 + lws_buf_length_1, in, len);
-			lws_buf_length_1 += len;		
-			if (!lws_is_final_fragment(wsi))
-				break;
-			argjson = cJSON_Parse(lws_buf_1);
-
-			if (bet_player_frontend(wsi, argjson) != 1) {
-				printf("\n%s:%d:Failed to process the host command", __FUNCTION__, __LINE__);
-			}
-			memset(lws_buf_1, 0x00, sizeof(lws_buf_1));
-			lws_buf_length_1 = 0;
-
+	case LWS_CALLBACK_RECEIVE:
+		memcpy(lws_buf_1 + lws_buf_length_1, in, len);
+		lws_buf_length_1 += len;
+		if (!lws_is_final_fragment(wsi))
 			break;
-		case LWS_CALLBACK_ESTABLISHED:
-			wsi_global_client = wsi;
-			printf("%s:%d::LWS_CALLBACK_ESTABLISHED\n", __FUNCTION__, __LINE__);
-			ws_connection_status = 1;
-			bet_gui_init_message(bet_player);
-			break;
-		case LWS_CALLBACK_SERVER_WRITEABLE:
-			printf("%s::%d::Writing data to the GUI\n", __FUNCTION__, __LINE__);
-			
+		argjson = cJSON_Parse(lws_buf_1);
+
+		if (bet_player_frontend(wsi, argjson) != 1) {
+			printf("\n%s:%d:Failed to process the host command", __FUNCTION__, __LINE__);
+		}
+		memset(lws_buf_1, 0x00, sizeof(lws_buf_1));
+		lws_buf_length_1 = 0;
+
+		break;
+	case LWS_CALLBACK_ESTABLISHED:
+		wsi_global_client = wsi;
+		printf("%s:%d::LWS_CALLBACK_ESTABLISHED\n", __FUNCTION__, __LINE__);
+		ws_connection_status = 1;
+		bet_gui_init_message(bet_player);
+		break;
+	case LWS_CALLBACK_SERVER_WRITEABLE:
+		printf("%s::%d::LWS_CALLBACK_SERVER_WRITEABLE triggered\n", __FUNCTION__, __LINE__);
+		if (data_exists) {
 			if (player_gui_data) {
 				lws_write(wsi, player_gui_data, strlen(player_gui_data), 0);
-				memset(player_gui_data,0x00,strlen(player_gui_data));
-			}	
-			/*
-			if (data_exists) {
-				if (player_gui_data) {
-					lws_write(wsi, player_gui_data, strlen(player_gui_data), 0);
-					data_exists = 0;
-				}
+				data_exists = 0;
 			}
-			*/
-			break;
+		}
+		break;
 	}
 	return 0;
 }
@@ -1286,7 +1391,17 @@ static struct lws_protocols player_http_protocol[] = {
 	{ NULL, NULL, 0, 0 } /* terminator */
 };
 
-static int interrupted1;
+static struct lws_protocols player_http_protocol_read[] = {
+	{ "http", lws_callback_http_player_read, 0, 0 },
+	{ NULL, NULL, 0, 0 } /* terminator */
+};
+
+static struct lws_protocols player_http_protocol_write[] = {
+	{ "http", lws_callback_http_player_write, 0, 0 },
+	{ NULL, NULL, 0, 0 } /* terminator */
+};
+
+static int interrupted1, interrupted_read, interrupted_write;
 
 static const struct lws_http_mount lws_http_mount_player = {
 	/* .mount_next */ NULL, /* linked-list "next" */
@@ -1313,22 +1428,74 @@ void player_sigint_handler(int sig)
 	interrupted1 = 1;
 }
 
-void bet_player_frontend_loop(void *_ptr)
+void player_sigint_handler_read(int sig)
 {
-	struct lws_context_creation_info player_info;
-	struct lws_context *player_context = NULL;
+	interrupted_read = 1;
+}
+
+void player_sigint_handler_write(int sig)
+{
+	interrupted_write = 1;
+}
+
+void bet_player_frontend_read_loop(void *_ptr)
+{
 	int n = 0, logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE;
 
 	// signal(SIGINT,player_sigint_handler);
 	lws_set_log_level(logs, NULL);
 
-	memset(&player_info, 0, sizeof player_info); /* otherwise uninitialized garbage */
-	player_info.port = 9000;
-	player_info.mounts = &lws_http_mount_player;
-	player_info.protocols = player_http_protocol;
-	player_info.options = LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
+	memset(&lws_player_info_read, 0, sizeof lws_player_info_read); /* otherwise uninitialized garbage */
+	lws_player_info_read.port = 9001;
+	lws_player_info_read.mounts = &lws_http_mount_player;
+	lws_player_info_read.protocols = player_http_protocol_read;
+	lws_player_info_read.options = LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
 
-	player_context = lws_create_context(&player_info);
+	player_context_read = lws_create_context(&lws_player_info_read);
+	if (!player_context_read) {
+		printf("lws init failed\n");
+	}
+	while (n >= 0 && !interrupted1) {
+		n = lws_service(player_context_read, 1000);
+	}
+}
+
+void bet_player_frontend_write_loop(void *_ptr)
+{
+	int n = 0, logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE;
+
+	// signal(SIGINT,player_sigint_handler);
+	lws_set_log_level(logs, NULL);
+
+	memset(&lws_player_info_write, 0, sizeof lws_player_info_write); /* otherwise uninitialized garbage */
+	lws_player_info_write.port = 9000;
+	lws_player_info_write.mounts = &lws_http_mount_player;
+	lws_player_info_write.protocols = player_http_protocol_write;
+	lws_player_info_write.options = LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
+
+	player_context_write = lws_create_context(&lws_player_info_write);
+	if (!player_context_write) {
+		printf("lws init failed\n");
+	}
+	while (n >= 0 && !interrupted1) {
+		n = lws_service(player_context_write, 1000);
+	}
+}
+
+void bet_player_frontend_loop(void *_ptr)
+{
+	int n = 0, logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE;
+
+	// signal(SIGINT,player_sigint_handler);
+	lws_set_log_level(logs, NULL);
+
+	memset(&lws_player_info, 0, sizeof lws_player_info); /* otherwise uninitialized garbage */
+	lws_player_info.port = 9000;
+	lws_player_info.mounts = &lws_http_mount_player;
+	lws_player_info.protocols = player_http_protocol;
+	lws_player_info.options = LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
+
+	player_context = lws_create_context(&lws_player_info);
 	if (!player_context) {
 		printf("lws init failed\n");
 	}
@@ -1510,14 +1677,14 @@ static int32_t bet_player_process_game_info(cJSON *argjson)
 	return rc;
 }
 
-
 static void bet_update_seat_info(cJSON *argjson)
 {
 	cJSON *seats_info = NULL;
 
 	seats_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(seats_info, "method", "seats");
-	cJSON_AddItemToObject(seats_info, "seats", cJSON_GetObjectItem(argjson,"seats"));
+	cJSON_AddItemToObject(seats_info, "seats", cJSON_GetObjectItem(argjson, "seats"));
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(seats_info));
 	player_lws_write(seats_info);
 }
 
@@ -1541,8 +1708,8 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		} else if (strcmp(method, "init") == 0) {
 			if (jint(argjson, "peerid") == bet->myplayerid) {
 				bet_player_blinds_info();
-				printf("%s::%d::myplayerid::%d::init::%s\n",__FUNCTION__,__LINE__,
-					bet->myplayerid,cJSON_Print(argjson));
+				printf("%s::%d::myplayerid::%d::init::%s\n", __FUNCTION__, __LINE__, bet->myplayerid,
+				       cJSON_Print(argjson));
 				retval = bet_client_init(argjson, bet, vars);
 			}
 		} else if (strcmp(method, "init_d") == 0) {
@@ -1598,12 +1765,12 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 					retval = -1;
 			}
 		} else if (strcmp(method, "stack_info_resp") == 0) {
-			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 			if (strncmp(req_identifier, jstr(argjson, "id"), sizeof(req_identifier)) == 0) {
 				retval = bet_player_handle_stack_info_resp(argjson, bet);
-			}	
+			}
 		} else if (strcmp(method, "tx_status") == 0) {
-			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 			if (strcmp(req_identifier, jstr(argjson, "id")) == 0) {
 				vars->player_funds = jint(argjson, "player_funds");
 				if (jint(argjson, "tx_validity") == 1) {
@@ -1618,11 +1785,14 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 					cJSON_AddStringToObject(info, "method", "backend_status");
 					cJSON_AddNumberToObject(info, "backend_status", backend_status);
 					player_lws_write(info);
-					cJSON *req_seats_info = NULL;					
+					cJSON *req_seats_info = NULL;
 					req_seats_info = cJSON_CreateObject();
-					cJSON_AddStringToObject(req_seats_info,"method","req_seats_info");
-					printf("%s::%d::joininfo::%s\n", __FUNCTION__, __LINE__, cJSON_Print(req_seats_info));
-					nn_send(bet->pushsock, cJSON_Print(req_seats_info), strlen(cJSON_Print(req_seats_info)), 0);
+					cJSON_AddStringToObject(req_seats_info, "method", "req_seats_info");
+					cJSON_AddStringToObject(req_seats_info, "req_identifier", req_identifier);
+					printf("%s::%d::joininfo::%s\n", __FUNCTION__, __LINE__,
+					       cJSON_Print(req_seats_info));
+					nn_send(bet->pushsock, cJSON_Print(req_seats_info),
+						strlen(cJSON_Print(req_seats_info)), 0);
 
 				} else {
 					printf("%s::%d::%s\n", __FUNCTION__, __LINE__,
@@ -1650,15 +1820,17 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 				retval = -1;
 			}
 		} else if (strcmp(method, "seats_info_resp") == 0) {
-			cJSON *seats_info = cJSON_CreateObject();
-			cJSON_AddStringToObject(seats_info,"method","seats");
-			cJSON_AddItemToObject(seats_info,"seats",cJSON_GetObjectItem(argjson,"seats"));
-			//printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(seats_info));
-			player_lws_write(seats_info);
+			if (strcmp(req_identifier, jstr(argjson, "req_identifier")) == 0) {
+				cJSON *seats_info = cJSON_CreateObject();
+				cJSON_AddStringToObject(seats_info, "method", "seats");
+				cJSON_AddItemToObject(seats_info, "seats", cJSON_GetObjectItem(argjson, "seats"));
+				printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(seats_info));
+				player_lws_write(seats_info);
+			}
 		} else if (strcmp(method, "config_data") == 0) {
-			printf("%s::%d::config_data::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+			printf("%s::%d::config_data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 		} else {
-			printf("%s::%d:: %s method is not handled in the backend\n",__FUNCTION__,__LINE__,method);
+			printf("%s::%d:: %s method is not handled in the backend\n", __FUNCTION__, __LINE__, method);
 		}
 	}
 	return retval;

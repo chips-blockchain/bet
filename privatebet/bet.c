@@ -119,24 +119,45 @@ static void bet_player_deinitialize()
 
 static void bet_player_thrd(char *dcv_ip, const int32_t port)
 {
-	pthread_t player_thrd, player_backend;
+	pthread_t player_thrd, /*player_backend,*/ player_backend_write, player_backend_read;
 
 	bet_player_initialize(dcv_ip, port);
 	if (OS_thread_create(&player_thrd, NULL, (void *)bet_player_backend_loop, (void *)bet_player) != 0) {
 		printf("error in launching bet_player_backend_loop\n");
 		exit(-1);
 	}
+#if 0
 	if (OS_thread_create(&player_backend, NULL, (void *)bet_player_frontend_loop, NULL) != 0) {
 		printf("error launching bet_player_frontend_loop\n");
 		exit(-1);
 	}
-	if (pthread_join(player_thrd, NULL)) {
+#endif
+
+	if (OS_thread_create(&player_backend_read, NULL, (void *)bet_player_frontend_read_loop, NULL) != 0) {
+		printf("error launching bet_player_frontend_loop\n");
+		exit(-1);
+	}
+	if (OS_thread_create(&player_backend_write, NULL, (void *)bet_player_frontend_write_loop, NULL) != 0) {
+		printf("error launching bet_player_frontend_loop\n");
+		exit(-1);
+	}
+
+	if (pthread_join(player_backend_read, NULL)) {
 		printf("\nError in joining the main thread for player_thrd");
 	}
 
+	if (pthread_join(player_backend_write, NULL)) {
+		printf("\nError in joining the main thread for player_thrd");
+	}
+
+	if (pthread_join(player_thrd, NULL)) {
+		printf("\nError in joining the main thread for player_thrd");
+	}
+#if 0
 	if (pthread_join(player_backend, NULL)) {
 		printf("\nError in joining the main thread for player_backend");
 	}
+#endif
 	bet_player_deinitialize();
 }
 
@@ -456,12 +477,12 @@ struct pair256 deckgen_player(bits256 *playerprivs, bits256 *playercards, int32_
 	int32_t i;
 	struct pair256 key, randcards[256];
 	char hexstr[65];
-		
+
 	key = deckgen_common(randcards, numcards);
 	bet_permutation(permis, numcards);
-	printf("%s::%d::The player key values\n",__FUNCTION__,__LINE__);
-	printf("priv key::%s\n",bits256_str(hexstr,key.priv));
-	printf("pub key::%s\n",bits256_str(hexstr,key.prod));
+	printf("%s::%d::The player key values\n", __FUNCTION__, __LINE__);
+	printf("priv key::%s\n", bits256_str(hexstr, key.priv));
+	printf("pub key::%s\n", bits256_str(hexstr, key.prod));
 
 	//printf("%s::%d::The player private key card values\n",__FUNCTION__,__LINE__);
 	for (i = 0; i < numcards; i++) {
