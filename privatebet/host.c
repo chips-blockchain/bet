@@ -473,6 +473,7 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 
 	cJSON *seats_info = NULL;
 
+	printf("%s::%d::bet->maxplayers::%d\n",__FUNCTION__,__LINE__,bet->maxplayers);
 	seats_info = bet_get_seats_json(bet->maxplayers);
 	cJSON_AddItemToObject(player_info, "seats", seats_info);
 
@@ -615,6 +616,7 @@ static int32_t bet_check_bvv_ready(struct privatebet_info *bet)
 		jaddistr(uri_info, dcv_info.uri[i]);
 	}
 	rendered = cJSON_Print(bvv_ready);
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(bvv_ready));
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 
 	if (bytes < 0)
@@ -907,6 +909,7 @@ void bet_reset_all_dcv_params(struct privatebet_info *bet, struct privatebet_var
 	no_of_rand_str = 0;
 	dcv_state = 0;
 	bet_set_table_id();
+	bet_init_player_seats_info();
 }
 
 void bet_dcv_reset(struct privatebet_info *bet, struct privatebet_vars *vars)
@@ -1533,8 +1536,6 @@ void bet_init_player_seats_info()
 		player_seats_info[i].empty = 1;
 		player_seats_info[i].playing = 0;
 	}
-	cJSON *temp = bet_get_seats_json(max_players);
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
 }
 
 static int32_t bet_dcv_check_pos_status(cJSON *argjson, struct privatebet_info *bet)

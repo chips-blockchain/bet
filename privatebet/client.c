@@ -1698,6 +1698,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
 
 		if (strcmp(method, "join_res") == 0) {
+			printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 			bet_update_seat_info(argjson);
 			if (strcmp(jstr(argjson, "req_identifier"), req_identifier) == 0) {
 				bet_push_join_info(argjson);
