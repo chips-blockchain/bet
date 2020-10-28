@@ -129,6 +129,5 @@ $ cd ~/bet/privatebet && ./bet dcv 45.77.139.155
 --------------------
 # Running Bet Player
 --------------------
-# e.g. You need to specify the dealer node IP
-$ cd ~/bet/privatebet && ./bet player 45.77.139.155
+$ cd ~/bet/privatebet && ./bet player
 ```
