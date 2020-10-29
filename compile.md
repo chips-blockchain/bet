@@ -6,7 +6,7 @@ You can either compile the project manually or run it using Docker. Compilation 
 
 All the dependencies have already been cloned/compiled in the docker container. 
 
-Please refer to https://github.com/chips-blockchain/docs for information on Docker.
+Please refer to https://github.com/chips-blockchain/docker for information on Docker.
 
 ## Compilation steps
 
@@ -68,67 +68,65 @@ $ rm CHIPS-bootstrap.tar.gz
 
 ### Running CHIPS Daemon
 
-see https://github.com/chips-blockchain/chips/tree/bd78b3d1c47a235e15049046162776dedb5ebffc#step-2-create-chips-data-dir-chipsconf-file-and-restrict-access-to-it
-
   #### Create `chips.conf` file
 
-    Create chips.conf file with random username, password, txindex and daemon turned on:
+  Create chips.conf file with random username, password, txindex and daemon turned on:
     
-    ```shell
-    cd ~
-    mkdir .chips
-    nano .chips/chips.conf
-    ```
+  ```shell
+  cd ~
+  mkdir .chips
+  nano .chips/chips.conf
+  ```
 
-    Add the following lines into your `chips.conf` file
+  Add the following lines into your `chips.conf` file
 
-    ```JSON
-    server=1
-    daemon=1
-    txindex=1
-    rpcuser=chipsuser
-    rpcpassword=passworddrowssap
-    addnode=159.69.23.29
-    addnode=95.179.192.102
-    addnode=149.56.29.163
-    addnode=145.239.149.173
-    addnode=178.63.53.110
-    addnode=151.80.108.76
-    addnode=185.137.233.199
-    rpcbind=127.0.0.1
-    rpcallowip=127.0.0.1
-    ```
+  ```JSON
+  server=1
+  daemon=1
+  txindex=1
+  rpcuser=chipsuser
+  rpcpassword=passworddrowssap
+  addnode=159.69.23.29
+  addnode=95.179.192.102
+  addnode=149.56.29.163
+  addnode=145.239.149.173
+  addnode=178.63.53.110
+  addnode=151.80.108.76
+  addnode=185.137.233.199
+  rpcbind=127.0.0.1
+  rpcallowip=127.0.0.1
+  ```
 
-    #### Symlinking the binaries
-    ```shell
-    sudo ln -sf /home/$USER/chips/src/chips-cli /usr/local/bin/chips-cli
-    sudo ln -sf /home/$USER/chips/src/chipsd /usr/local/bin/chipsd
-    sudo chmod +x /usr/local/bin/chips-cli
-    sudo chmod +x /usr/local/bin/chipsd
-    ```
-    #### Run
-    ```shell
-    cd ~
-    cd chips/src
-    ./chipsd &
-    ```
+  #### Symlinking the binaries
+  ```shell
+  sudo ln -sf /home/$USER/chips/src/chips-cli /usr/local/bin/chips-cli
+  sudo ln -sf /home/$USER/chips/src/chipsd /usr/local/bin/chipsd
+  sudo chmod +x /usr/local/bin/chips-cli
+  sudo chmod +x /usr/local/bin/chipsd
+  ```
+  #### Run
+  ```shell
+  cd ~
+  cd chips/src
+  ./chipsd &
+  ```
 
-    #### Check
-    ```shell
-    chips-cli getinfo
-    ```
+  #### Check
+  ```shell
+  chips-cli getinfo
+  ```
 
-    #### Preview block download status
-    ```
-    cd ~
-    cd .chips
-    tail -f debug.log
-    ```
+  #### Preview block download status
+  ```
+  cd ~
+  cd .chips
+  tail -f debug.log
+  ```
 
 ### Installing Lightning Network Node
 
 ```
-$ cd ~ && git clone https://github.com/sg777/lightning.git
+$ cd ~ && git clone https://github.com/chips-blockchain/lightning.git
 $ cd lightning && make
 $ cd /usr/bin/ && sudo nano lightning-cli
 # Insert the following into the newly created file
@@ -139,12 +137,13 @@ $ cd /usr/bin/ && sudo nano lightning-cli
 # ctrl + O to save the output and ctrl + X to exit nano editor
 
 $ chmod +x /usr/bin/lightning-cli
+```
 
-------------------------------
-# Running the Lightning Daemon
-------------------------------
-# LN will need a while to sync. It could take some time so its a good idea to run it in a tmux session.
+### Running the Lightning Daemon
 
+LN will need a while to sync. It could take some time so its a good idea to run it in a tmux session.
+
+```
 # Create a tmux session
 $ tmux new -s lightning
 
@@ -174,15 +173,14 @@ Join the [CHIPS discord](https://discord.gg/bcSpzWb) to get a small amount of CH
 ### Installing Bet
 ```
 $ cd ~ && git clone https://github.com/chips-blockchain/bet && cd bet && make
+```
 
---------------------
-# Running Bet Dealer
---------------------
+### Running Bet Dealer
+```
 # e.g. Dealer node is at 45.77.139.155 (you will know this IP from someone who will be running a dealer node OR you can run the dealer node yourself)
 $ cd ~/bet/privatebet && ./bet dcv 45.77.139.155
-
---------------------
-# Running Bet Player
---------------------
+```
+### Running Bet Player
+```
 $ cd ~/bet/privatebet && ./bet player
 ```
