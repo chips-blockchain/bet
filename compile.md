@@ -8,8 +8,6 @@ All the dependencies have already been cloned/compiled in the docker container.
 
 Please refer to https://github.com/chips-blockchain/docs for information on Docker.
 
-> Note: When you run this docker container, since we are sharing the host network with the docker container, make sure to stop the chips and ln nodes in the host node.
-
 ## Compilation steps
 
 Tested with Ubuntu 16.04 and Ubuntu 18.04
