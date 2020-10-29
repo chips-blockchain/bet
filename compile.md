@@ -18,6 +18,21 @@ Tested with Ubuntu 16.04 and Ubuntu 18.04
 $ sudo apt-get update
 $ sudo apt-get install software-properties-common autoconf git build-essential libtool libprotobuf-c-dev libgmp-dev libsqlite3-dev python python3 zip libevent-dev pkg-config libssl-dev libcurl4-gnutls-dev make libboost-all-dev automake jq wget ninja-build libsqlite3-dev libgmp3-dev valgrind libcli-dev libsecp256k1-dev libsodium-dev libbase58-dev nano tmux
 
+# Install Berkeley 4.8 db libs (chips dependecy)
+# Source: https://cryptoandcoffee.com/mining-gems/install-berkeley-4-8-db-libs-on-ubuntu-16-04/
+$ mkdir ~/db-4.8.30 && cd ~/db-4.8.30 && wget http://download.oracle.com/berkeley-db/db-4.8.30.zip && unzip db-4.8.30.zip
+$ cd db-4.8.30 && cd build_unix/ && ../dist/configure --prefix=/usr/local --enable-cxx && make && make install
+```
+
+BET dependencies
+```
+# Installing Jsmn 
+$ cd ~ && git clone https://github.com/zserge/jsmn.git && cd jsmn && make
+
+# Installing Libwally 
+$ cd ~ && git clone https://github.com/ElementsProject/libwally-core.git
+$ cd libwally-core && ./tools/autogen.sh && ./configure && make && make check
+
 # nanomsg-next-generation requires cmake 3.13 or higher
 $ cd ~ && wget https://cmake.org/files/v3.16/cmake-3.16.1-Linux-x86_64.sh
 $ mkdir /opt/cmake && sh ~/cmake-3.16.1-Linux-x86_64.sh --prefix=/opt/cmake --skip-license
@@ -26,26 +41,14 @@ $ ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
 # check the cmake version
 $ cmake --version
 
-# Installing Jsmn  (bet dependency)
-$ cd ~ && git clone https://github.com/zserge/jsmn.git && cd jsmn && make
-
-# Installing Libwally (bet dependency)
-$ cd ~ && git clone https://github.com/ElementsProject/libwally-core.git
-$ cd libwally-core && ./tools/autogen.sh && ./configure && make && make check
-
-# Install nanomsg-next-generation  (bet dependency)
+# Install nanomsg-next-generation  
 $ cd ~ && git clone https://github.com/nanomsg/nng.git
 $ cd nng && mkdir build && cd build && cmake -G Ninja .. && ninja && ninja install
 
-# Installing libwebsockets  (bet dependency)
+# Installing libwebsockets
 $ cd ~ && git clone https://github.com/sg777/libwebsockets.git
 $ cd libwebsockets && mkdir build && cd build && cmake -DLWS_WITH_HTTP2=1 .. && make && make install
 $ ldconfig /usr/local/lib
-
-# Install Berkeley 4.8 db libs (chips dependecy)
-# Source: https://cryptoandcoffee.com/mining-gems/install-berkeley-4-8-db-libs-on-ubuntu-16-04/
-$ mkdir ~/db-4.8.30 && cd ~/db-4.8.30 && wget http://download.oracle.com/berkeley-db/db-4.8.30.zip && unzip db-4.8.30.zip
-$ cd db-4.8.30 && cd build_unix/ && ../dist/configure --prefix=/usr/local --enable-cxx && make && make install
 
 ```
 
@@ -61,12 +64,66 @@ $ sudo ldconfig /usr/local/lib # thanks smaragda!
 $ mkdir ~/.chips && cd ~/.chips && wget http://bootstrap3rd.dexstats.info/CHIPS-bootstrap.tar.gz
 $ tar xvzf CHIPS-bootstrap.tar.gz
 $ rm CHIPS-bootstrap.tar.gz
-
-----------------------
-# Running CHIPS Daemon 
-----------------------
-# see https://github.com/chips-blockchain/chips#step-2-create-chips-data-dir-chipsconf-file-and-restrict-access-to-it
 ```
+
+### Running CHIPS Daemon
+
+see https://github.com/chips-blockchain/chips/tree/bd78b3d1c47a235e15049046162776dedb5ebffc#step-2-create-chips-data-dir-chipsconf-file-and-restrict-access-to-it
+
+  #### Create `chips.conf` file
+
+    Create chips.conf file with random username, password, txindex and daemon turned on:
+    
+    ```shell
+    cd ~
+    mkdir .chips
+    nano .chips/chips.conf
+    ```
+
+    Add the following lines into your `chips.conf` file
+
+    ```JSON
+    server=1
+    daemon=1
+    txindex=1
+    rpcuser=chipsuser
+    rpcpassword=passworddrowssap
+    addnode=159.69.23.29
+    addnode=95.179.192.102
+    addnode=149.56.29.163
+    addnode=145.239.149.173
+    addnode=178.63.53.110
+    addnode=151.80.108.76
+    addnode=185.137.233.199
+    rpcbind=127.0.0.1
+    rpcallowip=127.0.0.1
+    ```
+
+    #### Symlinking the binaries
+    ```shell
+    sudo ln -sf /home/$USER/chips/src/chips-cli /usr/local/bin/chips-cli
+    sudo ln -sf /home/$USER/chips/src/chipsd /usr/local/bin/chipsd
+    sudo chmod +x /usr/local/bin/chips-cli
+    sudo chmod +x /usr/local/bin/chipsd
+    ```
+    #### Run
+    ```shell
+    cd ~
+    cd chips/src
+    ./chipsd &
+    ```
+
+    #### Check
+    ```shell
+    chips-cli getinfo
+    ```
+
+    #### Preview block download status
+    ```
+    cd ~
+    cd .chips
+    tail -f debug.log
+    ```
 
 ### Installing Lightning Network Node
 
