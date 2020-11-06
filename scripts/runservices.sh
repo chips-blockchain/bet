@@ -74,12 +74,7 @@ printf "1. FUND YOUR CHIPS ADDRESS with CHIPS to be able to join the game.\n"
 printf "$lightgreen{ \"address\": \"bUBbFW6yYTH3qXmynTyBtQ1FEcVSDT7ZNw\" }${reset}"
 printf "\n\n"
 
-
-printf "2. Connect to the Docker container\n"
-printf "docker exec -it bet  bash"
-printf "\n\n"
-
-printf "3. Run bet (player OR dealer).\n\n"
+printf "2. Run bet (player OR dealer).\n\n"
 printf "DEALER \n"
 printf "cd ~/bet/privatebet && ./bet dcv 45.77.139.155"
 printf "\n\n"
