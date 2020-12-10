@@ -31,6 +31,9 @@ $ cd ~ && git clone https://github.com/zserge/jsmn.git && cd jsmn && make
 
 # Installing Libwally 
 $ cd ~ && git clone https://github.com/ElementsProject/libwally-core.git
+$ git submodule init
+$ git submodule sync --recursive
+$ git submodule update --init --recursive
 $ cd libwally-core && ./tools/autogen.sh && ./configure && make && make check
 
 # nanomsg-next-generation requires cmake 3.13 or higher
