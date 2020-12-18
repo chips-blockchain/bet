@@ -118,6 +118,7 @@ $ rm CHIPS-bootstrap.tar.gz
   ```shell
   chips-cli getinfo
   ```
+  The output might be an error followed by 'Loading blocks'. CHIPS is loading our bootstrapped blocks. Just give  it some time and try again later. Successful result is an object with info.
 
   #### Preview block download status
   ```
