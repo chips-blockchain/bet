@@ -569,6 +569,7 @@ int32_t chips_get_block_count()
 
 	rendered = cJSON_Print(block_height);
 	height = atoi(rendered);
+	printf("chips height - %d\n", height);
 	bet_dealloc_args(argc, &argv);
 	return height;
 }
