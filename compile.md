@@ -188,3 +188,9 @@ $ cd ~/bet/privatebet && ./bet dcv 45.77.139.155
 ```
 $ cd ~/bet/privatebet && ./bet player
 ```
+
+You might see something like this when running bet for the first time. The number of blocks will keep on rising. This means LN is not synced. You just need to let it be for a while and let it sync. Feel free to exit the currently running command. The sync is happening in the background in the tmux session that you have started earlier.
+```
+root@959aa68123b4:~/bet# cd ~/bet/privatebet && ./bet dcv 45.77.139.155
+ln is 48513 blocks behind chips network
+```
