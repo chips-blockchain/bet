@@ -31,7 +31,10 @@ $ cd ~ && git clone https://github.com/zserge/jsmn.git && cd jsmn && make
 
 # Installing Libwally 
 $ cd ~ && git clone https://github.com/ElementsProject/libwally-core.git
-$ cd libwally-core && ./tools/autogen.sh && ./configure && make && make check
+$ cd libwally-core/ && git submodule init
+$ git submodule sync --recursive
+$ git submodule update --init --recursive
+$ ./tools/autogen.sh && ./configure && make && make check
 
 # nanomsg-next-generation requires cmake 3.13 or higher
 $ cd ~ && wget https://cmake.org/files/v3.16/cmake-3.16.1-Linux-x86_64.sh
@@ -115,6 +118,7 @@ $ rm CHIPS-bootstrap.tar.gz
   ```shell
   chips-cli getinfo
   ```
+  The output might be an error followed by 'Loading blocks'. CHIPS is loading our bootstrapped blocks. Just give  it some time and try again later. Successful result is an object with info.
 
   #### Preview block download status
   ```
@@ -183,4 +187,10 @@ $ cd ~/bet/privatebet && ./bet dcv 45.77.139.155
 ### Running Bet Player
 ```
 $ cd ~/bet/privatebet && ./bet player
+```
+
+You might see something like this when running bet for the first time. The number of blocks will keep on rising. This means LN is not synced. You just need to let it be for a while and let it sync. Feel free to exit the currently running command. The sync is happening in the background in the tmux session that you have started earlier.
+```
+root@959aa68123b4:~/bet# cd ~/bet/privatebet && ./bet dcv 45.77.139.155
+ln is 48513 blocks behind chips network
 ```
