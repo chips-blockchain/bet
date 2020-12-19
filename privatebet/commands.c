@@ -569,7 +569,6 @@ int32_t chips_get_block_count()
 
 	rendered = cJSON_Print(block_height);
 	height = atoi(rendered);
-	printf("chips height - %d\n", height);
 	bet_dealloc_args(argc, &argv);
 	return height;
 }
@@ -580,7 +579,10 @@ void check_ln_chips_sync()
 	int32_t threshold_diff = 1000;
 
 	chips_bh = chips_get_block_count();
+	printf("chips height - %d\n", chips_bh);
+
 	ln_bh = ln_dev_block_height();
+	printf("LN height - %d\n", ln_bh);
 	while (1) {
 		if ((chips_bh - ln_bh) > threshold_diff) {
 			printf("\rln is %d blocks behind chips network", (chips_bh - ln_bh));
