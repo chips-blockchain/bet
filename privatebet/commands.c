@@ -569,7 +569,7 @@ int32_t chips_get_block_count()
 
 	rendered = cJSON_Print(block_height);
 	height = atoi(rendered);
-	printf("chips height - %d\n", height);
+	// printf("chips height - %d\n", height);
 	bet_dealloc_args(argc, &argv);
 	return height;
 }
@@ -1459,7 +1459,7 @@ int32_t ln_dev_block_height()
 	bh_info = cJSON_CreateObject();
 	make_command(argc, argv, &bh_info);
 	block_height = jint(bh_info, "blockheight");
-	printf("LN height - %d\n", block_height);
+	// printf("LN height - %d\n", block_height);
 	bet_dealloc_args(argc, &argv);
 	return block_height;
 }
