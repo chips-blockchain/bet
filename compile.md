@@ -102,8 +102,8 @@ $ rm CHIPS-bootstrap.tar.gz
 
   #### Symlinking the binaries (already done in Docker container)
   ```shell
-  sudo ln -sf /root/chips/src/chips-cli /usr/local/bin/chips-cli
-  sudo ln -sf /root/chips/src/chipsd /usr/local/bin/chipsd
+  sudo ln -sf ~/chips/src/chips-cli /usr/local/bin/chips-cli
+  sudo ln -sf ~/chips/src/chipsd /usr/local/bin/chipsd
   sudo chmod +x /usr/local/bin/chips-cli
   sudo chmod +x /usr/local/bin/chipsd
   ```
