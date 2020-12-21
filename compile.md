@@ -109,9 +109,7 @@ $ rm CHIPS-bootstrap.tar.gz
   ```
   #### Run
   ```shell
-  cd ~
-  cd chips/src
-  ./chipsd &
+  cd ~/chips/src && ./chipsd &
   ```
 
   #### Check
@@ -122,9 +120,7 @@ $ rm CHIPS-bootstrap.tar.gz
 
   #### Preview block download status
   ```
-  cd ~
-  cd .chips
-  tail -f debug.log
+  cd ~/.chips &&  tail -f debug.log
   ```
 
 ### Installing Lightning Network Node
