@@ -77,7 +77,7 @@ rm CHIPS-bootstrap.tar.gz
 Create `chips.conf` file with random username, password, txindex and daemon turned on.
 
 You can copy the following lines in your bash shell and press enter. It will create the CHIPS configuration file with random RPC username and password with all needed settings.
-    
+
 ```bash
 mkdir -p $HOME/.chips/
 echo "server=1
@@ -113,6 +113,15 @@ The output might be an error followed by `Loading blocks...`. CHIPS is loading o
 ```
 cd ~
 tail -f $HOME/.chips/debug.log
+```
+
+You should see something like below. If new lines are added quickly and the dates are in the past the chain is being synced. If new lines are slow to appear, the chain has been synced and is adding new blocks in real time.
+
+```bash
+2020-12-21T22:17:29Z UpdateTip: new best=0000000000001ce73ea95c83670afc1c10f20f1a8034aff91070b9e61916c647 height=6741707 version=0x20000000 log2_work=75.981897 tx=6966436 date='2020-08-16T10:30:21Z' progress=1.000000 cache=0.4MiB(2698txo)
+2020-12-21T22:17:29Z UpdateTip: new best=000000000000d0835bdfd153721c2a169966d5a3fc6ed4e244c41420c7d50b6f height=6741708 version=0x20000000 log2_work=75.981897 tx=6966437 date='2020-08-16T10:32:15Z' progress=1.000000 cache=0.4MiB(2699txo)
+2020-12-21T22:17:29Z UpdateTip: new best=00000000000022826e9293b8075ba5a207f71d33abe14ff9abeae7005abe92d4 height=6741709 version=0x20000000 log2_work=75.981897 tx=6966438 date='2020-08-16T10:33:53Z' progress=1.000000 cache=0.4MiB(2700txo)
+2020-12-21T22:17:29Z UpdateTip: new best=000000000001f55c8e27c5daeb7dac9c5f863af5d465090e5173f51a0556e9ef height=6741710 version=0x20000000 log2_work=75.981897 tx=6966439 date='2020-08-16T10:34:54Z' progress=1.000000 cache=0.4MiB(2701txo)
 ```
 
 ### Installing Lightning Network Node
