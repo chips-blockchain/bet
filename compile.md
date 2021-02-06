@@ -93,7 +93,7 @@ addnode=178.63.53.110
 addnode=151.80.108.76
 addnode=185.137.233.199
 rpcbind=127.0.0.1
-rpcallowip=127.0.0.1" > $HOME/chips/chips.conf
+rpcallowip=127.0.0.1" > $HOME/.chips/chips.conf
 ```
 
 #### Run CHIPS daemon
