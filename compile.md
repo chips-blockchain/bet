@@ -24,7 +24,7 @@ mkdir ~/db-4.8.30 && cd ~/db-4.8.30 && wget http://download.oracle.com/berkeley-
 cd db-4.8.30 && cd build_unix/ && ../dist/configure --prefix=/usr/local --enable-cxx && make && sudo make install
 ```
 
-### BET dependencies
+### Installing BET dependencies
 
 ```bash
 # Installing Jsmn 
