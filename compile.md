@@ -191,6 +191,16 @@ cd ~ && git clone https://github.com/chips-blockchain/bet && cd bet && make
 
 First determin what is the public IP of your server/VPS/VM/node. You probably know that already if you connected to this server over the internet through ssh terminal connection. In any case, you can also use the following command to get the public IP of your node:
 
+NOTE: If you see the following output running `./bet` command for the first time, just execute the same command again. This seems to be the bug, and will be resolved in future updates to `bet`:
+
+```bash
+./bet cashier 51.222.150.52
+ln is in sync with chips
+sqlite3_init_db_name::36::db_name::/home/satinder/.bet/db/pangea.db
+corrupted size vs. prev_size
+Aborted
+```
+
 ```bash
 curl ifconfig.co
 # Example output would be like 45.77.139.155, which you can use in next commands.
