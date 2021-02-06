@@ -50,7 +50,7 @@ cd nng && mkdir build && cd build && cmake -G Ninja .. && ninja && sudo ninja in
 # Installing libwebsockets
 cd ~ && git clone https://github.com/sg777/libwebsockets.git
 cd libwebsockets && mkdir build && cd build && cmake -DLWS_WITH_HTTP2=1 .. && make && sudo make install
-ldconfig /usr/local/lib
+sudo ldconfig /usr/local/lib
 ```
 
 ### Installing CHIPS
