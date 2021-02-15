@@ -133,3 +133,20 @@ For the GUI developers the backend message formats are defined [here](./docs/mes
 
 ### poker_test
 This branch is used to player poker via GUI, the GUI code should be taken from `poker_test` branch of `[pangea-poker-frontend](https://github.com/sg777/pangea-poker-frontend)` repo.
+
+### LN Upgrade
+Since bet uses the lightning network for the real time payments, so its necessary for the CHIPS LN node to be sync with upstream lightning network. As we seen the changes in the input and output of LN API's in the upstream we should be cautious about porting those changes into the CHIPS LN node. 
+The LN commands that bet uses at the moment during the process of the game are listed below:
+```
+getinfo
+fundchannel
+pay
+connect
+listfunds
+invoice
+dev-blockheight
+peer-channel-state
+listpeers
+newaddr
+```
+So we should test the functiolities of these API's to see any changes are made everytime when we port something to the downstream CHIPS LN node.
