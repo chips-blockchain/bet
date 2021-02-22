@@ -1271,7 +1271,7 @@ int lws_callback_http_player_write(struct lws *wsi, enum lws_callback_reasons re
 {
 	cJSON *argjson = NULL;
 
-	printf("%s::%d::In write callback code::%d\n", __FUNCTION__, __LINE__, (int)reason);
+	//printf("%s::%d::In write callback code::%d\n", __FUNCTION__, __LINE__, (int)reason);
 	switch (reason) {
 	case LWS_CALLBACK_RECEIVE:
 		memcpy(lws_buf_1 + lws_buf_length_1, in, len);
@@ -1310,7 +1310,7 @@ int lws_callback_http_player_read(struct lws *wsi, enum lws_callback_reasons rea
 {
 	cJSON *argjson = NULL;
 
-	printf("%s::%d::In read callback code::%d\n", __FUNCTION__, __LINE__, (int)reason);
+	//printf("%s::%d::In read callback code::%d\n", __FUNCTION__, __LINE__, (int)reason);
 	switch (reason) {
 	case LWS_CALLBACK_RECEIVE:
 		memcpy(lws_buf_1 + lws_buf_length_1, in, len);
