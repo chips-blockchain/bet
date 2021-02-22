@@ -1,3 +1,4 @@
+void bet_game_multisigaddress();
 void bet_compute_m_of_n_msig_addr();
 void bet_check_cashier_nodes();
 void bet_check_cashiers_status();

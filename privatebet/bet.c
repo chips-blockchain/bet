@@ -350,6 +350,7 @@ static void dealer_node_init()
 	bet_parse_dealer_config_file();
 	bet_set_table_id();
 	bet_compute_m_of_n_msig_addr();
+	bet_game_multisigaddress();
 	bet_init_player_seats_info();
 }
 

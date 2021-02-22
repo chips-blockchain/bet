@@ -655,6 +655,7 @@ cJSON *chips_add_multisig_address()
 
 	argv = bet_copy_args(argc, "chips-cli", "addmultisigaddress", param,
 			     cJSON_Print(cJSON_CreateString(cJSON_Print(addr_list)))); //"-addresstype legacy"
+			     
 	msig_address = cJSON_CreateObject();
 	make_command(argc, argv, &msig_address);
 	bet_dealloc_args(argc, &argv);
@@ -667,12 +668,13 @@ cJSON *chips_add_multisig_address_from_list(int32_t threshold_value, cJSON *addr
 	char **argv = NULL, param[arg_size];
 	cJSON *msig_address = NULL;
 
-	argc = 5;
+	argc = 4;
 	snprintf(param, arg_size, "%d", threshold_value);
 
 	argv = bet_copy_args(argc, "chips-cli", "addmultisigaddress", param,
-			     cJSON_Print(cJSON_CreateString(cJSON_Print(addr_list))), "-addresstype legacy");
+			     cJSON_Print(cJSON_CreateString(cJSON_Print(addr_list))));//, "-addresstype legacy"
 	msig_address = cJSON_CreateObject();
+
 	make_command(argc, argv, &msig_address);
 	bet_dealloc_args(argc, &argv);
 	return msig_address;
