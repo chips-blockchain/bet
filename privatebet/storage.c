@@ -149,7 +149,7 @@ void bet_create_schema()
 	char *sql_query = NULL, *err_msg = NULL;
 
 	db = bet_get_db_instance();
-	sql_query = calloc(1, 200);
+	sql_query = calloc(1, 2000);
 	for (int32_t i = 0; i < no_of_tables; i++) {
 		if (sqlite3_check_if_table_exists(db, table_names[i]) == 0) {
 			sprintf(sql_query, "CREATE TABLE %s %s;", table_names[i], schemas[i]);
