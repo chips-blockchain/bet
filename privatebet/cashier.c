@@ -138,7 +138,7 @@ void bet_check_cashiers_status()
 	live_notaries = 0;
 	for (int32_t i = 0; i < no_of_notaries; i++) {
 		cJSON *temp = bet_msg_cashier_with_response_id(live_info, notary_node_ips[i], "live");
-		if ((temp) && (jstr(temp, "live") == 0)) {
+		if ((temp) && (strcmp(jstr(temp, "method"),"live") == 0)) {
 			notary_status[i] = 1;
 			live_notaries++;
 		}
