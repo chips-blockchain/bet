@@ -28,6 +28,7 @@
 #include "cashier.h"
 #include "storage.h"
 #include "misc.h"
+#include "heartbeat.h"
 
 #include <errno.h>
 #include <netinet/in.h>
@@ -88,6 +89,7 @@ double dcv_commission_percentage = 0.75;
 double dev_fund_percentage = 0.25;
 
 int32_t req_id_to_player_id_mapping[CARDS777_MAXPLAYERS];
+int32_t heartbeat_on = 0;
 
 char table_id[65];
 int32_t dcv_state = 0;
@@ -858,6 +860,8 @@ void bet_reset_all_dcv_params(struct privatebet_info *bet, struct privatebet_var
 	river_card_drawn = 0;
 	invoiceID = 0;
 
+	heartbeat_on = 0;
+	
 	for (int i = 0; i < bet->maxplayers; i++)
 		player_ready[i] = 0;
 
@@ -1587,7 +1591,7 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 		bet_push_joinInfo(argjson, bet->numplayers);
 
 		if (bet->numplayers == bet->maxplayers) {
-			printf("%s::%d\n", __FUNCTION__, __LINE__);
+			heartbeat_on = 1;
 			for (int32_t i = 0; i < bet->maxplayers; i++) {
 				printf("%d::%s\n", req_id_to_player_id_mapping[i], vars->player_chips_addrs[i]);
 			}
@@ -1686,7 +1690,7 @@ void bet_dcv_backend_thrd(void *_ptr)
 		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
 		if (strcmp(method, "join_req") == 0) {
 			retval = bet_dcv_process_join_req(argjson, bet, vars);
-		} else if (strcmp(method, "bvv_ready") == 0) {
+		} else if (strcmp(method, "bvv_ready") == 0) {			
 			retval = bet_dcv_start(bet, 0);
 		} else if (strcmp(method, "init_p") == 0) {
 			retval = bet_dcv_init(argjson, bet, vars);
@@ -1762,6 +1766,8 @@ void bet_dcv_backend_thrd(void *_ptr)
 			cJSON_AddItemToObject(seats_info_resp, "seats", seats_info);
 			bytes = nn_send(bet->pubsock, cJSON_Print(seats_info_resp),
 					strlen(cJSON_Print(seats_info_resp)), 0);
+		} else if (strcmp(method, "player_active") == 0) {
+			bet_dcv_update_player_status(argjson);
 		} else {
 			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
 			if (bytes < 0) {

@@ -1830,6 +1830,18 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			}
 		} else if (strcmp(method, "config_data") == 0) {
 			printf("%s::%d::config_data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
+		} else if (strcmp(method, "is_player_active") == 0) {
+			cJSON *active_info = NULL;
+			active_info = cJSON_CreateObject();
+			cJSON_AddStringToObject(active_info,"method","player_active");
+			cJSON_AddNumberToObject(active_info,"playerid",bet->myplayerid);
+			cJSON_AddStringToObject(active_info,"req_identifier",req_identifier);
+			bytes = nn_send(bet->pushsock,cJSON_Print(active_info),strlen(cJSON_Print(active_info)),0);
+			if(bytes < 0) {
+				printf("%s::%d::There is a problem in sending the data",__FUNCTION__,__LINE__);
+			}
+		} else if (strcmp(method, "active_player_info") == 0) {
+			player_lws_write(argjson);
 		} else {
 			printf("%s::%d:: %s method is not handled in the backend\n", __FUNCTION__, __LINE__, method);
 		}

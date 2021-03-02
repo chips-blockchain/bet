@@ -1,7 +1,7 @@
 PROJNAME := bet
 CASHIER := cashierd
 LIB := libbet
-SRCFILES := cards777.c  client.c  commands.c  gfshare.c  host.c  network.c  oracle.c  payment.c  states.c  table.c poker.c cashier.c storage.c config.c misc.c
+SRCFILES := cards777.c  client.c  commands.c  gfshare.c  host.c  network.c  oracle.c  payment.c  states.c  table.c poker.c cashier.c storage.c config.c misc.c heartbeat.c
 OBJFILES := $(patsubst %.c,%.o,$(SRCFILES))
 CC := gcc
 WARNINGS := -Werror -Wunused-variable
