@@ -23,6 +23,7 @@
 #include "cashier.h"
 #include "storage.h"
 #include "commands.h"
+#include "misc.h"
 
 #include <stdarg.h>
 #include <stdlib.h>
@@ -655,6 +656,7 @@ cJSON *chips_add_multisig_address()
 
 	argv = bet_copy_args(argc, "chips-cli", "addmultisigaddress", param,
 			     cJSON_Print(cJSON_CreateString(cJSON_Print(addr_list)))); //"-addresstype legacy"
+			     
 	msig_address = cJSON_CreateObject();
 	make_command(argc, argv, &msig_address);
 	bet_dealloc_args(argc, &argv);
@@ -667,12 +669,13 @@ cJSON *chips_add_multisig_address_from_list(int32_t threshold_value, cJSON *addr
 	char **argv = NULL, param[arg_size];
 	cJSON *msig_address = NULL;
 
-	argc = 5;
+	argc = 4;
 	snprintf(param, arg_size, "%d", threshold_value);
 
 	argv = bet_copy_args(argc, "chips-cli", "addmultisigaddress", param,
-			     cJSON_Print(cJSON_CreateString(cJSON_Print(addr_list))), "-addresstype legacy");
+			     cJSON_Print(cJSON_CreateString(cJSON_Print(addr_list))));//, "-addresstype legacy"
 	msig_address = cJSON_CreateObject();
+
 	make_command(argc, argv, &msig_address);
 	bet_dealloc_args(argc, &argv);
 	return msig_address;
@@ -780,12 +783,13 @@ static int32_t check_if_tx_exists(char *txid, int32_t no_of_txs, char tx_ids[][1
 
 cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_ids[][100])
 {
-	int argc;
-	char **argv = NULL, params[2][arg_size] = { 0 };
-	cJSON *listunspent_info = NULL;
-	double amount = 0;
+	int argc, rc;
+	char **argv = NULL, params[2][arg_size] = { 0 }, *hex_data = NULL, *data = NULL, *msig_addr = NULL;
+	cJSON *listunspent_info = NULL, *player_info = NULL;
+	double amount = 0, value = 0;
 	cJSON *tx_list = NULL, *to_addr_info = NULL, *tx = NULL;
-
+	cJSON *raw_tx = NULL, *decoded_raw_tx = NULL, *vout = NULL;
+	
 	for (int32_t i = 0; i < no_of_txs; i++) {
 		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, tx_ids[i]);
 	}
@@ -797,15 +801,36 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 	make_command(argc, argv, &listunspent_info);
 	bet_dealloc_args(argc, &argv);
 
-	for (int i = 0; i < cJSON_GetArraySize(listunspent_info) - 1; i++) { //sg777: removing -1 from here
-		cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
-		if (temp) {
-			if (check_if_tx_exists(jstr(temp, "txid"), no_of_txs, tx_ids) == 1) {
-				cJSON *tx_info = cJSON_CreateObject();
-				amount += jdouble(temp, "amount");
-				cJSON_AddStringToObject(tx_info, "txid", jstr(temp, "txid"));
-				cJSON_AddNumberToObject(tx_info, "vout", jint(temp, "vout"));
-				cJSON_AddItemToArray(tx_list, tx_info);
+	if(chips_check_tx_exists_in_unspent(tx_ids[0]) == 1) {
+		raw_tx  = chips_get_raw_tx(tx_ids[0]);
+		decoded_raw_tx = chips_decode_raw_tx(raw_tx);
+		vout = cJSON_GetObjectItem(decoded_raw_tx, "vout");
+
+		hex_data = calloc(1, tx_data_size * 2);
+		rc = chips_extract_data(tx_ids[0], &hex_data);
+
+		if (rc == 1) {
+			data = calloc(1, tx_data_size);
+			hexstr_to_str(hex_data, data);
+			player_info = cJSON_CreateObject();
+			player_info = cJSON_Parse(data);
+			msig_addr = jstr(player_info,"msig_addr");
+		}
+
+		for(int i = 0; i<cJSON_GetArraySize(vout); i++) {
+			cJSON *temp = cJSON_GetArrayItem(vout,i);
+			
+			value = jdouble(temp,"value");
+			if(value > 0) {
+				cJSON *scriptPubKey = cJSON_GetObjectItem(temp,"scriptPubKey");
+				cJSON *addresses = cJSON_GetObjectItem(scriptPubKey,"addresses");
+				if(strcmp(msig_addr,jstri(addresses,0)) == 0) {
+					cJSON *tx_info = cJSON_CreateObject();
+					amount += jdouble(temp,"value");
+					cJSON_AddStringToObject(tx_info, "txid", tx_ids[0]);
+					cJSON_AddNumberToObject(tx_info, "vout", jint(temp, "n"));
+					cJSON_AddItemToArray(tx_list, tx_info); 		
+				}
 			}
 		}
 	}
@@ -821,7 +846,13 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 	argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
 	tx = cJSON_CreateObject();
 	make_command(argc, argv, &tx);
+	
 	bet_dealloc_args(argc, &argv);
+	if(data)
+		free(data);
+	if(hex_data)
+		free(hex_data);
+	
 	return tx;
 }
 
@@ -1259,6 +1290,46 @@ static void chips_read_valid_unspent(cJSON **argjson)
 		}
 	}
 }
+
+
+
+int32_t chips_check_tx_exists_in_unspent(char *tx_id)
+{
+	char *file_name = "listunspent.log";
+	FILE *fp = NULL;
+	char ch, buf[4196];
+	int32_t len = 0, tx_exists = 0;
+	cJSON *temp = NULL;
+
+	temp = cJSON_CreateObject();
+	fp = fopen(file_name, "r");
+	while ((ch = fgetc(fp)) != EOF) {
+		if ((ch != '[') || (ch != ']')) {
+			if (ch == '{') {
+				buf[len++] = ch;
+			} else {
+				if (len > 0) {
+					if (ch == '}') {
+						buf[len++] = ch;
+						buf[len] = '\0';
+						temp = cJSON_Parse(buf);
+						if (strcmp(unstringify(cJSON_Print(cJSON_GetObjectItem(temp, "txid"))),
+							   unstringify(tx_id)) == 0) {
+								tx_exists = 1;
+								break;
+						}
+						memset(buf, 0x00, len);
+						len = 0;
+					} else {
+						buf[len++] = ch;
+					}
+				}
+			}
+		}
+	}
+	return tx_exists;
+}
+
 
 int32_t chips_check_tx_exists(char *tx_id)
 {

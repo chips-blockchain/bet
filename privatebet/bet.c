@@ -26,6 +26,7 @@
 #include "table.h"
 #include "storage.h"
 #include "config.h"
+#include "heartbeat.h"
 
 #include <netinet/in.h>
 #include <stdio.h>
@@ -265,6 +266,13 @@ static void bet_dcv_thrd(char *dcv_ip, const int32_t port)
 	pthread_t /*live_thrd,*/ dcv_backend, dcv_thrd;
 
 	bet_dcv_initialize(dcv_ip, port);
+
+#if 0
+	if (OS_thread_create(&live_thrd, NULL, (void *)bet_dcv_heartbeat_loop, (void *)bet_dcv) != 0) {
+		printf("error launching bet_dcv_heartbeat_loop\n");
+		exit(-1);
+	}
+#endif
 	if (OS_thread_create(&dcv_backend, NULL, (void *)bet_dcv_backend_loop, (void *)bet_dcv) != 0) {
 		printf("error launching bet_dcv_backend_loop\n");
 		exit(-1);
@@ -279,6 +287,11 @@ static void bet_dcv_thrd(char *dcv_ip, const int32_t port)
 	if (pthread_join(dcv_thrd, NULL)) {
 		printf("\nError in joining the main thread for dcv_thrd");
 	}
+#if 0
+	if (pthread_join(live_thrd, NULL)) {
+		printf("\nError in joining the main thread for bet_dcv_heartbeat_loop");
+	}
+#endif
 	bet_dcv_deinitialize();
 }
 
@@ -350,6 +363,7 @@ static void dealer_node_init()
 	bet_parse_dealer_config_file();
 	bet_set_table_id();
 	bet_compute_m_of_n_msig_addr();
+	bet_game_multisigaddress();
 	bet_init_player_seats_info();
 }
 

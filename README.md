@@ -80,9 +80,25 @@ $ ./bet player
 ```
 $ cd
 $ cd bet/privatebet
-$ ./bet cashier cashier_ip
+$ ./cashierd cashier cashier_ip
 ```
 The `cashier_ip` should be a `static public ip` of a machine on which a cashier node runs. The cashier nodes are the trusted nodes in the network and are elcted and chosen by the community. The set of trusted nodes at the moment are [here](./privatebet/config/cashier_nodes.json).
+
+To avoid the unavailability of the nodes due to any crahing and disconnections, the cashier daemons are scheduled using crontab. The contents of the shell script which is scheduled using the crontab is as follows:
+```
+#!/bin/bash
+SERVICE="cashierd"
+date
+if pgrep -x "$SERVICE" >/dev/null
+then
+    echo "$SERVICE is running"
+else
+    echo "$SERVICE stopped"
+    cd /root/bet/privatebet
+    ./cashierd cashier <ip_addr>
+fi
+```
+Using `crontab -e` one can edit the crontab file and schedule it run all the time by adding the following line at the end of cron file <br/>`* * * * * /root/cron.sh`.<br/> Here `cron.sh` contains the above shell commands and replace `<ip_addr>` with the static public ipv4 address of the node where this daemon is running.
 
 The detailed description of the cashier protocol is mentioned [here](./cashier_protocol.md).
 
@@ -117,3 +133,20 @@ For the GUI developers the backend message formats are defined [here](./docs/mes
 
 ### poker_test
 This branch is used to player poker via GUI, the GUI code should be taken from `poker_test` branch of `[pangea-poker-frontend](https://github.com/sg777/pangea-poker-frontend)` repo.
+
+### LN Upgrade
+Since bet uses the lightning network for the real time payments, so its necessary for the CHIPS LN node to be sync with upstream lightning network. As we seen the changes in the input and output of LN API's in the upstream we should be cautious about porting those changes into the CHIPS LN node. 
+The LN commands that bet uses at the moment during the process of the game are listed below:
+```
+getinfo
+fundchannel
+pay
+connect
+listfunds
+invoice
+dev-blockheight
+peer-channel-state
+listpeers
+newaddr
+```
+So we should test the functiolities of these API's to see any changes are made everytime when we port something to the downstream CHIPS LN node.
