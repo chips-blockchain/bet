@@ -656,7 +656,7 @@ cJSON *chips_add_multisig_address()
 
 	argv = bet_copy_args(argc, "chips-cli", "addmultisigaddress", param,
 			     cJSON_Print(cJSON_CreateString(cJSON_Print(addr_list)))); //"-addresstype legacy"
-			     
+
 	msig_address = cJSON_CreateObject();
 	make_command(argc, argv, &msig_address);
 	bet_dealloc_args(argc, &argv);
@@ -673,7 +673,7 @@ cJSON *chips_add_multisig_address_from_list(int32_t threshold_value, cJSON *addr
 	snprintf(param, arg_size, "%d", threshold_value);
 
 	argv = bet_copy_args(argc, "chips-cli", "addmultisigaddress", param,
-			     cJSON_Print(cJSON_CreateString(cJSON_Print(addr_list))));//, "-addresstype legacy"
+			     cJSON_Print(cJSON_CreateString(cJSON_Print(addr_list)))); //, "-addresstype legacy"
 	msig_address = cJSON_CreateObject();
 
 	make_command(argc, argv, &msig_address);
@@ -789,7 +789,7 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 	double amount = 0, value = 0;
 	cJSON *tx_list = NULL, *to_addr_info = NULL, *tx = NULL;
 	cJSON *raw_tx = NULL, *decoded_raw_tx = NULL, *vout = NULL;
-	
+
 	for (int32_t i = 0; i < no_of_txs; i++) {
 		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, tx_ids[i]);
 	}
@@ -801,8 +801,8 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 	make_command(argc, argv, &listunspent_info);
 	bet_dealloc_args(argc, &argv);
 
-	if(chips_check_tx_exists_in_unspent(tx_ids[0]) == 1) {
-		raw_tx  = chips_get_raw_tx(tx_ids[0]);
+	if (chips_check_tx_exists_in_unspent(tx_ids[0]) == 1) {
+		raw_tx = chips_get_raw_tx(tx_ids[0]);
 		decoded_raw_tx = chips_decode_raw_tx(raw_tx);
 		vout = cJSON_GetObjectItem(decoded_raw_tx, "vout");
 
@@ -814,22 +814,22 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 			hexstr_to_str(hex_data, data);
 			player_info = cJSON_CreateObject();
 			player_info = cJSON_Parse(data);
-			msig_addr = jstr(player_info,"msig_addr");
+			msig_addr = jstr(player_info, "msig_addr");
 		}
 
-		for(int i = 0; i<cJSON_GetArraySize(vout); i++) {
-			cJSON *temp = cJSON_GetArrayItem(vout,i);
-			
-			value = jdouble(temp,"value");
-			if(value > 0) {
-				cJSON *scriptPubKey = cJSON_GetObjectItem(temp,"scriptPubKey");
-				cJSON *addresses = cJSON_GetObjectItem(scriptPubKey,"addresses");
-				if(strcmp(msig_addr,jstri(addresses,0)) == 0) {
+		for (int i = 0; i < cJSON_GetArraySize(vout); i++) {
+			cJSON *temp = cJSON_GetArrayItem(vout, i);
+
+			value = jdouble(temp, "value");
+			if (value > 0) {
+				cJSON *scriptPubKey = cJSON_GetObjectItem(temp, "scriptPubKey");
+				cJSON *addresses = cJSON_GetObjectItem(scriptPubKey, "addresses");
+				if (strcmp(msig_addr, jstri(addresses, 0)) == 0) {
 					cJSON *tx_info = cJSON_CreateObject();
-					amount += jdouble(temp,"value");
+					amount += jdouble(temp, "value");
 					cJSON_AddStringToObject(tx_info, "txid", tx_ids[0]);
 					cJSON_AddNumberToObject(tx_info, "vout", jint(temp, "n"));
-					cJSON_AddItemToArray(tx_list, tx_info); 		
+					cJSON_AddItemToArray(tx_list, tx_info);
 				}
 			}
 		}
@@ -846,13 +846,13 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 	argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
 	tx = cJSON_CreateObject();
 	make_command(argc, argv, &tx);
-	
+
 	bet_dealloc_args(argc, &argv);
-	if(data)
+	if (data)
 		free(data);
-	if(hex_data)
+	if (hex_data)
 		free(hex_data);
-	
+
 	return tx;
 }
 
@@ -1291,8 +1291,6 @@ static void chips_read_valid_unspent(cJSON **argjson)
 	}
 }
 
-
-
 int32_t chips_check_tx_exists_in_unspent(char *tx_id)
 {
 	char *file_name = "listunspent.log";
@@ -1315,8 +1313,8 @@ int32_t chips_check_tx_exists_in_unspent(char *tx_id)
 						temp = cJSON_Parse(buf);
 						if (strcmp(unstringify(cJSON_Print(cJSON_GetObjectItem(temp, "txid"))),
 							   unstringify(tx_id)) == 0) {
-								tx_exists = 1;
-								break;
+							tx_exists = 1;
+							break;
 						}
 						memset(buf, 0x00, len);
 						len = 0;
@@ -1329,7 +1327,6 @@ int32_t chips_check_tx_exists_in_unspent(char *tx_id)
 	}
 	return tx_exists;
 }
-
 
 int32_t chips_check_tx_exists(char *tx_id)
 {
