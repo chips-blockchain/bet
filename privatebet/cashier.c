@@ -68,29 +68,28 @@ char *legacy_m_of_n_msig_addr = NULL;
 int32_t bvv_state = 0;
 char dealer_ip_for_bvv[128];
 
-
-void bet_game_multisigaddress() {
+void bet_game_multisigaddress()
+{
 	cJSON *msig_info = NULL;
 	cJSON *addr_list = NULL;
-	
+
 	msig_info = cJSON_CreateObject();
 	addr_list = cJSON_CreateArray();
 	for (int i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1)
 			cJSON_AddItemToArray(addr_list, cJSON_CreateString_Length(notary_node_pubkeys[i], 67));
 	}
-	cJSON_AddStringToObject(msig_info,"method","game_multisigaddress");
-	cJSON_AddItemToObject(msig_info,"threshold_value",cJSON_CreateNumber(threshold_value));
-	cJSON_AddItemToObject(msig_info,"pubkeys",addr_list);
+	cJSON_AddStringToObject(msig_info, "method", "game_multisigaddress");
+	cJSON_AddItemToObject(msig_info, "threshold_value", cJSON_CreateNumber(threshold_value));
+	cJSON_AddItemToObject(msig_info, "pubkeys", addr_list);
 
-	
 	for (int32_t i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1) {
 			bet_msg_cashier(msig_info, notary_node_ips[i]);
 		}
 	}
 
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(msig_info));
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(msig_info));
 }
 void bet_compute_m_of_n_msig_addr()
 {
@@ -138,7 +137,7 @@ void bet_check_cashiers_status()
 	live_notaries = 0;
 	for (int32_t i = 0; i < no_of_notaries; i++) {
 		cJSON *temp = bet_msg_cashier_with_response_id(live_info, notary_node_ips[i], "live");
-		if ((temp) && (strcmp(jstr(temp, "method"),"live") == 0)) {
+		if ((temp) && (strcmp(jstr(temp, "method"), "live") == 0)) {
 			notary_status[i] = 1;
 			live_notaries++;
 		}
@@ -752,8 +751,9 @@ void bet_cashier_backend_thrd(void *_ptr)
 		} else if (strcmp(method, "add_bvv") == 0) {
 			bet_process_add_bvv(argjson, cashier_info);
 		} else if (strcmp(method, "game_multisigaddress") == 0) {
-			cJSON *msig_info = chips_add_multisig_address_from_list(jint(argjson,"threshold_value"),cJSON_GetObjectItem(argjson,"pubkeys"));
-			printf("%s::%d::msig_info::%s\n",__FUNCTION__,__LINE__,cJSON_Print(msig_info));
+			cJSON *msig_info = chips_add_multisig_address_from_list(
+				jint(argjson, "threshold_value"), cJSON_GetObjectItem(argjson, "pubkeys"));
+			printf("%s::%d::msig_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(msig_info));
 		}
 	}
 }
@@ -956,13 +956,13 @@ void bet_raise_dispute(char *tx_id)
 	cJSON_AddStringToObject(dispute_info, "method", "dispute");
 	cJSON_AddStringToObject(dispute_info, "tx_id", tx_id);
 	cJSON_AddStringToObject(dispute_info, "id", unique_id);
-	
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(dispute_info));
+
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(dispute_info));
 	for (int32_t i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1) {
 			response_info =
 				bet_msg_cashier_with_response_id(dispute_info, notary_node_ips[i], "dispute_response");
-			printf("%s::%d::response_info::%s\n",__FUNCTION__,__LINE__,cJSON_Print(response_info));
+			printf("%s::%d::response_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(response_info));
 			if (response_info)
 				break;
 		}
