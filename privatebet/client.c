@@ -1914,7 +1914,7 @@ int32_t bet_player_reset(struct privatebet_info *bet, struct privatebet_vars *va
 	}
 
 	memset(req_identifier, 0x00, sizeof(req_identifier));
-	bet_player_stack_info_req(bet);
+	//bet_player_stack_info_req(bet); sg777 commenting this to remove the auto start of the next hand
 #if 0
 	reset_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(reset_info, "method", "reset");
