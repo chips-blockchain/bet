@@ -1243,6 +1243,7 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 		printf("%s::%d::Failed to send data\n", __FUNCTION__, __LINE__);
 		goto end;
 	}
+
 	sleep(5);
 	if (wsi_global_host) {
 		lws_write(wsi_global_host, cJSON_Print(final_info), strlen(cJSON_Print(final_info)), 0);

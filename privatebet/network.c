@@ -117,8 +117,6 @@ cJSON *bet_msg_dealer_with_response_id(cJSON *argjson, char *dealer_ip, char *me
 						break;
 					}
 				}
-				if (tmp)
-					free(tmp);
 				if (ptr)
 					nn_freemsg(ptr);
 			}
