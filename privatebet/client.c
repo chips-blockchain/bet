@@ -1217,6 +1217,10 @@ int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 			bet_player_wallet_info();
 		} else if (strcmp(method, "backend_status") == 0) {
 			bet_player_process_be_status();
+		} else if (strcmp(method, "sitout") == 0) {
+			if(jint(argjson,"value") == 0) {
+				bet_player_stack_info_req(bet_player);
+			}
 		} else {
 			bet_player_handle_invalid_method(method);
 		}
