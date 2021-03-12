@@ -1,4 +1,5 @@
 #include "bet.h"
+#include "host.h"
 #include "heartbeat.h"
 
 #include <errno.h>
@@ -20,11 +21,33 @@ void bet_dcv_reset_player_status(struct privatebet_info *bet)
 	}
 }
 
+void bet_dcv_player_disconnection_action(struct privatebet_info *bet)
+{
+	struct privatebet_vars *vars = dcv_vars;
+	int32_t active_players = 0;
+
+	for (int i = 0; i < bet->maxplayers; i++) {
+		if (player_status[i] == 0) {
+			for (int j = vars->round; j < CARDS777_MAXROUNDS; j++) {
+				vars->bet_actions[i][j] = fold;
+			}
+		} else {
+			active_players++;
+		}
+	}
+	if (active_players == 1) {
+		bet_evaluate_hand(bet, vars);
+	} else if (active_players == 0) {
+		printf("%s::%d::Using DRP by running ./bet game solve players can claim their funds back", __FUNCTION__,
+		       __LINE__);
+	}
+}
+
 void bet_dcv_publish_player_active_info(struct privatebet_info *bet)
 {
 	cJSON *active_info = NULL;
 	cJSON *players_status_info = NULL;
-	int bytes;
+	int bytes, active_players = 0;
 
 	active_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(active_info, "method", "active_player_info");
@@ -32,6 +55,13 @@ void bet_dcv_publish_player_active_info(struct privatebet_info *bet)
 
 	for (int i = 0; i < bet->maxplayers; i++) {
 		cJSON_AddItemToArray(players_status_info, cJSON_CreateNumber(player_status[i]));
+		if (player_status[i] == 1) {
+			active_players++;
+		}
+	}
+	if (active_players < bet->maxplayers) {
+		printf("%s::%d::Some players got disconnected DCV needs to take an action", __FUNCTION__, __LINE__);
+		bet_dcv_player_disconnection_action(bet);
 	}
 	cJSON_AddItemToObject(active_info, "player_status", players_status_info);
 
