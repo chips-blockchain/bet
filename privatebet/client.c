@@ -1622,7 +1622,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 	return retval;
 }
 
-static int32_t bet_player_stack_info_req(struct privatebet_info *bet)
+int32_t bet_player_stack_info_req(struct privatebet_info *bet)
 {
 	int32_t bytes, retval = 1;
 	cJSON *stack_info_req = NULL;
