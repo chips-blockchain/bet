@@ -36,7 +36,7 @@ void bet_dcv_player_disconnection_action(struct privatebet_info *bet)
 		}
 	}
 	if (active_players == 1) {
-		bet_evaluate_hand(bet, vars);
+		//bet_evaluate_hand(bet, vars); // stopping evaluation hand for when the players gets disconnected as it has to handled by different approach.
 	} else if (active_players == 0) {
 		printf("%s::%d::Using DRP by running ./bet game solve players can claim their funds back", __FUNCTION__,
 		       __LINE__);
