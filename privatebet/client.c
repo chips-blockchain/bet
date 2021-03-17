@@ -87,6 +87,8 @@ int32_t lws_buf_length_bvv = 0;
 
 char req_identifier[65];
 int32_t backend_status = 0;
+int32_t sitout_value = 0;
+int32_t reset_lock = 0;
 
 struct lws_context_creation_info lws_player_info, lws_player_info_read, lws_player_info_write;
 struct lws_context *player_context = NULL, *player_context_read = NULL, *player_context_write = NULL;
@@ -1218,9 +1220,12 @@ int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 		} else if (strcmp(method, "backend_status") == 0) {
 			bet_player_process_be_status();
 		} else if (strcmp(method, "sitout") == 0) {
+			sitout_value = jint(argjson, "value");
+			/*
 			if(jint(argjson,"value") == 0) {
 				bet_player_stack_info_req(bet_player);
 			}
+			*/
 		} else {
 			bet_player_handle_invalid_method(method);
 		}
@@ -1698,6 +1703,12 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 	char *method = NULL;
 	char hexstr[65], *rendered = NULL;
 
+	if (strcmp(jstr(argjson, "method"), "reset") != 0) {
+		reset_lock = 0;
+	}
+	if ((reset_lock == 1) || ((sitout_value == 1) && (strcmp(jstr(argjson, "method"), "reset") != 0))) {
+		return retval;
+	}
 	if ((method = jstr(argjson, "method")) != 0) {
 		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
 
@@ -1918,12 +1929,12 @@ int32_t bet_player_reset(struct privatebet_info *bet, struct privatebet_vars *va
 	}
 
 	memset(req_identifier, 0x00, sizeof(req_identifier));
-	//bet_player_stack_info_req(bet); sg777 commenting this to remove the auto start of the next hand
-#if 0
-	reset_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(reset_info, "method", "reset");
-	player_lws_write(reset_info);
-#endif
+	if (sitout_value == 0) {
+		bet_player_stack_info_req(bet); //sg777 commenting this to remove the auto start of the next hand
+	} else {
+		reset_lock = 1;
+		printf("The player is choosen sitout option, so has to wait until the ongoing hand to be finished\n");
+	}
 	return retval;
 }
 
