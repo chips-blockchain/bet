@@ -782,11 +782,11 @@ void bet_cashier_server_loop(void *_ptr)
 					printf("error in launching the bet_cashier_backend_thrd\n");
 					exit(-1);
 				}
-				
+				/*
 				if (pthread_join(server_thrd, NULL)) {
 					printf("\nError in joining the main thread for bet_cashier_backend_thrd");
 				}
-				
+				*/
 				if (ptr)
 					nn_freemsg(ptr);
 			}

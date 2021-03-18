@@ -171,6 +171,7 @@ void bet_sqlite3_init()
 {
 	sqlite3_init_db_name();
 	bet_create_schema();
+	printf("DB Schema creation is done\n");
 }
 
 int32_t sqlite3_delete_dealer(char *dealer_ip)
