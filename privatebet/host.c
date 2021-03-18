@@ -1761,7 +1761,6 @@ void bet_dcv_backend_thrd(void *_ptr)
 		} else if (strcmp(method, "dcv_state") == 0) {
 			bet_get_dcv_state(argjson, bet);
 		} else if (strcmp(method, "req_seats_info") == 0) {
-			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 			cJSON *seats_info_resp = NULL;
 			cJSON *seats_info = bet_get_seats_json(bet->maxplayers);
 

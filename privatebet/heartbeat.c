@@ -1,6 +1,7 @@
 #include "bet.h"
 #include "host.h"
 #include "heartbeat.h"
+#include "states.h"
 
 #include <errno.h>
 #include <netinet/in.h>
@@ -48,6 +49,8 @@ void bet_dcv_publish_player_active_info(struct privatebet_info *bet)
 	cJSON *active_info = NULL;
 	cJSON *players_status_info = NULL;
 	int bytes, active_players = 0;
+	cJSON *argjson = NULL;
+	struct privatebet_vars *vars = dcv_vars;
 
 	active_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(active_info, "method", "active_player_info");
@@ -59,9 +62,23 @@ void bet_dcv_publish_player_active_info(struct privatebet_info *bet)
 			active_players++;
 		}
 	}
+	if (player_status[vars->turni] == 0) {
+		argjson = cJSON_CreateObject();
+		cJSON_AddStringToObject(argjson, "method", "betting");
+		cJSON_AddNumberToObject(argjson, "playerid", vars->turni);
+		cJSON_AddNumberToObject(argjson, "round", vars->round);
+		cJSON_AddNumberToObject(argjson, "pot", vars->pot);
+		cJSON_AddNumberToObject(argjson, "min_amount", 0);
+		cJSON_AddStringToObject(argjson, "action", "fold");
+		bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
+		if (bytes < 0) {
+			printf("%s::%d::There is a problem in sending the data\n", __FUNCTION__, __LINE__);
+		}
+		bet_dcv_round_betting_response(argjson, bet, vars);
+	}
 	if (active_players < bet->maxplayers) {
-		printf("%s::%d::Some players got disconnected DCV needs to take an action", __FUNCTION__, __LINE__);
-		bet_dcv_player_disconnection_action(bet);
+		printf("%s::%d::Players disconnect info::%s", __FUNCTION__, __LINE__, cJSON_Print(players_status_info));
+		//bet_dcv_player_disconnection_action(bet);
 	}
 	cJSON_AddItemToObject(active_info, "player_status", players_status_info);
 
