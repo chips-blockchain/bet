@@ -1642,7 +1642,7 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 			if (strcmp(tx_rand_str[i], rand_str) == 0)
 				vars->funds[i] = funds;
 		}
-		#if 0 //sg777 this is commenting for testing purposes
+		
 		sql_stmt = calloc(1, sql_query_size);
 
 		msig_addr_nodes = cJSON_CreateArray();
@@ -1651,7 +1651,8 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 				cJSON_AddItemToArray(msig_addr_nodes, cJSON_CreateString(notary_node_ips[i]));
 			}
 		}
-
+		
+		#if 0 //sg777 this is commenting for testing purposes
 		sprintf(sql_stmt, "INSERT INTO dcv_tx_mapping values(\'%s\',\'%s\',\'%s\',\'%s\',%d,%d);",
 			jstr(argjson, "tx_info"), table_id, rand_str, cJSON_Print(msig_addr_nodes), tx_unspent,
 			threshold_value);
