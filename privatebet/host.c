@@ -1619,6 +1619,7 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 	char *sql_stmt = NULL;
 	cJSON *msig_addr_nodes = NULL;
 
+	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
 	//retval = bet_dcv_verify_tx(argjson, bet); //sg777 commenting for testing purposes
 	if (retval == 2) {
 		return retval;
