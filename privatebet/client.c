@@ -1576,7 +1576,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		hex_data = calloc(1, 2 * tx_data_size);
 		str_to_hexstr(cJSON_Print(data_info), hex_data);
 		txid = cJSON_CreateObject();
-		txid = chips_transfer_funds_with_data(funds_needed, legacy_m_of_n_msig_addr, hex_data);
+		//txid = chips_transfer_funds_with_data(funds_needed, legacy_m_of_n_msig_addr, hex_data); sg777 commenting for testing purposes
 
 		printf("%s::%d::txid::%s\n", __FUNCTION__, __LINE__, cJSON_Print(txid));
 		if (txid) {

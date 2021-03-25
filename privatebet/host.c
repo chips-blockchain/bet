@@ -1614,12 +1614,12 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 
 static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars, char *addr)
 {
-	int32_t funds = 0, bytes, retval;
+	int32_t funds = 0, bytes, retval = 1;
 	cJSON *tx_status = NULL;
 	char *sql_stmt = NULL;
 	cJSON *msig_addr_nodes = NULL;
 
-	retval = bet_dcv_verify_tx(argjson, bet);
+	//retval = bet_dcv_verify_tx(argjson, bet); //sg777 commenting for testing purposes
 	if (retval == 2) {
 		return retval;
 	}
