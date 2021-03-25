@@ -1631,14 +1631,18 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 		strcpy(tx_rand_str[no_of_rand_str++], jstr(argjson, "id"));
 		pthread_mutex_unlock(&mutex);
 
+		#if 0 //sg777 this is commenting for testing purposes
 		double balance = chips_get_balance_on_address_from_tx(addr, jstr(argjson, "tx_info"));
 		funds = (balance * satoshis) / (satoshis_per_unit * normalization_factor);
-
+		#endif
+		funds = 10; // sg777 this is added for testing purposes
+		
 		char *rand_str = jstr(argjson, "id");
 		for (int i = 0; i < no_of_rand_str; i++) {
 			if (strcmp(tx_rand_str[i], rand_str) == 0)
 				vars->funds[i] = funds;
 		}
+		#if 0 //sg777 this is commenting for testing purposes
 		sql_stmt = calloc(1, sql_query_size);
 
 		msig_addr_nodes = cJSON_CreateArray();
@@ -1654,6 +1658,7 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 		int32_t ret = bet_run_query(sql_stmt);
 		if (ret != 0)
 			printf("%s::%d::Error in running the query::%s\n", __FUNCTION__, __LINE__, sql_stmt);
+		#endif
 	}
 
 	tx_status = cJSON_CreateObject();
