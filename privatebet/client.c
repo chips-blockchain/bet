@@ -770,6 +770,10 @@ int32_t bet_get_own_share(cJSON *argjson, struct privatebet_info *bet, struct pr
 	temp = g_shares[bet->myplayerid * bet->numplayers * bet->range + (cardid * bet->numplayers + playerid)];
 	recvlen = sizeof(temp);
 
+	printf("%s::%d::share position::%d\n",__FUNCTION__,__LINE__,(bet->myplayerid * bet->numplayers * bet->range + (cardid * bet->numplayers + playerid)));
+	printf("%s::%d::bet->myplayerid::%d  bet->numplayers::%d  bet->range ::%d cardid ::%d playerid::%d\n", __FUNCTION__,__LINE__,bet->myplayerid, bet->numplayers, bet->range, cardid, playerid);
+	enc_share_str(char hexstr [ 177 ],struct enc_share x)
+	
 	if ((ptr = bet_decrypt(decipher, sizeof(decipher), player_info.bvvpubkey, player_info.player_key.priv,
 			       temp.bytes, &recvlen)) == 0) {
 		retval = -1;
