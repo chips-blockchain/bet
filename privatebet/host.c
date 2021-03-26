@@ -1619,7 +1619,7 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 	char *sql_stmt = NULL;
 	cJSON *msig_addr_nodes = NULL;
 
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(argjson));
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 	//retval = bet_dcv_verify_tx(argjson, bet); //sg777 commenting for testing purposes
 	if (retval == 2) {
 		return retval;
@@ -1631,18 +1631,18 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 		strcpy(tx_rand_str[no_of_rand_str++], jstr(argjson, "id"));
 		pthread_mutex_unlock(&mutex);
 
-		#if 0 //sg777 this is commenting for testing purposes
+#if 0 //sg777 this is commenting for testing purposes
 		double balance = chips_get_balance_on_address_from_tx(addr, jstr(argjson, "tx_info"));
 		funds = (balance * satoshis) / (satoshis_per_unit * normalization_factor);
-		#endif
+#endif
 		funds = 10; // sg777 this is added for testing purposes
-		
+
 		char *rand_str = jstr(argjson, "id");
 		for (int i = 0; i < no_of_rand_str; i++) {
 			if (strcmp(tx_rand_str[i], rand_str) == 0)
 				vars->funds[i] = funds;
 		}
-		
+
 		sql_stmt = calloc(1, sql_query_size);
 
 		msig_addr_nodes = cJSON_CreateArray();
@@ -1651,15 +1651,15 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 				cJSON_AddItemToArray(msig_addr_nodes, cJSON_CreateString(notary_node_ips[i]));
 			}
 		}
-		
-		#if 0 //sg777 this is commenting for testing purposes
+
+#if 0 //sg777 this is commenting for testing purposes
 		sprintf(sql_stmt, "INSERT INTO dcv_tx_mapping values(\'%s\',\'%s\',\'%s\',\'%s\',%d,%d);",
 			jstr(argjson, "tx_info"), table_id, rand_str, cJSON_Print(msig_addr_nodes), tx_unspent,
 			threshold_value);
 		int32_t ret = bet_run_query(sql_stmt);
 		if (ret != 0)
 			printf("%s::%d::Error in running the query::%s\n", __FUNCTION__, __LINE__, sql_stmt);
-		#endif
+#endif
 	}
 
 	tx_status = cJSON_CreateObject();
