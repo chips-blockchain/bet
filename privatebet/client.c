@@ -770,9 +770,11 @@ int32_t bet_get_own_share(cJSON *argjson, struct privatebet_info *bet, struct pr
 	temp = g_shares[bet->myplayerid * bet->numplayers * bet->range + (cardid * bet->numplayers + playerid)];
 	recvlen = sizeof(temp);
 
-	printf("%s::%d::share position::%d\n",__FUNCTION__,__LINE__,(bet->myplayerid * bet->numplayers * bet->range + (cardid * bet->numplayers + playerid)));
-	printf("%s::%d::bet->myplayerid::%d  bet->numplayers::%d  bet->range ::%d cardid ::%d playerid::%d\n", __FUNCTION__,__LINE__,bet->myplayerid, bet->numplayers, bet->range, cardid, playerid);
-	
+	printf("%s::%d::share position::%d\n", __FUNCTION__, __LINE__,
+	       (bet->myplayerid * bet->numplayers * bet->range + (cardid * bet->numplayers + playerid)));
+	printf("%s::%d::bet->myplayerid::%d  bet->numplayers::%d  bet->range ::%d cardid ::%d playerid::%d\n",
+	       __FUNCTION__, __LINE__, bet->myplayerid, bet->numplayers, bet->range, cardid, playerid);
+
 	if ((ptr = bet_decrypt(decipher, sizeof(decipher), player_info.bvvpubkey, player_info.player_key.priv,
 			       temp.bytes, &recvlen)) == 0) {
 		retval = -1;
@@ -1579,7 +1581,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		hex_data = calloc(1, 2 * tx_data_size);
 		str_to_hexstr(cJSON_Print(data_info), hex_data);
 		txid = cJSON_CreateObject();
-		#if 0 //sg777 commenting for testing purposes
+#if 0 //sg777 commenting for testing purposes
 		txid = chips_transfer_funds_with_data(funds_needed, legacy_m_of_n_msig_addr, hex_data); 
 
 		printf("%s::%d::txid::%s\n", __FUNCTION__, __LINE__, cJSON_Print(txid));
@@ -1604,13 +1606,13 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 				bet_msg_cashier(temp, unstringify(cJSON_Print(cJSON_GetArrayItem(msig_addr_nodes, i))));
 			}
 		}
-		#endif
+#endif
 		cJSON_AddStringToObject(tx_info, "method", "tx");
 		cJSON_AddStringToObject(tx_info, "id", req_identifier);
 		cJSON_AddStringToObject(tx_info, "chips_addr", chips_get_new_address());
 		cJSON_AddItemToObject(tx_info, "tx_info", txid);
-		
-		#if 0 //sg777 this is commented for testing purposes
+
+#if 0 //sg777 this is commented for testing purposes
 		if (txid) {
 			while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
 				printf("%s::%d::Waiting for tx to confirm\r", __FUNCTION__, __LINE__);
@@ -1623,8 +1625,8 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		} else {
 			cJSON_AddNumberToObject(tx_info, "block_height", -1);
 		}
-		#endif
-		
+#endif
+
 		bytes = nn_send(bet->pushsock, cJSON_Print(tx_info), strlen(cJSON_Print(tx_info)), 0);
 		if (bytes < 0)
 			retval = -1;
