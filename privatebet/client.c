@@ -734,7 +734,7 @@ int32_t bet_client_give_share(cJSON *argjson, struct privatebet_info *bet, struc
 	if ((ptr = bet_decrypt(decipher, sizeof(decipher), player_info.bvvpubkey, player_info.player_key.priv,
 			       temp.bytes, &recvlen)) == 0) {
 		retval = -1;
-		printf("decrypt error \n");
+		printf("%s::%d::decrypt error \n",__FUNCTION__,__LINE__);
 		goto end;
 	} else {
 		memcpy(share.bytes, ptr, recvlen);
@@ -778,7 +778,7 @@ int32_t bet_get_own_share(cJSON *argjson, struct privatebet_info *bet, struct pr
 	if ((ptr = bet_decrypt(decipher, sizeof(decipher), player_info.bvvpubkey, player_info.player_key.priv,
 			       temp.bytes, &recvlen)) == 0) {
 		retval = -1;
-		printf("decrypt error ");
+		printf("%s::%d::decrypt error\n",__FUNCTION__,__LINE__);
 		goto end;
 	} else {
 		memcpy(share.bytes, ptr, recvlen);
