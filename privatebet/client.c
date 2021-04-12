@@ -734,7 +734,7 @@ int32_t bet_client_give_share(cJSON *argjson, struct privatebet_info *bet, struc
 	if ((ptr = bet_decrypt(decipher, sizeof(decipher), player_info.bvvpubkey, player_info.player_key.priv,
 			       temp.bytes, &recvlen)) == 0) {
 		retval = -1;
-		printf("%s::%d::decrypt error \n",__FUNCTION__,__LINE__);
+		printf("%s::%d::decrypt error \n", __FUNCTION__, __LINE__);
 		goto end;
 	} else {
 		memcpy(share.bytes, ptr, recvlen);
@@ -778,7 +778,7 @@ int32_t bet_get_own_share(cJSON *argjson, struct privatebet_info *bet, struct pr
 	if ((ptr = bet_decrypt(decipher, sizeof(decipher), player_info.bvvpubkey, player_info.player_key.priv,
 			       temp.bytes, &recvlen)) == 0) {
 		retval = -1;
-		printf("%s::%d::decrypt error\n",__FUNCTION__,__LINE__);
+		printf("%s::%d::decrypt error\n", __FUNCTION__, __LINE__);
 		goto end;
 	} else {
 		memcpy(share.bytes, ptr, recvlen);
@@ -915,7 +915,7 @@ int32_t bet_client_init(cJSON *argjson, struct privatebet_info *bet, struct priv
 		cJSON_AddItemToArray(cjson_player_cards,
 				     cJSON_CreateString(bits256_str(str, player_info.cardpubkeys[i])));
 	}
-	printf("%s::%d::init_p::%s\n",__FUNCTION__,__LINE__,cJSON_Print(init_p));
+	printf("%s::%d::init_p::%s\n", __FUNCTION__, __LINE__, cJSON_Print(init_p));
 	rendered = cJSON_Print(init_p);
 	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 	if (bytes < 0) {
@@ -1791,7 +1791,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			}
 		} else if (strcmp(method, "stack_info_resp") == 0) {
 			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
-			max_players = jint(argjson,"max_players");
+			max_players = jint(argjson, "max_players");
 			bet_player->maxplayers = max_players;
 			bet_player->numplayers = max_players;
 			if (strncmp(req_identifier, jstr(argjson, "id"), sizeof(req_identifier)) == 0) {
