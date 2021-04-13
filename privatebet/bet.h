@@ -177,6 +177,8 @@ extern struct seat_info player_seats_info[CARDS777_MAXPLAYERS];
 extern struct privatebet_info *bet_player;
 extern struct privatebet_vars *player_vars;
 
+extern int32_t heartbeat_on;
+
 bits256 xoverz_donna(bits256 a);
 bits256 crecip_donna(bits256 a);
 bits256 fmul_donna(bits256 a, bits256 b);

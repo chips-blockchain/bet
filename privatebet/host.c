@@ -28,6 +28,7 @@
 #include "cashier.h"
 #include "storage.h"
 #include "misc.h"
+#include "heartbeat.h"
 
 #include <errno.h>
 #include <netinet/in.h>
@@ -88,6 +89,7 @@ double dcv_commission_percentage = 0.75;
 double dev_fund_percentage = 0.25;
 
 int32_t req_id_to_player_id_mapping[CARDS777_MAXPLAYERS];
+int32_t heartbeat_on = 0;
 
 char table_id[65];
 int32_t dcv_state = 0;
@@ -473,7 +475,7 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 
 	cJSON *seats_info = NULL;
 
-	printf("%s::%d::bet->maxplayers::%d\n",__FUNCTION__,__LINE__,bet->maxplayers);
+	printf("%s::%d::bet->maxplayers::%d\n", __FUNCTION__, __LINE__, bet->maxplayers);
 	seats_info = bet_get_seats_json(bet->maxplayers);
 	cJSON_AddItemToObject(player_info, "seats", seats_info);
 
@@ -616,7 +618,7 @@ static int32_t bet_check_bvv_ready(struct privatebet_info *bet)
 		jaddistr(uri_info, dcv_info.uri[i]);
 	}
 	rendered = cJSON_Print(bvv_ready);
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(bvv_ready));
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(bvv_ready));
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 
 	if (bytes < 0)
@@ -705,9 +707,11 @@ static int32_t bet_create_betting_invoice(cJSON *argjson, struct privatebet_info
 	invoice = cJSON_CreateObject();
 	make_command(argc, argv, &invoice);
 
-	if (jint(invoice, "code") != 0)
+	if (jint(invoice, "code") != 0) {
+		printf("%s::%d::Failed to create the chips-ln invoice::\n%s\n", __FUNCTION__, __LINE__,
+		       cJSON_Print(argjson));
 		retval = -1;
-	else {
+	} else {
 		invoice_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(invoice_info, "method", "bettingInvoice");
 		cJSON_AddNumberToObject(invoice_info, "playerID", jint(argjson, "playerID"));
@@ -857,6 +861,8 @@ void bet_reset_all_dcv_params(struct privatebet_info *bet, struct privatebet_var
 	turn_card_drawn = 0;
 	river_card_drawn = 0;
 	invoiceID = 0;
+
+	heartbeat_on = 0;
 
 	for (int i = 0; i < bet->maxplayers; i++)
 		player_ready[i] = 0;
@@ -1237,8 +1243,11 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 		printf("%s::%d::Failed to send data\n", __FUNCTION__, __LINE__);
 		goto end;
 	}
+
 	sleep(5);
-	lws_write(wsi_global_host, cJSON_Print(final_info), strlen(cJSON_Print(final_info)), 0);
+	if (wsi_global_host) {
+		lws_write(wsi_global_host, cJSON_Print(final_info), strlen(cJSON_Print(final_info)), 0);
+	}
 end:
 	if (retval != -1) {
 		reset_info = cJSON_CreateObject();
@@ -1587,7 +1596,7 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 		bet_push_joinInfo(argjson, bet->numplayers);
 
 		if (bet->numplayers == bet->maxplayers) {
-			printf("%s::%d\n", __FUNCTION__, __LINE__);
+			heartbeat_on = 1;
 			for (int32_t i = 0; i < bet->maxplayers; i++) {
 				printf("%d::%s\n", req_id_to_player_id_mapping[i], vars->player_chips_addrs[i]);
 			}
@@ -1752,7 +1761,6 @@ void bet_dcv_backend_thrd(void *_ptr)
 		} else if (strcmp(method, "dcv_state") == 0) {
 			bet_get_dcv_state(argjson, bet);
 		} else if (strcmp(method, "req_seats_info") == 0) {
-			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 			cJSON *seats_info_resp = NULL;
 			cJSON *seats_info = bet_get_seats_json(bet->maxplayers);
 
@@ -1762,6 +1770,8 @@ void bet_dcv_backend_thrd(void *_ptr)
 			cJSON_AddItemToObject(seats_info_resp, "seats", seats_info);
 			bytes = nn_send(bet->pubsock, cJSON_Print(seats_info_resp),
 					strlen(cJSON_Print(seats_info_resp)), 0);
+		} else if (strcmp(method, "player_active") == 0) {
+			bet_dcv_update_player_status(argjson);
 		} else {
 			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
 			if (bytes < 0) {
