@@ -1198,7 +1198,6 @@ int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 	int32_t retval = 1;
 	char *method = NULL;
 
-	printf("%s::%d::method::%s\n", __FUNCTION__, __LINE__, jstr(argjson, "method"));
 	if ((method = jstr(argjson, "method")) != 0) {
 		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 		if (strcmp(method, "player_join") == 0) {
@@ -1327,9 +1326,7 @@ int lws_callback_http_player_read(struct lws *wsi, enum lws_callback_reasons rea
 		if (!lws_is_final_fragment(wsi))
 			break;
 
-		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, unstringify(lws_buf_1));
 		argjson = cJSON_Parse(unstringify(lws_buf_1));
-		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 		if (bet_player_frontend(wsi, argjson) != 1) {
 			printf("\n%s:%d:Failed to process the host command", __FUNCTION__, __LINE__);
 		}
@@ -1703,11 +1700,13 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 	char *method = NULL;
 	char hexstr[65], *rendered = NULL;
 
-	if (strcmp(jstr(argjson, "method"), "reset") != 0) {
+	if (strcmp(jstr(argjson, "method"), "reset") == 0) {
 		reset_lock = 0;
+		retval = bet_player_reset(bet, vars);
+		
 	}
-	if ((reset_lock == 1) || ((sitout_value == 1) && (strcmp(jstr(argjson, "method"), "reset") != 0))) {
-		return retval;
+	if(reset_lock == 1) {
+			return retval;
 	}
 	if ((method = jstr(argjson, "method")) != 0) {
 		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
