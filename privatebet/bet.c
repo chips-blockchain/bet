@@ -499,7 +499,7 @@ struct pair256 deckgen_player(bits256 *playerprivs, bits256 *playercards, int32_
 
 	printf("%s::%d::The player private key card values\n",__FUNCTION__,__LINE__);
 	for (i = 0; i < numcards; i++) {
-		playerprivs[i] = randcards[permis[i]].priv; // permis[i]
+		playerprivs[i] = randcards[i].priv; // permis[i]
 		playercards[i] = curve25519(playerprivs[i], key.prod);
 		printf("card ::%d::%s\n",i,bits256_str(hexstr,playercards[i]));
 	}
@@ -529,8 +529,8 @@ int32_t sg777_deckgen_vendor(int32_t playerid, bits256 *cardprods, bits256 *fina
 	}
 
 	for (int32_t i = 0; i < numcards; i++) {
-		finalcards[i] = tmp[permis_d[i]];
-		g_hash[playerid][i] = hash_temp[permis_d[i]]; // optimization
+		finalcards[i] = tmp[i]; //permis_d[i] sg777 this should be replaced with i
+		g_hash[playerid][i] = hash_temp[i]; // permis_d[i] sg777 this should be replaced with i
 		cardprods[i] = randcards[i].prod; // same cardprods[] returned for each player
 	}
 end:
@@ -547,7 +547,7 @@ struct pair256 p2p_bvv_init(bits256 *keys, struct pair256 b_key, bits256 *blindi
 
 	for (i = 0; i < numcards; i++) {
 		blindings[i] = rand256(1);
-		blindedcards[i] = fmul_donna(finalcards[permis_b[i]], blindings[i]);
+		blindedcards[i] = fmul_donna(finalcards[i], blindings[i]); //permis_b[i] should be replaced in place of i sg777
 	}
 
 	M = (numplayers / 2) + 1;
