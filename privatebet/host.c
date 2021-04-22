@@ -343,7 +343,7 @@ int32_t bet_dcv_deck_init_info(cJSON *argjson, struct privatebet_info *bet, stru
 		cJSON_AddItemToArray(cjson_peer_pub_keys,
 				     cJSON_CreateString(bits256_str(str, dcv_info.peerpubkeys[i])));
 	}
-	//printf("%s::%d::init_d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(deck_init_info));
+	printf("%s::%d::init_d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(deck_init_info));
 	rendered = cJSON_Print(deck_init_info);
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 

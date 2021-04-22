@@ -513,7 +513,8 @@ int32_t sg777_deckgen_vendor(int32_t playerid, bits256 *cardprods, bits256 *fina
 	static bits256 active_deckid, hash_temp[CARDS777_MAXCARDS];
 	int32_t retval = 1;
 	bits256 hash, xoverz, tmp[256];
-
+	char hexstr[65];
+		
 	if (bits256_cmp(deckid, active_deckid) != 0)
 		deckgen_common2(randcards, numcards);
 	else {
@@ -529,6 +530,7 @@ int32_t sg777_deckgen_vendor(int32_t playerid, bits256 *cardprods, bits256 *fina
 	}
 
 	for (int32_t i = 0; i < numcards; i++) {
+		printf("%s::%d::player card::%s::dcv card::%s\n",__FUNCTION__,__LINE__,bits256_str(hexstr,cardprods[i],tmp[i]));
 		finalcards[i] = tmp[i]; //permis_d[i] sg777 this should be replaced with i
 		g_hash[playerid][i] = hash_temp[i]; // permis_d[i] sg777 this should be replaced with i
 		cardprods[i] = randcards[i].prod; // same cardprods[] returned for each player
