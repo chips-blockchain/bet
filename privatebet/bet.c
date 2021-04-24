@@ -526,11 +526,11 @@ int32_t sg777_deckgen_vendor(int32_t playerid, bits256 *cardprods, bits256 *fina
 		xoverz = xoverz_donna(curve25519(randcards[i].priv, playercards[i]));
 		vcalc_sha256(0, hash.bytes, xoverz.bytes, sizeof(xoverz));
 		hash_temp[i] = hash; // optimization
-		tmp[i] = fmul_donna(curve25519_fieldelement(hash), randcards[i].priv);
+		tmp[i] = fmul_donna(curve25519_fieldelement(hash), randcards[i].priv);		
 	}
 
 	for (int32_t i = 0; i < numcards; i++) {
-		printf("%s::%d::player card::%s::dcv card::%s\n",__FUNCTION__,__LINE__,bits256_str(hexstr,cardprods[i]),bits256_str(hexstr,tmp[i]));
+		printf("%s::%d::player card::%s::dcv card::%s\n",__FUNCTION__,__LINE__,bits256_str(hexstr,playercards[i]),bits256_str(hexstr,tmp[i]));
 		finalcards[i] = tmp[i]; //permis_d[i] sg777 this should be replaced with i
 		g_hash[playerid][i] = hash_temp[i]; // permis_d[i] sg777 this should be replaced with i
 		cardprods[i] = randcards[i].prod; // same cardprods[] returned for each player
