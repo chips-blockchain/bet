@@ -530,7 +530,8 @@ int32_t sg777_deckgen_vendor(int32_t playerid, bits256 *cardprods, bits256 *fina
 	}
 
 	for (int32_t i = 0; i < numcards; i++) {
-		printf("%s::%d::player card::%s::dcv card::%s\n",__FUNCTION__,__LINE__,bits256_str(hexstr,playercards[i]),bits256_str(hexstr,tmp[i]));
+		if(numcards < 6)
+			printf("%s::%d::player card::%s::dcv card::%s\n",__FUNCTION__,__LINE__,bits256_str(hexstr,playercards[i]),bits256_str(hexstr,tmp[i]));
 		finalcards[i] = tmp[i]; //permis_d[i] sg777 this should be replaced with i
 		g_hash[playerid][i] = hash_temp[i]; // permis_d[i] sg777 this should be replaced with i
 		cardprods[i] = randcards[i].prod; // same cardprods[] returned for each player
