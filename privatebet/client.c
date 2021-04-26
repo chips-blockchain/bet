@@ -171,6 +171,9 @@ int32_t bet_bvv_init(cJSON *argjson, struct privatebet_info *bet, struct private
 	bits256 bvv_blinding_values[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 	bits256 bvv_blind_cards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 
+
+	printf("%s::%d::maxplayers::%d::numplayers::%d\n",__FUNCTION__,__LINE__,bet->maxplayers,bet->numplayers);
+
 	bvv_info.numplayers = bet->numplayers;
 	bvv_info.maxplayers = bet->maxplayers;
 	bvv_info.deckid = jbits256(argjson, "deckid");
