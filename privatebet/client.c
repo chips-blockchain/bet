@@ -1722,7 +1722,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
 
 		if (strcmp(method, "join_res") == 0) {
-			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
+			//printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 			bet_update_seat_info(argjson);
 			if (strcmp(jstr(argjson, "req_identifier"), req_identifier) == 0) {
 				bet_push_join_info(argjson);
@@ -1733,7 +1733,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		} else if (strcmp(method, "init") == 0) {
 			if (jint(argjson, "peerid") == bet->myplayerid) {
 				bet_player_blinds_info();
-				printf("%s::%d::myplayerid::%d::init::%s\n", __FUNCTION__, __LINE__, bet->myplayerid,
+				//printf("%s::%d::myplayerid::%d::init::%s\n", __FUNCTION__, __LINE__, bet->myplayerid,
 				       cJSON_Print(argjson));
 				retval = bet_client_init(argjson, bet, vars);
 			}
@@ -1790,7 +1790,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 					retval = -1;
 			}
 		} else if (strcmp(method, "stack_info_resp") == 0) {
-			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
+			//printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 			max_players = jint(argjson, "max_players");
 			bet_player->maxplayers = max_players;
 			bet_player->numplayers = max_players;
@@ -1798,7 +1798,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 				retval = bet_player_handle_stack_info_resp(argjson, bet);
 			}
 		} else if (strcmp(method, "tx_status") == 0) {
-			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
+			//printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 			if (strcmp(req_identifier, jstr(argjson, "id")) == 0) {
 				vars->player_funds = jint(argjson, "player_funds");
 				if (jint(argjson, "tx_validity") == 1) {
