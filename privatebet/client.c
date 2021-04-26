@@ -1733,8 +1733,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		} else if (strcmp(method, "init") == 0) {
 			if (jint(argjson, "peerid") == bet->myplayerid) {
 				bet_player_blinds_info();
-				//printf("%s::%d::myplayerid::%d::init::%s\n", __FUNCTION__, __LINE__, bet->myplayerid,
-				       cJSON_Print(argjson));
+				//printf("%s::%d::myplayerid::%d::init::%s\n", __FUNCTION__, __LINE__, bet->myplayerid, cJSON_Print(argjson));
 				retval = bet_client_init(argjson, bet, vars);
 			}
 		} else if (strcmp(method, "init_d") == 0) {
