@@ -212,7 +212,7 @@ int32_t bet_bvv_init(cJSON *argjson, struct privatebet_info *bet, struct private
 			}
 		}
 	}
-	printf("%s::%d::bvv_init_info::%s\n",__FUNCTION__,__LINE__,cJSON_Print(bvv_init_info));
+	printf("%s::%d::bvv_init_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(bvv_init_info));
 	rendered = cJSON_Print(bvv_init_info);
 	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 
