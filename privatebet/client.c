@@ -277,7 +277,7 @@ int32_t bet_check_bvv_ready(cJSON *argjson, struct privatebet_info *bet, struct 
 	bvv_ready = cJSON_CreateObject();
 	cJSON_AddStringToObject(bvv_ready, "method", "bvv_ready");
 
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(bvv_ready));
+	//printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(bvv_ready));
 	rendered = cJSON_Print(bvv_ready);
 	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 	if (bytes < 0)
@@ -1205,7 +1205,7 @@ int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 	char *method = NULL;
 
 	if ((method = jstr(argjson, "method")) != 0) {
-		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
+		//printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 		if (strcmp(method, "player_join") == 0) {
 			bet_player_process_player_join(argjson);
 		} else if (strcmp(method, "betting") == 0) {

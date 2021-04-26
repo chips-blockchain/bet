@@ -740,7 +740,7 @@ int32_t bet_player_round_betting(cJSON *argjson, struct privatebet_info *bet, st
 		if (vars->player_funds == 0) {
 			cJSON_DetachItemFromObject(action_response, "action");
 			cJSON_AddStringToObject(action_response, "action", "allin");
-			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(action_response));
+			//printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(action_response));
 		}
 
 		cJSON_AddNumberToObject(action_response, "bet_amount", jint(argjson, "bet_amount"));
@@ -764,7 +764,7 @@ int32_t bet_player_round_betting(cJSON *argjson, struct privatebet_info *bet, st
 			goto end;
 
 	} else {
-		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(action_response));
+		//printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(action_response));
 		rendered = cJSON_Print(action_response);
 		bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 

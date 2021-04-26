@@ -95,7 +95,7 @@ void bet_compute_m_of_n_msig_addr()
 {
 	cJSON *msig_addr = NULL;
 	msig_addr = chips_add_multisig_address();
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(msig_addr));
+	//printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(msig_addr));
 	if (msig_addr) {
 		legacy_m_of_n_msig_addr = (char *)malloc(strlen(jstr(msig_addr, "address")) + 1);
 		memset(legacy_m_of_n_msig_addr, 0x00, strlen(jstr(msig_addr, "address")) + 1);
