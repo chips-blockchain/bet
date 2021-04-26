@@ -354,6 +354,7 @@ int32_t bet_bvv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 			chips_tx_fee = jdouble(argjson, "chips_tx_fee");
 			table_stack_in_chips = jdouble(argjson, "table_stack_in_chips");
 			bet->maxplayers = max_players;
+			bet->numplayers = max_players;
 		}
 	}
 	return retval;
