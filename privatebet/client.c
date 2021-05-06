@@ -126,13 +126,12 @@ void player_lws_write(cJSON *data)
 	if (backend_status == 1) {
 		if (ws_connection_status_write == 1) {
 			if (data_exists == 1) {
-				printf("%s::%d::There is more data\n", __FUNCTION__, __LINE__);
+				//printf("%s::%d::There is more data\n", __FUNCTION__, __LINE__);
 				while (data_exists == 1) {
-					printf("%s::%d::Inside while\n", __FUNCTION__, __LINE__);
+					//printf("%s::%d::Inside while\n", __FUNCTION__, __LINE__);
 					sleep(1);
 				}
 			}
-			//printf("%s::%d::Writing data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(data));
 			memset(player_gui_data, 0, sizeof(player_gui_data));
 			strncpy(player_gui_data, cJSON_Print(data), strlen(cJSON_Print(data)));
 			data_exists = 1;
@@ -1312,7 +1311,7 @@ int lws_callback_http_player_write(struct lws *wsi, enum lws_callback_reasons re
 		bet_gui_init_message(bet_player);
 		break;
 	case LWS_CALLBACK_SERVER_WRITEABLE:
-		printf("%s::%d::LWS_CALLBACK_SERVER_WRITEABLE triggered\n", __FUNCTION__, __LINE__);
+		//printf("%s::%d::LWS_CALLBACK_SERVER_WRITEABLE triggered\n", __FUNCTION__, __LINE__);
 		if (data_exists) {
 			if (player_gui_data) {
 				lws_write(wsi, player_gui_data, strlen(player_gui_data), 0);
