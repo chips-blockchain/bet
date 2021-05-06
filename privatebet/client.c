@@ -378,7 +378,7 @@ bits256 bet_decode_card(cJSON *argjson, struct privatebet_info *bet, struct priv
 		memcpy(shares[i], playershares[cardid][i].bytes, sizeof(bits256));
 		printf("%s\t", shares[i]);
 	}
-	printf("\n")
+	printf("\n");
 	gfshare_calc_sharenrs(sharenrs, numplayers, player_info.deckid.bytes,
 			      sizeof(player_info.deckid)); // same for all players for this round
 
