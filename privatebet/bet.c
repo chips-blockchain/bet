@@ -62,7 +62,7 @@ The default value is 2, i.e as atleast two players are required to play the game
 
 int32_t max_players = 2;
 
-static const int32_t poker_deck_size = 8;
+static const int32_t poker_deck_size = 16;
 
 static void bet_cashier_client_initialize(char *node_ip, const int32_t port)
 {
