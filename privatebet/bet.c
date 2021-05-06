@@ -266,12 +266,12 @@ static void bet_dcv_thrd(char *dcv_ip, const int32_t port)
 	pthread_t /*live_thrd,*/ dcv_backend, dcv_thrd;
 
 	bet_dcv_initialize(dcv_ip, port);
-	/*
+#if 0
 	if (OS_thread_create(&live_thrd, NULL, (void *)bet_dcv_heartbeat_loop, (void *)bet_dcv) != 0) {
 		printf("error launching bet_dcv_heartbeat_loop\n");
 		exit(-1);
 	}
-	*/
+#endif
 	if (OS_thread_create(&dcv_backend, NULL, (void *)bet_dcv_backend_loop, (void *)bet_dcv) != 0) {
 		printf("error launching bet_dcv_backend_loop\n");
 		exit(-1);
@@ -286,11 +286,11 @@ static void bet_dcv_thrd(char *dcv_ip, const int32_t port)
 	if (pthread_join(dcv_thrd, NULL)) {
 		printf("\nError in joining the main thread for dcv_thrd");
 	}
-	/*
+#if 0
 	if (pthread_join(live_thrd, NULL)) {
 		printf("\nError in joining the main thread for bet_dcv_heartbeat_loop");
 	}
-	*/
+#endif
 	bet_dcv_deinitialize();
 }
 
@@ -400,7 +400,7 @@ static char *bet_pick_dealer()
 		}
 	}
 	return NULL;
-}
+		}
 
 int main(int argc, char **argv)
 {
@@ -497,11 +497,11 @@ struct pair256 deckgen_player(bits256 *playerprivs, bits256 *playercards, int32_
 	printf("priv key::%s\n", bits256_str(hexstr, key.priv));
 	printf("pub key::%s\n", bits256_str(hexstr, key.prod));
 
-	//printf("%s::%d::The player private key card values\n",__FUNCTION__,__LINE__);
+	printf("%s::%d::The player private key card values\n", __FUNCTION__, __LINE__);
 	for (i = 0; i < numcards; i++) {
 		playerprivs[i] = randcards[i].priv; // permis[i]
 		playercards[i] = curve25519(playerprivs[i], key.prod);
-		//printf("card ::%d::%s\n",i,bits256_str(hexstr,playercards[i]));
+		printf("card ::%d::%s\n", i, bits256_str(hexstr, playercards[i]));
 	}
 	return (key);
 }
@@ -513,6 +513,7 @@ int32_t sg777_deckgen_vendor(int32_t playerid, bits256 *cardprods, bits256 *fina
 	static bits256 active_deckid, hash_temp[CARDS777_MAXCARDS];
 	int32_t retval = 1;
 	bits256 hash, xoverz, tmp[256];
+	char hexstr[65];
 
 	if (bits256_cmp(deckid, active_deckid) != 0)
 		deckgen_common2(randcards, numcards);
@@ -529,8 +530,11 @@ int32_t sg777_deckgen_vendor(int32_t playerid, bits256 *cardprods, bits256 *fina
 	}
 
 	for (int32_t i = 0; i < numcards; i++) {
-		finalcards[i] = tmp[permis_d[i]];
-		g_hash[playerid][i] = hash_temp[permis_d[i]]; // optimization
+		if (numcards < 6)
+			printf("%s::%d::player card::%s::dcv card::%s\n", __FUNCTION__, __LINE__,
+			       bits256_str(hexstr, playercards[i]), bits256_str(hexstr, tmp[i]));
+		finalcards[i] = tmp[i]; //permis_d[i] sg777 this should be replaced with i
+		g_hash[playerid][i] = hash_temp[i]; // permis_d[i] sg777 this should be replaced with i
 		cardprods[i] = randcards[i].prod; // same cardprods[] returned for each player
 	}
 end:
@@ -547,7 +551,8 @@ struct pair256 p2p_bvv_init(bits256 *keys, struct pair256 b_key, bits256 *blindi
 
 	for (i = 0; i < numcards; i++) {
 		blindings[i] = rand256(1);
-		blindedcards[i] = fmul_donna(finalcards[permis_b[i]], blindings[i]);
+		blindedcards[i] =
+			fmul_donna(finalcards[i], blindings[i]); //permis_b[i] should be replaced in place of i sg777
 	}
 
 	M = (numplayers / 2) + 1;

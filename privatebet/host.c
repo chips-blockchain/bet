@@ -343,7 +343,7 @@ int32_t bet_dcv_deck_init_info(cJSON *argjson, struct privatebet_info *bet, stru
 		cJSON_AddItemToArray(cjson_peer_pub_keys,
 				     cJSON_CreateString(bits256_str(str, dcv_info.peerpubkeys[i])));
 	}
-	//printf("%s::%d::init_d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(deck_init_info));
+	printf("%s::%d::dcvblindcards::%s\n", __FUNCTION__, __LINE__, cJSON_Print(cjson_dcv_blind_cards));
 	rendered = cJSON_Print(deck_init_info);
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 
@@ -1619,7 +1619,7 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 	char *sql_stmt = NULL;
 	cJSON *msig_addr_nodes = NULL;
 
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
+	//printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 	//retval = bet_dcv_verify_tx(argjson, bet); //sg777 commenting for testing purposes
 	if (retval == 2) {
 		return retval;
