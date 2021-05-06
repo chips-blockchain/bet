@@ -372,9 +372,13 @@ bits256 bet_decode_card(cJSON *argjson, struct privatebet_info *bet, struct priv
 		shares[i] = calloc(sizeof(bits256), sizeof(uint8_t));
 
 	M = (numplayers / 2) + 1;
-	for (int i = 0; i < M; i++) {
+
+	printf("%s::%d::M::%d::N::%d::shares are below::\n", __FUNCTION__,__LINE__,M, numplayers);
+	for (int i = 0; i < M; i++) {		
 		memcpy(shares[i], playershares[cardid][i].bytes, sizeof(bits256));
+		printf("%s\t", shares[i]);
 	}
+	printf("\n")
 	gfshare_calc_sharenrs(sharenrs, numplayers, player_info.deckid.bytes,
 			      sizeof(player_info.deckid)); // same for all players for this round
 
@@ -383,7 +387,7 @@ bits256 bet_decode_card(cJSON *argjson, struct privatebet_info *bet, struct priv
 	gfshare_recoverdata(shares, sharenrs, M, recover.bytes, sizeof(bits256), M);
 	refval = fmul_donna(player_info.bvvblindcards[bet->myplayerid][cardid], crecip_donna(recover));
 
-	printf("\nDCV blinded card:%s",bits256_str(str,refval));
+	printf("\nDCV blinded card:%s\n",bits256_str(str,refval));
 
 	for (int i = 0; i < bet->range; i++) {
 		for (int j = 0; j < bet->range; j++) {
