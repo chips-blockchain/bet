@@ -159,7 +159,7 @@ int32_t bet_dcv_round_betting(cJSON *argjson, struct privatebet_info *bet, struc
 	}
 
 	for (int i = 0; i < bet->maxplayers; i++) {
-		//printf("%s::%d::player id::%d::funds::%d::vars->round::%d\n", __FUNCTION__, __LINE__, i, vars->funds[i],
+		printf("%s::%d::player id::%d::funds::%d::vars->round::%d\n", __FUNCTION__, __LINE__, i, vars->funds[i],
 		       vars->round);
 		for (int j = 0; j <= vars->round; j++)
 			printf("%d\t", vars->betamount[i][j]);
