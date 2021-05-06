@@ -325,7 +325,9 @@ int32_t bet_dcv_deck_init_info(cJSON *argjson, struct privatebet_info *bet, stru
 
 	cJSON_AddItemToObject(deck_init_info, "dcvblindcards", cjson_dcv_blind_cards = cJSON_CreateArray());
 	for (int i = 0; i < dcv_info.numplayers; i++) {
+		printf("%s::%d::DCV blinded cards of Player::%d\n",__FUNCTION__,__LINE__,i);
 		for (int j = 0; j < bet->range; j++) {
+			printf("%s\t",bits256_str(str, dcv_info.dcvblindcards[i][j]));
 			cJSON_AddItemToArray(cjson_dcv_blind_cards,
 					     cJSON_CreateString(bits256_str(str, dcv_info.dcvblindcards[i][j])));
 		}
