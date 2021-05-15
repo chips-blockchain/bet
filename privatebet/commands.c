@@ -1522,7 +1522,7 @@ int32_t ln_dev_block_height()
 
 	argc = 2;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "lightning-cli", "dev-blockheight");
+	argv = bet_copy_args(argc, "lightning-cli", "getinfo");
 	bh_info = cJSON_CreateObject();
 	make_command(argc, argv, &bh_info);
 	block_height = jint(bh_info, "blockheight");
@@ -1746,7 +1746,7 @@ int32_t ln_wait_for_tx_block_height(int32_t block_height)
 
 	argc = 2;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "lightning-cli", "dev-blockheight");
+	argv = bet_copy_args(argc, "lightning-cli", "getinfo");
 	bh_info = cJSON_CreateObject();
 	make_command(argc, argv, &bh_info);
 	while (jint(bh_info, "blockheight") < block_height) {
