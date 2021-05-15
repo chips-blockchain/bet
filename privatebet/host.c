@@ -475,7 +475,7 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 
 	cJSON *seats_info = NULL;
 
-	printf("%s::%d::bet->maxplayers::%d\n",__FUNCTION__,__LINE__,bet->maxplayers);
+	printf("%s::%d::bet->maxplayers::%d\n", __FUNCTION__, __LINE__, bet->maxplayers);
 	seats_info = bet_get_seats_json(bet->maxplayers);
 	cJSON_AddItemToObject(player_info, "seats", seats_info);
 
@@ -618,7 +618,7 @@ static int32_t bet_check_bvv_ready(struct privatebet_info *bet)
 		jaddistr(uri_info, dcv_info.uri[i]);
 	}
 	rendered = cJSON_Print(bvv_ready);
-	printf("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(bvv_ready));
+	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(bvv_ready));
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 
 	if (bytes < 0)
@@ -707,9 +707,11 @@ static int32_t bet_create_betting_invoice(cJSON *argjson, struct privatebet_info
 	invoice = cJSON_CreateObject();
 	make_command(argc, argv, &invoice);
 
-	if (jint(invoice, "code") != 0)
+	if (jint(invoice, "code") != 0) {
+		printf("%s::%d::Failed to create the chips-ln invoice::\n%s\n", __FUNCTION__, __LINE__,
+		       cJSON_Print(argjson));
 		retval = -1;
-	else {
+	} else {
 		invoice_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(invoice_info, "method", "bettingInvoice");
 		cJSON_AddNumberToObject(invoice_info, "playerID", jint(argjson, "playerID"));
@@ -861,7 +863,7 @@ void bet_reset_all_dcv_params(struct privatebet_info *bet, struct privatebet_var
 	invoiceID = 0;
 
 	heartbeat_on = 0;
-	
+
 	for (int i = 0; i < bet->maxplayers; i++)
 		player_ready[i] = 0;
 
@@ -1241,8 +1243,11 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 		printf("%s::%d::Failed to send data\n", __FUNCTION__, __LINE__);
 		goto end;
 	}
+
 	sleep(5);
-	lws_write(wsi_global_host, cJSON_Print(final_info), strlen(cJSON_Print(final_info)), 0);
+	if (wsi_global_host) {
+		lws_write(wsi_global_host, cJSON_Print(final_info), strlen(cJSON_Print(final_info)), 0);
+	}
 end:
 	if (retval != -1) {
 		reset_info = cJSON_CreateObject();
@@ -1690,7 +1695,7 @@ void bet_dcv_backend_thrd(void *_ptr)
 		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
 		if (strcmp(method, "join_req") == 0) {
 			retval = bet_dcv_process_join_req(argjson, bet, vars);
-		} else if (strcmp(method, "bvv_ready") == 0) {			
+		} else if (strcmp(method, "bvv_ready") == 0) {
 			retval = bet_dcv_start(bet, 0);
 		} else if (strcmp(method, "init_p") == 0) {
 			retval = bet_dcv_init(argjson, bet, vars);
@@ -1756,7 +1761,6 @@ void bet_dcv_backend_thrd(void *_ptr)
 		} else if (strcmp(method, "dcv_state") == 0) {
 			bet_get_dcv_state(argjson, bet);
 		} else if (strcmp(method, "req_seats_info") == 0) {
-			printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 			cJSON *seats_info_resp = NULL;
 			cJSON *seats_info = bet_get_seats_json(bet->maxplayers);
 

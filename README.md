@@ -48,7 +48,7 @@ Below are the list of the ports used and should be remained open incase if you h
 
 ### Compilation Guidelines
 
-Steps to compile this repo is mentioned in [compile.md](./compile.md). 
+Steps to compile this repo is mentioned in [compile.md](./docs/compile.md). 
 
 ### Docker Setup
 

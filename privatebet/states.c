@@ -757,10 +757,9 @@ int32_t bet_player_round_betting(cJSON *argjson, struct privatebet_info *bet, st
 		cJSON_AddNumberToObject(action_response, "bet_amount", jint(argjson, "bet_amount"));
 
 		cJSON_AddNumberToObject(action_response, "invoice_amount", vars->player_funds);
-
+		retval = bet_player_invoice_request(argjson, action_response, bet, vars->player_funds);
 		vars->player_funds = 0;
 
-		retval = bet_player_invoice_request(argjson, action_response, bet, vars->player_funds);
 		if (retval < 0)
 			goto end;
 
