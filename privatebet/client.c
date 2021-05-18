@@ -171,8 +171,7 @@ int32_t bet_bvv_init(cJSON *argjson, struct privatebet_info *bet, struct private
 	bits256 bvv_blinding_values[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 	bits256 bvv_blind_cards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 
-
-	printf("%s::%d::maxplayers::%d::numplayers::%d\n",__FUNCTION__,__LINE__,bet->maxplayers,bet->numplayers);
+	printf("%s::%d::maxplayers::%d::numplayers::%d\n", __FUNCTION__, __LINE__, bet->maxplayers, bet->numplayers);
 
 	bvv_info.numplayers = bet->numplayers;
 	bvv_info.maxplayers = bet->maxplayers;
@@ -384,7 +383,7 @@ bits256 bet_decode_card(cJSON *argjson, struct privatebet_info *bet, struct priv
 	gfshare_recoverdata(shares, sharenrs, M, recover.bytes, sizeof(bits256), M);
 	refval = fmul_donna(player_info.bvvblindcards[bet->myplayerid][cardid], crecip_donna(recover));
 
-	printf("\nDCV blinded card:%s",bits256_str(str,refval));
+	printf("\nDCV blinded card:%s", bits256_str(str, refval));
 
 	for (int i = 0; i < bet->range; i++) {
 		for (int j = 0; j < bet->range; j++) {
