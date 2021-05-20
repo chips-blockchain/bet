@@ -43,75 +43,66 @@ Now you have 3 options: Use installation script OR use Docker OR compile and ins
 
    3.1. Run the installation script under the user created at the intial server setup
 
-      ```
-      wget https://github.com/chips-blockchain/bet/blob/master/scripts/install.sh
+   ```
+   wget https://github.com/chips-blockchain/bet/blob/master/scripts/install.sh
 
-      bash install.sh
-      ```
+   bash install.sh
+   ```
 
    3.2. Run CHIPS daemon
-      ```shell
-      chipsd &
-      ```
+   ```shell
+   chipsd &
+   ```
 
-      Check if CHIPS is running
+   Check if CHIPS is running
 
-      ```shell
-      chips-cli getinfo
-     ```
+   ```shell
+   chips-cli getinfo
+  ```
 
-      The output might be an error followed by `Loading blocks...`. CHIPS is loading our bootstrapped blocks. Just give it some time and try again later. Successful result is an object with info.
+   The output might be an error followed by `Loading blocks...`. CHIPS is loading our bootstrapped blocks. Just give it some time and try again later. Successful result is an object with info.
 
-      **Wait for CHIPS to fully sync.**
+   **Wait for CHIPS to fully sync.**
 
-      CHIPS is fully synced when the number of `blocks` and `headers` match.
+   Can take about 1-2 hours.
 
-      ```bash
-      chips-cli getinfo
-      {
-        ...
-        ...
-        "chain": "main",
-        "blocks": 7709392,
-        "headers": 7709392,
-        ...
-        ...
-      } 
-      ```
+   CHIPS is fully synced when the number of `blocks` and `headers` match.
+
+   ```bash
+   chips-cli getinfo
+   {
+     ...
+     ...
+     "chain": "main",
+     "blocks": 7709392,
+     "headers": 7709392,
+     ...
+     ...
+   } 
+   ```
 
   3.3. Run the lightning node in tmux
 
-      Create a tmux session
-      ```
-      tmux new -s lightning
-      ```
+   Create a tmux session
+   ```
+   tmux new -s lightning
+   ```
 
-      Then inside the tmux session you've just created
-      ```
-      lightningd --log-level=debug &
-      # CTRL + B, then D to detach from the tmux session, to attach to the session again `tmux a -t lightning`
-      ```
+   Then inside the tmux session you've just created
+   ```
+   lightningd --log-level=debug &
+   # CTRL + B, then D to detach from the tmux session, to attach to the session again `tmux a -t lightning`
+   ```
 
-      Get chain info - If it returns your node’s id, you’re all set.
-      ```
-      lightning-cli getinfo
-      ```
+   Get chain info - If it returns your node’s id, you’re all set.
+   ```
+   lightning-cli getinfo
+   ```
 
-      If you don't see output `lightning-cli` of this command formatted, you can add `jq` with pipe command like following:
-      ```
-      lightning-cli getinfo | jq .
-      ```
-
-      Get a new address to fund your Lightning Node
-      This returns an address, which needs to be funded first in order to open a channel with another node.
-      ```
-      lightning-cli newaddr
-      ```
-
-      Run the following command to check if your node has funds
-      ```
-      lightning-cli listfunds
-      ```
+   If you don't see output `lightning-cli` of this command formatted, you can add `jq` with pipe command like following:
+   ```
+   lightning-cli getinfo | jq .
+   ```
 
 ### 2. Fund your nodes
 
