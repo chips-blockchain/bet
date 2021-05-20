@@ -11,6 +11,17 @@ First make sure the basics are working.
 
     Is Lightning synced?
 
+    if you lightning node is running in tmux do
+
+    ```
+    tmux a -t lightning
+    ```
+
+    and you can see if the chain is still syncing
+
+
+
+
     ```
     lightning-cli getinfo
 
@@ -27,15 +38,22 @@ First make sure the basics are working.
     `ps aux | grep chipsd`
 
 
-    Is Lightning synced?
+    Is Chips synced?
     
-    ```
-    chips-cli getinfo
+    CHIPS is fully synced when the number of `blocks` and `headers` match.
 
-    { "id" : "03f9b8668793f885e6c46bb5c37101d35d91f41791dec5157d9bde0db988b45271", "port" : 9735, "address" :
-        [
-            { "type" : "ipv4", "address" : "45.77.139.155", "port" : 9735 } ], "version" : "chipsln.0.0.0", "blockheight" : 7526989, "network" : "chips" }
-    ``
+    ```bash
+    chips-cli getinfo
+    {
+        ...
+        ...
+        "chain": "main",
+        "blocks": 7709392,
+        "headers": 7709392,
+        ...
+        ...
+    } 
+    ```
 
 
 ## Errors when running Player node
