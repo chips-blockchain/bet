@@ -44,9 +44,7 @@ Now you have 3 options: Use installation script OR use Docker OR compile and ins
    3.1. Run the installation script under the user created at the intial server setup
 
    ```
-   wget https://github.com/chips-blockchain/bet/blob/master/scripts/install.sh
-
-   bash install.sh
+   curl -L https://github.com/chips-blockchain/bet/blob/master/scripts/install.sh | bash -
    ```
 
    3.2. Run CHIPS daemon
