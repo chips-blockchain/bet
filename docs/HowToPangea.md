@@ -20,6 +20,14 @@ SSD: 80GB
 
 ## The setup
 
+1. Setup backend
+
+2. Fund your nodes
+
+3. Setup GUI
+
+4. Play
+
 ### 1. Setup backend
 
 Initial server setup ( https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04)
