@@ -15,7 +15,7 @@ In order to start playing you need to fund your LN node and your CHIPS node.
     }
     ```
 
-2. Send 1 CHIPS to the newly generated address. It is `bGq2Nnze7rxYuc8pExa6z7TiUoGGUac2hG` in our example.
+2. Send 0.25 CHIPS to the newly generated address. It is `bGq2Nnze7rxYuc8pExa6z7TiUoGGUac2hG` in our example.
 
 3. Check the balance
 
@@ -48,7 +48,7 @@ In order to start playing you need to fund your LN node and your CHIPS node.
     root@server:~/bet/privatebet$ chips-cli getnewaddress
     bbd7L2LuapPhw18DQZUnw25v1N3F3nrHB2
     ```
-2. Send a few CHIPS there (5).
+2. Send a few CHIPS there (1-3?). 
 
 3. Check the balance
     
