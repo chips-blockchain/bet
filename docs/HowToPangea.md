@@ -20,112 +20,113 @@ SSD: 80GB
 
 ## The setup
 
-1. Setup backend
+### 1. Setup backend
 
-    Initial server setup ( https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04)
+Initial server setup ( https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04)
 
-    Now you have 3 options: Use installation script OR use Docker OR compile and install manually
+Now you have 3 options: Use installation script OR use Docker OR compile and install manually
 
-    ### Option 1. Use the script to perform the setup.
 
-      1. Run the installation script under the user created at the intial server setup
+#### Option 1. Use Docker, see [Docker repo](https://github.com/chips-blockchain/docker) for info
 
-          ```
-          wget https://github.com/chips-blockchain/bet/blob/master/scripts/install.sh
+#### Option 2. Manually compile and install everything, see [Compile.md](./compile.md)
 
-          bash install.sh
-          ```
+#### Option 3. Use the script to perform the setup.
 
-      2. Run CHIPS daemon
-          ```shell
-          chipsd &
-          ```
+   3.1. Run the installation script under the user created at the intial server setup
 
-          Check if CHIPS is running
+      ```
+      wget https://github.com/chips-blockchain/bet/blob/master/scripts/install.sh
 
-          ```shell
-          chips-cli getinfo
-         ```
+      bash install.sh
+      ```
 
-          The output might be an error followed by `Loading blocks...`. CHIPS is loading our bootstrapped blocks. Just give it some time and try again later. Successful result is an object with info.
+   3.2. Run CHIPS daemon
+      ```shell
+      chipsd &
+      ```
 
-          **Wait for CHIPS to fully sync.**
+      Check if CHIPS is running
 
-          CHIPS is fully synced when the number of `blocks` and `headers` match.
+      ```shell
+      chips-cli getinfo
+     ```
 
-          ```bash
-          chips-cli getinfo
-          {
-            ...
-            ...
-            "chain": "main",
-            "blocks": 7709392,
-            "headers": 7709392,
-            ...
-            ...
-          } 
-          ```
+      The output might be an error followed by `Loading blocks...`. CHIPS is loading our bootstrapped blocks. Just give it some time and try again later. Successful result is an object with info.
 
-      3. Run the lightning node in tmux
-          
-          Create a tmux session
-          ```
-          tmux new -s lightning
-          ```
+      **Wait for CHIPS to fully sync.**
 
-          Then inside the tmux session you've just created
-          ```
-          lightningd --log-level=debug &
-          # CTRL + B, then D to detach from the tmux session, to attach to the session again `tmux a -t lightning`
-          ```
+      CHIPS is fully synced when the number of `blocks` and `headers` match.
 
-          Get chain info - If it returns your node’s id, you’re all set.
-          ```
-          lightning-cli getinfo
-          ```
+      ```bash
+      chips-cli getinfo
+      {
+        ...
+        ...
+        "chain": "main",
+        "blocks": 7709392,
+        "headers": 7709392,
+        ...
+        ...
+      } 
+      ```
 
-          If you don't see output `lightning-cli` of this command formatted, you can add `jq` with pipe command like following:
-          ```
-          lightning-cli getinfo | jq .
-          ```
+  3.3. Run the lightning node in tmux
 
-          Get a new address to fund your Lightning Node
-          This returns an address, which needs to be funded first in order to open a channel with another node.
-          ```
-          lightning-cli newaddr
-          ```
+      Create a tmux session
+      ```
+      tmux new -s lightning
+      ```
 
-          Run the following command to check if your node has funds
-          ```
-          lightning-cli listfunds
-          ```
-    
-    ### Option 2. Use Docker, see [Docker repo](https://github.com/chips-blockchain/docker) for info
+      Then inside the tmux session you've just created
+      ```
+      lightningd --log-level=debug &
+      # CTRL + B, then D to detach from the tmux session, to attach to the session again `tmux a -t lightning`
+      ```
 
-    ### Option 3. Manually compile and install everything, see [Compile.md](./compile.md)
+      Get chain info - If it returns your node’s id, you’re all set.
+      ```
+      lightning-cli getinfo
+      ```
 
-2. Fund your nodes
+      If you don't see output `lightning-cli` of this command formatted, you can add `jq` with pipe command like following:
+      ```
+      lightning-cli getinfo | jq .
+      ```
 
-    Once you setup your nodes, you need to fund them. See [Fund your nodes instructions](./setup_fund_nodes.md).
+      Get a new address to fund your Lightning Node
+      This returns an address, which needs to be funded first in order to open a channel with another node.
+      ```
+      lightning-cli newaddr
+      ```
 
-3. Setup GUI
+      Run the following command to check if your node has funds
+      ```
+      lightning-cli listfunds
+      ```
 
-    GUI is a separate project under the CHIPS blockchain repository. It does not require a backend setup aka player node for it. GUI only needs its repo cloned, dependencies installed and project run. You can have the GUI running locally on your computer. It will be the easiest for you to have it locally.
+### 2. Fund your nodes
 
-    There is also a deployed version of GUI at http://dev.chips.cash.
+Once you setup your nodes, you need to fund them. See [Fund your nodes instructions](./setup_fund_nodes.md).
 
-    **Local GUI setup**
+### 3. Setup GUI
 
-    ```
-    git clone https://github.com/chips-blockchain/pangea-poker.git
+GUI is a separate project under the CHIPS blockchain repository. It does not require a backend setup aka player node for it. GUI only needs its repo cloned, dependencies installed and project run. You can have the GUI running locally on your computer. It will be the easiest for you to have it locally.
 
-    npm install && npm start
+There is also a deployed version of GUI at http://dev.chips.cash.
 
-    ```
+**Local GUI setup**
 
-4. How to Play
+```
+git clone https://github.com/chips-blockchain/pangea-poker.git
 
-    See [Tutorial](https://github.com/chips-blockchain/pangea-poker/blob/dev/tutorial/Tutorial.md)
+npm install && npm start
+
+```
+
+### 4. How to Play
+
+  See [Tutorial](https://github.com/chips-blockchain/pangea-poker/blob/dev/tutorial/Tutorial.md)
 
 
 ## Its not working! Omg!
