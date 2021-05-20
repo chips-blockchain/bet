@@ -1,4 +1,4 @@
-# Common errors
+# Common issues
 
 First make sure the basics are working.
 
@@ -80,7 +80,7 @@ ln is 7822365 blocks behind chips network
 
 -> Most probably your lightning crashed
 
-## corrupted size vs. prev_size
+### corrupted size vs. prev_size
 
 **./bet player/dcv**
 
@@ -92,6 +92,10 @@ Aborted
 ```
 
 --> Ehhm, you are not supposed to get that as it has been already fixed. If you receive this error please report it in the CHIPS Discord. Thank you
+
+### bet_player_backend::1828::unable make lock_in transaction
+
+Check if all the entities involved - player node and dealer node, have enough funds. Minimum is 0.01 CHIPS.
 
 ## Chips keep on failing
 
