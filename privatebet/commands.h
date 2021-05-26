@@ -1,6 +1,6 @@
 #include "bet.h"
 
-#define arg_size 8192
+#define arg_size 16384
 #define tx_data_size 4196
 
 int32_t bet_alloc_args(int argc, char ***argv);
