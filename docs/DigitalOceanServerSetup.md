@@ -1,25 +1,49 @@
 # Server setup for the backend
 
-*
-* Please be aware this setup is a temporary measure while we are working on an easy to run installation, which will also support decentalization.
-*
-* 
+
+_Please be aware this setup is a temporary measure while we are working on an easy to run installation, which will also support decentalization._
+
 
 This example uses Digital Ocean. 
 
 You can sign up to Digital Ocean using this link - https://m.do.co/c/9492bae9fc3c It is a referral link and if you use it, it will give you $100 Digital Ocean credit and considering the droplet you need for this setup is about $20 per month you can have 5 free months. I in return will receive $25 and that will pay for my CHIPS server for the month.
 
 For this tutorial we are going to setup a droplet with the following configuration:
-Ubuntu 18.04 x 64
-RAM: 4GB
-SSD: 80GB
+
+- Ubuntu 18.04 x 64
+- RAM: 4GB
+- SSD: 80GB
 
 
 
+## Digital Ocean
 You need to register on Digital Ocean and once you are through and have your panel open choose Create a droplet.
 
 
+### 1. Create a droplet
+
 ![Create a droplet](./images/do-create-droplet.jpg)
 
+### 2. Choose Distribution - Ubuntu 18.04 or Ubuntu 20.04 and choose a plan
 
-Follow this initial server setup tutorial ( https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04)
+![Choose dist](./images/do-distribution.png)
+
+
+### 3. Choose any datacenter you want, it does not really matter.
+
+![Choose datacenter](./images/do-datacenter.png)
+
+
+### 4. Add your SSH keys
+
+![New SSH](./images/do-ssh-key.png)
+![Enter SSH](./images/do-add-ssh.png)
+
+### 5. Click Create Droplet
+Wait for your droplet to be created. Once done, copy your IP and open terminal on your computer. The rest of the setup will happen in terminal.
+
+![Copy IP](./images/do-copy-ip.png)
+
+### 6. Initial server setup
+
+Follow [The initial server setup tutorial](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04)
