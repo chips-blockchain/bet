@@ -21,7 +21,7 @@ You need to register on Digital Ocean and once you are through and have your pan
 
 ### 1. Create a droplet
 
-![Create a droplet](./images/do-create-droplet.jpg)
+![Create a droplet](./images/do-create-droplet.png)
 
 ### 2. Choose Distribution - Ubuntu 18.04 or Ubuntu 20.04 and choose a plan
 
