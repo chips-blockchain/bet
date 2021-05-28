@@ -35,7 +35,7 @@ SSD: 80GB
 Now you have 3 options: Use installation script OR use Docker OR compile and install manually
 
 
-#### Option 1. Use Docker (NOT READY FOR TESTING YET), see [Docker repo](https://github.com/chips-blockchain/docker) for info
+#### Option 1. Use Docker, see [Docker repo](https://github.com/chips-blockchain/docker) for info
 
 #### Option 2. Manually compile and install everything, see [Compile.md](./compile.md)
 
