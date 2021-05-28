@@ -1,8 +1,7 @@
 # Server setup for the backend
 
 
-_Please be aware this setup is a temporary measure while we are working on an easy to run installation, which will also support decentalization._
-
+_Please be aware this setup is a temporary measure while we are working on an easy to run installation. This setup will not be needed in the future. We intend to totally decentralise so it will not be required to use a centralised hosting at all._
 
 This example uses Digital Ocean. 
 
