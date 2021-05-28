@@ -6,7 +6,7 @@ _Please be aware this setup is a temporary measure while we are working on an ea
 
 This example uses Digital Ocean. 
 
-You can sign up to Digital Ocean using this link - https://m.do.co/c/9492bae9fc3c It is a referral link and if you use it, it will give you $100 Digital Ocean credit and considering the droplet you need for this setup is about $20 per month you can have 5 free months. I in return will receive $25 and that will pay for my CHIPS server for the month.
+You can sign up to Digital Ocean using this link - https://m.do.co/c/9492bae9fc3c It is a referral link and if you use it, it will give you $100 Digital Ocean credit for 60 days. The droplet we are creating here is $20 per month so you can have two free months of poker setup and plus you can experiment with Digital Ocean some more to use the rest of the credit. I in return will receive $25 and that will pay for my CHIPS server for the month.
 
 For this tutorial we are going to setup a droplet with the following configuration:
 
