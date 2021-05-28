@@ -25,7 +25,7 @@ You need to register on Digital Ocean and once you are through and have your pan
 
 ### 2. Choose Distribution - Ubuntu 18.04 or Ubuntu 20.04 and choose a plan
 
-![Choose dist](./images/do-distribution.png)
+![Choose distribution](./images/do-distribution.png)
 
 
 ### 3. Choose any datacenter you want, it does not really matter.
