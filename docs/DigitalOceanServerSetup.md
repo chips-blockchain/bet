@@ -45,4 +45,15 @@ Wait for your droplet to be created. Once done, copy your IP and open terminal o
 
 ### 6. Initial server setup
 
+Part of the following tutorial is enabling firewall, while doing so be aware that you need to make sure the following ports are open.
+
+```
+* 7797 - This port is used to have pub-sub communication between Dealer and player nodes.
+* 7798 - This port is used to have pull-push communication between Dealer and player nodes.
+* 7901 - This port is used to have pub-sub communication between Cashier and any other{player,dealer} nodes.
+* 7902 - This port is used to have push-pull communication between Cashier and any other{player,dealer} nodes.
+* 9000 - This port is used to have websocket communication between GUI and {player,dealer} nodes.
+```
+
+
 Follow [The initial server setup tutorial](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04)
