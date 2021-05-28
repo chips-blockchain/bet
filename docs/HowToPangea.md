@@ -20,17 +20,17 @@ SSD: 80GB
 
 ## The setup
 
-1. Setup backend
+1. [Server setup](./DigitalOceanServerSetup.md)
 
-2. Fund your nodes
+2. Setup backend
 
-3. Setup GUI
+3. Fund your nodes
 
-4. Play
+4. Setup GUI
 
-### 1. Setup backend
+5. Play
 
-Initial server setup ( https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04)
+### 2. Setup backend
 
 Now you have 3 options: Use installation script OR use Docker OR compile and install manually
 
@@ -102,11 +102,11 @@ Now you have 3 options: Use installation script OR use Docker OR compile and ins
    lightning-cli getinfo | jq .
    ```
 
-### 2. Fund your nodes
+### 3. Fund your nodes
 
 Once you setup your nodes, you need to fund them. See [Fund your nodes instructions](./setup_fund_nodes.md).
 
-### 3. Setup GUI
+### 4. Setup GUI
 
 GUI is a separate project under the CHIPS blockchain repository. It does not require a backend setup aka player node for it. GUI only needs its repo cloned, dependencies installed and project run. You can have the GUI running locally on your computer. It will be the easiest for you to have it locally.
 
@@ -121,7 +121,7 @@ npm install && npm start
 
 ```
 
-### 4. How to Play
+### 5. How to Play
 
   See [Tutorial](https://github.com/chips-blockchain/pangea-poker/blob/dev/tutorial/Tutorial.md)
 
