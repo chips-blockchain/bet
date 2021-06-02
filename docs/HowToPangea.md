@@ -108,9 +108,9 @@ Once you setup your nodes, you need to fund them. See [Fund your nodes instructi
 
 ### 4. Setup GUI
 
-GUI is a separate project under the CHIPS blockchain repository. It does not require a backend setup aka player node for it. GUI only needs its repo cloned, dependencies installed and project run. You can have the GUI running locally on your computer. It will be the easiest for you to have it locally.
+GUI is graphical user interface which players use to interact with the game. 
 
-There is also a deployed version of GUI at http://dev.chips.cash.
+You can either run the GUI locally or access it at http://dev.chips.cash.
 
 **Local GUI setup**
 
