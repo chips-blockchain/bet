@@ -16,10 +16,16 @@ For this tutorial we are going to setup a droplet with the following configurati
 
 
 ## Digital Ocean
-You need to register on Digital Ocean and once you are through and have your panel open choose Create a droplet.
+You need to register on Digital Ocean.
+
+### 1. Create VM
+
+Once you are through with the registration, choose Deploy a virtual machine. 
+
+![DO-registration](https://user-images.githubusercontent.com/2395326/120421661-47fb5b80-c399-11eb-9ce6-29b4f6833497.png)
 
 
-### 1. Create a droplet
+In the case you already have an account choose to create a new droplet.
 
 ![Create a droplet](./images/do-create-droplet.png)
 
