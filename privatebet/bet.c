@@ -124,7 +124,6 @@ static void bet_player_thrd(char *dcv_ip, const int32_t port)
 {
 	pthread_t player_thrd, player_backend_write, player_backend_read;
 
-
 #ifdef LIVE_THREAD
 	pthread_t player_backend;
 #endif
@@ -134,7 +133,7 @@ static void bet_player_thrd(char *dcv_ip, const int32_t port)
 		printf("error in launching bet_player_backend_loop\n");
 		exit(-1);
 	}
-	
+
 #ifdef LIVE_THREAD
 	if (OS_thread_create(&player_backend, NULL, (void *)bet_player_frontend_loop, NULL) != 0) {
 		printf("error launching bet_player_frontend_loop\n");
@@ -273,9 +272,9 @@ static void bet_dcv_thrd(char *dcv_ip, const int32_t port)
 {
 	pthread_t dcv_backend, dcv_thrd;
 
-	#ifdef LIVE_THREAD
-		pthread_t live_thrd;
-	#endif
+#ifdef LIVE_THREAD
+	pthread_t live_thrd;
+#endif
 
 	bet_dcv_initialize(dcv_ip, port);
 #ifdef LIVE_THREAD
