@@ -126,13 +126,13 @@ void player_lws_write(cJSON *data)
 	if (backend_status == 1) {
 		if (ws_connection_status_write == 1) {
 			if (data_exists == 1) {
-				printf("%s::%d::There is more data\n", __FUNCTION__, __LINE__);
+				//printf("%s::%d::There is more data\n", __FUNCTION__, __LINE__);
 				while (data_exists == 1) {
-					printf("%s::%d::Inside while\n", __FUNCTION__, __LINE__);
+					//printf("%s::%d::Inside while\n", __FUNCTION__, __LINE__);
 					sleep(1);
 				}
 			}
-			printf("%s::%d::Writing data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(data));
+			//printf("%s::%d::Writing data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(data));
 			memset(player_gui_data, 0, sizeof(player_gui_data));
 			strncpy(player_gui_data, cJSON_Print(data), strlen(cJSON_Print(data)));
 			data_exists = 1;
@@ -976,6 +976,7 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 
 		strcpy(uri, jstr(argjson, "uri"));
 		strcpy(channel_id, strtok(jstr(argjson, "uri"), "@"));
+
 		channel_state = ln_get_channel_status(channel_id);
 		if ((channel_state != CHANNELD_AWAITING_LOCKIN) && (channel_state != CHANNELD_NORMAL)) {
 			retval = ln_establish_channel(uri);
@@ -984,6 +985,7 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 			else
 				printf("Channel Didn't Established\n");
 		} else {
+			printf("There isn't any pre-established channel with the dealer, so creating one now");
 			strcpy(uri, jstr(argjson, "uri"));
 			ln_check_peer_and_connect(uri);
 		}
@@ -1703,10 +1705,9 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 	if (strcmp(jstr(argjson, "method"), "reset") == 0) {
 		reset_lock = 0;
 		retval = bet_player_reset(bet, vars);
-		
 	}
-	if(reset_lock == 1) {
-			return retval;
+	if (reset_lock == 1) {
+		return retval;
 	}
 	if ((method = jstr(argjson, "method")) != 0) {
 		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
