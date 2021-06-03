@@ -54,7 +54,10 @@ int32_t run_command(int argc, char **argv);
 int32_t make_command(int argc, char **argv, cJSON **argjson);
 
 char *ln_get_new_address();
+#if 0 //obsolated in new ln repo
 int32_t ln_dev_block_height();
+#endif
+int32_t ln_block_height();
 int32_t ln_listfunds();
 int32_t ln_get_uri(char **uri);
 int32_t ln_connect_uri(char *uri);

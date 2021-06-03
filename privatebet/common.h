@@ -24,7 +24,7 @@
 */
 
 #define mchips_msatoshichips 1000000 // 0.01mCHIPS
-#define channel_fund_satoshis 25000000 // 0.25CHIPS or 250 mCHIPS
+#define channel_fund_satoshis 16777215 // 0.167CHIPS this is the mx limit set up the c lightning node
 #define satoshis 100000000 //10^8 satoshis for 1 COIN
 #define satoshis_per_unit 1000
 #define normalization_factor 100

@@ -463,7 +463,7 @@ cJSON *chips_create_raw_tx(double amount, char *address)
 			cJSON *tx_info = cJSON_CreateObject();
 			if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "spendable")), "true") == 0) {
 				temp_balance += jdouble(temp, "amount");
-				if(jdouble(temp, "amount") > 0.0001) {
+				if (jdouble(temp, "amount") > 0.0001) {
 					if (temp_balance >= amount) {
 						changeAddress = jstr(temp, "address");
 						change = temp_balance - amount;
@@ -582,7 +582,7 @@ void check_ln_chips_sync()
 	int32_t threshold_diff = 1000;
 
 	chips_bh = chips_get_block_count();
-	ln_bh = ln_dev_block_height();
+	ln_bh = ln_block_height();
 	while (1) {
 		if ((chips_bh - ln_bh) > threshold_diff) {
 			printf("\rln is %d blocks behind chips network\n", (chips_bh - ln_bh));
@@ -590,7 +590,7 @@ void check_ln_chips_sync()
 		} else
 			break;
 		chips_bh = chips_get_block_count();
-		ln_bh = ln_dev_block_height();
+		ln_bh = ln_block_height();
 	}
 	printf("ln is in sync with chips\n");
 }
@@ -1431,6 +1431,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 		strcat(command, argv[i]);
 		strcat(command, " ");
 	}
+
 	/* Open the command for reading. */
 	fp = popen(command, "r");
 	if (fp == NULL) {
@@ -1513,9 +1514,10 @@ char *ln_get_new_address()
 	make_command(argc, argv, &addr_info);
 	bet_dealloc_args(argc, &argv);
 
-	return unstringify(cJSON_Print(addr_info));
+	return jstr(addr_info, "p2sh-segwit");
 }
 
+#if 0
 int32_t ln_dev_block_height()
 {
 	char **argv = NULL;
@@ -1529,6 +1531,24 @@ int32_t ln_dev_block_height()
 	make_command(argc, argv, &bh_info);
 	block_height = jint(bh_info, "blockheight");
 	// printf("LN height - %d\n", block_height);
+	bet_dealloc_args(argc, &argv);
+	return block_height;
+}
+
+#endif
+
+int32_t ln_block_height()
+{
+	char **argv = NULL;
+	int32_t argc, block_height;
+	cJSON *ln_info = NULL;
+
+	argc = 2;
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, "lightning-cli", "getinfo");
+	ln_info = cJSON_CreateObject();
+	make_command(argc, argv, &ln_info);
+	block_height = jint(ln_info, "blockheight");
 	bet_dealloc_args(argc, &argv);
 	return block_height;
 }
@@ -1675,8 +1695,11 @@ cJSON *ln_connect(char *id)
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
+	connect_info = cJSON_CreateObject();
+
 	argv = bet_copy_args(argc, "lightning-cli", "connect", id);
 	make_command(argc, argv, &connect_info);
+
 	bet_dealloc_args(argc, &argv);
 	return connect_info;
 }
@@ -1782,6 +1805,8 @@ int32_t ln_establish_channel(char *uri)
 			amount = channel_fund_satoshis - ln_listfunds();
 			amount = amount / satoshis;
 
+			printf("%s::%d::LN wallet doesn't have sufficient funds so loading LN wallet from CHIPS wallet\n",
+			       __FUNCTION__, __LINE__);
 			if (chips_get_balance() >= (amount + (2 * chips_tx_fee))) {
 				cJSON *tx_info = chips_deposit_to_ln_wallet(amount + chips_tx_fee);
 				while (chips_get_block_hash_from_txid(cJSON_Print(tx_info)) == NULL) {
@@ -1795,6 +1820,7 @@ int32_t ln_establish_channel(char *uri)
 				}
 			}
 		}
+
 		fund_channel_info = ln_fund_channel(jstr(connect_info, "id"), channel_fund_satoshis);
 		if ((retval = jint(fund_channel_info, "code")) != 0) {
 			return retval;
