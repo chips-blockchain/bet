@@ -1243,20 +1243,17 @@ int32_t bet_ln_check(struct privatebet_info *bet)
 	int32_t retval = 1, channel_state;
 	char uri[100];
 
-	printf("%s::%d\n", __FUNCTION__, __LINE__);
 	for (int32_t i = 0; i < bet_dcv->maxplayers; i++) {
 		strcpy(uri, dcv_info.uri[i]);
 		strcpy(channel_id, strtok(uri, "@"));
 
-		printf("%s::%d::uri::%s::channelid::%s\n", __FUNCTION__, __LINE__, uri, channel_id);
-
-		while ((channel_state = ln_get_channel_status(channel_id)) != 3) {
+		while ((channel_state = ln_get_channel_status(channel_id)) != CHANNELD_NORMAL) {
 			printf("%s::%d::channel-state::%d\n", __FUNCTION__, __LINE__, channel_state);
-			if (channel_state == 2) {
+			if (channel_state == CHANNELD_AWAITING_LOCKIN) {
 				printf("CHANNELD AWAITING LOCKIN\r");
 				fflush(stdout);
 				sleep(1);
-			} else if ((channel_state != 2) && (channel_state != 3)) {
+			} else if ((channel_state != CHANNELD_AWAITING_LOCKIN) && (channel_state != CHANNELD_NORMAL)) {
 				printf("\n%s:%d: Player: %d -> DCV LN Channel failed,channel_state=%d, JUST WAIT\n",
 				       __FUNCTION__, __LINE__, i, channel_state);
 				sleep(1);
@@ -1280,7 +1277,7 @@ static int32_t bet_award_winner(cJSON *argjson, struct privatebet_info *bet, str
 	for (int32_t i = 0; i < argc; i++)
 		argv[i] = (char *)malloc(1000 * sizeof(char));
 	strcpy(channel_id, strtok(dcv_info.uri[jint(argjson, "playerid")], "@"));
-	if (ln_get_channel_status(channel_id) != 3) {
+	if (ln_get_channel_status(channel_id) != CHANNELD_NORMAL) {
 		strcpy(argv[0], "lightning-cli");
 		strcpy(argv[1], "fundchannel");
 		strcpy(argv[2], channel_id);
@@ -1299,11 +1296,9 @@ static int32_t bet_award_winner(cJSON *argjson, struct privatebet_info *bet, str
 
 		printf("\nFund channel response:%s\n", cJSON_Print(fund_channel_info));
 		int state;
-		while ((state = ln_get_channel_status(channel_id)) != 3) {
-			if (state == 2) {
+		while ((state = ln_get_channel_status(channel_id)) != CHANNELD_NORMAL) {
+			if (state == CHANNELD_AWAITING_LOCKIN) {
 				printf("\nCHANNELD_AWAITING_LOCKIN");
-			} else if (state == 8) {
-				printf("\nONCHAIN");
 			} else
 				printf("\n%s:%d:channel-state:%d\n", __FUNCTION__, __LINE__, state);
 
