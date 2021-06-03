@@ -271,10 +271,14 @@ static void bet_dcv_deinitialize()
 
 static void bet_dcv_thrd(char *dcv_ip, const int32_t port)
 {
-	pthread_t /*live_thrd,*/ dcv_backend, dcv_thrd;
+	pthread_t dcv_backend, dcv_thrd;
+
+	#ifdef LIVE_THREAD
+		pthread_t live_thrd;
+	#endif
 
 	bet_dcv_initialize(dcv_ip, port);
-#if 0
+#ifdef LIVE_THREAD
 	if (OS_thread_create(&live_thrd, NULL, (void *)bet_dcv_heartbeat_loop, (void *)bet_dcv) != 0) {
 		printf("error launching bet_dcv_heartbeat_loop\n");
 		exit(-1);
@@ -294,7 +298,7 @@ static void bet_dcv_thrd(char *dcv_ip, const int32_t port)
 	if (pthread_join(dcv_thrd, NULL)) {
 		printf("\nError in joining the main thread for dcv_thrd");
 	}
-#if 0
+#ifdef LIVE_THREAD
 	if (pthread_join(live_thrd, NULL)) {
 		printf("\nError in joining the main thread for bet_dcv_heartbeat_loop");
 	}
