@@ -430,34 +430,16 @@ cJSON *bet_get_seats_json(int32_t max_players)
 
 int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	cJSON *player_info = NULL, *get_info = NULL, *addresses = NULL, *address = NULL;
+	cJSON *player_info = NULL;
 	uint32_t bytes, retval = 1;
 	char *rendered = NULL, *uri = NULL;
-	int argc;
-	char **argv = NULL;
 
 	bet->numplayers = ++players_joined;
 	dcv_info.peerpubkeys[jint(argjson, "gui_playerID")] = jbits256(argjson, "pubkey");
 	strcpy(dcv_info.uri[jint(argjson, "gui_playerID")], jstr(argjson, "uri"));
 
-	argc = 2;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++)
-		argv[i] = (char *)malloc(100 * sizeof(char));
-
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "getinfo");
-	get_info = cJSON_CreateObject();
-	make_command(argc, argv, &get_info);
-
 	uri = (char *)malloc(100 * sizeof(char));
-
-	addresses = cJSON_GetObjectItem(get_info, "address");
-	address = cJSON_GetArrayItem(addresses, 0);
-
-	strcpy(uri, jstr(get_info, "id"));
-	strcat(uri, "@");
-	strcat(uri, jstr(address, "address"));
+	ln_get_uri(&uri);
 
 	player_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(player_info, "method", "join_res");
@@ -490,13 +472,6 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 end:
 	if (uri)
 		free(uri);
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
 	return retval;
 }
 
@@ -644,7 +619,7 @@ static int32_t bet_create_invoice(cJSON *argjson, struct privatebet_info *bet, s
 
 	strcpy(argv[0], "lightning-cli");
 	strcpy(argv[1], "invoice");
-	sprintf(argv[2], "%ld", (long int)jint(argjson, "betAmount") * mchips_msatoshichips);
+	sprintf(argv[2], "%ld", (long int)jint(argjson, "betAmount")); //sg777 mchips_msatoshichips
 	sprintf(argv[3], "%s_%d_%d_%d_%d", bits256_str(hexstr, dcv_info.deckid), invoiceID, jint(argjson, "playerID"),
 		jint(argjson, "round"), jint(argjson, "betAmount"));
 	sprintf(argv[4], "\"Invoice_details_playerID:%d,round:%d,betting Amount:%d\"", jint(argjson, "playerID"),
@@ -1272,7 +1247,11 @@ int32_t bet_ln_check(struct privatebet_info *bet)
 	for (int32_t i = 0; i < bet_dcv->maxplayers; i++) {
 		strcpy(uri, dcv_info.uri[i]);
 		strcpy(channel_id, strtok(uri, "@"));
+
+		printf("%s::%d::uri::%s::channelid::%s\n", __FUNCTION__, __LINE__, uri, channel_id);
+
 		while ((channel_state = ln_get_channel_status(channel_id)) != 3) {
+			printf("%s::%d::channel-state::%d\n", __FUNCTION__, __LINE__, channel_state);
 			if (channel_state == 2) {
 				printf("CHANNELD AWAITING LOCKIN\r");
 				fflush(stdout);
