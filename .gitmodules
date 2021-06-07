@@ -1,0 +1,13 @@
+[submodule "external/jsmn"]
+	path = external/jsmn
+	url = https://github.com/zserge/jsmn
+[submodule "external/libwally-core"]
+	path = external/libwally-core
+	url = https://github.com/ElementsProject/libwally-core.git
+	ignore = dirty
+[submodule "external/nng"]
+	path = external/nng
+	url = https://github.com/nanomsg/nng.git
+[submodule "external/libwebsockets"]
+	path = external/libwebsockets
+	url = https://github.com/sg777/libwebsockets.git
