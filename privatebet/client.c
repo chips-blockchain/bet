@@ -965,9 +965,9 @@ static int32_t bet_check_player_stack(char *uri)
 }
 int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	char uri[100], *rendered = NULL;
+	char uri[ln_uri_length], *rendered = NULL;
 	int argc, retval = 1, channel_state, /* balance,*/ bytes;
-	char **argv = NULL, channel_id[100];
+	char **argv = NULL, channel_id[ln_uri_length];
 	cJSON *init_card_info = NULL, *hole_card_info = NULL, *init_info = NULL, *stack_info = NULL;
 
 	if (0 == bits256_cmp(player_info.player_key.prod, jbits256(argjson, "pubkey"))) {
@@ -1467,7 +1467,7 @@ void bet_player_frontend_read_loop(void *_ptr)
 
 	player_context_read = lws_create_context(&lws_player_info_read);
 	if (!player_context_read) {
-		printf("lws init failed\n");
+		printf("%s::%d::lws init failed\n",__FUNCTION__,__LINE__);
 	}
 	while (n >= 0 && !interrupted1) {
 		n = lws_service(player_context_read, 1000);
@@ -1489,7 +1489,7 @@ void bet_player_frontend_write_loop(void *_ptr)
 
 	player_context_write = lws_create_context(&lws_player_info_write);
 	if (!player_context_write) {
-		printf("lws init failed\n");
+		printf("%s::%d::lws init failed\n",__FUNCTION__,__LINE__);
 	}
 	while (n >= 0 && !interrupted1) {
 		n = lws_service(player_context_write, 1000);
@@ -1509,9 +1509,16 @@ void bet_player_frontend_loop(void *_ptr)
 	lws_player_info.protocols = player_http_protocol;
 	lws_player_info.options = LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
 
+	if(lws_player_info.vhost_name == NULL){
+		printf("%s::%d::vhost is NULL",__FUNCTION__,__LINE__);
+		lws_player_info.vhost_name = (char*)malloc(100*sizeof(char));
+	} else {
+		printf("%s::%d::vhost::%s\n",__FUNCTION__,__LINE__,lws_player_info.vhost_name);
+	}
+
 	player_context = lws_create_context(&lws_player_info);
 	if (!player_context) {
-		printf("lws init failed\n");
+		printf("%s::%d::lws init failed\n",__FUNCTION__,__LINE__);
 	}
 	while (n >= 0 && !interrupted1) {
 		n = lws_service(player_context, 1000);

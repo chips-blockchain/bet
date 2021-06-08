@@ -2,6 +2,7 @@
 
 #define arg_size 16384
 #define tx_data_size 4196
+#define ln_uri_length 200
 
 int32_t bet_alloc_args(int argc, char ***argv);
 void bet_dealloc_args(int argc, char ***argv);
