@@ -974,6 +974,13 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 		bet_player->myplayerid = jint(argjson, "playerid");
 		bet->myplayerid = jint(argjson, "playerid");
 
+		
+		if(1 != ln_check_if_address_isof_type(jstr(argjson,"type"))) {
+			printf("%s::%d::Dealer expects the ln to be established over tor, please make sure to run lightning node over tor\n", __FUNCTION__,__LINE__);
+			retval = -1;
+			goto end;
+		}
+		
 		strcpy(uri, jstr(argjson, "uri"));
 		strcpy(channel_id, strtok(jstr(argjson, "uri"), "@"));
 
