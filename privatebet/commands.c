@@ -1584,11 +1584,11 @@ end:
 	return value;
 }
 
-int32_t ln_get_uri(char **uri)
+char* ln_get_uri(char **uri)
 {
 	cJSON *channel_info = NULL, *addresses = NULL, *address = NULL;
 	int argc, retval = 1, port;
-	char **argv = NULL, port_str[6];
+	char **argv = NULL, port_str[6], *type = NULL;
 
 	argc = 2;
 	bet_alloc_args(argc, &argv);
@@ -1611,10 +1611,11 @@ int32_t ln_get_uri(char **uri)
 	port = jint(address,"port");
 	sprintf(port_str,"%d",port);
 	strcat(*uri,port_str);
+	type =jstr(address,"type");
 
 end:
 	bet_dealloc_args(argc, &argv);
-	return retval;
+	return type;
 }
 
 int32_t ln_connect_uri(char *uri)
@@ -1706,6 +1707,38 @@ cJSON *ln_connect(char *id)
 
 	bet_dealloc_args(argc, &argv);
 	return connect_info;
+}
+
+int32_t ln_check_if_address_isof_type(char *type)
+{
+	int32_t argc, retval = 0;
+	char **argv = NULL;
+	cJSON *channel_info = NULL, *addresses = NULL, *address = NULL;
+	
+	argc = 2;
+	bet_alloc_args(argc,&argv);
+	argv = bet_copy_args(argc, "lightning-cli", "getinfo");
+	
+	channel_info = cJSON_CreateObject();
+	make_command(argc, argv, &channel_info);
+
+	if (jint(channel_info, "code") != 0) {
+		retval = -1;
+		printf("\n%s:%d: Message:%s", __FUNCTION__, __LINE__, jstr(channel_info, "message"));
+		goto end;
+	}
+	addresses = cJSON_GetObjectItem(channel_info,"address");
+	for(int32_t i = 0; i < cJSON_GetArraySize(addresses); i++) {
+		address = cJSON_GetArrayItem(addresses,i);
+		if(0 == strcmp(jstr(address,"type"), type)) {
+			retval = 1;
+			break;
+		}
+	}
+	
+	end:
+		bet_dealloc_args(argc,&argv);
+		return retval;
 }
 
 void ln_check_peer_and_connect(char *id)
