@@ -974,13 +974,13 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 		bet_player->myplayerid = jint(argjson, "playerid");
 		bet->myplayerid = jint(argjson, "playerid");
 
-		
-		if(1 != ln_check_if_address_isof_type(jstr(argjson,"type"))) {
-			printf("%s::%d::Dealer expects the ln to be established over tor, please make sure to run lightning node over tor\n", __FUNCTION__,__LINE__);
+		if (1 != ln_check_if_address_isof_type(jstr(argjson, "type"))) {
+			printf("%s::%d::Dealer expects the ln to be established over tor, please make sure to run lightning node over tor\n",
+			       __FUNCTION__, __LINE__);
 			retval = -1;
 			goto end;
 		}
-		
+
 		strcpy(uri, jstr(argjson, "uri"));
 		strcpy(channel_id, strtok(jstr(argjson, "uri"), "@"));
 
@@ -1474,7 +1474,7 @@ void bet_player_frontend_read_loop(void *_ptr)
 
 	player_context_read = lws_create_context(&lws_player_info_read);
 	if (!player_context_read) {
-		printf("%s::%d::lws init failed\n",__FUNCTION__,__LINE__);
+		printf("%s::%d::lws init failed\n", __FUNCTION__, __LINE__);
 	}
 	while (n >= 0 && !interrupted1) {
 		n = lws_service(player_context_read, 1000);
@@ -1496,7 +1496,7 @@ void bet_player_frontend_write_loop(void *_ptr)
 
 	player_context_write = lws_create_context(&lws_player_info_write);
 	if (!player_context_write) {
-		printf("%s::%d::lws init failed\n",__FUNCTION__,__LINE__);
+		printf("%s::%d::lws init failed\n", __FUNCTION__, __LINE__);
 	}
 	while (n >= 0 && !interrupted1) {
 		n = lws_service(player_context_write, 1000);
@@ -1516,16 +1516,16 @@ void bet_player_frontend_loop(void *_ptr)
 	lws_player_info.protocols = player_http_protocol;
 	lws_player_info.options = LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
 
-	if(lws_player_info.vhost_name == NULL){
-		printf("%s::%d::vhost is NULL",__FUNCTION__,__LINE__);
-		lws_player_info.vhost_name = (char*)malloc(100*sizeof(char));
+	if (lws_player_info.vhost_name == NULL) {
+		printf("%s::%d::vhost is NULL", __FUNCTION__, __LINE__);
+		lws_player_info.vhost_name = (char *)malloc(100 * sizeof(char));
 	} else {
-		printf("%s::%d::vhost::%s\n",__FUNCTION__,__LINE__,lws_player_info.vhost_name);
+		printf("%s::%d::vhost::%s\n", __FUNCTION__, __LINE__, lws_player_info.vhost_name);
 	}
 
 	player_context = lws_create_context(&lws_player_info);
 	if (!player_context) {
-		printf("%s::%d::lws init failed\n",__FUNCTION__,__LINE__);
+		printf("%s::%d::lws init failed\n", __FUNCTION__, __LINE__);
 	}
 	while (n >= 0 && !interrupted1) {
 		n = lws_service(player_context, 1000);
@@ -2001,8 +2001,8 @@ void rest_push_cards(struct lws *wsi, cJSON *argjson, int32_t this_playerID)
 void rest_display_cards(cJSON *argjson, int32_t this_playerID)
 {
 	char *suit[NSUITS] = { "clubs", "diamonds", "hearts", "spades" };
-	char *face[NFACES] = { "two",  "three", "four", "five",	 "six",	 "seven", "eight",
-			       "nine", "ten",	"jack", "queen", "king", "ace" };
+	char *face[NFACES] = { "two",  "three", "four", "five",  "six",  "seven", "eight",
+			       "nine", "ten",   "jack", "queen", "king", "ace" };
 
 	char action_str[8][100] = { "", "small_blind", "big_blind", "check", "raise", "call", "allin", "fold" };
 	cJSON *actions = NULL;
