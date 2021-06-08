@@ -438,7 +438,7 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 	dcv_info.peerpubkeys[jint(argjson, "gui_playerID")] = jbits256(argjson, "pubkey");
 	strcpy(dcv_info.uri[jint(argjson, "gui_playerID")], jstr(argjson, "uri"));
 
-	uri = (char *)malloc(100 * sizeof(char));
+	uri = (char *)malloc(ln_uri_length * sizeof(char));
 	ln_get_uri(&uri);
 
 	player_info = cJSON_CreateObject();
@@ -469,6 +469,7 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 		printf("\n%s:%d: Failed to send data", __FUNCTION__, __LINE__);
 		goto end;
 	}
+	printf("%s::%d::uri::%s\n",__FUNCTION__,__LINE__,uri);
 end:
 	if (uri)
 		free(uri);
