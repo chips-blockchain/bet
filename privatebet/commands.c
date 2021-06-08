@@ -1587,8 +1587,8 @@ end:
 int32_t ln_get_uri(char **uri)
 {
 	cJSON *channel_info = NULL, *addresses = NULL, *address = NULL;
-	int argc, retval = 1;
-	char **argv = NULL;
+	int argc, retval = 1, port;
+	char **argv = NULL, port_str[6];
 
 	argc = 2;
 	bet_alloc_args(argc, &argv);
@@ -1607,6 +1607,10 @@ int32_t ln_get_uri(char **uri)
 	addresses = cJSON_GetObjectItem(channel_info, "address");
 	address = cJSON_GetArrayItem(addresses, 0);
 	strcat(*uri, jstr(address, "address"));
+	strcat(*uri, ":");
+	port = jint(address,"port");
+	sprintf(port_str,"%d",port);
+	strcat(*uri,port_str);
 
 end:
 	bet_dealloc_args(argc, &argv);
@@ -1616,9 +1620,9 @@ end:
 int32_t ln_connect_uri(char *uri)
 {
 	int argc, retval = 1, channel_state;
-	char **argv = NULL, channel_id[100];
+	char **argv = NULL, channel_id[ln_uri_length];
 	cJSON *connect_info = NULL;
-	char temp[200];
+	char temp[ln_uri_length];
 
 	strncpy(temp, uri, strlen(uri));
 	strcpy(channel_id, strtok(temp, "@"));
@@ -1793,10 +1797,11 @@ int32_t ln_establish_channel(char *uri)
 	int32_t retval = 1, state;
 	cJSON *connect_info = NULL, *fund_channel_info = NULL;
 	double amount;
-	char uid[100] = { 0 };
+	char uid[ln_uri_length] = { 0 };
 
 	strcpy(uid, uri);
 	if ((ln_get_channel_status(strtok(uid, "@")) != CHANNELD_NORMAL)) {
+		printf("%s::%d::uri::%s\n",__FUNCTION__,__LINE__,uri);
 		connect_info = ln_connect(uri);
 		if ((retval = jint(connect_info, "code")) != 0)
 			return retval;
