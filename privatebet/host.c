@@ -434,14 +434,14 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 {
 	cJSON *player_info = NULL;
 	uint32_t bytes, retval = 1;
-	char *rendered = NULL, *uri = NULL;
+	char *rendered = NULL, *uri = NULL, *type = NULL;
 
 	bet->numplayers = ++players_joined;
 	dcv_info.peerpubkeys[jint(argjson, "gui_playerID")] = jbits256(argjson, "pubkey");
 	strcpy((char *)dcv_info.uri[jint(argjson, "gui_playerID")], jstr(argjson, "uri"));
 
 	uri = (char *)malloc(ln_uri_length * sizeof(char));
-	ln_get_uri(&uri);
+	type = ln_get_uri(&uri);
 
 	player_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(player_info, "method", "join_res");
@@ -449,6 +449,7 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 	cJSON_AddNumberToObject(player_info, "playerid", jint(argjson, "gui_playerID"));
 	jaddbits256(player_info, "pubkey", jbits256(argjson, "pubkey"));
 	cJSON_AddStringToObject(player_info, "uri", uri);
+	cJSON_AddStringToObject(player_info,"type",type);
 	cJSON_AddNumberToObject(player_info, "dealer", dealerPosition);
 	cJSON_AddNumberToObject(player_info, "seat_taken", 0);
 	cJSON_AddStringToObject(player_info, "req_identifier", jstr(argjson, "req_identifier"));
