@@ -60,7 +60,7 @@ int32_t ln_dev_block_height();
 #endif
 int32_t ln_block_height();
 int32_t ln_listfunds();
-char* ln_get_uri(char **uri);
+char *ln_get_uri(char **uri);
 int32_t ln_connect_uri(char *uri);
 cJSON *ln_fund_channel(char *channel_id, int32_t channel_fund_satoshi);
 int32_t ln_pay(char *bolt11);
