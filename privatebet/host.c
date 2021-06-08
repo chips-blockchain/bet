@@ -63,8 +63,8 @@ int no_of_rand_str = 0;
 int32_t invoiceID;
 
 char *suit[NSUITS] = { "clubs", "diamonds", "hearts", "spades" };
-char *face[NFACES] = { "two",  "three", "four", "five",	 "six",	 "seven", "eight",
-		       "nine", "ten",	"jack", "queen", "king", "ace" };
+char *face[NFACES] = { "two",  "three", "four", "five",  "six",  "seven", "eight",
+		       "nine", "ten",   "jack", "queen", "king", "ace" };
 
 struct privatebet_info *bet_dcv = NULL;
 struct privatebet_vars *dcv_vars = NULL;
@@ -449,7 +449,7 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 	cJSON_AddNumberToObject(player_info, "playerid", jint(argjson, "gui_playerID"));
 	jaddbits256(player_info, "pubkey", jbits256(argjson, "pubkey"));
 	cJSON_AddStringToObject(player_info, "uri", uri);
-	cJSON_AddStringToObject(player_info,"type",type);
+	cJSON_AddStringToObject(player_info, "type", type);
 	cJSON_AddNumberToObject(player_info, "dealer", dealerPosition);
 	cJSON_AddNumberToObject(player_info, "seat_taken", 0);
 	cJSON_AddStringToObject(player_info, "req_identifier", jstr(argjson, "req_identifier"));
@@ -472,7 +472,7 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 		printf("\n%s:%d: Failed to send data", __FUNCTION__, __LINE__);
 		goto end;
 	}
-	printf("%s::%d::uri::%s\n",__FUNCTION__,__LINE__,uri);
+	printf("%s::%d::uri::%s\n", __FUNCTION__, __LINE__, uri);
 end:
 	if (uri)
 		free(uri);
