@@ -1,4 +1,4 @@
 x86_64-linux-gnu
 aarch64-linux-gnu
 arm-linux-gnueabihf
-arm64-apple-darwin20.3.0
+arm64-apple-darwin*
