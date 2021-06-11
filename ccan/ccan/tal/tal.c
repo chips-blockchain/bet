@@ -24,7 +24,6 @@ enum prop_type {
 	CHILDREN = 0x00c1d500,
 	NAME = 0x00111100,
 	NOTIFIER = 0x00071f00,
-	LENGTH = 0x00515300
 };
 
 struct tal_hdr {
@@ -32,6 +31,7 @@ struct tal_hdr {
 	struct prop_hdr *prop;
 	/* XOR with TAL_PTR_OBFUSTICATOR */
 	intptr_t parent_child;
+	size_t bytelen;
 };
 
 struct prop_hdr {
@@ -50,15 +50,10 @@ struct name {
 	char name[];
 };
 
-struct length {
-	struct prop_hdr hdr; /* LENGTH */
-	size_t len;
-};
-
 struct notifier {
 	struct prop_hdr hdr; /* NOTIFIER */
 	enum tal_notify_type types;
-	union {
+	union notifier_cb {
 		void (*notifyfn)(tal_t *, enum tal_notify_type, void *);
 		void (*destroy)(tal_t *); /* If NOTIFY_IS_DESTRUCTOR set */
 		void (*destroy2)(tal_t *, void *); /* If NOTIFY_EXTRA_ARG */
@@ -77,7 +72,7 @@ static struct {
 	struct tal_hdr hdr;
 	struct children c;
 } null_parent = { { { &null_parent.hdr.list, &null_parent.hdr.list },
-		    &null_parent.c.hdr, TAL_PTR_OBFUSTICATOR },
+		    &null_parent.c.hdr, TAL_PTR_OBFUSTICATOR, 0 },
 		  { { CHILDREN, NULL },
 		    &null_parent.hdr,
 		    { { &null_parent.c.children.n,
@@ -196,14 +191,14 @@ static void *from_tal_hdr(const struct tal_hdr *hdr)
 	return (void *)(hdr + 1);
 }
 
-#ifdef TAL_DEBUG
-static void *from_tal_hdr_or_null(struct tal_hdr *hdr)
+static void *from_tal_hdr_or_null(const struct tal_hdr *hdr)
 {
 	if (hdr == &null_parent.hdr)
 		return NULL;
 	return from_tal_hdr(hdr);
 }
 
+#ifdef TAL_DEBUG
 static struct tal_hdr *debug_tal(struct tal_hdr *tal)
 {
 	tal_check(from_tal_hdr_or_null(tal), "TAL_DEBUG ");
@@ -233,13 +228,18 @@ static void notify(const struct tal_hdr *ctx,
 		if (n->types & type) {
 			errno = saved_errno;
 			if (n->types & NOTIFY_IS_DESTRUCTOR) {
+				/* Blatt this notifier in case it tries to
+				 * tal_del_destructor() from inside */
+				union notifier_cb cb = n->u;
+				/* It's a union, so this NULLs destroy2 too! */
+				n->u.destroy = NULL;
 				if (n->types & NOTIFY_EXTRA_ARG)
-					n->u.destroy2(from_tal_hdr(ctx),
-						      EXTRA_ARG(n));
+					cb.destroy2(from_tal_hdr(ctx),
+						    EXTRA_ARG(n));
 				else
-					n->u.destroy(from_tal_hdr(ctx));
+					cb.destroy(from_tal_hdr(ctx));
 			} else
-				n->u.notifyfn(from_tal_hdr(ctx), type,
+				n->u.notifyfn(from_tal_hdr_or_null(ctx), type,
 					      (void *)info);
 		}
 	}
@@ -390,6 +390,8 @@ static void del_tree(struct tal_hdr *t, const tal_t *orig, int saved_errno)
 {
 	struct prop_hdr **prop, *p, *next;
 
+	assert(!taken(from_tal_hdr(t)));
+
         /* Already being destroyed?  Don't loop. */
         if (unlikely(get_destroying_bit(t->parent_child)))
                 return;
@@ -414,50 +416,23 @@ static void del_tree(struct tal_hdr *t, const tal_t *orig, int saved_errno)
         /* Finally free our properties. */
         for (p = t->prop; p && !is_literal(p); p = next) {
                 next = p->next;
-		/* LENGTH is appended, so don't free separately! */
-		if (p->type != LENGTH)
-			freefn(p);
+		freefn(p);
         }
         freefn(t);
 }
 
-static size_t extra_for_length(size_t size)
+void *tal_alloc_(const tal_t *ctx, size_t size, bool clear, const char *label)
 {
-	size_t extra;
-	const size_t align = ALIGNOF(struct length);
-
-	/* Round up size, and add tailer. */
-	extra = ((size + align-1) & ~(align-1)) - size;
-	extra += sizeof(struct length);
-	return extra;
-}
-
-void *tal_alloc_(const tal_t *ctx, size_t size,
-		 bool clear, bool add_length, const char *label)
-{
-	size_t req_size = size;
         struct tal_hdr *child, *parent = debug_tal(to_tal_hdr_or_null(ctx));
-
-#ifdef CCAN_TAL_DEBUG
-	/* Always record length if debugging. */
-	add_length = true;
-#endif
-	if (add_length)
-		size += extra_for_length(size);
 
         child = allocate(sizeof(struct tal_hdr) + size);
 	if (!child)
 		return NULL;
 	if (clear)
-		memset(from_tal_hdr(child), 0, req_size);
+		memset(from_tal_hdr(child), 0, size);
         child->prop = (void *)label;
+	child->bytelen = size;
 
-	if (add_length) {
-		struct length *lprop;
-		lprop = (struct length *)((char *)(child+1) + size) - 1;
-		init_property(&lprop->hdr, child, LENGTH);
-		lprop->len = req_size;
-	}
         if (!add_child(parent, child)) {
 		freefn(child);
 		return NULL;
@@ -470,7 +445,7 @@ void *tal_alloc_(const tal_t *ctx, size_t size,
 
 static bool adjust_size(size_t *size, size_t count)
 {
-	const size_t extra = sizeof(struct tal_hdr) + sizeof(struct length)*2;
+	const size_t extra = sizeof(struct tal_hdr);
 
 	/* Multiplication wrap */
         if (count && unlikely(*size * count / *size != count))
@@ -478,7 +453,7 @@ static bool adjust_size(size_t *size, size_t count)
 
         *size *= count;
 
-        /* Make sure we don't wrap adding header/tailer. */
+        /* Make sure we don't wrap adding header. */
         if (*size + extra < extra)
 		goto overflow;
 	return true;
@@ -488,12 +463,12 @@ overflow:
 }
 
 void *tal_alloc_arr_(const tal_t *ctx, size_t size, size_t count, bool clear,
-		     bool add_length, const char *label)
+		     const char *label)
 {
 	if (!adjust_size(&size, count))
 		return NULL;
 
-	return tal_alloc_(ctx, size, clear, add_length, label);
+	return tal_alloc_(ctx, size, clear, label);
 }
 
 void *tal_free(const tal_t *ctx)
@@ -527,7 +502,7 @@ void *tal_steal_(const tal_t *new_parent, const tal_t *ctx)
 		old_parent = ignore_destroying_bit(t->parent_child)->parent;
 
                 if (unlikely(!add_child(newpar, t))) {
-			/* We can always add to old parent, becuase it has a
+			/* We can always add to old parent, because it has a
 			 * children property already. */
 			if (!add_child(old_parent, t))
 				abort();
@@ -560,7 +535,7 @@ bool tal_add_destructor2_(const tal_t *ctx, void (*destroy)(void *me, void *arg)
 bool tal_add_notifier_(const tal_t *ctx, enum tal_notify_type types,
 		       void (*callback)(tal_t *, enum tal_notify_type, void *))
 {
-	tal_t *t = debug_tal(to_tal_hdr(ctx));
+	struct tal_hdr *t = debug_tal(to_tal_hdr_or_null(ctx));
 	struct notifier *n;
 
 	assert(types);
@@ -588,7 +563,7 @@ bool tal_del_notifier_(const tal_t *ctx,
 		       void (*callback)(tal_t *, enum tal_notify_type, void *),
 		       bool match_extra_arg, void *extra_arg)
 {
-	struct tal_hdr *t = debug_tal(to_tal_hdr(ctx));
+	struct tal_hdr *t = debug_tal(to_tal_hdr_or_null(ctx));
 	enum tal_notify_type types;
 
         types = del_notifier_property(t, callback, match_extra_arg, extra_arg);
@@ -656,17 +631,12 @@ const char *tal_name(const tal_t *t)
 	return n->name;
 }
 
-size_t tal_len(const tal_t *ptr)
+size_t tal_bytelen(const tal_t *ptr)
 {
-	struct length *l;
+	/* NULL -> null_parent which has bytelen 0 */
+	struct tal_hdr *t = debug_tal(to_tal_hdr_or_null(ptr));
 
-	if (!ptr)
-		return 0;
-
-	l = find_property(debug_tal(to_tal_hdr(ptr)), LENGTH);
-	if (!l)
-		return 0;
-	return l->len;
+	return t->bytelen;
 }
 
 /* Start one past first child: make stopping natural in circ. list. */
@@ -720,57 +690,36 @@ bool tal_resize_(tal_t **ctxp, size_t size, size_t count, bool clear)
 {
         struct tal_hdr *old_t, *t;
         struct children *child;
-	struct prop_hdr **lenp;
-	struct length len;
-	size_t extra = 0;
 
         old_t = debug_tal(to_tal_hdr(*ctxp));
 
 	if (!adjust_size(&size, count))
 		return false;
 
-	lenp = find_property_ptr(old_t, LENGTH);
-	if (lenp) {
-		/* Copy here, in case we're shrinking! */
-		len = *(struct length *)*lenp;
-		extra = extra_for_length(size);
-	} else /* If we don't have an old length, we can't clear! */
-		assert(!clear);
-
-        t = resizefn(old_t, sizeof(struct tal_hdr) + size + extra);
+        t = resizefn(old_t, sizeof(struct tal_hdr) + size);
 	if (!t) {
 		call_error("Reallocation failure");
 		return false;
 	}
 
-	/* Copy length to end. */
-	if (lenp) {
-		struct length *new_len;
-
-		/* Clear between old end and new end. */
-		if (clear && size > len.len) {
-			char *old_end = (char *)(t + 1) + len.len;
-			memset(old_end, 0, size - len.len);
-		}
-
-		new_len = (struct length *)((char *)(t + 1) + size
-					    + extra - sizeof(len));
-		len.len = size;
-		*new_len = len;
-
-		/* Be careful replacing next ptr; could be old hdr. */
-		if (lenp == &old_t->prop)
-			t->prop = &new_len->hdr;
-		else
-			*lenp = &new_len->hdr;
+	/* Clear between old end and new end. */
+	if (clear && size > t->bytelen) {
+		char *old_end = (char *)(t + 1) + t->bytelen;
+		memset(old_end, 0, size - t->bytelen);
 	}
 
-	update_bounds(t, sizeof(struct tal_hdr) + size + extra);
+	/* Update length. */
+	t->bytelen = size;
+	update_bounds(t, sizeof(struct tal_hdr) + size);
 
 	/* If it didn't move, we're done! */
         if (t != old_t) {
 		/* Fix up linked list pointers. */
 		t->list.next->prev = t->list.prev->next = &t->list;
+
+		/* Copy take() property. */
+		if (taken(from_tal_hdr(old_t)))
+			take(from_tal_hdr(t));
 
 		/* Fix up child property's parent pointer. */
 		child = find_property(t, CHILDREN);
@@ -790,12 +739,10 @@ bool tal_resize_(tal_t **ctxp, size_t size, size_t count, bool clear)
 
 bool tal_expand_(tal_t **ctxp, const void *src, size_t size, size_t count)
 {
-	struct length *l;
 	size_t old_len;
 	bool ret = false;
 
-	l = find_property(debug_tal(to_tal_hdr(*ctxp)), LENGTH);
-	old_len = l->len;
+	old_len = debug_tal(to_tal_hdr(*ctxp))->bytelen;
 
 	/* Check for additive overflow */
 	if (old_len + count * size < old_len) {
@@ -820,8 +767,7 @@ out:
 }
 
 void *tal_dup_(const tal_t *ctx, const void *p, size_t size,
-	       size_t n, size_t extra, bool add_length,
-	       const char *label)
+	       size_t n, size_t extra, const char *label)
 {
 	void *ret;
 	size_t nbytes = size;
@@ -850,7 +796,7 @@ void *tal_dup_(const tal_t *ctx, const void *p, size_t size,
 		return (void *)p;
 	}
 
-	ret = tal_alloc_arr_(ctx, size, n + extra, false, add_length, label);
+	ret = tal_alloc_arr_(ctx, size, n + extra, false, label);
 	if (ret)
 		memcpy(ret, p, nbytes);
 	return ret;
@@ -879,12 +825,11 @@ static void dump_node(unsigned int indent, const struct tal_hdr *t)
 
 	for (i = 0; i < indent; i++)
 		printf("  ");
-	printf("%p", t);
+	printf("%p len=%zu", t, t->bytelen);
         for (p = t->prop; p; p = p->next) {
 		struct children *c;
 		struct name *n;
 		struct notifier *no;
-		struct length *l;
                 if (is_literal(p)) {
 			printf(" \"%s\"", (const char *)p);
 			break;
@@ -903,10 +848,6 @@ static void dump_node(unsigned int indent, const struct tal_hdr *t)
 		case NOTIFIER:
 			no = (struct notifier *)p;
 			printf(" NOTIFIER(%p):fn=%p", p, no->u.notifyfn);
-			break;
-		case LENGTH:
-			l = (struct length *)p;
-			printf(" LENGTH(%p):len=%zu", p, l->len);
 			break;
 		default:
 			printf(" **UNKNOWN(%p):%i**", p, p->type);
@@ -955,7 +896,6 @@ static bool check_node(struct children *parent_child,
 	struct prop_hdr *p;
 	struct name *name = NULL;
 	struct children *children = NULL;
-	struct length *length = NULL;
 
 	if (!in_bounds(t))
 		return check_err(t, errorstr, "invalid pointer");
@@ -980,12 +920,6 @@ static bool check_node(struct children *parent_child,
 				return check_err(t, errorstr,
 						 "has two child nodes");
 			children = (struct children *)p;
-			break;
-		case LENGTH:
-			if (length)
-				return check_err(t, errorstr,
-						 "has two lengths");
-			length = (struct length *)p;
 			break;
 		case NOTIFIER:
 			break;
