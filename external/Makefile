@@ -28,7 +28,8 @@ LIBSECP_HEADERS := external/libwally-core/src/secp256k1/include/secp256k1_ecdh.h
 		external/libwally-core/src/secp256k1/include/secp256k1_recovery.h		\
 		external/libwally-core/src/secp256k1/include/secp256k1.h
 JSMN_HEADERS := external/jsmn/jsmn.h
-NNG_HEADERS := external/nng/include/nng.h
+NNG_HEADERS := external/nng/include/nng.h \
+		external/nng/include/nng/compat/nanomsg/nn.h
 LIBWEBSOCKETS_HEADERS := external/libwebsockets/include/libwebsockets.h
 
 EXTERNAL_HEADERS := $(LIBWALLY_HEADERS) $(LIBSECP_HEADERS) $(JSMN_HEADERS) $(NNG_HEADERS) $(LIBWEBSOCKETS_HEADERS)
@@ -118,7 +119,7 @@ ${TARGET_DIR}/libnng.a: external/nng/include/nng/nng.h
 ${TARGET_DIR}/libwebsockets.a: external/libwebsockets/include/libwebsockets.h
 	mkdir -p $(TARGET_DIR)/libwebsockets-build
 	cd $(TARGET_DIR)/libwebsockets-build && cmake -DLWS_WITH_HTTP2=1 $(TOP)/libwebsockets \
-	&& $(MAKE)
+	&& $(MAKE) && cp -av lib/libwebsockets.a ..
 
 distclean: external-distclean
 clean: external-clean
