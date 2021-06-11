@@ -557,11 +557,11 @@ update-ccan:
 
 # Now ALL_PROGRAMS is fully populated, we can expand it.
 build_dep:
-	# make --directory crypto777
-	make --directory external/jsmn
+	make --directory crypto777
+	# make --directory external/jsmn
 build_dep1:
 	make --directory privatebet
-all-programs: build_dep $(ALL_PROGRAMS) build_dep1
+all-programs: $(ALL_PROGRAMS) build_dep build_dep1
 all-test-programs: $(ALL_FUZZ_TARGETS)
 
 distclean: clean
