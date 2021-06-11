@@ -102,6 +102,12 @@ $(TARGET_DIR)/libjsmn.a: $(TARGET_DIR)/jsmn-build/jsmn.o
 # 	cd $(TARGET_DIR)/libbacktrace-build && $(TOP)/libbacktrace/configure CC="$(CC)" --enable-static=yes $(CROSSCOMPILE_OPTS) --enable-shared=no --prefix=/ --libdir=/ && $(MAKE)
 # 	$(MAKE) -C $(TARGET_DIR)/libbacktrace-build DESTDIR=$$(pwd)/$(TARGET_DIR) install-exec
 
+${TARGET_DIR}/libnng.a: external/nng/include/nng/nng.h
+	mkdir -p $(TARGET_DIR)/libnng-build
+	cd $(TARGET_DIR)/libnng-build && cmake -G Ninja $(TOP)/nng \
+	&& ninja && cp -av libnng.a .. \
+	&& cp -av $(TOP)/nng/include .
+
 distclean: external-distclean
 clean: external-clean
 
