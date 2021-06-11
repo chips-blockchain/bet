@@ -12,6 +12,14 @@ else
 TARGET_DIR := external/$(shell ${CC} -dumpmachine)
 endif
 
+UNAME_S := $(shell uname -s)
+UNAME_P := $(shell uname -p)
+ifeq ($(UNAME_S),Darwin)
+	ifneq ($(filter arm%,$(UNAME_P)),)
+        export OPENSSL_ROOT_DIR=/opt/homebrew/opt/openssl
+    endif
+endif
+
 LIBWALLY_HEADERS := external/libwally-core/include/wally_bip32.h		\
 			external/libwally-core/include/wally_core.h	\
 			external/libwally-core/include/wally_psbt.h	\
@@ -105,8 +113,12 @@ $(TARGET_DIR)/libjsmn.a: $(TARGET_DIR)/jsmn-build/jsmn.o
 ${TARGET_DIR}/libnng.a: external/nng/include/nng/nng.h
 	mkdir -p $(TARGET_DIR)/libnng-build
 	cd $(TARGET_DIR)/libnng-build && cmake -G Ninja $(TOP)/nng \
-	&& ninja && cp -av libnng.a .. \
-	&& cp -av $(TOP)/nng/include .
+	&& ninja && cp -av libnng.a .. 
+
+${TARGET_DIR}/libwebsockets.a: external/libwebsockets/include/libwebsockets.h
+	mkdir -p $(TARGET_DIR)/libwebsockets-build
+	cd $(TARGET_DIR)/libwebsockets-build && cmake -DLWS_WITH_HTTP2=1 $(TOP)/libwebsockets \
+	&& $(MAKE)
 
 distclean: external-distclean
 clean: external-clean
