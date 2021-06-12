@@ -43,7 +43,7 @@ char *bet_get_etho_ip()
 	memcpy(ifr.ifr_name, "eth0", IFNAMSIZ - 1);
 	ioctl(fd, SIOCGIFADDR, &ifr);
 	close(fd);
-	strcpy(ip_address, inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
+	strcpy((char *)ip_address, inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
 	return (inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
 }
 

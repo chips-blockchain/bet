@@ -82,7 +82,7 @@ int32_t sqlite3_check_if_table_exists(sqlite3 *db, const char *table_name)
 		goto end;
 	}
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
-		const char *name = sqlite3_column_text(stmt, 0);
+		const char *name = (const char *)sqlite3_column_text(stmt, 0);
 		if (strcmp(name, table_name) == 0) {
 			retval = 1;
 			break;
@@ -205,7 +205,7 @@ cJSON *sqlite3_get_dealer_info_details()
 	}
 	dealers_info = cJSON_CreateArray();
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
-		cJSON_AddItemToArray(dealers_info, cJSON_CreateString(sqlite3_column_text(stmt, 0)));
+		cJSON_AddItemToArray(dealers_info, cJSON_CreateString((const char *)sqlite3_column_text(stmt, 0)));
 	}
 	sqlite3_finalize(stmt);
 end:
@@ -238,10 +238,10 @@ cJSON *sqlite3_get_game_details(int32_t opt)
 	}
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
 		cJSON *game_obj = cJSON_CreateObject();
-		cJSON_AddStringToObject(game_obj, "table_id", sqlite3_column_text(stmt, 1));
-		cJSON_AddStringToObject(game_obj, "tx_id", sqlite3_column_text(stmt, 0));
-		cJSON_AddStringToObject(game_obj, "player_id", sqlite3_column_text(stmt, 2));
-		cJSON_AddStringToObject(game_obj, "msig_addr_nodes", sqlite3_column_text(stmt, 3));
+		cJSON_AddStringToObject(game_obj, "table_id", (const char *)sqlite3_column_text(stmt, 1));
+		cJSON_AddStringToObject(game_obj, "tx_id", (const char *)sqlite3_column_text(stmt, 0));
+		cJSON_AddStringToObject(game_obj, "player_id", (const char *)sqlite3_column_text(stmt, 2));
+		cJSON_AddStringToObject(game_obj, "msig_addr_nodes", (const char *)sqlite3_column_text(stmt, 3));
 		cJSON_AddNumberToObject(game_obj, "status", sqlite3_column_int(stmt, 4));
 		cJSON_AddNumberToObject(game_obj, "min_cashiers", sqlite3_column_int(stmt, 5));
 		cJSON_AddStringToObject(game_obj, "addr", chips_get_wallet_address());
@@ -254,7 +254,7 @@ cJSON *sqlite3_get_game_details(int32_t opt)
 			goto end;
 		}
 		while ((rc = sqlite3_step(sub_stmt)) == SQLITE_ROW) {
-			cJSON_AddItemToObject(game_obj, "game_state", cJSON_Parse(sqlite3_column_text(sub_stmt, 1)));
+			cJSON_AddItemToObject(game_obj, "game_state", cJSON_Parse((const char *)sqlite3_column_text(sub_stmt, 1)));
 		}
 		sqlite3_finalize(sub_stmt);
 		memset(sql_sub_query, 0x00, sql_query_size);
@@ -294,8 +294,8 @@ cJSON *bet_show_fail_history()
 
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
 		cJSON *game_obj = cJSON_CreateObject();
-		cJSON_AddStringToObject(game_obj, "table_id", sqlite3_column_text(stmt, 0));
-		cJSON_AddStringToObject(game_obj, "tx_id", sqlite3_column_text(stmt, 1));
+		cJSON_AddStringToObject(game_obj, "table_id", (const char *)sqlite3_column_text(stmt, 0));
+		cJSON_AddStringToObject(game_obj, "tx_id", (const char *)sqlite3_column_text(stmt, 1));
 
 		memset(hex_data, 0x00, 2 * tx_data_size);
 		memset(data, 0x00, tx_data_size);
@@ -344,8 +344,8 @@ cJSON *bet_show_success_history()
 
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
 		cJSON *game_obj = cJSON_CreateObject();
-		cJSON_AddStringToObject(game_obj, "table_id", sqlite3_column_text(stmt, 0));
-		cJSON_AddStringToObject(game_obj, "payout_tx_id", sqlite3_column_text(stmt, 1));
+		cJSON_AddStringToObject(game_obj, "table_id", (const char *)sqlite3_column_text(stmt, 0));
+		cJSON_AddStringToObject(game_obj, "payout_tx_id", (const char *)sqlite3_column_text(stmt, 1));
 
 		memset(hex_data, 0x00, 2 * tx_data_size);
 		memset(data, 0x00, tx_data_size);

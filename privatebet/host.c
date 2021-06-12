@@ -125,7 +125,7 @@ void bet_chat(struct lws *wsi, cJSON *argjson)
 
 	chat_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(chat_info, "chat", jstr(argjson, "value"));
-	lws_write(wsi, cJSON_Print(chat_info), strlen(cJSON_Print(chat_info)), 0);
+	lws_write(wsi, (unsigned char *)cJSON_Print(chat_info), strlen(cJSON_Print(chat_info)), 0);
 }
 
 void initialize_seat(cJSON *seat_info, char *name, int32_t seat, int32_t chips, int32_t empty, int32_t playing)
@@ -161,7 +161,7 @@ int32_t bet_seats(struct lws *wsi, cJSON *argjson)
 	cJSON_AddItemToObject(table_info, "seats", seats_info);
 
 	rendered = cJSON_Print(table_info);
-	lws_write(wsi, rendered, strlen(rendered), 0);
+	lws_write(wsi, (unsigned char *)rendered, strlen(rendered), 0);
 
 	bytes = nn_send(bet_dcv->pubsock, rendered, strlen(rendered), 0);
 	if (bytes < 0)
@@ -191,7 +191,7 @@ int32_t bet_game(struct lws *wsi, cJSON *argjson)
 	cJSON_AddStringToObject(game_info, "method", "game");
 	cJSON_AddItemToObject(game_info, "game", game_details);
 	rendered = cJSON_Print(game_info);
-	lws_write(wsi, rendered, strlen(rendered), 0);
+	lws_write(wsi, (unsigned char *)rendered, strlen(rendered), 0);
 	return 0;
 }
 
@@ -219,11 +219,11 @@ int32_t bet_dcv_frontend(struct lws *wsi, cJSON *argjson)
 	} else if (strcmp(method, "get_bal_info") == 0) {
 		cJSON *bal_info = cJSON_CreateObject();
 		bal_info = bet_get_chips_ln_bal_info();
-		lws_write(wsi, cJSON_Print(bal_info), strlen(cJSON_Print(bal_info)), 0);
+		lws_write(wsi, (unsigned char *)cJSON_Print(bal_info), strlen(cJSON_Print(bal_info)), 0);
 	} else if (strcmp(method, "get_addr_info") == 0) {
 		cJSON *addr_info = cJSON_CreateObject();
 		addr_info = bet_get_chips_ln_addr_info();
-		lws_write(wsi, cJSON_Print(addr_info), strlen(cJSON_Print(addr_info)), 0);
+		lws_write(wsi, (unsigned char *)cJSON_Print(addr_info), strlen(cJSON_Print(addr_info)), 0);
 	} else {
 		printf("%s::%d::Method::%s is not known to the system\n", __FUNCTION__, __LINE__, method);
 	}
@@ -256,11 +256,13 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason, v
 	case LWS_CALLBACK_SERVER_WRITEABLE:
 
 		if (dcv_data_exists) {
-			if (dcv_gui_data) {
-				lws_write(wsi, dcv_gui_data, strlen(dcv_gui_data), 0);
+			if (strlen(dcv_gui_data) != 0) {
+				lws_write(wsi, (unsigned char *)dcv_gui_data, strlen(dcv_gui_data), 0);
 				dcv_data_exists = 0;
 			}
 		}
+		break;
+	default:
 		break;
 	}
 	return 0;
@@ -436,7 +438,7 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 
 	bet->numplayers = ++players_joined;
 	dcv_info.peerpubkeys[jint(argjson, "gui_playerID")] = jbits256(argjson, "pubkey");
-	strcpy(dcv_info.uri[jint(argjson, "gui_playerID")], jstr(argjson, "uri"));
+	strcpy((char *)dcv_info.uri[jint(argjson, "gui_playerID")], jstr(argjson, "uri"));
 
 	uri = (char *)malloc(100 * sizeof(char));
 	ln_get_uri(&uri);
@@ -590,7 +592,7 @@ static int32_t bet_check_bvv_ready(struct privatebet_info *bet)
 	cJSON_AddStringToObject(bvv_ready, "method", "check_bvv_ready");
 	cJSON_AddItemToObject(bvv_ready, "uri_info", uri_info = cJSON_CreateArray());
 	for (int i = 0; i < bet->maxplayers; i++) {
-		jaddistr(uri_info, dcv_info.uri[i]);
+		jaddistr(uri_info, (char *)dcv_info.uri[i]);
 	}
 	rendered = cJSON_Print(bvv_ready);
 	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(bvv_ready));
@@ -1221,7 +1223,7 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 
 	sleep(5);
 	if (wsi_global_host) {
-		lws_write(wsi_global_host, cJSON_Print(final_info), strlen(cJSON_Print(final_info)), 0);
+		lws_write(wsi_global_host, (unsigned char *)cJSON_Print(final_info), strlen(cJSON_Print(final_info)), 0);
 	}
 end:
 	if (retval != -1) {
@@ -1244,7 +1246,7 @@ int32_t bet_ln_check(struct privatebet_info *bet)
 	char uri[100];
 
 	for (int32_t i = 0; i < bet_dcv->maxplayers; i++) {
-		strcpy(uri, dcv_info.uri[i]);
+		strcpy(uri, (const char *)dcv_info.uri[i]);
 		strcpy(channel_id, strtok(uri, "@"));
 
 		while ((channel_state = ln_get_channel_status(channel_id)) != CHANNELD_NORMAL) {
@@ -1276,7 +1278,7 @@ static int32_t bet_award_winner(cJSON *argjson, struct privatebet_info *bet, str
 	argv = (char **)malloc(sizeof(char *) * argc);
 	for (int32_t i = 0; i < argc; i++)
 		argv[i] = (char *)malloc(1000 * sizeof(char));
-	strcpy(channel_id, strtok(dcv_info.uri[jint(argjson, "playerid")], "@"));
+	strcpy(channel_id, strtok((char *)dcv_info.uri[jint(argjson, "playerid")], "@"));
 	if (ln_get_channel_status(channel_id) != CHANNELD_NORMAL) {
 		strcpy(argv[0], "lightning-cli");
 		strcpy(argv[1], "fundchannel");
@@ -1311,7 +1313,7 @@ static int32_t bet_award_winner(cJSON *argjson, struct privatebet_info *bet, str
 	invoice_info = cJSON_Parse(invoice);
 
 	for (int32_t i = 0; i < argc; i++)
-		memset(argv[i], 0, sizeof(argv[i]));
+		memset(&argv[i], 0, sizeof(argv[i]));
 
 	argc = 3;
 	strcpy(argv[0], "lightning-cli");
