@@ -201,7 +201,7 @@ cJSON *chips_get_block_hash_from_height(int64_t block_height)
 	bet_alloc_args(argc, &argv);
 	strcpy(argv[0], "chips-cli");
 	strcpy(argv[1], "getblockhash");
-	sprintf(argv[2], "%ld", block_height);
+	sprintf(argv[2], "%lld", block_height);
 	block_hash_info = cJSON_CreateObject();
 	make_command(argc, argv, &block_hash_info);
 	bet_dealloc_args(argc, &argv);
@@ -999,7 +999,7 @@ cJSON *chips_decode_raw_tx(cJSON *raw_tx)
 	return decoded_raw_tx;
 }
 
-int32_t chips_validate_tx(char *tx)
+void chips_validate_tx(char *tx)
 {
 	cJSON *raw_tx = NULL, *decoded_raw_tx = NULL, *vin = NULL, *txinwitness = NULL;
 
@@ -1190,7 +1190,7 @@ cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids
 	for (int32_t i = 0; i < no_of_txs; i++) {
 		amount_in_txs += chips_get_balance_on_address_from_tx(legacy_m_of_n_msig_addr, tx_ids[i]);
 	}
-	if (abs((payout_amount + chips_tx_fee) - amount_in_txs) < epsilon) {
+	if (fabs((payout_amount + chips_tx_fee) - amount_in_txs) < epsilon) {
 		printf("%s::%d::%f::%f\n", __FUNCTION__, __LINE__, payout_amount, amount_in_txs);
 		for (int32_t i = 0; i < no_of_txs; i++) {
 			printf("%s\n", tx_ids[i]);
