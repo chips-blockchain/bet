@@ -22,8 +22,8 @@ clean:
 	$(RM) *.o
 
 TARGET_DIR := external/$(shell ${CC} -dumpmachine)
-export CPPFLAGS+="-I../$(TARGET_DIR)/libwebsockets-build/include -I../external/libwally-core/include"
-export LDFLAGS+="-L../$(TARGET_DIR)/libwebsockets-build/lib"
+export CPPFLAGS+="-I../$(TARGET_DIR)/libwebsockets-build/include -I../external/libwally-core/include -I../external/jsmn"
+export LDFLAGS+="-L../$(TARGET_DIR)/libwebsockets-build/lib "
 # export LDFLAGS+="-L../$(TARGET_DIR)/"
 UNAME_S := $(shell uname -s)
 UNAME_P := $(shell uname -p)
@@ -37,7 +37,7 @@ endif
 $(info $$CC is [${CC}])
 
 $(PROJNAME): $(OBJFILES)
-	        $(CC) $(CFLAGS) -o $@ bet.c $^ ../crypto777/libcrypto777.a -L../$(TARGET_DIR) $(LDFLAGS) $(CPPFLAGS) -lcurl -ldl -lnng -lpthread -lm -lwallycore -lsecp256k1 -ljsmn -L/usr/local/lib -lm -lgmp -lsqlite3 -L/usr/local/lib -lssl -lcrypto -levent -lpthread -lstdc++ -lwebsockets
+	        $(CC) $(CFLAGS) -o $@ bet.c $^ ../crypto777/libcrypto777.a -L../$(TARGET_DIR) $(LDFLAGS) $(CPPFLAGS) -lcurl -ldl -lnng -lpthread -lm -lwallycore -lsecp256k1 -ljsmn -lwebsockets -L/usr/local/lib -lm -lgmp -lsqlite3 -L/usr/local/lib -lssl -lcrypto -levent -lpthread -lstdc++
 	cp $(PROJNAME) $(CASHIER)
 %.o: %.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@  -I ../includes/curl
