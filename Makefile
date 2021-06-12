@@ -22,12 +22,6 @@ PKGNAME = bet
 # We use our own internal ccan copy.
 CCANDIR := ccan
 
-# # Where we keep the BOLT RFCs
-# BOLTDIR := ../lightning-rfc/
-# DEFAULT_BOLTVERSION := b201efe0546120c14bf154ce5f4e18da7243fe7a
-# # Can be overridden on cmdline.
-# BOLTVERSION := $(DEFAULT_BOLTVERSION)
-
 -include config.vars
 
 SORT=LC_ALL=C sort
@@ -58,12 +52,6 @@ ifneq ($(FUZZING), 0)
 SANITIZER_FLAGS += -fsanitize=fuzzer-no-link
 endif
 
-# ifeq ($(DEVELOPER),1)
-# DEV_CFLAGS=-DCCAN_TAKE_DEBUG=1 -DCCAN_TAL_DEBUG=1 -DCCAN_JSON_OUT_DEBUG=1
-# else
-# DEV_CFLAGS=
-# endif
-
 ifeq ($(COVERAGE),1)
 COVFLAGS = --coverage
 endif
@@ -77,10 +65,6 @@ ifeq ($(COMPAT),1)
 # We support compatibility with pre-0.6.
 COMPAT_CFLAGS=-DCOMPAT_V052=1 -DCOMPAT_V060=1 -DCOMPAT_V061=1 -DCOMPAT_V062=1 -DCOMPAT_V070=1 -DCOMPAT_V072=1 -DCOMPAT_V073=1 -DCOMPAT_V080=1 -DCOMPAT_V081=1 -DCOMPAT_V082=1 -DCOMPAT_V090=1
 endif
-
-# # (method=thread to support xdist)
-# PYTEST_OPTS := -v -p no:logging $(PYTEST_OPTS)
-# PYTHONPATH=$(shell pwd)/contrib/pyln-client:$(shell pwd)/contrib/pyln-testing:$(shell pwd)/contrib/pyln-proto/:$(shell pwd)/external/lnprototest:$(shell pwd)/contrib/pyln-spec/bolt1:$(shell pwd)/contrib/pyln-spec/bolt2:$(shell pwd)/contrib/pyln-spec/bolt4:$(shell pwd)/contrib/pyln-spec/bolt7
 
 # This is where we add new features as bitcoin adds them.
 FEATURES :=
@@ -208,12 +192,6 @@ CCAN_HEADERS :=						\
 
 CDUMP_OBJS := ccan-cdump.o ccan-strmap.o
 
-# BOLT_GEN := tools/generate-wire.py
-# WIRE_GEN := $(BOLT_GEN)
-
-# # If you use wiregen, you're dependent on the tool and its templates
-# WIRE_GEN_DEPS := $(WIRE_GEN) $(wildcard tools/gen/*_template)
-
 # These are filled by individual Makefiles
 ALL_PROGRAMS :=
 # ALL_TEST_PROGRAMS :=
@@ -246,11 +224,6 @@ else
 LDLIBS = -L/usr/local/lib -lm -lgmp $(SQLITE3_LDLIBS) -lz $(COVFLAGS)
 endif
 
-# # If we have the postgres client library we need to link against it as well
-# ifeq ($(HAVE_POSTGRES),1)
-# LDLIBS += $(POSTGRES_LDLIBS)
-# endif
-
 default: show-flags all-programs
 
 show-flags: config.vars
@@ -267,44 +240,12 @@ config.vars:
 %.o: %.c
 	@$(call VERBOSE, "cc $<", $(CC) $(CFLAGS) -c -o $@ $<)
 
-# # '_exp' inserted before _wiregen.[ch] to demark experimental
-# # spec-derived headers, which are *not* committed into git.
-# ifeq ($(EXPERIMENTAL_FEATURES),1)se
-# EXP :=
-# endif
-
 # Git doesn't maintain timestamps, so we only regen if
 # We place the SHA inside some generated files so we can tell if they need updating.
 # Usage: $(call SHA256STAMP_CHANGED)
 SHA256STAMP_CHANGED = [ x"`sed -n 's/.*SHA256STAMP://p' $@ 2>/dev/null`" != x"`cat $(sort $(filter-out FORCE,$^)) | $(SHA256SUM) | cut -c1-64`" ]
 # Usage: $(call SHA256STAMP,commentprefix)
 SHA256STAMP = echo '$(1) SHA256STAMP:'`cat $(sort $(filter-out FORCE,$^)) | $(SHA256SUM) | cut -c1-64` >> $@
-
-# # generate-wire.py --page [header|impl] hdrfilename wirename < csv > file
-# %_wiregen.h: %_wire.csv $(WIRE_GEN_DEPS)
-# 	@if $(call SHA256STAMP_CHANGED); then if [ "$$NO_PYTHON" = 1 ]; then echo "Error: NO_PYTHON on $@"; exit 1; fi; \
-# 		$(call VERBOSE,"wiregen $@",tools/generate-wire.py --page header $($@_args) $@ `basename $< .csv | sed 's/_exp_/_/'` < $< > $@ && $(call SHA256STAMP,//)); \
-# 	fi
-
-# %_wiregen.c: %_wire.csv $(WIRE_GEN_DEPS)
-# 	@if $(call SHA256STAMP_CHANGED); then if [ "$$NO_PYTHON" = 1 ]; then echo "Error: NO_PYTHON on $@"; exit 1; fi; \
-# 		$(call VERBOSE,"wiregen $@",tools/generate-wire.py --page impl $($@_args) ${@:.c=.h} `basename $< .csv | sed 's/_exp_/_/'` < $< > $@ && $(call SHA256STAMP,//)); \
-# 	fi
-
-# %_printgen.h: %_wire.csv $(WIRE_GEN_DEPS)
-# 	@if $(call SHA256STAMP_CHANGED); then if [ "$$NO_PYTHON" = 1 ]; then echo "Error: NO_PYTHON on $@"; exit 1; fi; \
-# # 		$(call VERBOSE,"printgen $@",tools/generate-wire.py -s -P --page header $($@_args) $@ `basename $< .csv | sed 's/_exp_/_/'` < $< > $@ && $(call SHA256STAMP,//)); \
-# # 	fi
-
-# # %_printgen.c: %_wire.csv $(WIRE_GEN_DEPS)
-# 	@if $(call SHA256STAMP_CHANGED); then  if [ "$$NO_PYTHON" = 1 ]; then echo "Error: NO_PYTHON on $@"; exit 1; fi; \
-# 		build_dep:
-# 	make --directory crypto777
-# 	make --directory external/jsmn
-# build_dep1:
-# 	make --directory privatebet
-# 		$(call VERBOSE,"printgen $@",tools/generate-wire.py -s -P --page impl $($@_args) ${@:.c=.h} `basename $< .csv | sed 's/_exp_/_/'` < $< > $@ && $(call SHA256STAMP,//)); \
-# 	fi
 
 include external/Makefile
 
@@ -318,19 +259,8 @@ ALL_NONGEN_SRCFILES := $(ALL_NONGEN_HEADERS) $(ALL_NONGEN_SOURCES)
 # Programs to install in bindir and pkglibexecdir.
 # TODO: $(EXEEXT) support for Windows?  Needs more coding for
 # the individual Makefiles, however.
-BIN_PROGRAMS = \
-	    #    cli/lightning-cli \
-	    #    lightningd/lightningd \
-	    #    tools/lightning-hsmtool
-PKGLIBEXEC_PROGRAMS = \
-	    #    lightningd/lightning_channeld \
-	    #    lightningd/lightning_closingd \
-	    #    lightningd/lightning_connectd \
-	    #    lightningd/lightning_dualopend \
-	    #    lightningd/lightning_gossipd \
-	    #    lightningd/lightning_hsmd \
-	    #    lightningd/lightning_onchaind \
-	    #    lightningd/lightning_openingd
+BIN_PROGRAMS = 
+PKGLIBEXEC_PROGRAMS = 
 
 # Don't delete these intermediaries.
 .PRECIOUS: $(ALL_GEN_HEADERS) $(ALL_GEN_SOURCES)
@@ -338,43 +268,9 @@ PKGLIBEXEC_PROGRAMS = \
 # Every single object file.
 ALL_OBJS := $(ALL_C_SOURCES:.c=.o)
 
-# # We always regen wiregen and printgen files, since SHA256STAMP protects against
-# # spurious rebuilds.
-# $(filter %printgen.h %printgen.c %wiregen.h %wiregen.c, $(ALL_C_HEADERS) $(ALL_C_SOURCES)): FORCE
-
-# ifneq ($(TEST_GROUP_COUNT),)
-# PYTEST_OPTS += --test-group=$(TEST_GROUP) --test-group-count=$(TEST_GROUP_COUNT)
-# endif
-
-# # If we run the tests in parallel we can speed testing up by a lot, however we
-# # then don't exit on the first error, since that'd kill the other tester
-# # processes and result in loads in loads of output. So we only tell py.test to
-# # abort early if we aren't running in parallel.
-# ifneq ($(PYTEST_PAR),)
-# PYTEST_OPTS += -n=$(PYTEST_PAR)
-# else
-# PYTEST_OPTS += -x
-# endif
-
 check-units:
 
 check: check-units installcheck
-
-# check-protos: $(ALL_PROGRAMS)
-# ifeq ($(PYTEST),)
-# 	@echo "py.test is required to run the protocol tests, please install using 'pip3 install -r requirements.txt', and rerun 'configure'."; false
-# else
-# 	@(cd external/lnprototest && PYTHONPATH=$(PYTHONPATH) LIGHTNING_SRC=../.. $(PYTEST) --runner lnprototest.clightning.Runner $(PYTEST_OPTS))
-# endif
-
-# pytest: $(ALL_PROGRAMS)
-# ifeq ($(PYTEST),)
-# 	@echo "py.test is required to run the integration tests, please install using 'pip3 install -r requirements.txt', and rerun 'configure'."
-# 	exit 1
-# else
-# # Explicitly hand DEVELOPER and VALGRIND so you can override on make cmd line.
-# 	PYTHONPATH=$(PYTHONPATH) TEST_DEBUG=1 DEVELOPER=$(DEVELOPER) VALGRIND=$(VALGRIND) $(PYTEST) tests/ $(PYTEST_OPTS)
-# endif
 
 # Keep includes in alpha order.
 check-src-include-order/%: %
@@ -394,58 +290,6 @@ SRC_TO_CHECK := $(ALL_NONGEN_SOURCES)
 check-src-includes: $(SRC_TO_CHECK:%=check-src-include-order/%)
 check-hdr-includes: $(ALL_NONGEN_HEADERS:%=check-hdr-include-order/%)
 
-# # If you want to check a specific variant of quotes use:
-# #   make check-source-bolt BOLTVERSION=xxx
-# ifeq ($(BOLTVERSION),$(DEFAULT_BOLTVERSION))
-# CHECK_BOLT_PREFIX=
-# else
-# CHECK_BOLT_PREFIX=--prefix="BOLT-$(BOLTVERSION)"
-# endif
-
-# # Any mention of BOLT# must be followed by an exact quote, modulo whitespace.
-# bolt-check/%: % bolt-precheck tools/check-bolt
-# 	@if [ -d .tmp.lightningrfc ]; then tools/check-bolt $(CHECK_BOLT_PREFIX) .tmp.lightningrfc $<; else echo "Not checking BOLTs: BOLTDIR $(BOLTDIR) does not exist" >&2; fi
-
-# LOCAL_BOLTDIR=.tmp.lightningrfc
-
-# bolt-precheck:
-# 	@[ -d $(BOLTDIR) ] || exit 0; set -e; if [ -z "$(BOLTVERSION)" ]; then rm -rf $(LOCAL_BOLTDIR); ln -sf $(BOLTDIR) $(LOCAL_BOLTDIR); exit 0; fi; [ "$$(git -C $(LOCAL_BOLTDIR) rev-list --max-count=1 HEAD 2>/dev/null)" != "$(BOLTVERSION)" ] || exit 0; rm -rf $(LOCAL_BOLTDIR) && git clone -q $(BOLTDIR) $(LOCAL_BOLTDIR) && cd $(LOCAL_BOLTDIR) && git checkout -q $(BOLTVERSION)
-
-# check-source-bolt: $(ALL_NONGEN_SRCFILES:%=bolt-check/%)
-
-# check-whitespace/%: %
-# 	@if grep -Hn '[ 	]$$' $<; then echo Extraneous whitespace found >&2; exit 1; fi
-
-# check-whitespace: check-whitespace/Makefile $(ALL_NONGEN_SRCFILES:%=check-whitespace/%)
-
-# check-markdown:
-# 	@tools/check-markdown.sh
-
-# check-spelling:
-# 	@tools/check-spelling.sh
-
-# PYSRC=$(shell git ls-files "*.py" | grep -v /text.py) contrib/pylightning/lightning-pay
-
-# # Some tests in pyln will need to find lightningd to run, so have a PATH that
-# # allows it to find that
-# PYLN_PATH=$(shell pwd)/lightningd:$(PATH)
-# check-pyln-%: $(BIN_PROGRAMS) $(PKGLIBEXEC_PROGRAMS) $(PLUGINS)
-# 	@(cd contrib/$(shell echo $@ | cut -b 7-) && PATH=$(PYLN_PATH) PYTHONPATH=$(PYTHONPATH) $(MAKE) check)
-
-# check-python: check-python-flake8 check-pytest-pyln-proto check-pyln-client check-pyln-testing
-
-# check-python-flake8:
-# 	@# E501 line too long (N > 79 characters)
-# 	@# E731 do not assign a lambda expression, use a def
-# 	@# W503: line break before binary operator
-# 	@flake8 --ignore=E501,E731,W503 ${PYSRC}
-
-# check-pytest-pyln-proto:
-# 	PATH=$(PYLN_PATH) PYTHONPATH=$(PYTHONPATH) $(PYTEST) contrib/pyln-proto/tests/
-
-# check-includes: check-src-includes check-hdr-includes
-# 	@tools/check-includes.sh
-
 # cppcheck gets confused by list_for_each(head, i, list): thinks i is uninit.
 .cppcheck-suppress:
 	@git ls-files -- "*.c" "*.h" | grep -vE '^ccan/' | xargs grep -n '_for_each' | sed 's/\([^:]*:.*\):.*/uninitvar:\1/' > $@
@@ -456,20 +300,11 @@ check-cppcheck: .cppcheck-suppress
 check-shellcheck:
 	@git ls-files -- "*.sh" | xargs shellcheck
 
-# check-setup_locale:
-# 	@tools/check-setup_locale.sh
-
 check-tmpctx:
 	@if git grep -n 'tal_free[(]tmpctx)' | grep -Ev '^ccan/|/test/|^common/setup.c:|^common/utils.c:'; then echo "Don't free tmpctx!">&2; exit 1; fi
 
 check-discouraged-functions:
 	@if git grep -E "[^a-z_/](fgets|fputs|gets|scanf|sprintf)\(" -- "*.c" "*.h" ":(exclude)ccan/"; then exit 1; fi
-
-# # Don't access amount_msat and amount_sat members directly without a good reason
-# # since it risks overflow.
-# check-amount-access:
-# 	@! (git grep -nE "(->|\.)(milli)?satoshis" -- "*.c" "*.h" ":(exclude)common/amount.*" ":(exclude)*/test/*" | grep -v '/* Raw:')
-# 	@! git grep -nE "\\(struct amount_(m)?sat\\)" -- "*.c" "*.h" ":(exclude)common/amount.*" ":(exclude)*/test/*"
 
 check-source: check-makefile check-cppcheck check-shellcheck check-tmpctx check-discouraged-functions
 
@@ -514,15 +349,8 @@ version_gen.h: FORCE
 	@(echo "#define VERSION \"$(VERSION)\"" && echo "#define BUILD_FEATURES \"$(FEATURES)\"") > $@.new
 	@if cmp $@.new $@ >/dev/null 2>&1; then rm -f $@.new; else mv $@.new $@; $(ECHO) Version updated; fi
 
-# # That forces this rule to be run every time, too.
-# header_versions_gen.h: tools/headerversions
-# 	@tools/headerversions $@
-
 # All binaries require the external libs, ccan and system library versions.
 $(ALL_PROGRAMS) $(ALL_FUZZ_TARGETS): $(EXTERNAL_LIBS) $(CCAN_OBJS)
-
-# # Each test program depends on its own object.
-# $(ALL_TEST_PROGRAMS) $(ALL_FUZZ_TARGETS): %: %.o
 
 # Without this rule, the (built-in) link line contains
 # external/libwallycore.a directly, which causes a symbol clash (it
@@ -566,6 +394,7 @@ all-test-programs: $(ALL_FUZZ_TARGETS)
 
 distclean: clean
 	$(RM) ccan/config.h config.vars
+	make --directory external/ distclean
 
 maintainer-clean: distclean
 	@echo 'This command is intended for maintainers to use; it'
@@ -584,17 +413,11 @@ clean: obsclean
 	$(RM) ccan/ccan/cdump/tools/cdump-enumstr.o
 	make --directory privatebet clean
 	make --directory external/jsmn clean
+	make --directory external/libwally-core clean
 	make --directory crypto777 clean
 	find . -name '*gcda' -delete
 	find . -name '*gcno' -delete
 	find . -name '*.nccout' -delete
-
-# update-mocks: $(ALL_GEN_HEADERS)
-# update-mocks/%: %
-# 	@MAKE=$(MAKE) tools/update-mocks.sh "$*" $(SUPPRESS_OUTPUT)
-
-# unittest/%: %
-# 	$(VG) $(VG_TEST_ARGS) $* > /dev/null
 
 # Installation directories
 exec_prefix = $(PREFIX)

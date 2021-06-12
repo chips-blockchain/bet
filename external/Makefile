@@ -44,15 +44,6 @@ EXTERNAL_INCLUDE_FLAGS :=					\
 	-I external/nng/include/				\
 	-I external/libwebsockets/include/
 
-# ifneq ($(HAVE_GOOD_LIBSODIUM),1)
-# EXTERNAL_INCLUDE_FLAGS += -I external/libsodium/src/libsodium/include \
-# 			  -I external/libsodium/src/libsodium/include/sodium \
-# 			  -I $(TARGET_DIR)/libsodium-build/src/libsodium/include
-# EXTERNAL_LIBS += ${TARGET_DIR}/libsodium.a
-# else
-# LDLIBS += -lsodium
-# endif
-
 EXTERNAL_LDLIBS := -L${TARGET_DIR} $(patsubst lib%.a,-l%,$(notdir $(EXTERNAL_LIBS)))
 
 submodcheck: 
@@ -60,15 +51,6 @@ submodcheck:
 	@cd external/libwally-core && ../../tools/refresh-submodules.sh src/secp256k1
 
 $(EXTERNAL_HEADERS): submodcheck
-
-# # We build libsodium, since Ubuntu xenial has one too old.
-# $(TARGET_DIR)/libsodium.a: $(TARGET_DIR)/libsodium-build/src/libsodium/libsodium.la
-# 	$(MAKE) -C $(TARGET_DIR)/libsodium-build DESTDIR=$$(pwd)/$(TARGET_DIR) install-exec
-
-# $(TARGET_DIR)/libsodium-build/src/libsodium/libsodium.la: external/libsodium/src/libsodium/include/sodium.h
-# 	cd external/libsodium && ./autogen.sh
-# 	mkdir -p ${TARGET_DIR}/libsodium-build
-# 	cd $(TARGET_DIR)/libsodium-build && $(TOP)/libsodium/configure CC="$(CC)" --enable-static=yes $(CROSSCOMPILE_OPTS) --enable-shared=no --prefix=/ --libdir=/ && $(MAKE)
 
 # libsecp included in libwally.
 # Wildcards here are magic.  See http://stackoverflow.com/questions/2973445/gnu-makefile-rule-generating-a-few-targets-from-a-single-source-file
@@ -105,12 +87,6 @@ $(TARGET_DIR)/jsmn-build/jsmn.o: external/jsmn/jsmn.c Makefile
 $(TARGET_DIR)/libjsmn.a: $(TARGET_DIR)/jsmn-build/jsmn.o
 	$(AR) rc $@ $<
 
-# Need separate build dir: changes inside submodule make git think it's dirty.
-# $(TARGET_DIR)/libbacktrace.a: external/libbacktrace/backtrace.h
-# 	mkdir -p $(TARGET_DIR)/libbacktrace-build
-# 	cd $(TARGET_DIR)/libbacktrace-build && $(TOP)/libbacktrace/configure CC="$(CC)" --enable-static=yes $(CROSSCOMPILE_OPTS) --enable-shared=no --prefix=/ --libdir=/ && $(MAKE)
-# 	$(MAKE) -C $(TARGET_DIR)/libbacktrace-build DESTDIR=$$(pwd)/$(TARGET_DIR) install-exec
-
 ${TARGET_DIR}/libnng.a: external/nng/include/nng/nng.h
 	mkdir -p $(TARGET_DIR)/libnng-build
 	cd $(TARGET_DIR)/libnng-build && cmake -G Ninja $(TOP)/nng \
@@ -127,13 +103,15 @@ clean: external-clean
 external-clean:
 	$(RM) $(EXTERNAL_LIBS_CLEAN) $(TARGET_DIR)/*.la $(TARGET_DIR)/*.o
 	$(RM) $(TARGET_DIR)/jsmn-build/jsmn.o
-#	if [ -f ${TARGET_DIR}/libsodium-build/Makefile ]; then make -C ${TARGET_DIR}/libsodium-build clean; fi
 	if [ -f ${TARGET_DIR}/libwally-core-build/Makefile ]; then make -C ${TARGET_DIR}/libwally-core-build clean; fi
 	if [ -f ${TARGET_DIR}/libwally-core-build/src/Makefile ]; then make -C ${TARGET_DIR}/libwally-core-build/src clean; fi
-#	if [ -f ${TARGET_DIR}/libbacktrace-build/Makefile ]; then make -C ${TARGET_DIR}/libbacktrace-build clean; fi
+	if [ -f ${TARGET_DIR}/libwebsockets-build/Makefile ]; then make -C ${TARGET_DIR}/libwebsockets-build clean; fi
+	if [ -f ${TARGET_DIR}/libnng-build/Makefile ]; then make -C ${TARGET_DIR}/libnng-build clean; fi
 
 external-distclean:
-#	make -C external/libsodium distclean || true
-#	$(RM) -rf ${TARGET_DIR}/libbacktrace-build ${TARGET_DIR}/libsodium-build ${TARGET_DIR}/libwally-core-build ${TARGET_DIR}/jsmn-build
-	$(RM) -rf ${TARGET_DIR}/libwally-core-build ${TARGET_DIR}/jsmn-build
+	$(RM) -rf ${TARGET_DIR}/libwally-core-build
+	$(RM) -rf ${TARGET_DIR}/jsmn-build
+	$(RM) -rf ${TARGET_DIR}/libwebsockets-build
+	$(RM) -rf ${TARGET_DIR}/libnng-build
 	$(RM) -r `git status --ignored --porcelain external/libwally-core | grep '^!! ' | cut -c3-`
+	$(info $$TARGET_DIR is [${TARGET_DIR}])
