@@ -1306,12 +1306,14 @@ int lws_callback_http_player_write(struct lws *wsi, enum lws_callback_reasons re
 	case LWS_CALLBACK_SERVER_WRITEABLE:
 		printf("%s::%d::LWS_CALLBACK_SERVER_WRITEABLE triggered\n", __FUNCTION__, __LINE__);
 		if (data_exists) {
-			if (player_gui_data) {
-				lws_write(wsi, player_gui_data, strlen(player_gui_data), 0);
+			if (strlen(player_gui_data) != 0) {
+				lws_write(wsi, (unsigned char *)player_gui_data, strlen(player_gui_data), 0);
 				data_exists = 0;
 			}
 		}
 		break;
+	default:
+  		break;
 	}
 	return 0;
 }
@@ -1345,12 +1347,14 @@ int lws_callback_http_player_read(struct lws *wsi, enum lws_callback_reasons rea
 	case LWS_CALLBACK_SERVER_WRITEABLE:
 		printf("%s::%d::LWS_CALLBACK_SERVER_WRITEABLE triggered\n", __FUNCTION__, __LINE__);
 		if (data_exists) {
-			if (player_gui_data) {
-				lws_write(wsi, player_gui_data, strlen(player_gui_data), 0);
+			if (strlen(player_gui_data) != 0) {
+				lws_write(wsi, (unsigned char *)player_gui_data, strlen(player_gui_data), 0);
 				data_exists = 0;
 			}
 		}
 		break;
+	default:
+  		break;
 	}
 	return 0;
 }
@@ -1384,12 +1388,14 @@ int lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason, 
 	case LWS_CALLBACK_SERVER_WRITEABLE:
 		printf("%s::%d::LWS_CALLBACK_SERVER_WRITEABLE triggered\n", __FUNCTION__, __LINE__);
 		if (data_exists) {
-			if (player_gui_data) {
-				lws_write(wsi, player_gui_data, strlen(player_gui_data), 0);
+			if (strlen(player_gui_data) != 0) {
+				lws_write(wsi, (unsigned char *)player_gui_data, strlen(player_gui_data), 0);
 				data_exists = 0;
 			}
 		}
 		break;
+	default:
+  		break;
 	}
 	return 0;
 }
@@ -1975,7 +1981,7 @@ void rest_push_cards(struct lws *wsi, cJSON *argjson, int32_t this_playerID)
 	cJSON_AddItemToObject(init_card_info, "board", board_card_info);
 
 	cJSON_AddItemToObject(init_info, "deal", init_card_info);
-	lws_write(wsi, cJSON_Print(init_info), strlen(cJSON_Print(init_info)), 0);
+	lws_write(wsi, (unsigned char *)cJSON_Print(init_info), strlen(cJSON_Print(init_info)), 0);
 }
 
 void rest_display_cards(cJSON *argjson, int32_t this_playerID)
