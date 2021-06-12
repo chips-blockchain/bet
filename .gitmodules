@@ -10,4 +10,4 @@
 	url = https://github.com/nanomsg/nng.git
 [submodule "external/libwebsockets"]
 	path = external/libwebsockets
-	url = https://github.com/sg777/libwebsockets.git
+	url = https://github.com/warmcat/libwebsockets.git
