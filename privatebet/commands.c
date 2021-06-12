@@ -27,6 +27,7 @@
 
 #include <stdarg.h>
 #include <stdlib.h>
+#include <inttypes.h>
 
 char *multisigAddress = "bGmKoyJEz4ESuJCTjhVkgEb2Qkt8QuiQzQ";
 double epsilon = 0.000000001;
@@ -201,7 +202,10 @@ cJSON *chips_get_block_hash_from_height(int64_t block_height)
 	bet_alloc_args(argc, &argv);
 	strcpy(argv[0], "chips-cli");
 	strcpy(argv[1], "getblockhash");
-	sprintf(argv[2], "%lld", block_height);
+	// https://stackoverflow.com/questions/31534474/format-lld-expects-type-long-long-int-but-argument-4-has-type-int64-t/31534505
+	// using PRId64 instead of lld or ld, since on Darwin compiler
+	// complains of not having lld, where on Linux it complains of not having ld.
+	sprintf(argv[2], "%"PRId64, block_height);
 	block_hash_info = cJSON_CreateObject();
 	make_command(argc, argv, &block_hash_info);
 	bet_dealloc_args(argc, &argv);
