@@ -87,9 +87,9 @@ $(TARGET_DIR)/jsmn-build/jsmn.o: external/jsmn/jsmn.c Makefile
 $(TARGET_DIR)/libjsmn.a: $(TARGET_DIR)/jsmn-build/jsmn.o
 	$(AR) rc $@ $<
 
+WGET := wget
 ${TARGET_DIR}/libnng.a: external/nng/include/nng/nng.h
 	# If it's Linux, and cmake is not installed, get it temporarily for nng
-	WGET := wget
 	ifeq ($(UNAME_S),Darwin)
 		ifeq (, $(shell which cmake))
 			mkdir $(TARGET_DIR)/cmake
