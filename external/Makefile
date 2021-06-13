@@ -49,6 +49,11 @@ EXTERNAL_LDLIBS := -L${TARGET_DIR} $(patsubst lib%.a,-l%,$(notdir $(EXTERNAL_LIB
 submodcheck: 
 	@tools/refresh-submodules.sh $(SUBMODULES)
 	@cd external/libwally-core && ../../tools/refresh-submodules.sh src/secp256k1
+	ifeq ($(UNAME_S),Linux)
+		ifeq (, $(shell which cmake))
+			$(shell sh script/install_cmake.sh)
+		endif
+	endif
 
 $(EXTERNAL_HEADERS): submodcheck
 
@@ -88,12 +93,6 @@ $(TARGET_DIR)/libjsmn.a: $(TARGET_DIR)/jsmn-build/jsmn.o
 	$(AR) rc $@ $<
 
 ${TARGET_DIR}/libnng.a: external/nng/include/nng/nng.h
-	# If it's Linux, and cmake is not installed, get it temporarily for nng
-	ifeq ($(UNAME_S),Linux)
-		ifeq (, $(shell which cmake))
-			$(shell sh script/install_cmake.sh)
-		endif
-	endif
 	mkdir -p $(TARGET_DIR)/libnng-build
 	cd $(TARGET_DIR)/libnng-build && cmake -G Ninja $(TOP)/nng \
 	&& ninja && cp -av libnng.a .. 
