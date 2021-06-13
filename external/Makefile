@@ -95,7 +95,7 @@ ${TARGET_DIR}/libnng.a: external/nng/include/nng/nng.h
 			$(shell wget https://cmake.org/files/v3.16/cmake-3.16.1-Linux-x86_64.sh)
 			$(shell mv cmake-3.16.1-Linux-x86_64.sh $(TARGET_DIR)/cmake/)
 			$(shell sh $(TARGET_DIR)/cmake/cmake-3.16.1-Linux-x86_64.sh --prefix=$(TARGET_DIR)/cmake --skip-license)
-			$(shell export PATH=$PATH:$(TARGET_DIR)/cmake/bin)
+			export PATH=$PATH:$(TARGET_DIR)/cmake/bin
 		endif
 	endif
 	mkdir -p $(TARGET_DIR)/libnng-build
