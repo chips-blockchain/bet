@@ -49,11 +49,7 @@ EXTERNAL_LDLIBS := -L${TARGET_DIR} $(patsubst lib%.a,-l%,$(notdir $(EXTERNAL_LIB
 submodcheck: 
 	@tools/refresh-submodules.sh $(SUBMODULES)
 	@cd external/libwally-core && ../../tools/refresh-submodules.sh src/secp256k1
-	ifeq ($(UNAME_S),Linux)
-		ifeq (, $(shell which cmake))
-			$(shell sh script/install_cmake.sh)
-		endif
-	endif
+	@tools/install_cmake.sh
 
 $(EXTERNAL_HEADERS): submodcheck
 
