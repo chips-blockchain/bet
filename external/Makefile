@@ -91,11 +91,13 @@ ${TARGET_DIR}/libnng.a: external/nng/include/nng/nng.h
 	# If it's Linux, and cmake is not installed, get it temporarily for nng
 	ifeq ($(UNAME_S),Linux)
 		ifeq (, $(shell which cmake))
-			$(shell mkdir $(TARGET_DIR)/cmake)
-			$(shell wget https://cmake.org/files/v3.16/cmake-3.16.1-Linux-x86_64.sh)
-			$(shell mv cmake-3.16.1-Linux-x86_64.sh $(TARGET_DIR)/cmake/)
-			$(shell sh $(TARGET_DIR)/cmake/cmake-3.16.1-Linux-x86_64.sh --prefix=$(TARGET_DIR)/cmake --skip-license)
-			PATH=$PATH:$(TARGET_DIR)/cmake/bin
+			ifneq (1, test -s $(TARGET_DIR)/cmake/bin/cmake)
+				$(shell mkdir $(TARGET_DIR)/cmake)
+				$(shell wget https://cmake.org/files/v3.16/cmake-3.16.1-Linux-x86_64.sh)
+				$(shell mv cmake-3.16.1-Linux-x86_64.sh $(TARGET_DIR)/cmake/)
+				$(shell sh $(TARGET_DIR)/cmake/cmake-3.16.1-Linux-x86_64.sh --prefix=$(TARGET_DIR)/cmake --skip-license)
+				PATH=$PATH:$(TARGET_DIR)/cmake/bin
+			endif
 		endif
 	endif
 	mkdir -p $(TARGET_DIR)/libnng-build
