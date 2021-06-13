@@ -73,21 +73,21 @@
 #include "bus.h"
 #else*/
 //#ifdef __APPLE__
-#if defined(__APPLE__) || defined(WIN32) || defined(USE_STATIC_NANOMSG)
+// #if defined(__APPLE__) || defined(WIN32) || defined(USE_STATIC_NANOMSG)
 #include "../external/nng/include/nng/compat/nanomsg/nn.h"
 #include "../external/nng/include/nng/compat/nanomsg/bus.h"
 #include "../external/nng/include/nng/compat/nanomsg/pubsub.h"
 #include "../external/nng/include/nng/compat/nanomsg/pipeline.h"
 #include "../external/nng/include/nng/compat/nanomsg/reqrep.h"
 #include "../external/nng/include/nng/compat/nanomsg/tcp.h"
-#else
-#include "/usr/local/include/nng/compat/nanomsg/nn.h"
-#include "/usr/local/include/nng/compat/nanomsg/bus.h"
-#include "/usr/local/include/nng/compat/nanomsg/pubsub.h"
-#include "/usr/local/include/nng/compat/nanomsg/pipeline.h"
-#include "/usr/local/include/nng/compat/nanomsg/reqrep.h"
-#include "/usr/local/include/nng/compat/nanomsg/tcp.h"
-#endif
+// #else
+// #include "/usr/local/include/nng/compat/nanomsg/nn.h"
+// #include "/usr/local/include/nng/compat/nanomsg/bus.h"
+// #include "/usr/local/include/nng/compat/nanomsg/pubsub.h"
+// #include "/usr/local/include/nng/compat/nanomsg/pipeline.h"
+// #include "/usr/local/include/nng/compat/nanomsg/reqrep.h"
+// #include "/usr/local/include/nng/compat/nanomsg/tcp.h"
+// #endif
 
 struct supernet_info;
 struct exchange_info;
