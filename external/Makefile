@@ -87,15 +87,14 @@ $(TARGET_DIR)/jsmn-build/jsmn.o: external/jsmn/jsmn.c Makefile
 $(TARGET_DIR)/libjsmn.a: $(TARGET_DIR)/jsmn-build/jsmn.o
 	$(AR) rc $@ $<
 
-WGET := wget
 ${TARGET_DIR}/libnng.a: external/nng/include/nng/nng.h
 	# If it's Linux, and cmake is not installed, get it temporarily for nng
 	ifeq ($(UNAME_S),Linux)
 		ifeq (, $(shell which cmake))
-			mkdir $(TARGET_DIR)/cmake
-			$(WGET) -O $(TARGET_DIR)/cmake https://cmake.org/files/v3.16/cmake-3.16.1-Linux-x86_64.sh
-			sh $(TARGET_DIR)/cmake/cmake-3.16.1-Linux-x86_64.sh --prefix=$(TARGET_DIR)/cmake --skip-license
-			export PATH=$PATH:$(TARGET_DIR)/cmake/bin
+			$(shell mkdir $(TARGET_DIR)/cmake)
+			$(shell wget -O $(TARGET_DIR)/cmake https://cmake.org/files/v3.16/cmake-3.16.1-Linux-x86_64.sh)
+			$(shell sh $(TARGET_DIR)/cmake/cmake-3.16.1-Linux-x86_64.sh --prefix=$(TARGET_DIR)/cmake --skip-license)
+			$(shell export PATH=$PATH:$(TARGET_DIR)/cmake/bin)
 		endif
 	endif
 	mkdir -p $(TARGET_DIR)/libnng-build
