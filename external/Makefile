@@ -20,17 +20,6 @@ ifeq ($(UNAME_S),Darwin)
     endif
 endif
 
-# If it's Linux, and cmake is not installed, get it temporarily for nng
-WGET := wget
-ifeq ($(UNAME_S),Darwin)
-	ifeq (, $(shell which cmake))
-		mkdir $(TARGET_DIR)/cmake
-		$(WGET) -O $(TARGET_DIR)/cmake https://cmake.org/files/v3.16/cmake-3.16.1-Linux-x86_64.sh
-		sh $(TARGET_DIR)/cmake/cmake-3.16.1-Linux-x86_64.sh --prefix=$(TARGET_DIR)/cmake --skip-license
-		export PATH=$PATH:$(TARGET_DIR)/cmake/bin
-	endif
-endif
-
 LIBWALLY_HEADERS := external/libwally-core/include/wally_bip32.h		\
 			external/libwally-core/include/wally_core.h	\
 			external/libwally-core/include/wally_psbt.h	\
@@ -99,9 +88,19 @@ $(TARGET_DIR)/libjsmn.a: $(TARGET_DIR)/jsmn-build/jsmn.o
 	$(AR) rc $@ $<
 
 ${TARGET_DIR}/libnng.a: external/nng/include/nng/nng.h
-	mkdir -p $(TARGET_DIR)/libnng-build
-	cd $(TARGET_DIR)/libnng-build && cmake -G Ninja $(TOP)/nng \
-	&& ninja && cp -av libnng.a .. 
+# If it's Linux, and cmake is not installed, get it temporarily for nng
+WGET := wget
+ifeq ($(UNAME_S),Darwin)
+	ifeq (, $(shell which cmake))
+		mkdir $(TARGET_DIR)/cmake
+		$(WGET) -O $(TARGET_DIR)/cmake https://cmake.org/files/v3.16/cmake-3.16.1-Linux-x86_64.sh
+		sh $(TARGET_DIR)/cmake/cmake-3.16.1-Linux-x86_64.sh --prefix=$(TARGET_DIR)/cmake --skip-license
+		export PATH=$PATH:$(TARGET_DIR)/cmake/bin
+	endif
+endif
+mkdir -p $(TARGET_DIR)/libnng-build
+cd $(TARGET_DIR)/libnng-build && cmake -G Ninja $(TOP)/nng \
+&& ninja && cp -av libnng.a .. 
 
 ${TARGET_DIR}/libwebsockets.a: external/libwebsockets/include/libwebsockets.h
 	mkdir -p $(TARGET_DIR)/libwebsockets-build
