@@ -24,35 +24,6 @@ mkdir ~/db-4.8.30 && cd ~/db-4.8.30 && wget http://download.oracle.com/berkeley-
 cd db-4.8.30 && cd build_unix/ && ../dist/configure --prefix=/usr/local --enable-cxx && make && sudo make install
 ```
 
-### Installing BET dependencies
-
-```bash
-# Installing Jsmn 
-cd ~ && git clone https://github.com/zserge/jsmn.git && cd jsmn && make
-
-# Installing Libwally 
-cd ~ && git clone https://github.com/ElementsProject/libwally-core.git
-cd libwally-core/ && git submodule update --init --recursive
-./tools/autogen.sh && ./configure && make && make check && sudo make install
-
-# nanomsg-next-generation requires cmake 3.13 or higher
-cd ~ && wget https://cmake.org/files/v3.16/cmake-3.16.1-Linux-x86_64.sh
-sudo mkdir /opt/cmake && sudo sh ~/cmake-3.16.1-Linux-x86_64.sh --prefix=/opt/cmake --skip-license
-sudo ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
-
-# check the cmake version
-cmake --version
-
-# Install nanomsg-next-generation  
-cd ~ && git clone https://github.com/nanomsg/nng.git
-cd nng && mkdir build && cd build && cmake -G Ninja .. && ninja && sudo ninja install
-
-# Installing libwebsockets
-cd ~ && git clone https://github.com/sg777/libwebsockets.git
-cd libwebsockets && mkdir build && cd build && cmake -DLWS_WITH_HTTP2=1 .. && make && sudo make install
-sudo ldconfig /usr/local/lib
-```
-
 ### Installing CHIPS
 
 ```bash
@@ -183,8 +154,14 @@ Join the [CHIPS discord](https://discord.gg/bcSpzWb) to get a small amount of CH
 [Tmux cheatsheet](https://tmuxcheatsheet.com/)
 
 ### Installing Bet
-```
-cd ~ && git clone https://github.com/chips-blockchain/bet && cd bet && make
+
+Then clone BET repo and build the binaries
+
+```bash
+git clone https://github.com/chips-blockchain/bet
+cd bet
+./configure
+make
 ```
 
 ### Running Bet Dealer
