@@ -95,12 +95,21 @@ ${TARGET_DIR}/libnng.a: external/nng/include/nng/nng.h
 			$(shell wget https://cmake.org/files/v3.16/cmake-3.16.1-Linux-x86_64.sh)
 			$(shell mv cmake-3.16.1-Linux-x86_64.sh $(TARGET_DIR)/cmake/)
 			$(shell sh $(TARGET_DIR)/cmake/cmake-3.16.1-Linux-x86_64.sh --prefix=$(TARGET_DIR)/cmake --skip-license)
-			export PATH=$PATH:$(TARGET_DIR)/cmake/bin
+			# export PATH=$PATH:$(TARGET_DIR)/cmake/bin
+			mkdir -p $(TARGET_DIR)/libnng-build
+			cd $(TARGET_DIR)/libnng-build && $(TARGET_DIR)/cmake/bin/cmake -G Ninja $(TOP)/nng \
+			&& ninja && cp -av libnng.a ..
+		else
+			mkdir -p $(TARGET_DIR)/libnng-build
+			cd $(TARGET_DIR)/libnng-build && cmake -G Ninja $(TOP)/nng \
+			&& ninja && cp -av libnng.a ..
 		endif
+	else
+		mkdir -p $(TARGET_DIR)/libnng-build
+		cd $(TARGET_DIR)/libnng-build && cmake -G Ninja $(TOP)/nng \
+		&& ninja && cp -av libnng.a ..
 	endif
-	mkdir -p $(TARGET_DIR)/libnng-build
-	cd $(TARGET_DIR)/libnng-build && cmake -G Ninja $(TOP)/nng \
-	&& ninja && cp -av libnng.a .. 
+	 
 
 ${TARGET_DIR}/libwebsockets.a: external/libwebsockets/include/libwebsockets.h
 	mkdir -p $(TARGET_DIR)/libwebsockets-build
