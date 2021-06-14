@@ -1860,5 +1860,5 @@ char* bet_git_version()
 
 	bet_dealloc_args(argc,&argv);
 
-	return cJSON_Print(version);
+	return unstringify(cJSON_Print(version));
 }
