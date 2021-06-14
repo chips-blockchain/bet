@@ -436,6 +436,10 @@ int main(int argc, char **argv)
 	} else if ((argc == 2) && ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "h") == 0) ||
 				   (strcmp(argv[1], "--help") == 0) || (strcmp(argv[1], "help") == 0))) {
 		bet_display_usage();
+	} else if ((argc == 2) && ((strcmp(argv[1], "-v") == 0) || (strcmp(argv[1], "v") == 0) ||
+				   (strcmp(argv[1], "--version") == 0) || (strcmp(argv[1], "version") == 0))) {
+		printf("%s\n", bet_git_version());
+		
 	} else if ((argc == 3) && (strcmp(argv[1], "dcv") == 0)) {
 		strcpy(dealer_ip, argv[2]);
 		playing_nodes_init();

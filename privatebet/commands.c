@@ -1464,7 +1464,11 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 		memset(buf, 0x00, buf_size);
 	}
 	data[new_size - 1] = '\0';
-	if ((strcmp(argv[0], "lightning-cli") == 0) && (strncmp("error", data, strlen("error")) == 0)) {
+	if(strcmp(argv[0], "git") == 0) {
+		*argjson = cJSON_CreateString((const char*)data);
+		goto end;
+	}
+	else if ((strcmp(argv[0], "lightning-cli") == 0) && (strncmp("error", data, strlen("error")) == 0)) {
 		char temp[1024];
 		memset(temp, 0x00, sizeof(temp));
 		strncpy(temp, data + strlen("error"), (strlen(data) - strlen("error")));
@@ -1841,4 +1845,20 @@ int32_t ln_establish_channel(char *uri)
 		}
 	}
 	return retval;
+}
+
+char* bet_git_version()
+{
+	int argc = 2;
+	char **argv = NULL;
+	cJSON *version = NULL;
+	
+	bet_alloc_args(argc,&argv);
+	bet_copy_args(argc, "git", "describe");
+	version = cJSON_CreateObject();
+	make_command(argc,argv,&version);
+
+	bet_dealloc_args(argc,&argv);
+
+	return cJSON_Print(version);
 }
