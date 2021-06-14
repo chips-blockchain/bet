@@ -1854,7 +1854,7 @@ char* bet_git_version()
 	cJSON *version = NULL;
 	
 	bet_alloc_args(argc,&argv);
-	bet_copy_args(argc, "git", "describe");
+	argv = bet_copy_args(argc, "git", "describe");
 	version = cJSON_CreateObject();
 	make_command(argc,argv,&version);
 
