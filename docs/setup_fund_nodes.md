@@ -1,23 +1,28 @@
 # Fund nodes
 
-In order to start playing you need to fund your LN node and your CHIPS node.
+In order to start playing you need to fund your CHIPS node. Having funds in your CHIPS node will allow for the lightning node to be automatically funded once you run your player node. You need at least 0.167 in your CHIPS node to fund the LN.
 
-## Fund lightning
+## Fund CHIPS node
 
-1. Get a new lightning address
+1. Get new address
 
     ```
-    root@server:~/bet/privatebet$ lightning-cli newaddr
-
-    {
-        "address": "bGq2Nnze7rxYuc8pExa6z7TiUoGGUac2hG",
-        "p2sh-segwit": "bGq2Nnze7rxYuc8pExa6z7TiUoGGUac2hG"
-    }
+    root@server:~/bet/privatebet$ chips-cli getnewaddress
+    bbd7L2LuapPhw18DQZUnw25v1N3F3nrHB2
     ```
-
-2. Send 0.25 CHIPS to the newly generated address. It is `bGq2Nnze7rxYuc8pExa6z7TiUoGGUac2hG` in our example.
+2. Send a few CHIPS there (1-3?). 
 
 3. Check the balance
+    
+    ```
+    root@server:~/bet/privatebet$ chips-cli getbalance
+    1.00000000
+    ```
+
+
+## Helper commands to check Lightning node (optional)
+
+Check the balance
 
     ```
     root@server:~/bet/privatebet$ lightning-cli listfunds
@@ -38,25 +43,5 @@ In order to start playing you need to fund your LN node and your CHIPS node.
     ],
     "channels": []
     }
-    ```
-
-## Fund CHIPS
-
-1. Get new address
-
-    ```
-    root@server:~/bet/privatebet$ chips-cli getnewaddress
-    bbd7L2LuapPhw18DQZUnw25v1N3F3nrHB2
-    ```
-2. Send a few CHIPS there (1-3?). 
-
-3. Check the balance
-    
-    ```
-    root@server:~/bet/privatebet$ chips-cli getbalance
-    5.00000000
-    ```
-
-
 
 
