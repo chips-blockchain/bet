@@ -128,4 +128,4 @@ npm install && npm start
 
 ## Its not working! Omg!
 
-  Check out our ever growing list of [Common errors](./setup_common_errors.md). If your issue is not on the list, please report it to Discord and we will attend to it as soon as we can.
+  Check out our ever growing list of [Common errors](https://github.com/chips-blockchain/bet/blob/master/docs/setup_comon_errors.md). If your issue is not on the list, please report it to Discord and we will attend to it as soon as we can.
