@@ -24,7 +24,6 @@ In order to start playing you need to fund your CHIPS node. Having funds in your
 
 Check the balance
 
-    ```
     root@server:~/bet/privatebet$ lightning-cli listfunds
     {
     "outputs": [
