@@ -1,8 +1,9 @@
 SUBMODULES =					\
 	external/libwally-core			\
 	external/jsmn				\
-	external/nng			\
-	external/libwebsockets
+	external/nng				\
+	external/libwebsockets			\
+	external/dlg
 
 TOP := ../..
 ifdef BUILD
@@ -31,18 +32,20 @@ JSMN_HEADERS := external/jsmn/jsmn.h
 NNG_HEADERS := external/nng/include/nng.h \
 		external/nng/include/nng/compat/nanomsg/nn.h
 LIBWEBSOCKETS_HEADERS := external/libwebsockets/include/libwebsockets.h
+DLG_HEADERS := external/dlg/include/dlg/dlg.h
 
-EXTERNAL_HEADERS := $(LIBWALLY_HEADERS) $(LIBSECP_HEADERS) $(JSMN_HEADERS) $(NNG_HEADERS) $(LIBWEBSOCKETS_HEADERS)
-EXTERNAL_LIBS := ${TARGET_DIR}/libwallycore.a ${TARGET_DIR}/libsecp256k1.a ${TARGET_DIR}/libjsmn.a ${TARGET_DIR}/libnng.a ${TARGET_DIR}/libwebsockets.a
+EXTERNAL_HEADERS := $(LIBWALLY_HEADERS) $(LIBSECP_HEADERS) $(JSMN_HEADERS) $(NNG_HEADERS) $(LIBWEBSOCKETS_HEADERS) $(DLG_HEADERS)
+EXTERNAL_LIBS := ${TARGET_DIR}/libwallycore.a ${TARGET_DIR}/libsecp256k1.a ${TARGET_DIR}/libjsmn.a ${TARGET_DIR}/libnng.a ${TARGET_DIR}/libwebsockets.a $(TARGET_DIR)/libdlg.a
 
-EXTERNAL_LIBS_CLEAN := ${TARGET_DIR}/libwallycore.a ${TARGET_DIR}/libsecp256k1.a ${TARGET_DIR}/libjsmn.a ${TARGET_DIR}/libnng.a ${TARGET_DIR}/libwebsockets.a
+EXTERNAL_LIBS_CLEAN := ${TARGET_DIR}/libwallycore.a ${TARGET_DIR}/libsecp256k1.a ${TARGET_DIR}/libjsmn.a ${TARGET_DIR}/libnng.a ${TARGET_DIR}/libwebsockets.a $(TARGET_DIR)/libdlg.a
 
 EXTERNAL_INCLUDE_FLAGS :=					\
 	-I external/libwally-core/include/			\
 	-I external/libwally-core/src/secp256k1/include/	\
 	-I external/jsmn/					\
 	-I external/nng/include/				\
-	-I external/libwebsockets/include/
+	-I external/libwebsockets/include/			\
+	-I external/dlg/include/
 
 EXTERNAL_LDLIBS := -L${TARGET_DIR} $(patsubst lib%.a,-l%,$(notdir $(EXTERNAL_LIBS)))
 
@@ -88,6 +91,16 @@ $(TARGET_DIR)/jsmn-build/jsmn.o: external/jsmn/jsmn.c Makefile
 $(TARGET_DIR)/libjsmn.a: $(TARGET_DIR)/jsmn-build/jsmn.o
 	$(AR) rc $@ $<
 
+external/dlg/src/dlg/dlg.c: external/dlg/include/dlg/dlg.h
+	[ -f $@ ]
+
+$(TARGET_DIR)/dlg-build/dlg.o: external/dlg/src/dlg/dlg.c Makefile
+	@mkdir -p $(@D)
+	$(COMPILE.c) -o $@ $<
+
+$(TARGET_DIR)/libdlg.a: $(TARGET_DIR)/dlg-build/dlg.o
+	$(AR) rc $@ $<
+
 ${TARGET_DIR}/libnng.a: external/nng/include/nng/nng.h
 	mkdir -p $(TARGET_DIR)/libnng-build
 	cd $(TARGET_DIR)/libnng-build && cmake -G Ninja $(TOP)/nng \
@@ -104,6 +117,7 @@ clean: external-clean
 external-clean:
 	$(RM) $(EXTERNAL_LIBS_CLEAN) $(TARGET_DIR)/*.la $(TARGET_DIR)/*.o
 	$(RM) $(TARGET_DIR)/jsmn-build/jsmn.o
+	$(RM) $(TARGET_DIR)/dlg-build/dlg.o
 	if [ -f ${TARGET_DIR}/libwally-core-build/Makefile ]; then make -C ${TARGET_DIR}/libwally-core-build clean; fi
 	if [ -f ${TARGET_DIR}/libwally-core-build/src/Makefile ]; then make -C ${TARGET_DIR}/libwally-core-build/src clean; fi
 	if [ -f ${TARGET_DIR}/libwebsockets-build/Makefile ]; then make -C ${TARGET_DIR}/libwebsockets-build clean; fi
@@ -112,6 +126,7 @@ external-clean:
 external-distclean:
 	$(RM) -rf ${TARGET_DIR}/libwally-core-build
 	$(RM) -rf ${TARGET_DIR}/jsmn-build
+	$(RM) -rf $(TARGET_DIR)/dlg-build
 	$(RM) -rf ${TARGET_DIR}/libwebsockets-build
 	$(RM) -rf ${TARGET_DIR}/libnng-build
 	$(RM) -r `git status --ignored --porcelain external/libwally-core | grep '^!! ' | cut -c3-`
