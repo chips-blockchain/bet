@@ -68,7 +68,6 @@ int32_t all_sharesflag[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS][CARDS777_MAXPLAYE
 
 int32_t all_player_card_values[CARDS777_MAXPLAYERS][hand_size];
 int32_t all_number_cards_drawn[CARDS777_MAXPLAYERS];
-int32_t all_player_cards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 int32_t all_no_of_player_cards[CARDS777_MAXPLAYERS];
 bits256 all_playershares[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 
