@@ -65,7 +65,7 @@ struct gfshare_ctx_bet *_gfshare_init_core(uint8_t *sharenrs, uint32_t sharecoun
 	int32_t allocsize;
 	allocsize = (int32_t)(sizeof(struct gfshare_ctx_bet) + threshold * size);
 	if (allocsize > spacesize) {
-		printf("malloc allocsize %d vs spacesize.%d\n", allocsize, spacesize);
+		dlg_info("malloc allocsize %d vs spacesize.%d\n", allocsize, spacesize);
 		ctx = malloc(allocsize);
 		if (ctx == NULL)
 			return NULL; // errno should still be set from XMALLOC()
@@ -244,7 +244,7 @@ int32_t gfshare_calc_sharenrs(uint8_t *sharenrs, int32_t N, uint8_t *data, int32
 			if (j == i)
 				break;
 		}
-		// printf("%3d ",sharenrs[i]);
+		// dlg_info("%3d ",sharenrs[i]);
 	}
 	return (N);
 }
@@ -255,7 +255,7 @@ int32_t gfshare_init_sharenrs(uint8_t sharenrs[255], uint8_t *orig, int32_t m, i
 	int32_t i, j, r, remains, orign;
 	if (m > n || n >= 0xff) // reserve 255 for illegal sharei
 	{
-		printf("illegal M.%d of N.%d\n", m, n);
+		dlg_info("illegal M.%d of N.%d\n", m, n);
 		return (-1);
 	}
 	randvals = calloc(1, 65536);
@@ -268,31 +268,31 @@ int32_t gfshare_init_sharenrs(uint8_t sharenrs[255], uint8_t *orig, int32_t m, i
 		for (i = 0; i < n; i++) {
 			r = (randvals[i] % remains);
 			sharenrs[i] = valid[r];
-			printf("%d ", sharenrs[i]);
+			dlg_info("%d ", sharenrs[i]);
 			valid[r] = valid[--remains];
 		}
-		printf("FULL SET\n");
+		dlg_info("FULL SET");
 	} else {
 		memcpy(valid, orig, n);
 		memset(sharenrs, 0, n);
 		for (i = 0; i < n; i++)
-			printf("%d ", valid[i]);
-		printf("valid\n");
+			dlg_info("%d ", valid[i]);
+		dlg_info("valid");
 		for (i = 0; i < m; i++) {
 			r = rand() % n;
 			while ((j = valid[r]) == 0) {
-				// printf("i.%d j.%d m.%d n.%d r.%d\n",i,j,m,n,r);
+				// dlg_info("i.%d j.%d m.%d n.%d r.%d\n",i,j,m,n,r);
 				r = rand() % n;
 			}
 			sharenrs[i] = j;
 			valid[r] = 0;
 		}
 		for (i = 0; i < n; i++)
-			printf("%d ", valid[i]);
-		printf("valid\n");
+			dlg_info("%d ", valid[i]);
+		dlg_info("valid");
 		for (i = 0; i < m; i++)
-			printf("%d ", sharenrs[i]);
-		printf("sharenrs vals m.%d of n.%d\n", m, n);
+			dlg_info("%d ", sharenrs[i]);
+		dlg_info("sharenrs vals m.%d of n.%d\n", m, n);
 		// getchar();
 	}
 	free(randvals);
@@ -301,7 +301,7 @@ int32_t gfshare_init_sharenrs(uint8_t sharenrs[255], uint8_t *orig, int32_t m, i
 			if (i == j)
 				continue;
 			if (sharenrs[i] != 0 && sharenrs[i] == sharenrs[j]) {
-				printf("FATAL: duplicate entry sharenrs[%d] %d vs %d "
+				dlg_info("FATAL: duplicate entry sharenrs[%d] %d vs %d "
 				       "sharenrs[%d]\n",
 				       i, sharenrs[i], sharenrs[j], j);
 				return (-1);
@@ -359,7 +359,7 @@ void gfshare_calc_shares(uint8_t *shares, uint8_t *secret, int32_t size, int32_t
 	// M threshold
 	if (M * width > spacesize) {
 		buffer = calloc(M, width);
-		printf("calloc M.%d width.%d size.%d\n", M, width, N * width);
+		dlg_info("calloc M.%d width.%d size.%d\n", M, width, N * width);
 	} else
 		buffer = space;
 	memset(shares, 0, N * width);
