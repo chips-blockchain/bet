@@ -47,7 +47,6 @@ int32_t players_joined = 0;
 int32_t turn = 0, no_of_cards = 0, no_of_rounds = 0, no_of_bets = 0;
 int32_t card_matrix[CARDS777_MAXPLAYERS][hand_size];
 int32_t card_values[CARDS777_MAXPLAYERS][hand_size];
-int32_t all_player_cards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 struct deck_dcv_info dcv_info;
 int32_t player_ready[CARDS777_MAXPLAYERS];
 int32_t hole_cards_drawn = 0, community_cards_drawn = 0, flop_cards_drawn = 0, turn_card_drawn = 0,
@@ -100,14 +99,14 @@ void bet_set_table_id()
 	memset(table_id, 0x00, sizeof(table_id));
 	OS_randombytes(randval.bytes, sizeof(randval));
 	bits256_str(table_id, randval);
-	printf("table_id::%s\n", table_id);
+	dlg_info("table_id::%s\n", table_id);
 }
 
 void bet_dcv_lws_write(cJSON *data)
 {
 	if (ws_dcv_connection_status == 1) {
 		if (dcv_data_exists == 1) {
-			printf("%s::%d::There is more data\n", __FUNCTION__, __LINE__);
+			dlg_info("%s::%d::There is more data\n", __FUNCTION__, __LINE__);
 			while (dcv_data_exists == 1)
 				sleep(1);
 		}
@@ -115,7 +114,7 @@ void bet_dcv_lws_write(cJSON *data)
 		strncpy(dcv_gui_data, cJSON_Print(data), strlen(cJSON_Print(data)));
 		dcv_data_exists = 1;
 		lws_callback_on_writable(wsi_global_host);
-		printf("%s::%d:: Data pushed to GUI\n", __FUNCTION__, __LINE__);
+		dlg_info("%s::%d:: Data pushed to GUI\n", __FUNCTION__, __LINE__);
 	}
 }
 
@@ -202,7 +201,7 @@ int32_t bet_dcv_frontend(struct lws *wsi, cJSON *argjson)
 	int32_t bytes = 0;
 
 	method = jstr(argjson, "method");
-	printf("%s::%d::method::%s\n", __FUNCTION__, __LINE__, method);
+	dlg_info("%s::%d::method::%s\n", __FUNCTION__, __LINE__, method);
 	if (strcmp(method, "game") == 0) {
 		retval = bet_game(wsi, argjson);
 	} else if (strcmp(method, "seats") == 0) {
@@ -225,7 +224,7 @@ int32_t bet_dcv_frontend(struct lws *wsi, cJSON *argjson)
 		addr_info = bet_get_chips_ln_addr_info();
 		lws_write(wsi, (unsigned char *)cJSON_Print(addr_info), strlen(cJSON_Print(addr_info)), 0);
 	} else {
-		printf("%s::%d::Method::%s is not known to the system\n", __FUNCTION__, __LINE__, method);
+		dlg_info("%s::%d::Method::%s is not known to the system\n", __FUNCTION__, __LINE__, method);
 	}
 
 	return retval;
@@ -243,14 +242,14 @@ int lws_callback_http_dummy(struct lws *wsi, enum lws_callback_reasons reason, v
 			break;
 		argjson = cJSON_Parse(lws_buf);
 		if (bet_dcv_frontend(wsi, argjson) != 0) {
-			printf("\n%s:%d:Failed to process the host command", __FUNCTION__, __LINE__);
+			dlg_info("%s:%d:Failed to process the host command", __FUNCTION__, __LINE__);
 		}
 		memset(lws_buf, 0x00, sizeof(lws_buf));
 		lws_buf_length = 0;
 		break;
 	case LWS_CALLBACK_ESTABLISHED:
 		wsi_global_host = wsi;
-		printf("%s::%d::LWS_CALLBACK_ESTABLISHED\n", __FUNCTION__, __LINE__);
+		dlg_info("%s::%d::LWS_CALLBACK_ESTABLISHED\n", __FUNCTION__, __LINE__);
 		ws_dcv_connection_status = 1;
 		break;
 	case LWS_CALLBACK_SERVER_WRITEABLE:
@@ -345,7 +344,7 @@ int32_t bet_dcv_deck_init_info(cJSON *argjson, struct privatebet_info *bet, stru
 		cJSON_AddItemToArray(cjson_peer_pub_keys,
 				     cJSON_CreateString(bits256_str(str, dcv_info.peerpubkeys[i])));
 	}
-	//printf("%s::%d::init_d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(deck_init_info));
+	//dlg_info("%s::%d::init_d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(deck_init_info));
 	rendered = cJSON_Print(deck_init_info);
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 
@@ -460,7 +459,7 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 
 	cJSON *seats_info = NULL;
 
-	printf("%s::%d::bet->maxplayers::%d\n", __FUNCTION__, __LINE__, bet->maxplayers);
+	dlg_info("%s::%d::bet->maxplayers::%d\n", __FUNCTION__, __LINE__, bet->maxplayers);
 	seats_info = bet_get_seats_json(bet->maxplayers);
 	cJSON_AddItemToObject(player_info, "seats", seats_info);
 
@@ -469,10 +468,10 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 
 	if (bytes < 0) {
 		retval = -1;
-		printf("\n%s:%d: Failed to send data", __FUNCTION__, __LINE__);
+		dlg_info("%s:%d: Failed to send data", __FUNCTION__, __LINE__);
 		goto end;
 	}
-	printf("%s::%d::uri::%s\n", __FUNCTION__, __LINE__, uri);
+	dlg_info("%s::%d::uri::%s\n", __FUNCTION__, __LINE__, uri);
 end:
 	if (uri)
 		free(uri);
@@ -577,7 +576,7 @@ int32_t bet_relay(cJSON *argjson, struct privatebet_info *bet, struct privatebet
 
 	if (bytes < 0) {
 		retval = -1;
-		printf("\n%s :%d Failed to send data", __FUNCTION__, __LINE__);
+		dlg_info("%s :%d Failed to send data", __FUNCTION__, __LINE__);
 		goto end;
 	}
 end:
@@ -597,7 +596,7 @@ static int32_t bet_check_bvv_ready(struct privatebet_info *bet)
 		jaddistr(uri_info, (char *)dcv_info.uri[i]);
 	}
 	rendered = cJSON_Print(bvv_ready);
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(bvv_ready));
+	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(bvv_ready));
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 
 	if (bytes < 0)
@@ -687,7 +686,7 @@ static int32_t bet_create_betting_invoice(cJSON *argjson, struct privatebet_info
 	make_command(argc, argv, &invoice);
 
 	if (jint(invoice, "code") != 0) {
-		printf("%s::%d::Failed to create the chips-ln invoice::\n%s\n", __FUNCTION__, __LINE__,
+		dlg_info("%s::%d::Failed to create the chips-ln invoice::\n%s\n", __FUNCTION__, __LINE__,
 		       cJSON_Print(argjson));
 		retval = -1;
 	} else {
@@ -961,7 +960,7 @@ void bet_game_info(struct privatebet_info *bet, struct privatebet_vars *vars)
 
 	int bytes = nn_send(bet->pubsock, cJSON_Print(game_info), strlen(cJSON_Print(game_info)), 0);
 	if (bytes < 0)
-		printf("%s::%d::problem in sending the data\n", __FUNCTION__, __LINE__);
+		dlg_info("%s::%d::problem in sending the data\n", __FUNCTION__, __LINE__);
 }
 
 static cJSON *payout_tx_data_info(struct privatebet_info *bet, struct privatebet_vars *vars)
@@ -1079,7 +1078,7 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 	str_to_hexstr(cJSON_Print(data_info), hex_str);
 
 	payout_tx_info = chips_create_payout_tx(payout_info, no_of_txs, tx_ids, hex_str);
-	printf("%s::%d::payout_tx_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(payout_tx_info));
+	dlg_info("%s::%d::payout_tx_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(payout_tx_info));
 	bytes = nn_send(bet->pubsock, cJSON_Print(payout_tx_info), strlen(cJSON_Print(payout_tx_info)), 0);
 	if (bytes < 0)
 		retval = -1;
@@ -1153,18 +1152,18 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 				winners[i] = 0;
 		}
 
-		printf("\nWinning Amount:%d", (vars->pot / no_of_winners));
-		printf("\nWinning Players Are:");
+		dlg_info("Winning Amount:%d", (vars->pot / no_of_winners));
+		dlg_info("Winning Players Are:");
 		for (int i = 0; i < bet->maxplayers; i++) {
 			if (winners[i] == 1) {
 				//retval = bet_dcv_invoice_pay(bet, vars, i, (vars->pot / no_of_winners));
 				retval = bet_dcv_poker_winner(bet, vars, winners, vars->pot);
-				printf("%d\t", i);
+				dlg_info("%d\t", i);
 				if (retval == -1)
 					goto end;
 			}
 		}
-		printf("\n");
+		dlg_info("");
 	}
 
 	final_info = cJSON_CreateObject();
@@ -1213,13 +1212,13 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 	}
 	cJSON_AddItemToObject(final_info, "winners", winnersInfo);
 
-	printf("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(final_info));
+	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(final_info));
 	rendered = cJSON_Print(final_info);
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 
 	if (bytes < 0) {
 		retval = -1;
-		printf("%s::%d::Failed to send data\n", __FUNCTION__, __LINE__);
+		dlg_info("%s::%d::Failed to send data\n", __FUNCTION__, __LINE__);
 		goto end;
 	}
 
@@ -1252,18 +1251,18 @@ int32_t bet_ln_check(struct privatebet_info *bet)
 		strcpy(channel_id, strtok(uri, "@"));
 
 		while ((channel_state = ln_get_channel_status(channel_id)) != CHANNELD_NORMAL) {
-			printf("%s::%d::channel-state::%d\n", __FUNCTION__, __LINE__, channel_state);
+			dlg_info("%s::%d::channel-state::%d\n", __FUNCTION__, __LINE__, channel_state);
 			if (channel_state == CHANNELD_AWAITING_LOCKIN) {
-				printf("CHANNELD AWAITING LOCKIN\r");
+				dlg_info("CHANNELD AWAITING LOCKIN\r");
 				fflush(stdout);
 				sleep(1);
 			} else if ((channel_state != CHANNELD_AWAITING_LOCKIN) && (channel_state != CHANNELD_NORMAL)) {
-				printf("\n%s:%d: Player: %d -> DCV LN Channel failed,channel_state=%d, JUST WAIT\n",
+				dlg_info("%s:%d: Player: %d -> DCV LN Channel failed,channel_state=%d, JUST WAIT\n",
 				       __FUNCTION__, __LINE__, i, channel_state);
 				sleep(1);
 			}
 		}
-		printf("Player %d --> DCV channel ready\n", i);
+		dlg_info("Player %d --> DCV channel ready\n", i);
 	}
 	retval = 1;
 end:
@@ -1294,22 +1293,22 @@ static int32_t bet_award_winner(cJSON *argjson, struct privatebet_info *bet, str
 
 		if (jint(fund_channel_info, "code") != 0) {
 			retval = -1;
-			printf("\n%s:%d: Message:%s", __FUNCTION__, __LINE__, jstr(fund_channel_info, "message"));
+			dlg_info("%s:%d: Message:%s", __FUNCTION__, __LINE__, jstr(fund_channel_info, "message"));
 			goto end;
 		}
 
-		printf("\nFund channel response:%s\n", cJSON_Print(fund_channel_info));
+		dlg_info("Fund channel response:%s\n", cJSON_Print(fund_channel_info));
 		int state;
 		while ((state = ln_get_channel_status(channel_id)) != CHANNELD_NORMAL) {
 			if (state == CHANNELD_AWAITING_LOCKIN) {
-				printf("\nCHANNELD_AWAITING_LOCKIN");
+				dlg_info("CHANNELD_AWAITING_LOCKIN");
 			} else
-				printf("\n%s:%d:channel-state:%d\n", __FUNCTION__, __LINE__, state);
+				dlg_info("%s:%d:channel-state:%d\n", __FUNCTION__, __LINE__, state);
 
-			printf("%s::%d::%d\n", __FUNCTION__, __LINE__, state);
+			dlg_info("%s::%d::%d\n", __FUNCTION__, __LINE__, state);
 			sleep(10);
 		}
-		printf("%s::%d::%d\n", __FUNCTION__, __LINE__, state);
+		dlg_info("%s::%d::%d\n", __FUNCTION__, __LINE__, state);
 	}
 	invoice = jstr(argjson, "invoice");
 	invoice_info = cJSON_Parse(invoice);
@@ -1328,12 +1327,12 @@ static int32_t bet_award_winner(cJSON *argjson, struct privatebet_info *bet, str
 
 	if (jint(pay_response, "code") != 0) {
 		retval = -1;
-		printf("\n%s:%d: Message:%s", __FUNCTION__, __LINE__, jstr(pay_response, "message"));
+		dlg_info("%s:%d: Message:%s", __FUNCTION__, __LINE__, jstr(pay_response, "message"));
 		goto end;
 	}
 
 	if (strcmp(jstr(pay_response, "status"), "complete") == 0) {
-		printf("\nPayment Success\n");
+		dlg_info("Payment Success");
 	}
 
 end:
@@ -1411,9 +1410,9 @@ static void bet_dcv_process_signed_raw_tx(cJSON *argjson)
 static int32_t bet_dcv_verify_rand_str(char *rand_str)
 {
 	int32_t retval = 0;
-	printf("%s:;%d::%s\n", __FUNCTION__, __LINE__, rand_str);
+	dlg_info("%s:;%d::%s\n", __FUNCTION__, __LINE__, rand_str);
 	for (int i = 0; i < no_of_rand_str; i++) {
-		printf("%s:;%d::%s\n", __FUNCTION__, __LINE__, tx_rand_str[i]);
+		dlg_info("%s:;%d::%s\n", __FUNCTION__, __LINE__, tx_rand_str[i]);
 		if (strcmp(tx_rand_str[i], rand_str) == 0) {
 			retval = 1;
 			break;
@@ -1495,7 +1494,7 @@ static int32_t bet_dcv_check_pos_status(cJSON *argjson, struct privatebet_info *
 	gui_playerID = jint(argjson, "gui_playerID");
 	pos_status = player_pos[gui_playerID];
 	if (pos_status == 1) {
-		printf("%s::%d::seat taken\n", __FUNCTION__, __LINE__);
+		dlg_info("%s::%d::seat taken\n", __FUNCTION__, __LINE__);
 		join_res = cJSON_CreateObject();
 		cJSON_AddStringToObject(join_res, "method", "join_res");
 		cJSON_AddNumberToObject(join_res, "playerid", gui_playerID);
@@ -1504,7 +1503,7 @@ static int32_t bet_dcv_check_pos_status(cJSON *argjson, struct privatebet_info *
 		rendered = cJSON_Print(join_res);
 		bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 		if (bytes < 0) {
-			printf("There is a problem in sending the data at ::%s::%d\n", __FUNCTION__, __LINE__);
+			dlg_info("There is a problem in sending the data at ::%s::%d\n", __FUNCTION__, __LINE__);
 		}
 	} else {
 		player_pos[gui_playerID] = 1;
@@ -1515,7 +1514,7 @@ static int32_t bet_dcv_check_pos_status(cJSON *argjson, struct privatebet_info *
 
 void bet_init_player_seats_info()
 {
-	printf("%s::%d::max_players::%d\n", __FUNCTION__, __LINE__, max_players);
+	dlg_info("%s::%d::max_players::%d\n", __FUNCTION__, __LINE__, max_players);
 	for (int i = 0; i < max_players; i++) {
 		sprintf(player_seats_info[i].seat_name, "player%d", i + 1);
 		player_seats_info[i].seat = i;
@@ -1537,7 +1536,7 @@ static int32_t bet_dcv_check_pos_status(cJSON *argjson, struct privatebet_info *
 		pos_status = 1;
 
 	if (pos_status == 1) {
-		printf("%s::%d::seat taken\n", __FUNCTION__, __LINE__);
+		dlg_info("%s::%d::seat taken\n", __FUNCTION__, __LINE__);
 		join_res = cJSON_CreateObject();
 		cJSON_AddStringToObject(join_res, "method", "join_res");
 		cJSON_AddNumberToObject(join_res, "playerid", gui_playerID);
@@ -1546,7 +1545,7 @@ static int32_t bet_dcv_check_pos_status(cJSON *argjson, struct privatebet_info *
 		rendered = cJSON_Print(join_res);
 		bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 		if (bytes < 0) {
-			printf("There is a problem in sending the data at ::%s::%d\n", __FUNCTION__, __LINE__);
+			dlg_info("There is a problem in sending the data at ::%s::%d\n", __FUNCTION__, __LINE__);
 		}
 	}
 	return pos_status;
@@ -1576,11 +1575,11 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 		if (bet->numplayers == bet->maxplayers) {
 			heartbeat_on = 1;
 			for (int32_t i = 0; i < bet->maxplayers; i++) {
-				printf("%d::%s\n", req_id_to_player_id_mapping[i], vars->player_chips_addrs[i]);
+				dlg_info("%d::%s\n", req_id_to_player_id_mapping[i], vars->player_chips_addrs[i]);
 			}
 			retval = bet_ln_check(bet);
 			if (retval < 0) {
-				printf("%s::%d::Problem occured in establishing the LN channels", __FUNCTION__,
+				dlg_info("%s::%d::Problem occured in establishing the LN channels", __FUNCTION__,
 				       __LINE__);
 				return retval;
 			}
@@ -1630,7 +1629,7 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 			threshold_value);
 		int32_t ret = bet_run_query(sql_stmt);
 		if (ret != 0)
-			printf("%s::%d::Error in running the query::%s\n", __FUNCTION__, __LINE__, sql_stmt);
+			dlg_info("%s::%d::Error in running the query::%s\n", __FUNCTION__, __LINE__, sql_stmt);
 	}
 
 	tx_status = cJSON_CreateObject();
@@ -1670,7 +1669,7 @@ void bet_dcv_backend_thrd(void *_ptr)
 
 	argjson = cJSON_Parse(_ptr);
 	if ((method = jstr(argjson, "method")) != 0) {
-		printf("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
+		dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, method);
 		if (strcmp(method, "join_req") == 0) {
 			retval = bet_dcv_process_join_req(argjson, bet, vars);
 		} else if (strcmp(method, "bvv_ready") == 0) {
@@ -1707,7 +1706,7 @@ void bet_dcv_backend_thrd(void *_ptr)
 				bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 				if (bytes < 0) {
 					retval = -1;
-					printf("\nMehtod: %s Failed to send data", method);
+					dlg_info("Mehtod: %s Failed to send data", method);
 				}
 			}
 		} else if (strcmp(method, "betting") == 0) {
@@ -1734,7 +1733,7 @@ void bet_dcv_backend_thrd(void *_ptr)
 			bytes = nn_send(bet->pubsock, cJSON_Print(live_info), strlen(cJSON_Print(live_info)), 0);
 			if (bytes < 0) {
 				retval = -1;
-				printf("\nMehtod: %s Failed to send data", method);
+				dlg_info("Mehtod: %s Failed to send data", method);
 			}
 		} else if (strcmp(method, "dcv_state") == 0) {
 			bet_get_dcv_state(argjson, bet);
@@ -1754,7 +1753,7 @@ void bet_dcv_backend_thrd(void *_ptr)
 			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
 			if (bytes < 0) {
 				retval = -1;
-				printf("\nMehtod: %s Failed to send data", method);
+				dlg_info("Mehtod: %s Failed to send data", method);
 			}
 		}
 	}
@@ -1802,7 +1801,7 @@ void bet_dcv_backend_loop(void *_ptr)
 				pthread_t server_thrd;
 				if (OS_thread_create(&server_thrd, NULL, (void *)bet_dcv_backend_thrd,
 						     (void *)cJSON_Print(argjson)) != 0) {
-					printf("error in launching the bet_cashier_backend_thrd\n");
+					dlg_error("Error in launching the bet_cashier_backend_thrd");
 					exit(-1);
 				}
 				free_json(argjson);
@@ -1822,7 +1821,7 @@ void bet_dcv_frontend_loop(void *_ptr)
 	int n = 0, logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE;
 
 	lws_set_log_level(logs, NULL);
-	lwsl_user("LWS minimal ws broker | visit http://localhost:1234\n");
+	lwsl_user("LWS minimal ws broker | visit http://localhost:1234");
 
 	memset(&dcv_info, 0, sizeof dcv_info); /* otherwise uninitialized garbage */
 	dcv_info.port = 9000;
@@ -1832,8 +1831,8 @@ void bet_dcv_frontend_loop(void *_ptr)
 
 	dcv_context = lws_create_context(&dcv_info);
 	if (!dcv_context) {
-		lwsl_err("lws init failed\n");
-		printf("%s::%d::lws_context error", __FUNCTION__, __LINE__);
+		lwsl_err("lws init failed");
+		dlg_info("%s::%d::lws_context error", __FUNCTION__, __LINE__);
 	}
 	while (n >= 0 && !interrupted) {
 		n = lws_service(dcv_context, 1000);

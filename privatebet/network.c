@@ -60,19 +60,17 @@ int32_t bet_nanosock(int32_t bindflag, char *endpoint, int32_t nntype)
 	if ((sock = nn_socket(AF_SP, nntype)) >= 0) {
 		if (bindflag == 0) {
 			if (nn_connect(sock, endpoint) < 0) {
-				printf("connect to %s error for %s\n", endpoint, nn_strerror(nn_errno()));
+				dlg_error("connect to %s error for %s\n", endpoint, nn_strerror(nn_errno()));
 				nn_close(sock);
 				return (-1);
-			} /*else
-				printf("nntype.%d connect to %s connectsock.%d\n", nntype, endpoint, sock);
-				*/
+			}
 		} else {
 			if (nn_bind(sock, endpoint) < 0) {
-				printf("bind to %s error for %s\n", endpoint, nn_strerror(nn_errno()));
+				dlg_error("bind to %s error for %s\n", endpoint, nn_strerror(nn_errno()));
 				nn_close(sock);
 				return (-1);
 			} else
-				printf("(%s) bound\n", endpoint);
+				dlg_info("(%s) bound\n", endpoint);
 		}
 		timeout = 1;
 		nn_setsockopt(sock, NN_SOL_SOCKET, NN_RCVTIMEO, &timeout, sizeof(timeout));
