@@ -1631,7 +1631,6 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 				dlg_info("%s::%d::Waiting for tx to confirm\r", __FUNCTION__, __LINE__);
 				sleep(2);
 			}
-			dlg_info("");
 			cJSON_AddNumberToObject(tx_info, "block_height",
 						chips_get_block_height_from_block_hash(
 							chips_get_block_hash_from_txid(cJSON_Print(txid))));
@@ -2040,7 +2039,6 @@ void rest_display_cards(cJSON *argjson, int32_t this_playerID)
 			if (count == cJSON_GetArraySize(actions))
 				flag = 0;
 		}
-		dlg_info("");
 	}
 }
 

@@ -1163,7 +1163,6 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 					goto end;
 			}
 		}
-		dlg_info("");
 	}
 
 	final_info = cJSON_CreateObject();
