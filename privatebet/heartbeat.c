@@ -39,8 +39,7 @@ void bet_dcv_player_disconnection_action(struct privatebet_info *bet)
 	if (active_players == 1) {
 		//bet_evaluate_hand(bet, vars); // stopping evaluation hand for when the players gets disconnected as it has to handled by different approach.
 	} else if (active_players == 0) {
-		dlg_info("%s::%d::Using DRP by running ./bet game solve players can claim their funds back", __FUNCTION__,
-		       __LINE__);
+		dlg_info("Using DRP by running ./bet game solve players can claim their funds back\n");
 	}
 }
 
@@ -72,19 +71,18 @@ void bet_dcv_publish_player_active_info(struct privatebet_info *bet)
 		cJSON_AddStringToObject(argjson, "action", "fold");
 		bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
 		if (bytes < 0) {
-			dlg_info("%s::%d::There is a problem in sending the data\n", __FUNCTION__, __LINE__);
+			dlg_error("nn_send failed\n");
 		}
 		bet_dcv_round_betting_response(argjson, bet, vars);
 	}
 	if (active_players < bet->maxplayers) {
-		dlg_info("%s::%d::Players disconnect info::%s", __FUNCTION__, __LINE__, cJSON_Print(players_status_info));
-		//bet_dcv_player_disconnection_action(bet);
+		dlg_info("Players disconnect info::%s", cJSON_Print(players_status_info));
 	}
 	cJSON_AddItemToObject(active_info, "player_status", players_status_info);
 
 	bytes = nn_send(bet->pubsock, cJSON_Print(active_info), strlen(cJSON_Print(active_info)), 0);
 	if (bytes < 0) {
-		dlg_info("%s::%d::There is a problem in sending the data\n", __FUNCTION__, __LINE__);
+			dlg_error("nn_send failed\n");
 	}
 }
 
@@ -102,7 +100,7 @@ void bet_dcv_heartbeat_loop(void *_ptr)
 			bet_dcv_reset_player_status(bet);
 			bytes = nn_send(bet->pubsock, cJSON_Print(live_info), strlen(cJSON_Print(live_info)), 0);
 			if (bytes < 0) {
-				dlg_info("%s::%d::Error in sending the data\n", __FUNCTION__, __LINE__);
+				dlg_error("nn_send failed\n");
 			}
 			sleep(5);
 			bet_dcv_publish_player_active_info(bet);
