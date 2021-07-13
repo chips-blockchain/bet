@@ -39,7 +39,7 @@ int32_t bet_dcv_create_invoice_request(struct privatebet_info *bet, int32_t play
 
 	if (bytes < 0) {
 		retval = -1;
-		dlg_info("%s:%d: Failed to send data", __FUNCTION__, __LINE__);
+		dlg_error("nn_send failed");
 		goto end;
 	}
 
@@ -51,18 +51,15 @@ int32_t bet_dcv_invoice_pay(struct privatebet_info *bet, struct privatebet_vars 
 {
 	pthread_t pay_t;
 	int32_t retval = 1;
-	dlg_info("%s::%d\n", __FUNCTION__, __LINE__);
 	retval = bet_dcv_create_invoice_request(bet, playerid, amount);
 	if (OS_thread_create(&pay_t, NULL, (void *)bet_dcv_paymentloop, (void *)bet) != 0) {
-		// exit(-1);
 		retval = -1;
-		dlg_info("%s::%d::Invoice payment is failed\n", __FUNCTION__, __LINE__);
+		dlg_error(" LN Invoice payment failed\n");
 	}
 	if (pthread_join(pay_t, NULL)) {
 		dlg_error("Error in joining the main thread for player %d", bet->myplayerid);
 		retval = -1;
 	}
-
 	return retval;
 }
 
@@ -71,8 +68,6 @@ int32_t bet_dcv_pay(cJSON *argjson, struct privatebet_info *bet, struct privateb
 	cJSON *invoiceInfo = NULL, *payResponse = NULL;
 	int argc, retval = 1;
 	char **argv = NULL, *invoice = NULL;
-
-	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 
 	argv = (char **)malloc(4 * sizeof(char *));
 	argc = 3;
@@ -92,7 +87,7 @@ int32_t bet_dcv_pay(cJSON *argjson, struct privatebet_info *bet, struct privateb
 
 	if (jint(payResponse, "code") != 0) {
 		retval = -1;
-		dlg_info("%s:%d: Message:%s", __FUNCTION__, __LINE__, jstr(payResponse, "message"));
+		dlg_info("LN Error :: %s", jstr(payResponse, "message"));
 		goto end;
 	}
 
@@ -147,8 +142,6 @@ int32_t bet_player_create_invoice(cJSON *argjson, struct privatebet_info *bet, s
 	char **argv = NULL, *rendered = NULL;
 	cJSON *invoiceInfo = NULL, *invoice = NULL;
 
-	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
-
 	if (jint(argjson, "playerid") == bet->myplayerid) {
 		vars->player_funds += jint(argjson, "betAmount");
 
@@ -169,7 +162,7 @@ int32_t bet_player_create_invoice(cJSON *argjson, struct privatebet_info *bet, s
 		invoice = cJSON_CreateObject();
 		make_command(argc, argv, &invoice);
 
-		dlg_info("%s::%d::invoice::%s\n", __FUNCTION__, __LINE__, cJSON_Print(invoice));
+		dlg_info("invoice::%s\n", cJSON_Print(invoice));
 
 		invoiceInfo = cJSON_CreateObject();
 		cJSON_AddStringToObject(invoiceInfo, "method", "invoice");
@@ -181,7 +174,7 @@ int32_t bet_player_create_invoice(cJSON *argjson, struct privatebet_info *bet, s
 		bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 		if (bytes < 0) {
 			retval = -1;
-			dlg_info("%s:%d: Failed to send data", __FUNCTION__, __LINE__);
+			dlg_error("nn_send failed");
 			goto end;
 		}
 	}
@@ -215,7 +208,7 @@ int32_t bet_player_create_invoice_request(cJSON *argjson, struct privatebet_info
 
 	if (bytes < 0) {
 		retval = -1;
-		dlg_info("%s:%d: Failed to send data", __FUNCTION__, __LINE__);
+		dlg_error("nn_send failed");
 		goto end;
 	}
 
@@ -242,7 +235,7 @@ int32_t bet_player_invoice_request(cJSON *argjson, cJSON *actionResponse, struct
 
 	if (bytes < 0) {
 		retval = -1;
-		dlg_info("%s:%d: Failed to send data", __FUNCTION__, __LINE__);
+		dlg_error("nn_send failed");
 		goto end;
 	}
 
@@ -257,7 +250,7 @@ int32_t bet_player_invoice_pay(cJSON *argjson, struct privatebet_info *bet, stru
 
 	retval = bet_player_create_invoice_request(argjson, bet, amount);
 	if (OS_thread_create(&pay_t, NULL, (void *)bet_player_paymentloop, (void *)bet) != 0) {
-		dlg_info("%s::%d::%d\n", __FUNCTION__, __LINE__, retval);
+		dlg_error("LN invoice payment error :: %d\n", retval);
 	}
 	if (pthread_join(pay_t, NULL)) {
 		dlg_error("Error in joining the main thread for player %d", bet->myplayerid);
@@ -285,7 +278,7 @@ void bet_player_paymentloop(void *_ptr)
 						flag = 0;
 						break;
 					} else {
-						dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(msgjson));
+						dlg_info("%s\n",cJSON_Print(msgjson));
 					}
 				}
 			}

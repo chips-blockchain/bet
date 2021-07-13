@@ -509,11 +509,11 @@ struct pair256 deckgen_player(bits256 *playerprivs, bits256 *playercards, int32_
 
 	key = deckgen_common(randcards, numcards);
 	bet_permutation(permis, numcards);
-	dlg_info("%s::%d::The player key values\n", __FUNCTION__, __LINE__);
+	dlg_info("The player key values\n");
 	dlg_info("priv key::%s\n", bits256_str(hexstr, key.priv));
 	dlg_info("pub key::%s\n", bits256_str(hexstr, key.prod));
 
-	//dlg_info("%s::%d::The player private key card values\n",__FUNCTION__,__LINE__);
+	//dlg_info("The player private key card values\n");
 	for (i = 0; i < numcards; i++) {
 		playerprivs[i] = randcards[i].priv; // permis[i]
 		playercards[i] = curve25519(playerprivs[i], key.prod);

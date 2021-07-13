@@ -55,7 +55,7 @@ int32_t bet_initiate_statemachine(cJSON *argjson, struct privatebet_info *bet, s
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 	if (bytes < 0) {
 		retval = -1;
-		dlg_info(" Failed to send data");
+		dlg_error("nn_send failed");
 		goto end;
 	}
 
@@ -145,7 +145,6 @@ int32_t bet_dcv_round_betting(cJSON *argjson, struct privatebet_info *bet, struc
 		vars->round += 1;
 		vars->turni = vars->dealer;
 		vars->last_raise = 0;
-		// dlg_info("Round:%d is completed",vars->round);
 
 		if ((vars->round >= CARDS777_MAXROUNDS) || (players_left < 2)) {
 			vars->round -= 1;
@@ -158,8 +157,7 @@ int32_t bet_dcv_round_betting(cJSON *argjson, struct privatebet_info *bet, struc
 	}
 
 	for (int i = 0; i < bet->maxplayers; i++) {
-		dlg_info("%s::%d::player id::%d::funds::%d::vars->round::%d\n", __FUNCTION__, __LINE__, i, vars->funds[i],
-		       vars->round);
+		dlg_info("player id::%d::funds::%d::vars->round::%d\n", i, vars->funds[i], vars->round);
 		for (int j = 0; j <= vars->round; j++)
 			dlg_info("%d\t", vars->betamount[i][j]);
 	}
@@ -386,7 +384,7 @@ int32_t bet_dcv_big_blind(cJSON *argjson, struct privatebet_info *bet, struct pr
 
 	if (bytes < 0) {
 		retval = -1;
-		dlg_info("%s :%d Failed to send data", __FUNCTION__, __LINE__);
+		dlg_error("nn_send failed");
 		goto end;
 	}
 
@@ -432,7 +430,7 @@ int32_t bet_dcv_small_blind(cJSON *argjson, struct privatebet_info *bet, struct 
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 	if (bytes < 0) {
 		retval = -1;
-		dlg_info("Failed to send data");
+		dlg_error("nn_send failed");
 		goto end;
 	}
 
@@ -599,14 +597,14 @@ int32_t bet_player_dealer_info(cJSON *argjson, struct privatebet_info *bet, stru
 	}
 
 	if (vars->dealer == bet->myplayerid) {
-		dlg_info("%s:%d::I AM THE DEALER: %d\n", __FUNCTION__, __LINE__, bet->myplayerid);
+		dlg_info("I AM NEXT TO THE DEALER: %d\n", bet->myplayerid);
 		dealerReady = cJSON_CreateObject();
 		cJSON_AddStringToObject(dealerReady, "method", "dealer_ready");
 		rendered = cJSON_Print(dealerReady);
 		bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 		if (bytes < 0) {
 			retval = -1;
-			dlg_info(" Failed to send data");
+			dlg_error("nn_send failed");
 			goto end;
 		}
 	}
@@ -644,7 +642,7 @@ int32_t bet_player_small_blind(cJSON *argjson, struct privatebet_info *bet, stru
 	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 	if (bytes < 0) {
 		retval = -1;
-		dlg_info("%s:%d: Failed to send data", __FUNCTION__, __LINE__);
+		dlg_error("nn_send failed");
 		goto end;
 	}
 	player_lws_write(temp);
@@ -681,7 +679,7 @@ int32_t bet_player_big_blind(cJSON *argjson, struct privatebet_info *bet, struct
 	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 	if (bytes < 0) {
 		retval = -1;
-		dlg_info("%s:%d: Failed to send data", __FUNCTION__, __LINE__);
+		dlg_error("nn_send failed");
 		goto end;
 	}
 	player_lws_write(temp);
@@ -738,7 +736,7 @@ int32_t bet_player_round_betting(cJSON *argjson, struct privatebet_info *bet, st
 		if (vars->player_funds == 0) {
 			cJSON_DetachItemFromObject(action_response, "action");
 			cJSON_AddStringToObject(action_response, "action", "allin");
-			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(action_response));
+			dlg_info("action response :: %s\n", cJSON_Print(action_response));
 		}
 
 		cJSON_AddNumberToObject(action_response, "bet_amount", jint(argjson, "bet_amount"));
@@ -762,13 +760,13 @@ int32_t bet_player_round_betting(cJSON *argjson, struct privatebet_info *bet, st
 			goto end;
 
 	} else {
-		dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(action_response));
+		dlg_info("action response :: %s\n", cJSON_Print(action_response));
 		rendered = cJSON_Print(action_response);
 		bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 
 		if (bytes < 0) {
 			retval = -1;
-			dlg_info("Failed to send data");
+			dlg_error("nn_send failed");
 			goto end;
 		}
 	}

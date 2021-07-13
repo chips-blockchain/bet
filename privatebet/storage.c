@@ -33,7 +33,7 @@ void sqlite3_init_db_name()
 	char *homedir = pw->pw_dir;
 	db_name = calloc(1, 200);
 	sprintf(db_name, "%s/.bet/db/pangea.db", homedir);
-	dlg_info("%s::%d::db_name::%s\n", __FUNCTION__, __LINE__, db_name);
+	dlg_info("db_name::%s\n", db_name);
 }
 
 int32_t sqlite3_check_if_table_id_exists(const char *table_id)
@@ -230,10 +230,10 @@ cJSON *sqlite3_get_game_details(int32_t opt)
 		sprintf(sql_query, "select * from player_tx_mapping;");
 	else
 		sprintf(sql_query, "select * from player_tx_mapping where status = %d;", opt);
-	dlg_info("%s::%d::sql_query::%s\n", __FUNCTION__, __LINE__, sql_query);
+	dlg_info("sql_query::%s\n", sql_query);
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
-		dlg_error(": %s::%s", sqlite3_errmsg(db), sql_query);
+		dlg_error(" sql error :: %s in running the sql query :: %s", sqlite3_errmsg(db), sql_query);
 		goto end;
 	}
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
@@ -250,7 +250,7 @@ cJSON *sqlite3_get_game_details(int32_t opt)
 
 		rc = sqlite3_prepare_v2(db, sql_sub_query, -1, &sub_stmt, NULL);
 		if (rc != SQLITE_OK) {
-			dlg_error(": %s::%s", sqlite3_errmsg(db), sql_sub_query);
+			dlg_error(" sql error :: %s in running the sql query :: %s", sqlite3_errmsg(db), sql_sub_query);
 			goto end;
 		}
 		while ((rc = sqlite3_step(sub_stmt)) == SQLITE_ROW) {
@@ -283,7 +283,7 @@ cJSON *bet_show_fail_history()
 	sprintf(sql_query, "SELECT table_id,tx_id FROM player_tx_mapping WHERE payout_tx_id is null;");
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
-		dlg_error(": %s::%s", sqlite3_errmsg(db), sql_query);
+		dlg_error("sql error :: %s in running the sql query :: %s", sqlite3_errmsg(db), sql_query);
 		goto end;
 	}
 
@@ -333,7 +333,7 @@ cJSON *bet_show_success_history()
 
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
-		dlg_error(": %s::%s", sqlite3_errmsg(db), sql_query);
+		dlg_error("sql error :: %s in running the sql query :: %s", sqlite3_errmsg(db), sql_query);
 		goto end;
 	}
 
