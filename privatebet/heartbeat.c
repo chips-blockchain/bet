@@ -82,7 +82,7 @@ void bet_dcv_publish_player_active_info(struct privatebet_info *bet)
 
 	bytes = nn_send(bet->pubsock, cJSON_Print(active_info), strlen(cJSON_Print(active_info)), 0);
 	if (bytes < 0) {
-			dlg_error("nn_send failed\n");
+		dlg_error("nn_send failed\n");
 	}
 }
 

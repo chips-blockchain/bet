@@ -948,7 +948,8 @@ static int32_t bet_check_player_stack(char *uri)
 		balance = table_stack;
 	} else {
 		dlg_error("Insufficient Funds, Minimum needed::%d mCHIPS but only %d "
-		       "exists on the channel\n",table_stack, balance);
+			  "exists on the channel\n",
+			  table_stack, balance);
 	}
 	return balance;
 }
@@ -964,7 +965,8 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 		bet->myplayerid = jint(argjson, "playerid");
 
 		if (1 != ln_check_if_address_isof_type(jstr(argjson, "type"))) {
-			dlg_warn("Dealer expects the ln to be established over tor, please make sure to run lightning node over tor\n");
+			dlg_warn(
+				"Dealer expects the ln to be established over tor, please make sure to run lightning node over tor\n");
 			retval = -1;
 			goto end;
 		}
@@ -1072,7 +1074,7 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 		cJSON_AddNumberToObject(joininfo, "gui_playerID", (jint(argjson, "gui_playerID") - 1));
 		cJSON_AddStringToObject(joininfo, "req_identifier", req_identifier);
 		rendered = cJSON_Print(joininfo);
-		dlg_info("join info::%s\n",cJSON_Print(joininfo));
+		dlg_info("join info::%s\n", cJSON_Print(joininfo));
 		bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 		if (bytes < 0) {
 			dlg_error("Failed to send data");
@@ -1223,12 +1225,12 @@ static void bet_gui_init_message(struct privatebet_info *bet)
 {
 	cJSON *warning_info = NULL;
 	cJSON *req_seats_info = NULL;
-	
+
 	if (backend_status == 0) {
 		warning_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(warning_info, "method", "warning");
 		cJSON_AddNumberToObject(warning_info, "warning_num", backend_not_ready);
-		dlg_warn("%s\n",cJSON_Print(warning_info));
+		dlg_warn("%s\n", cJSON_Print(warning_info));
 		player_lws_write(warning_info);
 	} else {
 		req_seats_info = cJSON_CreateObject();
@@ -1276,7 +1278,7 @@ int lws_callback_http_player_write(struct lws *wsi, enum lws_callback_reasons re
 		}
 		break;
 	default:
-  		break;
+		break;
 	}
 	return 0;
 }
@@ -1315,7 +1317,7 @@ int lws_callback_http_player_read(struct lws *wsi, enum lws_callback_reasons rea
 		}
 		break;
 	default:
-  		break;
+		break;
 	}
 	return 0;
 }
@@ -1356,7 +1358,7 @@ int lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason, 
 		}
 		break;
 	default:
-  		break;
+		break;
 	}
 	return 0;
 }
@@ -1508,7 +1510,7 @@ static void bet_push_join_info(cJSON *argjson)
 	cJSON_AddStringToObject(join_info, "method", "info"); //changed to join_info to info
 	cJSON_AddNumberToObject(join_info, "playerid", jint(argjson, "playerid"));
 	cJSON_AddNumberToObject(join_info, "seat_taken", jint(argjson, "seat_taken"));
-	dlg_info("join info::%s\n",cJSON_Print(join_info));
+	dlg_info("join info::%s\n", cJSON_Print(join_info));
 	player_lws_write(join_info);
 }
 
@@ -1627,7 +1629,7 @@ static int32_t bet_player_process_payout_tx(cJSON *argjson)
 	char *sql_query = NULL;
 	int32_t rc;
 
-	dlg_info("%s\n",cJSON_Print(argjson));
+	dlg_info("%s\n", cJSON_Print(argjson));
 	sql_query = calloc(1, 400);
 	sprintf(sql_query, "UPDATE player_tx_mapping set status = 0,payout_tx_id = \'%s\' where table_id = \'%s\'",
 		jstr(argjson, "tx_info"), jstr(argjson, "table_id"));
@@ -1695,8 +1697,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		} else if (strcmp(method, "init") == 0) {
 			if (jint(argjson, "peerid") == bet->myplayerid) {
 				bet_player_blinds_info();
-				dlg_info("myplayerid::%d::init::%s\n", bet->myplayerid,
-				       cJSON_Print(argjson));
+				dlg_info("myplayerid::%d::init::%s\n", bet->myplayerid, cJSON_Print(argjson));
 				retval = bet_client_init(argjson, bet, vars);
 			}
 		} else if (strcmp(method, "init_d") == 0) {
@@ -1800,7 +1801,9 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			}
 		} else if (strcmp(method, "tx_reverse") == 0) {
 			if (strncmp(req_identifier, jstr(argjson, "id"), sizeof(req_identifier)) == 0) {
-				dlg_warn("The dealers table is already full, claim your tx back using dispute resolution protocol::%s\n", cJSON_Print(argjson));
+				dlg_warn(
+					"The dealers table is already full, claim your tx back using dispute resolution protocol::%s\n",
+					cJSON_Print(argjson));
 				retval = -1;
 			}
 		} else if (strcmp(method, "seats_info_resp") == 0) {
@@ -1949,8 +1952,8 @@ void rest_push_cards(struct lws *wsi, cJSON *argjson, int32_t this_playerID)
 void rest_display_cards(cJSON *argjson, int32_t this_playerID)
 {
 	char *suit[NSUITS] = { "clubs", "diamonds", "hearts", "spades" };
-	char *face[NFACES] = { "two",  "three", "four", "five",  "six",  "seven", "eight",
-			       "nine", "ten",   "jack", "queen", "king", "ace" };
+	char *face[NFACES] = { "two",  "three", "four", "five",	 "six",	 "seven", "eight",
+			       "nine", "ten",	"jack", "queen", "king", "ace" };
 
 	char action_str[8][100] = { "", "small_blind", "big_blind", "check", "raise", "call", "allin", "fold" };
 	cJSON *actions = NULL;
@@ -1960,7 +1963,7 @@ void rest_display_cards(cJSON *argjson, int32_t this_playerID)
 	dlg_info("Hole Cards:");
 	for (int32_t i = 0; ((i < no_of_hole_cards) && (i < all_number_cards_drawn[this_playerID])); i++) {
 		dlg_info("%s-->%s \t", suit[all_player_card_values[this_playerID][i] / 13],
-		       face[all_player_card_values[this_playerID][i] % 13]);
+			 face[all_player_card_values[this_playerID][i] % 13]);
 	}
 
 	flag = 1;
@@ -1970,7 +1973,7 @@ void rest_display_cards(cJSON *argjson, int32_t this_playerID)
 			flag = 0;
 		}
 		dlg_info("%s-->%s \t", suit[all_player_card_values[this_playerID][i] / 13],
-		       face[all_player_card_values[this_playerID][i] % 13]);
+			 face[all_player_card_values[this_playerID][i] % 13]);
 	}
 
 	dlg_info("******************** Betting done so far ********************");
@@ -1984,7 +1987,7 @@ void rest_display_cards(cJSON *argjson, int32_t this_playerID)
 		for (int j = 0; ((j < BET_player[this_playerID]->maxplayers) && (flag)); j++) {
 			if (jinti(actions, ((i * BET_player[this_playerID]->maxplayers) + j)) > 0)
 				dlg_info("played id:%d, action: %s", j,
-				       action_str[jinti(actions, ((i * BET_player[this_playerID]->maxplayers) + j))]);
+					 action_str[jinti(actions, ((i * BET_player[this_playerID]->maxplayers) + j))]);
 			count++;
 			if (count == cJSON_GetArraySize(actions))
 				flag = 0;

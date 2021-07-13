@@ -97,7 +97,7 @@ uint8_t *bet_decrypt(uint8_t *decoded, int32_t maxsize, bits256 senderpub, bits2
 		for (i = 0; i < recvlen; i++)
 			dlg_info("%02x", ptr[i]);
 		dlg_info(" decrypt [%llx] recvlen.%d crc32.%u %s\n", *(long long *)ptr, recvlen,
-		       calc_crc32(0, cipher, cipherlen), bits256_str(str, curve25519(mypriv, senderpub)));
+			 calc_crc32(0, cipher, cipherlen), bits256_str(str, curve25519(mypriv, senderpub)));
 	}
 	if (cipherlen > 0 && cipherlen <= maxsize) {
 		if ((dest = _SuperNET_decipher(nonce, cipher, decoded, cipherlen, senderpub, mypriv)) != 0) {

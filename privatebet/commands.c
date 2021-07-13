@@ -184,7 +184,7 @@ cJSON *chips_list_address_groupings()
 			if (chips_validate_address(cJSON_Print(address)) == 1) {
 				cJSON_AddItemToArray(addr_info, cJSON_CreateString(unstringify(cJSON_Print(address))));
 				dlg_info("%s::%f\n", cJSON_Print(address),
-				       atof(cJSON_Print(cJSON_GetArrayItem(temp, 1))));
+					 atof(cJSON_Print(cJSON_GetArrayItem(temp, 1))));
 			}
 		}
 	}
@@ -205,7 +205,7 @@ cJSON *chips_get_block_hash_from_height(int64_t block_height)
 	// https://stackoverflow.com/questions/31534474/format-lld-expects-type-long-long-int-but-argument-4-has-type-int64-t/31534505
 	// using PRId64 instead of lld or ld, since on Darwin compiler
 	// complains of not having lld, where on Linux it complains of not having ld.
-	sprintf(argv[2], "%"PRId64, block_height);
+	sprintf(argv[2], "%" PRId64, block_height);
 	block_hash_info = cJSON_CreateObject();
 	make_command(argc, argv, &block_hash_info);
 	bet_dealloc_args(argc, &argv);
@@ -1219,7 +1219,7 @@ cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids
 		}
 	} else {
 		dlg_error("%s::%d::Error occured in processing the payout tx ::%s\n", __FUNCTION__, __LINE__,
-		          cJSON_Print(tx_details));
+			  cJSON_Print(tx_details));
 	}
 	if (sql_query)
 		free(sql_query);
@@ -1360,7 +1360,7 @@ int32_t run_command(int argc, char **argv)
 	/* Open the command for reading. */
 	fp = popen(command, "r");
 	if (fp == NULL) {
-		dlg_error("Failed to run command::%s\n",command);
+		dlg_error("Failed to run command::%s\n", command);
 		exit(1);
 	}
 
@@ -1428,11 +1428,10 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 		memset(buf, 0x00, buf_size);
 	}
 	data[new_size - 1] = '\0';
-	if(strcmp(argv[0], "git") == 0) {
-		*argjson = cJSON_CreateString((const char*)data);
+	if (strcmp(argv[0], "git") == 0) {
+		*argjson = cJSON_CreateString((const char *)data);
 		goto end;
-	}
-	else if ((strcmp(argv[0], "lightning-cli") == 0) && (strncmp("error", data, strlen("error")) == 0)) {
+	} else if ((strcmp(argv[0], "lightning-cli") == 0) && (strncmp("error", data, strlen("error")) == 0)) {
 		char temp[1024];
 		memset(temp, 0x00, sizeof(temp));
 		strncpy(temp, data + strlen("error"), (strlen(data) - strlen("error")));
@@ -1828,18 +1827,18 @@ int32_t ln_establish_channel(char *uri)
 	return retval;
 }
 
-char* bet_git_version()
+char *bet_git_version()
 {
 	int argc = 2;
 	char **argv = NULL;
 	cJSON *version = NULL;
-	
-	bet_alloc_args(argc,&argv);
+
+	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "git", "describe");
 	version = cJSON_CreateObject();
-	make_command(argc,argv,&version);
+	make_command(argc, argv, &version);
 
-	bet_dealloc_args(argc,&argv);
+	bet_dealloc_args(argc, &argv);
 
 	return unstringify(cJSON_Print(version));
 }
