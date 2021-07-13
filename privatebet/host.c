@@ -1262,7 +1262,7 @@ int32_t bet_ln_check(struct privatebet_info *bet)
 				fflush(stdout);
 				sleep(1);
 			} else if ((channel_state != CHANNELD_AWAITING_LOCKIN) && (channel_state != CHANNELD_NORMAL)) {
-				dlg_warn("%s:%d: Player: %d -> DCV LN Channel is not established, current channel_state=%d\n",
+				dlg_warn("Player: %d -> DCV LN Channel is not established, current channel_state=%d\n",
 				      i, channel_state);
 				sleep(1);
 			}
