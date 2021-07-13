@@ -162,7 +162,6 @@ int32_t bet_dcv_round_betting(cJSON *argjson, struct privatebet_info *bet, struc
 		       vars->round);
 		for (int j = 0; j <= vars->round; j++)
 			dlg_info("%d\t", vars->betamount[i][j]);
-		dlg_info("");
 	}
 
 	players_left = 0;
