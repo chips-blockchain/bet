@@ -420,7 +420,7 @@ int main(int argc, char **argv)
 
 	bet_set_unique_id();
 	bet_parse_dealer_config_file();
-	
+
 	if ((argc == 2) && (strcmp(argv[1], "player") == 0)) {
 		playing_nodes_init();
 		dlg_info("Finding the dealer");
@@ -440,7 +440,7 @@ int main(int argc, char **argv)
 	} else if ((argc == 2) && ((strcmp(argv[1], "-v") == 0) || (strcmp(argv[1], "v") == 0) ||
 				   (strcmp(argv[1], "--version") == 0) || (strcmp(argv[1], "version") == 0))) {
 		dlg_info("%s\n", bet_git_version());
-		
+
 	} else if ((argc == 3) && (strcmp(argv[1], "dcv") == 0)) {
 		strcpy(dealer_ip, argv[2]);
 		playing_nodes_init();

@@ -964,7 +964,7 @@ void bet_handle_game(int argc, char **argv)
 					opt = 1;
 			}
 			cJSON *info = sqlite3_get_game_details(opt);
-			dlg_info("info::%s\n",cJSON_Print(info));
+			dlg_info("info::%s\n", cJSON_Print(info));
 		} else if (strcmp(argv[2], "solve") == 0) {
 			bet_resolve_disputed_tx();
 		} else if (strcmp(argv[2], "dispute") == 0) {
@@ -973,8 +973,9 @@ void bet_handle_game(int argc, char **argv)
 			}
 		} else if (strcmp(argv[2], "history") == 0) {
 			cJSON *fail_info = bet_show_fail_history();
-			dlg_info("Below hands played unsuccessfully, you can raise dispute using \'.\\bet game dispute tx_id\'::\n %s\n",
-			       cJSON_Print(fail_info));
+			dlg_info(
+				"Below hands played unsuccessfully, you can raise dispute using \'.\\bet game dispute tx_id\'::\n %s\n",
+				cJSON_Print(fail_info));
 			cJSON *success_info = bet_show_success_history();
 			dlg_info("Below hands are played successfully::\n%s\n", cJSON_Print(success_info));
 		}

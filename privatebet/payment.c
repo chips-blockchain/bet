@@ -278,7 +278,7 @@ void bet_player_paymentloop(void *_ptr)
 						flag = 0;
 						break;
 					} else {
-						dlg_info("%s\n",cJSON_Print(msgjson));
+						dlg_info("%s\n", cJSON_Print(msgjson));
 					}
 				}
 			}

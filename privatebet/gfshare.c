@@ -302,8 +302,8 @@ int32_t gfshare_init_sharenrs(uint8_t sharenrs[255], uint8_t *orig, int32_t m, i
 				continue;
 			if (sharenrs[i] != 0 && sharenrs[i] == sharenrs[j]) {
 				dlg_info("FATAL: duplicate entry sharenrs[%d] %d vs %d "
-				       "sharenrs[%d]\n",
-				       i, sharenrs[i], sharenrs[j], j);
+					 "sharenrs[%d]\n",
+					 i, sharenrs[i], sharenrs[j], j);
 				return (-1);
 			}
 		}

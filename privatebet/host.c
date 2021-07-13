@@ -62,8 +62,8 @@ int no_of_rand_str = 0;
 int32_t invoiceID;
 
 char *suit[NSUITS] = { "clubs", "diamonds", "hearts", "spades" };
-char *face[NFACES] = { "two",  "three", "four", "five",  "six",  "seven", "eight",
-		       "nine", "ten",   "jack", "queen", "king", "ace" };
+char *face[NFACES] = { "two",  "three", "four", "five",	 "six",	 "seven", "eight",
+		       "nine", "ten",	"jack", "queen", "king", "ace" };
 
 struct privatebet_info *bet_dcv = NULL;
 struct privatebet_vars *dcv_vars = NULL;
@@ -216,7 +216,7 @@ int32_t bet_dcv_frontend(struct lws *wsi, cJSON *argjson)
 		if (bytes < 0) {
 			retval = -1;
 			dlg_error("nn_send failed\n");
-		}		
+		}
 	} else if (strcmp(method, "get_bal_info") == 0) {
 		cJSON *bal_info = cJSON_CreateObject();
 		bal_info = bet_get_chips_ln_bal_info();
@@ -602,7 +602,7 @@ static int32_t bet_check_bvv_ready(struct privatebet_info *bet)
 	if (bytes < 0) {
 		retval = -1;
 		dlg_error("nn_send failed\n");
-	}	
+	}
 
 	return retval;
 }
@@ -704,7 +704,7 @@ static int32_t bet_create_betting_invoice(cJSON *argjson, struct privatebet_info
 
 		if (bytes < 0)
 			retval = -1;
-			dlg_error("nn_send failed\n");
+		dlg_error("nn_send failed\n");
 	}
 
 	if (argv) {
@@ -1085,7 +1085,7 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 	if (bytes < 0) {
 		retval = -1;
 		dlg_error("nn_send failed\n");
-	}	
+	}
 	if (hex_str)
 		free(hex_str);
 	return retval;
@@ -1215,7 +1215,7 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 	}
 	cJSON_AddItemToObject(final_info, "winners", winnersInfo);
 
-	dlg_info("Final Info :: %s\n",cJSON_Print(final_info));
+	dlg_info("Final Info :: %s\n", cJSON_Print(final_info));
 	rendered = cJSON_Print(final_info);
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 
@@ -1227,7 +1227,8 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 
 	sleep(5);
 	if (wsi_global_host) {
-		lws_write(wsi_global_host, (unsigned char *)cJSON_Print(final_info), strlen(cJSON_Print(final_info)), 0);
+		lws_write(wsi_global_host, (unsigned char *)cJSON_Print(final_info), strlen(cJSON_Print(final_info)),
+			  0);
 	}
 end:
 	if (retval != -1) {
@@ -1239,7 +1240,7 @@ end:
 		if (bytes < 0) {
 			retval = -1;
 			dlg_error("nn_send failed\n");
-		}	
+		}
 		bet_dcv_reset(bet, vars);
 	}
 	return retval;
@@ -1263,7 +1264,7 @@ int32_t bet_ln_check(struct privatebet_info *bet)
 				sleep(1);
 			} else if ((channel_state != CHANNELD_AWAITING_LOCKIN) && (channel_state != CHANNELD_NORMAL)) {
 				dlg_warn("Player: %d -> DCV LN Channel is not established, current channel_state=%d\n",
-				      i, channel_state);
+					 i, channel_state);
 				sleep(1);
 			}
 		}
