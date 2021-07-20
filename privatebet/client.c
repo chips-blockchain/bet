@@ -1582,10 +1582,11 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		cJSON_AddStringToObject(tx_info, "chips_addr", chips_get_new_address());
 		cJSON_AddItemToObject(tx_info, "tx_info", txid);
 		if (txid) {
-			while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
-				dlg_info("Waiting for tx to confirm\r");
+			dlg_info("Waiting for tx to confirm");
+			while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {				
 				sleep(2);
 			}
+			dlg_info("TX ::%s got confirmed",cJSON_Print(txid));
 			cJSON_AddNumberToObject(tx_info, "block_height",
 						chips_get_block_height_from_block_hash(
 							chips_get_block_hash_from_txid(cJSON_Print(txid))));
