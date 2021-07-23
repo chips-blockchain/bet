@@ -13,4 +13,4 @@
 	url = https://github.com/warmcat/libwebsockets.git
 [submodule "external/dlg"]
 	path = external/dlg
-	url = https://github.com/nyorain/dlg
+	url = https://github.com/sg777/dlg
