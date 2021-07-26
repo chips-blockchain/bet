@@ -1,0 +1,8 @@
+#ifndef PRIVATEBET_ERROR_H_
+#define PRIVATEBET_ERROR_H_
+
+#define BET_SUCCESS 0
+#define BET_ERR 1
+#define BET_INTF_FAIL 2
+
+#endif // PRIVATEBET_ERROR_H_

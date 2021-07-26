@@ -32,7 +32,8 @@
 #include "common.h"
 #include "gfshare.h"
 
-char *bet_get_etho_ip()
+// TODO: Deprecated
+b_status_t bet_get_intf_ip(const char * intf_ip)
 {
 	struct ifreq ifr;
 	int fd;
@@ -40,18 +41,19 @@ char *bet_get_etho_ip()
 
 	fd = socket(AF_INET, SOCK_DGRAM, 0);
 	ifr.ifr_addr.sa_family = AF_INET;
-	memcpy(ifr.ifr_name, "eth0", IFNAMSIZ - 1);
-	ioctl(fd, SIOCGIFADDR, &ifr);
-	close(fd);
-	strcpy((char *)ip_address, inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
-	return (inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
-}
+        
+	memcpy(ifr.ifr_name, DEFAULT_BET_INTF, IFNAMSIZ - 1);
 
-char *bet_tcp_sock_address(int32_t bindflag, char *str, char *ipaddr, uint16_t port)
-{
-	sprintf(str, "tcp://%s:%u", bindflag == 0 ? ipaddr : "*",
-		port); // ws is worse
-	return (str);
+	if (ioctl(fd, SIOCGIFADDR, &ifr) < 0) {
+            BET_LOG_ERR("Unable to acquire ip details for intf = %s", DEFAULT_BET_INTF);
+            close(fd);
+            return BET_INTF_FAIL;
+        }
+
+	strcpy((char *)intf_ip, inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
+	close(fd);
+
+	return BET_SUCCESS;
 }
 
 int32_t bet_nanosock(int32_t bindflag, char *endpoint, int32_t nntype)
@@ -95,10 +97,18 @@ cJSON *bet_msg_dealer_with_response_id(cJSON *argjson, char *dealer_ip, char *me
 	memset(bind_sub_addr, 0x00, sizeof(bind_sub_addr));
 	memset(bind_push_addr, 0x00, sizeof(bind_push_addr));
 
-	bet_tcp_sock_address(0, bind_sub_addr, dealer_ip, dealer_pubsub_port);
+
+        sprintf(bind_sub_addr, "%s%s:%u", BET_TCP_PREFIX,
+                (bindflags == 0 ? dealer_ip : "*"),
+                dealder_pubsub_port);
+
 	c_subsock = bet_nanosock(0, bind_sub_addr, NN_SUB);
 
-	bet_tcp_sock_address(0, bind_push_addr, dealer_ip, dealer_pushpull_port);
+
+        sprintf(bind_push_addr, "%s%s:%u", BET_TCP_PREFIX,
+                (bindflags == 0 ? dealer_ip : "*"),
+                dealer_pushpull_port);
+
 	c_pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
 
 	bytes = nn_send(c_pushsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
