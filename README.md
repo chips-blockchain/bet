@@ -1,3 +1,4 @@
+![example workflow](https://github.com/sg777/bet/actions/workflows/c-cpp.yml/badge.svg)
 # Pangea-Bet
 
 The aim of this project is to provide the necessary bet API's which are sufficient to play poker from the command line. The initial draft of the game written by jl777 is [here](./docs/BET_Initial_Draft.md).
