@@ -1643,7 +1643,7 @@ void bet_dcv_backend_thrd(void *_ptr)
 
 	argjson = cJSON_Parse(_ptr);
 	if ((method = jstr(argjson, "method")) != 0) {
-		dlg_info("%s\n", method);
+		dlg_info("%s", method);
 		if (strcmp(method, "join_req") == 0) {
 			retval = bet_dcv_process_join_req(argjson, bet, vars);
 		} else if (strcmp(method, "bvv_ready") == 0) {
