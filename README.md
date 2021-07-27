@@ -69,7 +69,7 @@ cd bet
 make
 ```
 
-Steps to compile this repo and all the other required dependencies to play Pangea Poker are mentioned in [compile.md](./docs/compile.md).
+Steps to compile this repo and all the other required dependencies to play Pangea Poker are mentioned in [compile.md](./docs/protocol/compile.md).
 
 ### Docker Setup
 
