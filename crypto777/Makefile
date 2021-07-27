@@ -6,7 +6,7 @@ HOME=/root/bet
 
 
 default:
-	$(CC) -c -w -O2 *.c  
+	$(CC) -c -w -O2 *.c  -I ../include
 	$(AR) rcu libcrypto777.a *.o
 
 clean:
