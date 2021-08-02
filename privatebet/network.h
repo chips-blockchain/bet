@@ -2,7 +2,6 @@
 #define PRIVATEBET_NET_H_
 
 #include "bet.h"
-#include "logging.h"
 
 // If system does'nt support 'eth0' query the system to find the
 // available interfaces
