@@ -6,6 +6,7 @@
 #include "commands.h"
 #include "storage.h"
 #include "misc.h"
+#include "cards777.h"
 
 int32_t no_of_notaries;
 
@@ -978,26 +979,30 @@ void bet_handle_game(int argc, char **argv)
 	}
 }
 
+
 void find_bvv()
 {
 	cJSON *bvv_rqst_info = NULL;
 	cJSON *response_info = NULL;
 	cJSON *bvv_info = NULL;
+	int32_t bvv_node_permutation[no_of_notaries];
 
+	bet_permutation(bvv_node_permutation, no_of_notaries);
+	
 	bvv_rqst_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(bvv_rqst_info, "method", "find_bvv");
 	cJSON_AddStringToObject(bvv_rqst_info, "id", unique_id);
 	dlg_warn("If its stuck here stop the node by pressing CTRL+C and start again");
 	for (int32_t i = 0; i < no_of_notaries; i++) {
-		if (notary_status[i] == 1) {
+		if (notary_status[bvv_node_permutation[i]] == 1) {
 			response_info =
-				bet_msg_cashier_with_response_id(bvv_rqst_info, notary_node_ips[i], "bvv_status");
+				bet_msg_cashier_with_response_id(bvv_rqst_info, notary_node_ips[bvv_node_permutation[i]], "bvv_status");
 			if ((response_info) && (jint(response_info, "bvv_state") == 0)) {
 				bvv_info = cJSON_CreateObject();
 				cJSON_AddStringToObject(bvv_info, "method", "add_bvv");
 				cJSON_AddStringToObject(bvv_info, "dealer_ip", dealer_ip);
-				bet_msg_cashier(bvv_info, notary_node_ips[i]);
-				dlg_info("BVV node chosen for this hand is ::%s", notary_node_ips[i]);
+				bet_msg_cashier(bvv_info, notary_node_ips[bvv_node_permutation[i]]);
+				dlg_info("BVV node chosen for this hand is ::%s", notary_node_ips[bvv_node_permutation[i]]);
 				break;
 			}
 		}
