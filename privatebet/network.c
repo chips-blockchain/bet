@@ -70,14 +70,12 @@ int32_t bet_nanosock(int32_t bindflag, char *endpoint, int32_t nntype)
 				nn_close(sock);
 				return (-1);
 			} else
-				dlg_info("(%s) bound\n", endpoint);
+				dlg_info("Network endpoints of this node :: (%s)", endpoint);
 		}
 		timeout = 1;
 		nn_setsockopt(sock, NN_SOL_SOCKET, NN_RCVTIMEO, &timeout, sizeof(timeout));
 		timeout = 100;
 		nn_setsockopt(sock, NN_SOL_SOCKET, NN_SNDTIMEO, &timeout, sizeof(timeout));
-		// maxsize = 2 * 1024 * 1024;
-		// nn_setsockopt(sock,NN_SOL_SOCKET,NN_RCVBUF,&maxsize,sizeof(maxsize));
 		if (nntype == NN_SUB)
 			nn_setsockopt(sock, NN_SUB, NN_SUB_SUBSCRIBE, "", 0);
 	}

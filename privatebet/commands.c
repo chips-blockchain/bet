@@ -594,8 +594,7 @@ void check_ln_chips_sync()
 			break;
 		chips_bh = chips_get_block_count();
 		ln_bh = ln_block_height();
-	}
-	dlg_info("ln is in sync with chips");
+	}	
 }
 
 cJSON *bet_get_chips_ln_bal_info()
