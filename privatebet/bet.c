@@ -431,7 +431,7 @@ int main(int argc, char **argv)
 		} while (ip == NULL);
 
 		if (ip) {
-			dlg_info("The dealer is :: %s\n", ip);
+			dlg_info("The dealer is :: %s", ip);
 			bet_player_thrd(ip, port);
 		}
 	} else if ((argc == 2) && ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "h") == 0) ||
@@ -439,7 +439,7 @@ int main(int argc, char **argv)
 		bet_display_usage();
 	} else if ((argc == 2) && ((strcmp(argv[1], "-v") == 0) || (strcmp(argv[1], "v") == 0) ||
 				   (strcmp(argv[1], "--version") == 0) || (strcmp(argv[1], "version") == 0))) {
-		dlg_info("%s\n", bet_git_version());
+		dlg_info("%s", bet_git_version());
 
 	} else if ((argc == 3) && (strcmp(argv[1], "dcv") == 0)) {
 		strcpy(dealer_ip, argv[2]);
@@ -455,7 +455,7 @@ int main(int argc, char **argv)
 	} else if ((argc == 4) && (strcmp(argv[1], "withdraw") == 0)) {
 		cJSON *tx = NULL;
 		tx = chips_transfer_funds(atof(argv[2]), argv[3]);
-		dlg_info("tx details::%s\n", cJSON_Print(tx));
+		dlg_info("tx details::%s", cJSON_Print(tx));
 	} else if ((argc > 2) && (strcmp(argv[1], "game") == 0)) {
 		playing_nodes_init();
 		bet_handle_game(argc, argv);
@@ -509,15 +509,15 @@ struct pair256 deckgen_player(bits256 *playerprivs, bits256 *playercards, int32_
 
 	key = deckgen_common(randcards, numcards);
 	bet_permutation(permis, numcards);
-	dlg_info("The player key values\n");
-	dlg_info("priv key::%s\n", bits256_str(hexstr, key.priv));
-	dlg_info("pub key::%s\n", bits256_str(hexstr, key.prod));
+	dlg_info("The player key values");
+	dlg_info("priv key::%s", bits256_str(hexstr, key.priv));
+	dlg_info("pub key::%s", bits256_str(hexstr, key.prod));
 
-	//dlg_info("The player private key card values\n");
+	//dlg_info("The player private key card values");
 	for (i = 0; i < numcards; i++) {
 		playerprivs[i] = randcards[i].priv; // permis[i]
 		playercards[i] = curve25519(playerprivs[i], key.prod);
-		//dlg_info("card ::%d::%s\n",i,bits256_str(hexstr,playercards[i]));
+		//dlg_info("card ::%d::%s",i,bits256_str(hexstr,playercards[i]));
 	}
 	return (key);
 }

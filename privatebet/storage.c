@@ -33,7 +33,7 @@ void sqlite3_init_db_name()
 	char *homedir = pw->pw_dir;
 	db_name = calloc(1, 200);
 	sprintf(db_name, "%s/.bet/db/pangea.db", homedir);
-	dlg_info("db_name::%s\n", db_name);
+	dlg_info("The DB to store game info is ::%s", db_name);
 }
 
 int32_t sqlite3_check_if_table_id_exists(const char *table_id)
@@ -49,7 +49,7 @@ int32_t sqlite3_check_if_table_id_exists(const char *table_id)
 	sprintf(sql_query, "select count(table_id) from c_tx_addr_mapping where table_id = \"%s\";", table_id);
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
-		dlg_error(": %s::%s", sqlite3_errmsg(db), sql_query);
+		dlg_error("%s::%s", sqlite3_errmsg(db), sql_query);
 		goto end;
 	}
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
@@ -78,7 +78,7 @@ int32_t sqlite3_check_if_table_exists(sqlite3 *db, const char *table_name)
 	sprintf(sql_query, "select name from sqlite_master where type = \"table\" and name =\"%s\";", table_name);
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
-		dlg_error(": %s::%s", sqlite3_errmsg(db), sql_query);
+		dlg_error("%s::%s", sqlite3_errmsg(db), sql_query);
 		goto end;
 	}
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
@@ -102,7 +102,7 @@ sqlite3 *bet_get_db_instance()
 
 	rc = sqlite3_open(db_name, &db);
 	if (rc) {
-		fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
+		dlg_error("Can't open database: %s", sqlite3_errmsg(db));
 		return (0);
 	}
 	return db;
@@ -134,7 +134,8 @@ int32_t bet_run_query(char *sql_query)
 		rc = sqlite3_exec(db, sql_query, NULL, 0, &err_msg);
 
 		if (rc != SQLITE_OK) {
-			fprintf(stderr, "SQL error: %s::in running ::%s\n", err_msg, sql_query);
+			
+			dlg_error("SQL error: %s::in running ::%s", err_msg, sql_query);
 			sqlite3_free(err_msg);
 		}
 		sqlite3_close(db);
@@ -156,7 +157,7 @@ void bet_create_schema()
 
 			rc = sqlite3_exec(db, sql_query, NULL, 0, &err_msg);
 			if (rc != SQLITE_OK) {
-				fprintf(stderr, "SQL error: %s::%s\n", err_msg, sql_query);
+				dlg_error("SQL error: %s::%s\n", err_msg, sql_query);
 				sqlite3_free(err_msg);
 			}
 			memset(sql_query, 0x00, 200);
@@ -170,8 +171,7 @@ void bet_create_schema()
 void bet_sqlite3_init()
 {
 	sqlite3_init_db_name();
-	bet_create_schema();
-	dlg_info("DB Schema creation is done");
+	bet_create_schema();	
 }
 
 int32_t sqlite3_delete_dealer(char *dealer_ip)

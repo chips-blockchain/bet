@@ -99,7 +99,7 @@ void bet_set_table_id()
 	memset(table_id, 0x00, sizeof(table_id));
 	OS_randombytes(randval.bytes, sizeof(randval));
 	bits256_str(table_id, randval);
-	dlg_info("table_id::%s\n", table_id);
+	dlg_info("table_id::%s", table_id);
 }
 
 void bet_dcv_lws_write(cJSON *data)
@@ -1643,7 +1643,7 @@ void bet_dcv_backend_thrd(void *_ptr)
 
 	argjson = cJSON_Parse(_ptr);
 	if ((method = jstr(argjson, "method")) != 0) {
-		dlg_info("%s", method);
+		dlg_info("%s\n", method);
 		if (strcmp(method, "join_req") == 0) {
 			retval = bet_dcv_process_join_req(argjson, bet, vars);
 		} else if (strcmp(method, "bvv_ready") == 0) {
