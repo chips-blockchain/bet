@@ -1786,7 +1786,7 @@ int32_t ln_establish_channel(char *uri)
 			amount = channel_fund_satoshis - ln_listfunds();
 			amount = amount / satoshis;
 
-			dlg_info("LN wallet doesn't have sufficient funds so loading LN wallet from CHIPS wallet\n");
+			dlg_warn("LN wallet doesn't have sufficient funds so loading LN wallet from CHIPS wallet");
 			if (chips_get_balance() >= (amount + (2 * chips_tx_fee))) {
 				cJSON *tx_info = chips_deposit_to_ln_wallet(amount + chips_tx_fee);
 				while (chips_get_block_hash_from_txid(cJSON_Print(tx_info)) == NULL) {
