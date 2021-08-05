@@ -1326,7 +1326,7 @@ int lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason, 
 {
 	cJSON *argjson = NULL;
 
-	dlg_info("callback code::%d\n", (int)reason);
+	//dlg_info("callback code::%d\n", (int)reason);
 	switch (reason) {
 	case LWS_CALLBACK_RECEIVE:
 		memcpy(lws_buf_1 + lws_buf_length_1, in, len);
