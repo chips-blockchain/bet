@@ -131,7 +131,11 @@ void player_lws_write(cJSON *data)
 			strncpy(player_gui_data, cJSON_Print(data), strlen(cJSON_Print(data)));
 			data_exists = 1;
 			lws_callback_on_writable(wsi_global_client_write);
-		}
+		} 	else {
+			dlg_warn("GUI is not started, can't write the following data to the GUI::\n%s",cJSON_Print(data));
+		}	 	
+	} else {
+	  dlg_warn("Backend is not ready to write data to the GUI");	
 	}
 }
 
