@@ -690,10 +690,8 @@ int32_t chips_check_if_tx_unspent(char *input_tx)
 	argv = bet_copy_args(argc, "chips-cli", "listunspent", " > listunspent.log");
 
 	run_command(argc, argv);
-	dlg_info("%s::%s\n", legacy_m_of_n_msig_addr, input_tx);
 	tx_exists = chips_check_tx_exists(input_tx);
 	bet_dealloc_args(argc, &argv);
-	dlg_info("%d\n", tx_exists);
 	return tx_exists;
 }
 
