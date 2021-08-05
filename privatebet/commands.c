@@ -1021,12 +1021,12 @@ cJSON *chips_deposit_to_ln_wallet(double channel_chips)
 	cJSON *newaddr = NULL;
 	cJSON *tx = NULL;
 
-	argc = 2;
+	argc = 3;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "lightning-cli", "newaddr");
+	argv = bet_copy_args(argc, "lightning-cli", "newaddr", "p2sh-segwit");
 	newaddr = cJSON_CreateObject();
 	make_command(argc, argv, &newaddr);
-	tx = chips_transfer_funds(channel_chips, jstr(newaddr, "address"));
+	tx = chips_transfer_funds(channel_chips, jstr(newaddr, "p2sh-segwit"));
 	bet_dealloc_args(argc, &argv);
 	return tx;
 }
