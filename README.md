@@ -171,3 +171,25 @@ listpeers
 newaddr
 ```
 So we should test the functiolities of these API's to see any changes are made everytime when we port something to the downstream CHIPS LN node.
+
+### CHIPS Upgrade
+The underlying crypto on which the pangea protocol built on is CHIPS. As we know CHIPS initially is a BTC fork with the modified chain and mining parameters to suit to the real time gaming applications. So CHIPS will be periodically updated from the BTC upstream changes to fetch the changes that are needed. 
+
+With that little background, the CHIPS API's used by bet are mentioned below. So whenever the CHIPS upstream changes are made its important to test these API's for bet compatability.
+
+```
+importaddress
+getnewaddress
+listaddressgroupings
+getblock
+getrawtransaction
+decoderawtransaction
+gettransaction
+sendrawtransaction
+signrawtransactionwithwallet 
+listunspent
+createrawtransaction
+getblockcount
+getbalance
+addmultisigaddress 
+```
