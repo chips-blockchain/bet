@@ -131,11 +131,12 @@ void player_lws_write(cJSON *data)
 			strncpy(player_gui_data, cJSON_Print(data), strlen(cJSON_Print(data)));
 			data_exists = 1;
 			lws_callback_on_writable(wsi_global_client_write);
-		} 	else {
-			dlg_warn("GUI is not started, can't write the following data to the GUI::\n%s",cJSON_Print(data));
-		}	 	
+		} else {
+			dlg_warn("GUI is not started, can't write the following data to the GUI::\n%s",
+				 cJSON_Print(data));
+		}
 	} else {
-	  dlg_warn("Backend is not ready to write data to the GUI");	
+		dlg_warn("Backend is not ready to write data to the GUI");
 	}
 }
 
@@ -1587,10 +1588,10 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		cJSON_AddItemToObject(tx_info, "tx_info", txid);
 		if (txid) {
 			dlg_info("Waiting for tx to confirm");
-			while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {				
+			while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
 				sleep(2);
 			}
-			dlg_info("TX ::%s got confirmed",cJSON_Print(txid));
+			dlg_info("TX ::%s got confirmed", cJSON_Print(txid));
 			cJSON_AddNumberToObject(tx_info, "block_height",
 						chips_get_block_height_from_block_hash(
 							chips_get_block_hash_from_txid(cJSON_Print(txid))));

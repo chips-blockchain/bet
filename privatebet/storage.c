@@ -134,7 +134,6 @@ int32_t bet_run_query(char *sql_query)
 		rc = sqlite3_exec(db, sql_query, NULL, 0, &err_msg);
 
 		if (rc != SQLITE_OK) {
-			
 			dlg_error("SQL error: %s::in running ::%s", err_msg, sql_query);
 			sqlite3_free(err_msg);
 		}
@@ -171,7 +170,7 @@ void bet_create_schema()
 void bet_sqlite3_init()
 {
 	sqlite3_init_db_name();
-	bet_create_schema();	
+	bet_create_schema();
 }
 
 int32_t sqlite3_delete_dealer(char *dealer_ip)
