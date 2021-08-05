@@ -1230,7 +1230,7 @@ static void bet_gui_init_message(struct privatebet_info *bet)
 		warning_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(warning_info, "method", "warning");
 		cJSON_AddNumberToObject(warning_info, "warning_num", backend_not_ready);
-		dlg_warn("%s\n", cJSON_Print(warning_info));
+		dlg_warn("Backend is not yet ready, it takes a while please wait...");
 		player_lws_write(warning_info);
 	} else {
 		req_seats_info = cJSON_CreateObject();
