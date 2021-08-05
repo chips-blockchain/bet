@@ -35,7 +35,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define LIVE_THREAD 1
+#define LIVE_THREAD 0
 
 struct privatebet_info *bet_player = NULL;
 struct privatebet_vars *player_vars = NULL;
@@ -124,23 +124,11 @@ static void bet_player_thrd(char *dcv_ip, const int32_t port)
 {
 	pthread_t player_thrd, player_backend_write, player_backend_read;
 
-#ifdef LIVE_THREAD
-	pthread_t player_backend;
-#endif
-
 	bet_player_initialize(dcv_ip, port);
 	if (OS_thread_create(&player_thrd, NULL, (void *)bet_player_backend_loop, (void *)bet_player) != 0) {
 		dlg_error("Error in launching bet_player_backend_loop");
 		exit(-1);
 	}
-
-#ifdef LIVE_THREAD
-	if (OS_thread_create(&player_backend, NULL, (void *)bet_player_frontend_loop, NULL) != 0) {
-		dlg_error("Error launching bet_player_frontend_loop");
-		exit(-1);
-	}
-#endif
-
 	if (OS_thread_create(&player_backend_read, NULL, (void *)bet_player_frontend_read_loop, NULL) != 0) {
 		dlg_error("Error launching bet_player_frontend_loop");
 		exit(-1);
@@ -161,11 +149,7 @@ static void bet_player_thrd(char *dcv_ip, const int32_t port)
 	if (pthread_join(player_thrd, NULL)) {
 		dlg_error("Error in joining the main thread for player_thrd");
 	}
-#if LIVE_THREAD
-	if (pthread_join(player_backend, NULL)) {
-		dlg_error("Error in joining the main thread for player_backend");
-	}
-#endif
+
 	bet_player_deinitialize();
 }
 
