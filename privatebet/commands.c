@@ -103,7 +103,7 @@ int32_t chips_iswatchonly(char *address)
 void chips_spend_multi_sig_address(char *address, double amount)
 {
 	cJSON *raw_tx = NULL;
-	if(address) {
+	if (address) {
 		if (chips_iswatchonly(address) == 0) {
 			chips_import_address(address);
 		}
@@ -370,7 +370,7 @@ cJSON *chips_transfer_funds(double amount, char *address)
 	cJSON *tx_info = NULL, *signed_tx = NULL;
 	char *raw_tx = NULL;
 
-	if(address) {
+	if (address) {
 		raw_tx = cJSON_str(chips_create_raw_tx(amount, address));
 		signed_tx = chips_sign_raw_tx_with_wallet(raw_tx);
 		tx_info = chips_send_raw_tx(signed_tx);
@@ -589,7 +589,7 @@ void check_ln_chips_sync()
 			break;
 		chips_bh = chips_get_block_count();
 		ln_bh = ln_block_height();
-	}	
+	}
 }
 
 cJSON *bet_get_chips_ln_bal_info()
