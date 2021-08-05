@@ -1777,7 +1777,7 @@ int32_t ln_establish_channel(char *uri)
 
 	strcpy(uid, uri);
 	if ((ln_get_channel_status(strtok(uid, "@")) != CHANNELD_NORMAL)) {
-		dlg_info("uri::%s\n", uri);
+		dlg_info("LN uri::%s", uri);
 		connect_info = ln_connect(uri);
 		if ((retval = jint(connect_info, "code")) != 0)
 			return retval;
