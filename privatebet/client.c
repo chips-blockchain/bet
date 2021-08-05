@@ -1269,7 +1269,7 @@ int lws_callback_http_player_write(struct lws *wsi, enum lws_callback_reasons re
 		bet_gui_init_message(bet_player);
 		break;
 	case LWS_CALLBACK_SERVER_WRITEABLE:
-		dlg_info("LWS_CALLBACK_SERVER_WRITEABLE triggered\n");
+		//dlg_info("LWS_CALLBACK_SERVER_WRITEABLE triggered\n");
 		if (data_exists) {
 			if (strlen(player_gui_data) != 0) {
 				lws_write(wsi, (unsigned char *)player_gui_data, strlen(player_gui_data), 0);

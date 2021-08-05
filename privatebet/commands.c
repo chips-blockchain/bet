@@ -29,7 +29,6 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
-char *multisigAddress = "bGmKoyJEz4ESuJCTjhVkgEb2Qkt8QuiQzQ";
 double epsilon = 0.000000001;
 
 int32_t bet_alloc_args(int argc, char ***argv)
@@ -104,13 +103,13 @@ int32_t chips_iswatchonly(char *address)
 void chips_spend_multi_sig_address(char *address, double amount)
 {
 	cJSON *raw_tx = NULL;
-	if (chips_iswatchonly(address) == 0) {
-		chips_import_address(address);
+	if(address) {
+		if (chips_iswatchonly(address) == 0) {
+			chips_import_address(address);
+		}
+		raw_tx = chips_create_raw_tx(amount, address);
+		dlg_info("%s\n", cJSON_Print(raw_tx));
 	}
-
-	raw_tx = chips_create_raw_tx(amount, address);
-
-	dlg_info("%s\n", cJSON_Print(raw_tx));
 }
 
 cJSON *chips_import_address(char *address)
@@ -371,9 +370,11 @@ cJSON *chips_transfer_funds(double amount, char *address)
 	cJSON *tx_info = NULL, *signed_tx = NULL;
 	char *raw_tx = NULL;
 
-	raw_tx = cJSON_str(chips_create_raw_tx(amount, address));
-	signed_tx = chips_sign_raw_tx_with_wallet(raw_tx);
-	tx_info = chips_send_raw_tx(signed_tx);
+	if(address) {
+		raw_tx = cJSON_str(chips_create_raw_tx(amount, address));
+		signed_tx = chips_sign_raw_tx_with_wallet(raw_tx);
+		tx_info = chips_send_raw_tx(signed_tx);
+	}
 	return tx_info;
 }
 
@@ -445,11 +446,6 @@ cJSON *chips_create_raw_tx(double amount, char *address)
 	tx_list = cJSON_CreateArray();
 	address_info = cJSON_CreateObject();
 
-	if (address == NULL) {
-		address = (char *)malloc(64 * sizeof(char));
-		strcpy(address, multisigAddress);
-	}
-
 	if ((balance + chips_tx_fee) < amount) {
 		return NULL;
 	} else {
@@ -509,9 +505,8 @@ cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 	address_info = cJSON_CreateObject();
 
 	if (address == NULL) {
-		address = (char *)malloc(64 * sizeof(char));
-		strcpy(address, multisigAddress);
-		address[63] = '\0';
+		dlg_error("Address to transfer funds in NULL");
+		return NULL;
 	}
 	if ((balance + chips_tx_fee) < amount) {
 		return NULL;
