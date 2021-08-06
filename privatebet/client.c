@@ -1264,12 +1264,10 @@ int lws_callback_http_player_write(struct lws *wsi, enum lws_callback_reasons re
 		break;
 	case LWS_CALLBACK_ESTABLISHED:
 		wsi_global_client_write = wsi;
-		dlg_info("Write::LWS_CALLBACK_ESTABLISHED\n");
 		ws_connection_status_write = 1;
 		bet_gui_init_message(bet_player);
 		break;
 	case LWS_CALLBACK_SERVER_WRITEABLE:
-		//dlg_info("LWS_CALLBACK_SERVER_WRITEABLE triggered\n");
 		if (data_exists) {
 			if (strlen(player_gui_data) != 0) {
 				lws_write(wsi, (unsigned char *)player_gui_data, strlen(player_gui_data), 0);
@@ -1304,7 +1302,6 @@ int lws_callback_http_player_read(struct lws *wsi, enum lws_callback_reasons rea
 		break;
 	case LWS_CALLBACK_ESTABLISHED:
 		wsi_global_client = wsi;
-		dlg_info("Read::LWS_CALLBACK_ESTABLISHED\n");
 		ws_connection_status = 1;
 		break;
 	case LWS_CALLBACK_SERVER_WRITEABLE:
@@ -1758,10 +1755,10 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 				retval = bet_player_handle_stack_info_resp(argjson, bet);
 			}
 		} else if (strcmp(method, "tx_status") == 0) {
-			dlg_info("%s\n", cJSON_Print(argjson));
 			if (strcmp(req_identifier, jstr(argjson, "id")) == 0) {
 				vars->player_funds = jint(argjson, "player_funds");
 				if (jint(argjson, "tx_validity") == 1) {
+					dlg_info("Dealer verified the TX made by the player");
 					if (backend_status ==
 					    1) { /* This snippet is added to handle the reset scenario after the initial hand got played*/
 						cJSON *reset_info = cJSON_CreateObject();
@@ -1777,12 +1774,12 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 					req_seats_info = cJSON_CreateObject();
 					cJSON_AddStringToObject(req_seats_info, "method", "req_seats_info");
 					cJSON_AddStringToObject(req_seats_info, "req_identifier", req_identifier);
-					dlg_info("joininfo::%s\n", cJSON_Print(req_seats_info));
+					dlg_info("Player requesting seats info from the dealer to join");
 					nn_send(bet->pushsock, cJSON_Print(req_seats_info),
 						strlen(cJSON_Print(req_seats_info)), 0);
 
 				} else {
-					dlg_error("%s\n", "unable make lock_in transaction");
+					dlg_error("%s", "unable make lock_in transaction");
 					retval = 0;
 				}
 			}
