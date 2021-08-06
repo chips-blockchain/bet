@@ -50,7 +50,18 @@ enum action_type { small_blind = 1, big_blind, check, raise, call, allin, fold }
 
 enum card_type { burn_card = 0, hole_card, flop_card_1, flop_card_2, flop_card_3, turn_card, river_card };
 
-enum bet_warnings { backend_not_ready = 0, seat_already_taken, insufficient_funds, table_is_full };
+enum bet_warnings { seat_already_taken, insufficient_funds, table_is_full };
+
+enum be_status {
+	backend_not_ready = 0,
+	backend_ready	
+};
+
+enum gui_status {
+	gui_not_ready = 0,
+	gui_ready	
+};
+
 
 struct BET_shardsinfo {
 	UT_hash_handle hh;

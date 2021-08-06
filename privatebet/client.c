@@ -85,7 +85,7 @@ char lws_buf_bvv[2000];
 int32_t lws_buf_length_bvv = 0;
 
 char req_identifier[65];
-int32_t backend_status = 0;
+int32_t backend_status = backend_not_ready;
 int32_t sitout_value = 0;
 int32_t reset_lock = 0;
 
@@ -120,7 +120,7 @@ void sg777_test(cJSON *data)
 
 void player_lws_write(cJSON *data)
 {
-	if (backend_status == 1) {
+	if (backend_status == backend_ready) {
 		if (ws_connection_status_write == 1) {
 			if (data_exists == 1) {
 				while (data_exists == 1) {
@@ -1108,7 +1108,7 @@ static int32_t bet_player_process_player_join(cJSON *argjson)
 	cJSON *warning_info = NULL;
 
 	if (player_joined == 0) {
-		if (backend_status == 1) {
+		if (backend_status == backend_ready) {
 			retval = bet_client_join(argjson, bet_player);
 		} else {
 			warning_info = cJSON_CreateObject();
@@ -1226,7 +1226,7 @@ static void bet_gui_init_message(struct privatebet_info *bet)
 	cJSON *warning_info = NULL;
 	cJSON *req_seats_info = NULL;
 
-	if (backend_status == 0) {
+	if (backend_status == backend_not_ready) {
 		warning_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(warning_info, "method", "warning");
 		cJSON_AddNumberToObject(warning_info, "warning_num", backend_not_ready);
@@ -1757,13 +1757,18 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 				vars->player_funds = jint(argjson, "player_funds");
 				if (jint(argjson, "tx_validity") == 1) {
 					dlg_info("Dealer verified the TX made by the player");
-					if (backend_status ==
-					    1) { /* This snippet is added to handle the reset scenario after the initial hand got played*/
+					if (backend_status == backend_ready) { 
+						/* 
+						This snippet is added to handle the reset scenario after the initial hand got played. How this works is the backend status 
+						for the player is set when the dealer verifies the tx as valid.
+						It means when the backend is ready, for the next hand the GUI is expecting to push the reset info from the backend for this reason
+						this snippet is added.
+						*/
 						cJSON *reset_info = cJSON_CreateObject();
 						cJSON_AddStringToObject(reset_info, "method", "reset");
 						player_lws_write(reset_info);
 					}
-					backend_status = 1;
+					backend_status = backend_ready;
 					cJSON *info = cJSON_CreateObject();
 					cJSON_AddStringToObject(info, "method", "backend_status");
 					cJSON_AddNumberToObject(info, "backend_status", backend_status);
@@ -1807,7 +1812,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 				cJSON_AddStringToObject(seats_info, "method", "seats");
 				cJSON_AddItemToObject(seats_info, "seats", cJSON_GetObjectItem(argjson, "seats"));
 				player_lws_write(seats_info);
-				if ((backend_status == 1) && (ws_connection_status_write == 0)) {
+				if ((backend_status == backend_ready) && (ws_connection_status_write == 0)) {
 					dlg_info("Backend is ready, from GUI you can connect to backend and play...");
 				}					
 			}
