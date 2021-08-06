@@ -132,8 +132,7 @@ void player_lws_write(cJSON *data)
 			data_exists = 1;
 			lws_callback_on_writable(wsi_global_client_write);
 		} else {
-			dlg_warn("GUI is not started, can't write the following data to the GUI::\n%s",
-				 cJSON_Print(data));
+			dlg_warn("Backend is ready, but GUI is not started yet...");
 		}
 	} else {
 		dlg_warn("Backend is not ready to write data to the GUI");
@@ -1551,7 +1550,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		txid = cJSON_CreateObject();
 		txid = chips_transfer_funds_with_data(funds_needed, legacy_m_of_n_msig_addr, hex_data);
 
-		dlg_info("tx id::%s\n", cJSON_Print(txid));
+		dlg_info("tx id::%s", cJSON_Print(txid));
 		if (txid) {
 			sql_query = calloc(1, sql_query_size);
 			sprintf(sql_query, "INSERT INTO player_tx_mapping values(%s,\'%s\',\'%s\',\'%s\',%d,%d, NULL);",
@@ -1808,6 +1807,9 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 				cJSON_AddStringToObject(seats_info, "method", "seats");
 				cJSON_AddItemToObject(seats_info, "seats", cJSON_GetObjectItem(argjson, "seats"));
 				player_lws_write(seats_info);
+				if ((backend_status == 1) && (ws_connection_status_write == 0)) {
+					dlg_info("Backend is ready, from GUI you can connect to backend and play...");
+				}					
 			}
 		} else if (strcmp(method, "config_data") == 0) {
 			dlg_info("config_data::%s\n", cJSON_Print(argjson));
