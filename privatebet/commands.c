@@ -526,18 +526,20 @@ cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 			cJSON *tx_info = cJSON_CreateObject();
 			char *state = cJSON_Print(cJSON_GetObjectItem(temp, "spendable"));
 			if (strcmp(state, "true") == 0) {
-				temp_balance += jdouble(temp, "amount");
-				if (temp_balance >= amount) {
-					changeAddress = jstr(temp, "address");
-					change = temp_balance - amount;
-					cJSON_AddStringToObject(tx_info, "txid", jstr(temp, "txid"));
-					cJSON_AddNumberToObject(tx_info, "vout", jint(temp, "vout"));
-					cJSON_AddItemToArray(tx_list, tx_info);
-					break;
-				} else {
-					cJSON_AddStringToObject(tx_info, "txid", jstr(temp, "txid"));
-					cJSON_AddNumberToObject(tx_info, "vout", jint(temp, "vout"));
-					cJSON_AddItemToArray(tx_list, tx_info);
+				if(jdouble(temp, "amount") > 0.0001) {
+					temp_balance += jdouble(temp, "amount");
+					if (temp_balance >= amount) {
+						changeAddress = jstr(temp, "address");
+						change = temp_balance - amount;
+						cJSON_AddStringToObject(tx_info, "txid", jstr(temp, "txid"));
+						cJSON_AddNumberToObject(tx_info, "vout", jint(temp, "vout"));
+						cJSON_AddItemToArray(tx_list, tx_info);
+						break;
+					} else {
+						cJSON_AddStringToObject(tx_info, "txid", jstr(temp, "txid"));
+						cJSON_AddNumberToObject(tx_info, "vout", jint(temp, "vout"));
+						cJSON_AddItemToArray(tx_list, tx_info);
+					}
 				}
 			}
 		}
