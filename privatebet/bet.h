@@ -52,16 +52,9 @@ enum card_type { burn_card = 0, hole_card, flop_card_1, flop_card_2, flop_card_3
 
 enum bet_warnings { seat_already_taken, insufficient_funds, table_is_full };
 
-enum be_status {
-	backend_not_ready = 0,
-	backend_ready	
-};
+enum be_status { backend_not_ready = 0, backend_ready };
 
-enum gui_status {
-	gui_not_ready = 0,
-	gui_ready	
-};
-
+enum gui_status { gui_not_ready = 0, gui_ready };
 
 struct BET_shardsinfo {
 	UT_hash_handle hh;
