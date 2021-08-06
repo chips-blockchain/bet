@@ -526,7 +526,7 @@ cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 			cJSON *tx_info = cJSON_CreateObject();
 			char *state = cJSON_Print(cJSON_GetObjectItem(temp, "spendable"));
 			if (strcmp(state, "true") == 0) {
-				if(jdouble(temp, "amount") > 0.0001) {
+				if (jdouble(temp, "amount") > 0.0001) {
 					temp_balance += jdouble(temp, "amount");
 					if (temp_balance >= amount) {
 						changeAddress = jstr(temp, "address");

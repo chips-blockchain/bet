@@ -986,8 +986,9 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 			else
 				dlg_info("Channel Didn't Established");
 		} else {
-			if(0 == channel_state)
-				dlg_info("There isn't any pre-established channel with the dealer, so creating one now");
+			if (0 == channel_state)
+				dlg_info(
+					"There isn't any pre-established channel with the dealer, so creating one now");
 			strcpy(uri, jstr(argjson, "uri"));
 			ln_check_peer_and_connect(uri);
 		}
@@ -1757,7 +1758,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 				vars->player_funds = jint(argjson, "player_funds");
 				if (jint(argjson, "tx_validity") == 1) {
 					dlg_info("Dealer verified the TX made by the player");
-					if (backend_status == backend_ready) { 
+					if (backend_status == backend_ready) {
 						/* 
 						This snippet is added to handle the reset scenario after the initial hand got played. How this works is the backend status 
 						for the player is set when the dealer verifies the tx as valid.
@@ -1814,7 +1815,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 				player_lws_write(seats_info);
 				if ((backend_status == backend_ready) && (ws_connection_status_write == 0)) {
 					dlg_info("Backend is ready, from GUI you can connect to backend and play...");
-				}					
+				}
 			}
 		} else if (strcmp(method, "config_data") == 0) {
 			dlg_info("config_data::%s\n", cJSON_Print(argjson));
