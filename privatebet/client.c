@@ -1683,7 +1683,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		return retval;
 	}
 	if ((method = jstr(argjson, "method")) != 0) {
-		dlg_info("Backend request received from dealer :: %s", method);
+		dlg_info("Backend method received from dealer :: %s", method);
 
 		if (strcmp(method, "join_res") == 0) {
 			dlg_info("%s\n", cJSON_Print(argjson));
