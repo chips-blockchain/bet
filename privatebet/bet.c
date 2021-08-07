@@ -35,7 +35,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define LIVE_THREAD 0
+//#define LIVE_THREAD 0
 
 struct privatebet_info *bet_player = NULL;
 struct privatebet_vars *player_vars = NULL;
