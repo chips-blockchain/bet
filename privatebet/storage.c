@@ -60,6 +60,7 @@ int32_t sqlite3_check_if_table_id_exists(const char *table_id)
 		}
 	}
 	sqlite3_finalize(stmt);
+	sqlite3_close(db);
 end:
 	if (sql_query)
 		free(sql_query);
@@ -89,6 +90,7 @@ int32_t sqlite3_check_if_table_exists(sqlite3 *db, const char *table_name)
 		}
 	}
 	sqlite3_finalize(stmt);
+	sqlite3_close(db);
 end:
 	if (sql_query)
 		free(sql_query);
@@ -162,6 +164,7 @@ void bet_create_schema()
 			memset(sql_query, 0x00, 200);
 		}
 	}
+	sqlite3_close(db);
 	if (sql_query)
 		free(sql_query);
 	sqlite3_close(db);
@@ -207,6 +210,7 @@ cJSON *sqlite3_get_dealer_info_details()
 		cJSON_AddItemToArray(dealers_info, cJSON_CreateString((const char *)sqlite3_column_text(stmt, 0)));
 	}
 	sqlite3_finalize(stmt);
+	sqlite3_close(db);
 end:
 	if (sql_query)
 		free(sql_query);
@@ -261,6 +265,7 @@ cJSON *sqlite3_get_game_details(int32_t opt)
 		cJSON_AddItemToArray(game_info, game_obj);
 	}
 	sqlite3_finalize(stmt);
+	sqlite3_close(db);
 end:
 	if (sql_query)
 		free(sql_query);
@@ -306,6 +311,7 @@ cJSON *bet_show_fail_history()
 		cJSON_AddItemToArray(game_fail_info, game_obj);
 	}
 	sqlite3_finalize(stmt);
+	sqlite3_close(db);
 end:
 	if (sql_query)
 		free(sql_query);
@@ -358,6 +364,7 @@ cJSON *bet_show_success_history()
 		cJSON_AddItemToArray(game_success_info, game_obj);
 	}
 	sqlite3_finalize(stmt);
+	sqlite3_close(db);
 end:
 	if (sql_query)
 		free(sql_query);
