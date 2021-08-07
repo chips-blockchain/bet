@@ -49,7 +49,7 @@ int32_t sqlite3_check_if_table_id_exists(const char *table_id)
 	sprintf(sql_query, "select count(table_id) from c_tx_addr_mapping where table_id = \"%s\";", table_id);
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
-		dlg_error("%s::%s", sqlite3_errmsg(db), sql_query);
+		dlg_error("error_code :: %d, error msg ::%s, \n query ::%s", rc, sqlite3_errmsg(db), sql_query);
 		goto end;
 	}
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
@@ -78,7 +78,7 @@ int32_t sqlite3_check_if_table_exists(sqlite3 *db, const char *table_name)
 	sprintf(sql_query, "select name from sqlite_master where type = \"table\" and name =\"%s\";", table_name);
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
-		dlg_error("%s::%s", sqlite3_errmsg(db), sql_query);
+		dlg_error("error_code :: %d, error msg ::%s, \n query ::%s", rc, sqlite3_errmsg(db), sql_query);		
 		goto end;
 	}
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
@@ -134,7 +134,7 @@ int32_t bet_run_query(char *sql_query)
 		rc = sqlite3_exec(db, sql_query, NULL, 0, &err_msg);
 
 		if (rc != SQLITE_OK) {
-			dlg_error("SQL error: %s::in running ::%s", err_msg, sql_query);
+			dlg_error("error_code :: %d, error msg ::%s, \n query ::%s", rc, sqlite3_errmsg(db), sql_query);
 			sqlite3_free(err_msg);
 		}
 		sqlite3_close(db);
@@ -156,7 +156,7 @@ void bet_create_schema()
 
 			rc = sqlite3_exec(db, sql_query, NULL, 0, &err_msg);
 			if (rc != SQLITE_OK) {
-				dlg_error("SQL error: %s::%s\n", err_msg, sql_query);
+				dlg_error("error_code :: %d, error msg ::%s, \n query ::%s", rc, sqlite3_errmsg(db), sql_query);
 				sqlite3_free(err_msg);
 			}
 			memset(sql_query, 0x00, 200);
@@ -199,7 +199,7 @@ cJSON *sqlite3_get_dealer_info_details()
 	sprintf(sql_query, "SELECT dealer_ip FROM dealers_info;");
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
-		dlg_error(": %s::%s", sqlite3_errmsg(db), sql_query);
+		dlg_error("error_code :: %d, error msg ::%s, \n query ::%s", rc, sqlite3_errmsg(db), sql_query);
 		goto end;
 	}
 	dealers_info = cJSON_CreateArray();
@@ -232,7 +232,7 @@ cJSON *sqlite3_get_game_details(int32_t opt)
 	dlg_info("sql_query::%s\n", sql_query);
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
-		dlg_error(" sql error :: %s in running the sql query :: %s", sqlite3_errmsg(db), sql_query);
+		dlg_error("error_code :: %d, error msg ::%s, \n query ::%s", rc, sqlite3_errmsg(db), sql_query);
 		goto end;
 	}
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
@@ -249,7 +249,7 @@ cJSON *sqlite3_get_game_details(int32_t opt)
 
 		rc = sqlite3_prepare_v2(db, sql_sub_query, -1, &sub_stmt, NULL);
 		if (rc != SQLITE_OK) {
-			dlg_error(" sql error :: %s in running the sql query :: %s", sqlite3_errmsg(db), sql_sub_query);
+			dlg_error("error_code :: %d, error msg ::%s, \n query ::%s", rc, sqlite3_errmsg(db), sql_query);
 			goto end;
 		}
 		while ((rc = sqlite3_step(sub_stmt)) == SQLITE_ROW) {
@@ -283,7 +283,7 @@ cJSON *bet_show_fail_history()
 	sprintf(sql_query, "SELECT table_id,tx_id FROM player_tx_mapping WHERE payout_tx_id is null;");
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
-		dlg_error("sql error :: %s in running the sql query :: %s", sqlite3_errmsg(db), sql_query);
+		dlg_error("error_code :: %d, error msg ::%s, \n query ::%s", rc, sqlite3_errmsg(db), sql_query);
 		goto end;
 	}
 
@@ -333,7 +333,7 @@ cJSON *bet_show_success_history()
 
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
-		dlg_error("sql error :: %s in running the sql query :: %s", sqlite3_errmsg(db), sql_query);
+		dlg_error("error_code :: %d, error msg ::%s, \n query ::%s", rc, sqlite3_errmsg(db), sql_query);
 		goto end;
 	}
 
