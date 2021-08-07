@@ -107,6 +107,7 @@ sqlite3 *bet_get_db_instance()
 		dlg_error("Can't open database: %s", sqlite3_errmsg(db));
 		return (0);
 	}
+	sqlite3_busy_timeout(db, 1000);
 	return db;
 }
 
