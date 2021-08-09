@@ -570,14 +570,18 @@ int32_t bet_process_dispute(cJSON *argjson, struct cashier *cashier_info)
 static int32_t bet_process_dealer_info(cJSON *argjson)
 {
 	char *sql_query = NULL;
-	int rc;
+	int rc, retval = 0;
 
 	sql_query = calloc(1, sql_query_size);
 	sprintf(sql_query, "INSERT into dealers_info values(\'%s\');", jstr(argjson, "ip"));
 	rc = bet_run_query(sql_query);
+	if((rc == SQLITE_OK) || (rc == SQLITE_CONSTRAINT)) {
+		retval = 1;
+	}
 	if (sql_query)
 		free(sql_query);
-	return rc;
+	
+	return retval;
 }
 
 static int32_t bet_check_dealer_status(char *dealer_ip)
