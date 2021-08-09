@@ -79,7 +79,7 @@ int32_t sqlite3_check_if_table_exists(sqlite3 *db, const char *table_name)
 	sprintf(sql_query, "select name from sqlite_master where type = \"table\" and name =\"%s\";", table_name);
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
-		dlg_error("error_code :: %d, error msg ::%s, \n query ::%s", rc, sqlite3_errmsg(db), sql_query);		
+		dlg_error("error_code :: %d, error msg ::%s, \n query ::%s", rc, sqlite3_errmsg(db), sql_query);
 		goto end;
 	}
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
@@ -159,7 +159,8 @@ void bet_create_schema()
 
 			rc = sqlite3_exec(db, sql_query, NULL, 0, &err_msg);
 			if (rc != SQLITE_OK) {
-				dlg_error("error_code :: %d, error msg ::%s, \n query ::%s", rc, sqlite3_errmsg(db), sql_query);
+				dlg_error("error_code :: %d, error msg ::%s, \n query ::%s", rc, sqlite3_errmsg(db),
+					  sql_query);
 				sqlite3_free(err_msg);
 			}
 			memset(sql_query, 0x00, 200);
