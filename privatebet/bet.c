@@ -262,6 +262,7 @@ static void bet_dcv_thrd(char *dcv_ip, const int32_t port)
 
 	bet_dcv_initialize(dcv_ip, port);
 #ifdef LIVE_THREAD
+	dlg_warn("Hope its not coming here");
 	if (OS_thread_create(&live_thrd, NULL, (void *)bet_dcv_heartbeat_loop, (void *)bet_dcv) != 0) {
 		dlg_error("Error launching bet_dcv_heartbeat_loop");
 		exit(-1);

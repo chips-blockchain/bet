@@ -727,7 +727,6 @@ int32_t bet_check_player_ready(cJSON *argjson, struct privatebet_info *bet, stru
 			break;
 		}
 	}
-	dlg_info("flag::%d",flag);
 	return flag;
 }
 
@@ -1661,9 +1660,7 @@ void bet_dcv_backend_thrd(void *_ptr)
 				retval = bet_relay(argjson, bet, vars);
 			}
 		} else if (strcmp(method, "player_ready") == 0) {
-			dlg_info("%s",cJSON_Print(argjson));
 			if (bet_check_player_ready(argjson, bet, vars)) {
-				dlg_info("coming here");
 				retval = bet_initiate_statemachine(argjson, bet, vars);
 			}
 		} else if (strcmp(method, "dealer_ready") == 0) {
