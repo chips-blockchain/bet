@@ -69,6 +69,9 @@ char *legacy_m_of_n_msig_addr = NULL;
 int32_t bvv_state = 0;
 char dealer_ip_for_bvv[128];
 
+char bvv_unique_id[65];
+
+
 void bet_game_multisigaddress()
 {
 	cJSON *msig_info = NULL;
@@ -671,6 +674,7 @@ static int32_t bet_process_find_bvv(cJSON *argjson, struct cashier *cashier_info
 	cJSON_AddStringToObject(bvv_status, "method", "bvv_status");
 	cJSON_AddNumberToObject(bvv_status, "bvv_state", bvv_state);
 	cJSON_AddStringToObject(bvv_status, "id", jstr(argjson, "id"));
+	cJSON_AddStringToObject(bvv_status,"bvv_unique_id",unique_id);
 	bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(bvv_status), strlen(cJSON_Print(bvv_status)), 0);
 	if (bytes < 0)
 		rc = -1;
@@ -1005,8 +1009,10 @@ void find_bvv()
 				cJSON_AddStringToObject(bvv_info, "method", "add_bvv");
 				cJSON_AddStringToObject(bvv_info, "dealer_ip", dealer_ip);
 				bet_msg_cashier(bvv_info, notary_node_ips[bvv_node_permutation[i]]);
-				dlg_info("BVV node chosen for this hand is ::%s",
-					 notary_node_ips[bvv_node_permutation[i]]);
+				strcpy(bvv_unique_id, jstr(response_info,"bvv_unique_id"));
+				bvv_unique_id[sizeof(bvv_unique_id)-1] = '\0';
+				dlg_info("BVV node IP is ::%s, its unique id is :: %s",
+					 notary_node_ips[bvv_node_permutation[i]],bvv_unique_id);
 				break;
 			}
 		}

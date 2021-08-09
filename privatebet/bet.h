@@ -125,6 +125,8 @@ struct enc_share {
 	uint8_t bytes[sizeof(bits256) + crypto_box_NONCEBYTES + crypto_box_ZEROBYTES];
 };
 
+extern char bvv_unique_id[65];
+
 extern struct enc_share *g_shares;
 
 extern struct enc_share *all_g_shares[CARDS777_MAXPLAYERS];
