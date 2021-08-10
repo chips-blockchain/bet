@@ -68,7 +68,6 @@ cJSON *ln_connect(char *id);
 int32_t ln_check_if_address_isof_type(char *type);
 void ln_check_peer_and_connect(char *id);
 int32_t ln_get_channel_status(char *id);
-int32_t ln_wait_for_tx_block_height(int32_t block_height);
 int32_t ln_establish_channel(char *uri);
 
 char *bet_git_version();

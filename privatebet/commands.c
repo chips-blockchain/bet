@@ -1743,36 +1743,9 @@ int32_t ln_get_channel_status(char *id)
 	return channel_state;
 }
 
-int32_t ln_wait_for_tx_block_height(int32_t block_height)
-{
-	int argc;
-	char **argv = NULL;
-	cJSON *bh_info = NULL;
-	int32_t count = 0, max_attempts = 60;
-	int32_t ret = 1;
-
-	argc = 2;
-	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "lightning-cli", "dev-blockheight");
-	bh_info = cJSON_CreateObject();
-	make_command(argc, argv, &bh_info);
-	while (jint(bh_info, "blockheight") < block_height) {
-		sleep(2);
-		memset(bh_info, 0x00, sizeof(struct cJSON));
-		make_command(argc, argv, &bh_info);
-		if (count++ > max_attempts)
-			break;
-	}
-	if (count > max_attempts)
-		ret = 0;
-
-	bet_dealloc_args(argc, &argv);
-	return ret;
-}
-
 int32_t ln_establish_channel(char *uri)
 {
-	int32_t retval = 1, state;
+	int32_t retval = 1, state, ln_bh, chips_bh;
 	cJSON *connect_info = NULL, *fund_channel_info = NULL;
 	double amount;
 	char uid[ln_uri_length] = { 0 };
@@ -1788,21 +1761,35 @@ int32_t ln_establish_channel(char *uri)
 			amount = channel_fund_satoshis - ln_listfunds();
 			amount = amount / satoshis;
 
-			dlg_warn("LN wallet doesn't have sufficient funds so loading LN wallet from CHIPS wallet");
+			dlg_warn("LN wallet doesn't have sufficient funds, checking to load LN wallet from CHIPS wallet...");
 			if (chips_get_balance() >= (amount + (2 * chips_tx_fee))) {
+				dlg_info("Loading funds from CHIPS to LN wallet...");
 				cJSON *tx_info = chips_deposit_to_ln_wallet(amount + chips_tx_fee);
-				while (chips_get_block_hash_from_txid(cJSON_Print(tx_info)) == NULL) {
-					sleep(2);
-				}
+				
 				if (tx_info) {
-					retval = ln_wait_for_tx_block_height(chips_get_block_height_from_block_hash(
-						chips_get_block_hash_from_txid(cJSON_Print(tx_info))));
-					if (retval == 0)
-						return retval;
+					dlg_info(" %f CHIPS transferred from CHIPS to LN wallet, tx_id :: ",amount, cJSON_Print(tx_info));
+					//The below while loop is to wait for the tx to be mined.
+					while (chips_get_block_hash_from_txid(cJSON_Print(tx_info)) == NULL) {
+						sleep(2);
+					}
+					chips_bh = chips_get_block_height_from_block_hash(chips_get_block_hash_from_txid(cJSON_Print(tx_info)));
+					do {
+						sleep(2);
+						ln_bh = ln_block_height();						
+					}while(ln_bh < chips_bh);
+				} else {
+					retval = 0;
+					dlg_error("Automatic loading of the LN wallet from the CHIPS wallet is failed");
 				}
+			} else {
+				retval = 0;
+				dlg_warn("Even CHIPS wallet is short of (%f CHIPS) the funds...try loading either CHIPS or LN wallet manually", amount);
 			}
 		}
 
+		if(retval = 0)
+			goto end;
+		
 		fund_channel_info = ln_fund_channel(jstr(connect_info, "id"), channel_fund_satoshis);
 		if ((retval = jint(fund_channel_info, "code")) != 0) {
 			return retval;
@@ -1818,7 +1805,8 @@ int32_t ln_establish_channel(char *uri)
 			sleep(2);
 		}
 	}
-	return retval;
+	end:
+		return retval;
 }
 
 char *bet_git_version()
