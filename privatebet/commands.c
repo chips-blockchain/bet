@@ -1767,7 +1767,7 @@ int32_t ln_establish_channel(char *uri)
 				cJSON *tx_info = chips_deposit_to_ln_wallet(amount + chips_tx_fee);
 				
 				if (tx_info) {
-					dlg_info(" %f CHIPS transferred from CHIPS to LN wallet, tx_id :: ",amount, cJSON_Print(tx_info));
+					dlg_info(" %f CHIPS transferred from CHIPS to LN wallet, tx_id :: %s",amount, cJSON_Print(tx_info));
 					//The below while loop is to wait for the tx to be mined.
 					while (chips_get_block_hash_from_txid(cJSON_Print(tx_info)) == NULL) {
 						sleep(2);
