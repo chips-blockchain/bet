@@ -112,7 +112,7 @@ void bet_check_cashier_nodes()
 {
 	bet_check_cashiers_status();
 
-	if (live_notaries <= threshold_value) {
+	if (live_notaries < threshold_value) {
 		dlg_warn(
 			"The cashier nodes available are :: %d  whic is less than the required number of cashier nodes i.e ::%d",
 			live_notaries, threshold_value);
