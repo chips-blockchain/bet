@@ -1761,35 +1761,40 @@ int32_t ln_establish_channel(char *uri)
 			amount = channel_fund_satoshis - ln_listfunds();
 			amount = amount / satoshis;
 
-			dlg_warn("LN wallet doesn't have sufficient funds, checking to load LN wallet from CHIPS wallet...");
+			dlg_warn(
+				"LN wallet doesn't have sufficient funds, checking to load LN wallet from CHIPS wallet...");
 			if (chips_get_balance() >= (amount + (2 * chips_tx_fee))) {
 				dlg_info("Loading funds from CHIPS to LN wallet...");
 				cJSON *tx_info = chips_deposit_to_ln_wallet(amount + chips_tx_fee);
-				
+
 				if (tx_info) {
-					dlg_info(" %f CHIPS transferred from CHIPS to LN wallet, tx_id :: %s",amount, cJSON_Print(tx_info));
+					dlg_info(" %f CHIPS transferred from CHIPS to LN wallet, tx_id :: %s", amount,
+						 cJSON_Print(tx_info));
 					//The below while loop is to wait for the tx to be mined.
 					while (chips_get_block_hash_from_txid(cJSON_Print(tx_info)) == NULL) {
 						sleep(2);
 					}
-					chips_bh = chips_get_block_height_from_block_hash(chips_get_block_hash_from_txid(cJSON_Print(tx_info)));
+					chips_bh = chips_get_block_height_from_block_hash(
+						chips_get_block_hash_from_txid(cJSON_Print(tx_info)));
 					do {
 						sleep(2);
-						ln_bh = ln_block_height();						
-					}while(ln_bh < chips_bh);
+						ln_bh = ln_block_height();
+					} while (ln_bh < chips_bh);
 				} else {
 					retval = 0;
 					dlg_error("Automatic loading of the LN wallet from the CHIPS wallet is failed");
 				}
 			} else {
 				retval = 0;
-				dlg_warn("Even CHIPS wallet is short of (%f CHIPS) the funds...try loading either CHIPS or LN wallet manually", amount);
+				dlg_warn(
+					"Even CHIPS wallet is short of (%f CHIPS) the funds...try loading either CHIPS or LN wallet manually",
+					amount);
 			}
 		}
 
-		if(retval = 0)
+		if (retval = 0)
 			goto end;
-		
+
 		dlg_info("Funding the LN channel :: %s", jstr(connect_info, "id"));
 		fund_channel_info = ln_fund_channel(jstr(connect_info, "id"), channel_fund_satoshis);
 		if ((retval = jint(fund_channel_info, "code")) != 0) {
@@ -1806,8 +1811,8 @@ int32_t ln_establish_channel(char *uri)
 			sleep(2);
 		}
 	}
-	end:
-		return retval;
+end:
+	return retval;
 }
 
 char *bet_git_version()
