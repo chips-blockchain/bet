@@ -426,6 +426,9 @@ int main(int argc, char **argv)
 				   (strcmp(argv[1], "--version") == 0) || (strcmp(argv[1], "version") == 0))) {
 		dlg_info("%s", bet_git_version());
 
+	} else if ((argc == 2) && (strcmp(argv[1], "spendable") == 0)) {
+		cJSON *spendable_tx = chips_spendable_tx();
+		dlg_info("CHIPS Spendable tx's :: %s\n", cJSON_Print(spendable_tx));
 	} else if ((argc == 3) && (strcmp(argv[1], "dcv") == 0)) {
 		strcpy(dealer_ip, argv[2]);
 		playing_nodes_init();

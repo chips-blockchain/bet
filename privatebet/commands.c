@@ -435,6 +435,32 @@ int32_t chips_publish_multisig_tx(char *tx)
 	return retval;
 }
 
+
+cJSON *chips_spendable_tx()
+{
+	char **argv = NULL;
+	int argc;
+	cJSON *listunspent_info = NULL, *spendable_txs = NULL;
+
+
+	argc = 3;
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, "chips-cli", "listunspent", " > listunspent.log");
+	make_command(argc, argv, &listunspent_info);
+	bet_dealloc_args(argc, &argv);
+
+	spendable_txs = cJSON_CreateArray();
+	for (int i = 0; i < cJSON_GetArraySize(listunspent_info); i++) { 
+		cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
+		if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "spendable")), "true") == 0) {
+			cJSON_AddItemToArray(spendable_txs,temp);
+		}
+	}
+
+	return spendable_txs;
+}
+
+
 cJSON *chips_create_raw_tx(double amount, char *address)
 {
 	char **argv = NULL, *changeAddress = NULL, params[2][arg_size] = { 0 };

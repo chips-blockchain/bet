@@ -23,6 +23,7 @@ cJSON *chips_transfer_funds(double amount, char *address);
 cJSON *chips_send_raw_tx(cJSON *signed_tx);
 cJSON *chips_sign_raw_tx_with_wallet(char *raw_tx);
 int32_t chips_publish_multisig_tx(char *tx);
+cJSON *chips_spendable_tx();
 cJSON *chips_create_raw_tx(double amount, char *address);
 int32_t chips_get_block_count();
 void check_ln_chips_sync();
