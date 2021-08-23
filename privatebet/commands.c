@@ -442,7 +442,6 @@ cJSON *chips_spendable_tx()
 	int argc;
 	cJSON *listunspent_info = NULL, *spendable_txs = NULL;
 
-
 	argc = 3;
 	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "chips-cli", "listunspent", " > listunspent.log");
@@ -450,13 +449,12 @@ cJSON *chips_spendable_tx()
 	bet_dealloc_args(argc, &argv);
 
 	spendable_txs = cJSON_CreateArray();
-	for (int i = 0; i < cJSON_GetArraySize(listunspent_info); i++) { 
+	for (int i = 0; i < cJSON_GetArraySize(listunspent_info); i++) { 		 
 		cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
 		if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "spendable")), "true") == 0) {
-			cJSON_AddItemToArray(spendable_txs,temp);
+			cJSON_AddItemReferenceToArray(spendable_txs,temp);
 		}
 	}
-
 	return spendable_txs;
 }
 
