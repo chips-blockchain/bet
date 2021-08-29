@@ -28,7 +28,7 @@ The significance of each field is mentioned as follows:
 * __seat__ : This value referes to the relative positioning of the player on the table. The front end GUI which `pangea-poker-frontend` has 
 max table size of **9**.
 * __stack__: This value refers to the amount of funds that each player is having at the begining of the game.
-* __empty__: I didn't used this field abywhere in the frontend GUI, can be considered optional.
+* __empty__: I didn't used this field anywhere in the frontend GUI, can be considered optional.
 * __playing__: This field is used to make the seat available for playing, so tha any players can chose the seat with with value **1** and join the table.
 
 In the GUI you can see the two seats which appear after the receiving of the seats information by DCV as shown below ![after_seats](./images/after_seats.png)
