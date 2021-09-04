@@ -19,7 +19,7 @@ cJSON *bet_read_json_file(char *file_name)
 
 	fp = fopen(file_name, "r");
 	if (fp == NULL) {
-		printf("%s::%d::Failed to open %s\n", __FUNCTION__, __LINE__, file_name);
+		dlg_error("Failed to open file %s\n", file_name);
 		goto end;
 	} else {
 		while (fgets(buf, buf_size, fp) != NULL) {
@@ -48,12 +48,15 @@ end:
 void bet_parse_dealer_config_file()
 {
 	cJSON *config_info = NULL;
+	char type[10];
 
 	config_info = bet_read_json_file(dealer_config_file);
 	if (config_info) {
 		max_players = jint(config_info, "max_players");
 		table_stack_in_chips = jdouble(config_info, "table_stack_in_chips");
 		chips_tx_fee = jdouble(config_info, "chips_tx_fee");
+		strcpy(type, jstr(config_info, "type"));
+		dlg_info("LN address type :: %s\n", type);
 	}
 }
 

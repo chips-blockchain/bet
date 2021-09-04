@@ -1,7 +1,8 @@
 #include "bet.h"
 
-#define arg_size 8192
+#define arg_size 16384
 #define tx_data_size 4196
+#define ln_uri_length 200
 
 int32_t bet_alloc_args(int argc, char ***argv);
 void bet_dealloc_args(int argc, char ***argv);
@@ -39,7 +40,7 @@ cJSON *chips_sign_msig_tx(char *ip, cJSON *raw_tx);
 cJSON *chips_spend_msig_txs(char *to_addr, int no_of_txs, char tx_ids[][100]);
 cJSON *chips_get_raw_tx(char *tx);
 cJSON *chips_decode_raw_tx(cJSON *raw_tx);
-int32_t chips_validate_tx(char *tx);
+void chips_validate_tx(char *tx);
 int32_t chips_extract_data(char *tx, char **rand_str);
 cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data);
 cJSON *chips_transfer_funds_with_data(double amount, char *address, char *data);
@@ -54,14 +55,20 @@ int32_t run_command(int argc, char **argv);
 int32_t make_command(int argc, char **argv, cJSON **argjson);
 
 char *ln_get_new_address();
+#if 0 //obsolated in new ln repo
 int32_t ln_dev_block_height();
+#endif
+int32_t ln_block_height();
 int32_t ln_listfunds();
-int32_t ln_get_uri(char **uri);
+char *ln_get_uri(char **uri);
 int32_t ln_connect_uri(char *uri);
 cJSON *ln_fund_channel(char *channel_id, int32_t channel_fund_satoshi);
 int32_t ln_pay(char *bolt11);
 cJSON *ln_connect(char *id);
+int32_t ln_check_if_address_isof_type(char *type);
 void ln_check_peer_and_connect(char *id);
 int32_t ln_get_channel_status(char *id);
 int32_t ln_wait_for_tx_block_height(int32_t block_height);
 int32_t ln_establish_channel(char *uri);
+
+char *bet_git_version();

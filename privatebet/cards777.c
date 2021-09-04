@@ -32,7 +32,7 @@ int32_t bet_permutation(int32_t *permi, int32_t numcards)
 		pos = (x % n);
 		// fprintf(stderr,"%d ",pos);
 		if (desti[pos] == -1) {
-			printf("n.%d unexpected pos.%d\n", n, pos);
+			dlg_error("n.%d unexpected pos.%d\n", n, pos);
 			continue;
 		}
 		permi[i++] = desti[pos];
@@ -45,16 +45,16 @@ int32_t bet_permutation(int32_t *permi, int32_t numcards)
 		SETBIT(mask, permi[i]);
 	for (i = nonz = 0; i < numcards; i++)
 		if (GETBIT(mask, i) == 0)
-			printf("err.%d ", i), nonz++;
+			dlg_error("err.%d ", i), nonz++;
 	if (nonz != 0) {
 		for (i = 0; i < numcards; i++)
-			printf("%d ", desti[i]);
-		printf("missing bits.%d\n", nonz);
+			dlg_info("%d ", desti[i]);
+		dlg_info("missing bits.%d\n", nonz);
 		return (-nonz);
 	} else if ((0)) {
 		for (i = 0; i < numcards; i++)
-			printf("%d ", permi[i]);
-		printf("PERMI.%d\n", numcards);
+			dlg_info("%d ", permi[i]);
+		dlg_info("PERMI.%d\n", numcards);
 	}
 	return 0;
 }
@@ -95,9 +95,9 @@ uint8_t *bet_decrypt(uint8_t *decoded, int32_t maxsize, bits256 senderpub, bits2
 		int32_t i;
 		char str[65];
 		for (i = 0; i < recvlen; i++)
-			printf("%02x", ptr[i]);
-		printf(" decrypt [%llx] recvlen.%d crc32.%u %s\n", *(long long *)ptr, recvlen,
-		       calc_crc32(0, cipher, cipherlen), bits256_str(str, curve25519(mypriv, senderpub)));
+			dlg_info("%02x", ptr[i]);
+		dlg_info(" decrypt [%llx] recvlen.%d crc32.%u %s\n", *(long long *)ptr, recvlen,
+			 calc_crc32(0, cipher, cipherlen), bits256_str(str, curve25519(mypriv, senderpub)));
 	}
 	if (cipherlen > 0 && cipherlen <= maxsize) {
 		if ((dest = _SuperNET_decipher(nonce, cipher, decoded, cipherlen, senderpub, mypriv)) != 0) {
@@ -105,12 +105,12 @@ uint8_t *bet_decrypt(uint8_t *decoded, int32_t maxsize, bits256 senderpub, bits2
 			if ((0)) {
 				int32_t i;
 				for (i = 0; i < recvlen; i++)
-					printf("%02x", dest[i]);
-				printf(" decrypted\n");
+					dlg_info("%02x", dest[i]);
+				dlg_info(" decrypted");
 			}
 		}
 	} else
-		printf("cipher.%d too big for %d\n", cipherlen, maxsize);
+		dlg_info("cipher.%d too big for %d\n", cipherlen, maxsize);
 	*recvlenp = recvlen;
 	return (dest);
 }

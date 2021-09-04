@@ -1,3 +1,4 @@
+![example workflow](https://github.com/sg777/bet/actions/workflows/c-cpp.yml/badge.svg)
 # Pangea-Bet
 
 The aim of this project is to provide the necessary bet API's which are sufficient to play poker from the command line. The initial draft of the game written by jl777 is [here](./docs/BET_Initial_Draft.md).
@@ -48,7 +49,27 @@ Below are the list of the ports used and should be remained open incase if you h
 
 ### Compilation Guidelines
 
-Steps to compile this repo is mentioned in [compile.md](./docs/compile.md). 
+Install Dependencies:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y \
+  autoconf automake build-essential git libtool libgmp-dev \
+  libsqlite3-dev python3 net-tools zlib1g-dev libsodium-dev \
+  gettext wget libcurl3-gnutls ninja-build libssl-dev \
+  libcurl4-gnutls-dev libevent-dev
+```
+
+Then clone this repo and build the binaries
+
+```bash
+git clone https://github.com/chips-blockchain/bet
+cd bet
+./configure
+make
+```
+
+Steps to compile this repo and all the other required dependencies to play Pangea Poker are mentioned in [compile.md](./docs/protocol/compile.md).
 
 ### Docker Setup
 

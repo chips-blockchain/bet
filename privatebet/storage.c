@@ -33,7 +33,7 @@ void sqlite3_init_db_name()
 	char *homedir = pw->pw_dir;
 	db_name = calloc(1, 200);
 	sprintf(db_name, "%s/.bet/db/pangea.db", homedir);
-	printf("%s::%d::db_name::%s\n", __FUNCTION__, __LINE__, db_name);
+	dlg_info("db_name::%s\n", db_name);
 }
 
 int32_t sqlite3_check_if_table_id_exists(const char *table_id)
@@ -49,7 +49,7 @@ int32_t sqlite3_check_if_table_id_exists(const char *table_id)
 	sprintf(sql_query, "select count(table_id) from c_tx_addr_mapping where table_id = \"%s\";", table_id);
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
-		printf("error: %s::%s", sqlite3_errmsg(db), sql_query);
+		dlg_error(": %s::%s", sqlite3_errmsg(db), sql_query);
 		goto end;
 	}
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
@@ -78,11 +78,11 @@ int32_t sqlite3_check_if_table_exists(sqlite3 *db, const char *table_name)
 	sprintf(sql_query, "select name from sqlite_master where type = \"table\" and name =\"%s\";", table_name);
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
-		printf("error: %s::%s", sqlite3_errmsg(db), sql_query);
+		dlg_error(": %s::%s", sqlite3_errmsg(db), sql_query);
 		goto end;
 	}
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
-		const char *name = sqlite3_column_text(stmt, 0);
+		const char *name = (const char *)sqlite3_column_text(stmt, 0);
 		if (strcmp(name, table_name) == 0) {
 			retval = 1;
 			break;
@@ -171,7 +171,7 @@ void bet_sqlite3_init()
 {
 	sqlite3_init_db_name();
 	bet_create_schema();
-	printf("DB Schema creation is done\n");
+	dlg_info("DB Schema creation is done");
 }
 
 int32_t sqlite3_delete_dealer(char *dealer_ip)
@@ -200,12 +200,12 @@ cJSON *sqlite3_get_dealer_info_details()
 	sprintf(sql_query, "SELECT dealer_ip FROM dealers_info;");
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
-		printf("error: %s::%s", sqlite3_errmsg(db), sql_query);
+		dlg_error(": %s::%s", sqlite3_errmsg(db), sql_query);
 		goto end;
 	}
 	dealers_info = cJSON_CreateArray();
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
-		cJSON_AddItemToArray(dealers_info, cJSON_CreateString(sqlite3_column_text(stmt, 0)));
+		cJSON_AddItemToArray(dealers_info, cJSON_CreateString((const char *)sqlite3_column_text(stmt, 0)));
 	}
 	sqlite3_finalize(stmt);
 end:
@@ -230,18 +230,18 @@ cJSON *sqlite3_get_game_details(int32_t opt)
 		sprintf(sql_query, "select * from player_tx_mapping;");
 	else
 		sprintf(sql_query, "select * from player_tx_mapping where status = %d;", opt);
-	printf("%s::%d::sql_query::%s\n", __FUNCTION__, __LINE__, sql_query);
+	dlg_info("sql_query::%s\n", sql_query);
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
-		printf("error: %s::%s", sqlite3_errmsg(db), sql_query);
+		dlg_error(" sql error :: %s in running the sql query :: %s", sqlite3_errmsg(db), sql_query);
 		goto end;
 	}
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
 		cJSON *game_obj = cJSON_CreateObject();
-		cJSON_AddStringToObject(game_obj, "table_id", sqlite3_column_text(stmt, 1));
-		cJSON_AddStringToObject(game_obj, "tx_id", sqlite3_column_text(stmt, 0));
-		cJSON_AddStringToObject(game_obj, "player_id", sqlite3_column_text(stmt, 2));
-		cJSON_AddStringToObject(game_obj, "msig_addr_nodes", sqlite3_column_text(stmt, 3));
+		cJSON_AddStringToObject(game_obj, "table_id", (const char *)sqlite3_column_text(stmt, 1));
+		cJSON_AddStringToObject(game_obj, "tx_id", (const char *)sqlite3_column_text(stmt, 0));
+		cJSON_AddStringToObject(game_obj, "player_id", (const char *)sqlite3_column_text(stmt, 2));
+		cJSON_AddStringToObject(game_obj, "msig_addr_nodes", (const char *)sqlite3_column_text(stmt, 3));
 		cJSON_AddNumberToObject(game_obj, "status", sqlite3_column_int(stmt, 4));
 		cJSON_AddNumberToObject(game_obj, "min_cashiers", sqlite3_column_int(stmt, 5));
 		cJSON_AddStringToObject(game_obj, "addr", chips_get_wallet_address());
@@ -250,11 +250,12 @@ cJSON *sqlite3_get_game_details(int32_t opt)
 
 		rc = sqlite3_prepare_v2(db, sql_sub_query, -1, &sub_stmt, NULL);
 		if (rc != SQLITE_OK) {
-			printf("error: %s::%s", sqlite3_errmsg(db), sql_sub_query);
+			dlg_error(" sql error :: %s in running the sql query :: %s", sqlite3_errmsg(db), sql_sub_query);
 			goto end;
 		}
 		while ((rc = sqlite3_step(sub_stmt)) == SQLITE_ROW) {
-			cJSON_AddItemToObject(game_obj, "game_state", cJSON_Parse(sqlite3_column_text(sub_stmt, 1)));
+			cJSON_AddItemToObject(game_obj, "game_state",
+					      cJSON_Parse((const char *)sqlite3_column_text(sub_stmt, 1)));
 		}
 		sqlite3_finalize(sub_stmt);
 		memset(sql_sub_query, 0x00, sql_query_size);
@@ -283,7 +284,7 @@ cJSON *bet_show_fail_history()
 	sprintf(sql_query, "SELECT table_id,tx_id FROM player_tx_mapping WHERE payout_tx_id is null;");
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
-		printf("error: %s::%s", sqlite3_errmsg(db), sql_query);
+		dlg_error("sql error :: %s in running the sql query :: %s", sqlite3_errmsg(db), sql_query);
 		goto end;
 	}
 
@@ -294,8 +295,8 @@ cJSON *bet_show_fail_history()
 
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
 		cJSON *game_obj = cJSON_CreateObject();
-		cJSON_AddStringToObject(game_obj, "table_id", sqlite3_column_text(stmt, 0));
-		cJSON_AddStringToObject(game_obj, "tx_id", sqlite3_column_text(stmt, 1));
+		cJSON_AddStringToObject(game_obj, "table_id", (const char *)sqlite3_column_text(stmt, 0));
+		cJSON_AddStringToObject(game_obj, "tx_id", (const char *)sqlite3_column_text(stmt, 1));
 
 		memset(hex_data, 0x00, 2 * tx_data_size);
 		memset(data, 0x00, tx_data_size);
@@ -333,7 +334,7 @@ cJSON *bet_show_success_history()
 
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
-		printf("error: %s::%s", sqlite3_errmsg(db), sql_query);
+		dlg_error("sql error :: %s in running the sql query :: %s", sqlite3_errmsg(db), sql_query);
 		goto end;
 	}
 
@@ -344,8 +345,8 @@ cJSON *bet_show_success_history()
 
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
 		cJSON *game_obj = cJSON_CreateObject();
-		cJSON_AddStringToObject(game_obj, "table_id", sqlite3_column_text(stmt, 0));
-		cJSON_AddStringToObject(game_obj, "payout_tx_id", sqlite3_column_text(stmt, 1));
+		cJSON_AddStringToObject(game_obj, "table_id", (const char *)sqlite3_column_text(stmt, 0));
+		cJSON_AddStringToObject(game_obj, "payout_tx_id", (const char *)sqlite3_column_text(stmt, 1));
 
 		memset(hex_data, 0x00, 2 * tx_data_size);
 		memset(data, 0x00, tx_data_size);

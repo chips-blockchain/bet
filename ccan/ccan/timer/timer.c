@@ -2,7 +2,6 @@
 #include <ccan/timer/timer.h>
 #include <ccan/array_size/array_size.h>
 #include <ccan/ilog/ilog.h>
-#include <ccan/likely/likely.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -11,6 +10,30 @@
 struct timer_level {
 	struct list_head list[PER_LEVEL];
 };
+
+static void *timer_default_alloc(struct timers *timers, size_t len)
+{
+	return malloc(len);
+}
+
+static void timer_default_free(struct timers *timers, void *p)
+{
+	free(p);
+}
+
+static void *(*timer_alloc)(struct timers *, size_t) = timer_default_alloc;
+static void (*timer_free)(struct timers *, void *) = timer_default_free;
+
+void timers_set_allocator(void *(*alloc)(struct timers *, size_t len),
+			  void (*free)(struct timers *, void *p))
+{
+	if (!alloc)
+		alloc = timer_default_alloc;
+	if (!free)
+		free = timer_default_free;
+	timer_alloc = alloc;
+	timer_free = free;
+}
 
 static uint64_t time_to_grains(struct timemono t)
 {
@@ -74,7 +97,7 @@ void timer_init(struct timer *t)
 	list_node_init(&t->list);
 }
 
-static bool list_node_initted(const struct list_node *n)
+static inline bool list_node_initted(const struct list_node *n)
 {
 	return n->prev == n;
 }
@@ -85,13 +108,10 @@ void timer_addrel(struct timers *timers, struct timer *t, struct timerel rel)
 
 	t->time = time_to_grains(timemono_add(time_mono(), rel));
 
-#if TIME_HAVE_MONOTONIC
-	assert(t->time >= timers->base);
-#else
 	/* Added in the past?  Treat it as imminent. */
 	if (t->time < timers->base)
 		t->time = timers->base;
-#endif
+
 	if (t->time < timers->first)
 		timers->first = t->time;
 
@@ -140,7 +160,7 @@ static void add_level(struct timers *timers, unsigned int level)
 	unsigned int i;
 	struct list_head from_far;
 
-	l = malloc(sizeof(*l));
+	l = timer_alloc(timers, sizeof(*l));
 	if (!l)
 		return;
 
@@ -323,7 +343,11 @@ struct timer *timers_expire(struct timers *timers, struct timemono expire)
 	unsigned int off;
 	struct timer *t;
 
-	assert(now >= timers->base);
+	/* This can happen without TIME_HAVE_MONOTONIC, but I also have
+	 * a report of OpenBSD 6.8 under virtualbox doing this. */
+	if (now < timers->base) {
+		return NULL;
+	}
 
 	if (!timers->level[0]) {
 		if (list_empty(&timers->far))
@@ -521,5 +545,5 @@ void timers_cleanup(struct timers *timers)
 	unsigned int l;
 
 	for (l = 0; l < ARRAY_SIZE(timers->level); l++)
-		free(timers->level[l]);
+		timer_free(timers, timers->level[l]);
 }

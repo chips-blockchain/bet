@@ -1,0 +1,26 @@
+var structprivatebet__info =
+[
+    [ "cardid", "d0/d9f/structprivatebet__info.html#ac1a593b6b04f50e52892def22a3fdd53", null ],
+    [ "cardpubs", "d0/d9f/structprivatebet__info.html#a8f79ab33689ddb0e10858491ec02a896", null ],
+    [ "chipsize", "d0/d9f/structprivatebet__info.html#a1f4c834e20b87839446da22179d2e58b", null ],
+    [ "deckid", "d0/d9f/structprivatebet__info.html#ac742825adc9a2808a8e0d18390e18b24", null ],
+    [ "game", "d0/d9f/structprivatebet__info.html#a9f134d6dc6e24c2382cc9a937a8c4fd9", null ],
+    [ "maxchips", "d0/d9f/structprivatebet__info.html#a195fee78bb1a26504e4920dafea3b195", null ],
+    [ "maxplayers", "d0/d9f/structprivatebet__info.html#a2d44b99e9160029507e6e0d04b92dbd4", null ],
+    [ "MofN", "d0/d9f/structprivatebet__info.html#ac33fc414297eac35e0e50eefcce9e358", null ],
+    [ "msg", "d0/d9f/structprivatebet__info.html#a256ab6b96f4e57798f0d439dcfe234e5", null ],
+    [ "myplayerid", "d0/d9f/structprivatebet__info.html#ad502ebd5a1f56f383db682da311e813e", null ],
+    [ "no_of_turns", "d0/d9f/structprivatebet__info.html#ad37d01428dc307e9deaf5768596e94ef", null ],
+    [ "numplayers", "d0/d9f/structprivatebet__info.html#a8a60dda249031fc496a0307c34f3cb69", null ],
+    [ "numrounds", "d0/d9f/structprivatebet__info.html#ae9386be7e568fdb22e00cb600834fc7b", null ],
+    [ "peerids", "d0/d9f/structprivatebet__info.html#a3aa8ce19463aa786e93e92ac4759a6bd", null ],
+    [ "playerpubs", "d0/d9f/structprivatebet__info.html#ad834b583e3a2f3b8607420c42751e376", null ],
+    [ "pubsock", "d0/d9f/structprivatebet__info.html#a2443f8a982fb92f3cab78d35d54aeb24", null ],
+    [ "pullsock", "d0/d9f/structprivatebet__info.html#a5a624f46decb6be461ec1e4edc0cc140", null ],
+    [ "pushsock", "d0/d9f/structprivatebet__info.html#aa04b8bcf4acf5ced8cfeaa006cc69249", null ],
+    [ "range", "d0/d9f/structprivatebet__info.html#af01242479bf0e4175782043883b177f8", null ],
+    [ "subsock", "d0/d9f/structprivatebet__info.html#adf0111f2d0328b929100e926427b5ced", null ],
+    [ "tableid", "d0/d9f/structprivatebet__info.html#a2092f6f498aad90aa677505b82e48c9e", null ],
+    [ "timestamp", "d0/d9f/structprivatebet__info.html#a41d485812c76258fe86aa2ebb0a43e3b", null ],
+    [ "turni", "d0/d9f/structprivatebet__info.html#a4a3070b8d22e8ce276a72d45db56353e", null ]
+];
