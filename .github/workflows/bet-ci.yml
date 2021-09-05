@@ -51,11 +51,11 @@ jobs:
     - name: List files
       run: |
         pwd && \
-        tar -czvf bet-linux-$(printf '%s' ${{ steps.extract_branch.outputs.branch }}.tar.gz privatebet/bet privatebet/config && \
-        ls -lh bet-linux-$(printf '%s' ${{ steps.extract_branch.outputs.branch }}.tar.gz
+        tar -czvf bet-linux-$(printf '%s' ${{ steps.extract_branch.outputs.branch }}).tar.gz privatebet/bet privatebet/config && \
+        ls -lh bet-linux-$(printf '%s' ${{ steps.extract_branch.outputs.branch }}).tar.gz
 
     - name: Upload bet-linux release files
       uses: actions/upload-artifact@v2
       with:
-        name: bet-linux-$(printf '%s' ${{ steps.extract_branch.outputs.branch }}.tar.gz
-        path: /home/runner/work/bet/bet/bet-linux-$(printf '%s' ${{ steps.extract_branch.outputs.branch }}.tar.gz
+        name: bet-linux-$(printf '%s' ${{ steps.extract_branch.outputs.branch }}).tar.gz
+        path: /home/runner/work/bet/bet/bet-linux-$(printf '%s' ${{ steps.extract_branch.outputs.branch }}).tar.gz
