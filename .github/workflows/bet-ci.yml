@@ -39,17 +39,23 @@ jobs:
       
     - name: make
       run: make
-    
-    - name: List files
-      run: |
-        pwd && \
-        tar -czvf bet-linux-$(printf '%s' $(git describe --always)).tar.gz privatebet/bet privatebet/config && \
-        ls -lh bet-linux-$(printf '%s' $(git describe --always)).tar.gz
-    
+      
     - name: Extract branch name
       shell: bash
       run: echo "##[set-output name=branch;]$(echo $(git describe --always))"
       id: extract_branch
 
-    - name: Show Git Describe
-      run: echo ${{ steps.extract_branch.outputs.branch }}
+    # - name: Show Git Describe
+    #   run: echo ${{ steps.extract_branch.outputs.branch }}
+
+    - name: List files
+      run: |
+        pwd && \
+        tar -czvf bet-linux-$(printf '%s' ${{ steps.extract_branch.outputs.branch }}.tar.gz privatebet/bet privatebet/config && \
+        ls -lh bet-linux-$(printf '%s' ${{ steps.extract_branch.outputs.branch }}.tar.gz
+
+    - name: Upload bet-linux release files
+      uses: actions/upload-artifact@v2
+      with:
+        name: bet-linux-$(printf '%s' ${{ steps.extract_branch.outputs.branch }}.tar.gz
+        path: /home/runner/work/bet/bet/bet-linux-$(printf '%s' ${{ steps.extract_branch.outputs.branch }}.tar.gz
