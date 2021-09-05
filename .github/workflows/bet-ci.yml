@@ -46,3 +46,10 @@ jobs:
         tar -czvf bet-linux-$(printf '%s' $(git describe --always)).tar.gz privatebet/bet privatebet/config && \
         ls -lh bet-linux-$(printf '%s' $(git describe --always)).tar.gz
     
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo $(git describe --always))"
+      id: extract_branch
+
+    - name: Show Git Describe
+      run: echo ${{ steps.extract_branch.outputs.branch }}
