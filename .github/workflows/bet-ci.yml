@@ -9,7 +9,7 @@ on:
         - '**'
 jobs:
 
-  build:
+  linux-build:
     runs-on: ubuntu-18.04
 
     steps:
@@ -42,6 +42,6 @@ jobs:
     - name: List files
       run: |
         pwd && \
-        tar -czvf bet-linux-$(printf '%s' $(git describe)).tar.gz privatebet/bet privatebet/config && \
-        ls -lh bet-linux-$(printf '%s' $(git describe)).tar.gz
+        tar -czvf bet-linux-$(printf '%s' $(git describe --always)).tar.gz privatebet/bet privatebet/config && \
+        ls -lh bet-linux-$(printf '%s' $(git describe --always)).tar.gz
     
