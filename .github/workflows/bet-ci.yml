@@ -52,7 +52,7 @@ jobs:
       run: |
         pwd && \
         tar -czvf bet-linux-$(printf '%s' ${{ steps.extract_branch.outputs.branch }}).tar.gz privatebet/bet privatebet/config && \
-        ls -lh bet-linux-$(printf '%s' ${{ steps.extract_branch.outputs.branch }}).tar.gz
+        ls -lh  $(pwd)/bet-linux-$(printf '%s' ${{ steps.extract_branch.outputs.branch }}).tar.gz
 
     - name: Upload bet-linux release files
       uses: actions/upload-artifact@v2
