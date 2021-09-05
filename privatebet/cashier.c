@@ -117,10 +117,12 @@ void bet_check_cashier_nodes()
 	} else {
 		dlg_info("Notary node status");
 		for (int i = 0; i < no_of_notaries; i++) {
-			if (notary_status[i] == 1)
+			if (notary_status[i] == 1) {
 				dlg_info("%d. %s active\n", i + 1, notary_node_ips[i]);
-			else
+			}
+			else {
 				dlg_info("%d. %s not active\n", i + 1, notary_node_ips[i]);
+			}
 		}
 	}
 }
@@ -400,8 +402,9 @@ void bet_cashier_status_loop(void *_ptr)
 	bytes = nn_send(cashier_info->c_pushsock, cJSON_Print(cashier_info->msg),
 			strlen(cJSON_Print(cashier_info->msg)), 0);
 
-	if (bytes < 0)
+	if (bytes < 0) {
 		dlg_error("Failed to send data\n");
+	}
 	else {
 		while (cashier_info->c_pushsock >= 0 && cashier_info->c_subsock >= 0) {
 			ptr = 0;

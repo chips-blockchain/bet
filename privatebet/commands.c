@@ -1634,10 +1634,12 @@ int32_t ln_pay(char *bolt11)
 		goto end;
 	}
 
-	if (strcmp(jstr(pay_response, "status"), "complete") == 0)
+	if (strcmp(jstr(pay_response, "status"), "complete") == 0) {
 		dlg_info("Payment Success");
-	else
+	}
+	else {
 		retval = -1;
+	}
 end:
 	bet_dealloc_args(argc, &argv);
 	return retval;

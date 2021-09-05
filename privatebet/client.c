@@ -452,10 +452,12 @@ int32_t ln_pay_invoice(cJSON *argjson, struct privatebet_info *bet, struct priva
 			goto end;
 		}
 
-		if (strcmp(jstr(pay_response, "status"), "complete") == 0)
+		if (strcmp(jstr(pay_response, "status"), "complete") == 0) {
 			dlg_info("Payment Success");
-		else
+		}
+		else {
 			retval = -1;
+		}
 	}
 end:
 	if (argv) {
@@ -504,10 +506,12 @@ static int32_t bet_player_betting_invoice(cJSON *argjson, struct privatebet_info
 			goto end;
 		}
 
-		if (strcmp(jstr(pay_response, "status"), "complete") == 0)
+		if (strcmp(jstr(pay_response, "status"), "complete") == 0) {
 			dlg_info("Payment Success");
-		else
+		}
+		else {
 			retval = -1;
+		}
 
 		rendered = cJSON_Print(action_response);
 		bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
@@ -977,10 +981,12 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 		channel_state = ln_get_channel_status(channel_id);
 		if ((channel_state != CHANNELD_AWAITING_LOCKIN) && (channel_state != CHANNELD_NORMAL)) {
 			retval = ln_establish_channel(uri);
-			if (retval == 1)
+			if (retval == 1) {
 				dlg_info("Channel Established");
-			else
+			}
+			else {
 				dlg_info("Channel Didn't Established");
+			}
 		} else {
 			dlg_info("There isn't any pre-established channel with the dealer, so creating one now");
 			strcpy(uri, jstr(argjson, "uri"));
