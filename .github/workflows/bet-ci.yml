@@ -22,7 +22,13 @@ jobs:
       run: sudo apt-get update
       
     - name: Installing dependencies
-      run: sudo apt-get install software-properties-common autoconf git build-essential libtool libprotobuf-c-dev libgmp-dev libsqlite3-dev python python3 python3-mako zip libevent-dev pkg-config libssl-dev libcurl4-gnutls-dev make libboost-all-dev automake jq wget ninja-build libsqlite3-dev libgmp3-dev valgrind libcli-dev libsecp256k1-dev libsodium-dev libbase58-dev nano
+      run: |
+        sudo apt-get install software-properties-common autoconf git \
+        build-essential libtool libprotobuf-c-dev libgmp-dev libsqlite3-dev \
+        python python3 python3-mako zip libevent-dev pkg-config \
+        libssl-dev libcurl4-gnutls-dev make libboost-all-dev automake \
+        jq wget ninja-build libsqlite3-dev libgmp3-dev valgrind libcli-dev \
+        libsecp256k1-dev libsodium-dev libbase58-dev nano
       
     - name: Installing Ninja
       run: sudo apt install ninja-build
@@ -34,4 +40,8 @@ jobs:
       run: make
     
     - name: List files
-      run: ls -lhaR privatebet
+      run: |
+        pwd && \
+        tar -czvf bet-linux-$(printf '%s' $(git describe)).tar.gz privatebet/bet privatebet/config && \
+        ls -lh bet-linux-$(printf '%s' $(git describe)).tar.gz
+    
