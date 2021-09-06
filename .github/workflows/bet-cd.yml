@@ -1,4 +1,4 @@
-name: bet CI
+name: bet CD
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
       run: sudo apt install ninja-build
       
     - name: configure
-      run: ./configure
+      run: ./configure --enable-static
       
     - name: make
       run: make
