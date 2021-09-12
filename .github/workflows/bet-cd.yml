@@ -31,9 +31,6 @@ jobs:
         jq wget ninja-build libsqlite3-dev libgmp3-dev valgrind libcli-dev \
         libsecp256k1-dev libsodium-dev libbase58-dev nano
       
-    - name: Installing mingw
-      run: sudo apt install mingw-w64
-    
     - name: Installing Ninja
       run: sudo apt install ninja-build
       
