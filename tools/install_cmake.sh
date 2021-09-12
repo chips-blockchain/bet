@@ -1,7 +1,7 @@
 #!/bin/bash
 ARCH=$(uname -m)
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    if [[ $ARCH == "aarch64"* ]]; then
+    if [[ $ARCH == "aarch64"* ]] || [[ $ARCH == "armv7l"* ]]; then
         echo '$ARCH equals'
         if [ ! -f external/cmake/bin/cmake ];
         then
