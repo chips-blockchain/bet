@@ -14,3 +14,6 @@
 [submodule "external/libwebsockets"]
 	path = external/libwebsockets
 	url = https://github.com/warmcat/libwebsockets
+[submodule "external/cmake"]
+	path = external/cmake
+	url = https://github.com/Kitware/CMake.git
