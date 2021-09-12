@@ -3,7 +3,8 @@ SUBMODULES =					\
 	external/jsmn				\
 	external/nng				\
 	external/libwebsockets			\
-	external/dlg
+	external/dlg 		\
+	external/cmake
 
 TOP := ../..
 ifdef BUILD
@@ -103,12 +104,12 @@ $(TARGET_DIR)/libdlg.a: $(TARGET_DIR)/dlg-build/dlg.o
 
 ${TARGET_DIR}/libnng.a: external/nng/include/nng/nng.h
 	mkdir -p $(TARGET_DIR)/libnng-build
-	cd $(TARGET_DIR)/libnng-build && cmake -G Ninja $(TOP)/nng \
+	cd $(TARGET_DIR)/libnng-build && PATH=$(shell pwd)/external/cmake/bin:${PATH} cmake -G Ninja $(TOP)/nng \
 	&& ninja && cp -av libnng.a .. 
 
 ${TARGET_DIR}/libwebsockets.a: external/libwebsockets/include/libwebsockets.h
 	mkdir -p $(TARGET_DIR)/libwebsockets-build
-	cd $(TARGET_DIR)/libwebsockets-build && cmake -DLWS_WITH_HTTP2=1 -DLWS_WITH_NO_LOGS=ON $(TOP)/libwebsockets \
+	cd $(TARGET_DIR)/libwebsockets-build && PATH=$(shell pwd)/external/cmake/bin:${PATH} cmake -DLWS_WITH_HTTP2=1 -DLWS_WITH_NO_LOGS=ON $(TOP)/libwebsockets \
 	&& $(MAKE) -j4 && cp -av lib/libwebsockets.a ..
 
 distclean: external-distclean

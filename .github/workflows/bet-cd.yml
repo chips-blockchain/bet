@@ -51,7 +51,7 @@ jobs:
     - name: List files
       run: |
         pwd && \
-        tar -czvf bet-linux-${{ steps.extract_git_tag.outputs.branch }}.tar.gz privatebet/bet privatebet/config && \
+        tar -czvf bet-linux-${{ steps.extract_git_tag.outputs.branch }}.tar.gz privatebet/bet privatebet/cashierd privatebet/config && \
         ls -lh bet-linux-${{ steps.extract_git_tag.outputs.branch }}.tar.gz
 
     - name: Upload bet-linux release files
