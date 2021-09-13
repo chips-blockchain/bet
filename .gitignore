@@ -45,3 +45,4 @@ tools/headerversions
 release/
 .DS_Store
 external/arm64-apple-darwin*
+dist/*
