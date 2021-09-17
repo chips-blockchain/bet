@@ -847,7 +847,7 @@ cJSON *bet_msg_cashier_with_response_id(cJSON *argjson, char *cashier_ip, char *
 
 	bytes = nn_send(c_pushsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
 	if (bytes < 0) {
-		dlg_error("Failed to send the data");
+		dlg_warn("Failed to send the data to cashier node :: %s , possibly its not reachable", cashier_ip);
 		return NULL;
 	} else {
 		while (c_pushsock >= 0 && c_subsock >= 0) {
