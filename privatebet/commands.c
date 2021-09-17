@@ -1419,7 +1419,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 		strcat(command, argv[i]);
 		strcat(command, " ");
 	}
-
+	dlg_info("Command::%s", command);
 	/* Open the command for reading. */
 	fp = popen(command, "r");
 	if (fp == NULL) {
