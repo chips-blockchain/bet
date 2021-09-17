@@ -89,7 +89,7 @@ int32_t chips_iswatchonly(char *address)
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "chips-cli", "validateaddress", address);
+	argv = bet_copy_args(argc, "chips-cli", "getaddressinfo", address);
 	is_watch_only = cJSON_CreateObject();
 	make_command(argc, argv, &is_watch_only);
 
