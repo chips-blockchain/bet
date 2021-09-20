@@ -792,7 +792,9 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 	make_command(argc, argv, &listunspent_info);
 	bet_dealloc_args(argc, &argv);
 
+	dlg_info("Writing the unspent tx's to listunspent.org");
 	if (chips_check_tx_exists_in_unspent(tx_ids[0]) == 1) {
+		
 		raw_tx = chips_get_raw_tx(tx_ids[0]);
 		decoded_raw_tx = chips_decode_raw_tx(raw_tx);
 		vout = cJSON_GetObjectItem(decoded_raw_tx, "vout");
@@ -807,10 +809,10 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 			player_info = cJSON_Parse(data);
 			msig_addr = jstr(player_info, "msig_addr");
 		}
-
+		dlg_info("vout::%s\n", cJSON_Print(vout));
 		for (int i = 0; i < cJSON_GetArraySize(vout); i++) {
 			cJSON *temp = cJSON_GetArrayItem(vout, i);
-
+			dlg_info("temp::%s\n", cJSON_Print(temp));
 			value = jdouble(temp, "value");
 			if (value > 0) {
 				cJSON *scriptPubKey = cJSON_GetObjectItem(temp, "scriptPubKey");
