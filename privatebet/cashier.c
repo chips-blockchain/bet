@@ -941,12 +941,10 @@ void bet_raise_dispute(char *tx_id)
 		if (notary_status[i] == 1) {
 			response_info =
 				bet_msg_cashier_with_response_id(dispute_info, notary_node_ips[i], "dispute_response");
-			dlg_info("Dispute Response Info::%s", cJSON_Print(response_info));
 			if (response_info)
 				break;
 		}
 	}
-
 	dlg_info("Response info::%s", cJSON_Print(response_info));
 	if ((response_info) && (jstr(response_info, "payout_tx"))) {
 		sql_query = calloc(1, sql_query_size);
