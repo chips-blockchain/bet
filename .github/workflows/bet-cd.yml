@@ -9,7 +9,8 @@ on:
         - '**'
 jobs:
 
-  linux-build:
+  # Build Linux x86 64bit build
+  linux-build-x86_64:
     runs-on: ubuntu-18.04
 
     steps:
@@ -42,20 +43,156 @@ jobs:
       
     - name: Extract git tag
       shell: bash
-      run: echo "##[set-output name=branch;]$(echo $(git describe --always))"
+      run: echo "##[set-output name=gittag;]$(echo $(git describe --always))"
       id: extract_git_tag
-
-    # - name: Show Git Describe
-    #   run: echo ${{ steps.extract_git_tag.outputs.branch }}
 
     - name: List files
       run: |
         pwd && \
-        tar -czvf bet-linux-${{ steps.extract_git_tag.outputs.branch }}.tar.gz privatebet/bet privatebet/cashierd privatebet/config && \
-        ls -lh bet-linux-${{ steps.extract_git_tag.outputs.branch }}.tar.gz
+        tar -czvf bet-linux-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz privatebet/bet privatebet/cashierd privatebet/config && \
+        ls -lh bet-linux-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
+
+    - name: Upload bet-linux-x86_64 release files
+      uses: actions/upload-artifact@v2
+      with:
+        name: bet-linux-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
+        path: /home/runner/work/bet/bet/bet-linux-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
+
+
+  # Build Linux ARM 64bit build
+  linux-build-arm64:
+    runs-on: [self-hosted, linux, ARM64, Raspberry-Pi]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+          ref: 'master'
+    - run: git fetch --prune --unshallow
+      
+    - name: configure
+      run: ./configure --enable-static
+      
+    - name: make
+      run: make
+      
+    - name: Extract git tag
+      shell: bash
+      run: echo "##[set-output name=gittag;]$(echo $(git describe --always))"
+      id: extract_git_tag
+
+    - name: List files
+      run: |
+        pwd && \
+        tar -czvf bet-linux-aarch64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz privatebet/bet privatebet/cashierd privatebet/config && \
+        ls -lh bet-linux-aarch64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
 
     - name: Upload bet-linux release files
       uses: actions/upload-artifact@v2
       with:
-        name: bet-linux-${{ steps.extract_git_tag.outputs.branch }}.tar.gz
-        path: /home/runner/work/bet/bet/bet-linux-${{ steps.extract_git_tag.outputs.branch }}.tar.gz
+        name: bet-linux-aarch64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
+        path: /home/pi/actions-chips/bet-runner/_work/bet/bet/bet-linux-aarch64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
+
+    # - name: Cleanup after build
+    #   run: rm -rf /home/pi/actions-runner/_work/bet
+
+
+
+  # Build MacOS 64bit build
+  macos-build-x86_64:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+          ref: 'master'
+    - run: git fetch --prune --unshallow
+    
+    - name: Install deps (macOS)
+      run: |
+          brew update
+          brew install zlib
+          brew install autoconf
+          brew install automake
+          brew install libtool
+          brew install gmp
+          brew install sqlite
+          brew install libsodium
+          brew install gettext
+          brew install wget
+          brew install curl
+          brew install ninja
+          brew install openssl
+          brew install libevent
+          brew install cmake
+          brew install python3
+          brew install gnu-sed
+          brew install pyenv
+          pip3 install mako
+
+    - name: configure
+      run: ./configure
+      
+    - name: make
+      run: |
+          export LDFLAGS="-L/usr/local/opt/openssl/lib"
+          export CPPFLAGS="-I/usr/local/opt/openssl/include"
+          export PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig"
+          export OPENSSL_ROOT_DIR=/usr/local/opt/openssl
+          make
+      
+    - name: Extract git tag
+      shell: bash
+      run: echo "##[set-output name=gittag;]$(echo $(git describe --always))"
+      id: extract_git_tag
+
+    - name: List files
+      run: |
+        pwd && \
+        tar -czvf bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz privatebet/bet privatebet/cashierd privatebet/config && \
+        ls -lh bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
+
+    - name: Upload bet-macos-x86_64 release files
+      uses: actions/upload-artifact@v2
+      with:
+        name: bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
+        path: /Users/runner/work/bet/bet/bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
+
+
+  # linux-build-aarch64:
+  #   runs-on: ubuntu-18.04
+
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v2
+  #     with:
+  #         ref: 'master'
+  #   - run: git fetch --prune --unshallow
+    
+  #   # - name: apt update
+  #   #   run: sudo apt update
+
+  #   - name: Enable Docker multiarch
+  #     run: |
+  #         sudo apt-get install -y qemu binfmt-support qemu-user-static && \
+  #         docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+  #   - name: Build aarch64 binaries
+  #     run: ./tools/build_aarch64.sh
+            
+  #   - name: Extract git tag
+  #     shell: bash
+  #     run: echo "##[set-output name=branch;]$(echo $(git describe --always))"
+  #     id: extract_git_tag
+
+  #   - name: List dist files
+  #     run: |
+  #       pwd && \
+  #       ls -lh dist/
+
+  #   - name: Upload bet-linux aarch64 release files
+  #     uses: actions/upload-artifact@v2
+  #     with:
+  #       name: bet-linux-aarch64-${{ steps.extract_git_tag.outputs.branch }}.tar.gz
+  #       path: /home/runner/work/bet/bet/dist/bet-linux-aarch64-${{ steps.extract_git_tag.outputs.branch }}.tar.gz
