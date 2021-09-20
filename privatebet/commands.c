@@ -150,7 +150,7 @@ int chips_validate_address(char *address)
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "chips-cli", "validateaddress", address);
+	argv = bet_copy_args(argc, "chips-cli", "getaddressinfo", address);
 	address_info = cJSON_CreateObject();
 	make_command(argc, argv, &address_info);
 	cJSON *temp = cJSON_GetObjectItem(address_info, "ismine");
