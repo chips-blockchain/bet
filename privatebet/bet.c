@@ -345,6 +345,7 @@ static void common_init()
 	check_ln_chips_sync();
 	bet_sqlite3_init();
 	bet_parse_cashier_nodes_file();
+	bet_clear_tables();
 }
 
 static void playing_nodes_init()
