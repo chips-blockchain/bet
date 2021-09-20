@@ -21,3 +21,4 @@ void bet_resolve_disputed_tx();
 void bet_raise_dispute(char *tx_id);
 void bet_handle_game(int argc, char **argv);
 void find_bvv();
+int32_t bet_clear_tables();
