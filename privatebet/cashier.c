@@ -1020,3 +1020,19 @@ void find_bvv()
 		}
 	}
 }
+
+int32_t bet_clear_tables()
+{
+	int32_t retval = -1;
+	char *sql_query = NULL;
+
+	sql_query = calloc(1, 400);
+	//Cleaaring dealers_info table contents
+	sprintf(sql_query,"DELETE from dealers_info");
+	retval = bet_run_query(sql_query);
+	if (sql_query)
+		free(sql_query);
+
+	return retval;
+}
+
