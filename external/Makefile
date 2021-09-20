@@ -53,6 +53,7 @@ EXTERNAL_LDLIBS := -L${TARGET_DIR} $(patsubst lib%.a,-l%,$(notdir $(EXTERNAL_LIB
 submodcheck: 
 	@tools/refresh-submodules.sh $(SUBMODULES)
 	@cd external/libwally-core && ../../tools/refresh-submodules.sh src/secp256k1
+	@patch external/libwebsockets/include/libwebsockets/lws-lecp.h < tools/libwebsockets.patch
 	@tools/install_cmake.sh
 
 $(EXTERNAL_HEADERS): submodcheck

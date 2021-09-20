@@ -1,0 +1,11 @@
+--- external/libwebsockets/include/libwebsockets/lws-lecp.h	2021-09-20 22:53:19.000000000 +1200
++++ external/libwebsockets/include/libwebsockets/lws-lecp_new.h	2021-09-20 22:53:56.000000000 +1200
+@@ -351,7 +351,7 @@
+ 	uint8_t			_long;
+ 	uint8_t			vaa_pos;
+ 	uint8_t			dotstar;
+-} lws_lec_pctx_t;
++} lws_lec_pctx;
+ 
+ LWS_VISIBLE LWS_EXTERN void
+ lws_lec_int(lws_lec_pctx_t *ctx, uint8_t opcode, uint8_t indet, uint64_t num);
