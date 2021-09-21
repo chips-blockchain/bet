@@ -435,7 +435,6 @@ int32_t chips_publish_multisig_tx(char *tx)
 	return retval;
 }
 
-
 cJSON *chips_spendable_tx()
 {
 	char **argv = NULL;
@@ -449,15 +448,14 @@ cJSON *chips_spendable_tx()
 	bet_dealloc_args(argc, &argv);
 
 	spendable_txs = cJSON_CreateArray();
-	for (int i = 0; i < cJSON_GetArraySize(listunspent_info); i++) { 		 
+	for (int i = 0; i < cJSON_GetArraySize(listunspent_info); i++) {
 		cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
 		if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "spendable")), "true") == 0) {
-			cJSON_AddItemReferenceToArray(spendable_txs,temp);
+			cJSON_AddItemReferenceToArray(spendable_txs, temp);
 		}
 	}
 	return spendable_txs;
 }
-
 
 cJSON *chips_create_raw_tx(double amount, char *address)
 {
@@ -792,9 +790,7 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 	make_command(argc, argv, &listunspent_info);
 	bet_dealloc_args(argc, &argv);
 
-	dlg_info("Writing the unspent tx's to listunspent.org");
 	if (chips_check_tx_exists_in_unspent(tx_ids[0]) == 1) {
-		
 		raw_tx = chips_get_raw_tx(tx_ids[0]);
 		decoded_raw_tx = chips_decode_raw_tx(raw_tx);
 		vout = cJSON_GetObjectItem(decoded_raw_tx, "vout");
@@ -809,16 +805,13 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 			player_info = cJSON_Parse(data);
 			msig_addr = jstr(player_info, "msig_addr");
 		}
-		dlg_info("vout::%s\n", cJSON_Print(vout));
 		for (int i = 0; i < cJSON_GetArraySize(vout); i++) {
 			cJSON *temp = cJSON_GetArrayItem(vout, i);
-			dlg_info("temp::%s\n", cJSON_Print(temp));
 			value = jdouble(temp, "value");
 			if (value > 0) {
-				cJSON *scriptPubKey = cJSON_GetObjectItem(temp, "scriptPubKey");				
-				//cJSON *addresses = cJSON_GetObjectItem(scriptPubKey, "addresses");
-				//if (strcmp(msig_addr, jstri(addresses, 0)) == 0) { 
-				if ((strcmp("scripthash", jstr(scriptPubKey,"type")) == 0) && (strcmp(msig_addr, jstr(scriptPubKey,"address")) == 0)) {
+				cJSON *scriptPubKey = cJSON_GetObjectItem(temp, "scriptPubKey");
+				if ((strcmp("scripthash", jstr(scriptPubKey, "type")) == 0) &&
+				    (strcmp(msig_addr, jstr(scriptPubKey, "address")) == 0)) {
 					cJSON *tx_info = cJSON_CreateObject();
 					amount += jdouble(temp, "value");
 					cJSON_AddStringToObject(tx_info, "txid", tx_ids[0]);
@@ -829,7 +822,7 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 		}
 	}
 	if ((cJSON_GetArraySize(tx_list) == 0) || (amount < chips_tx_fee)) {
-		return NULL;
+		goto end;
 	}
 	cJSON_AddNumberToObject(to_addr_info, to_addr, (amount - chips_tx_fee));
 	argc = 4;
@@ -840,13 +833,14 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 	argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
 	tx = cJSON_CreateObject();
 	make_command(argc, argv, &tx);
-
 	bet_dealloc_args(argc, &argv);
+	
+	end:
 	if (data)
 		free(data);
 	if (hex_data)
 		free(hex_data);
-
+	delete_file("listunspent.log");
 	return tx;
 }
 
