@@ -778,19 +778,17 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 	double amount = 0, value = 0;
 	cJSON *tx_list = NULL, *to_addr_info = NULL, *tx = NULL;
 	cJSON *raw_tx = NULL, *decoded_raw_tx = NULL, *vout = NULL;
+	char *temp_file = "utxo.log";
 
-	for (int32_t i = 0; i < no_of_txs; i++) {
-		dlg_info("%s\n", tx_ids[i]);
-	}
 	to_addr_info = cJSON_CreateObject();
 	tx_list = cJSON_CreateArray();
-	argc = 3;
-	argv = bet_copy_args(argc, "chips-cli", "listunspent", " > listunspent.log");
+	argc = 4;
+	argv = bet_copy_args(argc, "chips-cli", "listunspent", ">", temp_file);
 	listunspent_info = cJSON_CreateObject();
 	make_command(argc, argv, &listunspent_info);
 	bet_dealloc_args(argc, &argv);
 
-	if (chips_check_tx_exists_in_unspent(tx_ids[0]) == 1) {
+	if (chips_check_tx_exists_in_unspent(temp_file, tx_ids[0]) == 1) {
 		raw_tx = chips_get_raw_tx(tx_ids[0]);
 		decoded_raw_tx = chips_decode_raw_tx(raw_tx);
 		vout = cJSON_GetObjectItem(decoded_raw_tx, "vout");
@@ -828,8 +826,6 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 	argc = 4;
 	sprintf(params[0], "\'%s\'", cJSON_Print(tx_list));
 	sprintf(params[1], "\'%s\'", cJSON_Print(to_addr_info));
-	dlg_info("%s\n", params[0]);
-	dlg_info("%s\n", params[1]);
 	argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
 	tx = cJSON_CreateObject();
 	make_command(argc, argv, &tx);
@@ -1278,9 +1274,8 @@ static void chips_read_valid_unspent(cJSON **argjson)
 	}
 }
 
-int32_t chips_check_tx_exists_in_unspent(char *tx_id)
+int32_t chips_check_tx_exists_in_unspent(char *file_name, char *tx_id)
 {
-	char *file_name = "listunspent.log";
 	FILE *fp = NULL;
 	char ch, buf[4196];
 	int32_t len = 0, tx_exists = 0;
