@@ -941,7 +941,7 @@ void bet_raise_dispute(char *tx_id)
 		if (notary_status[i] == 1) {
 			response_info =
 				bet_msg_cashier_with_response_id(dispute_info, notary_node_ips[i], "dispute_response");
-			if (response_info)
+			if ((response_info) && (jstr(response_info, "payout_tx")))
 				break;
 		}
 	}
