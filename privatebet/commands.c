@@ -1238,9 +1238,8 @@ cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids
 	return payout_tx_info;
 }
 
-static void chips_read_valid_unspent(cJSON **argjson)
+static void chips_read_valid_unspent(char *file_name, cJSON **argjson)
 {
-	char *file_name = "listunspent.log";
 	FILE *fp = NULL;
 	char ch, buf[4196];
 	int32_t len = 0;
@@ -1249,24 +1248,26 @@ static void chips_read_valid_unspent(cJSON **argjson)
 	temp = cJSON_CreateObject();
 	*argjson = cJSON_CreateArray();
 	fp = fopen(file_name, "r");
-	while ((ch = fgetc(fp)) != EOF) {
-		if ((ch != '[') || (ch != ']')) {
-			if (ch == '{') {
-				buf[len++] = ch;
-			} else {
-				if (len > 0) {
-					if (ch == '}') {
-						buf[len++] = ch;
-						buf[len] = '\0';
-						temp = cJSON_Parse(buf);
-						if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "spendable")),
-							   "true") == 0) {
-							cJSON_AddItemToArray(*argjson, temp);
+	if(fp) {
+		while ((ch = fgetc(fp)) != EOF) {
+			if ((ch != '[') || (ch != ']')) {
+				if (ch == '{') {
+					buf[len++] = ch;
+				} else {
+					if (len > 0) {
+						if (ch == '}') {
+							buf[len++] = ch;
+							buf[len] = '\0';
+							temp = cJSON_Parse(buf);
+							if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "spendable")),
+								   "true") == 0) {
+								cJSON_AddItemToArray(*argjson, temp);
+							}
+							memset(buf, 0x00, len);
+							len = 0;
+						} else {
+							buf[len++] = ch;
 						}
-						memset(buf, 0x00, len);
-						len = 0;
-					} else {
-						buf[len++] = ch;
 					}
 				}
 			}
@@ -1452,7 +1453,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 		if (strcmp(argv[1], "importaddress") == 0) {
 			cJSON_AddNumberToObject(*argjson, "code", 0);
 		} else if (strcmp(argv[1], "listunspent") == 0) {
-			chips_read_valid_unspent(argjson);
+			chips_read_valid_unspent(argv[3], argjson);
 		} else {
 			cJSON_AddStringToObject(*argjson, "error", "command failed");
 			cJSON_AddStringToObject(*argjson, "command", command);
