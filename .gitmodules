@@ -17,3 +17,6 @@
 [submodule "external/cmake"]
 	path = external/cmake
 	url = https://github.com/Kitware/CMake.git
+[submodule "external/iniparser"]
+	path = external/iniparser
+	url = https://github.com/ndevilla/iniparser
