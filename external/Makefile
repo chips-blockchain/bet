@@ -3,8 +3,9 @@ SUBMODULES =					\
 	external/jsmn				\
 	external/nng				\
 	external/libwebsockets			\
-	external/dlg 		\
-	external/cmake
+	external/dlg 				\
+	external/cmake				\
+	external/iniparser
 
 TOP := ../..
 ifdef BUILD
@@ -22,9 +23,9 @@ ifeq ($(UNAME_S),Darwin)
     endif
 endif
 
-LIBWALLY_HEADERS := external/libwally-core/include/wally_bip32.h		\
-			external/libwally-core/include/wally_core.h	\
-			external/libwally-core/include/wally_psbt.h	\
+LIBWALLY_HEADERS := external/libwally-core/include/wally_bip32.h				\
+			external/libwally-core/include/wally_core.h				\
+			external/libwally-core/include/wally_psbt.h				\
 			external/libwally-core/include/wally_crypto.h
 LIBSECP_HEADERS := external/libwally-core/src/secp256k1/include/secp256k1_ecdh.h		\
 		external/libwally-core/src/secp256k1/include/secp256k1_recovery.h		\
@@ -34,11 +35,13 @@ NNG_HEADERS := external/nng/include/nng.h \
 		external/nng/include/nng/compat/nanomsg/nn.h
 LIBWEBSOCKETS_HEADERS := external/libwebsockets/include/libwebsockets.h
 DLG_HEADERS := external/dlg/include/dlg/dlg.h
+INI_HEADERS := external/iniparser/src/dictionary.h \
+		external/iniparser/src/iniparser.h
 
-EXTERNAL_HEADERS := $(LIBWALLY_HEADERS) $(LIBSECP_HEADERS) $(JSMN_HEADERS) $(NNG_HEADERS) $(LIBWEBSOCKETS_HEADERS) $(DLG_HEADERS)
-EXTERNAL_LIBS := ${TARGET_DIR}/libwallycore.a ${TARGET_DIR}/libsecp256k1.a ${TARGET_DIR}/libjsmn.a ${TARGET_DIR}/libnng.a ${TARGET_DIR}/libwebsockets.a $(TARGET_DIR)/libdlg.a
+EXTERNAL_HEADERS := $(LIBWALLY_HEADERS) $(LIBSECP_HEADERS) $(JSMN_HEADERS) $(NNG_HEADERS) $(LIBWEBSOCKETS_HEADERS) $(DLG_HEADERS) $(INI_HEADERS)
+EXTERNAL_LIBS := ${TARGET_DIR}/libwallycore.a ${TARGET_DIR}/libsecp256k1.a ${TARGET_DIR}/libjsmn.a ${TARGET_DIR}/libnng.a ${TARGET_DIR}/libwebsockets.a $(TARGET_DIR)/libdlg.a $(TARGET_DIR)/libiniparser.a
 
-EXTERNAL_LIBS_CLEAN := ${TARGET_DIR}/libwallycore.a ${TARGET_DIR}/libsecp256k1.a ${TARGET_DIR}/libjsmn.a ${TARGET_DIR}/libnng.a ${TARGET_DIR}/libwebsockets.a $(TARGET_DIR)/libdlg.a
+EXTERNAL_LIBS_CLEAN := ${TARGET_DIR}/libwallycore.a ${TARGET_DIR}/libsecp256k1.a ${TARGET_DIR}/libjsmn.a ${TARGET_DIR}/libnng.a ${TARGET_DIR}/libwebsockets.a $(TARGET_DIR)/libdlg.a $TARGET_DIR)/libiniparser.a
 
 EXTERNAL_INCLUDE_FLAGS :=					\
 	-I external/libwally-core/include/			\
@@ -46,7 +49,8 @@ EXTERNAL_INCLUDE_FLAGS :=					\
 	-I external/jsmn/					\
 	-I external/nng/include/				\
 	-I external/libwebsockets/include/			\
-	-I external/dlg/include/
+	-I external/dlg/include/				\
+	-I external/iniparser/src/
 
 EXTERNAL_LDLIBS := -L${TARGET_DIR} $(patsubst lib%.a,-l%,$(notdir $(EXTERNAL_LIBS)))
 
@@ -95,6 +99,11 @@ $(TARGET_DIR)/libjsmn.a: $(TARGET_DIR)/jsmn-build/jsmn.o
 
 external/dlg/src/dlg/dlg.c: external/dlg/include/dlg/dlg.h
 	[ -f $@ ]
+
+$(TARGET_DIR)/libiniparser.a: external/iniparser/src/dictionary.c external/iniparser/src/iniparser.c Makefile
+	mkdir -p $(TARGET_DIR)/libiniparser-build
+	cd $(TARGET_DIR)/libiniparser-build
+	$(COMPILE.c) -o $@ $<
 
 $(TARGET_DIR)/dlg-build/dlg.o: external/dlg/src/dlg/dlg.c Makefile
 	@mkdir -p $(@D)
