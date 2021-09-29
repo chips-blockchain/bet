@@ -35,7 +35,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define LIVE_THREAD 1
+//#define LIVE_THREAD 0
 
 struct privatebet_info *bet_player = NULL;
 struct privatebet_vars *player_vars = NULL;
@@ -124,23 +124,11 @@ static void bet_player_thrd(char *dcv_ip, const int32_t port)
 {
 	pthread_t player_thrd, player_backend_write, player_backend_read;
 
-#ifdef LIVE_THREAD
-	pthread_t player_backend;
-#endif
-
 	bet_player_initialize(dcv_ip, port);
 	if (OS_thread_create(&player_thrd, NULL, (void *)bet_player_backend_loop, (void *)bet_player) != 0) {
 		dlg_error("Error in launching bet_player_backend_loop");
 		exit(-1);
 	}
-
-#ifdef LIVE_THREAD
-	if (OS_thread_create(&player_backend, NULL, (void *)bet_player_frontend_loop, NULL) != 0) {
-		dlg_error("Error launching bet_player_frontend_loop");
-		exit(-1);
-	}
-#endif
-
 	if (OS_thread_create(&player_backend_read, NULL, (void *)bet_player_frontend_read_loop, NULL) != 0) {
 		dlg_error("Error launching bet_player_frontend_loop");
 		exit(-1);
@@ -161,11 +149,7 @@ static void bet_player_thrd(char *dcv_ip, const int32_t port)
 	if (pthread_join(player_thrd, NULL)) {
 		dlg_error("Error in joining the main thread for player_thrd");
 	}
-#if LIVE_THREAD
-	if (pthread_join(player_backend, NULL)) {
-		dlg_error("Error in joining the main thread for player_backend");
-	}
-#endif
+
 	bet_player_deinitialize();
 }
 
@@ -278,6 +262,7 @@ static void bet_dcv_thrd(char *dcv_ip, const int32_t port)
 
 	bet_dcv_initialize(dcv_ip, port);
 #ifdef LIVE_THREAD
+	dlg_warn("Hope its not coming here");
 	if (OS_thread_create(&live_thrd, NULL, (void *)bet_dcv_heartbeat_loop, (void *)bet_dcv) != 0) {
 		dlg_error("Error launching bet_dcv_heartbeat_loop");
 		exit(-1);
@@ -360,6 +345,7 @@ static void common_init()
 	check_ln_chips_sync();
 	bet_sqlite3_init();
 	bet_parse_cashier_nodes_file();
+	bet_clear_tables();
 }
 
 static void playing_nodes_init()
@@ -431,7 +417,7 @@ int main(int argc, char **argv)
 		} while (ip == NULL);
 
 		if (ip) {
-			dlg_info("The dealer is :: %s\n", ip);
+			dlg_info("The dealer is :: %s", ip);
 			bet_player_thrd(ip, port);
 		}
 	} else if ((argc == 2) && ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "h") == 0) ||
@@ -439,8 +425,11 @@ int main(int argc, char **argv)
 		bet_display_usage();
 	} else if ((argc == 2) && ((strcmp(argv[1], "-v") == 0) || (strcmp(argv[1], "v") == 0) ||
 				   (strcmp(argv[1], "--version") == 0) || (strcmp(argv[1], "version") == 0))) {
-		dlg_info("%s\n", bet_git_version());
+		dlg_info("%s", bet_git_version());
 
+	} else if ((argc == 2) && (strcmp(argv[1], "spendable") == 0)) {
+		cJSON *spendable_tx = chips_spendable_tx();
+		dlg_info("CHIPS Spendable tx's :: %s\n", cJSON_Print(spendable_tx));
 	} else if ((argc == 3) && (strcmp(argv[1], "dcv") == 0)) {
 		strcpy(dealer_ip, argv[2]);
 		playing_nodes_init();
@@ -455,7 +444,7 @@ int main(int argc, char **argv)
 	} else if ((argc == 4) && (strcmp(argv[1], "withdraw") == 0)) {
 		cJSON *tx = NULL;
 		tx = chips_transfer_funds(atof(argv[2]), argv[3]);
-		dlg_info("tx details::%s\n", cJSON_Print(tx));
+		dlg_info("tx details::%s", cJSON_Print(tx));
 	} else if ((argc > 2) && (strcmp(argv[1], "game") == 0)) {
 		playing_nodes_init();
 		bet_handle_game(argc, argv);
@@ -509,15 +498,15 @@ struct pair256 deckgen_player(bits256 *playerprivs, bits256 *playercards, int32_
 
 	key = deckgen_common(randcards, numcards);
 	bet_permutation(permis, numcards);
-	dlg_info("The player key values\n");
-	dlg_info("priv key::%s\n", bits256_str(hexstr, key.priv));
-	dlg_info("pub key::%s\n", bits256_str(hexstr, key.prod));
+	dlg_info("The player key values");
+	dlg_info("priv key::%s", bits256_str(hexstr, key.priv));
+	dlg_info("pub key::%s", bits256_str(hexstr, key.prod));
 
-	//dlg_info("The player private key card values\n");
+	//dlg_info("The player private key card values");
 	for (i = 0; i < numcards; i++) {
 		playerprivs[i] = randcards[i].priv; // permis[i]
 		playercards[i] = curve25519(playerprivs[i], key.prod);
-		//dlg_info("card ::%d::%s\n",i,bits256_str(hexstr,playercards[i]));
+		//dlg_info("card ::%d::%s",i,bits256_str(hexstr,playercards[i]));
 	}
 	return (key);
 }

@@ -85,7 +85,7 @@ char lws_buf_bvv[2000];
 int32_t lws_buf_length_bvv = 0;
 
 char req_identifier[65];
-int32_t backend_status = 0;
+int32_t backend_status = backend_not_ready;
 int32_t sitout_value = 0;
 int32_t reset_lock = 0;
 
@@ -120,7 +120,7 @@ void sg777_test(cJSON *data)
 
 void player_lws_write(cJSON *data)
 {
-	if (backend_status == 1) {
+	if (backend_status == backend_ready) {
 		if (ws_connection_status_write == 1) {
 			if (data_exists == 1) {
 				while (data_exists == 1) {
@@ -131,7 +131,11 @@ void player_lws_write(cJSON *data)
 			strncpy(player_gui_data, cJSON_Print(data), strlen(cJSON_Print(data)));
 			data_exists = 1;
 			lws_callback_on_writable(wsi_global_client_write);
+		} else {
+			dlg_warn("Backend is ready, but GUI is not started yet...");
 		}
+	} else {
+		dlg_warn("Backend is not ready to write data to the GUI");
 	}
 }
 
@@ -988,7 +992,9 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 				dlg_info("Channel Didn't Established");
 			}
 		} else {
-			dlg_info("There isn't any pre-established channel with the dealer, so creating one now");
+			if (0 == channel_state)
+				dlg_info(
+					"There isn't any pre-established channel with the dealer, so creating one now");
 			strcpy(uri, jstr(argjson, "uri"));
 			ln_check_peer_and_connect(uri);
 		}
@@ -1006,7 +1012,7 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 		cJSON_AddStringToObject(init_info, "method", "deal");
 		cJSON_AddItemToObject(init_info, "deal", init_card_info);
 
-		dlg_info("init_info::%s\n", cJSON_Print(init_info));
+		dlg_info("init_info::%s", cJSON_Print(init_info));
 		player_lws_write(init_info);
 
 		stack_info = cJSON_CreateObject();
@@ -1014,7 +1020,7 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 		cJSON_AddNumberToObject(stack_info, "playerid", bet->myplayerid);
 		cJSON_AddNumberToObject(stack_info, "stack_value", vars->player_funds);
 
-		dlg_info("stack_info::%s\n", cJSON_Print(stack_info));
+		dlg_info("stack_info::%s", cJSON_Print(stack_info));
 		rendered = cJSON_Print(stack_info);
 		bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 		if (bytes < 0) {
@@ -1109,7 +1115,7 @@ static int32_t bet_player_process_player_join(cJSON *argjson)
 	cJSON *warning_info = NULL;
 
 	if (player_joined == 0) {
-		if (backend_status == 1) {
+		if (backend_status == backend_ready) {
 			retval = bet_client_join(argjson, bet_player);
 		} else {
 			warning_info = cJSON_CreateObject();
@@ -1194,7 +1200,7 @@ int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 	char *method = NULL;
 
 	if ((method = jstr(argjson, "method")) != 0) {
-		dlg_info("%s\n", cJSON_Print(argjson));
+		dlg_info("Info requested from the GUI :: %s", cJSON_Print(argjson));
 		if (strcmp(method, "player_join") == 0) {
 			bet_player_process_player_join(argjson);
 		} else if (strcmp(method, "betting") == 0) {
@@ -1215,11 +1221,6 @@ int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 			bet_player_process_be_status();
 		} else if (strcmp(method, "sitout") == 0) {
 			sitout_value = jint(argjson, "value");
-			/*
-			if(jint(argjson,"value") == 0) {
-				bet_player_stack_info_req(bet_player);
-			}
-			*/
 		} else {
 			bet_player_handle_invalid_method(method);
 		}
@@ -1232,17 +1233,17 @@ static void bet_gui_init_message(struct privatebet_info *bet)
 	cJSON *warning_info = NULL;
 	cJSON *req_seats_info = NULL;
 
-	if (backend_status == 0) {
+	if (backend_status == backend_not_ready) {
 		warning_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(warning_info, "method", "warning");
 		cJSON_AddNumberToObject(warning_info, "warning_num", backend_not_ready);
-		dlg_warn("%s\n", cJSON_Print(warning_info));
+		dlg_warn("Backend is not yet ready, it takes a while please wait...");
 		player_lws_write(warning_info);
 	} else {
 		req_seats_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(req_seats_info, "method", "req_seats_info");
 		cJSON_AddStringToObject(req_seats_info, "req_identifier", req_identifier);
-		dlg_info("join info::%s\n", cJSON_Print(req_seats_info));
+		dlg_info("Requesting seats into with the dealer \n %s", cJSON_Print(req_seats_info));
 		if (nn_send(bet->pushsock, cJSON_Print(req_seats_info), strlen(cJSON_Print(req_seats_info)), 0) < 0) {
 			dlg_error("Error in sending the data");
 		}
@@ -1270,12 +1271,10 @@ int lws_callback_http_player_write(struct lws *wsi, enum lws_callback_reasons re
 		break;
 	case LWS_CALLBACK_ESTABLISHED:
 		wsi_global_client_write = wsi;
-		dlg_info("Write::LWS_CALLBACK_ESTABLISHED\n");
 		ws_connection_status_write = 1;
 		bet_gui_init_message(bet_player);
 		break;
 	case LWS_CALLBACK_SERVER_WRITEABLE:
-		dlg_info("LWS_CALLBACK_SERVER_WRITEABLE triggered\n");
 		if (data_exists) {
 			if (strlen(player_gui_data) != 0) {
 				lws_write(wsi, (unsigned char *)player_gui_data, strlen(player_gui_data), 0);
@@ -1310,11 +1309,9 @@ int lws_callback_http_player_read(struct lws *wsi, enum lws_callback_reasons rea
 		break;
 	case LWS_CALLBACK_ESTABLISHED:
 		wsi_global_client = wsi;
-		dlg_info("Read::LWS_CALLBACK_ESTABLISHED\n");
 		ws_connection_status = 1;
 		break;
 	case LWS_CALLBACK_SERVER_WRITEABLE:
-		dlg_info("LWS_CALLBACK_SERVER_WRITEABLE triggered\n");
 		if (data_exists) {
 			if (strlen(player_gui_data) != 0) {
 				lws_write(wsi, (unsigned char *)player_gui_data, strlen(player_gui_data), 0);
@@ -1332,7 +1329,7 @@ int lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason, 
 {
 	cJSON *argjson = NULL;
 
-	dlg_info("callback code::%d\n", (int)reason);
+	//dlg_info("callback code::%d\n", (int)reason);
 	switch (reason) {
 	case LWS_CALLBACK_RECEIVE:
 		memcpy(lws_buf_1 + lws_buf_length_1, in, len);
@@ -1516,7 +1513,7 @@ static void bet_push_join_info(cJSON *argjson)
 	cJSON_AddStringToObject(join_info, "method", "info"); //changed to join_info to info
 	cJSON_AddNumberToObject(join_info, "playerid", jint(argjson, "playerid"));
 	cJSON_AddNumberToObject(join_info, "seat_taken", jint(argjson, "seat_taken"));
-	dlg_info("join info::%s\n", cJSON_Print(join_info));
+	dlg_info("Writing the availability of the seat info to the GUI \n %s", cJSON_Print(join_info));
 	player_lws_write(join_info);
 }
 
@@ -1560,7 +1557,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		txid = cJSON_CreateObject();
 		txid = chips_transfer_funds_with_data(funds_needed, legacy_m_of_n_msig_addr, hex_data);
 
-		dlg_info("tx id::%s\n", cJSON_Print(txid));
+		dlg_info("tx id::%s", cJSON_Print(txid));
 		if (txid) {
 			sql_query = calloc(1, sql_query_size);
 			sprintf(sql_query, "INSERT INTO player_tx_mapping values(%s,\'%s\',\'%s\',\'%s\',%d,%d, NULL);",
@@ -1589,10 +1586,10 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		cJSON_AddItemToObject(tx_info, "tx_info", txid);
 		if (txid) {
 			dlg_info("Waiting for tx to confirm");
-			while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {				
+			while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
 				sleep(2);
 			}
-			dlg_info("TX ::%s got confirmed",cJSON_Print(txid));
+			dlg_info("TX ::%s got confirmed", cJSON_Print(txid));
 			cJSON_AddNumberToObject(tx_info, "block_height",
 						chips_get_block_height_from_block_hash(
 							chips_get_block_hash_from_txid(cJSON_Print(txid))));
@@ -1672,7 +1669,6 @@ static void bet_update_seat_info(cJSON *argjson)
 	seats_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(seats_info, "method", "seats");
 	cJSON_AddItemToObject(seats_info, "seats", cJSON_GetObjectItem(argjson, "seats"));
-	dlg_info("%s\n", cJSON_Print(seats_info));
 	player_lws_write(seats_info);
 }
 
@@ -1690,10 +1686,10 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		return retval;
 	}
 	if ((method = jstr(argjson, "method")) != 0) {
-		dlg_info("%s\n", method);
+		dlg_info("Backend method received from dealer :: %s", method);
 
 		if (strcmp(method, "join_res") == 0) {
-			dlg_info("%s\n", cJSON_Print(argjson));
+			dlg_info("%s", cJSON_Print(argjson));
 			bet_update_seat_info(argjson);
 			if (strcmp(jstr(argjson, "req_identifier"), req_identifier) == 0) {
 				bet_push_join_info(argjson);
@@ -1760,22 +1756,26 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 					retval = -1;
 			}
 		} else if (strcmp(method, "stack_info_resp") == 0) {
-			dlg_info("%s\n", cJSON_Print(argjson));
 			if (strncmp(req_identifier, jstr(argjson, "id"), sizeof(req_identifier)) == 0) {
 				retval = bet_player_handle_stack_info_resp(argjson, bet);
 			}
 		} else if (strcmp(method, "tx_status") == 0) {
-			dlg_info("%s\n", cJSON_Print(argjson));
 			if (strcmp(req_identifier, jstr(argjson, "id")) == 0) {
 				vars->player_funds = jint(argjson, "player_funds");
 				if (jint(argjson, "tx_validity") == 1) {
-					if (backend_status ==
-					    1) { /* This snippet is added to handle the reset scenario after the initial hand got played*/
+					dlg_info("Dealer verified the TX made by the player");
+					if (backend_status == backend_ready) {
+						/* 
+						This snippet is added to handle the reset scenario after the initial hand got played. How this works is the backend status 
+						for the player is set when the dealer verifies the tx as valid.
+						It means when the backend is ready, for the next hand the GUI is expecting to push the reset info from the backend for this reason
+						this snippet is added.
+						*/
 						cJSON *reset_info = cJSON_CreateObject();
 						cJSON_AddStringToObject(reset_info, "method", "reset");
 						player_lws_write(reset_info);
 					}
-					backend_status = 1;
+					backend_status = backend_ready;
 					cJSON *info = cJSON_CreateObject();
 					cJSON_AddStringToObject(info, "method", "backend_status");
 					cJSON_AddNumberToObject(info, "backend_status", backend_status);
@@ -1784,12 +1784,12 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 					req_seats_info = cJSON_CreateObject();
 					cJSON_AddStringToObject(req_seats_info, "method", "req_seats_info");
 					cJSON_AddStringToObject(req_seats_info, "req_identifier", req_identifier);
-					dlg_info("joininfo::%s\n", cJSON_Print(req_seats_info));
+					dlg_info("Player requesting seats info from the dealer to join");
 					nn_send(bet->pushsock, cJSON_Print(req_seats_info),
 						strlen(cJSON_Print(req_seats_info)), 0);
 
 				} else {
-					dlg_error("%s\n", "unable make lock_in transaction");
+					dlg_error("%s", "unable make lock_in transaction");
 					retval = 0;
 				}
 			}
@@ -1818,8 +1818,10 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 				cJSON *seats_info = cJSON_CreateObject();
 				cJSON_AddStringToObject(seats_info, "method", "seats");
 				cJSON_AddItemToObject(seats_info, "seats", cJSON_GetObjectItem(argjson, "seats"));
-				dlg_info("%s\n", cJSON_Print(seats_info));
 				player_lws_write(seats_info);
+				if ((backend_status == backend_ready) && (ws_connection_status_write == 0)) {
+					dlg_info("Backend is ready, from GUI you can connect to backend and play...");
+				}
 			}
 		} else if (strcmp(method, "config_data") == 0) {
 			dlg_info("config_data::%s\n", cJSON_Print(argjson));
