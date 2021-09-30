@@ -35,13 +35,13 @@ NNG_HEADERS := external/nng/include/nng.h \
 		external/nng/include/nng/compat/nanomsg/nn.h
 LIBWEBSOCKETS_HEADERS := external/libwebsockets/include/libwebsockets.h
 DLG_HEADERS := external/dlg/include/dlg/dlg.h
-INI_HEADERS := external/iniparser/src/dictionary.h \
+INIPARSER_HEADERS := external/iniparser/src/dictionary.h \
 		external/iniparser/src/iniparser.h
 
-EXTERNAL_HEADERS := $(LIBWALLY_HEADERS) $(LIBSECP_HEADERS) $(JSMN_HEADERS) $(NNG_HEADERS) $(LIBWEBSOCKETS_HEADERS) $(DLG_HEADERS) $(INI_HEADERS)
-EXTERNAL_LIBS := ${TARGET_DIR}/libwallycore.a ${TARGET_DIR}/libsecp256k1.a ${TARGET_DIR}/libjsmn.a ${TARGET_DIR}/libnng.a ${TARGET_DIR}/libwebsockets.a $(TARGET_DIR)/libdlg.a $(TARGET_DIR)/libiniparser.a
+EXTERNAL_HEADERS := $(LIBWALLY_HEADERS) $(LIBSECP_HEADERS) $(JSMN_HEADERS) $(NNG_HEADERS) $(LIBWEBSOCKETS_HEADERS) $(DLG_HEADERS) $(INIPARSER_HEADERS)
+EXTERNAL_LIBS := ${TARGET_DIR}/libwallycore.a ${TARGET_DIR}/libsecp256k1.a ${TARGET_DIR}/libjsmn.a ${TARGET_DIR}/libnng.a ${TARGET_DIR}/libwebsockets.a $(TARGET_DIR)/libdlg.a ${TARGET_DIR}/libiniparser.a
 
-EXTERNAL_LIBS_CLEAN := ${TARGET_DIR}/libwallycore.a ${TARGET_DIR}/libsecp256k1.a ${TARGET_DIR}/libjsmn.a ${TARGET_DIR}/libnng.a ${TARGET_DIR}/libwebsockets.a $(TARGET_DIR)/libdlg.a $TARGET_DIR)/libiniparser.a
+EXTERNAL_LIBS_CLEAN := ${TARGET_DIR}/libwallycore.a ${TARGET_DIR}/libsecp256k1.a ${TARGET_DIR}/libjsmn.a ${TARGET_DIR}/libnng.a ${TARGET_DIR}/libwebsockets.a $(TARGET_DIR)/libdlg.a ${TARGET_DIR}/libiniparser.a
 
 EXTERNAL_INCLUDE_FLAGS :=					\
 	-I external/libwally-core/include/			\
@@ -100,17 +100,15 @@ $(TARGET_DIR)/libjsmn.a: $(TARGET_DIR)/jsmn-build/jsmn.o
 external/dlg/src/dlg/dlg.c: external/dlg/include/dlg/dlg.h
 	[ -f $@ ]
 
-$(TARGET_DIR)/libiniparser.a: external/iniparser/src/dictionary.c external/iniparser/src/iniparser.c Makefile
-	mkdir -p $(TARGET_DIR)/libiniparser-build
-	cd $(TARGET_DIR)/libiniparser-build
-	$(COMPILE.c) -o $@ $<
-
 $(TARGET_DIR)/dlg-build/dlg.o: external/dlg/src/dlg/dlg.c Makefile
 	@mkdir -p $(@D)
 	$(COMPILE.c) -o $@ $<
 
 $(TARGET_DIR)/libdlg.a: $(TARGET_DIR)/dlg-build/dlg.o
 	$(AR) rc $@ $<
+
+$(TARGET_DIR)/libiniparser.a:
+	cd external/iniparser && $(MAKE) && cp -f libiniparser.a ../../$(TARGET_DIR)/
 
 ${TARGET_DIR}/libnng.a: external/nng/include/nng/nng.h
 	mkdir -p $(TARGET_DIR)/libnng-build

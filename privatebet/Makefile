@@ -39,6 +39,7 @@ LIBWALLY_CORE_HEADERS = "$(EXTERNAL_LIBS_DIR)/libwally-core/include"
 LIBJSMN_HEADERS = "$(EXTERNAL_LIBS_DIR)/jsmn"
 LIBDLG_HEADERS = "$(EXTERNAL_LIBS_DIR)/dlg"
 LIBINIPARSER_HEADERS = "$(EXTERNAL_LIBS_DIR)/iniparser-build/src"
+LIBINIPARSER_LDFLAGS = "$(EXTERNAL_LIBS_DIR)/iniparser"
 LIBWEBSOCKETS_LDFLAGS = "$(TARGET_DIR)/libwebsockets-build/lib"
 
 ifeq ($(UNAME_S),Darwin)
@@ -51,10 +52,10 @@ endif
 $(info $$CC is [${CC}])
 
 $(PROJNAME): $(OBJFILES)
-	        $(CC) $(CFLAGS) -o $@ bet.c $^ ../crypto777/libcrypto777.a -L$(TARGET_DIR) -I$(LIBWEBSOCKETS_HEADERS) -I$(LIBWALLY_CORE_HEADERS) -I$(LIBJSMN_HEADERS) -I$(LIBINIPARSER_HEADERS) -L$(LIBWEBSOCKETS_LDFLAGS) $(LDFLAGS) $(CPPFLAGS) -lcurl -ldl -lnng -lpthread -lm -lwallycore -lsecp256k1 -ljsmn -liniparser -lwebsockets -ldlg -L/usr/local/lib -lm -lgmp -lsqlite3 -L/usr/local/lib -lssl -lcrypto -levent -lpthread -lstdc++
+	        $(CC) $(CFLAGS) -o $@ bet.c $^ ../external/iniparser/libiniparser.a ../crypto777/libcrypto777.a -L$(TARGET_DIR) -I$(LIBWEBSOCKETS_HEADERS) -I$(LIBWALLY_CORE_HEADERS) -I$(LIBJSMN_HEADERS) -I$(LIBINIPARSER_HEADERS) -L$(LIBWEBSOCKETS_LDFLAGS) $(LDFLAGS) $(CPPFLAGS) -lcurl -ldl -lnng -lpthread -lm -lwallycore -lsecp256k1 -ljsmn -lwebsockets -ldlg -L/usr/local/lib -lm -lgmp -lsqlite3 -L/usr/local/lib -lssl -lcrypto -levent -lpthread -lstdc++
 	cp $(PROJNAME) $(CASHIER)
 %.o: %.c
-	$(CC) $(CFLAGS) -L$(TARGET_DIR) -I$(LIBWEBSOCKETS_HEADERS) -I$(LIBWALLY_CORE_HEADERS) -I$(LIBJSMN_HEADERS) -L$(LIBWEBSOCKETS_LDFLAGS) $(LDFLAGS) $(CPPFLAGS) -c $< -o $@  -I ../includes/curl
+	$(CC) $(CFLAGS) -L$(TARGET_DIR) -I$(LIBINIPARSER_HEADERS) -I$(LIBWEBSOCKETS_HEADERS) -I$(LIBWALLY_CORE_HEADERS) -I$(LIBJSMN_HEADERS) -L$(LIBINIPARSER_LDFLAGS) -L$(LIBWEBSOCKETS_LDFLAGS) $(LDFLAGS) $(CPPFLAGS) -c $< -o $@  -I ../includes/curl
 
 build_dir_tree:
 	sh ./scripts/build_dir_tree.sh
