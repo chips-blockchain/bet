@@ -548,6 +548,7 @@ cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 
 		for (int i = 0; i < cJSON_GetArraySize(listunspent_info); i++) { //sg777: removed -1 from here
 			cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
+			dlg_info("%s",cJSON_Print(temp));
 			cJSON *tx_info = cJSON_CreateObject();
 			char *state = cJSON_Print(cJSON_GetObjectItem(temp, "spendable"));
 			if (strcmp(state, "true") == 0) {
@@ -577,6 +578,8 @@ cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 		snprintf(params[0], arg_size, "\'%s\'", cJSON_Print(tx_list));
 		snprintf(params[1], arg_size, "\'%s\'", cJSON_Print(address_info));
 		argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
+		dlg_info("%s",params[0]);
+		dlg_info("%s",params[1]);
 		tx = cJSON_CreateObject();
 		make_command(argc, argv, &tx);
 		bet_dealloc_args(argc, &argv);
