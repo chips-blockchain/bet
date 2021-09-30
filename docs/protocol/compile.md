@@ -99,9 +99,8 @@ You should see something like below. If new lines are added quickly and the date
 
 ```
 cd ~ && git clone https://github.com/chips-blockchain/lightning.git
-cd lightning && make
-sudo ln -s $HOME/lightning/lightningd/lightningd /usr/local/bin/
-sudo ln -s $HOME/lightning/cli/lightning-cli /usr/local/bin/
+cd lightning && ./configure && make
+sudo make install
 ```
 
 ### Running the Lightning Daemon
