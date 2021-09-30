@@ -811,8 +811,8 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 			value = jdouble(temp, "value");
 			if (value > 0) {
 				cJSON *scriptPubKey = cJSON_GetObjectItem(temp, "scriptPubKey");
-				if ((strcmp("scripthash", jstr(scriptPubKey, "type")) == 0) &&
-				    (strcmp(msig_addr, jstr(scriptPubKey, "address")) == 0)) {
+				cJSON *addresses = cJSON_GetObjectItem(scriptPubKey, "addresses");
+				if (strcmp(msig_addr, jstri(addresses, 0)) == 0) {
 					cJSON *tx_info = cJSON_CreateObject();
 					amount += jdouble(temp, "value");
 					cJSON_AddStringToObject(tx_info, "txid", tx_ids[0]);
