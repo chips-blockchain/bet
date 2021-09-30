@@ -808,6 +808,7 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 		}
 		for (int i = 0; i < cJSON_GetArraySize(vout); i++) {
 			cJSON *temp = cJSON_GetArrayItem(vout, i);
+			dlg_info("%s", cJSON_Print(temp));
 			value = jdouble(temp, "value");
 			if (value > 0) {
 				cJSON *scriptPubKey = cJSON_GetObjectItem(temp, "scriptPubKey");
@@ -830,6 +831,8 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 	sprintf(params[0], "\'%s\'", cJSON_Print(tx_list));
 	sprintf(params[1], "\'%s\'", cJSON_Print(to_addr_info));
 	argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
+	dlg_info("%s",params[0]);
+	dlg_info("%s",params[1]);
 	tx = cJSON_CreateObject();
 	make_command(argc, argv, &tx);
 	bet_dealloc_args(argc, &argv);
