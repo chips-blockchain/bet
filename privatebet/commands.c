@@ -443,10 +443,11 @@ cJSON *chips_spendable_tx()
 	char **argv = NULL;
 	int argc;
 	cJSON *listunspent_info = NULL, *spendable_txs = NULL;
-
-	argc = 3;
+	char *temp_file = "utxo.log";
+	
+	argc = 4;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "chips-cli", "listunspent", " > listunspent.log");
+	argv = bet_copy_args(argc, "chips-cli", "listunspent", ">", temp_file);
 	make_command(argc, argv, &listunspent_info);
 	bet_dealloc_args(argc, &argv);
 
@@ -457,6 +458,7 @@ cJSON *chips_spendable_tx()
 			cJSON_AddItemReferenceToArray(spendable_txs, temp);
 		}
 	}
+	delete_file(temp_file);
 	return spendable_txs;
 }
 
@@ -845,7 +847,7 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 		free(data);
 	if (hex_data)
 		free(hex_data);
-	delete_file("listunspent.log");
+	delete_file(temp_file);
 	return tx;
 }
 
