@@ -1014,7 +1014,6 @@ void chips_validate_tx(char *tx)
 int32_t chips_extract_data(char *tx, char **rand_str)
 {
 	cJSON *raw_tx = NULL, *decoded_raw_tx = NULL, *vout = NULL, *script_pubkey = NULL;
-	double zero = 0.0;
 	int32_t retval = 0;
 
 	raw_tx = chips_get_raw_tx(tx);
