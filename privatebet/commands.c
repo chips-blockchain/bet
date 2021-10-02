@@ -441,7 +441,7 @@ cJSON *chips_spendable_tx()
 	int argc;
 	cJSON *listunspent_info = NULL, *spendable_txs = NULL;
 	char *temp_file = "utxo.log";
-	
+
 	argc = 4;
 	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "chips-cli", "listunspent", ">", temp_file);
@@ -466,7 +466,7 @@ cJSON *chips_create_raw_tx(double amount, char *address)
 	cJSON *listunspent_info = NULL, *address_info = NULL, *tx_list = NULL, *tx = NULL;
 	double balance, change, temp_balance = 0;
 	char *temp_file = "utxo.log";
-	
+
 	balance = chips_get_balance();
 	tx_list = cJSON_CreateArray();
 	address_info = cJSON_CreateObject();
@@ -483,7 +483,7 @@ cJSON *chips_create_raw_tx(double amount, char *address)
 		make_command(argc, argv, &listunspent_info);
 		bet_dealloc_args(argc, &argv);
 
-		for (int i = 0; i < cJSON_GetArraySize(listunspent_info); i++) { 
+		for (int i = 0; i < cJSON_GetArraySize(listunspent_info); i++) {
 			cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
 			cJSON *tx_info = cJSON_CreateObject();
 			if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "spendable")), "true") == 0) {
@@ -526,7 +526,7 @@ cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 	cJSON *listunspent_info = NULL, *address_info = NULL, *tx_list = NULL, *tx = NULL;
 	double balance, change, temp_balance = 0;
 	char *temp_file = "utxo.log";
-	
+
 	balance = chips_get_balance();
 	tx_list = cJSON_CreateArray();
 	address_info = cJSON_CreateObject();
@@ -548,7 +548,7 @@ cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 		make_command(argc, argv, &listunspent_info);
 		bet_dealloc_args(argc, &argv);
 
-		for (int i = 0; i < cJSON_GetArraySize(listunspent_info); i++) { 
+		for (int i = 0; i < cJSON_GetArraySize(listunspent_info); i++) {
 			cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
 			cJSON *tx_info = cJSON_CreateObject();
 			char *state = cJSON_Print(cJSON_GetObjectItem(temp, "spendable"));
@@ -715,7 +715,7 @@ int32_t chips_check_if_tx_unspent(char *input_tx)
 	int argc;
 	int32_t tx_exists = 0;
 	char *temp_file = "utxo.log";
-	
+
 	argc = 4;
 	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "chips-cli", "listunspent", ">", temp_file);
@@ -836,13 +836,13 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 	sprintf(params[0], "\'%s\'", cJSON_Print(tx_list));
 	sprintf(params[1], "\'%s\'", cJSON_Print(to_addr_info));
 	argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
-	dlg_info("%s",params[0]);
-	dlg_info("%s",params[1]);
+	dlg_info("%s", params[0]);
+	dlg_info("%s", params[1]);
 	tx = cJSON_CreateObject();
 	make_command(argc, argv, &tx);
 	bet_dealloc_args(argc, &argv);
-	
-	end:
+
+end:
 	if (data)
 		free(data);
 	if (hex_data)
@@ -1259,7 +1259,7 @@ static void chips_read_valid_unspent(char *file_name, cJSON **argjson)
 	temp = cJSON_CreateObject();
 	*argjson = cJSON_CreateArray();
 	fp = fopen(file_name, "r");
-	if(fp) {
+	if (fp) {
 		while ((ch = fgetc(fp)) != EOF) {
 			if ((ch != '[') || (ch != ']')) {
 				if (ch == '{') {
@@ -1656,8 +1656,7 @@ int32_t ln_pay(char *bolt11)
 
 	if (strcmp(jstr(pay_response, "status"), "complete") == 0) {
 		dlg_info("Payment Success");
-	}
-	else {
+	} else {
 		retval = -1;
 	}
 end:

@@ -458,8 +458,7 @@ int32_t ln_pay_invoice(cJSON *argjson, struct privatebet_info *bet, struct priva
 
 		if (strcmp(jstr(pay_response, "status"), "complete") == 0) {
 			dlg_info("Payment Success");
-		}
-		else {
+		} else {
 			retval = -1;
 		}
 	}
@@ -512,8 +511,7 @@ static int32_t bet_player_betting_invoice(cJSON *argjson, struct privatebet_info
 
 		if (strcmp(jstr(pay_response, "status"), "complete") == 0) {
 			dlg_info("Payment Success");
-		}
-		else {
+		} else {
 			retval = -1;
 		}
 
@@ -987,8 +985,7 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 			retval = ln_establish_channel(uri);
 			if (retval == 1) {
 				dlg_info("Channel Established");
-			}
-			else {
+			} else {
 				dlg_info("Channel Didn't Established");
 			}
 		} else {

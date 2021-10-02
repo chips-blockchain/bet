@@ -49,9 +49,9 @@ void str_to_hexstr(char *input, char *output)
 	output[i++] = '\0';
 }
 
-void delete_file(char *file_name) 
+void delete_file(char *file_name)
 {
-	if(remove(file_name) == 0) {
+	if (remove(file_name) == 0) {
 		dlg_info("Intermediate file %s is removed", file_name);
 	} else {
 		dlg_info("Intermediate file %s is not removed", file_name);
