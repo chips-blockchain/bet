@@ -468,7 +468,8 @@ cJSON *chips_create_raw_tx(double amount, char *address)
 	int argc;
 	cJSON *listunspent_info = NULL, *address_info = NULL, *tx_list = NULL, *tx = NULL;
 	double balance, change, temp_balance = 0;
-
+	char *temp_file = "utxo.log";
+	
 	balance = chips_get_balance();
 	tx_list = cJSON_CreateArray();
 	address_info = cJSON_CreateObject();
@@ -479,13 +480,13 @@ cJSON *chips_create_raw_tx(double amount, char *address)
 		cJSON_AddNumberToObject(address_info, address, amount);
 		amount += chips_tx_fee;
 
-		argc = 3;
+		argc = 4;
 		bet_alloc_args(argc, &argv);
-		argv = bet_copy_args(argc, "chips-cli", "listunspent", " > listunspent.log");
+		argv = bet_copy_args(argc, "chips-cli", "listunspent", ">", temp_file);
 		make_command(argc, argv, &listunspent_info);
 		bet_dealloc_args(argc, &argv);
 
-		for (int i = 0; i < cJSON_GetArraySize(listunspent_info); i++) { // sg777: removed -1 from here
+		for (int i = 0; i < cJSON_GetArraySize(listunspent_info); i++) { 
 			cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
 			cJSON *tx_info = cJSON_CreateObject();
 			if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "spendable")), "true") == 0) {
@@ -516,6 +517,7 @@ cJSON *chips_create_raw_tx(double amount, char *address)
 		argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
 		make_command(argc, argv, &tx);
 		bet_dealloc_args(argc, &argv);
+		delete_file(temp_file);
 		return tx;
 	}
 }
@@ -526,7 +528,8 @@ cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 	int argc;
 	cJSON *listunspent_info = NULL, *address_info = NULL, *tx_list = NULL, *tx = NULL;
 	double balance, change, temp_balance = 0;
-
+	char *temp_file = "utxo.log";
+	
 	balance = chips_get_balance();
 	tx_list = cJSON_CreateArray();
 	address_info = cJSON_CreateObject();
@@ -541,16 +544,15 @@ cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 		cJSON_AddNumberToObject(address_info, address, amount);
 		amount += chips_tx_fee;
 
-		argc = 3;
+		argc = 4;
 		bet_alloc_args(argc, &argv);
-		argv = bet_copy_args(argc, "chips-cli", "listunspent", " > listunspent.log");
+		argv = bet_copy_args(argc, "chips-cli", "listunspent", ">", temp_file);
 		listunspent_info = cJSON_CreateArray();
 		make_command(argc, argv, &listunspent_info);
 		bet_dealloc_args(argc, &argv);
 
-		for (int i = 0; i < cJSON_GetArraySize(listunspent_info); i++) { //sg777: removed -1 from here
+		for (int i = 0; i < cJSON_GetArraySize(listunspent_info); i++) { 
 			cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
-			dlg_info("%s",cJSON_Print(temp));
 			cJSON *tx_info = cJSON_CreateObject();
 			char *state = cJSON_Print(cJSON_GetObjectItem(temp, "spendable"));
 			if (strcmp(state, "true") == 0) {
@@ -580,11 +582,10 @@ cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 		snprintf(params[0], arg_size, "\'%s\'", cJSON_Print(tx_list));
 		snprintf(params[1], arg_size, "\'%s\'", cJSON_Print(address_info));
 		argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
-		dlg_info("%s",params[0]);
-		dlg_info("%s",params[1]);
 		tx = cJSON_CreateObject();
 		make_command(argc, argv, &tx);
 		bet_dealloc_args(argc, &argv);
+		delete_file(temp_file);
 		return tx;
 	}
 }
@@ -716,14 +717,16 @@ int32_t chips_check_if_tx_unspent(char *input_tx)
 	char **argv = NULL;
 	int argc;
 	int32_t tx_exists = 0;
-
-	argc = 3;
+	char *temp_file = "utxo.log";
+	
+	argc = 4;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "chips-cli", "listunspent", " > listunspent.log");
+	argv = bet_copy_args(argc, "chips-cli", "listunspent", ">", temp_file);
 
 	run_command(argc, argv);
-	tx_exists = chips_check_tx_exists(input_tx);
+	tx_exists = chips_check_tx_exists(temp_file, input_tx);
 	bet_dealloc_args(argc, &argv);
+	delete_file(temp_file);
 	return tx_exists;
 }
 
@@ -1322,9 +1325,8 @@ int32_t chips_check_tx_exists_in_unspent(char *file_name, char *tx_id)
 	return tx_exists;
 }
 
-int32_t chips_check_tx_exists(char *tx_id)
+int32_t chips_check_tx_exists(char *file_name, char *tx_id)
 {
-	char *file_name = "listunspent.log";
 	FILE *fp = NULL;
 	char ch, buf[4196];
 	int32_t len = 0, tx_exists = 0;
