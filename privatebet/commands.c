@@ -1014,7 +1014,7 @@ void chips_validate_tx(char *tx)
 int32_t chips_extract_data(char *tx, char **rand_str)
 {
 	cJSON *raw_tx = NULL, *decoded_raw_tx = NULL, *vout = NULL, *script_pubkey = NULL;
-	double zero = 0.0, value;
+	double zero = 0.0;
 	int32_t retval = 0;
 
 	raw_tx = chips_get_raw_tx(tx);
@@ -1028,16 +1028,14 @@ int32_t chips_extract_data(char *tx, char **rand_str)
 	vout = cJSON_GetObjectItem(decoded_raw_tx, "vout");
 	for (int i = 0; i < cJSON_GetArraySize(vout); i++) {
 		cJSON *temp = cJSON_GetArrayItem(vout, i);
-		value = jdouble(temp, "value");
-		if (value == zero) {
-			script_pubkey = cJSON_GetObjectItem(temp, "scriptPubKey");
-			if (script_pubkey) {
-				char *data = jstr(script_pubkey, "hex");
-				strcpy((*rand_str),
-				       data + 8); // first 4 bytes contains OP_RETURN hex code so we are skipping them
-				break;
-			}
+		script_pubkey = cJSON_GetObjectItem(temp, "scriptPubKey");
+		if(0 == strcmp(jstr(script_pubkey,"type"), "nulldata"))  {
+			char *data = jstr(script_pubkey, "hex");
+			strcpy((*rand_str),
+			       data + 8); // first 4 bytes contains OP_RETURN hex code so we are skipping them
+			break;
 		}
+		
 	}
 	if (*rand_str)
 		retval = 1;
