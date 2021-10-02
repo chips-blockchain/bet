@@ -450,13 +450,16 @@ int main(int argc, char **argv)
 		bet_handle_game(argc, argv);
 	} else if(strcmp(argv[1], "extract_tx_data") == 0) {
 		if(argc == 3) {
-			char *hex_data = NULL;
+			char *hex_data = NULL, *data = NULL;
 			hex_data = calloc(1, tx_data_size * 2);
-			chips_extract_data(argv[2],&hex_data);
-			cJSON *temp = cJSON_Parse(hex_data);
-			dlg_info("Data part of tx \n %s", cJSON_Print(temp));
+			data = calloc(1, tx_data_size * 2);
+			if(1 == chips_extract_data(argv[2],&hex_data)) {
+				dlg_info("Data part of tx \n %s", hexstr_to_str(hex_data, data));
+			}
 			if(hex_data)
 				free(hex_data);
+			if(data)
+				free(data);
 		}
 	
 	} else {
