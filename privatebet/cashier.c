@@ -142,6 +142,8 @@ void bet_check_cashiers_status()
 		if ((temp) && (strcmp(jstr(temp, "method"), "live") == 0)) {
 			notary_status[i] = 1;
 			live_notaries++;
+		} else {
+			notary_status[i] = 0;
 		}
 	}
 }
