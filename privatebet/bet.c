@@ -27,6 +27,8 @@
 #include "storage.h"
 #include "config.h"
 #include "heartbeat.h"
+#include "misc.h"
+
 
 #include <netinet/in.h>
 #include <stdio.h>
