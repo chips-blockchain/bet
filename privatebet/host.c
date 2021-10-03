@@ -99,7 +99,7 @@ void bet_set_table_id()
 	memset(table_id, 0x00, sizeof(table_id));
 	OS_randombytes(randval.bytes, sizeof(randval));
 	bits256_str(table_id, randval);
-	dlg_info("table_id::%s\n", table_id);
+	dlg_info("table_id::%s", table_id);
 }
 
 void bet_dcv_lws_write(cJSON *data)
@@ -1391,6 +1391,7 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 		}
 	}
 	cJSON_AddItemToObject(stack_info_resp, "msig_addr_nodes", msig_addr_nodes);
+	dlg_info("stack info resp::%s", cJSON_Print(stack_info_resp));
 	bytes = nn_send(bet->pubsock, cJSON_Print(stack_info_resp), strlen(cJSON_Print(stack_info_resp)), 0);
 	if (bytes < 0)
 		retval = -1;

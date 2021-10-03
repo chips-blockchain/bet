@@ -56,7 +56,6 @@ void bet_parse_dealer_config_file()
 		table_stack_in_chips = jdouble(config_info, "table_stack_in_chips");
 		chips_tx_fee = jdouble(config_info, "chips_tx_fee");
 		strcpy(type, jstr(config_info, "type"));
-		dlg_info("LN address type :: %s\n", type);
 	}
 }
 

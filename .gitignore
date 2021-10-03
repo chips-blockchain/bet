@@ -29,7 +29,7 @@ monkeytype.sqlite3
 privatebet/bet
 privatebet/cashierd
 privatebet/cron.sh
-privatebet/listunspent.log
+*.log
 
 # Ignore some generated binaries
 external/libbacktrace-build/
