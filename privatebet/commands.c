@@ -818,6 +818,10 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 			if (value > 0) {
 				cJSON *scriptPubKey = cJSON_GetObjectItem(temp, "scriptPubKey");
 				cJSON *addresses = cJSON_GetObjectItem(scriptPubKey, "addresses");
+				cJSON *address = cJSON_GetObjectItem(scriptPubKey, "address");
+				dlg_info("addresses ::%s", cJSON_Print(addresses));
+				dlg_info("address ::%s", cJSON_Print(address));
+
 				if (strcmp(msig_addr, jstri(addresses, 0)) == 0) {
 					cJSON *tx_info = cJSON_CreateObject();
 					amount += jdouble(temp, "value");
@@ -1028,13 +1032,12 @@ int32_t chips_extract_data(char *tx, char **rand_str)
 	for (int i = 0; i < cJSON_GetArraySize(vout); i++) {
 		cJSON *temp = cJSON_GetArrayItem(vout, i);
 		script_pubkey = cJSON_GetObjectItem(temp, "scriptPubKey");
-		if(0 == strcmp(jstr(script_pubkey,"type"), "nulldata"))  {
+		if (0 == strcmp(jstr(script_pubkey, "type"), "nulldata")) {
 			char *data = jstr(script_pubkey, "hex");
 			strcpy((*rand_str),
 			       data + 8); // first 4 bytes contains OP_RETURN hex code so we are skipping them
 			break;
 		}
-		
 	}
 	if (*rand_str)
 		retval = 1;
@@ -1280,6 +1283,7 @@ static void chips_read_valid_unspent(char *file_name, cJSON **argjson)
 				}
 			}
 		}
+		fclose(fp);
 	}
 }
 
@@ -1292,29 +1296,33 @@ int32_t chips_check_tx_exists_in_unspent(char *file_name, char *tx_id)
 
 	temp = cJSON_CreateObject();
 	fp = fopen(file_name, "r");
-	while ((ch = fgetc(fp)) != EOF) {
-		if ((ch != '[') || (ch != ']')) {
-			if (ch == '{') {
-				buf[len++] = ch;
-			} else {
-				if (len > 0) {
-					if (ch == '}') {
-						buf[len++] = ch;
-						buf[len] = '\0';
-						temp = cJSON_Parse(buf);
-						if (strcmp(unstringify(cJSON_Print(cJSON_GetObjectItem(temp, "txid"))),
-							   unstringify(tx_id)) == 0) {
-							tx_exists = 1;
-							break;
+	if (fp) {
+		while ((ch = fgetc(fp)) != EOF) {
+			if ((ch != '[') || (ch != ']')) {
+				if (ch == '{') {
+					buf[len++] = ch;
+				} else {
+					if (len > 0) {
+						if (ch == '}') {
+							buf[len++] = ch;
+							buf[len] = '\0';
+							temp = cJSON_Parse(buf);
+							if (strcmp(unstringify(cJSON_Print(
+									   cJSON_GetObjectItem(temp, "txid"))),
+								   unstringify(tx_id)) == 0) {
+								tx_exists = 1;
+								break;
+							}
+							memset(buf, 0x00, len);
+							len = 0;
+						} else {
+							buf[len++] = ch;
 						}
-						memset(buf, 0x00, len);
-						len = 0;
-					} else {
-						buf[len++] = ch;
 					}
 				}
 			}
 		}
+		fclose(fp);
 	}
 	return tx_exists;
 }

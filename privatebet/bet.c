@@ -29,7 +29,6 @@
 #include "heartbeat.h"
 #include "misc.h"
 
-
 #include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -450,21 +449,21 @@ int main(int argc, char **argv)
 	} else if ((argc > 2) && (strcmp(argv[1], "game") == 0)) {
 		playing_nodes_init();
 		bet_handle_game(argc, argv);
-	} else if(strcmp(argv[1], "extract_tx_data") == 0) {
-		if(argc == 3) {
+	} else if (strcmp(argv[1], "extract_tx_data") == 0) {
+		if (argc == 3) {
 			char *hex_data = NULL, *data = NULL;
 			hex_data = calloc(1, tx_data_size * 2);
 			data = calloc(1, tx_data_size * 2);
-			if(1 == chips_extract_data(argv[2],&hex_data)) {
+			if (1 == chips_extract_data(argv[2], &hex_data)) {
 				hexstr_to_str(hex_data, data);
-				dlg_info("Data part of tx \n %s",data);
+				dlg_info("Data part of tx \n %s", data);
 			}
-			if(hex_data)
+			if (hex_data)
 				free(hex_data);
-			if(data)
+			if (data)
 				free(data);
 		}
-	
+
 	} else {
 		dlg_info("Invalid Usage, use the flag -h or --help to get more usage details");
 		bet_display_usage();
