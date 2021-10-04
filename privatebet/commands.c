@@ -1853,8 +1853,9 @@ int32_t ln_establish_channel(char *uri)
 			}
 		}
 
-		if (retval = 0)
+		if (retval == 0) {
 			goto end;
+		}	
 
 		dlg_info("Funding the LN channel :: %s", jstr(connect_info, "id"));
 		fund_channel_info = ln_fund_channel(jstr(connect_info, "id"), channel_fund_satoshis);
