@@ -323,6 +323,30 @@ static void bet_cashier_server_thrd(char *node_ip, const int32_t port)
 	bet_cashier_deinitialize();
 }
 
+static void bet_help_player_command_usage()
+{
+	dlg_info("\n"
+		 "player \n"
+		 "Starts the backend player node \n"
+		 "Result: \n"
+		 "A player node get started and look for the available dealers and joins the table if there are sufficient funds \n"
+		 "Example: \n"
+		 "./bet player \n");
+}
+
+static void bet_help_command(char* command)
+{
+	if(strcmp(command, "dcv") == 0) {
+	} else if(strcmp(command, "player") == 0) {
+		bet_help_player_command_usage();
+	} else if((strcmp(command, "cashier") == 0) || ((strcmp(command, "cashierd") == 0))) {
+	} else if(strcmp(command, "game") == 0) {
+	} else if(strcmp(command, "withdraw") == 0) {
+	} else if(strcmp(command, "spendable") == 0) {
+	} else if(strcmp(command, "extract_tx_data") == 0) {
+	}
+	
+}
 static void bet_display_usage()
 {
 	dlg_info("\n==Dealer==\n"
@@ -434,7 +458,11 @@ int main(int argc, char **argv)
 			}
 		} else if ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "h") == 0) ||
 			   (strcmp(argv[1], "--help") == 0) || (strcmp(argv[1], "help") == 0)) {
-			bet_display_usage();
+			   if(argc == 3) {
+			   		bet_help_command(argv[2]);
+			   	} else {
+					bet_display_usage();
+			   	}
 		} else if ((strcmp(argv[1], "-v") == 0) || (strcmp(argv[1], "v") == 0) ||
 			   (strcmp(argv[1], "--version") == 0) || (strcmp(argv[1], "version") == 0)) {
 			dlg_info("%s", bet_git_version());
@@ -479,6 +507,8 @@ int main(int argc, char **argv)
 				if (data)
 					free(data);
 			}
+		} else {
+			bet_display_usage();
 		}
 	} else {
 		dlg_info("Invalid Usage, use the flag -h or --help to get more usage details");
