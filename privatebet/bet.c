@@ -325,27 +325,19 @@ static void bet_cashier_server_thrd(char *node_ip, const int32_t port)
 
 static void bet_display_usage()
 {
-	dlg_info("
-		
-		\n==Dealer==\n
-		dcv \"ipv4 address of the dealer node\" \n
-		
-		\n==Player==\n
-		player \n
-		
-		\n==Cashier==\n
-		cashierd cashier \"ipv4 address of the cashier node\" \n
-
-		\n==DRP==\n
-		game info [fail]/[success]
-		game solve
-		raise dispte \" Disputed tx to resolve\"
-
-		\n==Wallet==\n
-		withdraw amount \"chips address\" \n
-		spendable\n		
-
-		");
+	dlg_info("\n==Dealer==\n"
+		"dcv \"ipv4 address of the dealer node\" \n"		
+		"\n==Player==\n"
+		"player \n"		
+		"\n==Cashier==\n"
+		"cashierd cashier \"ipv4 address of the cashier node\" \n"
+		"\n==DRP==\n"
+		"game info [fail]/[success]"
+		"game solve"
+		"raise dispte \" Disputed tx to resolve\""
+		"\n==Wallet==\n"
+		"withdraw amount \"chips address\" \n"
+		"spendable\n");
 }
 
 static void bet_set_unique_id()
