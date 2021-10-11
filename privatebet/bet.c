@@ -419,6 +419,20 @@ static void bet_help_game_command_usage()
 		reversed and the CHIPS amount will be credited back to the address from which the CHIPS are spent.\n");
 }
 
+static void bet_help_spendable_command_usage()
+{	
+	dlg_info(
+		"\n"
+		"spendable \n"
+		"List the unspent transactions that are spendable by this node \n"
+		"\n"
+		"Result: \n"
+		"Returns the utxo of which spendable is set to true\n"
+		"\n"
+		"Example: \n"
+		"./bet spendable \n");
+}
+
 static void bet_help_command(char *command)
 {
 	if (strcmp(command, "dcv") == 0) {
@@ -431,6 +445,7 @@ static void bet_help_command(char *command)
 		bet_help_game_command_usage();
 	} else if (strcmp(command, "withdraw") == 0) {		
 	} else if (strcmp(command, "spendable") == 0) {
+		bet_help_spendable_command_usage();
 	} else if (strcmp(command, "extract_tx_data") == 0) {
 	}
 }
