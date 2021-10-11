@@ -433,6 +433,18 @@ static void bet_help_spendable_command_usage()
 		"./bet spendable \n");
 }
 
+static void bet_help_extract_tx_data_command_usage()
+{
+	dlg_info(
+		"\n"
+		"extract_tx_data tx_id \n"
+		"The data part of the payin transactions made during the game contains the game info and this is 
+		extracted and displayed in a user readable format.\n"
+		"\n"
+		"Example: \n"
+		"./bet extract_tx_data tx_id \n");
+}
+
 static void bet_help_command(char *command)
 {
 	if (strcmp(command, "dcv") == 0) {
@@ -447,6 +459,7 @@ static void bet_help_command(char *command)
 	} else if (strcmp(command, "spendable") == 0) {
 		bet_help_spendable_command_usage();
 	} else if (strcmp(command, "extract_tx_data") == 0) {
+		bet_help_extract_tx_data_command_usage();
 	}
 }
 
