@@ -122,10 +122,9 @@ void bet_check_cashier_nodes()
 		for (int i = 0; i < no_of_notaries; i++) {
 			if (notary_status[i] == 1) {
 				dlg_info("%d. %s active", i + 1, notary_node_ips[i]);
-			}	
-			else {
+			} else {
 				dlg_info("%d. %s not active", i + 1, notary_node_ips[i]);
-			}	
+			}
 		}
 	}
 }
@@ -409,8 +408,7 @@ void bet_cashier_status_loop(void *_ptr)
 
 	if (bytes < 0) {
 		dlg_error("Failed to send data");
-	}	
-	else {
+	} else {
 		while (cashier_info->c_pushsock >= 0 && cashier_info->c_subsock >= 0) {
 			ptr = 0;
 			if ((recvlen = nn_recv(cashier_info->c_subsock, &ptr, NN_MSG, 0)) > 0) {
