@@ -362,8 +362,7 @@ static void bet_help_player_command_usage()
 		"Starts the backend player node \n"
 		"\n"
 		"Result: \n"
-		"A player node get started and look for the available dealers and joins the table if there are 
-		sufficient funds \n"
+		"A player node get started and look for the available dealers and joins the table if there are sufficient funds \n"
 		"\n"
 		"Example: \n"
 		"./bet player");
@@ -377,9 +376,7 @@ static void bet_help_cashier_command_usage()
 		"Starts the cashier node \n"
 		"\n"
 		"Result: \n"
-		"A cashier node get started, like this a group of cashier nodes are required to hold and release the 
-		funds during the game. Since the BVV functionalties are integrated into the cashier node, so while deck 
-		shuflling the cashier node can also acts like a blinder\n"
+		"A cashier node get started, like this a group of cashier nodes are required to hold and release the funds during the game. Since the BVV functionalties are integrated into the cashier node, so while deck shuflling the cashier node can also acts like a blinder\n"
 		"\n"
 		"Example: \n"
 		"./cashierd cashier \"ip address of the cashier\" \n"
@@ -391,57 +388,51 @@ static void bet_help_game_command_usage()
 {
 	dlg_info(
 		"\n"
-		"game"
-		"This provides the statistics about the games played and to resolve any disputes. The dispute resolution 
-		protocol(DRP) which is implemented beneath this command is used to resolve the disputes and players can 
-		use this command in order to reverse the funding tx of the games which are not fully played(due to network 
-		disruptions or by any other reason) \n"
+		"game \n"
+		"This provides the statistics about the games played and to resolve any disputes. The dispute resolution protocol(DRP) which is implemented beneath this command is used to resolve the disputes and players can use this command in order to reverse the funding tx of the games which are not fully played(due to network disruptions or by any other reason) \n"
 		"\n"
 		"Example: \n"
 		"./bet game info fail\" \n"
 		"Result: \n"
 		"Displays list of games which are not successfully played.\n"
+		"\n"
 		"Example: \n"
 		"./bet game info success\" \n"
 		"Result: \n"
 		"Displays list of games which are played successfully.\n"
+		"\n"
 		"Example: \n"
 		"./bet game solve\" \n"
 		"Result: \n"
-		"It parses through all unsuccessful games and resolve them using DRP, provided if the game is not played 
-		and payout_tx is not happened and the notaries involved(atleast 2) are active then the payin_tx will be 
-		reversed and the CHIPS amount will be credited back to the address from which the CHIPS are spent.\n"
+		"It parses through all unsuccessful games and resolve them using DRP, provided if the game is not played and payout_tx is not happened and the notaries involved(atleast 2) are active then the payin_tx will be reversed and the CHIPS amount will be credited back to the address from which the CHIPS are spent.\n"
+		"\n"
 		"Example: \n"
 		"./bet game dispute \"disputed tx id \"  \n"
 		"Result: \n"
-		"Only the game with the disputed tx id will be resolved using DRP, provided if the game is not played 
-		and payout_tx is not happened and the notaries involved(atleast 2) are active then the payin_tx will be 
-		reversed and the CHIPS amount will be credited back to the address from which the CHIPS are spent.\n");
+		"Only the game with the disputed tx id will be resolved using DRP, provided if the game is not played and payout_tx is not happened and the notaries involved(atleast 2) are active then the payin_tx will be reversed and the CHIPS amount will be credited back to the address from which the CHIPS are spent.\n");
 }
 
 static void bet_help_withdraw_command_usage()
 {
-	dlg_info(
-		"\n"
-		"withdraw"
-		"Withdraws CHIPS to the address specified \n"
-		"\n"
-		"Example: \n"
-		"./bet withdraw amount \"chips address\" \n");
+	dlg_info("\n"
+		 "withdraw"
+		 "Withdraws CHIPS to the address specified \n"
+		 "\n"
+		 "Example: \n"
+		 "./bet withdraw amount \"chips address\" \n");
 }
 
 static void bet_help_spendable_command_usage()
-{	
-	dlg_info(
-		"\n"
-		"spendable \n"
-		"List the unspent transactions that are spendable by this node \n"
-		"\n"
-		"Result: \n"
-		"Returns the utxo of which spendable is set to true\n"
-		"\n"
-		"Example: \n"
-		"./bet spendable \n");
+{
+	dlg_info("\n"
+		 "spendable \n"
+		 "List the unspent transactions that are spendable by this node \n"
+		 "\n"
+		 "Result: \n"
+		 "Returns the utxo of which spendable is set to true\n"
+		 "\n"
+		 "Example: \n"
+		 "./bet spendable \n");
 }
 
 static void bet_help_extract_tx_data_command_usage()
@@ -449,8 +440,7 @@ static void bet_help_extract_tx_data_command_usage()
 	dlg_info(
 		"\n"
 		"extract_tx_data tx_id \n"
-		"The data part of the payin transactions made during the game contains the game info and this is 
-		extracted and displayed in a user readable format.\n"
+		"The data part of the payin transactions made during the game contains the game info and this is extracted and displayed in a user readable format.\n"
 		"\n"
 		"Example: \n"
 		"./bet extract_tx_data tx_id \n");
@@ -466,7 +456,7 @@ static void bet_help_command(char *command)
 		bet_help_cashier_command_usage();
 	} else if (strcmp(command, "game") == 0) {
 		bet_help_game_command_usage();
-	} else if (strcmp(command, "withdraw") == 0) {		
+	} else if (strcmp(command, "withdraw") == 0) {
 		bet_help_withdraw_command_usage();
 	} else if (strcmp(command, "spendable") == 0) {
 		bet_help_spendable_command_usage();
