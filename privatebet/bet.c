@@ -323,20 +323,36 @@ static void bet_cashier_server_thrd(char *node_ip, const int32_t port)
 	bet_cashier_deinitialize();
 }
 
+static void bet_help_dcv_command_usage()
+{
+	dlg_info("\n"
+		 "dcv \"ip address of the dealer\" \n"
+		 "Starts the backend dealer node \n"
+		 "\n"
+		 "Result: \n"
+		 "A dealer node get started and informed about its availability to the cashier nodes \n"
+		 "\n"
+		 "Example: \n"
+		 "./bet dcv \"ip address of the dealer\" ");
+}
+
 static void bet_help_player_command_usage()
 {
 	dlg_info("\n"
 		 "player \n"
 		 "Starts the backend player node \n"
+		 "\n"
 		 "Result: \n"
 		 "A player node get started and look for the available dealers and joins the table if there are sufficient funds \n"
+		 "\n"
 		 "Example: \n"
-		 "./bet player \n");
+		 "./bet player");
 }
 
 static void bet_help_command(char* command)
 {
 	if(strcmp(command, "dcv") == 0) {
+		bet_help_dcv_command_usage();
 	} else if(strcmp(command, "player") == 0) {
 		bet_help_player_command_usage();
 	} else if((strcmp(command, "cashier") == 0) || ((strcmp(command, "cashierd") == 0))) {
