@@ -326,19 +326,19 @@ static void bet_cashier_server_thrd(char *node_ip, const int32_t port)
 static void bet_display_usage()
 {
 	dlg_info("\n==Dealer==\n"
-		"dcv \"ipv4 address of the dealer node\" \n"		
-		"\n==Player==\n"
-		"player \n"		
-		"\n==Cashier==\n"
-		"cashierd cashier \"ipv4 address of the cashier node\" \n"
-		"\n==DRP==\n"
-		"game info [fail]/[success] \n"
-		"game solve \n"
-		"raise dispte \" Disputed tx to resolve\" \n"
-		"\n==Wallet==\n"
-		"withdraw amount \"chips address\" \n"
-		"spendable \n"
-		"extract_tx_data tx_id \n");
+		 "dcv \"ipv4 address of the dealer node\" \n"
+		 "\n==Player==\n"
+		 "player \n"
+		 "\n==Cashier==\n"
+		 "cashierd cashier \"ipv4 address of the cashier node\" \n"
+		 "\n==DRP==\n"
+		 "game info [fail]/[success] \n"
+		 "game solve \n"
+		 "raise dispte \" Disputed tx to resolve\" \n"
+		 "\n==Wallet==\n"
+		 "withdraw amount \"chips address\" \n"
+		 "spendable \n"
+		 "extract_tx_data tx_id \n");
 }
 
 static void bet_set_unique_id()
@@ -418,8 +418,8 @@ int main(int argc, char **argv)
 	bet_set_unique_id();
 	bet_parse_dealer_config_file();
 
-	if(argc >= 2) {
-		if(strcmp(argv[1], "player") == 0) {
+	if (argc >= 2) {
+		if (strcmp(argv[1], "player") == 0) {
 			playing_nodes_init();
 			dlg_info("Finding the dealer");
 			do {
@@ -427,65 +427,64 @@ int main(int argc, char **argv)
 				if (!ip)
 					sleep(2);
 			} while (ip == NULL);
-			
+
 			if (ip) {
 				dlg_info("The dealer is :: %s", ip);
 				bet_player_thrd(ip, port);
-			}						
-		} else if((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "h") == 0) ||
-				   (strcmp(argv[1], "--help") == 0) || (strcmp(argv[1], "help") == 0)) {
+			}
+		} else if ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "h") == 0) ||
+			   (strcmp(argv[1], "--help") == 0) || (strcmp(argv[1], "help") == 0)) {
 			bet_display_usage();
 		} else if ((strcmp(argv[1], "-v") == 0) || (strcmp(argv[1], "v") == 0) ||
-				   (strcmp(argv[1], "--version") == 0) || (strcmp(argv[1], "version") == 0)) {
-		dlg_info("%s", bet_git_version());
-	} else if (strcmp(argv[1], "spendable") == 0) {
-		cJSON *spendable_tx = chips_spendable_tx();
-		dlg_info("CHIPS Spendable tx's :: %s\n", cJSON_Print(spendable_tx));
-	} else if (strcmp(argv[1], "dcv") == 0) {
-		if(argc == 3) {
-			strcpy(dealer_ip, argv[2]);
-			playing_nodes_init();
-			bet_send_dealer_info_to_cashier(dealer_ip);
-			dealer_node_init();
-			find_bvv();
-			bet_dcv_thrd(dealer_ip, port);
-		}
-	} else if (strcmp(argv[1], "cashier") == 0) {
-		if(argc == 3) {
-			strcpy(cashier_ip, argv[2]);
-			common_init();
-			bet_cashier_server_thrd(cashier_ip, cashier_pub_sub_port);
-		}
-	} else if (strcmp(argv[1], "withdraw") == 0) {
-		if(argc == 4) {
-			cJSON *tx = NULL;
-			tx = chips_transfer_funds(atof(argv[2]), argv[3]);
-			dlg_info("tx details::%s", cJSON_Print(tx));
-		}
-	} else if (strcmp(argv[1], "game") == 0) {
-		playing_nodes_init();
-		bet_handle_game(argc, argv);
-	} else if (strcmp(argv[1], "extract_tx_data") == 0) {
-		if(argc == 3) {
-			char *hex_data = NULL, *data = NULL;
-			hex_data = calloc(1, tx_data_size * 2);
-			data = calloc(1, tx_data_size * 2);
-			if (1 == chips_extract_data(argv[2], &hex_data)) {
-				hexstr_to_str(hex_data, data);
-				dlg_info("Data part of tx \n %s", data);
+			   (strcmp(argv[1], "--version") == 0) || (strcmp(argv[1], "version") == 0)) {
+			dlg_info("%s", bet_git_version());
+		} else if (strcmp(argv[1], "spendable") == 0) {
+			cJSON *spendable_tx = chips_spendable_tx();
+			dlg_info("CHIPS Spendable tx's :: %s\n", cJSON_Print(spendable_tx));
+		} else if (strcmp(argv[1], "dcv") == 0) {
+			if (argc == 3) {
+				strcpy(dealer_ip, argv[2]);
+				playing_nodes_init();
+				bet_send_dealer_info_to_cashier(dealer_ip);
+				dealer_node_init();
+				find_bvv();
+				bet_dcv_thrd(dealer_ip, port);
 			}
-			if (hex_data)
-				free(hex_data);
-			if (data)
-				free(data);
+		} else if (strcmp(argv[1], "cashier") == 0) {
+			if (argc == 3) {
+				strcpy(cashier_ip, argv[2]);
+				common_init();
+				bet_cashier_server_thrd(cashier_ip, cashier_pub_sub_port);
+			}
+		} else if (strcmp(argv[1], "withdraw") == 0) {
+			if (argc == 4) {
+				cJSON *tx = NULL;
+				tx = chips_transfer_funds(atof(argv[2]), argv[3]);
+				dlg_info("tx details::%s", cJSON_Print(tx));
+			}
+		} else if (strcmp(argv[1], "game") == 0) {
+			playing_nodes_init();
+			bet_handle_game(argc, argv);
+		} else if (strcmp(argv[1], "extract_tx_data") == 0) {
+			if (argc == 3) {
+				char *hex_data = NULL, *data = NULL;
+				hex_data = calloc(1, tx_data_size * 2);
+				data = calloc(1, tx_data_size * 2);
+				if (1 == chips_extract_data(argv[2], &hex_data)) {
+					hexstr_to_str(hex_data, data);
+					dlg_info("Data part of tx \n %s", data);
+				}
+				if (hex_data)
+					free(hex_data);
+				if (data)
+					free(data);
+			}
+
+		} else {
+			dlg_info("Invalid Usage, use the flag -h or --help to get more usage details");
+			bet_display_usage();
 		}
-
-	} else {
-		dlg_info("Invalid Usage, use the flag -h or --help to get more usage details");
-		bet_display_usage();
-	}		
 	}
-
 }
 
 bits256 curve25519_fieldelement(bits256 hash)

@@ -353,7 +353,7 @@ cJSON *chips_transfer_funds_with_data(double amount, char *address, char *data)
 
 	raw_tx = calloc(arg_size, sizeof(char));
 	strncpy(raw_tx, cJSON_str(chips_create_raw_tx_with_data(amount, address, data)), arg_size);
-	dlg_info("raw_tx::%s", raw_tx);	
+	dlg_info("raw_tx::%s", raw_tx);
 	signed_tx = cJSON_CreateObject();
 	signed_tx = chips_sign_raw_tx_with_wallet(raw_tx);
 	dlg_info("signed_tx::%s", cJSON_Print(signed_tx));
@@ -1855,7 +1855,7 @@ int32_t ln_establish_channel(char *uri)
 
 		if (retval == 0) {
 			goto end;
-		}	
+		}
 
 		dlg_info("Funding the LN channel :: %s", jstr(connect_info, "id"));
 		fund_channel_info = ln_fund_channel(jstr(connect_info, "id"), channel_fund_satoshis);
