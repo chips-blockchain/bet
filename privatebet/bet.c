@@ -419,6 +419,17 @@ static void bet_help_game_command_usage()
 		reversed and the CHIPS amount will be credited back to the address from which the CHIPS are spent.\n");
 }
 
+static void bet_help_withdraw_command_usage()
+{
+	dlg_info(
+		"\n"
+		"withdraw"
+		"Withdraws CHIPS to the address specified \n"
+		"\n"
+		"Example: \n"
+		"./bet withdraw amount \"chips address\" \n");
+}
+
 static void bet_help_spendable_command_usage()
 {	
 	dlg_info(
@@ -456,6 +467,7 @@ static void bet_help_command(char *command)
 	} else if (strcmp(command, "game") == 0) {
 		bet_help_game_command_usage();
 	} else if (strcmp(command, "withdraw") == 0) {		
+		bet_help_withdraw_command_usage();
 	} else if (strcmp(command, "spendable") == 0) {
 		bet_help_spendable_command_usage();
 	} else if (strcmp(command, "extract_tx_data") == 0) {
