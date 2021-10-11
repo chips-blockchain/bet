@@ -324,21 +324,6 @@ static void bet_cashier_server_thrd(char *node_ip, const int32_t port)
 }
 
 
-static void bet_help_cashier_command_usage()
-{
-	dlg_info("\n"
-		 "cashier \"ip address of the cashier node\" \n"
-		 "Starts the cashier node \n"
-		 "\n"
-		 "Result: \n"
-		 "A cashier node get started, like this a group of cashier nodes are required to hold and release the funds during the game. Since the BVV functionalties are integrated into the cashier node, so while deck shuflling the cashier node can also acts like a blinder\n"
-		 "\n"
-		 "Example: \n"
-		 "./cashierd cashier \"ip address of the cashier\" \n"
-		 "or \n (at the moment bet and cashier daemons contains all the functionalities while building)"
-		 "./bet cashier \"ip address of the cashier\" \n");		
-}
-
 static void bet_help_dcv_command_usage()
 {
 	dlg_info("\n"
@@ -365,6 +350,46 @@ static void bet_help_player_command_usage()
 		 "./bet player");
 }
 
+static void bet_help_cashier_command_usage()
+{
+	dlg_info("\n"
+		 "cashier \"ip address of the cashier node\" \n"
+		 "Starts the cashier node \n"
+		 "\n"
+		 "Result: \n"
+		 "A cashier node get started, like this a group of cashier nodes are required to hold and release the funds during the game. Since the BVV functionalties are integrated into the cashier node, so while deck shuflling the cashier node can also acts like a blinder\n"
+		 "\n"
+		 "Example: \n"
+		 "./cashierd cashier \"ip address of the cashier\" \n"
+		 "or (at the moment bet and cashier daemons contains all the functionalities while building) \n"
+		 "./bet cashier \"ip address of the cashier\" \n");		
+}
+
+static void bet_help_game_command_usage()
+{
+	dlg_info("\n"
+		 "game"
+		 "This provides the statistics about the games played and to resolve any disputes. The dispute resolution protocol(DRP) which is implemented beneath this command is used to resolve the disputes and players can use this command in order to reverse the funding tx of the games which are not fully played(due to network disruptions or by any other reason) \n"
+		 "\n"
+		 "Example: \n"
+		 "./bet game info fail\" \n"
+		 "Result: \n"
+		 "Displays list of games which are not successfully played.\n"	 
+		 "Example: \n"
+		 "./bet game info success\" \n"
+		 "Result: \n"
+		 "Displays list of games which are played successfully.\n"	 
+  	 	 "Example: \n"
+ 		 "./bet game solve\" \n"
+ 		 "Result: \n"
+ 		 "It parses through all unsuccessful games and resolve them using DRP, provided if the game is not played and payout_tx is not happened and the notaries involved(atleast 2) are active then the payin_tx will be reversed and the CHIPS amount will be credited back to the address from which the CHIPS are spent.\n"	
+		 "Example: \n"
+		 "./bet game dispute \"disputed tx id \"  \n"
+		 "Result: \n"
+		 "Only the game with the disputed tx id will be resolved using DRP, provided if the game is not played and payout_tx is not happened and the notaries involved(atleast 2) are active then the payin_tx will be reversed and the CHIPS amount will be credited back to the address from which the CHIPS are spent.\n"); 	
+	
+}
+
 static void bet_help_command(char* command)
 {
 	if(strcmp(command, "dcv") == 0) {
@@ -374,6 +399,7 @@ static void bet_help_command(char* command)
 	} else if((strcmp(command, "cashier") == 0) || ((strcmp(command, "cashierd") == 0))) {
 		bet_help_cashier_command_usage();
 	} else if(strcmp(command, "game") == 0) {
+		bet_help_game_command_usage();
 	} else if(strcmp(command, "withdraw") == 0) {
 	} else if(strcmp(command, "spendable") == 0) {
 	} else if(strcmp(command, "extract_tx_data") == 0) {
@@ -391,7 +417,7 @@ static void bet_display_usage()
 		 "\n==DRP==\n"
 		 "game info [fail]/[success] \n"
 		 "game solve \n"
-		 "raise dispte \" Disputed tx to resolve\" \n"
+		 "game dispte \" Disputed tx to resolve\" \n"
 		 "\n==Wallet==\n"
 		 "withdraw amount \"chips address\" \n"
 		 "spendable \n"
