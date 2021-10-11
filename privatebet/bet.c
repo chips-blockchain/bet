@@ -479,12 +479,12 @@ int main(int argc, char **argv)
 				if (data)
 					free(data);
 			}
-
-		} else {
+		} 
+	}else {
 			dlg_info("Invalid Usage, use the flag -h or --help to get more usage details");
 			bet_display_usage();
 		}
-	}
+	
 }
 
 bits256 curve25519_fieldelement(bits256 hash)
