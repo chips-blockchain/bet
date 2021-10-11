@@ -323,6 +323,22 @@ static void bet_cashier_server_thrd(char *node_ip, const int32_t port)
 	bet_cashier_deinitialize();
 }
 
+
+static void bet_help_cashier_command_usage()
+{
+	dlg_info("\n"
+		 "cashier \"ip address of the cashier node\" \n"
+		 "Starts the cashier node \n"
+		 "\n"
+		 "Result: \n"
+		 "A cashier node get started, like this a group of cashier nodes are required to hold and release the funds during the game. Since the BVV functionalties are integrated into the cashier node, so while deck shuflling the cashier node can also acts like a blinder\n"
+		 "\n"
+		 "Example: \n"
+		 "./cashierd cashier \"ip address of the cashier\" \n"
+		 "or \n (at the moment bet and cashier daemons contains all the functionalities while building)"
+		 "./bet cashier \"ip address of the cashier\" \n");		
+}
+
 static void bet_help_dcv_command_usage()
 {
 	dlg_info("\n"
@@ -356,6 +372,7 @@ static void bet_help_command(char* command)
 	} else if(strcmp(command, "player") == 0) {
 		bet_help_player_command_usage();
 	} else if((strcmp(command, "cashier") == 0) || ((strcmp(command, "cashierd") == 0))) {
+		bet_help_cashier_command_usage();
 	} else if(strcmp(command, "game") == 0) {
 	} else if(strcmp(command, "withdraw") == 0) {
 	} else if(strcmp(command, "spendable") == 0) {
