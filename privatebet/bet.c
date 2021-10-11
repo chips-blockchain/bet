@@ -577,18 +577,24 @@ int main(int argc, char **argv)
 				dealer_node_init();
 				find_bvv();
 				bet_dcv_thrd(dealer_ip, port);
+			} else {
+				bet_help_dcv_command_usage();
 			}
 		} else if (strcmp(argv[1], "cashier") == 0) {
 			if (argc == 3) {
 				strcpy(cashier_ip, argv[2]);
 				common_init();
 				bet_cashier_server_thrd(cashier_ip, cashier_pub_sub_port);
+			} else {
+				bet_help_cashier_command_usage();
 			}
 		} else if (strcmp(argv[1], "withdraw") == 0) {
 			if (argc == 4) {
 				cJSON *tx = NULL;
 				tx = chips_transfer_funds(atof(argv[2]), argv[3]);
 				dlg_info("tx details::%s", cJSON_Print(tx));
+			} else {
+				bet_help_withdraw_command_usage();
 			}
 		} else if (strcmp(argv[1], "game") == 0) {
 			playing_nodes_init();
@@ -606,6 +612,8 @@ int main(int argc, char **argv)
 					free(hex_data);
 				if (data)
 					free(data);
+			} else {
+				bet_help_extract_tx_data_command_usage();
 			}
 		} else {
 			bet_display_usage();
