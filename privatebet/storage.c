@@ -231,11 +231,13 @@ cJSON *sqlite3_get_game_details(int32_t opt)
 	db = bet_get_db_instance();
 	sql_query = calloc(1, sql_query_size);
 	sql_sub_query = calloc(1, sql_query_size);
-	if (opt == -1)
+	if (opt == -1) {
 		sprintf(sql_query, "select * from player_tx_mapping;");
-	else
+	}	
+	else {
 		sprintf(sql_query, "select * from player_tx_mapping where status = %d;", opt);
-	dlg_info("sql_query::%s\n", sql_query);
+	}
+
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
 		dlg_error("error_code :: %d, error msg ::%s, \n query ::%s", rc, sqlite3_errmsg(db), sql_query);
