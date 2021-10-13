@@ -51,9 +51,7 @@ void str_to_hexstr(char *input, char *output)
 
 void delete_file(char *file_name)
 {
-	if (remove(file_name) == 0) {
-		dlg_info("Intermediate file %s is removed", file_name);
-	} else {
-		dlg_info("Intermediate file %s is not removed", file_name);
+	if (remove(file_name) != 0) {
+		dlg_warn("Intermediate file %s is not removed", file_name);
 	}
 }
