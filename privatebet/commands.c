@@ -1813,9 +1813,18 @@ int32_t ln_establish_channel(char *uri)
 	if ((ln_get_channel_status(strtok(uid, "@")) != CHANNELD_NORMAL)) {
 		dlg_info("LN uri::%s", uri);
 		connect_info = ln_connect(uri);
+
+		if(jint(connect_info,"code") != 0) {
+			dlg_error("%s", jstr(connect_info,"message"));
+			retval = 0;
+			goto end;
+		}
+
+		/*
 		if ((retval = jint(connect_info, "code")) != 0)
 			return retval;
-
+		*/
+		
 		if (ln_listfunds() < (channel_fund_satoshis + (chips_tx_fee * satoshis))) {
 			amount = channel_fund_satoshis - ln_listfunds();
 			amount = amount / satoshis;
@@ -1842,17 +1851,15 @@ int32_t ln_establish_channel(char *uri)
 				} else {
 					retval = 0;
 					dlg_error("Automatic loading of the LN wallet from the CHIPS wallet is failed");
+					goto end;
 				}
 			} else {
 				retval = 0;
 				dlg_warn(
 					"Even CHIPS wallet is short of (%f CHIPS) the funds...try loading either CHIPS or LN wallet manually",
 					amount);
+				goto end;
 			}
-		}
-
-		if (retval == 0) {
-			goto end;
 		}
 
 		dlg_info("Funding the LN channel :: %s", jstr(connect_info, "id"));
