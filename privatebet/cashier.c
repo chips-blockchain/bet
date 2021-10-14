@@ -947,19 +947,23 @@ void bet_raise_dispute(char *tx_id)
 				break;
 		}
 	}
+	
+	sql_query = calloc(1, sql_query_size);
 	if ((response_info) && (jstr(response_info, "payout_tx"))) {
 		dlg_info("The tx::%s has been reversed with the payout_tx::%s", jstr(dispute_info, "tx_id"),
 			 jstr(response_info, "payout_tx"));
-		sql_query = calloc(1, sql_query_size);
 		sprintf(sql_query,
 			"UPDATE player_tx_mapping set status = 0, payout_tx_id = \'%s\' where tx_id = \'%s\';",
 			(jstr(response_info, "payout_tx")), tx_id);
-		bet_run_query(sql_query);
-		if (sql_query)
-			free(sql_query);
 	} else {
 		dlg_info("Notaries are failed to recover this disputed tx :: %s", jstr(dispute_info, "tx_id"));
+		sprintf(sql_query,
+			"UPDATE player_tx_mapping set status = 2, payout_tx_id = \'%s\' where tx_id = \'%s\';",
+			(jstr(response_info, "payout_tx")), tx_id);
 	}
+	bet_run_query(sql_query);
+	if (sql_query)
+		free(sql_query);
 }
 
 void bet_handle_game(int argc, char **argv)
