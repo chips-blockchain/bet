@@ -947,7 +947,7 @@ void bet_raise_dispute(char *tx_id)
 				break;
 		}
 	}
-	
+
 	sql_query = calloc(1, sql_query_size);
 	if ((response_info) && (jstr(response_info, "payout_tx"))) {
 		dlg_info("The tx::%s has been reversed with the payout_tx::%s", jstr(dispute_info, "tx_id"),

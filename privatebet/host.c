@@ -1725,12 +1725,15 @@ void bet_dcv_backend_thrd(void *_ptr)
 		} else if (strcmp(method, "player_active") == 0) {
 			bet_dcv_update_player_status(argjson);
 		} else if (strcmp(method, "share_info") == 0) {
-			if(jint(argjson, "error") == -2) { //Decryption Error
+			if (jint(argjson, "error") == -2) { //Decryption Error
 				cJSON *game_abort = cJSON_CreateObject();
-				cJSON_AddStringToObject(game_abort,"method","game_abort");
-				cJSON_AddStringToObject(game_abort,"message","Player node failed to decrypt the share, so reversing the tx's and stopping the game...");
-				
-				bytes = nn_send(bet->pubsock, cJSON_Print(game_abort), strlen(cJSON_Print(game_abort)), 0);
+				cJSON_AddStringToObject(game_abort, "method", "game_abort");
+				cJSON_AddStringToObject(
+					game_abort, "message",
+					"Player node failed to decrypt the share, so reversing the tx's and stopping the game...");
+
+				bytes = nn_send(bet->pubsock, cJSON_Print(game_abort), strlen(cJSON_Print(game_abort)),
+						0);
 				if (bytes < 0) {
 					retval = -1;
 					dlg_error("nn_send failed");
@@ -1746,12 +1749,12 @@ void bet_dcv_backend_thrd(void *_ptr)
 		} else if (strcmp(method, "game_abort") == 0) {
 			dlg_error("%s", jstr(argjson, "message"));
 			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
-				if (bytes < 0) {
-					retval = -1;
-					dlg_error("nn_send failed");
+			if (bytes < 0) {
+				retval = -1;
+				dlg_error("nn_send failed");
 			}
 			exit(0);
-			
+
 		} else {
 			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
 			if (bytes < 0) {

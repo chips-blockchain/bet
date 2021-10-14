@@ -233,8 +233,7 @@ cJSON *sqlite3_get_game_details(int32_t opt)
 	sql_sub_query = calloc(1, sql_query_size);
 	if (opt == -1) {
 		sprintf(sql_query, "select * from player_tx_mapping;");
-	}	
-	else {
+	} else {
 		sprintf(sql_query, "select * from player_tx_mapping where status = %d;", opt);
 	}
 
