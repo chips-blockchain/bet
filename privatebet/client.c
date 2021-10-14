@@ -984,12 +984,12 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 		if ((channel_state != CHANNELD_AWAITING_LOCKIN) && (channel_state != CHANNELD_NORMAL)) {
 			retval = ln_establish_channel(uri);
 			if (retval == 1) {
-				dlg_info("Channel Established");
+				dlg_info("LN Channel Established");
 			} else {
-				dlg_info("Channel Didn't Established");
+				dlg_warn("LN Channel Didn't Established, Game stopping...");
+				return retval;
 			}
-		} else {
-			if (0 == channel_state)
+		} else if (0 == channel_state) {
 				dlg_info(
 					"There isn't any pre-established channel with the dealer, so creating one now");
 			strcpy(uri, jstr(argjson, "uri"));
