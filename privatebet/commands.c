@@ -1636,7 +1636,7 @@ cJSON *ln_fund_channel(char *channel_id, int32_t channel_fund_satoshi)
 	argv = bet_copy_args(argc, "lightning-cli", "fundchannel", channel_id, channel_satoshis);
 	fund_channel_info = cJSON_CreateObject();
 	make_command(argc, argv, &fund_channel_info);
-
+	dlg_info("%s", cJSON_Print(fund_channel_info));
 	bet_dealloc_args(argc, &argv);
 	return fund_channel_info;
 }
