@@ -1729,14 +1729,11 @@ void bet_dcv_backend_thrd(void *_ptr)
 				cJSON *game_abort = cJSON_CreateObject();
 				cJSON_AddStringToObject(game_abort,"method","game_abort");
 				cJSON_AddStringToObject(game_abort,"message","Player node failed to decrypt the share, so reversing the tx's and stopping the game...");
+				
 				bytes = nn_send(bet->pubsock, cJSON_Print(game_abort), strlen(cJSON_Print(game_abort)), 0);
 				if (bytes < 0) {
 					retval = -1;
 					dlg_error("nn_send failed");
-				}
-				dlg_error("Player node failed to decrypt the share, so reversing the tx's and stopping the game...");				
-				for(int32_t i = 0; i < bet->numplayers; i++) {
-					bet_raise_dispute(tx_ids[i]);
 				}
 				exit(0);
 			} else {
@@ -1752,9 +1749,6 @@ void bet_dcv_backend_thrd(void *_ptr)
 				if (bytes < 0) {
 					retval = -1;
 					dlg_error("nn_send failed");
-			}
-			for(int32_t i = 0; i < bet->numplayers; i++) {
-				bet_raise_dispute(tx_ids[i]);
 			}
 			exit(0);
 			
