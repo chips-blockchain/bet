@@ -723,8 +723,9 @@ int32_t bet_client_give_share(cJSON *argjson, struct privatebet_info *bet, struc
 	cardid = jint(argjson, "cardid");
 	card_type = jint(argjson, "card_type");
 
-	if (playerid == bet->myplayerid)
-		goto end;
+	if (playerid == bet->myplayerid) {
+		return retval;
+	}	
 
 	temp = g_shares[playerid * bet->numplayers * bet->range + (cardid * bet->numplayers + bet->myplayerid)];
 
@@ -733,26 +734,27 @@ int32_t bet_client_give_share(cJSON *argjson, struct privatebet_info *bet, struc
 	if ((ptr = bet_decrypt(decipher, sizeof(decipher), player_info.bvvpubkey, player_info.player_key.priv,
 			       temp.bytes, &recvlen)) == 0) {
 		retval = -2;
-		dlg_error("decrypt error ");
-		goto end;
-	} else {
+		dlg_error("decrypt error ");		
+	} 
+
+	share_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(share_info, "method", "share_info");
+	cJSON_AddNumberToObject(share_info, "playerid", bet->myplayerid);
+	cJSON_AddNumberToObject(share_info, "cardid", cardid);
+	cJSON_AddNumberToObject(share_info, "card_type", card_type);
+	cJSON_AddNumberToObject(share_info, "error", retval);
+	
+	if(retval != -2) {	
 		memcpy(share.bytes, ptr, recvlen);
-		share_info = cJSON_CreateObject();
-		cJSON_AddStringToObject(share_info, "method", "share_info");
-		cJSON_AddNumberToObject(share_info, "playerid", bet->myplayerid);
-		cJSON_AddNumberToObject(share_info, "cardid", cardid);
-		cJSON_AddNumberToObject(share_info, "card_type", card_type);
 		jaddbits256(share_info, "share", share);
+	} 
+	rendered = cJSON_Print(share_info);
+	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 
-		rendered = cJSON_Print(share_info);
-		bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
-
-		if (bytes < 0) {
-			retval = -1;
-			dlg_error("Failed to send data");
-		}
+	if (bytes < 0) {
+		retval = -1;
+		dlg_error("Failed to send data");
 	}
-end:
 	return retval;
 }
 
@@ -1834,6 +1836,9 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			}
 		} else if (strcmp(method, "active_player_info") == 0) {
 			player_lws_write(argjson);
+		} else if (strcmp(method, "game_abort") == 0) {
+			dlg_warn("%s", jstr(argjson,"message"));
+			exit(0);
 		} else if (strcmp(method, "check_bvv_ready") == 0) {
 			// Do nothing, this broadcast is for BVV nodes
 		} else {
