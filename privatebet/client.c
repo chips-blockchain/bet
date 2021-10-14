@@ -354,7 +354,7 @@ int32_t bet_bvv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 
 bits256 bet_decode_card(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars, int32_t cardid)
 {
-	int32_t numplayers, M, flag = 0;
+	int32_t numplayers, M, flag = 0, bytes;
 	bits256 recover, decoded, refval, tmp, xoverz, hash, fe, basepoint;
 	uint8_t **shares;
 	char str[65];
@@ -421,8 +421,17 @@ bits256 bet_decode_card(cJSON *argjson, struct privatebet_info *bet, struct priv
 	}
 
 end:
-	if (!flag)
-		dlg_info("Decoding Failed");
+	if (!flag) {
+		dlg_error("Decoding Failed");
+		cJSON *game_abort = cJSON_CreateObject();
+		cJSON_AddStringToObject(game_abort, "method", "game_abort");
+		cJSON_AddNumberToObject(game_abort,"error",-3); // Assigning -3 number for the decoding error
+		cJSON_AddStringToObject(game_abort,"message","Decoding Failed");
+		bytes = nn_send(bet->pushsock, cJSON_Print(game_abort), strlen(cJSON_Print(game_abort)), 0);
+		if (bytes < 0) {
+			dlg_error("Failed to send data");
+		}
+	}	
 
 	return tmp;
 }
