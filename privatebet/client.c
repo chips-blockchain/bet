@@ -426,13 +426,13 @@ end:
 		dlg_error("Decoding Failed");
 		cJSON *game_abort = cJSON_CreateObject();
 		cJSON_AddStringToObject(game_abort, "method", "game_abort");
-		cJSON_AddNumberToObject(game_abort,"error",-3); // Assigning -3 number for the decoding error
-		cJSON_AddStringToObject(game_abort,"message","Decoding Failed");
+		cJSON_AddNumberToObject(game_abort, "error", -3); // Assigning -3 number for the decoding error
+		cJSON_AddStringToObject(game_abort, "message", "Decoding Failed");
 		bytes = nn_send(bet->pushsock, cJSON_Print(game_abort), strlen(cJSON_Print(game_abort)), 0);
 		if (bytes < 0) {
 			dlg_error("Failed to send data");
 		}
-	}	
+	}
 
 	return tmp;
 }
@@ -735,7 +735,7 @@ int32_t bet_client_give_share(cJSON *argjson, struct privatebet_info *bet, struc
 
 	if (playerid == bet->myplayerid) {
 		return retval;
-	}	
+	}
 
 	temp = g_shares[playerid * bet->numplayers * bet->range + (cardid * bet->numplayers + bet->myplayerid)];
 
@@ -744,8 +744,8 @@ int32_t bet_client_give_share(cJSON *argjson, struct privatebet_info *bet, struc
 	if ((ptr = bet_decrypt(decipher, sizeof(decipher), player_info.bvvpubkey, player_info.player_key.priv,
 			       temp.bytes, &recvlen)) == 0) {
 		retval = -2;
-		dlg_error("decrypt error ");		
-	} 
+		dlg_error("decrypt error ");
+	}
 
 	share_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(share_info, "method", "share_info");
@@ -753,11 +753,11 @@ int32_t bet_client_give_share(cJSON *argjson, struct privatebet_info *bet, struc
 	cJSON_AddNumberToObject(share_info, "cardid", cardid);
 	cJSON_AddNumberToObject(share_info, "card_type", card_type);
 	cJSON_AddNumberToObject(share_info, "error", retval);
-	
-	if(retval != -2) {	
+
+	if (retval != -2) {
 		memcpy(share.bytes, ptr, recvlen);
 		jaddbits256(share_info, "share", share);
-	} 
+	}
 	rendered = cJSON_Print(share_info);
 	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 
@@ -1002,8 +1002,7 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 				return retval;
 			}
 		} else if (0 == channel_state) {
-				dlg_info(
-					"There isn't any pre-established channel with the dealer, so creating one now");
+			dlg_info("There isn't any pre-established channel with the dealer, so creating one now");
 			strcpy(uri, jstr(argjson, "uri"));
 			ln_check_peer_and_connect(uri);
 		}
@@ -1849,7 +1848,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		} else if (strcmp(method, "active_player_info") == 0) {
 			player_lws_write(argjson);
 		} else if (strcmp(method, "game_abort") == 0) {
-			dlg_warn("%s", jstr(argjson,"message"));
+			dlg_warn("%s", jstr(argjson, "message"));
 			bet_raise_dispute(player_payin_txid);
 			exit(0);
 		} else if (strcmp(method, "check_bvv_ready") == 0) {

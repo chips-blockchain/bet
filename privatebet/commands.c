@@ -1812,8 +1812,8 @@ int32_t ln_establish_channel(char *uri)
 	if ((ln_get_channel_status(strtok(uid, "@")) != CHANNELD_NORMAL)) {
 		dlg_info("LN uri::%s", uri);
 		connect_info = ln_connect(uri);
-		if(jint(connect_info,"code") != 0) {
-			dlg_error("%s", jstr(connect_info,"message"));
+		if (jint(connect_info, "code") != 0) {
+			dlg_error("%s", jstr(connect_info, "message"));
 			retval = 0;
 			goto end;
 		}
@@ -1857,8 +1857,8 @@ int32_t ln_establish_channel(char *uri)
 		dlg_info("Funding the LN channel :: %s", jstr(connect_info, "id"));
 		fund_channel_info = ln_fund_channel(jstr(connect_info, "id"), channel_fund_satoshis);
 		if (jint(fund_channel_info, "code") != 0) {
-			dlg_error("%s",cJSON_Print(fund_channel_info));
-			retval = 0;			
+			dlg_error("%s", cJSON_Print(fund_channel_info));
+			retval = 0;
 			goto end;
 		}
 		while ((state = ln_get_channel_status(jstr(connect_info, "id"))) != CHANNELD_NORMAL) {
