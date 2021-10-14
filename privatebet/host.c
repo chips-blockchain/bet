@@ -1746,6 +1746,18 @@ void bet_dcv_backend_thrd(void *_ptr)
 					dlg_error("nn_send failed");
 				}
 			}
+		} else if (strcmp(method, "game_abort") == 0) {
+			dlg_error("%s", jstr(argjson, "message"));
+			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
+				if (bytes < 0) {
+					retval = -1;
+					dlg_error("nn_send failed");
+			}
+			for(int32_t i = 0; i < bet->numplayers; i++) {
+				bet_raise_dispute(tx_ids[i]);
+			}
+			exit(0);
+			
 		} else {
 			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
 			if (bytes < 0) {
