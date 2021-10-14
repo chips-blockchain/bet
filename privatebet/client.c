@@ -53,6 +53,7 @@ int32_t sharesflag[CARDS777_MAXCARDS][CARDS777_MAXPLAYERS];
 int32_t data_exists = 0;
 char player_gui_data[8196];
 
+char player_payin_txid[100];
 struct deck_player_info player_info;
 struct deck_bvv_info bvv_info;
 int32_t no_of_shares = 0;
@@ -1566,6 +1567,8 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		txid = chips_transfer_funds_with_data(funds_needed, legacy_m_of_n_msig_addr, hex_data);
 
 		dlg_info("tx id::%s", cJSON_Print(txid));
+		memset(player_payin_txid, 0x00, sizeof(player_payin_txid));
+		strcpy(player_payin_txid, cJSON_Print(txid));
 		if (txid) {
 			sql_query = calloc(1, sql_query_size);
 			sprintf(sql_query, "INSERT INTO player_tx_mapping values(%s,\'%s\',\'%s\',\'%s\',%d,%d, NULL);",
@@ -1847,6 +1850,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			player_lws_write(argjson);
 		} else if (strcmp(method, "game_abort") == 0) {
 			dlg_warn("%s", jstr(argjson,"message"));
+			bet_raise_dispute(player_payin_txid);
 			exit(0);
 		} else if (strcmp(method, "check_bvv_ready") == 0) {
 			// Do nothing, this broadcast is for BVV nodes
