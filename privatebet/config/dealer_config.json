@@ -1,5 +1,5 @@
 {
-		"max_players":	2,
+		"max_players":	333,
 		"table_stack_in_chips":	0.01000000,
 		"chips_tx_fee":	0.00050000,
 		"type": "torv3"
