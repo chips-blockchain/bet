@@ -1814,16 +1814,12 @@ int32_t ln_establish_channel(char *uri)
 		dlg_info("LN uri::%s", uri);
 		connect_info = ln_connect(uri);
 
+		dlg_info("%s", cJSON_Print(connect_info));
 		if(jint(connect_info,"code") != 0) {
 			dlg_error("%s", jstr(connect_info,"message"));
 			retval = 0;
 			goto end;
 		}
-
-		/*
-		if ((retval = jint(connect_info, "code")) != 0)
-			return retval;
-		*/
 		
 		if (ln_listfunds() < (channel_fund_satoshis + (chips_tx_fee * satoshis))) {
 			amount = channel_fund_satoshis - ln_listfunds();
