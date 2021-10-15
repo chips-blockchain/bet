@@ -653,18 +653,28 @@ int32_t bet_client_receive_share(cJSON *argjson, struct privatebet_info *bet, st
 	cJSON *player_card_info = NULL;
 	char *rendered = NULL;
 	bits256 share, decoded256;
-
+	char hexstr[65];
+	
 	share = jbits256(argjson, "share");
 	cardid = jint(argjson, "cardid");
 	playerid = jint(argjson, "playerid");
 	card_type = jint(argjson, "card_type");
 
-	if (sharesflag[cardid][playerid] == 0) {
+	dlg_info("%s", cJSON_Print(argjson));
+	
+	if (sharesflag[cardid][playerid] == 0) {		
 		playershares[cardid][playerid] = share;
+		dlg_info("%s",bits256_str(hexstr,playershares[cardid][playerid]));
 		sharesflag[cardid][playerid] = 1;
 		no_of_shares++;
 	}
 	if (no_of_shares == bet->maxplayers) {
+		
+		dlg_info("card shares are::");
+		for(int32_t i=0; i< no_of_shares; i++) {
+			dlg_info("%s",bits256_str(hexstr,playershares[cardid][i]));
+		}
+		
 		no_of_shares = 0;
 		decoded256 = bet_decode_card(argjson, bet, vars, cardid);
 		if (bits256_nonz(decoded256) == 0)
@@ -686,7 +696,7 @@ int32_t bet_client_receive_share(cJSON *argjson, struct privatebet_info *bet, st
 			cJSON_AddNumberToObject(player_card_info, "cardid", cardid);
 			cJSON_AddNumberToObject(player_card_info, "card_type", card_type);
 			cJSON_AddNumberToObject(player_card_info, "decoded_card", decoded256.bytes[30]);
-
+			dlg_info("%s", cJSON_Print(player_card_info));
 			rendered = cJSON_Print(player_card_info);
 			bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 			if (bytes < 0) {

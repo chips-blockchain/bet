@@ -484,12 +484,17 @@ static int32_t bet_send_turn_info(struct privatebet_info *bet, int32_t playerid,
 	int retval = 1, bytes;
 	char *rendered = NULL;
 
+	dlg_info("cardid::%d", cardid);
+	while(cardid > 0) {
+		
+	}
 	turn_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(turn_info, "method", "turn");
 	cJSON_AddNumberToObject(turn_info, "playerid", playerid);
 	cJSON_AddNumberToObject(turn_info, "cardid", cardid);
 	cJSON_AddNumberToObject(turn_info, "card_type", card_type);
 	rendered = cJSON_Print(turn_info);
+	dlg_info("%s",cJSON_Print(turn_info));
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 	if (bytes < 0)
 		retval = -1;
@@ -1638,7 +1643,6 @@ void bet_dcv_backend_thrd(void *_ptr)
 	struct privatebet_info *bet = bet_dcv;
 	char *method = NULL;
 	int32_t bytes, retval = 1;
-	char *rendered = NULL;
 	cJSON *argjson = NULL;
 	struct privatebet_vars *vars = dcv_vars;
 
@@ -1676,13 +1680,11 @@ void bet_dcv_backend_thrd(void *_ptr)
 		} else if (strcmp(method, "claim") == 0) {
 			retval = bet_award_winner(argjson, bet, vars);
 		} else if (strcmp(method, "requestShare") == 0) {
-			rendered = cJSON_Print(argjson);
-			for (int i = 0; i < 2; i++) {
-				bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
-				if (bytes < 0) {
-					retval = -1;
-					dlg_error("nn_send failed");
-				}
+		    dlg_info("%s", cJSON_Print(argjson));
+			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
+			if (bytes < 0) {
+				retval = -1;
+				dlg_error("nn_send failed");
 			}
 		} else if (strcmp(method, "betting") == 0) {
 			retval = bet_player_betting_statemachine(argjson, bet, vars);

@@ -101,7 +101,7 @@ static void bet_player_initialize(char *dcv_ip, const int32_t port)
 	bet_tcp_sock_address(0, bind_push_addr, dcv_ip, port + 1);
 	pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
 
-	player_vars = calloc(1, sizeof(*player_vars));
+	player_vars = calloc(1, sizeof(struct privatebet_vars));
 
 	bet_player = calloc(1, sizeof(struct privatebet_info));
 	bet_player->subsock = subsock;
@@ -165,7 +165,7 @@ static void bet_bvv_initialize(char *dcv_ip, const int32_t port)
 	bet_tcp_sock_address(0, bind_push_addr, dcv_ip, port + 1);
 	pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
 
-	bvv_vars = calloc(1, sizeof(*bvv_vars));
+	bvv_vars = calloc(1, sizeof(struct privatebet_vars));
 	bet_bvv = calloc(1, sizeof(struct privatebet_info));
 	bet_bvv->subsock = subsock;
 	bet_bvv->pushsock = pushsock;
@@ -703,8 +703,8 @@ int32_t sg777_deckgen_vendor(int32_t playerid, bits256 *cardprods, bits256 *fina
 	}
 
 	for (int32_t i = 0; i < numcards; i++) {
-		finalcards[i] = tmp[permis_d[i]];
-		g_hash[playerid][i] = hash_temp[permis_d[i]]; // optimization
+		finalcards[i] = tmp[i]; //sg777 tmp[permis_d[i]]
+		g_hash[playerid][i] = hash_temp[i]; // sg777 hash_temp[permis_d[i]] 
 		cardprods[i] = randcards[i].prod; // same cardprods[] returned for each player
 	}
 end:
@@ -721,7 +721,7 @@ struct pair256 p2p_bvv_init(bits256 *keys, struct pair256 b_key, bits256 *blindi
 
 	for (i = 0; i < numcards; i++) {
 		blindings[i] = rand256(1);
-		blindedcards[i] = fmul_donna(finalcards[permis_b[i]], blindings[i]);
+		blindedcards[i] = fmul_donna(finalcards[i], blindings[i]); //sg777 fmul_donna(finalcards[permis_b[i]], blindings[i])
 	}
 
 	M = (numplayers / 2) + 1;
