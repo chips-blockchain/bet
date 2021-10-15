@@ -1733,7 +1733,7 @@ void bet_dcv_backend_thrd(void *_ptr)
 				cJSON_AddStringToObject(
 					game_abort, "message",
 					"Player node failed to decrypt the share, so reversing the tx's and stopping the game...");
-
+				cJSON_AddNumberToObject(game_abort, "error", jint(argjson, "error"));
 				bytes = nn_send(bet->pubsock, cJSON_Print(game_abort), strlen(cJSON_Print(game_abort)),
 						0);
 				if (bytes < 0) {
