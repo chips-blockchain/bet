@@ -807,7 +807,7 @@ end:
 
 int32_t bet_client_turn(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int32_t retval = 1, playerid;
+	int32_t retval = 1, playerid, bytes;
 
 	playerid = jint(argjson, "playerid");
 	dlg_info("playerid::%d::%s::\n", playerid, cJSON_Print(argjson));
@@ -815,9 +815,18 @@ int32_t bet_client_turn(cJSON *argjson, struct privatebet_info *bet, struct priv
 	if (playerid == bet->myplayerid) {
 		no_of_shares = 1;
 		retval = bet_get_own_share(argjson, bet, vars);
-		if (retval == -1) {
+
+		if (retval == -1) {			
 			dlg_error("Failing to get own share: Decryption Error");
-			goto end;
+			cJSON *game_abort = cJSON_CreateObject();
+			cJSON_AddStringToObject(game_abort, "method", "game_abort");
+			cJSON_AddNumberToObject(game_abort, "error", -4); // Assigning -4 number to decrypt its own share
+			cJSON_AddStringToObject(game_abort, "message", "Failing to get its own share: Decryption Error");
+			bytes = nn_send(bet->pushsock, cJSON_Print(game_abort), strlen(cJSON_Print(game_abort)), 0);
+			if (bytes < 0) {
+				dlg_error("Failed to send data");
+			}
+			return retval;
 		}
 
 		for (int i = 0; i < bet->numplayers; i++) {
@@ -827,7 +836,6 @@ int32_t bet_client_turn(cJSON *argjson, struct privatebet_info *bet, struct priv
 			}
 		}
 	}
-end:
 	return retval;
 }
 
