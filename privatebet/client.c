@@ -702,11 +702,10 @@ int32_t bet_client_receive_share(cJSON *argjson, struct privatebet_info *bet, st
 			if (bytes < 0) {
 				retval = -1;
 				dlg_error("Failed to send data\n");
-				goto end;
+				return retval;
 			}
 		}
 	}
-end:
 	return retval;
 }
 
