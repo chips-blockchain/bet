@@ -664,11 +664,20 @@ int32_t bet_client_receive_share(cJSON *argjson, struct privatebet_info *bet, st
 	
 	if (sharesflag[cardid][playerid] == 0) {		
 		playershares[cardid][playerid] = share;
-		dlg_info("%s",bits256_str(hexstr,playershares[cardid][playerid]));
 		sharesflag[cardid][playerid] = 1;
 		no_of_shares++;
 	}
-	if (no_of_shares == bet->maxplayers) {
+	if((no_of_shares < bet->maxplayers) && (jint(argjson,"to_playerid")== bet->myplayerid)){		
+		dlg_info("  ");
+		for (int i = 0; i < bet->numplayers; i++) {
+			if ((!sharesflag[jint(argjson, "cardid")][i]) && (i != bet->myplayerid)) {
+				retval = bet_player_ask_share(bet, jint(argjson, "cardid"), bet->myplayerid,
+							      jint(argjson, "card_type"), i);
+				break;
+			}
+		}		
+	}
+	else if (no_of_shares == bet->maxplayers) {
 		
 		dlg_info("card shares are::");
 		for(int32_t i=0; i< no_of_shares; i++) {
@@ -709,7 +718,7 @@ int32_t bet_client_receive_share(cJSON *argjson, struct privatebet_info *bet, st
 	return retval;
 }
 
-static int32_t bet_player_ask_share(struct privatebet_info *bet, int32_t cardid, int32_t playerid, int32_t card_type)
+int32_t bet_player_ask_share(struct privatebet_info *bet, int32_t cardid, int32_t playerid, int32_t card_type, int32_t other_player)
 {
 	cJSON *request_info = NULL;
 	char *rendered = NULL;
@@ -720,7 +729,8 @@ static int32_t bet_player_ask_share(struct privatebet_info *bet, int32_t cardid,
 	cJSON_AddNumberToObject(request_info, "playerid", playerid);
 	cJSON_AddNumberToObject(request_info, "cardid", cardid);
 	cJSON_AddNumberToObject(request_info, "card_type", card_type);
-
+	cJSON_AddNumberToObject(request_info, "other_player", other_player);
+	
 	rendered = cJSON_Print(request_info);
 	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 	if (bytes < 0)
@@ -761,6 +771,7 @@ int32_t bet_client_give_share(cJSON *argjson, struct privatebet_info *bet, struc
 	cJSON_AddNumberToObject(share_info, "playerid", bet->myplayerid);
 	cJSON_AddNumberToObject(share_info, "cardid", cardid);
 	cJSON_AddNumberToObject(share_info, "card_type", card_type);
+	cJSON_AddNumberToObject(share_info, "to_playerid", playerid);
 	cJSON_AddNumberToObject(share_info, "error", retval);
 
 	if (retval != -2) {
@@ -831,7 +842,8 @@ int32_t bet_client_turn(cJSON *argjson, struct privatebet_info *bet, struct priv
 		for (int i = 0; i < bet->numplayers; i++) {
 			if ((!sharesflag[jint(argjson, "cardid")][i]) && (i != bet->myplayerid)) {
 				retval = bet_player_ask_share(bet, jint(argjson, "cardid"), jint(argjson, "playerid"),
-							      jint(argjson, "card_type"));
+							      jint(argjson, "card_type"), i);
+				break;
 			}
 		}
 	}
@@ -1735,13 +1747,19 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		} else if (strcmp(method, "init_b") == 0) {
 			retval = bet_client_bvv_init(argjson, bet, vars);
 		} else if (strcmp(method, "turn") == 0) {
-			retval = bet_client_turn(argjson, bet, vars);
+			if(jint(argjson,"playerid") == bet->myplayerid) {
+				retval = bet_client_turn(argjson, bet, vars);
+			}
 		} else if (strcmp(method, "ask_share") == 0) {
 			retval = bet_client_give_share(argjson, bet, vars);
 		} else if (strcmp(method, "requestShare") == 0) {
-			retval = bet_client_give_share(argjson, bet, vars);
+			if(jint(argjson,"other_player") == bet->myplayerid) {
+				retval = bet_client_give_share(argjson, bet, vars);
+			}
 		} else if (strcmp(method, "share_info") == 0) {
-			retval = bet_client_receive_share(argjson, bet, vars);
+			if(jint(argjson,"to_playerid") == bet->myplayerid) {
+				retval = bet_client_receive_share(argjson, bet, vars);
+			}
 		} else if (strcmp(method, "bet") == 0) {
 			retval = bet_player_bet_round(argjson, bet, vars);
 		} else if (strcmp(method, "invoice") == 0) {

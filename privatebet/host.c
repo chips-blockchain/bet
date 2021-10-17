@@ -484,10 +484,6 @@ static int32_t bet_send_turn_info(struct privatebet_info *bet, int32_t playerid,
 	int retval = 1, bytes;
 	char *rendered = NULL;
 
-	dlg_info("cardid::%d", cardid);
-	while(cardid > 0) {
-		
-	}
 	turn_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(turn_info, "method", "turn");
 	cJSON_AddNumberToObject(turn_info, "playerid", playerid);
@@ -1025,6 +1021,7 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 	       amount_in_txs = 0.0, player_amounts[bet->maxplayers], pot_in_chips = 0.0;
 	cJSON *payout_info = NULL, *dev_info = NULL, *dcv_info = NULL, *payout_tx_info = NULL, *data_info = NULL;
 	char *hex_str = NULL;
+	
 	for (int i = 0; i < bet->maxplayers; i++) {
 		if (winners[i] == 1)
 			no_of_winners++;
