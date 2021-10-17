@@ -668,7 +668,6 @@ int32_t bet_client_receive_share(cJSON *argjson, struct privatebet_info *bet, st
 		no_of_shares++;
 	}
 	if((no_of_shares < bet->maxplayers) && (jint(argjson,"to_playerid")== bet->myplayerid)){		
-		dlg_info("  ");
 		for (int i = 0; i < bet->numplayers; i++) {
 			if ((!sharesflag[jint(argjson, "cardid")][i]) && (i != bet->myplayerid)) {
 				retval = bet_player_ask_share(bet, jint(argjson, "cardid"), bet->myplayerid,
@@ -678,12 +677,6 @@ int32_t bet_client_receive_share(cJSON *argjson, struct privatebet_info *bet, st
 		}		
 	}
 	else if (no_of_shares == bet->maxplayers) {
-		
-		dlg_info("card shares are::");
-		for(int32_t i=0; i< no_of_shares; i++) {
-			dlg_info("%s",bits256_str(hexstr,playershares[cardid][i]));
-		}
-		
 		no_of_shares = 0;
 		decoded256 = bet_decode_card(argjson, bet, vars, cardid);
 		if (bits256_nonz(decoded256) == 0)
