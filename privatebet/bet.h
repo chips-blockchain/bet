@@ -108,6 +108,7 @@ struct privatebet_vars {
 	int32_t player_funds;
 	int32_t funds[CARDS777_MAXPLAYERS];
 	char player_chips_addrs[CARDS777_MAXPLAYERS][64];
+	int32_t req_id_to_player_id_mapping[CARDS777_MAXPLAYERS];
 };
 
 struct pair256 {

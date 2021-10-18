@@ -647,13 +647,13 @@ void display_cards()
 	cJSON_AddItemToObject(init_info, "deal", init_card_info);
 	player_lws_write(init_info);
 }
+
 int32_t bet_client_receive_share(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int32_t retval = 1, bytes, cardid, playerid, errs = 0, unpermi, card_type;
 	cJSON *player_card_info = NULL;
 	char *rendered = NULL;
 	bits256 share, decoded256;
-	char hexstr[65];
 	
 	share = jbits256(argjson, "share");
 	cardid = jint(argjson, "cardid");
