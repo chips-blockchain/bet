@@ -489,7 +489,7 @@ static int32_t bet_send_turn_info(struct privatebet_info *bet, int32_t playerid,
 	cJSON_AddNumberToObject(turn_info, "cardid", cardid);
 	cJSON_AddNumberToObject(turn_info, "card_type", card_type);
 	rendered = cJSON_Print(turn_info);
-	dlg_info("%s",cJSON_Print(turn_info));
+	dlg_info("%s", cJSON_Print(turn_info));
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 	if (bytes < 0)
 		retval = -1;
@@ -1020,7 +1020,7 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 	       amount_in_txs = 0.0, player_amounts[bet->maxplayers], pot_in_chips = 0.0;
 	cJSON *payout_info = NULL, *dev_info = NULL, *dcv_info = NULL, *payout_tx_info = NULL, *data_info = NULL;
 	char *hex_str = NULL;
-	
+
 	for (int i = 0; i < bet->maxplayers; i++) {
 		if (winners[i] == 1)
 			no_of_winners++;
@@ -1066,11 +1066,11 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 			player_amounts[i] += winning_pot;
 	}
 
-	
 	for (int32_t i = 0; i < bet->maxplayers; i++) {
 		cJSON *temp = cJSON_CreateObject();
 		if (player_amounts[i] > 0) {
-			cJSON_AddStringToObject(temp, "address",vars->player_chips_addrs[vars->req_id_to_player_id_mapping[i]]); 
+			cJSON_AddStringToObject(temp, "address",
+						vars->player_chips_addrs[vars->req_id_to_player_id_mapping[i]]);
 			cJSON_AddNumberToObject(temp, "amount", player_amounts[i]);
 			cJSON_AddItemToArray(payout_info, temp);
 		}
@@ -1637,7 +1637,7 @@ void bet_dcv_backend_thrd(void *_ptr)
 	int32_t bytes, retval = 1;
 	cJSON *argjson = NULL;
 	struct privatebet_vars *vars = dcv_vars;
-	
+
 	argjson = cJSON_Parse(_ptr);
 	if ((method = jstr(argjson, "method")) != 0) {
 		dlg_info("%s", method);
@@ -1672,7 +1672,7 @@ void bet_dcv_backend_thrd(void *_ptr)
 		} else if (strcmp(method, "claim") == 0) {
 			retval = bet_award_winner(argjson, bet, vars);
 		} else if (strcmp(method, "requestShare") == 0) {
-		    dlg_info("%s", cJSON_Print(argjson));
+			dlg_info("%s", cJSON_Print(argjson));
 			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
 			if (bytes < 0) {
 				retval = -1;

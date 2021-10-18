@@ -704,7 +704,7 @@ int32_t sg777_deckgen_vendor(int32_t playerid, bits256 *cardprods, bits256 *fina
 
 	for (int32_t i = 0; i < numcards; i++) {
 		finalcards[i] = tmp[permis_d[i]]; //sg777 tmp[permis_d[i]]
-		g_hash[playerid][i] = hash_temp[permis_d[i]]; // sg777 hash_temp[permis_d[i]] 
+		g_hash[playerid][i] = hash_temp[permis_d[i]]; // sg777 hash_temp[permis_d[i]]
 		cardprods[i] = randcards[i].prod; // same cardprods[] returned for each player
 	}
 end:
@@ -721,7 +721,8 @@ struct pair256 p2p_bvv_init(bits256 *keys, struct pair256 b_key, bits256 *blindi
 
 	for (i = 0; i < numcards; i++) {
 		blindings[i] = rand256(1);
-		blindedcards[i] = fmul_donna(finalcards[permis_b[i]], blindings[i]); //sg777 fmul_donna(finalcards[i], blindings[i])
+		blindedcards[i] = fmul_donna(finalcards[permis_b[i]],
+					     blindings[i]); //sg777 fmul_donna(finalcards[i], blindings[i])
 	}
 
 	M = (numplayers / 2) + 1;

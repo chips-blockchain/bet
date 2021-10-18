@@ -654,29 +654,28 @@ int32_t bet_client_receive_share(cJSON *argjson, struct privatebet_info *bet, st
 	cJSON *player_card_info = NULL;
 	char *rendered = NULL;
 	bits256 share, decoded256;
-	
+
 	share = jbits256(argjson, "share");
 	cardid = jint(argjson, "cardid");
 	playerid = jint(argjson, "playerid");
 	card_type = jint(argjson, "card_type");
 
 	dlg_info("%s", cJSON_Print(argjson));
-	
-	if (sharesflag[cardid][playerid] == 0) {		
+
+	if (sharesflag[cardid][playerid] == 0) {
 		playershares[cardid][playerid] = share;
 		sharesflag[cardid][playerid] = 1;
 		no_of_shares++;
 	}
-	if((no_of_shares < bet->maxplayers) && (jint(argjson,"to_playerid")== bet->myplayerid)){		
+	if ((no_of_shares < bet->maxplayers) && (jint(argjson, "to_playerid") == bet->myplayerid)) {
 		for (int i = 0; i < bet->numplayers; i++) {
 			if ((!sharesflag[jint(argjson, "cardid")][i]) && (i != bet->myplayerid)) {
 				retval = bet_player_ask_share(bet, jint(argjson, "cardid"), bet->myplayerid,
 							      jint(argjson, "card_type"), i);
 				break;
 			}
-		}		
-	}
-	else if (no_of_shares == bet->maxplayers) {
+		}
+	} else if (no_of_shares == bet->maxplayers) {
 		no_of_shares = 0;
 		decoded256 = bet_decode_card(argjson, bet, vars, cardid);
 		if (bits256_nonz(decoded256) == 0)
@@ -711,7 +710,8 @@ int32_t bet_client_receive_share(cJSON *argjson, struct privatebet_info *bet, st
 	return retval;
 }
 
-int32_t bet_player_ask_share(struct privatebet_info *bet, int32_t cardid, int32_t playerid, int32_t card_type, int32_t other_player)
+int32_t bet_player_ask_share(struct privatebet_info *bet, int32_t cardid, int32_t playerid, int32_t card_type,
+			     int32_t other_player)
 {
 	cJSON *request_info = NULL;
 	char *rendered = NULL;
@@ -723,7 +723,7 @@ int32_t bet_player_ask_share(struct privatebet_info *bet, int32_t cardid, int32_
 	cJSON_AddNumberToObject(request_info, "cardid", cardid);
 	cJSON_AddNumberToObject(request_info, "card_type", card_type);
 	cJSON_AddNumberToObject(request_info, "other_player", other_player);
-	
+
 	rendered = cJSON_Print(request_info);
 	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 	if (bytes < 0)
@@ -819,12 +819,14 @@ int32_t bet_client_turn(cJSON *argjson, struct privatebet_info *bet, struct priv
 		no_of_shares = 1;
 		retval = bet_get_own_share(argjson, bet, vars);
 
-		if (retval == -1) {			
+		if (retval == -1) {
 			dlg_error("Failing to get own share: Decryption Error");
 			cJSON *game_abort = cJSON_CreateObject();
 			cJSON_AddStringToObject(game_abort, "method", "game_abort");
-			cJSON_AddNumberToObject(game_abort, "error", -4); // Assigning -4 number to decrypt its own share
-			cJSON_AddStringToObject(game_abort, "message", "Failing to get its own share: Decryption Error");
+			cJSON_AddNumberToObject(game_abort, "error",
+						-4); // Assigning -4 number to decrypt its own share
+			cJSON_AddStringToObject(game_abort, "message",
+						"Failing to get its own share: Decryption Error");
 			bytes = nn_send(bet->pushsock, cJSON_Print(game_abort), strlen(cJSON_Print(game_abort)), 0);
 			if (bytes < 0) {
 				dlg_error("Failed to send data");
@@ -1740,17 +1742,17 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		} else if (strcmp(method, "init_b") == 0) {
 			retval = bet_client_bvv_init(argjson, bet, vars);
 		} else if (strcmp(method, "turn") == 0) {
-			if(jint(argjson,"playerid") == bet->myplayerid) {
+			if (jint(argjson, "playerid") == bet->myplayerid) {
 				retval = bet_client_turn(argjson, bet, vars);
 			}
 		} else if (strcmp(method, "ask_share") == 0) {
 			retval = bet_client_give_share(argjson, bet, vars);
 		} else if (strcmp(method, "requestShare") == 0) {
-			if(jint(argjson,"other_player") == bet->myplayerid) {
+			if (jint(argjson, "other_player") == bet->myplayerid) {
 				retval = bet_client_give_share(argjson, bet, vars);
 			}
 		} else if (strcmp(method, "share_info") == 0) {
-			if(jint(argjson,"to_playerid") == bet->myplayerid) {
+			if (jint(argjson, "to_playerid") == bet->myplayerid) {
 				retval = bet_client_receive_share(argjson, bet, vars);
 			}
 		} else if (strcmp(method, "bet") == 0) {
