@@ -87,7 +87,6 @@ int ws_dcv_connection_status = 0;
 double dcv_commission_percentage = 0.75;
 double dev_fund_percentage = 0.25;
 
-int32_t req_id_to_player_id_mapping[CARDS777_MAXPLAYERS];
 int32_t heartbeat_on = 0;
 
 char table_id[65];
@@ -456,7 +455,7 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 
 	player_seats_info[jint(argjson, "gui_playerID")].empty = 0;
 	player_seats_info[jint(argjson, "gui_playerID")].chips =
-		vars->funds[req_id_to_player_id_mapping[jint(argjson, "gui_playerID")]];
+		vars->funds[vars->req_id_to_player_id_mapping[jint(argjson, "gui_playerID")]];
 
 	cJSON *seats_info = NULL;
 
@@ -1067,12 +1066,11 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 			player_amounts[i] += winning_pot;
 	}
 
+	
 	for (int32_t i = 0; i < bet->maxplayers; i++) {
 		cJSON *temp = cJSON_CreateObject();
 		if (player_amounts[i] > 0) {
-			cJSON_AddStringToObject(
-				temp, "address",
-				vars->player_chips_addrs[req_id_to_player_id_mapping[i]]); //req_id_to_player_id_mapping[i]
+			cJSON_AddStringToObject(temp, "address",vars->player_chips_addrs[vars->req_id_to_player_id_mapping[i]]); 
 			cJSON_AddNumberToObject(temp, "amount", player_amounts[i]);
 			cJSON_AddItemToArray(payout_info, temp);
 		}
@@ -1540,7 +1538,7 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 		char *req_id = jstr(argjson, "req_identifier");
 		for (int32_t i = 0; i < no_of_rand_str; i++) {
 			if (strcmp(tx_rand_str[i], req_id) == 0) {
-				req_id_to_player_id_mapping[jint(argjson, "gui_playerID")] = i;
+				vars->req_id_to_player_id_mapping[jint(argjson, "gui_playerID")] = i;
 				break;
 			}
 		}
@@ -1552,9 +1550,6 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 
 		if (bet->numplayers == bet->maxplayers) {
 			heartbeat_on = 1;
-			for (int32_t i = 0; i < bet->maxplayers; i++) {
-				dlg_info("%d::%s\n", req_id_to_player_id_mapping[i], vars->player_chips_addrs[i]);
-			}
 			retval = bet_ln_check(bet);
 			if (retval < 0) {
 				dlg_error("Issue in establishing the LN channels");
@@ -1642,7 +1637,7 @@ void bet_dcv_backend_thrd(void *_ptr)
 	int32_t bytes, retval = 1;
 	cJSON *argjson = NULL;
 	struct privatebet_vars *vars = dcv_vars;
-
+	
 	argjson = cJSON_Parse(_ptr);
 	if ((method = jstr(argjson, "method")) != 0) {
 		dlg_info("%s", method);
