@@ -1177,6 +1177,7 @@ cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids
 	int argc, vout;
 	char **argv = NULL, params[2][arg_size] = { 0 }, *sql_query = NULL;
 
+	dlg_info("%s", cJSON_Print(payout_addr));
 	for (int32_t i = 0; i < cJSON_GetArraySize(payout_addr); i++) {
 		cJSON *addr_info = cJSON_GetArrayItem(payout_addr, i);
 		payout_amount += jdouble(addr_info, "amount");
