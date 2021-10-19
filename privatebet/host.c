@@ -1015,13 +1015,15 @@ static cJSON *payout_tx_data_info(struct privatebet_info *bet, struct privatebet
 
 static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privatebet_vars *vars, int winners[], int pot)
 {
-	int32_t no_of_winners = 0, retval = 1, bytes;
+	int32_t no_of_winners = 0, retval = 1, bytes, funds_left = 0;
 	double dcv_commission = 0, dev_commission = 0, winning_pot = 0, chips_conversion_factor = 0.001,
 	       amount_in_txs = 0.0, player_amounts[bet->maxplayers], pot_in_chips = 0.0;
 	cJSON *payout_info = NULL, *dev_info = NULL, *dcv_info = NULL, *payout_tx_info = NULL, *data_info = NULL;
 	char *hex_str = NULL;
 
+
 	for (int i = 0; i < bet->maxplayers; i++) {
+		funds_left += vars->funds[i];
 		if (winners[i] == 1)
 			no_of_winners++;
 	}
@@ -1039,7 +1041,7 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 		amount_in_txs = amount_in_txs - chips_tx_fee;
 	}
 
-	amount_in_txs = amount_in_txs / bet->numplayers;
+	//amount_in_txs = amount_in_txs / bet->numplayers;
 
 	dcv_commission = ((dcv_commission_percentage * pot_in_chips) / 100);
 	dev_commission = ((dev_fund_percentage * pot_in_chips) / 100);
@@ -1061,7 +1063,7 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 	cJSON_AddItemToArray(payout_info, dcv_info);
 
 	for (int32_t i = 0; i < bet->maxplayers; i++) {
-		player_amounts[i] = amount_in_txs;
+		player_amounts[i] = (amount_in_txs * vars->funds[i])/funds_left;
 		if (winners[i] == 1)
 			player_amounts[i] += winning_pot;
 	}
@@ -1160,13 +1162,13 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 		dlg_info("Winning Players Are:");
 		for (int i = 0; i < bet->maxplayers; i++) {
 			if (winners[i] == 1) {
-				//retval = bet_dcv_invoice_pay(bet, vars, i, (vars->pot / no_of_winners));
-				retval = bet_dcv_poker_winner(bet, vars, winners, vars->pot);
-				dlg_info("%d\t", i);
-				if (retval == -1)
-					goto end;
+				dlg_info("playerid :: %d", i);
 			}
 		}
+		retval = bet_dcv_poker_winner(bet, vars, winners, vars->pot);
+		if (retval == -1) {
+			goto end;
+		}			
 	}
 
 	final_info = cJSON_CreateObject();
@@ -1231,6 +1233,7 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 			  0);
 	}
 end:
+	while(1){}	
 	if (retval != -1) {
 		reset_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(reset_info, "method", "reset");
