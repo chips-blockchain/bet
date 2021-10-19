@@ -1063,7 +1063,11 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 	cJSON_AddItemToArray(payout_info, dcv_info);
 
 	for (int32_t i = 0; i < bet->maxplayers; i++) {
-		player_amounts[i] = (amount_in_txs * vars->funds[i])/funds_left;
+		if(funds_left > 0) {
+			player_amounts[i] = (amount_in_txs * vars->funds[i])/funds_left;
+		} else {
+			player_amounts[i] = 0;
+		}
 		if (winners[i] == 1)
 			player_amounts[i] += winning_pot;
 	}
@@ -1233,7 +1237,6 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 			  0);
 	}
 end:
-	while(1){}	
 	if (retval != -1) {
 		reset_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(reset_info, "method", "reset");
