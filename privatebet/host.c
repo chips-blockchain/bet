@@ -67,6 +67,7 @@ char *face[NFACES] = { "two",  "three", "four", "five",  "six",  "seven", "eight
 
 struct privatebet_info *bet_dcv = NULL;
 struct privatebet_vars *dcv_vars = NULL;
+struct dcv_bvv_sock_info *bet_dcv_bvv = NULL;
 
 static int dealerPosition;
 int32_t no_of_signers, max_no_of_signers = 2, is_signed[CARDS777_MAXPLAYERS];
@@ -377,7 +378,7 @@ int32_t bet_dcv_init(cJSON *argjson, struct privatebet_info *bet, struct private
 	return retval;
 }
 
-static int32_t bet_dcv_bvv_join(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
+static int32_t bet_dcv_bvv_join(cJSON *argjson, struct dcv_bvv_sock_info *bet_dcv_bvv, struct privatebet_vars *vars)
 {
 	int retval = 1, bytes;
 	cJSON *config_info = NULL;
@@ -390,7 +391,7 @@ static int32_t bet_dcv_bvv_join(cJSON *argjson, struct privatebet_info *bet, str
 	cJSON_AddNumberToObject(config_info, "chips_tx_fee", chips_tx_fee);
 
 	rendered = cJSON_Print(config_info);
-	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
+	bytes = nn_send(bet_dcv_bvv->pubsock, rendered, strlen(rendered), 0);
 	if (bytes < 0)
 		retval = -1;
 	return retval;
@@ -1613,11 +1614,9 @@ void bet_dcv_backend_thrd(void *_ptr)
 				retval = bet_dcv_deck_init_info(argjson, bet, vars);
 			}
 		} else if (strcmp(method, "bvv_join") == 0) {
-			retval = bet_dcv_bvv_join(argjson, bet, vars);
-		} else if ((strcmp(method, "init_b") == 0) || (strcmp(method, "next_turn") == 0)) {
-			if (strcmp(method, "init_b") == 0) {
-				retval = bet_relay(argjson, bet, vars);
-			}
+			//retval = bet_dcv_bvv_join(argjson, bet, vars);
+		} else if (strcmp(method, "init_b") == 0) {
+				retval = bet_relay(argjson, bet, vars);			
 		} else if (strcmp(method, "player_ready") == 0) {
 			if (bet_check_player_ready(argjson, bet, vars)) {
 				retval = bet_initiate_statemachine(argjson, bet, vars);
@@ -1776,6 +1775,54 @@ void bet_dcv_backend_loop(void *_ptr)
 	}
 }
 
+
+int32_t bet_dcv_bvv_backend(cJSON *argjson, struct dcv_bvv_sock_info *bet_dcv_bvv)
+{
+		char *method = NULL;
+		int32_t retval = 0;
+		
+		if(method = jstr(argjson,"method") != NULL) {
+			dlg_info("Received method from BVV :: %s", method);
+			if (strcmp(method, "bvv_ready") == 0) {
+				retval = bet_dcv_start(bet_dcv, 0);
+			} else if (strcmp(method, "bvv_join") == 0) {
+				retval = bet_dcv_bvv_join(argjson, bet_dcv_bvv, dcv_vars);
+			} else if (strcmp(method, "init_b") == 0) {
+					retval = bet_relay(argjson, bet_dcv, dcv_vars);			
+			}
+		
+		}
+}
+
+void bet_dcv_bvv_backend_loop(void *_ptr)
+{	
+	
+	int32_t recvlen = 0;
+	void *ptr = NULL;
+	cJSON *msgjson = NULL;
+	struct privatebet_info *bet_dcv_bvv = _ptr;
+
+	while (bet_dcv_bvv->pubsock>= 0 && bet_dcv_bvv->pullsock>= 0) {
+		ptr = 0;
+		char *tmp = NULL;
+		recvlen = nn_recv(bet_dcv_bvv->pullsock, &ptr, NN_MSG, 0);
+		if (recvlen > 0)
+			tmp = clonestr(ptr);
+		if ((recvlen > 0) && ((msgjson = cJSON_Parse(tmp)) != 0)) {
+			if (bet_dcv_bvv_backend(msgjson, bet_dcv_bvv) < 0) {
+				// This error case scenario needs to be handled...
+				dlg_error("Some error occured during the communication between dealer and BVV");
+				break;
+			}
+
+			if (tmp)
+				free(tmp);
+			if (ptr)
+				nn_freemsg(ptr);
+		}
+	}
+	
+}
 void bet_dcv_frontend_loop(void *_ptr)
 {
 	struct lws_context_creation_info dcv_info;

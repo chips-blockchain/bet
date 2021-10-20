@@ -23,3 +23,5 @@ void bet_dcv_lws_write(cJSON *data);
 void bet_init_player_seats_info();
 cJSON *bet_get_seats_json(int32_t max_players);
 int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *vars);
+void bet_dcv_bvv_backend_loop(void *_ptr);
+int32_t bet_dcv_bvv_backend(cJSON *argjson, struct dcv_bvv_sock_info *bet);
