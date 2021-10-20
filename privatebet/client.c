@@ -1479,7 +1479,7 @@ void bet_player_frontend_write_loop(void *_ptr)
 	lws_set_log_level(logs, NULL);
 
 	memset(&lws_player_info_write, 0, sizeof lws_player_info_write); /* otherwise uninitialized garbage */
-	lws_player_info_write.port = 9000;
+	lws_player_info_write.port = gui_ws_port;
 	lws_player_info_write.mounts = &lws_http_mount_player;
 	lws_player_info_write.protocols = player_http_protocol_write;
 	lws_player_info_write.options = LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
@@ -1500,7 +1500,7 @@ void bet_player_frontend_loop(void *_ptr)
 	lws_set_log_level(logs, NULL);
 
 	memset(&lws_player_info, 0, sizeof lws_player_info); /* otherwise uninitialized garbage */
-	lws_player_info.port = 9000;
+	lws_player_info.port = gui_ws_port;
 	lws_player_info.mounts = &lws_http_mount_player;
 	lws_player_info.protocols = player_http_protocol;
 	lws_player_info.options = LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
