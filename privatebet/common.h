@@ -44,8 +44,13 @@
 
 #define dealer_pub_sub_port 7797
 #define dealer_push_pull_port 7798
+
 #define cashier_pub_sub_port 7901
 #define cashier_push_pull_port 7902
+
+#define dealer_bvv_pub_sub_port 7903
+#define dealer_bvv_push_pull_port 7904
+
 #define gui_ws_port 9000
 
 extern bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
