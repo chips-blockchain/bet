@@ -7,6 +7,7 @@
 #include "storage.h"
 #include "misc.h"
 #include "cards777.h"
+#include "common.h"
 
 int32_t no_of_notaries;
 
@@ -687,11 +688,9 @@ static int32_t bet_process_find_bvv(cJSON *argjson, struct cashier *cashier_info
 
 static void bet_process_add_bvv(cJSON *argjson, struct cashier *cashier_info)
 {
-	uint16_t port = 7797;
-
 	if (bvv_state == 0) {
 		bvv_state = 1;
-		bet_bvv_thrd(jstr(argjson, "dealer_ip"), port);
+		bet_bvv_thrd(jstr(argjson, "dealer_ip"), dealer_pub_sub_port);
 		memset(dealer_ip_for_bvv, 0x00, sizeof(dealer_ip_for_bvv));
 		strcpy(dealer_ip_for_bvv, jstr(argjson, "dealer_ip"));
 	}
@@ -798,7 +797,6 @@ int32_t bet_submit_msig_raw_tx(cJSON *tx)
 char *bet_send_message_to_notary(cJSON *argjson, char *notary_node_ip)
 {
 	int32_t c_subsock, c_pushsock;
-	uint16_t cashier_pubsub_port = 7901, cashier_pushpull_port = 7902;
 	char bind_sub_addr[128] = { 0 }, bind_push_addr[128] = { 0 };
 	pthread_t cashier_thrd;
 	struct cashier *cashier_info = NULL;
@@ -809,10 +807,10 @@ char *bet_send_message_to_notary(cJSON *argjson, char *notary_node_ip)
 	memset(bind_sub_addr, 0x00, sizeof(bind_sub_addr));
 	memset(bind_push_addr, 0x00, sizeof(bind_push_addr));
 
-	bet_tcp_sock_address(0, bind_sub_addr, notary_node_ip, cashier_pubsub_port);
+	bet_tcp_sock_address(0, bind_sub_addr, notary_node_ip, cashier_pub_sub_port);
 	c_subsock = bet_nanosock(0, bind_sub_addr, NN_SUB);
 
-	bet_tcp_sock_address(0, bind_push_addr, notary_node_ip, cashier_pushpull_port);
+	bet_tcp_sock_address(0, bind_push_addr, notary_node_ip, cashier_push_pull_port);
 	c_pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
 
 	cashier_info->c_subsock = c_subsock;
@@ -834,7 +832,6 @@ char *bet_send_message_to_notary(cJSON *argjson, char *notary_node_ip)
 cJSON *bet_msg_cashier_with_response_id(cJSON *argjson, char *cashier_ip, char *method_name)
 {
 	int32_t c_subsock, c_pushsock, bytes, recvlen;
-	uint16_t cashier_pubsub_port = 7901, cashier_pushpull_port = 7902;
 	char bind_sub_addr[128] = { 0 }, bind_push_addr[128] = { 0 };
 	void *ptr;
 	cJSON *response_info = NULL;
@@ -842,10 +839,10 @@ cJSON *bet_msg_cashier_with_response_id(cJSON *argjson, char *cashier_ip, char *
 	memset(bind_sub_addr, 0x00, sizeof(bind_sub_addr));
 	memset(bind_push_addr, 0x00, sizeof(bind_push_addr));
 
-	bet_tcp_sock_address(0, bind_sub_addr, cashier_ip, cashier_pubsub_port);
+	bet_tcp_sock_address(0, bind_sub_addr, cashier_ip, cashier_pub_sub_port);
 	c_subsock = bet_nanosock(0, bind_sub_addr, NN_SUB);
 
-	bet_tcp_sock_address(0, bind_push_addr, cashier_ip, cashier_pushpull_port);
+	bet_tcp_sock_address(0, bind_push_addr, cashier_ip, cashier_push_pull_port);
 	c_pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
 
 	bytes = nn_send(c_pushsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
@@ -880,12 +877,11 @@ cJSON *bet_msg_cashier_with_response_id(cJSON *argjson, char *cashier_ip, char *
 int32_t bet_msg_cashier(cJSON *argjson, char *cashier_ip)
 {
 	int32_t c_pushsock, bytes, retval = 1;
-	uint16_t cashier_pushpull_port = 7902;
 	char bind_push_addr[128] = { 0 };
 
 	memset(bind_push_addr, 0x00, sizeof(bind_push_addr));
 
-	bet_tcp_sock_address(0, bind_push_addr, cashier_ip, cashier_pushpull_port);
+	bet_tcp_sock_address(0, bind_push_addr, cashier_ip, cashier_push_pull_port);
 	c_pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
 
 	bytes = nn_send(c_pushsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);

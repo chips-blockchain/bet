@@ -42,6 +42,12 @@
 #define tx_spent 0
 #define tx_unspent 1
 
+#define dealer_pub_sub_port 7797
+#define dealer_push_pull_port 7798
+#define cashier_pub_sub_port 7901
+#define cashier_push_pull_port 7902
+#define gui_ws_port 9000
+
 extern bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 extern bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 

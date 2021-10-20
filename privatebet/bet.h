@@ -44,8 +44,6 @@
 
 #include "common.h"
 
-#define PORT 9000
-
 enum action_type { small_blind = 1, big_blind, check, raise, call, allin, fold };
 
 enum card_type { burn_card = 0, hole_card, flop_card_1, flop_card_2, flop_card_3, turn_card, river_card };

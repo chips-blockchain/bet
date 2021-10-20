@@ -536,7 +536,6 @@ static char *bet_pick_dealer()
 
 int main(int argc, char **argv)
 {
-	uint16_t port = 7797, cashier_pub_sub_port = 7901;
 	char *ip = NULL;
 
 	bet_set_unique_id();
@@ -554,7 +553,7 @@ int main(int argc, char **argv)
 
 			if (ip) {
 				dlg_info("The dealer is :: %s", ip);
-				bet_player_thrd(ip, port);
+				bet_player_thrd(ip, dealer_pub_sub_port);
 			}
 		} else if ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "h") == 0) ||
 			   (strcmp(argv[1], "--help") == 0) || (strcmp(argv[1], "help") == 0)) {
@@ -576,7 +575,7 @@ int main(int argc, char **argv)
 				bet_send_dealer_info_to_cashier(dealer_ip);
 				dealer_node_init();
 				find_bvv();
-				bet_dcv_thrd(dealer_ip, port);
+				bet_dcv_thrd(dealer_ip, dealer_pub_sub_port);
 			} else {
 				bet_help_dcv_command_usage();
 			}

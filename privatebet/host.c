@@ -1786,7 +1786,7 @@ void bet_dcv_frontend_loop(void *_ptr)
 	lwsl_user("LWS minimal ws broker | visit http://localhost:1234");
 
 	memset(&dcv_info, 0, sizeof dcv_info); /* otherwise uninitialized garbage */
-	dcv_info.port = 9000;
+	dcv_info.port = gui_ws_port;
 	dcv_info.mounts = &mount;
 	dcv_info.protocols = protocols;
 	dcv_info.options = LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE;
