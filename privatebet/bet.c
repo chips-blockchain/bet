@@ -90,15 +90,15 @@ static void bet_cashier_deinitialize()
 		free(cashier_info);
 }
 
-static void bet_player_initialize(char *dcv_ip, const int32_t port)
+static void bet_player_initialize(char *dcv_ip)
 {
 	int32_t subsock = -1, pushsock = -1;
 	char bind_sub_addr[128], bind_push_addr[128];
 
-	bet_tcp_sock_address(0, bind_sub_addr, dcv_ip, port);
+	bet_tcp_sock_address(0, bind_sub_addr, dcv_ip, dealer_pub_sub_port);
 	subsock = bet_nanosock(0, bind_sub_addr, NN_SUB);
 
-	bet_tcp_sock_address(0, bind_push_addr, dcv_ip, port + 1);
+	bet_tcp_sock_address(0, bind_push_addr, dcv_ip, dealer_push_pull_port);
 	pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
 
 	player_vars = calloc(1, sizeof(struct privatebet_vars));
@@ -121,11 +121,11 @@ static void bet_player_deinitialize()
 		free(player_vars);
 }
 
-static void bet_player_thrd(char *dcv_ip, const int32_t port)
+static void bet_player_thrd(char *dcv_ip)
 {
 	pthread_t player_thrd, player_backend_write, player_backend_read;
 
-	bet_player_initialize(dcv_ip, port);
+	bet_player_initialize(dcv_ip);
 	if (OS_thread_create(&player_thrd, NULL, (void *)bet_player_backend_loop, (void *)bet_player) != 0) {
 		dlg_error("Error in launching bet_player_backend_loop");
 		exit(-1);
@@ -200,15 +200,15 @@ void bet_bvv_thrd(char *dcv_ip, const int32_t port)
 	bet_bvv_deinitialize();
 }
 
-static void bet_dcv_initialize(char *dcv_ip, const int32_t port)
+static void bet_dcv_initialize(char *dcv_ip)
 {
 	int32_t pubsock = -1, pullsock = -1;
 	char bind_pub_addr[128], bind_pull_addr[128];
 
-	bet_tcp_sock_address(0, bind_pub_addr, dcv_ip, port);
+	bet_tcp_sock_address(0, bind_pub_addr, dcv_ip, dealer_pub_sub_port);
 	pubsock = bet_nanosock(1, bind_pub_addr, NN_PUB);
 
-	bet_tcp_sock_address(0, bind_pull_addr, dcv_ip, port + 1);
+	bet_tcp_sock_address(0, bind_pull_addr, dcv_ip, dealer_push_pull_port);
 	pullsock = bet_nanosock(1, bind_pull_addr, NN_PULL);
 
 	bet_dcv = calloc(1, sizeof(struct privatebet_info));
@@ -253,7 +253,7 @@ static void bet_dcv_deinitialize()
 		free(dcv_vars);
 }
 
-static void bet_dcv_thrd(char *dcv_ip, const int32_t port)
+static void bet_dcv_thrd(char *dcv_ip)
 {
 	pthread_t dcv_backend, dcv_thrd;
 
@@ -261,7 +261,7 @@ static void bet_dcv_thrd(char *dcv_ip, const int32_t port)
 	pthread_t live_thrd;
 #endif
 
-	bet_dcv_initialize(dcv_ip, port);
+	bet_dcv_initialize(dcv_ip);
 #ifdef LIVE_THREAD
 	dlg_warn("Hope its not coming here");
 	if (OS_thread_create(&live_thrd, NULL, (void *)bet_dcv_heartbeat_loop, (void *)bet_dcv) != 0) {
@@ -291,15 +291,15 @@ static void bet_dcv_thrd(char *dcv_ip, const int32_t port)
 	bet_dcv_deinitialize();
 }
 
-static void bet_cashier_server_initialize(char *node_ip, const int32_t port)
+static void bet_cashier_server_initialize(char *node_ip)
 {
 	int32_t pubsock = -1, pullsock = -1;
 	char bind_pub_addr[128], bind_pull_addr[128];
 
-	bet_tcp_sock_address(0, bind_pub_addr, node_ip, port);
+	bet_tcp_sock_address(0, bind_pub_addr, node_ip, cashier_pub_sub_port);
 	pubsock = bet_nanosock(1, bind_pub_addr, NN_PUB);
 
-	bet_tcp_sock_address(0, bind_pull_addr, node_ip, port + 1);
+	bet_tcp_sock_address(0, bind_pull_addr, node_ip, cashier_push_pull_port);
 	pullsock = bet_nanosock(1, bind_pull_addr, NN_PULL);
 
 	cashier_info = calloc(1, sizeof(struct cashier));
@@ -308,11 +308,11 @@ static void bet_cashier_server_initialize(char *node_ip, const int32_t port)
 	cashier_info->c_pullsock = pullsock;
 }
 
-static void bet_cashier_server_thrd(char *node_ip, const int32_t port)
+static void bet_cashier_server_thrd(char *node_ip)
 {
 	pthread_t server_thrd;
 
-	bet_cashier_server_initialize(node_ip, port);
+	bet_cashier_server_initialize(node_ip);
 	if (OS_thread_create(&server_thrd, NULL, (void *)bet_cashier_server_loop, (void *)cashier_info) != 0) {
 		dlg_error("Error launching bet_dcv_live_loop]n");
 		exit(-1);
@@ -536,24 +536,25 @@ static char *bet_pick_dealer()
 
 int main(int argc, char **argv)
 {
-	char *ip = NULL;
-
+	
 	bet_set_unique_id();
 	bet_parse_dealer_config_file();
 
 	if (argc >= 2) {
 		if (strcmp(argv[1], "player") == 0) {
 			playing_nodes_init();
+			
+			char *dealer_ip = NULL;
 			dlg_info("Finding the dealer");
 			do {
-				ip = bet_pick_dealer();
-				if (!ip)
+				dealer_ip = bet_pick_dealer();
+				if (!dealer_ip)
 					sleep(2);
-			} while (ip == NULL);
+			} while (dealer_ip == NULL);
 
-			if (ip) {
-				dlg_info("The dealer is :: %s", ip);
-				bet_player_thrd(ip, dealer_pub_sub_port);
+			if (dealer_ip) {
+				dlg_info("The dealer is :: %s", dealer_ip);
+				bet_player_thrd(dealer_ip);
 			}
 		} else if ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "h") == 0) ||
 			   (strcmp(argv[1], "--help") == 0) || (strcmp(argv[1], "help") == 0)) {
@@ -575,7 +576,7 @@ int main(int argc, char **argv)
 				bet_send_dealer_info_to_cashier(dealer_ip);
 				dealer_node_init();
 				find_bvv();
-				bet_dcv_thrd(dealer_ip, dealer_pub_sub_port);
+				bet_dcv_thrd(dealer_ip);
 			} else {
 				bet_help_dcv_command_usage();
 			}
@@ -583,7 +584,7 @@ int main(int argc, char **argv)
 			if (argc == 3) {
 				strcpy(cashier_ip, argv[2]);
 				common_init();
-				bet_cashier_server_thrd(cashier_ip, cashier_pub_sub_port);
+				bet_cashier_server_thrd(cashier_ip);
 			} else {
 				bet_help_cashier_command_usage();
 			}
