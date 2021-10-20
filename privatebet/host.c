@@ -1341,12 +1341,6 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 	stack_info_resp = cJSON_CreateObject();
 	cJSON_AddStringToObject(stack_info_resp, "method", "stack_info_resp");
 	cJSON_AddStringToObject(stack_info_resp, "id", jstr(argjson, "id"));
-	/*
-	pthread_mutex_lock(&mutex);
-	strcpy(vars->player_chips_addrs[no_of_rand_str], jstr(argjson, "chips_addr"));
-	strcpy(tx_rand_str[no_of_rand_str++], jstr(argjson, "req_identifier"));
-	pthread_mutex_unlock(&mutex);
-	*/
 	cJSON_AddNumberToObject(stack_info_resp, "max_players", max_players);
 	cJSON_AddNumberToObject(stack_info_resp, "table_stack_in_chips", table_stack_in_chips);
 	cJSON_AddNumberToObject(stack_info_resp, "chips_tx_fee", chips_tx_fee);
@@ -1360,7 +1354,6 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 		}
 	}
 	cJSON_AddItemToObject(stack_info_resp, "msig_addr_nodes", msig_addr_nodes);
-	dlg_info("stack info resp::%s", cJSON_Print(stack_info_resp));
 	bytes = nn_send(bet->pubsock, cJSON_Print(stack_info_resp), strlen(cJSON_Print(stack_info_resp)), 0);
 	if (bytes < 0)
 		retval = -1;
