@@ -200,6 +200,23 @@ void bet_bvv_thrd(char *dcv_ip, const int32_t port)
 	bet_bvv_deinitialize();
 }
 
+static void bet_dcv_bvv_initialize(char *dcv_ip)
+{
+	int32_t pubsock = -1, pullsock = -1;
+	char bind_pub_addr[128], bind_pull_addr[128];
+
+	bet_tcp_sock_address(0, bind_pub_addr, dcv_ip, dealer_bvv_pub_sub_port);
+	pubsock = bet_nanosock(1, bind_pub_addr, NN_PUB);
+
+	bet_tcp_sock_address(0, bind_pull_addr, dcv_ip, dealer_bvv_push_pull_port);
+	pullsock = bet_nanosock(1, bind_pull_addr, NN_PULL);
+
+	bet_dcv_bvv = calloc(1, sizeof(struct dcv_bvv_sock_info));
+	bet_dcv_bvv->pubsock = pubsock;
+	bet_dcv_bvv->pullsock = pullsock;
+		
+}
+
 static void bet_dcv_initialize(char *dcv_ip)
 {
 	int32_t pubsock = -1, pullsock = -1;
@@ -255,13 +272,14 @@ static void bet_dcv_deinitialize()
 
 static void bet_dcv_thrd(char *dcv_ip)
 {
-	pthread_t dcv_backend, dcv_thrd;
+	pthread_t dcv_backend, dcv_thrd, dcv_bvv_thrd;
 
 #ifdef LIVE_THREAD
 	pthread_t live_thrd;
 #endif
 
 	bet_dcv_initialize(dcv_ip);
+	bet_dcv_bvv_initialize(dcv_ip);
 #ifdef LIVE_THREAD
 	dlg_warn("Hope its not coming here");
 	if (OS_thread_create(&live_thrd, NULL, (void *)bet_dcv_heartbeat_loop, (void *)bet_dcv) != 0) {
@@ -273,6 +291,13 @@ static void bet_dcv_thrd(char *dcv_ip)
 		dlg_error("Error launching bet_dcv_backend_loop");
 		exit(-1);
 	}
+
+	
+	if (OS_thread_create(&dcv_bvv_thrd, NULL, (void *)bet_dcv_bvv_backend_loop, (void *)bet_dcv_bvv) != 0) {
+		dlg_error("Error launching bet_dcv_backend_loop");
+		exit(-1);
+	}
+	
 	if (OS_thread_create(&dcv_thrd, NULL, (void *)bet_dcv_frontend_loop, NULL) != 0) {
 		dlg_error("Error launching bet_dcv_frontend_loop");
 		exit(-1);

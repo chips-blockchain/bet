@@ -79,6 +79,10 @@ struct privatebet_info {
 	cJSON *msg;
 };
 
+struct dcv_bvv_sock_info {
+	int32_t pullsock, pubsock, subsock, pushsock;
+};
+
 struct privatebet_rawpeerln {
 	uint64_t msatoshi_to_us, msatoshi_total;
 	uint32_t unique_id;
