@@ -1021,7 +1021,6 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 	cJSON *payout_info = NULL, *dev_info = NULL, *dcv_info = NULL, *payout_tx_info = NULL, *data_info = NULL;
 	char *hex_str = NULL;
 
-
 	for (int i = 0; i < bet->maxplayers; i++) {
 		funds_left += vars->funds[i];
 		if (winners[i] == 1)
@@ -1063,8 +1062,8 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 	cJSON_AddItemToArray(payout_info, dcv_info);
 
 	for (int32_t i = 0; i < bet->maxplayers; i++) {
-		if(funds_left > 0) {
-			player_amounts[i] = (amount_in_txs * vars->funds[i])/funds_left;
+		if (funds_left > 0) {
+			player_amounts[i] = (amount_in_txs * vars->funds[i]) / funds_left;
 		} else {
 			player_amounts[i] = 0;
 		}
@@ -1102,11 +1101,9 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 	int retval = 1, max_score = 0, no_of_winners = 0, bytes;
 	unsigned char h[7];
 	unsigned long scores[CARDS777_MAXPLAYERS];
-	int p[CARDS777_MAXPLAYERS];
-	int winners[CARDS777_MAXPLAYERS], players_left = 0, only_winner = -1;
+	int winners[CARDS777_MAXPLAYERS];
 	cJSON *reset_info = NULL;
 	char *rendered = NULL;
-	int fold_flag = 0;
 	cJSON *final_info = NULL, *all_hole_card_info = NULL, *board_card_info = NULL, *hole_card_info = NULL,
 	      *show_info = NULL;
 	char *cards[52] = { "2C", "3C", "4C", "5C", "6C", "7C", "8C", "9C", "10C", "JC", "QC", "KC", "AC",
@@ -1117,62 +1114,37 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 	bet_game_info(bet, vars);
 
 	for (int i = 0; i < bet->maxplayers; i++) {
-		p[i] = vars->bet_actions[i][(vars->round)];
-
-		if (vars->bet_actions[i][vars->round] == fold) //|| (vars->bet_actions[i][vars->round]==allin))
-			players_left++;
-		else
-			only_winner = i;
+		if (vars->bet_actions[i][(vars->round)] == fold)
+			scores[i] = 0;
+		else {
+			for (int j = 0; j < hand_size; j++) {
+				h[j] = (unsigned char)card_values[i][j];
+			}
+			scores[i] = seven_card_draw_score(h);
+		}
+	}
+	for (int i = 0; i < bet->maxplayers; i++) {
+		if (max_score < scores[i])
+			max_score = scores[i];
+	}
+	for (int i = 0; i < bet->maxplayers; i++) {
+		if (scores[i] == max_score) {
+			winners[i] = 1;
+			no_of_winners++;
+		} else
+			winners[i] = 0;
 	}
 
-	players_left = bet->maxplayers - players_left;
-	if (players_left < 2) {
-		if (only_winner != -1) {
-			fold_flag = 1;
-			no_of_winners = 1;
-			for (int i = 0; i < bet->maxplayers; i++) {
-				if (vars->bet_actions[i][vars->round] == fold)
-					winners[i] = 0;
-				else
-					winners[i] = 1;
-			}
-			//retval = bet_dcv_invoice_pay(bet, vars, only_winner, vars->pot);
-			retval = bet_dcv_poker_winner(bet, vars, winners, vars->pot);
+	dlg_info("Winning Amount:%d", (vars->pot / no_of_winners));
+	dlg_info("Winning Players Are:");
+	for (int i = 0; i < bet->maxplayers; i++) {
+		if (winners[i] == 1) {
+			dlg_info("playerid :: %d", i);
 		}
-	} else {
-		for (int i = 0; i < bet->maxplayers; i++) {
-			if (p[i] == fold)
-				scores[i] = 0;
-			else {
-				for (int j = 0; j < hand_size; j++) {
-					h[j] = (unsigned char)card_values[i][j];
-				}
-				scores[i] = seven_card_draw_score(h);
-			}
-		}
-		for (int i = 0; i < bet->maxplayers; i++) {
-			if (max_score < scores[i])
-				max_score = scores[i];
-		}
-		for (int i = 0; i < bet->maxplayers; i++) {
-			if (scores[i] == max_score) {
-				winners[i] = 1;
-				no_of_winners++;
-			} else
-				winners[i] = 0;
-		}
-
-		dlg_info("Winning Amount:%d", (vars->pot / no_of_winners));
-		dlg_info("Winning Players Are:");
-		for (int i = 0; i < bet->maxplayers; i++) {
-			if (winners[i] == 1) {
-				dlg_info("playerid :: %d", i);
-			}
-		}
-		retval = bet_dcv_poker_winner(bet, vars, winners, vars->pot);
-		if (retval == -1) {
-			goto end;
-		}			
+	}
+	retval = bet_dcv_poker_winner(bet, vars, winners, vars->pot);
+	if (retval == -1) {
+		goto end;
 	}
 
 	final_info = cJSON_CreateObject();
@@ -1182,28 +1154,19 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 	for (int i = 0; i < bet->maxplayers; i++) {
 		hole_card_info = cJSON_CreateArray();
 		for (int j = 0; j < no_of_hole_cards; j++) {
-			if (fold_flag == 1) {
+			if (card_values[i][j] != -1)
+				cJSON_AddItemToArray(hole_card_info, cJSON_CreateString(cards[card_values[i][j]]));
+			else
 				cJSON_AddItemToArray(hole_card_info, cJSON_CreateNull());
-			} else {
-				if (card_values[i][j] != -1)
-					cJSON_AddItemToArray(hole_card_info,
-							     cJSON_CreateString(cards[card_values[i][j]]));
-				else
-					cJSON_AddItemToArray(hole_card_info, cJSON_CreateNull());
-			}
 		}
 		cJSON_AddItemToArray(all_hole_card_info, hole_card_info);
 	}
 
 	for (int j = no_of_hole_cards; j < hand_size; j++) {
-		if (fold_flag == 1) {
+		if (card_values[0][j] != -1)
+			cJSON_AddItemToArray(board_card_info, cJSON_CreateString(cards[card_values[0][j]]));
+		else
 			cJSON_AddItemToArray(board_card_info, cJSON_CreateNull());
-		} else {
-			if (card_values[0][j] != -1)
-				cJSON_AddItemToArray(board_card_info, cJSON_CreateString(cards[card_values[0][j]]));
-			else
-				cJSON_AddItemToArray(board_card_info, cJSON_CreateNull());
-		}
 	}
 
 	show_info = cJSON_CreateObject();

@@ -326,8 +326,8 @@ int32_t bet_dcv_round_betting_response(cJSON *argjson, struct privatebet_info *b
 			vars->bet_actions[playerid][round] = allin;
 		} else if (strcmp(action, "fold") == 0) {
 			vars->bet_actions[playerid][round] = fold;
-			for(int32_t i = round; i<CARDS777_MAXROUNDS; i++) {
-				vars->bet_actions[playerid][i] = fold;	
+			for (int32_t i = round; i < CARDS777_MAXROUNDS; i++) {
+				vars->bet_actions[playerid][i] = fold;
 			}
 		}
 
