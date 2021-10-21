@@ -92,14 +92,15 @@ cJSON *bet_msg_dealer_with_response_id(cJSON *argjson, char *dealer_ip, char *me
 	memset(bind_sub_addr, 0x00, sizeof(bind_sub_addr));
 	memset(bind_push_addr, 0x00, sizeof(bind_push_addr));
 
-	bet_tcp_sock_address(0, bind_sub_addr, dealer_ip, dealer_pub_sub_port);
+	bet_tcp_sock_address(0, bind_sub_addr, dealer_ip, dealer_bvv_pub_sub_port);
 	c_subsock = bet_nanosock(0, bind_sub_addr, NN_SUB);
 
-	bet_tcp_sock_address(0, bind_push_addr, dealer_ip, dealer_push_pull_port);
+	bet_tcp_sock_address(0, bind_push_addr, dealer_ip, dealer_bvv_push_pull_port);
 	c_pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
 
 	bytes = nn_send(c_pushsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
 	if (bytes < 0) {
+		dlg_error("Failed to send data to the dealer :: %s", dealer_ip);
 		return NULL;
 	} else {
 		while (c_pushsock >= 0 && c_subsock >= 0) {

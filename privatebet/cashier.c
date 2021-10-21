@@ -592,29 +592,6 @@ static int32_t bet_process_dealer_info(cJSON *argjson)
 	return retval;
 }
 
-static int32_t bet_check_dealer_status(char *dealer_ip)
-{
-	cJSON *live_info = NULL;
-	cJSON *response = NULL;
-	int32_t rc = 0;
-
-	live_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(live_info, "method", "live");
-	cJSON_AddStringToObject(live_info, "id", unique_id);
-	response = bet_msg_dealer_with_response_id(live_info, dealer_ip, "live");
-
-	if (response) {
-		rc = 1;
-	} else {
-		char *sql_query = NULL;
-		sql_query = calloc(1, sql_query_size);
-		sprintf(sql_query, "DELETE FROM dealers_info WHERE dealer_ip = \'%s\';", dealer_ip);
-		bet_run_query(sql_query);
-		if (sql_query)
-			free(sql_query);
-	}
-	return rc;
-}
 static int32_t bet_process_rqst_dealer_info(cJSON *argjson, struct cashier *cashier_info)
 {
 	cJSON *response_info = NULL;
@@ -1030,7 +1007,6 @@ int32_t bet_clear_tables()
 	char *sql_query = NULL;
 
 	sql_query = calloc(1, 400);
-	//Cleaaring dealers_info table contents
 	sprintf(sql_query, "DELETE from dealers_info");
 	retval = bet_run_query(sql_query);
 	if (sql_query)

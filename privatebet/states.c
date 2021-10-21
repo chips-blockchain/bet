@@ -156,12 +156,6 @@ int32_t bet_dcv_round_betting(cJSON *argjson, struct privatebet_info *bet, struc
 		goto end;
 	}
 
-	for (int i = 0; i < bet->maxplayers; i++) {
-		dlg_info("player id::%d::funds::%d::vars->round::%d\n", i, vars->funds[i], vars->round);
-		for (int j = 0; j <= vars->round; j++)
-			dlg_info("%d\t", vars->betamount[i][j]);
-	}
-
 	players_left = 0;
 	for (int i = 0; i < bet->maxplayers; i++) {
 		if (vars->bet_actions[i][vars->round] == fold) //|| (vars->bet_actions[i][vars->round]==allin))
@@ -202,14 +196,17 @@ int32_t bet_dcv_round_betting(cJSON *argjson, struct privatebet_info *bet, struc
 
 	cJSON_AddItemToObject(roundBetting, "possibilities", possibilities = cJSON_CreateArray());
 
-	if (vars->betamount[vars->last_turn][vars->round] == vars->betamount[vars->turni][vars->round]) {
-		// check, allin, fold
-		if (vars->bet_actions[vars->turni][vars->round] == big_blind)
-			toCall = vars->betamount[vars->turni][vars->round];
-
+	if ((vars->betamount[vars->last_turn][vars->round] == vars->betamount[vars->turni][vars->round]) &&
+	    (vars->bet_actions[vars->turni][vars->round] == big_blind)) {
+		toCall = vars->betamount[vars->turni][vars->round];
 	} else {
 		// raise, call, allin, fold
-		toCall = vars->betamount[vars->last_turn][vars->round];
+		int32_t max = 0;
+		for (int32_t i = 0; i < bet->maxplayers; i++) {
+			if (max < vars->betamount[i][vars->round])
+				max = vars->betamount[i][vars->round];
+		}
+		toCall = max; //vars->betamount[vars->last_turn][vars->round];
 	}
 
 	if (vars->last_raise < big_blind_amount)
@@ -280,7 +277,6 @@ int32_t bet_dcv_round_betting(cJSON *argjson, struct privatebet_info *bet, struc
 	}
 
 	cJSON_AddNumberToObject(roundBetting, "min_amount", (maxamount - vars->betamount[vars->turni][vars->round]));
-
 	rendered = cJSON_Print(roundBetting);
 	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 
@@ -449,6 +445,7 @@ int32_t bet_player_betting_statemachine(cJSON *argjson, struct privatebet_info *
 	char *action = NULL;
 	char *rendered = NULL;
 	int retval = 1, bytes;
+
 	if ((action = jstr(argjson, "action")) != 0) {
 		if (strcmp(action, "small_blind") == 0) {
 			if (jint(argjson, "playerid") == bet->myplayerid) {

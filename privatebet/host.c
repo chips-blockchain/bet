@@ -347,8 +347,14 @@ int32_t bet_dcv_deck_init_info(cJSON *argjson, struct privatebet_info *bet, stru
 				     cJSON_CreateString(bits256_str(str, dcv_info.peerpubkeys[i])));
 	}
 	rendered = cJSON_Print(deck_init_info);
-	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 
+	//sending init_d to BVV
+	bytes = nn_send(bet_dcv_bvv->pubsock, rendered, strlen(rendered), 0);
+	if (bytes < 0)
+		retval = -1;
+
+	//sending init_d to players
+	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 	if (bytes < 0)
 		retval = -1;
 
@@ -598,7 +604,7 @@ static int32_t bet_check_bvv_ready(struct privatebet_info *bet)
 	}
 	rendered = cJSON_Print(bvv_ready);
 	dlg_info("%s\n", cJSON_Print(bvv_ready));
-	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
+	bytes = nn_send(bet_dcv_bvv->pubsock, rendered, strlen(rendered), 0);
 
 	if (bytes < 0) {
 		retval = -1;
@@ -1590,7 +1596,29 @@ static void bet_get_dcv_state(cJSON *argjson, struct privatebet_info *bet)
 	cJSON_AddNumberToObject(dcv_state_info, "players_joined", players_joined);
 	cJSON_AddNumberToObject(dcv_state_info, "max_players", bet->maxplayers);
 	cJSON_AddStringToObject(dcv_state_info, "id", jstr(argjson, "id"));
+
 	bytes = nn_send(bet->pubsock, cJSON_Print(dcv_state_info), strlen(cJSON_Print(dcv_state_info)), 0);
+	if (bytes < 0) {
+		dlg_error("Failed to send data");
+	}
+}
+
+static void bet_get_dcv_state_for_bvv(cJSON *argjson, struct privatebet_info *bet)
+{
+	cJSON *dcv_state_info = NULL;
+	int32_t bytes;
+
+	dcv_state_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(dcv_state_info, "method", "dcv_state");
+	cJSON_AddNumberToObject(dcv_state_info, "dcv_state", dcv_state);
+	cJSON_AddNumberToObject(dcv_state_info, "players_joined", players_joined);
+	cJSON_AddNumberToObject(dcv_state_info, "max_players", bet->maxplayers);
+	cJSON_AddStringToObject(dcv_state_info, "id", jstr(argjson, "id"));
+
+	bytes = nn_send(bet_dcv_bvv->pubsock, cJSON_Print(dcv_state_info), strlen(cJSON_Print(dcv_state_info)), 0);
+	if (bytes < 0) {
+		dlg_error("Failed to send data");
+	}
 }
 
 void bet_dcv_backend_thrd(void *_ptr)
@@ -1616,7 +1644,7 @@ void bet_dcv_backend_thrd(void *_ptr)
 		} else if (strcmp(method, "bvv_join") == 0) {
 			//retval = bet_dcv_bvv_join(argjson, bet, vars);
 		} else if (strcmp(method, "init_b") == 0) {
-				retval = bet_relay(argjson, bet, vars);			
+			retval = bet_relay(argjson, bet, vars);
 		} else if (strcmp(method, "player_ready") == 0) {
 			if (bet_check_player_ready(argjson, bet, vars)) {
 				retval = bet_initiate_statemachine(argjson, bet, vars);
@@ -1775,34 +1803,44 @@ void bet_dcv_backend_loop(void *_ptr)
 	}
 }
 
-
 int32_t bet_dcv_bvv_backend(cJSON *argjson, struct dcv_bvv_sock_info *bet_dcv_bvv)
 {
-		char *method = NULL;
-		int32_t retval = 0;
-		
-		if(method = jstr(argjson,"method") != NULL) {
-			dlg_info("Received method from BVV :: %s", method);
-			if (strcmp(method, "bvv_ready") == 0) {
-				retval = bet_dcv_start(bet_dcv, 0);
-			} else if (strcmp(method, "bvv_join") == 0) {
-				retval = bet_dcv_bvv_join(argjson, bet_dcv_bvv, dcv_vars);
-			} else if (strcmp(method, "init_b") == 0) {
-					retval = bet_relay(argjson, bet_dcv, dcv_vars);			
+	char *method = NULL;
+	int32_t retval = 0, bytes;
+
+	if ((method = jstr(argjson, "method")) != 0) {
+		dlg_info("Received method from BVV :: %s", method);
+		if (strcmp(method, "bvv_ready") == 0) {
+			retval = bet_dcv_start(bet_dcv, 0);
+		} else if (strcmp(method, "bvv_join") == 0) {
+			retval = bet_dcv_bvv_join(argjson, bet_dcv_bvv, dcv_vars);
+		} else if (strcmp(method, "init_b") == 0) {
+			retval = bet_relay(argjson, bet_dcv, dcv_vars);
+		} else if (strcmp(method, "dcv_state") == 0) {
+			bet_get_dcv_state_for_bvv(argjson, bet_dcv);
+		} else if (strcmp(method, "live") == 0) {
+			cJSON *live_info = cJSON_CreateObject();
+			cJSON_AddStringToObject(live_info, "method", "live");
+			cJSON_AddStringToObject(live_info, "id", jstr(argjson, "id"));
+			bytes = nn_send(bet_dcv_bvv->pubsock, cJSON_Print(live_info), strlen(cJSON_Print(live_info)),
+					0);
+			if (bytes < 0) {
+				retval = -1;
+				dlg_error("nn_send failed");
 			}
-		
 		}
+	}
+	return retval;
 }
 
 void bet_dcv_bvv_backend_loop(void *_ptr)
-{	
-	
+{
 	int32_t recvlen = 0;
 	void *ptr = NULL;
 	cJSON *msgjson = NULL;
-	struct privatebet_info *bet_dcv_bvv = _ptr;
+	struct dcv_bvv_sock_info *bet_dcv_bvv = _ptr;
 
-	while (bet_dcv_bvv->pubsock>= 0 && bet_dcv_bvv->pullsock>= 0) {
+	while (bet_dcv_bvv->pubsock >= 0 && bet_dcv_bvv->pullsock >= 0) {
 		ptr = 0;
 		char *tmp = NULL;
 		recvlen = nn_recv(bet_dcv_bvv->pullsock, &ptr, NN_MSG, 0);
@@ -1821,7 +1859,6 @@ void bet_dcv_bvv_backend_loop(void *_ptr)
 				nn_freemsg(ptr);
 		}
 	}
-	
 }
 void bet_dcv_frontend_loop(void *_ptr)
 {
