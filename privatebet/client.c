@@ -1849,8 +1849,9 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		} else if (strcmp(method, "tx_reverse") == 0) {
 			if (strncmp(req_identifier, jstr(argjson, "id"), sizeof(req_identifier)) == 0) {
 				dlg_warn(
-					"The dealers table is already full, claim your tx back using dispute resolution protocol::%s\n",
+					"The dealers table is already full, the payin_tx will be reversed using dispute resolution protocol::%s\n",
 					cJSON_Print(argjson));
+				bet_raise_dispute(player_payin_txid);
 				retval = -1;
 			}
 		} else if (strcmp(method, "seats_info_resp") == 0) {
