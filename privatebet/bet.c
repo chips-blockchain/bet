@@ -565,7 +565,6 @@ static char *bet_pick_dealer()
 int main(int argc, char **argv)
 {
 	bet_set_unique_id();
-	bet_parse_dealer_config_file();
 
 	if (argc >= 2) {
 		if (strcmp(argv[1], "player") == 0) {

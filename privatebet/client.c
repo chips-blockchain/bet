@@ -1864,8 +1864,6 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 					dlg_info("Backend is ready, from GUI you can connect to backend and play...");
 				}
 			}
-		} else if (strcmp(method, "config_data") == 0) {
-			dlg_info("config_data::%s\n", cJSON_Print(argjson));
 		} else if (strcmp(method, "is_player_active") == 0) {
 			cJSON *active_info = NULL;
 			active_info = cJSON_CreateObject();
