@@ -170,8 +170,6 @@ int32_t bet_bvv_init(cJSON *argjson, struct privatebet_info *bet, struct private
 	bits256 bvv_blinding_values[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 	bits256 bvv_blind_cards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 
-	bvv_info.numplayers = bet->numplayers;
-	bvv_info.maxplayers = bet->maxplayers;
 	bvv_info.deckid = jbits256(argjson, "deckid");
 	bvv_info.bvv_key.priv = curve25519_keypair(&bvv_info.bvv_key.prod);
 	cjson_peer_pubkeys = cJSON_GetObjectItem(argjson, "peerpubkeys");
@@ -348,6 +346,9 @@ int32_t bet_bvv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 			chips_tx_fee = jdouble(argjson, "chips_tx_fee");
 			table_stack_in_chips = jdouble(argjson, "table_stack_in_chips");
 			bet->maxplayers = max_players;
+			bet->numplayers = max_players;
+			bvv_info.maxplayers = bet->maxplayers;
+			bvv_info.numplayers = bet->numplayers;
 		}
 	}
 	return retval;
@@ -660,15 +661,13 @@ int32_t bet_client_receive_share(cJSON *argjson, struct privatebet_info *bet, st
 	playerid = jint(argjson, "playerid");
 	card_type = jint(argjson, "card_type");
 
-	dlg_info("%s", cJSON_Print(argjson));
-
 	if (sharesflag[cardid][playerid] == 0) {
 		playershares[cardid][playerid] = share;
 		sharesflag[cardid][playerid] = 1;
 		no_of_shares++;
 	}
 	if ((no_of_shares < bet->maxplayers) && (jint(argjson, "to_playerid") == bet->myplayerid)) {
-		for (int i = 0; i < bet->numplayers; i++) {
+		for (int i = 0; i < bet->maxplayers; i++) {
 			if ((!sharesflag[jint(argjson, "cardid")][i]) && (i != bet->myplayerid)) {
 				retval = bet_player_ask_share(bet, jint(argjson, "cardid"), bet->myplayerid,
 							      jint(argjson, "card_type"), i);
@@ -1573,6 +1572,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		strncpy(table_id, jstr(argjson, "table_id"), strlen(jstr(argjson, "table_id")));
 
 		bet->maxplayers = max_players;
+		bet->numplayers = max_players;
 		tx_info = cJSON_CreateObject();
 		cJSON *data_info = NULL;
 		data_info = cJSON_CreateObject();
@@ -2062,6 +2062,7 @@ cJSON *bet_get_available_dealers()
 			cashier_response_info = bet_msg_cashier_with_response_id(rqst_dealer_info, notary_node_ips[i],
 										 "rqst_dealer_info_response");
 			if (cashier_response_info == NULL) {
+				dlg_warn("No response from cashier :: %s", notary_node_ips[i]);
 				continue;
 			}
 			dealers_ip_info = cJSON_CreateArray();
