@@ -31,7 +31,7 @@ The detailed technical whitepaper is [here.](https://cdn.discordapp.com/attachme
 3. Setting Up Cashier Node.
 
 
-### [Coomunication b/w Bet Nodes](./docs/protocol/communication.md) 
+### [Coomunication b/w Bet Nodes](./docs/protocol/node_communication.md) 
 
 ### [Glossary](./docs/protocol/glossary.md) 
 
