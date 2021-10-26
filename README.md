@@ -1,11 +1,11 @@
 ![example workflow](https://github.com/sg777/bet/actions/workflows/bet-cd.yml/badge.svg)
 # Pangea-Bet
 
-The aim of this project is to provide the necessary bet API's which are sufficient to play poker from the command line. The initial draft of the game written by jl777 is [here](./docs/BET_Initial_Draft.md).
+## Abstract
+Bet is a decentralized adopatable gaming platform that meet the needs of any card game and predictable betting scenarios. The initial draft is written by jl777 is [here](./docs/BET_Initial_Draft.md). The underlying cryptocurrency that bet uses is [CHIPS](https://github.com/chips-blockchain/chips) and for real time betting and bet uses [CHIPS over LN](https://github.com/chips-blockchain/lightning). 
 
-Bet is the implementation of the Pangea protocol which nees LN and CHIPS. The installation of [LN](https://github.com/chips-blockchain/lightning) and [CHIPS](https://github.com/chips-blockchain/chips) must be done before proceeding to play with bet.
+The detailed technical whitepaper written by sg777 is [here.](https://cdn.discordapp.com/attachments/455737840668770315/456036359870611457/Unsolicited_PANGEA_WP.pdf)
 
-If you would like to learn more please refer to the [Pangea Protocol Whitepaper](https://cdn.discordapp.com/attachments/455737840668770315/456036359870611457/Unsolicited_PANGEA_WP.pdf)
 
 ## The game
 
