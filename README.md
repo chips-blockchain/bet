@@ -9,8 +9,9 @@ The detailed technical whitepaper written by sg777 is [here.](https://cdn.discor
 ## Guide to use & understand Bet is as follows
 
 ### Compilation Guidelines
-1. [Compiling On Ubuntu](./docs/protocol/ubuntu_compile.md)
-2. [Detailed Compilation Guidelines](./docs/protocol/compile.md)
+1. [Compiling only bet repo](./docs/protocol/ubuntu_compile.md#building-bet)
+2. [Compiling all the repos needed on Ubuntu](./docs/protocol/ubuntu_compile.md)
+3. [Detailed compilation of all the repos needed on various platforms](./docs/protocol/compile.md)
 
 ### Setting up Bet Nodes
 1. [Setting Up Player Node](./docs/protocol/player_setup.md)
