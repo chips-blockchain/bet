@@ -17,31 +17,9 @@ The detailed technical whitepaper written by sg777 is [here.](https://cdn.discor
 2. Setting up Dealer Node.
 3. Setting up Cashier Node.
 
+### [Coomunication b/w Bet Nodes](./docs/protocol/communication.md) 
+
 ### [Glossary](./docs/protocol/glossary.md) 
-## The game
-
-### Terms
-
-`CHIPS` - game token and the name of the poker project
-
-`DCV` - Deck Creating Vendor, the Dealer node
-
-`BVV` - Blinding Value Vendor, the component that helps securely shuffle the deck
-
-`Cashier` or `Notary` nodes - Trusted nodes in the network that are elcted and chosen by the community. The set of trusted nodes at the moment are [here](https://github.com/chips-blockchain/bet/blob/master/privatebet/config/cashier_nodes.json).
-
-### Node Communication
-
-All the communication in the game must happen though `DCV`. Pangea Protocol does not allow any direct communication between the Players and the `BVV`. Players and `BVV` connect to `DCV` via `NN_PUSH/NN_PULL` socket. If any entity in the game is willing to send a message, it sends it to `DCV` via `NN_PUSH`, and `DCV` receives it via `NN_PULL`.
-
-<img src="assets/PULL.png" width="500">
-
-Once the `DCV` receives the messages it publishes it via `NN_PUB` and since Players and `BVV` are subscribed to `DCV` via `NN_SUB` so whenever the `DCV` publishes messages the Players and `BVV` receive it.
-
-<img src="assets/Messages.png" width="500">
-
-Source: Pangea Protocol Whitepaper (authors: [sg777](https://github.com/sg777), [jl777](https://github.com/jl777/))
-
 
 ## Installation
 
