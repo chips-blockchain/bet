@@ -13,9 +13,11 @@ By now we already aware that their exists player, dealer and cashier nodes in th
 As per our design there isn't any direct communication exists b/w the playing nodes and all the players must communicate through the dealer. There exists two layers of communication that happens b/w the dealer and playing nodes. Dealer node binds on to the ports `7797` and `7798`. On port `7797` dealer node communicates with pub-sub mechanism with the players and on port `7798` the dealer node communicates with push-pull mechanism with the players. 
 
 The typical pub-sub model b/w dealer and players is shown below:
+
 <img src="../../assets/Messages.png" width="500">
 
 The typical push-pull medel b/w dealer and players is shown below:
+
 <img src="../../assets/PULL.png" width="500">
 
 So as you see, players push messages to the dealer on port `7798` using nng push-pull sockets, and when dealer wants to communicate anyhting with the players it publishes the messages on port `7797`.
