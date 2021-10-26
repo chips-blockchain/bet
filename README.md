@@ -6,16 +6,19 @@ Bet is a decentralized adopatable gaming platform that meet the needs of any car
 
 The detailed technical whitepaper written by sg777 is [here.](https://cdn.discordapp.com/attachments/455737840668770315/456036359870611457/Unsolicited_PANGEA_WP.pdf)
 
-# Guide to use & understand Bet is as follows
+## Guide to use & understand Bet is as follows
 
-## Compilation Guidelines
+### Compilation Guidelines
 1. [Compiling On Ubuntu](./docs/protocol/ubuntu_compile.md)
 2. [Detailed Compilation Guidelines](./docs/protocol/compile.md)
 
 ### Setting up Bet Nodes
 1. [Setting Up Player Node](./docs/protocol/player_setup.md)
-2. Setting up Dealer Node.
-3. Setting up Cashier Node.
+2. Setting Up Dealer Node.<br/>
+   In this we discuss more details about how to setup the dealer node and also steps to host a private table. 
+3. Setting Up Cashier Node.
+4. 
+
 
 ### [Coomunication b/w Bet Nodes](./docs/protocol/communication.md) 
 
