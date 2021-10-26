@@ -29,7 +29,6 @@ The detailed technical whitepaper written by sg777 is [here.](https://cdn.discor
 2. Setting Up Dealer Node.<br/>
    In this we discuss more details about how to setup the dealer node and also steps to host a private table. 
 3. Setting Up Cashier Node.
-4. 
 
 
 ### [Coomunication b/w Bet Nodes](./docs/protocol/communication.md) 
