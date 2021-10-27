@@ -361,8 +361,6 @@ cJSON *bet_show_success_history()
 
 		chips_extract_data(jstr(game_obj, "payout_tx_id"), &hex_data);
 		hexstr_to_str(hex_data, data);
-		cJSON *temp = cJSON_CreateObject();
-		temp = cJSON_Parse(data);
 		cJSON_AddItemToObject(game_obj, "game_details", cJSON_Parse(data));
 		cJSON_AddItemToArray(game_success_info, game_obj);
 	}
