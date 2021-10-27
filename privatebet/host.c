@@ -1350,6 +1350,7 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 	cJSON_AddStringToObject(stack_info_resp, "id", jstr(argjson, "id"));
 	cJSON_AddNumberToObject(stack_info_resp, "max_players", max_players);
 	cJSON_AddNumberToObject(stack_info_resp, "table_stack_in_chips", table_stack_in_chips);
+	cJSON_AddNumberToObject(stack_info_resp, "dcv_commission", dcv_commission_percentage);
 	cJSON_AddNumberToObject(stack_info_resp, "chips_tx_fee", chips_tx_fee);
 	cJSON_AddStringToObject(stack_info_resp, "legacy_m_of_n_msig_addr", legacy_m_of_n_msig_addr);
 	cJSON_AddStringToObject(stack_info_resp, "table_id", table_id);
