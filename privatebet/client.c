@@ -1559,7 +1559,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 
 	funds_needed = jdouble(argjson, "table_stack_in_chips");
 	if (jdouble(argjson, "dcv_commission") > max_allowed_dcv_commission) {
-		dlg_warn("Dealer set the commission %f which is more than max commission set by player %f, so exiting",
+		dlg_warn("Dealer set the commission %f%% which is more than max commission i.e %f%% set by player, so exiting",
 			 jdouble(argjson, "dcv_commission"), max_allowed_dcv_commission);
 		retval = -1;
 		return retval;
