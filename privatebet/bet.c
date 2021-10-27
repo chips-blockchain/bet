@@ -374,6 +374,7 @@ static void playing_nodes_init()
 {
 	common_init();
 	bet_check_cashier_nodes();
+	bet_parse_player_config_file();
 }
 
 static void dealer_node_init()

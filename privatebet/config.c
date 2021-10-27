@@ -2,6 +2,7 @@
 #include "common.h"
 
 char *dealer_config_file = "./config/dealer_config.json";
+char *player_config_file = "./config/player_config.json";
 char *notaries_file = "./config/cashier_nodes.json";
 
 cJSON *bet_read_json_file(char *file_name)
@@ -87,5 +88,15 @@ void bet_parse_cashier_nodes_file()
 			strncpy(notary_node_ips[i], jstr(node_info, "ip"), strlen(jstr(node_info, "ip")));
 			strncpy(notary_node_pubkeys[i], jstr(node_info, "pubkey"), strlen(jstr(node_info, "pubkey")));
 		}
+	}
+}
+
+void bet_parse_player_config_file()
+{
+	cJSON *config_info = NULL;
+
+	config_info = bet_read_json_file(player_config_file);
+	if (config_info) {
+		max_allowed_dcv_commission = jdouble(config_info, "max_allowed_dcv_commission");
 	}
 }
