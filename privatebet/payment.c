@@ -275,6 +275,9 @@ void bet_player_paymentloop(void *_ptr)
 				if ((method = jstr(msgjson, "method")) != 0) {
 					if (strcmp(method, "invoice") == 0) {
 						retval = ln_pay_invoice(msgjson, bet, NULL);
+						if (retval == -1) {
+							dlg_warn("LN invoice payment is not completed");
+						}
 						flag = 0;
 						break;
 					} else {

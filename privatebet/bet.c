@@ -68,23 +68,6 @@ int32_t max_players = 2;
 
 static const int32_t poker_deck_size = 52;
 
-static void bet_cashier_client_initialize(char *node_ip, const int32_t port)
-{
-	int32_t subsock = -1, pushsock = -1;
-	char bind_sub_addr[128], bind_push_addr[128];
-
-	bet_tcp_sock_address(0, bind_sub_addr, node_ip, port);
-	subsock = bet_nanosock(0, bind_sub_addr, NN_SUB);
-
-	bet_tcp_sock_address(0, bind_push_addr, node_ip, port + 1);
-	pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
-
-	cashier_info = calloc(1, sizeof(struct cashier));
-
-	cashier_info->c_subsock = subsock;
-	cashier_info->c_pushsock = pushsock;
-}
-
 static void bet_cashier_deinitialize()
 {
 	if (cashier_info)

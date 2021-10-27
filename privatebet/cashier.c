@@ -363,9 +363,8 @@ end:
 	return NULL;
 }
 
-int32_t bet_process_solve(cJSON *argjson, struct cashier *cashier_info)
+void bet_process_solve(cJSON *argjson, struct cashier *cashier_info)
 {
-	int rc;
 	cJSON *disputed_games_info = NULL;
 
 	disputed_games_info = cJSON_CreateArray();
@@ -375,7 +374,6 @@ int32_t bet_process_solve(cJSON *argjson, struct cashier *cashier_info)
 	for (int32_t i = 0; i < cJSON_GetArraySize(disputed_games_info); i++) {
 		bet_resolve_game_dispute(cJSON_GetArrayItem(disputed_games_info, i));
 	}
-	return rc;
 }
 
 int32_t bet_validate_game_details(cJSON *argjson, struct cashier *cashier_info)
@@ -694,7 +692,7 @@ void bet_cashier_backend_thrd(void *_ptr)
 		} else if (strcmp(method, "game_info") == 0) {
 			retval = bet_process_game_info(argjson, cashier_info);
 		} else if (strcmp(method, "solve") == 0) {
-			retval = bet_process_solve(argjson, cashier_info);
+			bet_process_solve(argjson, cashier_info);
 		} else if (strcmp(method, "validate_game_details") == 0) {
 			retval = bet_validate_game_details(argjson, cashier_info);
 		} else if (strcmp(method, "tx_spent") == 0) {
@@ -714,6 +712,9 @@ void bet_cashier_backend_thrd(void *_ptr)
 				jint(argjson, "threshold_value"), cJSON_GetObjectItem(argjson, "pubkeys"));
 			dlg_info("msig_info::%s", cJSON_Print(msig_info));
 		}
+	}
+	if (retval != -1) {
+		//This needs to be handled.
 	}
 }
 void bet_cashier_server_loop(void *_ptr)

@@ -238,34 +238,6 @@ static int32_t bet_bvv_join_init(struct privatebet_info *bet)
 	return retval;
 }
 
-static cJSON *bet_player_fundchannel(char *channel_id)
-{
-	char **argv = NULL;
-	int argc = 4;
-	cJSON *fund_channel_info = NULL;
-
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++)
-		argv[i] = (char *)malloc(100 * sizeof(char));
-
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "fundchannel");
-	strcpy(argv[2], channel_id);
-	sprintf(argv[3], "%d", channel_fund_satoshis);
-
-	fund_channel_info = cJSON_CreateObject();
-	make_command(argc, argv, &fund_channel_info);
-
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-	return fund_channel_info;
-}
-
 int32_t bet_check_bvv_ready(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	cJSON *bvv_ready = NULL;
@@ -281,7 +253,6 @@ int32_t bet_check_bvv_ready(cJSON *argjson, struct privatebet_info *bet, struct 
 	if (bytes < 0)
 		retval = -1;
 
-end:
 	return retval;
 }
 
@@ -955,52 +926,11 @@ end:
 	return retval;
 }
 
-static int32_t bet_find_channel_balance(char *uri)
-{
-	int argc = 2, buf_size = 100;
-	char **argv = NULL;
-	cJSON *listfundsInfo = NULL, *channelsInfo = NULL;
-	int balance = 0;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(buf_size * sizeof(char));
-	}
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "listfunds");
-
-	listfundsInfo = cJSON_CreateObject();
-	make_command(argc, argv, &listfundsInfo);
-
-	channelsInfo = cJSON_CreateObject();
-	channelsInfo = cJSON_GetObjectItem(listfundsInfo, "channels");
-	for (int i = 0; i < cJSON_GetArraySize(channelsInfo); i++) {
-		cJSON *temp = cJSON_GetArrayItem(channelsInfo, i);
-		if (strcmp(jstr(temp, "peer_id"), uri) == 0)
-			balance = jint(temp, "channel_sat") / 100000;
-	}
-
-	return balance;
-}
-
-static int32_t bet_check_player_stack(char *uri)
-{
-	int balance = 0;
-	balance = bet_find_channel_balance(uri);
-	balance = balance * 100;
-	if (balance >= table_stack) {
-		balance = table_stack;
-	} else {
-		dlg_error("Insufficient Funds, Minimum needed::%d mCHIPS but only %d "
-			  "exists on the channel\n",
-			  table_stack, balance);
-	}
-	return balance;
-}
 int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	char uri[ln_uri_length], *rendered = NULL;
-	int argc, retval = 1, channel_state, /* balance,*/ bytes;
-	char **argv = NULL, channel_id[ln_uri_length];
+	int retval = 1, channel_state, /* balance,*/ bytes;
+	char channel_id[ln_uri_length];
 	cJSON *init_card_info = NULL, *hole_card_info = NULL, *init_info = NULL, *stack_info = NULL;
 
 	if (0 == bits256_cmp(player_info.player_key.prod, jbits256(argjson, "pubkey"))) {
@@ -1062,13 +992,6 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 		}
 	}
 end:
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
 	return retval;
 }
 
@@ -1559,8 +1482,9 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 
 	funds_needed = jdouble(argjson, "table_stack_in_chips");
 	if (jdouble(argjson, "dcv_commission") > max_allowed_dcv_commission) {
-		dlg_warn("Dealer set the commission %f%% which is more than max commission i.e %f%% set by player, so exiting",
-			 jdouble(argjson, "dcv_commission"), max_allowed_dcv_commission);
+		dlg_warn(
+			"Dealer set the commission %f%% which is more than max commission i.e %f%% set by player, so exiting",
+			jdouble(argjson, "dcv_commission"), max_allowed_dcv_commission);
 		retval = -1;
 		return retval;
 	}

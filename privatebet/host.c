@@ -166,7 +166,7 @@ int32_t bet_seats(struct lws *wsi, cJSON *argjson)
 	if (bytes < 0)
 		retval = -1;
 
-	return 0;
+	return retval;
 }
 
 int32_t bet_game(struct lws *wsi, cJSON *argjson)
@@ -1246,8 +1246,6 @@ int32_t bet_ln_check(struct privatebet_info *bet)
 		}
 		dlg_info("Player %d --> DCV channel ready\n", i);
 	}
-	retval = 1;
-end:
 	return retval;
 }
 
@@ -1384,18 +1382,6 @@ static void bet_dcv_process_signed_raw_tx(cJSON *argjson)
 	}
 }
 
-static int32_t bet_dcv_verify_rand_str(char *rand_str)
-{
-	int32_t retval = 0;
-	for (int i = 0; i < no_of_rand_str; i++) {
-		if (strcmp(tx_rand_str[i], rand_str) == 0) {
-			retval = 1;
-			break;
-		}
-	}
-	return retval;
-}
-
 static void bet_send_tx_reverse_rqst(cJSON *argjson, struct privatebet_info *bet)
 {
 	cJSON *tx_reverse_rqst_info = NULL;
@@ -1409,6 +1395,9 @@ static void bet_send_tx_reverse_rqst(cJSON *argjson, struct privatebet_info *bet
 	cJSON_AddNumberToObject(tx_reverse_rqst_info, "max_players", bet->maxplayers);
 	cJSON_AddStringToObject(tx_reverse_rqst_info, "id", jstr(argjson, "id"));
 	bytes = nn_send(bet->pubsock, cJSON_Print(tx_reverse_rqst_info), strlen(cJSON_Print(tx_reverse_rqst_info)), 0);
+	if (bytes < 0) {
+		dlg_error("Error in sending data");
+	}
 }
 
 static int32_t bet_dcv_verify_tx(cJSON *argjson, struct privatebet_info *bet)
@@ -1533,7 +1522,7 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 
 static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars, char *addr)
 {
-	int32_t funds = 0, bytes, retval;
+	int32_t funds = 0, bytes, retval = 1;
 	cJSON *tx_status = NULL;
 	char *sql_stmt = NULL;
 	cJSON *msig_addr_nodes = NULL;
@@ -1580,6 +1569,10 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 	cJSON_AddNumberToObject(tx_status, "tx_validity", retval);
 	cJSON_AddNumberToObject(tx_status, "player_funds", funds);
 	bytes = nn_send(bet->pubsock, cJSON_Print(tx_status), strlen(cJSON_Print(tx_status)), 0);
+	if (bytes < 0) {
+		dlg_error("Error in sending the data");
+		retval = -1;
+	}
 
 	if (sql_stmt)
 		free(sql_stmt);
@@ -1746,6 +1739,9 @@ void bet_dcv_backend_thrd(void *_ptr)
 				dlg_error("nn_send failed");
 			}
 		}
+	}
+	if (retval != 1) {
+		// This needs to be handled
 	}
 }
 

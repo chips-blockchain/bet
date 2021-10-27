@@ -766,18 +766,6 @@ int32_t chips_get_block_height_from_block_hash(char *block_hash)
 	return block_height;
 }
 
-static int32_t check_if_tx_exists(char *txid, int32_t no_of_txs, char tx_ids[][100])
-{
-	int32_t exists = 0;
-	for (int32_t i = 0; i < no_of_txs; i++) {
-		if (strcmp(tx_ids[i], txid) == 0) {
-			exists = 1;
-			break;
-		}
-	}
-	return exists;
-}
-
 cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_ids[][100])
 {
 	int argc, rc;
@@ -1075,18 +1063,6 @@ static int32_t find_address_in_addresses(char *address, cJSON *argjson)
 		}
 	}
 	return retval;
-}
-
-static char *get_address_in_addresses(cJSON *argjson)
-{
-	cJSON *addresses = NULL, *script_pub_key = NULL;
-
-	script_pub_key = cJSON_GetObjectItem(argjson, "scriptPubKey");
-	addresses = cJSON_GetObjectItem(script_pub_key, "addresses");
-	for (int i = 0; i < cJSON_GetArraySize(addresses); i++) {
-		return (unstringify(cJSON_Print(cJSON_GetArrayItem(addresses, i))));
-	}
-	return NULL;
 }
 
 double chips_get_balance_on_address_from_tx(char *address, char *tx)
@@ -1564,7 +1540,7 @@ end:
 char *ln_get_uri(char **uri)
 {
 	cJSON *channel_info = NULL, *addresses = NULL, *address = NULL;
-	int argc, retval = 1, port;
+	int argc, port;
 	char **argv = NULL, port_str[6], *type = NULL;
 
 	argc = 2;
@@ -1574,7 +1550,6 @@ char *ln_get_uri(char **uri)
 	make_command(argc, argv, &channel_info);
 
 	if (jint(channel_info, "code") != 0) {
-		retval = -1;
 		dlg_error("LN Error::%s", jstr(channel_info, "message"));
 		goto end;
 	}
