@@ -44,6 +44,8 @@ int ws_connection_status = 0, ws_connection_status_write = 0;
 
 struct lws *wsi_global_bvv = NULL;
 
+double max_allowed_dcv_commission = 2;
+
 int32_t player_card_matrix[hand_size];
 int32_t player_card_values[hand_size];
 int32_t number_cards_drawn = 0;
@@ -1556,6 +1558,12 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 	char *hex_data = NULL, *sql_query = NULL;
 
 	funds_needed = jdouble(argjson, "table_stack_in_chips");
+	if (jdouble(argjson, "dcv_commission") > max_allowed_dcv_commission) {
+		dlg_warn("Dealer set the commission %f which is more than max commission set by player %f, so exiting",
+			 jdouble(argjson, "dcv_commission"), max_allowed_dcv_commission);
+		retval = -1;
+		return retval;
+	}
 	if (chips_get_balance() < (funds_needed + chips_tx_fee)) {
 		dlg_error("Insufficient funds\n");
 		retval = -1;
@@ -2004,8 +2012,8 @@ void rest_push_cards(struct lws *wsi, cJSON *argjson, int32_t this_playerID)
 void rest_display_cards(cJSON *argjson, int32_t this_playerID)
 {
 	char *suit[NSUITS] = { "clubs", "diamonds", "hearts", "spades" };
-	char *face[NFACES] = { "two",  "three", "four", "five",	 "six",	 "seven", "eight",
-			       "nine", "ten",	"jack", "queen", "king", "ace" };
+	char *face[NFACES] = { "two",  "three", "four", "five",  "six",  "seven", "eight",
+			       "nine", "ten",   "jack", "queen", "king", "ace" };
 
 	char action_str[8][100] = { "", "small_blind", "big_blind", "check", "raise", "call", "allin", "fold" };
 	cJSON *actions = NULL;

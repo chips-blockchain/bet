@@ -114,4 +114,7 @@ extern char dealer_ip[20];
 extern char cashier_ip[20];
 extern char unique_id[65];
 
+extern double dcv_commission_percentage;
+extern double max_allowed_dcv_commission;
+
 #endif
