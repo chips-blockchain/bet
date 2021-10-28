@@ -33,6 +33,7 @@
 #include <libwebsockets.h>
 
 #include "../external/dlg/include/dlg/dlg.h"
+#include "../external/iniparser/src/iniparser.h"
 
 #include "../external/nng/include/nng/compat/nanomsg/bus.h"
 #include "../external/nng/include/nng/compat/nanomsg/nn.h"
