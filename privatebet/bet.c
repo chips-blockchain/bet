@@ -344,7 +344,7 @@ static void common_init()
 	libgfshare_init();
 	check_ln_chips_sync();
 	bet_sqlite3_init();
-	bet_parse_cashier_nodes_file();
+	bet_parse_cashier_config_ini_file();
 }
 
 static void cashier_init()
@@ -357,12 +357,12 @@ static void playing_nodes_init()
 {
 	common_init();
 	bet_check_cashier_nodes();
-	bet_parse_player_config_file();
+	bet_parse_player_config_ini_file();
 }
 
 static void dealer_node_init()
 {
-	bet_parse_dealer_config_file();
+	bet_parse_dealer_config_ini_file();
 	bet_set_table_id();
 	bet_compute_m_of_n_msig_addr();
 	bet_game_multisigaddress();
@@ -408,7 +408,6 @@ static char *bet_pick_dealer()
 int main(int argc, char **argv)
 {
 	bet_set_unique_id();
-
 	if (argc >= 2) {
 		if (strcmp(argv[1], "player") == 0) {
 			playing_nodes_init();

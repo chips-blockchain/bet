@@ -1,9 +1,14 @@
+#include "bet.h"
 #include "config.h"
 #include "common.h"
 
 char *dealer_config_file = "./config/dealer_config.json";
 char *player_config_file = "./config/player_config.json";
 char *notaries_file = "./config/cashier_nodes.json";
+
+char *dealer_config_ini_file = "./config/dealer_config.ini";
+char *player_config_ini_file = "./config/player_config.ini";
+char *cashier_config_ini_file = "./config/cashier_config.ini";
 
 cJSON *bet_read_json_file(char *file_name)
 {
@@ -58,9 +63,8 @@ void bet_parse_dealer_config_file()
 		chips_tx_fee = jdouble(config_info, "chips_tx_fee");
 		dcv_commission_percentage = jdouble(config_info, "dcv_commission");
 		strcpy(type, jstr(config_info, "type"));
-		dlg_info(
-			"The maxplayers for the table set by dealer is :: %d, dealers can change this in the dealer_config.json",
-			max_players);
+		dlg_info("The maxplayers for the table set by dealer is :: %d, dealers can change this in the %s",
+			 max_players, dealer_config_file);
 	}
 }
 
@@ -98,5 +102,83 @@ void bet_parse_player_config_file()
 	config_info = bet_read_json_file(player_config_file);
 	if (config_info) {
 		max_allowed_dcv_commission = jdouble(config_info, "max_allowed_dcv_commission");
+	}
+}
+
+void bet_parse_dealer_config_ini_file()
+{
+	dictionary *ini = NULL;
+
+	ini = iniparser_load(dealer_config_ini_file);
+	if (ini == NULL) {
+		dlg_error("error in parsing %s", dealer_config_ini_file);
+	} else {
+		if (-1 != iniparser_getint(ini, "dealer:max_players", -1)) {
+			max_players = iniparser_getint(ini, "dealer:max_players", -1);
+		}
+		if (0 != iniparser_getdouble(ini, "dealer:table_stack_in_chips", 0)) {
+			table_stack_in_chips = iniparser_getdouble(ini, "dealer:table_stack_in_chips", 0);
+		}
+		if (0 != iniparser_getdouble(ini, "dealer:chips_tx_fee", 0)) {
+			chips_tx_fee = iniparser_getdouble(ini, "dealer:chips_tx_fee", 0);
+		}
+		if (0 != iniparser_getdouble(ini, "dealer:dcv_commission", 0)) {
+			dcv_commission_percentage = iniparser_getdouble(ini, "dealer:dcv_commission", 0);
+		}
+		dlg_info("The maxplayers for the table set by dealer is :: %d, dealers can change this in the %s",
+			 max_players, dealer_config_ini_file);
+	}
+}
+
+void bet_parse_player_config_ini_file()
+{
+	dictionary *ini = NULL;
+
+	ini = iniparser_load(player_config_ini_file);
+	if (ini == NULL) {
+		dlg_error("error in parsing %s", player_config_ini_file);
+	} else {
+		if (0 != iniparser_getdouble(ini, "player:max_allowed_dcv_commission", 0)) {
+			max_allowed_dcv_commission = iniparser_getdouble(ini, "player:max_allowed_dcv_commission", 0);
+		}
+	}
+}
+
+void bet_parse_cashier_config_ini_file()
+{
+	cJSON *cashiers_info = NULL;
+	dictionary *ini = NULL;
+
+	ini = iniparser_load(cashier_config_ini_file);
+	if (ini == NULL) {
+		dlg_error("error in parsing %s", cashier_config_ini_file);
+	} else {
+		char str[20];
+		int i = 1;
+		sprintf(str, "cashier:node-%d", i);
+		cashiers_info = cJSON_CreateArray();
+		while (NULL != iniparser_getstring(ini, str, NULL)) {
+			cJSON_AddItemToArray(cashiers_info, cJSON_Parse(iniparser_getstring(ini, str, NULL)));
+			memset(str, 0x00, sizeof(str));
+			sprintf(str, "cashier:node-%d", ++i);
+		}
+		no_of_notaries = cJSON_GetArraySize(cashiers_info);
+		notary_node_ips = (char **)malloc(no_of_notaries * sizeof(char *));
+		notary_node_pubkeys = (char **)malloc(no_of_notaries * sizeof(char *));
+		notary_status = (int *)malloc(no_of_notaries * sizeof(int));
+
+		for (int32_t i = 0; i < no_of_notaries; i++) {
+			cJSON *node_info = cJSON_CreateObject();
+			node_info = cJSON_GetArrayItem(cashiers_info, i);
+
+			notary_node_ips[i] = (char *)malloc(strlen(jstr(node_info, "ip")) + 1);
+			memset(notary_node_ips[i], 0x00, strlen(jstr(node_info, "ip")) + 1);
+
+			notary_node_pubkeys[i] = (char *)malloc(strlen(jstr(node_info, "pubkey")) + 1);
+			memset(notary_node_pubkeys[i], 0x00, strlen(jstr(node_info, "pubkey")) + 1);
+
+			strncpy(notary_node_ips[i], jstr(node_info, "ip"), strlen(jstr(node_info, "ip")));
+			strncpy(notary_node_pubkeys[i], jstr(node_info, "pubkey"), strlen(jstr(node_info, "pubkey")));
+		}
 	}
 }
