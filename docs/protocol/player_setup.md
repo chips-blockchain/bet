@@ -5,7 +5,7 @@ In order to setup the player node follow either the [basic compilation guide](./
 
 ## Configuring the player node
 
-All the configurable options for the player can be set in `player_setup.ini` which is located at `bet/privatebet/config` path. The default content of this file is as follows:
+All the configurable options for the player can be set in `player_setup.ini` file, which is located at `bet/privatebet/config` path. The default content of this file is as follows:
 ```
 [player]
 max_allowed_dcv_commission = 5 # This is the max percentage of the dealer commision that the player is willing to pay, if the dealer sets the commission higher than this then the backend node will exit.
