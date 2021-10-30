@@ -34,6 +34,13 @@ git clone https://github.com/chips-blockchain/pangea-poker.git
 npm install
 npm start
 ```
+If you find any issues related to npm, please install latest npm package and try
+```
+sudo npm cache clean -f
+sudo npm install -g n
+sudo n stable
+sudo npm install npm@latest
+```
 Since i installed it on the node `159.69.23.30`, I'm able to access it using `http://159.69.23.30:1234/` and the same will be shared with the players in the console log when the dealer accepts the player join.
 
 ## Dealer during the gameplay
