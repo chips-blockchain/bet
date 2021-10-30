@@ -8,8 +8,8 @@ In order to setup the player node follow either the [basic compilation guide](./
 All the configurable options for the player can be set in `player_setup.ini` file, which is located at `bet/privatebet/config` path. The default content of this file is as follows:
 ```
 [player]
-max_allowed_dcv_commission = 5 # This is the max percentage of the dealer commision that the player is willing to pay, if the dealer sets the commission higher than this then the backend node will exit.
-type = torv3 # This will enforce LN and CHIPS run on onion address, atm this will be ignored.
+max_allowed_dcv_commission = 5 #This is the max percentage of the dealer commision that the player is willing to pay, if the dealer sets the commission higher than this then the backend node will exit.
+type = torv3 #This will enforce LN and CHIPS run on onion address, atm this will be ignored.
 ```
 
 ## Running the player node
