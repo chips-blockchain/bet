@@ -1480,6 +1480,17 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 	int32_t retval = 1, bytes;
 	char *hex_data = NULL, *sql_query = NULL;
 
+	if (0 == check_url(jstr(argjson, "gui_url"))) {
+		if (0 == strlen(jstr(argjson, "gui_url"))) {
+			dlg_warn("Dealer is not hosting the GUI, so exiting...");
+		} else {
+			dlg_warn("Dealer hosted GUI :: %s is not reachable, so exiting...", jstr(argjson, "gui_url"));
+		}
+		exit(-1);
+	} else {
+		dlg_warn("Dealer hosted GUI :: %s, using this you can connect to player backend and interact",
+			 jstr(argjson, "gui_url"));
+	}
 	funds_needed = jdouble(argjson, "table_stack_in_chips");
 	if (jdouble(argjson, "dcv_commission") > max_allowed_dcv_commission) {
 		dlg_warn(

@@ -125,8 +125,9 @@ void bet_parse_dealer_config_ini_file()
 		if (0 != iniparser_getdouble(ini, "dealer:dcv_commission", 0)) {
 			dcv_commission_percentage = iniparser_getdouble(ini, "dealer:dcv_commission", 0);
 		}
-		dlg_info("The maxplayers for the table set by dealer is :: %d, dealers can change this in the %s",
-			 max_players, dealer_config_ini_file);
+		if (NULL != iniparser_getstring(ini, "dealer:gui_host", NULL)) {
+			strcpy(dcv_hosted_gui_url, iniparser_getstring(ini, "dealer:gui_host", NULL));
+		}
 	}
 }
 

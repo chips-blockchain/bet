@@ -1,4 +1,6 @@
 #include "misc.h"
+#include "../includes/curl/curl.h"
+#include "../includes/curl/easy.h"
 
 int32_t hexstr_to_str(char *input, char *output)
 {
@@ -54,4 +56,21 @@ void delete_file(char *file_name)
 	if (remove(file_name) != 0) {
 		dlg_warn("Intermediate file %s is not removed", file_name);
 	}
+}
+
+int check_url(char *url)
+{
+	CURL *curl = NULL;
+	CURLcode response;
+
+	curl = curl_easy_init();
+
+	if (curl) {
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_NOBODY, 1);
+		response = curl_easy_perform(curl);
+		curl_easy_cleanup(curl);
+	}
+
+	return (response == CURLE_OK) ? 1 : 0;
 }

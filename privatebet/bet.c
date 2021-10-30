@@ -363,6 +363,13 @@ static void playing_nodes_init()
 static void dealer_node_init()
 {
 	bet_parse_dealer_config_ini_file();
+	if (0 == strlen(dcv_hosted_gui_url)) {
+		sprintf(dcv_hosted_gui_url, "http://%s:1234/", dealer_ip);
+	}
+	dlg_warn("Delaer GUI URL :: %s", dcv_hosted_gui_url); // dlg_warn is just to highlight the log in the console
+	if (0 == check_url(dcv_hosted_gui_url))
+		memset(dcv_hosted_gui_url, 0x00, sizeof(dcv_hosted_gui_url));
+
 	bet_set_table_id();
 	bet_compute_m_of_n_msig_addr();
 	bet_game_multisigaddress();
