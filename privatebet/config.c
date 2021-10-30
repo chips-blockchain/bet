@@ -1,6 +1,7 @@
 #include "bet.h"
 #include "config.h"
 #include "common.h"
+#include "misc.h"
 
 char *dealer_config_file = "./config/dealer_config.json";
 char *player_config_file = "./config/player_config.json";
@@ -180,6 +181,26 @@ void bet_parse_cashier_config_ini_file()
 
 			strncpy(notary_node_ips[i], jstr(node_info, "ip"), strlen(jstr(node_info, "ip")));
 			strncpy(notary_node_pubkeys[i], jstr(node_info, "pubkey"), strlen(jstr(node_info, "pubkey")));
+		}
+	}
+}
+
+void bet_display_cashier_hosted_gui()
+{
+	dictionary *ini = NULL;
+	
+	ini = iniparser_load(player_config_ini_file);
+	if (ini == NULL) {
+		dlg_error("error in parsing %s", player_config_ini_file);
+	} else {
+		char str[20];
+		int i = 1;
+		sprintf(str, "gui:cashier-%d", i);
+		while (NULL != iniparser_getstring(ini, str, NULL)) {
+			if(check_url(iniparser_getstring(ini, str, NULL)))
+				dlg_warn("%s", iniparser_getstring(ini, str, NULL));
+			memset(str, 0x00, sizeof(str));
+			sprintf(str, "gui:cashier-%d", ++i);
 		}
 	}
 }

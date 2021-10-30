@@ -58,7 +58,7 @@ void delete_file(char *file_name)
 	}
 }
 
-int check_url(char *url)
+int check_url(const char *url)
 {
 	CURL *curl = NULL;
 	CURLcode response;

@@ -35,6 +35,7 @@
 #include "cashier.h"
 #include "misc.h"
 #include "host.h"
+#include "config.h"
 
 #define LWS_PLUGIN_STATIC
 
@@ -1482,11 +1483,13 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 
 	if (0 == check_url(jstr(argjson, "gui_url"))) {
 		if (0 == strlen(jstr(argjson, "gui_url"))) {
-			dlg_warn("Dealer is not hosting the GUI, so exiting...");
+			dlg_warn("Dealer is not hosting the GUI");
 		} else {
-			dlg_warn("Dealer hosted GUI :: %s is not reachable, so exiting...", jstr(argjson, "gui_url"));
+			dlg_warn("Dealer hosted GUI :: %s is not reachable", jstr(argjson, "gui_url"));
 		}
-		exit(-1);
+		dlg_info("Player can use any of the GUI's hosted by cashiers to connect to backend");
+		bet_display_cashier_hosted_gui();
+		
 	} else {
 		dlg_warn("Dealer hosted GUI :: %s, using this you can connect to player backend and interact",
 			 jstr(argjson, "gui_url"));
