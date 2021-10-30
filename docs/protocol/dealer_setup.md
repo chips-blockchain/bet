@@ -8,12 +8,12 @@ The compilation instructions for any node of a bet is same, please follow the co
 All the configurable options for the player can be set in `dealer_setup.ini` file, which is located at `bet/privatebet/config` path. The default content of this file is as follows:
 ```
 [dealer]
-max_players =	3 #This is the maximun number of players that dealer will allow them to join the table. Atm, dealer waits for this number of players to join before starting hand.
-table_stack_in_chips=	0.01000000 #This is the amount of CHIPS that needed to join the table.
-dcv_commission= 0.5 #This is the percentage of the pot amount that dealer takes home as commission.
-chips_tx_fee=	0.00050000 #The default tx_fee is `0.0001` dealer can set any amount greater than minimum tx_fee.
-type= torv3 #When this set dealer only allows LN nodes running on torv3 to establish channels with it. This feature is not activated yet.
-gui_host = ""#If the GUI is hosted on the same backend node then it can be left blank, else the URL on which the GUI is hosted must be provided.
+max_players           = 3           #This is the maximun number of players that dealer will allow them to join the table. Atm, dealer waits for this number of players to join before starting hand.
+table_stack_in_chips  = 0.01000000  #This is the amount of CHIPS that needed to join the table.
+dcv_commission        = 0.5         #This is the percentage of the pot amount that dealer takes home as commission.				
+chips_tx_fee          = 0.00050000  #The default tx_fee is `0.0001` dealer can set any amount greater than minimum tx_fee.
+type                  = torv3       #When this set dealer only allows LN nodes running on torv3 to establish channels with it. This feature is not activated yet.
+gui_host              = ""          #If the GUI is hosted on the same backend node then it can be left blank, else the URL on which the GUI is hosted must be provided.
 ```
 
 ## Running the dealer node
