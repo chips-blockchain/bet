@@ -1,4 +1,4 @@
-Here we see detailed info about compiling, configuring, running backend, resolving disputes, hosting GUI and most importanly the constraints to meet.
+Here we see detailed info about compiling, configuring, running backend, resolving disputes, hosting GUI and most importanly the constraints to meet and hosting private tables.
 
 ## Compiling the dealer node
 
