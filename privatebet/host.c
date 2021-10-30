@@ -87,6 +87,7 @@ int ws_dcv_connection_status = 0;
 
 double dcv_commission_percentage = 0.75;
 double dev_fund_percentage = 0.25;
+char dcv_hosted_gui_url[128];
 
 int32_t heartbeat_on = 0;
 
@@ -1353,6 +1354,7 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 	cJSON_AddStringToObject(stack_info_resp, "legacy_m_of_n_msig_addr", legacy_m_of_n_msig_addr);
 	cJSON_AddStringToObject(stack_info_resp, "table_id", table_id);
 	cJSON_AddNumberToObject(stack_info_resp, "threshold_value", threshold_value);
+	cJSON_AddStringToObject(stack_info_resp, "gui_url", dcv_hosted_gui_url);
 	msig_addr_nodes = cJSON_CreateArray();
 	for (int32_t i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1) {
