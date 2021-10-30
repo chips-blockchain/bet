@@ -13,6 +13,7 @@ table_stack_in_chips=	0.01000000 #This is the amount of CHIPS that needed to joi
 dcv_commission= 0.5 #This is the percentage of the pot amount that dealer takes home as commission.
 chips_tx_fee=	0.00050000 #The default tx_fee is `0.0001` dealer can set any amount greater than minimum tx_fee.
 type= torv3 #When this set dealer only allows LN nodes running on torv3 to establish channels with it. This feature is not activated yet.
+gui_host = ""#If the GUI is hosted on the same backend node then it can be left blank, else the URL on which the GUI is hosted must be provided.
 ```
 
 ## Running the dealer node
