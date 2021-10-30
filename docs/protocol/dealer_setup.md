@@ -63,3 +63,6 @@ cd bet/privatebet
 ./bet game solve
 ./bet game dispute "disputed tx_id" #This is for a specific tx_id.
 ```
+
+## Running private tables
+At the moment there are no constraints to be a dealer. Anyone can follow the above instructions and set a dealer node to play with closed friends groups. Going forward to incentivise the people holding CHIPS, to become a dealer one should possess `100xBB` or `50K` CHIPS whichever is lower. Even after enforcing this still one can host their own dealer but we limit the table stack size to < 0.01 CHIPS, meaning that one can still host the dealer but can only play with small amounts.
