@@ -26,8 +26,8 @@ The detailed technical whitepaper is [here.](https://cdn.discordapp.com/attachme
 
 ### Setting up Bet Nodes
 1. [Setting Up Player Node](./docs/protocol/player_setup.md)
-2. Setting Up Dealer Node.<br/>
-   In this we discuss more details about how to setup the dealer node and also steps to host a private table. 
+2. [Setting Up Dealer Node](./docs/protocol/dealer_setup.md)
+   <br/>In this we discuss more details about how to setup the dealer node and also steps to host a private table. 
 3. Setting Up Cashier Node.
 
 
