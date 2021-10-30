@@ -28,11 +28,11 @@ The detailed technical whitepaper is [here.](https://cdn.discordapp.com/attachme
 1. [Setting Up Player Node](./docs/protocol/player_setup.md)
 2. [Setting Up Dealer Node](./docs/protocol/dealer_setup.md)
    <br/>In this we discuss more details about how to setup the dealer node and also steps to host a private table. 
-3. Setting Up Cashier Node.
+3. [Setting Up Cashier Node](./docs/protocol/cashier_setup.md)
 
 
 ### [Coomunication b/w Bet Nodes](./docs/protocol/node_communication.md) 
 
-### [Glossary](./docs/protocol/glossary.md) 
-
 ### [CHIPS & LN Upgrade](./docs/protocol/upgrade.md)
+
+### [Glossary](./docs/protocol/glossary.md) 
