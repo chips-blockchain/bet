@@ -12,7 +12,7 @@ void bet_command_info()
 		 "\n==DRP==\n"
 		 "game info [fail]/[success] \n"
 		 "game solve \n"
-		 "game dispte \" Disputed tx to resolve\" \n"
+		 "game dispute \" Disputed tx to resolve\" \n"
 		 "\n==Wallet==\n"
 		 "withdraw amount \"chips address\" \n"
 		 "spendable \n"
