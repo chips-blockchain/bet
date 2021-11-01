@@ -117,4 +117,7 @@ extern char unique_id[65];
 extern double dcv_commission_percentage;
 extern double max_allowed_dcv_commission;
 extern char dcv_hosted_gui_url[128];
+
+int32_t is_table_private;
+char table_password[128];
 #endif
