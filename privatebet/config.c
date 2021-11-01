@@ -143,7 +143,15 @@ void bet_parse_player_config_ini_file()
 		if (0 != iniparser_getdouble(ini, "player:max_allowed_dcv_commission", 0)) {
 			max_allowed_dcv_commission = iniparser_getdouble(ini, "player:max_allowed_dcv_commission", 0);
 		}
+		if (-1 != iniparser_getboolean(ini, "private table:is_table_private", -1)) {
+			is_table_private = iniparser_getboolean(ini, "private table:is_table_private", -1);
+		}
+		if (NULL != iniparser_getstring(ini, "private table:table_password", NULL)) {
+			strcpy(table_password, iniparser_getstring(ini, "private table:table_password", NULL));
+		}
 	}
+	dlg_info("is_table_private :: %d", is_table_private);
+	dlg_info("table_password :: %s", table_password);
 }
 
 void bet_parse_cashier_config_ini_file()
