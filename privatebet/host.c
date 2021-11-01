@@ -1345,23 +1345,31 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 	cJSON *msig_addr_nodes = NULL;
 
 	stack_info_resp = cJSON_CreateObject();
-	cJSON_AddStringToObject(stack_info_resp, "method", "stack_info_resp");
-	cJSON_AddStringToObject(stack_info_resp, "id", jstr(argjson, "id"));
-	cJSON_AddNumberToObject(stack_info_resp, "max_players", max_players);
-	cJSON_AddNumberToObject(stack_info_resp, "table_stack_in_chips", table_stack_in_chips);
-	cJSON_AddNumberToObject(stack_info_resp, "dcv_commission", dcv_commission_percentage);
-	cJSON_AddNumberToObject(stack_info_resp, "chips_tx_fee", chips_tx_fee);
-	cJSON_AddStringToObject(stack_info_resp, "legacy_m_of_n_msig_addr", legacy_m_of_n_msig_addr);
-	cJSON_AddStringToObject(stack_info_resp, "table_id", table_id);
-	cJSON_AddNumberToObject(stack_info_resp, "threshold_value", threshold_value);
-	cJSON_AddStringToObject(stack_info_resp, "gui_url", dcv_hosted_gui_url);
-	msig_addr_nodes = cJSON_CreateArray();
-	for (int32_t i = 0; i < no_of_notaries; i++) {
-		if (notary_status[i] == 1) {
-			cJSON_AddItemToArray(msig_addr_nodes, cJSON_CreateString(notary_node_ips[i]));
+	if ((is_table_private) && ((NULL == jstr(argjson, "table_password")) ||
+				   (0 != strcmp(table_password, jstr(argjson, "table_password"))))) {
+		cJSON_AddStringToObject(stack_info_resp, "method", "game_abort");
+		cJSON_AddNumberToObject(stack_info_resp, "error", -5);
+		cJSON_AddStringToObject(stack_info_resp, "message",
+					"Player is not authorized to join the dealers table");
+	} else {
+		cJSON_AddStringToObject(stack_info_resp, "method", "stack_info_resp");
+		cJSON_AddStringToObject(stack_info_resp, "id", jstr(argjson, "id"));
+		cJSON_AddNumberToObject(stack_info_resp, "max_players", max_players);
+		cJSON_AddNumberToObject(stack_info_resp, "table_stack_in_chips", table_stack_in_chips);
+		cJSON_AddNumberToObject(stack_info_resp, "dcv_commission", dcv_commission_percentage);
+		cJSON_AddNumberToObject(stack_info_resp, "chips_tx_fee", chips_tx_fee);
+		cJSON_AddStringToObject(stack_info_resp, "legacy_m_of_n_msig_addr", legacy_m_of_n_msig_addr);
+		cJSON_AddStringToObject(stack_info_resp, "table_id", table_id);
+		cJSON_AddNumberToObject(stack_info_resp, "threshold_value", threshold_value);
+		cJSON_AddStringToObject(stack_info_resp, "gui_url", dcv_hosted_gui_url);
+		msig_addr_nodes = cJSON_CreateArray();
+		for (int32_t i = 0; i < no_of_notaries; i++) {
+			if (notary_status[i] == 1) {
+				cJSON_AddItemToArray(msig_addr_nodes, cJSON_CreateString(notary_node_ips[i]));
+			}
 		}
+		cJSON_AddItemToObject(stack_info_resp, "msig_addr_nodes", msig_addr_nodes);
 	}
-	cJSON_AddItemToObject(stack_info_resp, "msig_addr_nodes", msig_addr_nodes);
 	bytes = nn_send(bet->pubsock, cJSON_Print(stack_info_resp), strlen(cJSON_Print(stack_info_resp)), 0);
 	if (bytes < 0)
 		retval = -1;

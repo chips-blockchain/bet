@@ -1489,7 +1489,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		}
 		dlg_info("Player can use any of the GUI's hosted by cashiers to connect to backend");
 		bet_display_cashier_hosted_gui();
-		
+
 	} else {
 		dlg_warn("Dealer hosted GUI :: %s, using this you can connect to player backend and interact",
 			 jstr(argjson, "gui_url"));
@@ -1601,6 +1601,10 @@ int32_t bet_player_stack_info_req(struct privatebet_info *bet)
 	strncpy(req_identifier, rand_str, sizeof(req_identifier));
 	cJSON_AddStringToObject(stack_info_req, "id", rand_str);
 	cJSON_AddStringToObject(stack_info_req, "chips_addr", chips_get_new_address());
+	cJSON_AddNumberToObject(stack_info_req, "is_table_private", is_table_private);
+	if (is_table_private) {
+		cJSON_AddStringToObject(stack_info_req, "table_password", table_password);
+	}
 	bytes = nn_send(bet->pushsock, cJSON_Print(stack_info_req), strlen(cJSON_Print(stack_info_req)), 0);
 	if (bytes < 0)
 		retval = -1;
@@ -1824,7 +1828,8 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			player_lws_write(argjson);
 		} else if (strcmp(method, "game_abort") == 0) {
 			dlg_warn("%s", jstr(argjson, "message"));
-			bet_raise_dispute(player_payin_txid);
+			if (jint(argjson, "error") != -5)
+				bet_raise_dispute(player_payin_txid);
 			exit(0);
 		} else if (strcmp(method, "check_bvv_ready") == 0) {
 			// Do nothing, this broadcast is for BVV nodes
