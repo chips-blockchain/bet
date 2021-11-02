@@ -8,6 +8,7 @@
 #include "misc.h"
 #include "cards777.h"
 #include "common.h"
+#include "err.h"
 
 int32_t no_of_notaries;
 
@@ -161,7 +162,7 @@ int32_t bet_send_status(struct cashier *cashier_info, char *id)
 
 	if ((retval = nn_send(cashier_info->c_pubsock, cJSON_Print(live_info), strlen(cJSON_Print(live_info)), 0)) < 0) {
 		retval = -1;
-		dlg_info("%s", bet_err_str(ERR_NNG_SEND));
+		dlg_error("%s", bet_err_str(ERR_NNG_SEND));
 	}	
 	return retval;
 }
