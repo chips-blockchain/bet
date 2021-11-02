@@ -29,6 +29,7 @@
 #include "storage.h"
 #include "misc.h"
 #include "heartbeat.h"
+#include "err.h"
 
 #include <errno.h>
 #include <netinet/in.h>
@@ -1348,9 +1349,7 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 	if ((is_table_private) && ((NULL == jstr(argjson, "table_password")) ||
 				   (0 != strcmp(table_password, jstr(argjson, "table_password"))))) {
 		cJSON_AddStringToObject(stack_info_resp, "method", "game_abort");
-		cJSON_AddNumberToObject(stack_info_resp, "error", -5);
-		cJSON_AddStringToObject(stack_info_resp, "message",
-					"Player is not authorized to join the dealers table");
+		cJSON_AddNumberToObject(stack_info_resp, "err_no", ERR_PT_PLAYER_UNAUTHORIZED);
 	} else {
 		cJSON_AddStringToObject(stack_info_resp, "method", "stack_info_resp");
 		cJSON_AddStringToObject(stack_info_resp, "id", jstr(argjson, "id"));
@@ -1712,13 +1711,10 @@ void bet_dcv_backend_thrd(void *_ptr)
 		} else if (strcmp(method, "player_active") == 0) {
 			bet_dcv_update_player_status(argjson);
 		} else if (strcmp(method, "share_info") == 0) {
-			if (jint(argjson, "error") == -2) { //Decryption Error
+			if (jint(argjson, "error") == ERR_DECRYPTING_OTHER_SHARE) {
 				cJSON *game_abort = cJSON_CreateObject();
 				cJSON_AddStringToObject(game_abort, "method", "game_abort");
-				cJSON_AddStringToObject(
-					game_abort, "message",
-					"Player node failed to decrypt the share, so reversing the tx's and stopping the game...");
-				cJSON_AddNumberToObject(game_abort, "error", jint(argjson, "error"));
+				cJSON_AddNumberToObject(game_abort, "err_no", ERR_DECRYPTING_OTHER_SHARE);
 				bytes = nn_send(bet->pubsock, cJSON_Print(game_abort), strlen(cJSON_Print(game_abort)),
 						0);
 				if (bytes < 0) {
@@ -1734,7 +1730,7 @@ void bet_dcv_backend_thrd(void *_ptr)
 				}
 			}
 		} else if (strcmp(method, "game_abort") == 0) {
-			dlg_error("%s", jstr(argjson, "message"));
+			bet_err_str(jint(argjson, "err_no"));
 			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
 			if (bytes < 0) {
 				retval = -1;

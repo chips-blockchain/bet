@@ -36,6 +36,7 @@
 #include "misc.h"
 #include "host.h"
 #include "config.h"
+#include "err.h"
 
 #define LWS_PLUGIN_STATIC
 
@@ -398,11 +399,10 @@ bits256 bet_decode_card(cJSON *argjson, struct privatebet_info *bet, struct priv
 
 end:
 	if (!flag) {
-		dlg_error("Decoding Failed");
+		bet_err_str(ERR_CARD_RETRIEVING_USING_SS);
 		cJSON *game_abort = cJSON_CreateObject();
 		cJSON_AddStringToObject(game_abort, "method", "game_abort");
-		cJSON_AddNumberToObject(game_abort, "error", -3); // Assigning -3 number for the decoding error
-		cJSON_AddStringToObject(game_abort, "message", "Decoding Failed");
+		cJSON_AddNumberToObject(game_abort, "err_no", ERR_CARD_RETRIEVING_USING_SS);
 		bytes = nn_send(bet->pushsock, cJSON_Print(game_abort), strlen(cJSON_Print(game_abort)), 0);
 		if (bytes < 0) {
 			dlg_error("Failed to send data");
@@ -728,7 +728,7 @@ int32_t bet_client_give_share(cJSON *argjson, struct privatebet_info *bet, struc
 
 	if ((ptr = bet_decrypt(decipher, sizeof(decipher), player_info.bvvpubkey, player_info.player_key.priv,
 			       temp.bytes, &recvlen)) == 0) {
-		retval = -2;
+		retval = ERR_DECRYPTING_OTHER_SHARE;
 		dlg_error("decrypt error ");
 	}
 
@@ -740,7 +740,7 @@ int32_t bet_client_give_share(cJSON *argjson, struct privatebet_info *bet, struc
 	cJSON_AddNumberToObject(share_info, "to_playerid", playerid);
 	cJSON_AddNumberToObject(share_info, "error", retval);
 
-	if (retval != -2) {
+	if (retval != ERR_DECRYPTING_OTHER_SHARE) {
 		memcpy(share.bytes, ptr, recvlen);
 		jaddbits256(share_info, "share", share);
 	}
@@ -769,8 +769,7 @@ int32_t bet_get_own_share(cJSON *argjson, struct privatebet_info *bet, struct pr
 
 	if ((ptr = bet_decrypt(decipher, sizeof(decipher), player_info.bvvpubkey, player_info.player_key.priv,
 			       temp.bytes, &recvlen)) == 0) {
-		retval = -1;
-		dlg_error("decrypt error ");
+		retval = ERR_DECRYPTING_OWN_SHARE;
 		goto end;
 	} else {
 		memcpy(share.bytes, ptr, recvlen);
@@ -792,14 +791,11 @@ int32_t bet_client_turn(cJSON *argjson, struct privatebet_info *bet, struct priv
 		no_of_shares = 1;
 		retval = bet_get_own_share(argjson, bet, vars);
 
-		if (retval == -1) {
-			dlg_error("Failing to get own share: Decryption Error");
+		if (retval == ERR_DECRYPTING_OWN_SHARE) {
+			bet_err_str(ERR_DECRYPTING_OWN_SHARE);
 			cJSON *game_abort = cJSON_CreateObject();
 			cJSON_AddStringToObject(game_abort, "method", "game_abort");
-			cJSON_AddNumberToObject(game_abort, "error",
-						-4); // Assigning -4 number to decrypt its own share
-			cJSON_AddStringToObject(game_abort, "message",
-						"Failing to get its own share: Decryption Error");
+			cJSON_AddNumberToObject(game_abort, "err_no", ERR_DECRYPTING_OWN_SHARE);
 			bytes = nn_send(bet->pushsock, cJSON_Print(game_abort), strlen(cJSON_Print(game_abort)), 0);
 			if (bytes < 0) {
 				dlg_error("Failed to send data");
@@ -1827,8 +1823,8 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		} else if (strcmp(method, "active_player_info") == 0) {
 			player_lws_write(argjson);
 		} else if (strcmp(method, "game_abort") == 0) {
-			dlg_warn("%s", jstr(argjson, "message"));
-			if (jint(argjson, "error") != -5)
+			bet_err_str(jint(argjson, "err_no"));
+			if (jint(argjson, "err_no") != ERR_PT_PLAYER_UNAUTHORIZED)
 				bet_raise_dispute(player_payin_txid);
 			exit(0);
 		} else if (strcmp(method, "check_bvv_ready") == 0) {
