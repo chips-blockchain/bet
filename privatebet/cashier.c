@@ -160,10 +160,11 @@ int32_t bet_send_status(struct cashier *cashier_info, char *id)
 	cJSON_AddStringToObject(live_info, "method", "live");
 	cJSON_AddStringToObject(live_info, "id", id);
 
-	if ((retval = nn_send(cashier_info->c_pubsock, cJSON_Print(live_info), strlen(cJSON_Print(live_info)), 0)) < 0) {
+	if ((retval = nn_send(cashier_info->c_pubsock, cJSON_Print(live_info), strlen(cJSON_Print(live_info)), 0)) <
+	    0) {
 		retval = -1;
 		dlg_error("%s", bet_err_str(ERR_NNG_SEND));
-	}	
+	}
 	return retval;
 }
 
