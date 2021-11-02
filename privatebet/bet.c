@@ -280,13 +280,13 @@ static void bet_dcv_thrd(char *dcv_ip)
 		dlg_error("%s", bet_err_str(ERR_PTHREAD_LAUNCHING));
 		exit(-1);
 	}
-	
+
 	if (pthread_join(dcv_backend, NULL)) {
 		dlg_error("%s", bet_err_str(ERR_PTHREAD_JOINING));
 	}
 	if (pthread_join(dcv_thrd, NULL)) {
 		dlg_error("%s", bet_err_str(ERR_PTHREAD_JOINING));
-	}	
+	}
 	if (pthread_join(dcv_bvv_thrd, NULL)) {
 		dlg_error("%s", bet_err_str(ERR_PTHREAD_JOINING));
 	}
