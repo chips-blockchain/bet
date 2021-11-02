@@ -1,3 +1,6 @@
+#ifndef ERR_H
+#define ERR_H
+
 #include <stdio.h>
 #include <stdint.h>
 
@@ -9,6 +12,7 @@ All the errors that come across in bet are defined here. The error numbers are a
 * Error No's 33-48 reserved for CHIPS and LN related issues
 * All other erros numbered from 49 and so on with the spacing for new errors 
 ******************************************************************************/
+#define MAX_ERR_NO 128
 //Bet Gameplay Errors
 #define NO_ERROR 0
 #define ERR_RESERVED 1
@@ -38,4 +42,5 @@ All the errors that come across in bet are defined here. The error numbers are a
 //SQLITE Errors
 #define ERR_SQL 55
 
-void bet_err_str(int32_t err_no);
+char *bet_err_str(int32_t err_no);
+#endif

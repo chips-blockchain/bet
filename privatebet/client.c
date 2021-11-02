@@ -399,7 +399,7 @@ bits256 bet_decode_card(cJSON *argjson, struct privatebet_info *bet, struct priv
 
 end:
 	if (!flag) {
-		bet_err_str(ERR_CARD_RETRIEVING_USING_SS);
+		dlg_error("%s", bet_err_str(ERR_CARD_RETRIEVING_USING_SS));
 		cJSON *game_abort = cJSON_CreateObject();
 		cJSON_AddStringToObject(game_abort, "method", "game_abort");
 		cJSON_AddNumberToObject(game_abort, "err_no", ERR_CARD_RETRIEVING_USING_SS);
@@ -792,7 +792,7 @@ int32_t bet_client_turn(cJSON *argjson, struct privatebet_info *bet, struct priv
 		retval = bet_get_own_share(argjson, bet, vars);
 
 		if (retval == ERR_DECRYPTING_OWN_SHARE) {
-			bet_err_str(ERR_DECRYPTING_OWN_SHARE);
+			dlg_error("%s", bet_err_str(ERR_DECRYPTING_OWN_SHARE));
 			cJSON *game_abort = cJSON_CreateObject();
 			cJSON_AddStringToObject(game_abort, "method", "game_abort");
 			cJSON_AddNumberToObject(game_abort, "err_no", ERR_DECRYPTING_OWN_SHARE);
@@ -1823,7 +1823,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		} else if (strcmp(method, "active_player_info") == 0) {
 			player_lws_write(argjson);
 		} else if (strcmp(method, "game_abort") == 0) {
-			bet_err_str(jint(argjson, "err_no"));
+			dlg_error("%s", bet_err_str(jint(argjson, "err_no")));
 			if (jint(argjson, "err_no") != ERR_PT_PLAYER_UNAUTHORIZED)
 				bet_raise_dispute(player_payin_txid);
 			exit(0);
