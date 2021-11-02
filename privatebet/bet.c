@@ -29,6 +29,7 @@
 #include "heartbeat.h"
 #include "misc.h"
 #include "help.h"
+#include "err.h"
 
 #include <netinet/in.h>
 #include <stdio.h>
@@ -415,6 +416,7 @@ static char *bet_pick_dealer()
 int main(int argc, char **argv)
 {
 	bet_set_unique_id();
+
 	if (argc >= 2) {
 		if (strcmp(argv[1], "player") == 0) {
 			playing_nodes_init();

@@ -1730,7 +1730,7 @@ void bet_dcv_backend_thrd(void *_ptr)
 				}
 			}
 		} else if (strcmp(method, "game_abort") == 0) {
-			bet_err_str(jint(argjson, "err_no"));
+			dlg_error("%s", bet_err_str(jint(argjson, "err_no")));
 			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
 			if (bytes < 0) {
 				retval = -1;
