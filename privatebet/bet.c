@@ -112,28 +112,26 @@ static void bet_player_thrd(char *dcv_ip)
 
 	bet_player_initialize(dcv_ip);
 	if (OS_thread_create(&player_thrd, NULL, (void *)bet_player_backend_loop, (void *)bet_player) != 0) {
-		dlg_error("Error in launching bet_player_backend_loop");
+		dlg_error("%s", bet_err_str(ERR_PTHREAD_LAUNCHING));
 		exit(-1);
 	}
 	if (OS_thread_create(&player_backend_read, NULL, (void *)bet_player_frontend_read_loop, NULL) != 0) {
-		dlg_error("Error launching bet_player_frontend_loop");
+		dlg_error("%s", bet_err_str(ERR_PTHREAD_LAUNCHING));
 		exit(-1);
 	}
 	if (OS_thread_create(&player_backend_write, NULL, (void *)bet_player_frontend_write_loop, NULL) != 0) {
-		dlg_error("Error launching bet_player_frontend_loop");
+		dlg_error("%s", bet_err_str(ERR_PTHREAD_LAUNCHING));
 		exit(-1);
 	}
 
 	if (pthread_join(player_backend_read, NULL)) {
-		dlg_error("Error in joining the main thread for player_thrd");
+		dlg_error("%s", bet_err_str(ERR_PTHREAD_JOINING));
 	}
-
 	if (pthread_join(player_backend_write, NULL)) {
-		dlg_error("Error in joining the main thread for player_thrd");
+		dlg_error("%s", bet_err_str(ERR_PTHREAD_JOINING));
 	}
-
 	if (pthread_join(player_thrd, NULL)) {
-		dlg_error("Error in joining the main thread for player_thrd");
+		dlg_error("%s", bet_err_str(ERR_PTHREAD_JOINING));
 	}
 
 	bet_player_deinitialize();
@@ -176,11 +174,11 @@ void bet_bvv_thrd(char *dcv_ip, const int32_t port)
 
 	bet_bvv_initialize(dcv_ip, port);
 	if (OS_thread_create(&bvv_backend, NULL, (void *)bet_bvv_backend_loop, (void *)bet_bvv) != 0) {
-		dlg_error("Error launching bet_bvv_backend_loop");
+		dlg_error("%s", bet_err_str(ERR_PTHREAD_LAUNCHING));
 		exit(-1);
 	}
 	if (pthread_join(bvv_backend, NULL)) {
-		dlg_error("Error in joining the main thread for bvv_thrd");
+		dlg_error("%s", bet_err_str(ERR_PTHREAD_JOINING));
 	}
 	bet_bvv_deinitialize();
 }
@@ -265,35 +263,36 @@ static void bet_dcv_thrd(char *dcv_ip)
 	bet_dcv_initialize(dcv_ip);
 	bet_dcv_bvv_initialize(dcv_ip);
 #ifdef LIVE_THREAD
-	dlg_warn("Hope its not coming here");
 	if (OS_thread_create(&live_thrd, NULL, (void *)bet_dcv_heartbeat_loop, (void *)bet_dcv) != 0) {
-		dlg_error("Error launching bet_dcv_heartbeat_loop");
+		dlg_error("%s", bet_err_str(ERR_PTHREAD_LAUNCHING));
 		exit(-1);
 	}
 #endif
 	if (OS_thread_create(&dcv_backend, NULL, (void *)bet_dcv_backend_loop, (void *)bet_dcv) != 0) {
-		dlg_error("Error launching bet_dcv_backend_loop");
+		dlg_error("%s", bet_err_str(ERR_PTHREAD_LAUNCHING));
 		exit(-1);
 	}
-
 	if (OS_thread_create(&dcv_bvv_thrd, NULL, (void *)bet_dcv_bvv_backend_loop, (void *)bet_dcv_bvv) != 0) {
-		dlg_error("Error launching bet_dcv_backend_loop");
+		dlg_error("%s", bet_err_str(ERR_PTHREAD_LAUNCHING));
 		exit(-1);
 	}
-
 	if (OS_thread_create(&dcv_thrd, NULL, (void *)bet_dcv_frontend_loop, NULL) != 0) {
-		dlg_error("Error launching bet_dcv_frontend_loop");
+		dlg_error("%s", bet_err_str(ERR_PTHREAD_LAUNCHING));
 		exit(-1);
 	}
+	
 	if (pthread_join(dcv_backend, NULL)) {
-		dlg_error("Error in joining the main thread for dcv_backend");
+		dlg_error("%s", bet_err_str(ERR_PTHREAD_JOINING));
 	}
 	if (pthread_join(dcv_thrd, NULL)) {
-		dlg_error("Error in joining the main thread for dcv_thrd");
+		dlg_error("%s", bet_err_str(ERR_PTHREAD_JOINING));
+	}	
+	if (pthread_join(dcv_bvv_thrd, NULL)) {
+		dlg_error("%s", bet_err_str(ERR_PTHREAD_JOINING));
 	}
 #ifdef LIVE_THREAD
 	if (pthread_join(live_thrd, NULL)) {
-		dlg_error("Error in joining the main thread for bet_dcv_heartbeat_loop");
+		dlg_error("%s", bet_err_str(ERR_PTHREAD_JOINING));
 	}
 #endif
 	bet_dcv_deinitialize();
@@ -322,11 +321,11 @@ static void bet_cashier_server_thrd(char *node_ip)
 
 	bet_cashier_server_initialize(node_ip);
 	if (OS_thread_create(&server_thrd, NULL, (void *)bet_cashier_server_loop, (void *)cashier_info) != 0) {
-		dlg_error("Error launching bet_dcv_live_loop]n");
+		dlg_error("%s", bet_err_str(ERR_PTHREAD_LAUNCHING));
 		exit(-1);
 	}
 	if (pthread_join(server_thrd, NULL)) {
-		dlg_error("Error in joining the main thread for live_thrd");
+		dlg_error("%s", bet_err_str(ERR_PTHREAD_JOINING));
 	}
 	bet_cashier_deinitialize();
 }

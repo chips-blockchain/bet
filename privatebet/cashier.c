@@ -152,19 +152,17 @@ void bet_check_cashiers_status()
 
 int32_t bet_send_status(struct cashier *cashier_info, char *id)
 {
-	int32_t retval = 1, bytes;
+	int32_t retval = 1;
 	cJSON *live_info = NULL;
 
 	live_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(live_info, "method", "live");
 	cJSON_AddStringToObject(live_info, "id", id);
-	dlg_info("Sending::%s", cJSON_Print(live_info));
-	bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(live_info), strlen(cJSON_Print(live_info)), 0);
-	if (bytes < 0) {
-		dlg_info("Error occured in sending::%s", cJSON_Print(live_info));
-		retval = -1;
-	}
 
+	if ((retval = nn_send(cashier_info->c_pubsock, cJSON_Print(live_info), strlen(cJSON_Print(live_info)), 0)) < 0) {
+		retval = -1;
+		dlg_info("%s", bet_err_str(ERR_NNG_SEND));
+	}	
 	return retval;
 }
 
