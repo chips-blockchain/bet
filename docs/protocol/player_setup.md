@@ -67,3 +67,5 @@ cd bet/privatebet
 In order to join the private table player must set the value `is_table_private` to true by setting it to `[Y/y/1/t]` and then player has to set the `table_password` with the value that it gets from dealer.
 
 So basically when dealer starts the private tables, by some means it shares the password with the players and the players has to set this password in the configuration file at `table_password` and the player will share this password with the dealer when it sends `stack_info_req` and if the dealer sees match in the password, then respond with `stack_info_resp` else `game_abort`.
+
+The further improvements to this can be tracked in this [git issue](https://github.com/chips-blockchain/bet/issues/303).
