@@ -14,7 +14,7 @@ All the errors that come across in bet are defined here. The error numbers are a
 ******************************************************************************/
 #define MAX_ERR_NO 128
 //Bet Gameplay Errors
-#define NO_ERROR 0
+#define OK 0
 #define ERR_RESERVED 1
 #define ERR_DECRYPTING_OWN_SHARE 2
 #define ERR_DECRYPTING_OTHER_SHARE 3

@@ -1838,7 +1838,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 
 void bet_player_backend_loop(void *_ptr)
 {
-	int32_t recvlen = 0;
+	int32_t recvlen = 0, retval = OK;
 	void *ptr = NULL;
 	cJSON *msgjson = NULL;
 	struct privatebet_info *bet = _ptr;
