@@ -6,7 +6,8 @@ int32_t bet_bvv_init(cJSON *argjson, struct privatebet_info *bet, struct private
 int32_t bet_bvv_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
 void bet_bvv_reset(struct privatebet_info *bet, struct privatebet_vars *vars);
 
-bits256 bet_decode_card(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars, int32_t cardid);
+bits256 bet_decode_card(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars, int32_t cardid,
+			int32_t *retval);
 int32_t bet_client_receive_share(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
 int32_t bet_player_ask_share(struct privatebet_info *bet, int32_t cardid, int32_t playerid, int32_t card_type,
 			     int32_t other_player);

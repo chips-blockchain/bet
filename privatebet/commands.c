@@ -24,6 +24,7 @@
 #include "storage.h"
 #include "commands.h"
 #include "misc.h"
+#include "err.h"
 
 #include <stdarg.h>
 #include <stdlib.h>
@@ -67,7 +68,7 @@ static void bet_memset_args(int argc, char ***argv)
 	}
 }
 
-static char **bet_copy_args(int argc, ...)
+char **bet_copy_args(int argc, ...)
 {
 	va_list valist;
 	char **argv = NULL;
@@ -1663,7 +1664,7 @@ cJSON *ln_connect(char *id)
 
 int32_t ln_check_if_address_isof_type(char *type)
 {
-	int32_t argc, retval = 0;
+	int32_t argc, retval = OK;
 	char **argv = NULL;
 	cJSON *channel_info = NULL, *addresses = NULL, *address = NULL;
 
@@ -1675,15 +1676,15 @@ int32_t ln_check_if_address_isof_type(char *type)
 	make_command(argc, argv, &channel_info);
 
 	if (jint(channel_info, "code") != 0) {
-		retval = -1;
+		retval = ERR_LN;
 		dlg_error("LN Error :: %s", jstr(channel_info, "message"));
 		goto end;
 	}
 	addresses = cJSON_GetObjectItem(channel_info, "address");
 	for (int32_t i = 0; i < cJSON_GetArraySize(addresses); i++) {
 		address = cJSON_GetArrayItem(addresses, i);
-		if (0 == strcmp(jstr(address, "type"), type)) {
-			retval = 1;
+		if (strcmp(jstr(address, "type"), type) != 0) {
+			retval = ERR_LN_IS_NOT_OVER_TOR;
 			break;
 		}
 	}
@@ -1779,7 +1780,7 @@ int32_t ln_wait_for_tx_block_height(int32_t block_height)
 
 int32_t ln_establish_channel(char *uri)
 {
-	int32_t retval = 1, state, ln_bh, chips_bh;
+	int32_t retval = OK, state, ln_bh, chips_bh;
 	cJSON *connect_info = NULL, *fund_channel_info = NULL;
 	double amount;
 	char uid[ln_uri_length] = { 0 };
@@ -1790,7 +1791,7 @@ int32_t ln_establish_channel(char *uri)
 		connect_info = ln_connect(uri);
 		if (jint(connect_info, "code") != 0) {
 			dlg_error("%s", jstr(connect_info, "message"));
-			retval = 0;
+			retval = ERR_LN;
 			goto end;
 		}
 		if (ln_listfunds() < (channel_fund_satoshis + (chips_tx_fee * satoshis))) {
@@ -1817,12 +1818,12 @@ int32_t ln_establish_channel(char *uri)
 						ln_bh = ln_block_height();
 					} while (ln_bh < chips_bh);
 				} else {
-					retval = 0;
+					retval = ERR_CHIPS_TX_FAILED;
 					dlg_error("Automatic loading of the LN wallet from the CHIPS wallet is failed");
 					goto end;
 				}
 			} else {
-				retval = 0;
+				retval = ERR_LN_INSUFFICIENT_FUNDS;
 				dlg_warn(
 					"Even CHIPS wallet is short of (%f CHIPS) the funds...try loading either CHIPS or LN wallet manually",
 					amount);
@@ -1834,7 +1835,7 @@ int32_t ln_establish_channel(char *uri)
 		fund_channel_info = ln_fund_channel(jstr(connect_info, "id"), channel_fund_satoshis);
 		if (jint(fund_channel_info, "code") != 0) {
 			dlg_error("%s", cJSON_Print(fund_channel_info));
-			retval = 0;
+			retval = ERR_LN_CHANNEL_FUNDING_FAILED;
 			goto end;
 		}
 		while ((state = ln_get_channel_status(jstr(connect_info, "id"))) != CHANNELD_NORMAL) {
