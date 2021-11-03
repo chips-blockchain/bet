@@ -489,26 +489,23 @@ end:
 static int32_t bet_send_turn_info(struct privatebet_info *bet, int32_t playerid, int32_t cardid, int32_t card_type)
 {
 	cJSON *turn_info = NULL;
-	int retval = 1, bytes;
-	char *rendered = NULL;
+	int32_t retval = OK;
 
 	turn_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(turn_info, "method", "turn");
 	cJSON_AddNumberToObject(turn_info, "playerid", playerid);
 	cJSON_AddNumberToObject(turn_info, "cardid", cardid);
 	cJSON_AddNumberToObject(turn_info, "card_type", card_type);
-	rendered = cJSON_Print(turn_info);
-	dlg_info("%s", cJSON_Print(turn_info));
-	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
-	if (bytes < 0)
-		retval = -1;
 
+	dlg_info("%s", cJSON_Print(turn_info));
+	retval = (nn_send(bet->pubsock, cJSON_Print(turn_info), strlen(cJSON_Print(turn_info)), 0) < 0) ? ERR_NNG_SEND :
+													  OK;
 	return retval;
 }
 
 int32_t bet_dcv_turn(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int32_t retval = 1;
+	int32_t retval = OK;
 
 	if (hole_cards_drawn == 0) {
 		for (int i = 0; i < no_of_hole_cards; i++) {
@@ -570,7 +567,7 @@ int32_t bet_dcv_turn(cJSON *argjson, struct privatebet_info *bet, struct private
 			}
 		}
 	} else
-		retval = 2;
+		retval = ERR_ALL_CARDS_DRAWN;
 end:
 	return retval;
 }
@@ -1024,7 +1021,7 @@ static cJSON *payout_tx_data_info(struct privatebet_info *bet, struct privatebet
 
 static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privatebet_vars *vars, int winners[], int pot)
 {
-	int32_t no_of_winners = 0, retval = 1, bytes, funds_left = 0;
+	int32_t no_of_winners = 0, retval = OK, funds_left = 0;
 	double dcv_commission = 0, dev_commission = 0, winning_pot = 0, chips_conversion_factor = 0.001,
 	       amount_in_txs = 0.0, player_amounts[bet->maxplayers], pot_in_chips = 0.0;
 	cJSON *payout_info = NULL, *dev_info = NULL, *dcv_info = NULL, *payout_tx_info = NULL, *data_info = NULL;
@@ -1095,11 +1092,10 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 
 	payout_tx_info = chips_create_payout_tx(payout_info, no_of_txs, tx_ids, hex_str);
 	dlg_info("payout_tx_info::%s\n", cJSON_Print(payout_tx_info));
-	bytes = nn_send(bet->pubsock, cJSON_Print(payout_tx_info), strlen(cJSON_Print(payout_tx_info)), 0);
-	if (bytes < 0) {
-		retval = -1;
-		dlg_error("nn_send failed\n");
-	}
+
+	retval = (nn_send(bet->pubsock, cJSON_Print(payout_tx_info), strlen(cJSON_Print(payout_tx_info)), 0) < 0) ?
+			 ERR_NNG_SEND :
+			 OK;
 	if (hex_str)
 		free(hex_str);
 	return retval;
@@ -1107,14 +1103,11 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 
 int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int retval = 1, max_score = 0, no_of_winners = 0, bytes;
+	int32_t retval = OK, max_score = 0, no_of_winners = 0, winners[CARDS777_MAXPLAYERS];
 	unsigned char h[7];
 	unsigned long scores[CARDS777_MAXPLAYERS];
-	int winners[CARDS777_MAXPLAYERS];
-	cJSON *reset_info = NULL;
-	char *rendered = NULL;
 	cJSON *final_info = NULL, *all_hole_card_info = NULL, *board_card_info = NULL, *hole_card_info = NULL,
-	      *show_info = NULL;
+	      *show_info = NULL, *reset_info = NULL;
 	char *cards[52] = { "2C", "3C", "4C", "5C", "6C", "7C", "8C", "9C", "10C", "JC", "QC", "KC", "AC",
 			    "2D", "3D", "4D", "5D", "6D", "7D", "8D", "9D", "10D", "JD", "QD", "KD", "AD",
 			    "2H", "3H", "4H", "5H", "6H", "7H", "8H", "9H", "10H", "JH", "QH", "KH", "AH",
@@ -1152,7 +1145,7 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 		}
 	}
 	retval = bet_dcv_poker_winner(bet, vars, winners, vars->pot);
-	if (retval == -1) {
+	if (retval != OK) {
 		goto end;
 	}
 
@@ -1194,14 +1187,12 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 	cJSON_AddItemToObject(final_info, "winners", winnersInfo);
 
 	dlg_info("Final Info :: %s\n", cJSON_Print(final_info));
-	rendered = cJSON_Print(final_info);
-	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 
-	if (bytes < 0) {
-		retval = -1;
-		dlg_error("nn_send failed\n");
+	retval = (nn_send(bet->pubsock, cJSON_Print(final_info), strlen(cJSON_Print(final_info)), 0) < 0) ?
+			 ERR_NNG_SEND :
+			 OK;
+	if (retval != OK)
 		goto end;
-	}
 
 	sleep(5);
 	if (wsi_global_host) {
@@ -1209,16 +1200,13 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 			  0);
 	}
 end:
-	if (retval != -1) {
+	if (retval == OK) {
+		find_bvv();
 		reset_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(reset_info, "method", "reset");
-		rendered = cJSON_Print(reset_info);
-		find_bvv();
-		bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
-		if (bytes < 0) {
-			retval = -1;
-			dlg_error("nn_send failed\n");
-		}
+		retval = (nn_send(bet->pubsock, cJSON_Print(reset_info), strlen(cJSON_Print(reset_info)), 0) < 0) ?
+				 ERR_NNG_SEND :
+				 OK;
 		bet_dcv_reset(bet, vars);
 	}
 	return retval;

@@ -329,9 +329,10 @@ int32_t bet_bvv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 	return retval;
 }
 
-bits256 bet_decode_card(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars, int32_t cardid)
+bits256 bet_decode_card(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars, int32_t cardid,
+			int32_t *retval)
 {
-	int32_t numplayers, M, flag = 0, bytes;
+	int32_t numplayers, M, flag = 0;
 	bits256 recover, decoded, refval, tmp, xoverz, hash, fe, basepoint;
 	uint8_t **shares;
 	char str[65];
@@ -398,196 +399,90 @@ bits256 bet_decode_card(cJSON *argjson, struct privatebet_info *bet, struct priv
 	}
 
 end:
-	if (!flag) {
-		dlg_error("%s", bet_err_str(ERR_CARD_RETRIEVING_USING_SS));
-		cJSON *game_abort = cJSON_CreateObject();
-		cJSON_AddStringToObject(game_abort, "method", "game_abort");
-		cJSON_AddNumberToObject(game_abort, "err_no", ERR_CARD_RETRIEVING_USING_SS);
-		bytes = nn_send(bet->pushsock, cJSON_Print(game_abort), strlen(cJSON_Print(game_abort)), 0);
-		if (bytes < 0) {
-			dlg_error("Failed to send data");
-		}
-	}
+	if (!flag)
+		*retval = ERR_CARD_RETRIEVING_USING_SS;
 
 	return tmp;
 }
 
 int32_t ln_pay_invoice(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
+	int argc, player_id, retval = OK;
+	char **argv = NULL, *invoice = NULL;
 	cJSON *invoice_info = NULL, *pay_response = NULL;
-	char *invoice = NULL;
-	int argc, retval = 1;
-	char **argv = NULL;
-	int32_t player_id;
 
-	argc = 3;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(sizeof(char) * 1000);
-	}
 	player_id = jint(argjson, "playerID");
 	invoice = jstr(argjson, "invoice");
 	invoice_info = cJSON_Parse(invoice);
+
 	if (player_id == bet->myplayerid) {
-		strcpy(argv[0], "lightning-cli");
-		strcpy(argv[1], "pay");
-		sprintf(argv[2], "%s", jstr(invoice_info, "bolt11"));
+		argc = 3;
+		bet_alloc_args(argc, &argv);
+		argv = bet_copy_args(argc, "lightning-cli", "pay", jstr(invoice_info, "bolt11"));
 		pay_response = cJSON_CreateObject();
 		make_command(argc, argv, &pay_response);
 
 		if (jint(pay_response, "code") != 0) {
-			retval = -1;
+			retval = ERR_LN_PAY;
 			dlg_error("LN payment might be failed:%s", jstr(pay_response, "message"));
-			goto end;
-		}
-
-		if (strcmp(jstr(pay_response, "status"), "complete") == 0) {
-			dlg_info("Payment Success");
-		} else {
-			retval = -1;
 		}
 	}
-end:
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-
+	bet_dealloc_args(argc, &argv);
 	return retval;
 }
 
 static int32_t bet_player_betting_invoice(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
+	int argc, player_id, retval = OK;
+	char **argv = NULL, *invoice = NULL;
 	cJSON *invoice_info = NULL, *pay_response = NULL;
-	char *invoice = NULL;
-	int argc, retval = 1;
-	char **argv = NULL;
-	int32_t player_id, bytes;
-	char *rendered = NULL;
-	cJSON *action_response = NULL;
 
-	action_response = cJSON_CreateObject();
-	action_response = cJSON_GetObjectItem(argjson, "actionResponse");
-
-	argc = 3;
-	argv = (char **)malloc(argc * sizeof(char *));
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(sizeof(char) * 1000);
-	}
 	player_id = jint(argjson, "playerID");
 	invoice = jstr(argjson, "invoice");
 	invoice_info = cJSON_Parse(invoice);
 	if (player_id == bet->myplayerid) {
-		strcpy(argv[0], "lightning-cli");
-		strcpy(argv[1], "pay");
-		sprintf(argv[2], "%s", jstr(invoice_info, "bolt11"));
+		argc = 3;
+		bet_alloc_args(argc, &argv);
+		argv = bet_copy_args(argc, "lightning-cli", "pay", jstr(invoice_info, "bolt11"));
 		pay_response = cJSON_CreateObject();
-
 		make_command(argc, argv, &pay_response);
-
 		if (jint(pay_response, "code") != 0) {
 			dlg_error("LN payment might be failed::%s\n", cJSON_Print(pay_response));
-			retval = -1;
-			goto end;
-		}
-
-		if (strcmp(jstr(pay_response, "status"), "complete") == 0) {
-			dlg_info("Payment Success");
-		} else {
-			retval = -1;
-		}
-
-		rendered = cJSON_Print(action_response);
-		bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
-		if (bytes < 0) {
-			retval = -1;
-			goto end;
+			retval = ERR_LN_PAY;
 		}
 	}
-end:
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-
+	bet_dealloc_args(argc, &argv);
 	return retval;
 }
 
 static int32_t bet_player_winner(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int argc, bytes, retval = 1;
-	char **argv = NULL, hexstr[65], *rendered = NULL;
+	int argc, retval = OK;
+	char **argv = NULL, hexstr[65], params[arg_size];
 	cJSON *invoice_info = NULL, *winner_invoice_info = NULL;
 
 	if (jint(argjson, "playerid") == bet->myplayerid) {
 		argc = 5;
-		argv = (char **)malloc(argc * sizeof(char *));
-		for (int i = 0; i < argc; i++) {
-			argv[i] = (char *)malloc(sizeof(char) * 1000);
-		}
+		bet_alloc_args(argc, &argv);
 
-		strcpy(argv[0], "lightning-cli");
-		strcpy(argv[1], "invoice");
-		sprintf(argv[2], "%d", jint(argjson, "winning_amount"));
-		sprintf(argv[3], "%s_%d", bits256_str(hexstr, player_info.deckid), jint(argjson, "winning_amount"));
-		sprintf(argv[4], "Winning claim");
+		sprintf(params, "%s_%d", bits256_str(hexstr, player_info.deckid), jint(argjson, "winning_amount"));
+		argv = bet_copy_args(argc, "lightning-cli", "invoice", jint(argjson, "winning_amount"), params,
+				     "Winning claim");
 
 		winner_invoice_info = cJSON_CreateObject();
 		make_command(argc, argv, &winner_invoice_info);
+
 		invoice_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(invoice_info, "method", "claim");
 		cJSON_AddNumberToObject(invoice_info, "playerid", bet->myplayerid);
-		cJSON_AddStringToObject(invoice_info, "label", argv[3]);
+		cJSON_AddStringToObject(invoice_info, "label", params);
 		cJSON_AddStringToObject(invoice_info, "invoice", cJSON_Print(winner_invoice_info));
 
-		rendered = cJSON_Print(invoice_info);
-		bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
-		if (bytes < 0) {
-			retval = -1;
-			dlg_error("Failed to send data");
-			goto end;
-		}
+		retval = (nn_send(bet->pushsock, cJSON_Print(invoice_info), strlen(cJSON_Print(invoice_info)), 0) < 0) ?
+				 ERR_NNG_SEND :
+				 OK;
 	}
-end:
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-	return retval;
-}
-
-static int32_t bet_player_bet_round(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
-{
-	int32_t bet_amount, round, bytes, retval = 1;
-	cJSON *bet_info = NULL;
-	char *rendered = NULL;
-	round = jint(argjson, "round");
-	dlg_info("Enter Betting Amount in MilliSatoshis:");
-	scanf("%d", &bet_amount);
-
-	bet_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(bet_info, "method", "invoiceRequest");
-	cJSON_AddNumberToObject(bet_info, "round", round);
-	cJSON_AddNumberToObject(bet_info, "playerID", bet->myplayerid);
-	cJSON_AddNumberToObject(bet_info, "betAmount", bet_amount);
-
-	rendered = cJSON_Print(bet_info);
-	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
-	if (bytes < 0) {
-		retval = -1;
-		dlg_error("Failed to send data\n");
-		goto end;
-	}
-end:
+	bet_dealloc_args(argc, &argv);
 	return retval;
 }
 
@@ -625,9 +520,8 @@ void display_cards()
 
 int32_t bet_client_receive_share(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int32_t retval = 1, bytes, cardid, playerid, errs = 0, unpermi, card_type;
+	int32_t retval = OK, cardid, playerid, errs = 0, unpermi, card_type;
 	cJSON *player_card_info = NULL;
-	char *rendered = NULL;
 	bits256 share, decoded256;
 
 	share = jbits256(argjson, "share");
@@ -650,7 +544,10 @@ int32_t bet_client_receive_share(cJSON *argjson, struct privatebet_info *bet, st
 		}
 	} else if (no_of_shares == bet->maxplayers) {
 		no_of_shares = 0;
-		decoded256 = bet_decode_card(argjson, bet, vars, cardid);
+		decoded256 = bet_decode_card(argjson, bet, vars, cardid, &retval);
+		if (retval != OK)
+			return retval;
+
 		if (bits256_nonz(decoded256) == 0)
 			errs++;
 		else {
@@ -671,13 +568,10 @@ int32_t bet_client_receive_share(cJSON *argjson, struct privatebet_info *bet, st
 			cJSON_AddNumberToObject(player_card_info, "card_type", card_type);
 			cJSON_AddNumberToObject(player_card_info, "decoded_card", decoded256.bytes[30]);
 			dlg_info("%s", cJSON_Print(player_card_info));
-			rendered = cJSON_Print(player_card_info);
-			bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
-			if (bytes < 0) {
-				retval = -1;
-				dlg_error("Failed to send data\n");
-				return retval;
-			}
+			retval = (nn_send(bet->pushsock, cJSON_Print(player_card_info),
+					  strlen(cJSON_Print(player_card_info)), 0) < 0) ?
+					 ERR_NNG_SEND :
+					 OK;
 		}
 	}
 	return retval;
@@ -687,8 +581,7 @@ int32_t bet_player_ask_share(struct privatebet_info *bet, int32_t cardid, int32_
 			     int32_t other_player)
 {
 	cJSON *request_info = NULL;
-	char *rendered = NULL;
-	int32_t bytes, retval = 1;
+	int32_t retval = OK;
 
 	request_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(request_info, "method", "requestShare");
@@ -697,19 +590,16 @@ int32_t bet_player_ask_share(struct privatebet_info *bet, int32_t cardid, int32_
 	cJSON_AddNumberToObject(request_info, "card_type", card_type);
 	cJSON_AddNumberToObject(request_info, "other_player", other_player);
 
-	rendered = cJSON_Print(request_info);
-	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
-	if (bytes < 0)
-		retval = -1;
-
+	retval = (nn_send(bet->pushsock, cJSON_Print(request_info), strlen(cJSON_Print(request_info)), 0) < 0) ?
+			 ERR_NNG_SEND :
+			 OK;
 	return retval;
 }
 
 int32_t bet_client_give_share(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int32_t retval = 1, bytes, playerid, cardid, recvlen, card_type;
+	int32_t retval = OK, playerid, cardid, recvlen, card_type;
 	cJSON *share_info = NULL;
-	char *rendered = NULL;
 	struct enc_share temp;
 	uint8_t decipher[sizeof(bits256) + 1024], *ptr;
 	bits256 share;
@@ -729,7 +619,6 @@ int32_t bet_client_give_share(cJSON *argjson, struct privatebet_info *bet, struc
 	if ((ptr = bet_decrypt(decipher, sizeof(decipher), player_info.bvvpubkey, player_info.player_key.priv,
 			       temp.bytes, &recvlen)) == 0) {
 		retval = ERR_DECRYPTING_OTHER_SHARE;
-		dlg_error("decrypt error ");
 	}
 
 	share_info = cJSON_CreateObject();
@@ -744,20 +633,17 @@ int32_t bet_client_give_share(cJSON *argjson, struct privatebet_info *bet, struc
 		memcpy(share.bytes, ptr, recvlen);
 		jaddbits256(share_info, "share", share);
 	}
-	rendered = cJSON_Print(share_info);
-	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
+	retval = (nn_send(bet->pushsock, cJSON_Print(share_info), strlen(cJSON_Print(share_info)), 0) < 0) ?
+			 ERR_NNG_SEND :
+			 OK;
 
-	if (bytes < 0) {
-		retval = -1;
-		dlg_error("Failed to send data");
-	}
 	return retval;
 }
 
 int32_t bet_get_own_share(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	struct enc_share temp;
-	int32_t cardid, retval = 1, playerid, recvlen;
+	int32_t cardid, retval = OK, playerid, recvlen;
 	uint8_t decipher[sizeof(bits256) + 1024], *ptr;
 	bits256 share;
 
@@ -770,38 +656,25 @@ int32_t bet_get_own_share(cJSON *argjson, struct privatebet_info *bet, struct pr
 	if ((ptr = bet_decrypt(decipher, sizeof(decipher), player_info.bvvpubkey, player_info.player_key.priv,
 			       temp.bytes, &recvlen)) == 0) {
 		retval = ERR_DECRYPTING_OWN_SHARE;
-		goto end;
 	} else {
 		memcpy(share.bytes, ptr, recvlen);
 		playershares[cardid][bet->myplayerid] = share;
 		sharesflag[cardid][bet->myplayerid] = 1;
 	}
-end:
 	return retval;
 }
 
 int32_t bet_client_turn(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int32_t retval = 1, playerid, bytes;
+	int32_t retval = OK, playerid;
 
 	playerid = jint(argjson, "playerid");
 	dlg_info("playerid::%d::%s::\n", playerid, cJSON_Print(argjson));
 
 	if (playerid == bet->myplayerid) {
 		no_of_shares = 1;
-		retval = bet_get_own_share(argjson, bet, vars);
-
-		if (retval == ERR_DECRYPTING_OWN_SHARE) {
-			dlg_error("%s", bet_err_str(ERR_DECRYPTING_OWN_SHARE));
-			cJSON *game_abort = cJSON_CreateObject();
-			cJSON_AddStringToObject(game_abort, "method", "game_abort");
-			cJSON_AddNumberToObject(game_abort, "err_no", ERR_DECRYPTING_OWN_SHARE);
-			bytes = nn_send(bet->pushsock, cJSON_Print(game_abort), strlen(cJSON_Print(game_abort)), 0);
-			if (bytes < 0) {
-				dlg_error("Failed to send data");
-			}
+		if (retval = bet_get_own_share(argjson, bet, vars) != OK)
 			return retval;
-		}
 
 		for (int i = 0; i < bet->numplayers; i++) {
 			if ((!sharesflag[jint(argjson, "cardid")][i]) && (i != bet->myplayerid)) {
@@ -817,24 +690,22 @@ int32_t bet_client_turn(cJSON *argjson, struct privatebet_info *bet, struct priv
 int32_t bet_player_ready(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	cJSON *player_ready = NULL;
-	char *rendered = NULL;
-	int bytes, retval = 1;
+	int retval = OK;
 
 	player_ready = cJSON_CreateObject();
 	cJSON_AddStringToObject(player_ready, "method", "player_ready");
 	cJSON_AddNumberToObject(player_ready, "playerid", bet->myplayerid);
-	rendered = cJSON_Print(player_ready);
-	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
-	if (bytes < 0)
-		retval = -1;
 
+	retval = (nn_send(bet->pushsock, cJSON_Print(player_ready), strlen(cJSON_Print(player_ready)), 0) < 0) ?
+			 ERR_NNG_SEND :
+			 OK;
 	return retval;
 }
 
 int32_t bet_client_bvv_init(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 
 {
-	int32_t retval = 1;
+	int32_t retval = OK;
 	cJSON *cjson_bvv_blind_cards, *cjson_shamir_shards;
 	bits256 temp, player_privs[CARDS777_MAXCARDS];
 
@@ -874,7 +745,7 @@ int32_t bet_client_bvv_init(cJSON *argjson, struct privatebet_info *bet, struct 
 
 int32_t bet_client_dcv_init(cJSON *dcv_info, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int32_t retval = 1;
+	int32_t retval = OK;
 	cJSON *cjson_card_prods, *cjsong_hash;
 
 	player_info.deckid = jbits256(dcv_info, "deckid");
@@ -898,9 +769,9 @@ int32_t bet_client_dcv_init(cJSON *dcv_info, struct privatebet_info *bet, struct
 
 int32_t bet_client_init(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int32_t bytes, retval = 1;
+	int32_t retval = OK;
 	cJSON *cjson_player_cards, *init_p = NULL;
-	char *rendered = NULL, str[65];
+	char str[65];
 
 	init_p = cJSON_CreateObject();
 
@@ -912,21 +783,15 @@ int32_t bet_client_init(cJSON *argjson, struct privatebet_info *bet, struct priv
 		cJSON_AddItemToArray(cjson_player_cards,
 				     cJSON_CreateString(bits256_str(str, player_info.cardpubkeys[i])));
 	}
-	rendered = cJSON_Print(init_p);
-	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
-	if (bytes < 0) {
-		retval = -1;
-		dlg_error("Failed to send data");
-		goto end;
-	}
-end:
+	retval = (nn_send(bet->pushsock, cJSON_Print(init_p), strlen(cJSON_Print(init_p)), 0) < 0) ? ERR_NNG_SEND : OK;
+
 	return retval;
 }
 
 int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	char uri[ln_uri_length], *rendered = NULL;
-	int retval = 1, channel_state, /* balance,*/ bytes;
+	int retval = OK, channel_state, bytes;
 	char channel_id[ln_uri_length];
 	cJSON *init_card_info = NULL, *hole_card_info = NULL, *init_info = NULL, *stack_info = NULL;
 
@@ -934,25 +799,15 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 		bet_player->myplayerid = jint(argjson, "playerid");
 		bet->myplayerid = jint(argjson, "playerid");
 
-		if (1 != ln_check_if_address_isof_type(jstr(argjson, "type"))) {
-			dlg_warn(
-				"Dealer expects the ln to be established over tor, please make sure to run lightning node over tor\n");
-			retval = -1;
+		if ((retval = ln_check_if_address_isof_type(jstr(argjson, "type"))) != OK)
 			goto end;
-		}
 
 		strcpy(uri, jstr(argjson, "uri"));
 		strcpy(channel_id, strtok(jstr(argjson, "uri"), "@"));
-
 		channel_state = ln_get_channel_status(channel_id);
 		if ((channel_state != CHANNELD_AWAITING_LOCKIN) && (channel_state != CHANNELD_NORMAL)) {
-			retval = ln_establish_channel(uri);
-			if (retval == 1) {
-				dlg_info("LN Channel Established");
-			} else {
-				dlg_warn("LN Channel Didn't Established, Game stopping...");
-				return retval;
-			}
+			if ((retval = ln_establish_channel(uri)) != OK)
+				goto end;
 		} else if (0 == channel_state) {
 			dlg_info("There isn't any pre-established channel with the dealer, so creating one now");
 			strcpy(uri, jstr(argjson, "uri"));
@@ -984,7 +839,7 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 		rendered = cJSON_Print(stack_info);
 		bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
 		if (bytes < 0) {
-			dlg_error("Failed to send data");
+			retval = ERR_NNG_SEND;
 			goto end;
 		}
 	}
@@ -1474,7 +1329,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 {
 	cJSON *tx_info = NULL, *txid = NULL;
 	double funds_needed;
-	int32_t retval = 1, bytes;
+	int32_t retval = OK;
 	char *hex_data = NULL, *sql_query = NULL;
 
 	if (0 == check_url(jstr(argjson, "gui_url"))) {
@@ -1495,12 +1350,11 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		dlg_warn(
 			"Dealer set the commission %f%% which is more than max commission i.e %f%% set by player, so exiting",
 			jdouble(argjson, "dcv_commission"), max_allowed_dcv_commission);
-		retval = -1;
+		retval = ERR_DCV_COMMISSION_MISMATCH;
 		return retval;
 	}
 	if (chips_get_balance() < (funds_needed + chips_tx_fee)) {
-		dlg_error("Insufficient funds\n");
-		retval = -1;
+		retval = ERR_CHIPS_INSUFFICIENT_FUNDS;
 	} else {
 		max_players = jint(argjson, "max_players");
 		table_stack_in_chips = jdouble(argjson, "table_stack_in_chips");
@@ -1572,9 +1426,9 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		} else {
 			cJSON_AddNumberToObject(tx_info, "block_height", -1);
 		}
-		bytes = nn_send(bet->pushsock, cJSON_Print(tx_info), strlen(cJSON_Print(tx_info)), 0);
-		if (bytes < 0)
-			retval = -1;
+		retval = (nn_send(bet->pushsock, cJSON_Print(tx_info), strlen(cJSON_Print(tx_info)), 0) < 0) ?
+				 ERR_NNG_SEND :
+				 OK;
 	}
 	if (sql_query)
 		free(sql_query);
@@ -1585,7 +1439,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 
 int32_t bet_player_stack_info_req(struct privatebet_info *bet)
 {
-	int32_t bytes, retval = 1;
+	int32_t bytes, retval = OK;
 	cJSON *stack_info_req = NULL;
 	char rand_str[65] = { 0 };
 	bits256 randval;
@@ -1603,7 +1457,7 @@ int32_t bet_player_stack_info_req(struct privatebet_info *bet)
 	}
 	bytes = nn_send(bet->pushsock, cJSON_Print(stack_info_req), strlen(cJSON_Print(stack_info_req)), 0);
 	if (bytes < 0)
-		retval = -1;
+		retval = ERR_NNG_SEND;
 
 	return retval;
 }
@@ -1611,13 +1465,15 @@ int32_t bet_player_stack_info_req(struct privatebet_info *bet)
 static int32_t bet_player_process_payout_tx(cJSON *argjson)
 {
 	char *sql_query = NULL;
-	int32_t rc;
+	int32_t rc = OK;
 
 	dlg_info("%s\n", cJSON_Print(argjson));
 	sql_query = calloc(1, 400);
 	sprintf(sql_query, "UPDATE player_tx_mapping set status = 0,payout_tx_id = \'%s\' where table_id = \'%s\'",
 		jstr(argjson, "tx_info"), jstr(argjson, "table_id"));
 	rc = bet_run_query(sql_query);
+	if (rc != SQLITE_OK)
+		rc = ERR_SQL;
 	if (sql_query)
 		free(sql_query);
 	return rc;
@@ -1625,7 +1481,7 @@ static int32_t bet_player_process_payout_tx(cJSON *argjson)
 
 static int32_t bet_player_process_game_info(cJSON *argjson)
 {
-	int argc = 3, rc;
+	int argc = 3, retval = OK;
 	char **argv = NULL;
 	char *sql_query = calloc(1, arg_size);
 
@@ -1635,11 +1491,14 @@ static int32_t bet_player_process_game_info(cJSON *argjson)
 	sprintf(argv[2], "\'%s\'", cJSON_Print(cJSON_GetObjectItem(argjson, "game_state")));
 
 	bet_make_insert_query(argc, argv, &sql_query);
-	rc = bet_run_query(sql_query);
+	retval = bet_run_query(sql_query);
+	if (retval != SQLITE_OK)
+		retval = ERR_SQL;
+
 	bet_dealloc_args(argc, &argv);
 	if (sql_query)
 		free(sql_query);
-	return rc;
+	return retval;
 }
 
 static void bet_update_seat_info(cJSON *argjson)
@@ -1654,9 +1513,9 @@ static void bet_update_seat_info(cJSON *argjson)
 
 int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int32_t retval = 1, bytes;
+	int32_t retval = OK;
 	char *method = NULL;
-	char hexstr[65], *rendered = NULL;
+	char hexstr[65];
 
 	if (strcmp(jstr(argjson, "method"), "reset") == 0) {
 		reset_lock = 0;
@@ -1666,10 +1525,8 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		return retval;
 	}
 	if ((method = jstr(argjson, "method")) != 0) {
-		dlg_info("Backend method received from dealer :: %s", method);
-
+		dlg_info("recv :: %s", method);
 		if (strcmp(method, "join_res") == 0) {
-			dlg_info("%s", cJSON_Print(argjson));
 			bet_update_seat_info(argjson);
 			if (strcmp(jstr(argjson, "req_identifier"), req_identifier) == 0) {
 				bet_push_join_info(argjson);
@@ -1701,8 +1558,6 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			if (jint(argjson, "to_playerid") == bet->myplayerid) {
 				retval = bet_client_receive_share(argjson, bet, vars);
 			}
-		} else if (strcmp(method, "bet") == 0) {
-			retval = bet_player_bet_round(argjson, bet, vars);
 		} else if (strcmp(method, "invoice") == 0) {
 			retval = ln_pay_invoice(argjson, bet, vars);
 		} else if (strcmp(method, "bettingInvoice") == 0) {
@@ -1735,11 +1590,10 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 				cJSON_AddStringToObject(signedTxInfo, "method", "signedrawtransaction");
 				cJSON_AddStringToObject(signedTxInfo, "tx", jstr(temp, "hex"));
 				cJSON_AddNumberToObject(signedTxInfo, "playerid", bet->myplayerid);
-
-				rendered = cJSON_Print(signedTxInfo);
-				bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
-				if (bytes < 0)
-					retval = -1;
+				retval = (nn_send(bet->pushsock, cJSON_Print(signedTxInfo),
+						  strlen(cJSON_Print(signedTxInfo)), 0) < 0) ?
+						 ERR_NNG_SEND :
+						 OK;
 			}
 		} else if (strcmp(method, "stack_info_resp") == 0) {
 			if (strncmp(req_identifier, jstr(argjson, "id"), sizeof(req_identifier)) == 0) {
@@ -1771,12 +1625,13 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 					cJSON_AddStringToObject(req_seats_info, "method", "req_seats_info");
 					cJSON_AddStringToObject(req_seats_info, "req_identifier", req_identifier);
 					dlg_info("Player requesting seats info from the dealer to join");
-					nn_send(bet->pushsock, cJSON_Print(req_seats_info),
-						strlen(cJSON_Print(req_seats_info)), 0);
+					retval = (nn_send(bet->pushsock, cJSON_Print(req_seats_info),
+							  strlen(cJSON_Print(req_seats_info)), 0) < 0) ?
+							 ERR_NNG_SEND :
+							 OK;
 
 				} else {
-					dlg_error("%s", "unable make lock_in transaction");
-					retval = 0;
+					retval = ERR_CHIPS_INVALID_TX;
 				}
 			}
 		} else if (strcmp(method, "payout_tx") == 0) {
@@ -1789,7 +1644,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 					dlg_warn("DCV which you trying to connect is full");
 					dlg_info("%s\n", cJSON_Print(argjson));
 					bet_player_reset(bet, vars);
-					retval = -1;
+					retval = ERR_DEALER_TABLE_FULL;
 				}
 			}
 		} else if (strcmp(method, "tx_reverse") == 0) {
@@ -1798,7 +1653,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 					"The dealers table is already full, the payin_tx will be reversed using dispute resolution protocol::%s\n",
 					cJSON_Print(argjson));
 				bet_raise_dispute(player_payin_txid);
-				retval = -1;
+				retval = ERR_DEALER_TABLE_FULL;
 			}
 		} else if (strcmp(method, "seats_info_resp") == 0) {
 			if (strcmp(req_identifier, jstr(argjson, "req_identifier")) == 0) {
@@ -1816,10 +1671,10 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			cJSON_AddStringToObject(active_info, "method", "player_active");
 			cJSON_AddNumberToObject(active_info, "playerid", bet->myplayerid);
 			cJSON_AddStringToObject(active_info, "req_identifier", req_identifier);
-			bytes = nn_send(bet->pushsock, cJSON_Print(active_info), strlen(cJSON_Print(active_info)), 0);
-			if (bytes < 0) {
-				dlg_error("There is a problem in sending the data");
-			}
+			retval = (nn_send(bet->pushsock, cJSON_Print(active_info), strlen(cJSON_Print(active_info)),
+					  0) < 0) ?
+					 ERR_NNG_SEND :
+					 OK;
 		} else if (strcmp(method, "active_player_info") == 0) {
 			player_lws_write(argjson);
 		} else if (strcmp(method, "game_abort") == 0) {
@@ -1842,11 +1697,9 @@ void bet_player_backend_loop(void *_ptr)
 	void *ptr = NULL;
 	cJSON *msgjson = NULL;
 	struct privatebet_info *bet = _ptr;
-	uint8_t flag = 1;
 
-	flag = bet_player_stack_info_req(bet);
-
-	while (flag) {
+	retval = bet_player_stack_info_req(bet);
+	while (retval == OK) {
 		if (bet->subsock >= 0 && bet->pushsock >= 0) {
 			ptr = 0;
 			char *tmp = NULL;
@@ -1854,14 +1707,10 @@ void bet_player_backend_loop(void *_ptr)
 			if (recvlen > 0)
 				tmp = clonestr(ptr);
 			if ((recvlen > 0) && ((msgjson = cJSON_Parse(tmp)) != 0)) {
-				if (bet_player_backend(msgjson, bet, player_vars) < 0) {
-					// do something here, possibly this could be because unknown
-					// commnad or because of encountering a special case which
-					// state machine fails to handle
-					//break;
+				if ((retval = bet_player_backend(msgjson, bet, player_vars)) != OK) {
+					dlg_error("%s", bet_err_str(retval));
 					exit(-1);
 				}
-
 				if (tmp)
 					free(tmp);
 				if (ptr)
@@ -1873,8 +1722,7 @@ void bet_player_backend_loop(void *_ptr)
 
 int32_t bet_player_reset(struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int32_t retval = 1;
-	//cJSON *reset_info = NULL;
+	int32_t retval = OK;
 
 	player_joined = 0;
 	no_of_shares = 0;
@@ -1900,7 +1748,8 @@ int32_t bet_player_reset(struct privatebet_info *bet, struct privatebet_vars *va
 
 	memset(req_identifier, 0x00, sizeof(req_identifier));
 	if (sitout_value == 0) {
-		bet_player_stack_info_req(bet); //sg777 commenting this to remove the auto start of the next hand
+		retval = bet_player_stack_info_req(
+			bet); //sg777 commenting this to remove the auto start of the next hand
 	} else {
 		reset_lock = 1;
 		dlg_info("The player is choosen sitout option, so has to wait until the ongoing hand to be finished");

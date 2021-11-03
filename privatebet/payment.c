@@ -18,7 +18,7 @@
 #include "commands.h"
 #include "common.h"
 #include "network.h"
-
+#include "err.h"
 /***************************************************************
 Here contains the functions which are specific to DCV
 ****************************************************************/
@@ -138,63 +138,38 @@ Here contains the functions which are specific to players and BVV
 int32_t bet_player_create_invoice(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars,
 				  char *deckid)
 {
-	int argc, bytes, retval = 1;
-	char **argv = NULL, *rendered = NULL;
+	int argc, retval = OK;
+	char **argv = NULL, params[2][arg_size];
 	cJSON *invoiceInfo = NULL, *invoice = NULL;
 
 	if (jint(argjson, "playerid") == bet->myplayerid) {
 		vars->player_funds += jint(argjson, "betAmount");
 
-		argv = (char **)malloc(6 * sizeof(char *));
-		for (int i = 0; i < 6; i++) {
-			argv[i] = (char *)malloc(sizeof(char) * 1000);
-		}
-
-		strcpy(argv[0], "lightning-cli");
-		strcpy(argv[1], "invoice");
-
-		sprintf(argv[2], "%ld", (long int)jint(argjson, "betAmount") * mchips_msatoshichips);
-		sprintf(argv[3], "%s_%d", deckid, jint(argjson, "betAmount"));
-		sprintf(argv[4], "\"Winning claim\"");
-		argv[5] = NULL;
 		argc = 5;
+		bet_alloc_args(argc, &argv);
+		bet_copy_args(argc, "lightning-cli", "invoice", params[0], params[1], "Winning claim");
 
 		invoice = cJSON_CreateObject();
 		make_command(argc, argv, &invoice);
-
 		dlg_info("invoice::%s\n", cJSON_Print(invoice));
 
 		invoiceInfo = cJSON_CreateObject();
 		cJSON_AddStringToObject(invoiceInfo, "method", "invoice");
 		cJSON_AddNumberToObject(invoiceInfo, "playerid", bet->myplayerid);
-		cJSON_AddStringToObject(invoiceInfo, "label", argv[3]);
+		cJSON_AddStringToObject(invoiceInfo, "label", params[1]);
 		cJSON_AddStringToObject(invoiceInfo, "invoice", cJSON_Print(invoice));
-
-		rendered = cJSON_Print(invoiceInfo);
-		bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
-		if (bytes < 0) {
-			retval = -1;
-			dlg_error("nn_send failed");
-			goto end;
-		}
+		retval = (nn_send(bet->pushsock, cJSON_Print(invoiceInfo), strlen(cJSON_Print(invoiceInfo)), 0) < 0) ?
+				 ERR_NNG_SEND :
+				 OK;
 	}
-end:
-
-	if (argv) {
-		for (int i = 0; i < 5; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
+	bet_dealloc_args(argc, &argv);
 	return retval;
 }
 
 int32_t bet_player_create_invoice_request(cJSON *argjson, struct privatebet_info *bet, int32_t amount)
 {
-	int32_t retval = 1, bytes;
+	int32_t retval = OK;
 	cJSON *betInfo = NULL;
-	char *rendered = NULL;
 
 	betInfo = cJSON_CreateObject();
 	cJSON_AddStringToObject(betInfo, "method", "invoiceRequest");
@@ -202,17 +177,8 @@ int32_t bet_player_create_invoice_request(cJSON *argjson, struct privatebet_info
 	cJSON_AddNumberToObject(betInfo, "playerID", bet->myplayerid);
 	cJSON_AddNumberToObject(betInfo, "betAmount", amount);
 
-	rendered = cJSON_Print(betInfo);
-
-	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
-
-	if (bytes < 0) {
-		retval = -1;
-		dlg_error("nn_send failed");
-		goto end;
-	}
-
-end:
+	retval =
+		(nn_send(bet->pushsock, cJSON_Print(betInfo), strlen(cJSON_Print(betInfo)), 0) < 0) ? ERR_NNG_SEND : OK;
 	return retval;
 }
 
@@ -246,15 +212,17 @@ end:
 int32_t bet_player_invoice_pay(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars, int amount)
 {
 	pthread_t pay_t;
-	int32_t retval = 1;
+	int32_t retval = OK;
 
 	retval = bet_player_create_invoice_request(argjson, bet, amount);
+	if (retval != OK)
+		return retval;
+
 	if (OS_thread_create(&pay_t, NULL, (void *)bet_player_paymentloop, (void *)bet) != 0) {
-		dlg_error("LN invoice payment error :: %d\n", retval);
+		retval = ERR_PTHREAD_LAUNCHING;
 	}
 	if (pthread_join(pay_t, NULL)) {
-		dlg_error("Error in joining the main thread for player %d", bet->myplayerid);
-		retval = -1;
+		retval = ERR_PTHREAD_JOINING;
 	}
 	return retval;
 }

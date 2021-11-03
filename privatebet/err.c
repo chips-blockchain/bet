@@ -27,6 +27,9 @@ const char *bet_err_str(int32_t err_no)
 	case ERR_LN:
 		return "An LN Error in performing the LN operation";
 		break;
+	case ERR_LN_IS_NOT_OVER_TOR:
+		return "The LN channel is not established over TOR";
+		break;
 	case ERR_LN_CHANNEL_ESTABLISHMENT:
 		return "Error in establishing LN channel";
 		break;
