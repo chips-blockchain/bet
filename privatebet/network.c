@@ -128,12 +128,10 @@ cJSON *bet_msg_dealer_with_response_id(cJSON *argjson, char *dealer_ip, char *me
 int32_t bet_send_data(int32_t socket, char *data, int32_t length)
 {
 	int32_t bytes_sent;
-	
-	bytes_sent = nn_send(socket, data, length , 0);
-	if(bytes_sent < 0)
+
+	bytes_sent = nn_send(socket, data, length, 0);
+	if (bytes_sent < 0)
 		return -1;
 	else
 		return 0;
 }
-
-

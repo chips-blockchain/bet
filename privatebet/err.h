@@ -42,5 +42,5 @@ All the errors that come across in bet are defined here. The error numbers are a
 //SQLITE Errors
 #define ERR_SQL 55
 
-char *bet_err_str(int32_t err_no);
+const char *bet_err_str(int32_t err_no);
 #endif
