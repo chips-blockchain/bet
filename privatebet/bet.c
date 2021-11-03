@@ -414,6 +414,7 @@ static char *bet_pick_dealer()
 
 int main(int argc, char **argv)
 {
+	dlg_info("%s", bet_err_str(ERR_DECRYPTING_OWN_SHARE));
 	bet_set_unique_id();
 
 	if (argc >= 2) {
