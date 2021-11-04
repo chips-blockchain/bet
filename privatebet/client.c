@@ -799,6 +799,7 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 		bet_player->myplayerid = jint(argjson, "playerid");
 		bet->myplayerid = jint(argjson, "playerid");
 
+		dlg_info("%s", cJSON_Print(argjson));
 		if ((retval = ln_check_if_address_isof_type(jstr(argjson, "type"))) != OK)
 			goto end;
 

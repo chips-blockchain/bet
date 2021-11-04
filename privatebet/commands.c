@@ -1664,7 +1664,7 @@ cJSON *ln_connect(char *id)
 
 int32_t ln_check_if_address_isof_type(char *type)
 {
-	int32_t argc, retval = OK;
+	int32_t argc, retval = OK, flag = 0;
 	char **argv = NULL;
 	cJSON *channel_info = NULL, *addresses = NULL, *address = NULL;
 
@@ -1677,16 +1677,18 @@ int32_t ln_check_if_address_isof_type(char *type)
 
 	if (jint(channel_info, "code") != 0) {
 		retval = ERR_LN;
-		dlg_error("LN Error :: %s", jstr(channel_info, "message"));
 		goto end;
 	}
 	addresses = cJSON_GetObjectItem(channel_info, "address");
 	for (int32_t i = 0; i < cJSON_GetArraySize(addresses); i++) {
-		address = cJSON_GetArrayItem(addresses, i);
-		if (strcmp(jstr(address, "type"), type) != 0) {
-			retval = ERR_LN_IS_NOT_OVER_TOR;
+		address = cJSON_GetArrayItem(addresses, i);	
+		if (strcmp(jstr(address, "type"), type) == 0) {
+			flag = 1;
 			break;
 		}
+	}
+	if(flag == 0) {
+		retval = ERR_LN_ADDRESS_TYPE_MISMATCH;
 	}
 
 end:
