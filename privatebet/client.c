@@ -680,7 +680,7 @@ int32_t bet_client_turn(cJSON *argjson, struct privatebet_info *bet, struct priv
 
 	if (playerid == bet->myplayerid) {
 		no_of_shares = 1;
-		if (retval = bet_get_own_share(argjson, bet, vars) != OK)
+		if ((retval = bet_get_own_share(argjson, bet, vars)) != OK)
 			return retval;
 
 		for (int i = 0; i < bet->numplayers; i++) {
