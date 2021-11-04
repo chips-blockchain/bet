@@ -100,7 +100,7 @@ int32_t bet_dcv_next_turn(cJSON *argjson, struct privatebet_info *bet, struct pr
 	}
 	players_left = bet->maxplayers - players_left;
 	if (players_left < 2)
-		return ERR_NOT_ENOUGH_PLAYERS;
+		return ERR_NO_TURN;
 
 	for (int i = 0; i < bet->maxplayers; i++) {
 		if (maxamount < vars->betamount[i][vars->round])
@@ -115,6 +115,7 @@ int32_t bet_dcv_next_turn(cJSON *argjson, struct privatebet_info *bet, struct pr
 					    (((vars->bet_actions[j][vars->round] == 0) && (vars->funds[j] != 0)) ||
 					     (vars->bet_actions[j][vars->round] != 0))) {
 						*next_turn = i;
+						return retval;
 					}
 				}
 			} else if (/*(vars->bet_actions[i][vars->round] == 0) ||*/ (vars->bet_actions[i][vars->round] ==
@@ -125,10 +126,11 @@ int32_t bet_dcv_next_turn(cJSON *argjson, struct privatebet_info *bet, struct pr
 				     (vars->bet_actions[i][vars->round] == raise)) &&
 				    (maxamount != vars->betamount[i][vars->round]))) {
 				*next_turn = i;
+				return retval;
 			}
 		}
 	}
-	return retval;
+	return ERR_NO_TURN;
 }
 
 int32_t bet_dcv_round_betting(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
@@ -136,7 +138,7 @@ int32_t bet_dcv_round_betting(cJSON *argjson, struct privatebet_info *bet, struc
 	cJSON *roundBetting = NULL, *possibilities = NULL, *actions = NULL, *betAmounts = NULL;
 	int maxamount = 0, retval = OK, players_left = 0, toCall = 0, toRaise = 0, totalBet = 0, next_turn = -1;
 
-	if ((retval = bet_dcv_next_turn(argjson, bet, vars, &next_turn)) == ERR_NOT_ENOUGH_PLAYERS) {
+	if ((retval = bet_dcv_next_turn(argjson, bet, vars, &next_turn)) == ERR_NO_TURN) {
 		for (int i = 0; i < bet->maxplayers; i++) {
 			if (vars->bet_actions[i][vars->round] == fold) //|| (vars->bet_actions[i][vars->round]==allin))
 				players_left++;
@@ -168,9 +170,14 @@ int32_t bet_dcv_round_betting(cJSON *argjson, struct privatebet_info *bet, struc
 		goto end;
 	}
 
+	//vars->turni = bet_dcv_next_turn(argjson, bet, vars, &next_turn);
+	retval = bet_dcv_next_turn(argjson, bet, vars, &next_turn);
+	if ((retval == OK) && (next_turn == -1)) {
+		retval = ERR_INVALID_POS;
+		return retval;
+	}
 	vars->last_turn = vars->turni;
-	vars->turni = bet_dcv_next_turn(argjson, bet, vars, &next_turn);
-
+	vars->turni = next_turn;
 	roundBetting = cJSON_CreateObject();
 	cJSON_AddStringToObject(roundBetting, "method", "betting");
 	cJSON_AddStringToObject(roundBetting, "action", "round_betting");

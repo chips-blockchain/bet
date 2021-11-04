@@ -705,13 +705,13 @@ static int32_t bet_create_betting_invoice(cJSON *argjson, struct privatebet_info
 		cJSON_AddStringToObject(invoice_info, "label", argv[3]);
 		cJSON_AddStringToObject(invoice_info, "invoice", cJSON_Print(invoice));
 		cJSON_AddItemToObject(invoice_info, "actionResponse", cJSON_GetObjectItem(argjson, "actionResponse"));
-
 		rendered = cJSON_Print(invoice_info);
 		bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
 
-		if (bytes < 0)
+		if (bytes < 0) {
 			retval = -1;
-		dlg_error("nn_send failed\n");
+			dlg_error("nn_send failed\n");
+		}
 	}
 
 	if (argv) {
@@ -1728,24 +1728,25 @@ void bet_dcv_backend_thrd(void *_ptr)
 			exit(0);
 
 		} else if (strcmp(method, "player_error") == 0) {
-			dlg_warn("Player :: %d encounters the error ::%s", jint(argjson,"playerid"), bet_err_str(jint(argjson,"err_no")));
-			switch(jint(argjson,"err_no")){
-				case ERR_DECRYPTING_OWN_SHARE:
-				case ERR_DECRYPTING_OTHER_SHARE:
-				case ERR_CARD_RETRIEVING_USING_SS:
-					cJSON *game_abort = cJSON_CreateObject();
-					cJSON_AddStringToObject(game_abort, "method", "game_abort");
-					cJSON_AddNumberToObject(game_abort,"err_no", jint(argjson,"err_no"));
-					cJSON_AddNumberToObject(game_abort,"playerid",jint(argjson,"playerid"));
-					if ((retval = nn_send(bet->pubsock, cJSON_Print(game_abort), strlen(cJSON_Print(game_abort)), 0)) < 0) {
-						dlg_error("%s", bet_err_str(retval));
-						exit(-1);
-					}						
-					break;
-				default:
-					dlg_warn("No action from dealer is needed for this player error");
-			}		
-			
+			dlg_warn("Player :: %d encounters the error ::%s", jint(argjson, "playerid"),
+				 bet_err_str(jint(argjson, "err_no")));
+			cJSON *game_abort = cJSON_CreateObject();
+			switch (jint(argjson, "err_no")) {
+			case ERR_DECRYPTING_OWN_SHARE:
+			case ERR_DECRYPTING_OTHER_SHARE:
+			case ERR_CARD_RETRIEVING_USING_SS:
+				cJSON_AddStringToObject(game_abort, "method", "game_abort");
+				cJSON_AddNumberToObject(game_abort, "err_no", jint(argjson, "err_no"));
+				cJSON_AddNumberToObject(game_abort, "playerid", jint(argjson, "playerid"));
+				if ((retval = nn_send(bet->pubsock, cJSON_Print(game_abort),
+						      strlen(cJSON_Print(game_abort)), 0)) < 0) {
+					dlg_error("%s", bet_err_str(retval));
+				}
+				exit(-1);
+			default:
+				dlg_warn("No action from dealer is needed for this player error");
+			}
+
 		} else {
 			bytes = nn_send(bet->pubsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
 			if (bytes < 0) {

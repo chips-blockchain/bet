@@ -24,7 +24,8 @@ All the errors that come across in bet are defined here. The error numbers are a
 #define ERR_ALL_CARDS_DRAWN 7
 #define ERR_DCV_COMMISSION_MISMATCH 8
 #define ERR_DEALER_TABLE_FULL 9
-
+#define ERR_INVALID_POS 10
+#define ERR_NO_TURN 11
 //Chips LN Errors
 #define ERR_CHIPS_TX_SIGNING 32
 #define ERR_CHIPS_INVALID_TX 33
