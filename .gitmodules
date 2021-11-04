@@ -19,4 +19,4 @@
 	url = https://github.com/Kitware/CMake.git
 [submodule "external/iniparser"]
 	path = external/iniparser
-	url = https://github.com/ndevilla/iniparser
+	url = https://github.com/sg777/iniparser
