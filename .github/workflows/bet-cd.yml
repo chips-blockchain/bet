@@ -88,8 +88,8 @@ jobs:
          name: bet-linux-aarch64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
          path: /home/pi/actions-runner/_work/bet/bet/bet-linux-aarch64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
 
-     - name: Cleanup after build
-       run: rm -rf /home/pi/actions-runner/_work/bet
+#      - name: Cleanup after build
+#        run: rm -rf /home/pi/actions-runner/_work/bet
 
 
 
