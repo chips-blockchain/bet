@@ -86,7 +86,7 @@ jobs:
        uses: actions/upload-artifact@v2
        with:
          name: bet-linux-aarch64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
-         path: /home/pi/actions-chips/bet-runner/_work/bet/bet/bet-linux-aarch64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
+         path: /home/pi/actions-runner/_work/bet/bet/bet-linux-aarch64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
 
      - name: Cleanup after build
        run: rm -rf /home/pi/actions-runner/_work/bet
