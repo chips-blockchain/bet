@@ -198,8 +198,8 @@ jobs:
           run: |
             pwd && \
             ls -lh /home/runner/work/bet/bet/artifacts/bet-linux-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz/bet-linux-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz && \
-            #ls -lh /home/runner/work/bet/bet/artifacts/bet-linux-aarch64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz/bet-linux-aarch64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz && \
-            ls -lh /home/runner/work/bet/bet/artifacts/bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz/bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
+            ls -lh /home/runner/work/bet/bet/artifacts/bet-linux-aarch64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz/bet-linux-aarch64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
+            #ls -lh /home/runner/work/bet/bet/artifacts/bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz/bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
 
         - name: Create Release
           id: create_release
@@ -239,16 +239,16 @@ jobs:
             asset_name: bet-linux-aarch64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
             asset_content_type: application/gzip
           
-        - name: Upload MacOS Release Asset
-          id: upload-macos-release-asset 
-          uses: actions/upload-release-asset@latest
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-            asset_path: /home/runner/work/bet/bet/artifacts/bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz/bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
-            asset_name: bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
-            asset_content_type: application/gzip
+#         - name: Upload MacOS Release Asset
+#           id: upload-macos-release-asset 
+#           uses: actions/upload-release-asset@latest
+#           env:
+#             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#           with:
+#             upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+#             asset_path: /home/runner/work/bet/bet/artifacts/bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz/bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
+#             asset_name: bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
+#             asset_content_type: application/gzip
 
 
 
