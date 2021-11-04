@@ -93,66 +93,66 @@ jobs:
 
 
 
-  # Build MacOS 64bit build
-  macos-build-x86_64:
-    runs-on: macos-latest
+#   # Build MacOS 64bit build
+#   macos-build-x86_64:
+#     runs-on: macos-latest
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-      with:
-          ref: 'master'
-    - run: git fetch --prune --unshallow
+#     steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v2
+#       with:
+#           ref: 'master'
+#     - run: git fetch --prune --unshallow
     
-    - name: Install deps (macOS)
-      run: |
-          brew update
-          brew install zlib
-          brew install autoconf
-          brew install automake
-          brew install libtool
-          brew install gmp
-          brew install sqlite
-          brew install libsodium
-          brew install gettext
-          brew install wget
-          brew install curl
-          brew install ninja
-          brew install openssl
-          brew install libevent
-          brew install cmake
-          brew install python3
-          brew install gnu-sed
-          brew install pyenv
-          pip3 install mako
+#     - name: Install deps (macOS)
+#       run: |
+#           brew update
+#           brew install zlib
+#           brew install autoconf
+#           brew install automake
+#           brew install libtool
+#           brew install gmp
+#           brew install sqlite
+#           brew install libsodium
+#           brew install gettext
+#           brew install wget
+#           brew install curl
+#           brew install ninja
+#           brew install openssl
+#           brew install libevent
+#           brew install cmake
+#           brew install python3
+#           brew install gnu-sed
+#           brew install pyenv
+#           pip3 install mako
 
-    - name: configure
-      run: ./configure
+#     - name: configure
+#       run: ./configure
       
-    - name: make
-      run: |
-          export LDFLAGS="-L/usr/local/opt/openssl/lib"
-          export CPPFLAGS="-I/usr/local/opt/openssl/include"
-          export PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig"
-          export OPENSSL_ROOT_DIR=/usr/local/opt/openssl
-          make
+#     - name: make
+#       run: |
+#           export LDFLAGS="-L/usr/local/opt/openssl/lib"
+#           export CPPFLAGS="-I/usr/local/opt/openssl/include"
+#           export PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig"
+#           export OPENSSL_ROOT_DIR=/usr/local/opt/openssl
+#           make
       
-    - name: Extract git tag
-      shell: bash
-      run: echo "##[set-output name=gittag;]$(echo $(git describe --always))"
-      id: extract_git_tag
+#     - name: Extract git tag
+#       shell: bash
+#       run: echo "##[set-output name=gittag;]$(echo $(git describe --always))"
+#       id: extract_git_tag
 
-    - name: List files
-      run: |
-        pwd && \
-        tar -czvf bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz privatebet/bet privatebet/cashierd privatebet/config && \
-        ls -lh bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
+#     - name: List files
+#       run: |
+#         pwd && \
+#         tar -czvf bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz privatebet/bet privatebet/cashierd privatebet/config && \
+#         ls -lh bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
 
-    - name: Upload bet-macos-x86_64 release files
-      uses: actions/upload-artifact@v2
-      with:
-        name: bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
-        path: /Users/runner/work/bet/bet/bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
+#     - name: Upload bet-macos-x86_64 release files
+#       uses: actions/upload-artifact@v2
+#       with:
+#         name: bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
+#         path: /Users/runner/work/bet/bet/bet-macos-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
 
 
 
