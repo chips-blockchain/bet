@@ -1716,8 +1716,6 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			dlg_warn("Player :: %d encounters the error ::%s, it has impact on game so exiting...", jint(argjson,"playerid"), bet_err_str(jint(argjson,"err_no")));
 			bet_raise_dispute(player_payin_txid);
 			exit(-1);
-		} else if (strcmp(method, "check_bvv_ready") == 0) {
-			// Do nothing, this broadcast is for BVV nodes
 		} else {
 			dlg_info("%s method is not handled in the backend\n", method);
 		}
