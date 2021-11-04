@@ -450,6 +450,7 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 
 	uri = (char *)malloc(ln_uri_length * sizeof(char));
 	type = ln_get_uri(&uri);
+	dlg_info("%s::\n%s", type, uri);
 
 	player_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(player_info, "method", "join_res");

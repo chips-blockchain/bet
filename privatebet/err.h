@@ -36,6 +36,7 @@ All the errors that come across in bet are defined here. The error numbers are a
 #define ERR_CHIPS_TX_FAILED 39
 #define ERR_LN_CHANNEL_FUNDING_FAILED 40
 #define ERR_LN_PAY 41
+#define ERR_LN_ADDRESS_TYPE_MISMATCH 42
 
 //Parsing Errors
 #define ERR_INI_PARSING 49
