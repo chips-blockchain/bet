@@ -1512,6 +1512,40 @@ static void bet_update_seat_info(cJSON *argjson)
 	player_lws_write(seats_info);
 }
 
+static int32_t bet_handle_player_error(struct privatebet_info *bet, int32_t err_no)
+{
+	cJSON *publish_error = NULL;
+
+	dlg_error("%s", bet_err_str(err_no));
+	publish_error = cJSON_CreateObject();
+	cJSON_AddStringToObject(publish_error, "method", "player_error");
+	cJSON_AddNumberToObject(publish_error, "playerid", bet->myplayerid);
+	cJSON_AddNumberToObject(publish_error, "err_no",err_no);
+	if (nn_send(bet->pushsock, cJSON_Print(publish_error), strlen(cJSON_Print(publish_error)), 0) < 0)
+		exit(-1);
+	
+	switch(err_no) {
+		case ERR_DECRYPTING_OWN_SHARE:
+		case ERR_DECRYPTING_OTHER_SHARE:	
+		case ERR_CARD_RETRIEVING_USING_SS:
+			dlg_info("This error can impact whole game...");
+				break;			
+		case ERR_DEALER_TABLE_FULL:
+			bet_raise_dispute(player_payin_txid);
+		case ERR_PT_PLAYER_UNAUTHORIZED:
+		case ERR_DCV_COMMISSION_MISMATCH:		
+		case ERR_INI_PARSING:
+		case ERR_JSON_PARSING:	
+		case ERR_NNG_SEND:
+		case ERR_NNG_BINDING:
+		case ERR_PTHREAD_LAUNCHING:
+		case ERR_PTHREAD_JOINING:	
+			exit(-1);
+		default:
+			dlg_error("The err_no :: %d is not handled by the backend player yet");
+	}
+}
+
 int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int32_t retval = OK;
@@ -1679,10 +1713,9 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		} else if (strcmp(method, "active_player_info") == 0) {
 			player_lws_write(argjson);
 		} else if (strcmp(method, "game_abort") == 0) {
-			dlg_error("%s", bet_err_str(jint(argjson, "err_no")));
-			if (jint(argjson, "err_no") != ERR_PT_PLAYER_UNAUTHORIZED)
-				bet_raise_dispute(player_payin_txid);
-			exit(0);
+			dlg_warn("Player :: %d encounters the error ::%s, it has impact on game so exiting...", jint(argjson,"playerid"), bet_err_str(jint(argjson,"err_no")));
+			bet_raise_dispute(player_payin_txid);
+			exit(-1);
 		} else if (strcmp(method, "check_bvv_ready") == 0) {
 			// Do nothing, this broadcast is for BVV nodes
 		} else {
@@ -1709,8 +1742,7 @@ void bet_player_backend_loop(void *_ptr)
 				tmp = clonestr(ptr);
 			if ((recvlen > 0) && ((msgjson = cJSON_Parse(tmp)) != 0)) {
 				if ((retval = bet_player_backend(msgjson, bet, player_vars)) != OK) {
-					dlg_error("%s", bet_err_str(retval));
-					exit(-1);
+					bet_handle_player_error(bet, retval);
 				}
 				if (tmp)
 					free(tmp);

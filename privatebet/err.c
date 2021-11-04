@@ -16,7 +16,7 @@ const char *bet_err_str(int32_t err_no)
 		return "Error in retrieving the card by combining all shamir secret shards";
 		break;
 	case ERR_PT_PLAYER_UNAUTHORIZED:
-		return "Player is unauthorized to join the private table hosting by the dealer";
+		return "Player is not unauthorized to join the private table hosting by the dealer";
 		break;
 	case ERR_NOT_ENOUGH_PLAYERS:
 		return "There should be atleast two players needed to play the game";
