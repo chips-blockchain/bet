@@ -159,7 +159,8 @@ jobs:
   publish-release:
       name: Publishing CD releases
       runs-on: ubuntu-latest
-      needs: [linux-build-x86_64, macos-build-x86_64, linux-build-arm64]
+#      needs: [linux-build-x86_64, macos-build-x86_64, linux-build-arm64]
+      needs: [linux-build-x86_64, linux-build-arm64]
       
       steps:
         - name: Checkout code
