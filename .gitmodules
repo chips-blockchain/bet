@@ -20,3 +20,4 @@
 [submodule "external/iniparser"]
 	path = external/iniparser
 	url = https://github.com/sg777/iniparser
+	branch = master
