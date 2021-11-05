@@ -12,8 +12,8 @@
 
 char *db_name = NULL;
 
-const char *table_names[no_of_tables] = { "dcv_tx_mapping",	"player_tx_mapping", "cashier_tx_mapping",
-					  "c_tx_addr_mapping",	"dcv_game_state",    "player_game_state",
+const char *table_names[no_of_tables] = { "dcv_tx_mapping",     "player_tx_mapping", "cashier_tx_mapping",
+					  "c_tx_addr_mapping",  "dcv_game_state",    "player_game_state",
 					  "cashier_game_state", "dealers_info" };
 
 const char *schemas[no_of_tables] = {

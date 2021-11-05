@@ -9,8 +9,8 @@
 /******************************************************************************
 All the errors that come across in bet are defined here. The error numbers are assigned with the following criteria
 * Error No's 1-32 reserved for bet gameplay
-* Error No's 33-48 reserved for CHIPS and LN related issues
-* All other erros numbered from 49 and so on with the spacing for new errors 
+* Error No's 33-64 reserved for CHIPS and LN related issues
+* All other erros numbered from 65 and so on with the spacing for new errors 
 ******************************************************************************/
 #define MAX_ERR_NO 128
 //Bet Gameplay Errors
@@ -26,6 +26,7 @@ All the errors that come across in bet are defined here. The error numbers are a
 #define ERR_DEALER_TABLE_FULL 9
 #define ERR_INVALID_POS 10
 #define ERR_NO_TURN 11
+
 //Chips LN Errors
 #define ERR_CHIPS_TX_SIGNING 32
 #define ERR_CHIPS_INVALID_TX 33
@@ -35,24 +36,35 @@ All the errors that come across in bet are defined here. The error numbers are a
 #define ERR_CHIPS_INSUFFICIENT_FUNDS 37
 #define ERR_LN_INSUFFICIENT_FUNDS 38
 #define ERR_CHIPS_TX_FAILED 39
-#define ERR_LN_CHANNEL_FUNDING_FAILED 40
+#define ERR_LN_FUNDCHANNEL 40
 #define ERR_LN_PAY 41
 #define ERR_LN_ADDRESS_TYPE_MISMATCH 42
+#define ERR_LN_COMMAND 43
+#define ERR_CHIPS_COMMAND 44
+#define ERR_LN_INVOICE_CREATE 45
+#define ERR_LN_NEWADDR 46
+#define ERR_LN_LISTFUNDS 47
+#define ERR_LN_CONNECT 48
+#define ERR_LN_LISTPEERS 49
+#define ERR_LN_PEERCHANNEL_STATE 50
 
 //Parsing Errors
-#define ERR_INI_PARSING 49
-#define ERR_JSON_PARSING 50
+#define ERR_INI_PARSING 65
+#define ERR_JSON_PARSING 66
 
 //NNG Related Errors
-#define ERR_NNG_SEND 51
-#define ERR_NNG_BINDING 52
+#define ERR_NNG_SEND 67
+#define ERR_NNG_BINDING 68
 
 //PTHREAD Errors
-#define ERR_PTHREAD_LAUNCHING 53
-#define ERR_PTHREAD_JOINING 54
+#define ERR_PTHREAD_LAUNCHING 69
+#define ERR_PTHREAD_JOINING 70
 
 //SQLITE Errors
-#define ERR_SQL 55
+#define ERR_SQL 71
+
+//Standard Errors
+#define ERR_MEMORY_ALLOC 72
 
 const char *bet_err_str(int32_t err_no);
 #endif

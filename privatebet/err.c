@@ -57,7 +57,7 @@ const char *bet_err_str(int32_t err_no)
 	case ERR_CHIPS_TX_FAILED:
 		return "Error in making CHIPS TX";
 		break;
-	case ERR_LN_CHANNEL_FUNDING_FAILED:
+	case ERR_LN_FUNDCHANNEL:
 		return "Funding LN channel got failed";
 		break;
 	case ERR_LN_PAY:
@@ -65,6 +65,30 @@ const char *bet_err_str(int32_t err_no)
 		break;
 	case ERR_LN_ADDRESS_TYPE_MISMATCH:
 		return "LN address type is not matched with the one configured";
+		break;
+	case ERR_LN_COMMAND:
+		return "Error occured while running LN command";
+		break;
+	case ERR_CHIPS_COMMAND:
+		return "Error occured while running Chips command";
+		break;
+	case ERR_LN_INVOICE_CREATE:
+		return "Error in creating LN invoice";
+		break;
+	case ERR_LN_NEWADDR:
+		return "Error in creating new LN wallet address";
+		break;
+	case ERR_LN_LISTFUNDS:
+		return "LN error occured while running listfunds";
+		break;
+	case ERR_LN_CONNECT:
+		return "Error in connecting to LN Channel";
+		break;
+	case ERR_LN_LISTPEERS:
+		return "Error in listing peers";
+		break;
+	case ERR_LN_PEERCHANNEL_STATE:
+		return "Error in finding the peer channel state";
 		break;
 	case ERR_INI_PARSING:
 		return "Error in parsing the ini configuration file";
@@ -86,6 +110,9 @@ const char *bet_err_str(int32_t err_no)
 		break;
 	case ERR_SQL:
 		return "Error occured in performing the sqlite operation";
+		break;
+	case ERR_MEMORY_ALLOC:
+		return "Memory allocation failed";
 		break;
 	default:
 		return "This error is not handled yet...";

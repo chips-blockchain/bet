@@ -63,8 +63,8 @@ int no_of_rand_str = 0;
 int32_t invoiceID;
 
 char *suit[NSUITS] = { "clubs", "diamonds", "hearts", "spades" };
-char *face[NFACES] = { "two",  "three", "four", "five",	 "six",	 "seven", "eight",
-		       "nine", "ten",	"jack", "queen", "king", "ace" };
+char *face[NFACES] = { "two",  "three", "four", "five",  "six",  "seven", "eight",
+		       "nine", "ten",   "jack", "queen", "king", "ace" };
 
 struct privatebet_info *bet_dcv = NULL;
 struct privatebet_vars *dcv_vars = NULL;
@@ -616,17 +616,13 @@ static int32_t bet_check_bvv_ready(struct privatebet_info *bet)
 
 static int32_t bet_create_invoice(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int argc, bytes, retval = 1;
-	char **argv = NULL, *rendered = NULL;
-	char hexstr[65] = { 0 };
+	int32_t argc, retval = OK;
+	char **argv = NULL, hexstr[65] = { 0 };
 	cJSON *invoice_info = NULL, *invoice = NULL;
 
-	argc = 5;
-	argv = (char **)malloc(argc * sizeof(char *));
 	invoiceID++;
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(sizeof(char) * 1000);
-	}
+	argc = 5;
+	bet_alloc_args(argc, &argv);
 	dcv_info.betamount += jint(argjson, "betAmount");
 
 	strcpy(argv[0], "lightning-cli");
@@ -638,49 +634,34 @@ static int32_t bet_create_invoice(cJSON *argjson, struct privatebet_info *bet, s
 		jint(argjson, "round"), jint(argjson, "betAmount"));
 
 	invoice = cJSON_CreateObject();
-	make_command(argc, argv, &invoice);
+	retval = make_command(argc, argv, &invoice);
 
-	if (jint(invoice, "code") != 0)
-		retval = -1;
-	else {
+	if (retval == OK) {
 		invoice_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(invoice_info, "method", "invoice");
 		cJSON_AddNumberToObject(invoice_info, "playerID", jint(argjson, "playerID"));
 		cJSON_AddNumberToObject(invoice_info, "round", jint(argjson, "round"));
 		cJSON_AddStringToObject(invoice_info, "label", argv[3]);
 		cJSON_AddStringToObject(invoice_info, "invoice", cJSON_Print(invoice));
-
-		rendered = cJSON_Print(invoice_info);
-		bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
-
-		if (bytes < 0)
-			retval = -1;
+		retval = (nn_send(bet->pubsock, cJSON_Print(invoice_info), strlen(cJSON_Print(invoice_info)), 0) < 0) ?
+				 ERR_NNG_SEND :
+				 OK;
+	} else {
+		dlg_error("%s", bet_err_str(retval));
 	}
-
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-
+	bet_dealloc_args(argc, &argv);
 	return retval;
 }
 
 static int32_t bet_create_betting_invoice(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int argc, bytes, retval = 1;
-	char **argv = NULL, *rendered = NULL;
-	char hexstr[65] = { 0 };
+	int32_t argc, retval = OK;
+	char **argv = NULL, hexstr[65] = { 0 };
 	cJSON *invoice_info = NULL, *invoice = NULL;
 
-	argc = 5;
-	argv = (char **)malloc(argc * sizeof(char *));
 	invoiceID++;
-	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(sizeof(char) * 1000);
-	}
+	argc = 5;
+	bet_alloc_args(argc, &argv);
 	dcv_info.betamount += jint(argjson, "betAmount");
 
 	strcpy(argv[0], "lightning-cli");
@@ -692,12 +673,8 @@ static int32_t bet_create_betting_invoice(cJSON *argjson, struct privatebet_info
 		jint(argjson, "round"), jint(argjson, "invoice_amount"));
 
 	invoice = cJSON_CreateObject();
-	make_command(argc, argv, &invoice);
-
-	if (jint(invoice, "code") != 0) {
-		dlg_error("Failed to create the chips-ln invoice::\n%s\n", cJSON_Print(argjson));
-		retval = -1;
-	} else {
+	retval = make_command(argc, argv, &invoice);
+	if (retval == OK) {
 		invoice_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(invoice_info, "method", "bettingInvoice");
 		cJSON_AddNumberToObject(invoice_info, "playerID", jint(argjson, "playerID"));
@@ -705,22 +682,13 @@ static int32_t bet_create_betting_invoice(cJSON *argjson, struct privatebet_info
 		cJSON_AddStringToObject(invoice_info, "label", argv[3]);
 		cJSON_AddStringToObject(invoice_info, "invoice", cJSON_Print(invoice));
 		cJSON_AddItemToObject(invoice_info, "actionResponse", cJSON_GetObjectItem(argjson, "actionResponse"));
-		rendered = cJSON_Print(invoice_info);
-		bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
-
-		if (bytes < 0) {
-			retval = -1;
-			dlg_error("nn_send failed\n");
-		}
+		retval = (nn_send(bet->pubsock, cJSON_Print(invoice_info), strlen(cJSON_Print(invoice_info)), 0) < 0) ?
+				 ERR_NNG_SEND :
+				 OK;
+	} else {
+		dlg_error("%s", bet_err_str(retval));
 	}
-
-	if (argv) {
-		for (int i = 0; i < argc; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
+	bet_dealloc_args(argc, &argv);
 	return retval;
 }
 
@@ -1242,32 +1210,22 @@ int32_t bet_ln_check(struct privatebet_info *bet)
 
 static int32_t bet_award_winner(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int argc, retval = 1;
+	int32_t argc, retval = OK;
 	char **argv = NULL, channel_id[100], *invoice = NULL;
 	cJSON *pay_response = NULL, *invoice_info = NULL, *fund_channel_info = NULL;
 
-	argc = 5;
-	argv = (char **)malloc(sizeof(char *) * argc);
-	for (int32_t i = 0; i < argc; i++)
-		argv[i] = (char *)malloc(1000 * sizeof(char));
+	argc = 4;
+	bet_alloc_args(argc, &argv);
 	strcpy(channel_id, strtok((char *)dcv_info.uri[jint(argjson, "playerid")], "@"));
 	if (ln_get_channel_status(channel_id) != CHANNELD_NORMAL) {
-		strcpy(argv[0], "lightning-cli");
-		strcpy(argv[1], "fundchannel");
-		strcpy(argv[2], channel_id);
-		strcpy(argv[3], "500000");
-		argv[4] = NULL;
-		argc = 4;
+		argv = bet_copy_args(argc, "lightning-cli", "fundchannel", channel_id, "500000");
 
 		fund_channel_info = cJSON_CreateObject();
-		make_command(argc, argv, &fund_channel_info);
-
-		if (jint(fund_channel_info, "code") != 0) {
-			retval = -1;
-			dlg_error("LN Error ::%s", jstr(fund_channel_info, "message"));
+		retval = make_command(argc, argv, &fund_channel_info);
+		if (retval != OK) {
+			dlg_error("%s", bet_err_str(retval));
 			goto end;
 		}
-
 		dlg_info("Fund channel response:%s\n", cJSON_Print(fund_channel_info));
 		int state;
 		while ((state = ln_get_channel_status(channel_id)) != CHANNELD_NORMAL) {
@@ -1284,36 +1242,19 @@ static int32_t bet_award_winner(cJSON *argjson, struct privatebet_info *bet, str
 	invoice = jstr(argjson, "invoice");
 	invoice_info = cJSON_Parse(invoice);
 
-	for (int32_t i = 0; i < argc; i++)
-		memset(&argv[i], 0, sizeof(argv[i]));
-
+	bet_dealloc_args(argc, &argv);
 	argc = 3;
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "pay");
-	sprintf(argv[2], "%s", jstr(invoice_info, "bolt11"));
-	argv[3] = NULL;
-
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, "lightning-cli", "pay", jstr(invoice_info, "bolt11"));
 	pay_response = cJSON_CreateObject();
-	make_command(argc, argv, &pay_response);
-
-	if (jint(pay_response, "code") != 0) {
-		retval = -1;
-		dlg_info("LN Error :: %s", jstr(pay_response, "message"));
+	retval = make_command(argc, argv, &pay_response);
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
 		goto end;
 	}
 
-	if (strcmp(jstr(pay_response, "status"), "complete") == 0) {
-		dlg_info("Payment Success");
-	}
-
 end:
-	if (argv) {
-		for (int i = 0; i < 5; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
+	bet_dealloc_args(argc, &argv);
 	return retval;
 }
 static void bet_push_joinInfo(cJSON *argjson, int32_t numplayers)
