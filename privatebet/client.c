@@ -110,19 +110,6 @@ void write_to_GUI(void *ptr)
 	}
 }
 
-void sg777_test(cJSON *data)
-{
-	pthread_t gui_thrd;
-
-	if (OS_thread_create(&gui_thrd, NULL, (void *)write_to_GUI, (void *)data) != 0) {
-		dlg_error("Error launching bet_dcv_live_loop]n");
-		exit(-1);
-	}
-	if (pthread_join(gui_thrd, NULL)) {
-		dlg_error("Error in joining the main thread for live_thrd");
-	}
-}
-
 void player_lws_write(cJSON *data)
 {
 	if (backend_status == backend_ready) {
@@ -420,12 +407,7 @@ int32_t ln_pay_invoice(cJSON *argjson, struct privatebet_info *bet, struct priva
 		bet_alloc_args(argc, &argv);
 		argv = bet_copy_args(argc, "lightning-cli", "pay", jstr(invoice_info, "bolt11"));
 		pay_response = cJSON_CreateObject();
-		make_command(argc, argv, &pay_response);
-
-		if (jint(pay_response, "code") != 0) {
-			retval = ERR_LN_PAY;
-			dlg_error("LN payment might be failed:%s", jstr(pay_response, "message"));
-		}
+		retval = make_command(argc, argv, &pay_response);
 	}
 	bet_dealloc_args(argc, &argv);
 	return retval;
@@ -438,8 +420,6 @@ static int32_t bet_player_betting_invoice(cJSON *argjson, struct privatebet_info
 	cJSON *invoice_info = NULL, *pay_response = NULL;
 	cJSON *action_response = NULL;
 
-	action_response = cJSON_CreateObject();
-	action_response = cJSON_GetObjectItem(argjson, "actionResponse");
 	player_id = jint(argjson, "playerID");
 	invoice = jstr(argjson, "invoice");
 	invoice_info = cJSON_Parse(invoice);
@@ -448,11 +428,13 @@ static int32_t bet_player_betting_invoice(cJSON *argjson, struct privatebet_info
 		bet_alloc_args(argc, &argv);
 		argv = bet_copy_args(argc, "lightning-cli", "pay", jstr(invoice_info, "bolt11"));
 		pay_response = cJSON_CreateObject();
-		make_command(argc, argv, &pay_response);
-		if (jint(pay_response, "code") != 0) {
-			dlg_error("LN payment might be failed::%s\n", cJSON_Print(pay_response));
-			retval = ERR_LN_PAY;
+		retval = make_command(argc, argv, &pay_response);
+		if (retval != OK) {
+			dlg_error("%s", cJSON_Print(pay_response));
 		}
+
+		action_response = cJSON_CreateObject();
+		action_response = cJSON_GetObjectItem(argjson, "actionResponse");
 		retval = (nn_send(bet->pushsock, cJSON_Print(action_response), strlen(cJSON_Print(action_response)),
 				  0) < 0) ?
 				 ERR_NNG_SEND :
@@ -477,8 +459,10 @@ static int32_t bet_player_winner(cJSON *argjson, struct privatebet_info *bet, st
 				     "Winning claim");
 
 		winner_invoice_info = cJSON_CreateObject();
-		make_command(argc, argv, &winner_invoice_info);
-
+		retval = make_command(argc, argv, &winner_invoice_info);
+		if (retval != OK) {
+			dlg_error("%s", bet_err_str(retval));
+		}
 		invoice_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(invoice_info, "method", "claim");
 		cJSON_AddNumberToObject(invoice_info, "playerid", bet->myplayerid);
@@ -797,9 +781,8 @@ int32_t bet_client_init(cJSON *argjson, struct privatebet_info *bet, struct priv
 
 int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	char uri[ln_uri_length], *rendered = NULL;
-	int retval = OK, channel_state, bytes;
-	char channel_id[ln_uri_length];
+	int32_t retval = OK, channel_state;
+	char channel_id[ln_uri_length], uri[ln_uri_length];
 	cJSON *init_card_info = NULL, *hole_card_info = NULL, *init_info = NULL, *stack_info = NULL;
 
 	if (0 == bits256_cmp(player_info.player_key.prod, jbits256(argjson, "pubkey"))) {
@@ -819,7 +802,7 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 		} else if (0 == channel_state) {
 			dlg_info("There isn't any pre-established channel with the dealer, so creating one now");
 			strcpy(uri, jstr(argjson, "uri"));
-			ln_check_peer_and_connect(uri);
+			retval = ln_check_peer_and_connect(uri);
 		}
 		init_card_info = cJSON_CreateObject();
 		cJSON_AddNumberToObject(init_card_info, "dealer", jint(argjson, "dealer"));
@@ -844,12 +827,10 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 		cJSON_AddNumberToObject(stack_info, "stack_value", vars->player_funds);
 
 		dlg_info("stack_info::%s", cJSON_Print(stack_info));
-		rendered = cJSON_Print(stack_info);
-		bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
-		if (bytes < 0) {
-			retval = ERR_NNG_SEND;
-			goto end;
-		}
+
+		retval = (nn_send(bet->pushsock, cJSON_Print(stack_info), strlen(cJSON_Print(stack_info)), 0) < 0) ?
+				 ERR_NNG_SEND :
+				 OK;
 	}
 end:
 	return retval;
@@ -857,10 +838,10 @@ end:
 
 int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 {
-	int32_t bytes, argc, retval = -1;
+	int32_t argc, retval = OK;
 	cJSON *joininfo = NULL, *channel_info = NULL, *addresses = NULL, *address = NULL;
 	struct pair256 key;
-	char **argv = NULL, *rendered = NULL, *uri = NULL;
+	char **argv = NULL, *uri = NULL;
 
 	if (bet->pushsock >= 0) {
 		key = deckgen_player(player_info.cardprivkeys, player_info.cardpubkeys, player_info.permis, bet->range);
@@ -869,23 +850,14 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 		cJSON_AddStringToObject(joininfo, "method", "join_req");
 		jaddbits256(joininfo, "pubkey", key.prod);
 		argc = 2;
-		argv = (char **)malloc(argc * sizeof(char *));
-		for (int i = 0; i < argc; i++) {
-			argv[i] = (char *)malloc(100 * sizeof(char));
-		}
-
-		strcpy(argv[0], "lightning-cli");
-		strcpy(argv[1], "getinfo");
+		bet_alloc_args(argc, &argv);
+		argv = bet_copy_args(argc, "lightning-cli", "getinfo");
 		channel_info = cJSON_CreateObject();
-
-		make_command(argc, argv, &channel_info);
-
-		if (jint(channel_info, "code") != 0) {
-			retval = -1;
-			dlg_error("Message:%s", jstr(channel_info, "message"));
+		retval = make_command(argc, argv, &channel_info);
+		if (retval != OK) {
+			dlg_error("%s", bet_err_str(retval));
 			goto end;
 		}
-
 		uri = (char *)malloc(sizeof(char) * 100);
 
 		strcpy(uri, jstr(channel_info, "id"));
@@ -901,27 +873,16 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 		cJSON_AddStringToObject(joininfo, "uri", uri);
 		cJSON_AddNumberToObject(joininfo, "gui_playerID", (jint(argjson, "gui_playerID") - 1));
 		cJSON_AddStringToObject(joininfo, "req_identifier", req_identifier);
-		rendered = cJSON_Print(joininfo);
+
 		dlg_info("join info::%s\n", cJSON_Print(joininfo));
-		bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
-		if (bytes < 0) {
-			dlg_error("Failed to send data");
-			goto end;
-		}
-		retval = 1;
+		retval = (nn_send(bet->pushsock, cJSON_Print(joininfo), strlen(cJSON_Print(joininfo)), 0) < 0) ?
+				 ERR_NNG_SEND :
+				 OK;
 	}
 end:
 	if (uri)
 		free(uri);
-	if (argv) {
-		for (int i = 0; i < argc; i++)
-			free(argv[i]);
-
-		free(argv);
-	}
-
-	if (retval == -1)
-		dlg_error("Error\n");
+	bet_dealloc_args(argc, &argv);
 	return retval;
 }
 
@@ -1016,7 +977,7 @@ int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 	char *method = NULL;
 
 	if ((method = jstr(argjson, "method")) != 0) {
-		dlg_info("Info requested from the GUI :: %s", cJSON_Print(argjson));
+		dlg_info("Recv from GUI :: %s", cJSON_Print(argjson));
 		if (strcmp(method, "player_join") == 0) {
 			bet_player_process_player_join(argjson);
 		} else if (strcmp(method, "betting") == 0) {
@@ -1840,8 +1801,8 @@ void rest_push_cards(struct lws *wsi, cJSON *argjson, int32_t this_playerID)
 void rest_display_cards(cJSON *argjson, int32_t this_playerID)
 {
 	char *suit[NSUITS] = { "clubs", "diamonds", "hearts", "spades" };
-	char *face[NFACES] = { "two",  "three", "four", "five",	 "six",	 "seven", "eight",
-			       "nine", "ten",	"jack", "queen", "king", "ace" };
+	char *face[NFACES] = { "two",  "three", "four", "five",  "six",  "seven", "eight",
+			       "nine", "ten",   "jack", "queen", "king", "ace" };
 
 	char action_str[8][100] = { "", "small_blind", "big_blind", "check", "raise", "call", "allin", "fold" };
 	cJSON *actions = NULL;

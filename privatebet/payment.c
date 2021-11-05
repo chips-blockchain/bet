@@ -66,43 +66,21 @@ int32_t bet_dcv_invoice_pay(struct privatebet_info *bet, struct privatebet_vars 
 int32_t bet_dcv_pay(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	cJSON *invoiceInfo = NULL, *payResponse = NULL;
-	int argc, retval = 1;
+	int argc, retval = OK;
 	char **argv = NULL, *invoice = NULL;
 
-	argv = (char **)malloc(4 * sizeof(char *));
-	argc = 3;
-	for (int i = 0; i < 4; i++) {
-		argv[i] = (char *)malloc(sizeof(char) * 1000);
-	}
 	invoice = jstr(argjson, "invoice");
 	invoiceInfo = cJSON_Parse(invoice);
-
-	strcpy(argv[0], "lightning-cli");
-	strcpy(argv[1], "pay");
-	sprintf(argv[2], "%s", jstr(invoiceInfo, "bolt11"));
-	argv[3] = NULL;
+	argc = 3;
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, "lightning-cli", "pay", jstr(invoiceInfo, "bolt11"));
 
 	payResponse = cJSON_CreateObject();
-	make_command(argc, argv, &payResponse);
-
-	if (jint(payResponse, "code") != 0) {
-		retval = -1;
-		dlg_info("LN Error :: %s", jstr(payResponse, "message"));
-		goto end;
+	retval = make_command(argc, argv, &payResponse);
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
 	}
-
-	if (strcmp(jstr(payResponse, "status"), "complete") == 0)
-		dlg_info("Payment Success");
-
-end:
-	if (argv) {
-		for (int i = 0; i < 4; i++) {
-			if (argv[i])
-				free(argv[i]);
-		}
-		free(argv);
-	}
-
+	bet_dealloc_args(argc, &argv);
 	return retval;
 }
 
@@ -147,12 +125,13 @@ int32_t bet_player_create_invoice(cJSON *argjson, struct privatebet_info *bet, s
 
 		argc = 5;
 		bet_alloc_args(argc, &argv);
-		bet_copy_args(argc, "lightning-cli", "invoice", params[0], params[1], "Winning claim");
-
+		argv = bet_copy_args(argc, "lightning-cli", "invoice", params[0], params[1], "Winning claim");
 		invoice = cJSON_CreateObject();
-		make_command(argc, argv, &invoice);
+		retval = make_command(argc, argv, &invoice);
+		if (retval != OK) {
+			dlg_error("%s", bet_err_str(retval));
+		}
 		dlg_info("invoice::%s\n", cJSON_Print(invoice));
-
 		invoiceInfo = cJSON_CreateObject();
 		cJSON_AddStringToObject(invoiceInfo, "method", "invoice");
 		cJSON_AddNumberToObject(invoiceInfo, "playerid", bet->myplayerid);

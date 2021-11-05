@@ -607,11 +607,15 @@ int32_t chips_get_block_count()
 
 void check_ln_chips_sync()
 {
-	int32_t chips_bh, ln_bh;
+	int32_t chips_bh, ln_bh, retval = OK;
 	int32_t threshold_diff = 1000;
 
 	chips_bh = chips_get_block_count();
-	ln_bh = ln_block_height();
+	retval = ln_block_height(&ln_bh);
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
+		exit(-1);
+	}
 	while (1) {
 		if ((chips_bh - ln_bh) > threshold_diff) {
 			dlg_info("\rln is %d blocks behind chips network\n", (chips_bh - ln_bh));
@@ -619,7 +623,7 @@ void check_ln_chips_sync()
 		} else
 			break;
 		chips_bh = chips_get_block_count();
-		ln_bh = ln_block_height();
+		retval = ln_block_height(&ln_bh);
 	}
 }
 
@@ -1035,7 +1039,7 @@ int32_t chips_extract_data(char *tx, char **rand_str)
 
 cJSON *chips_deposit_to_ln_wallet(double channel_chips)
 {
-	int argc;
+	int32_t argc, retval = OK;
 	char **argv = NULL;
 	cJSON *newaddr = NULL;
 	cJSON *tx = NULL;
@@ -1044,7 +1048,10 @@ cJSON *chips_deposit_to_ln_wallet(double channel_chips)
 	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "lightning-cli", "newaddr", "p2sh-segwit");
 	newaddr = cJSON_CreateObject();
-	make_command(argc, argv, &newaddr);
+	retval = make_command(argc, argv, &newaddr);
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
+	}
 	tx = chips_transfer_funds(channel_chips, jstr(newaddr, "p2sh-segwit"));
 	bet_dealloc_args(argc, &argv);
 	return tx;
@@ -1376,42 +1383,70 @@ end:
 	return ret;
 }
 
+static int32_t process_ln_data(char *data, char *command_name, cJSON **ln_data)
+{
+	int32_t retval = OK;
+
+	*ln_data = NULL;
+	if (strlen(data) == 0)
+		return ERR_LN_COMMAND;
+
+	*ln_data = cJSON_Parse(data);
+	if (*ln_data == NULL)
+		return ERR_LN_COMMAND;
+	if (jint(*ln_data, "code") != 0) {
+		dlg_error("%s", cJSON_Print(*ln_data));
+		if (strcmp(command_name, "pay") == 0) {
+			retval = ERR_LN_PAY;
+		} else if (strcmp(command_name, "invoice") == 0) {
+			retval = ERR_LN_INVOICE_CREATE;
+		} else if (strcmp(command_name, "newaddr") == 0) {
+			retval = ERR_LN_NEWADDR;
+		} else if (strcmp(command_name, "listfunds") == 0) {
+			retval = ERR_LN_LISTFUNDS;
+		} else if (strcmp(command_name, "fundchannel") == 0) {
+			retval = ERR_LN_FUNDCHANNEL;
+		} else if (strcmp(command_name, "listpeers") == 0) {
+			retval = ERR_LN_LISTPEERS;
+		} else if (strcmp(command_name, "peer-channel-state") == 0) {
+			retval = ERR_LN_PEERCHANNEL_STATE;
+		}
+	}
+	return retval;
+}
+
 int32_t make_command(int argc, char **argv, cJSON **argjson)
 {
 	FILE *fp = NULL;
 	char *data = NULL, *command = NULL, *buf = NULL;
-	int32_t ret = 1;
+	int32_t retval = OK;
 	unsigned long command_size = 16384, data_size = 262144, buf_size = 1024;
 
 	command = calloc(command_size, sizeof(char));
 	if (!command) {
-		ret = 0;
-		goto end;
+		retval = ERR_MEMORY_ALLOC;
+		return retval;
+	}
+	for (int32_t i = 0; i < argc; i++) {
+		strcat(command, argv[i]);
+		strcat(command, " ");
+	}
+	fp = popen(command, "r");
+	if (fp == NULL) {
+		if (strcmp(argv[0], "chips-cli") == 0)
+			retval = ERR_CHIPS_COMMAND;
+		if (strcmp(argv[0], "lightning-cli") == 0)
+			retval = ERR_LN_COMMAND;
+		return retval;
 	}
 	data = calloc(data_size, sizeof(char));
 	if (!data) {
-		ret = 0;
+		retval = ERR_MEMORY_ALLOC;
 		goto end;
 	}
 	buf = calloc(buf_size, sizeof(char));
 	if (!buf) {
-		ret = 0;
-		goto end;
-	}
-
-	for (int i = 0; i < argc; i++) {
-		strcat(command, argv[i]);
-		strcat(command, " ");
-	}
-	/* Open the command for reading. */
-	fp = popen(command, "r");
-	if (fp == NULL) {
-		dlg_info("Failed to run command::%s\n", command);
-		exit(1);
-	}
-
-	if (!buf) {
-		dlg_error("Malloc failed\n");
+		retval = ERR_MEMORY_ALLOC;
 		goto end;
 	}
 	unsigned long temp_size = 0;
@@ -1431,37 +1466,33 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 		memset(buf, 0x00, buf_size);
 	}
 	data[new_size - 1] = '\0';
+	dlg_info("%s", data);
+	*argjson = NULL;
 	if (strcmp(argv[0], "git") == 0) {
 		*argjson = cJSON_CreateString((const char *)data);
-		goto end;
-	} else if ((strcmp(argv[0], "lightning-cli") == 0) && (strncmp("error", data, strlen("error")) == 0)) {
-		char temp[1024];
-		memset(temp, 0x00, sizeof(temp));
-		strncpy(temp, data + strlen("error"), (strlen(data) - strlen("error")));
-		*argjson = cJSON_Parse(temp);
-		ret = 0;
-
-	} else if (strlen(data) == 0) {
-		*argjson = cJSON_CreateObject();
-		if (strcmp(argv[1], "importaddress") == 0) {
-			cJSON_AddNumberToObject(*argjson, "code", 0);
-		} else if (strcmp(argv[1], "listunspent") == 0) {
-			chips_read_valid_unspent(argv[3], argjson);
+	} else if (strcmp(argv[0], "lightning-cli") == 0) {
+		retval = process_ln_data(data, argv[1], argjson);
+	} else if (strcmp(argv[0], "chips-cli") == 0) {
+		if (strlen(data) == 0) {
+			if (strcmp(argv[1], "importaddress") == 0) {
+				cJSON_AddNumberToObject(*argjson, "code", 0);
+			} else if (strcmp(argv[1], "listunspent") == 0) {
+				chips_read_valid_unspent(argv[3], argjson);
+			} else {
+				retval = ERR_CHIPS_COMMAND;
+			}
 		} else {
-			cJSON_AddStringToObject(*argjson, "error", "command failed");
-			cJSON_AddStringToObject(*argjson, "command", command);
-		}
-	} else {
-		if ((strcmp(argv[1], "createrawtransaction") == 0) || (strcmp(argv[1], "sendrawtransaction") == 0) ||
-		    (strcmp(argv[1], "getnewaddress") == 0) || (strcmp(argv[1], "getrawtransaction") == 0) ||
-		    (strcmp(argv[1], "getblockhash") == 0)) {
-			if (data[strlen(data) - 1] == '\n')
-				data[strlen(data) - 1] = '\0';
+			if ((strcmp(argv[1], "createrawtransaction") == 0) ||
+			    (strcmp(argv[1], "sendrawtransaction") == 0) || (strcmp(argv[1], "getnewaddress") == 0) ||
+			    (strcmp(argv[1], "getrawtransaction") == 0) || (strcmp(argv[1], "getblockhash") == 0)) {
+				if (data[strlen(data) - 1] == '\n')
+					data[strlen(data) - 1] = '\0';
 
-			*argjson = cJSON_CreateString(data);
-		} else {
-			*argjson = cJSON_Parse(data);
-			cJSON_AddNumberToObject(*argjson, "code", 0);
+				*argjson = cJSON_CreateString(data);
+			} else {
+				*argjson = cJSON_Parse(data);
+				cJSON_AddNumberToObject(*argjson, "code", 0);
+			}
 		}
 	}
 end:
@@ -1473,38 +1504,44 @@ end:
 		free(command);
 	pclose(fp);
 
-	return ret;
+	return retval;
 }
 
 char *ln_get_new_address()
 {
-	int argc;
+	int32_t argc, retval = OK;
 	char **argv = NULL;
 	cJSON *addr_info = NULL;
 
 	argc = 2;
 	argv = bet_copy_args(argc, "lightning-cli", "newaddr");
 	addr_info = cJSON_CreateObject();
-	make_command(argc, argv, &addr_info);
+	retval = make_command(argc, argv, &addr_info);
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
+	}
 	bet_dealloc_args(argc, &argv);
 
 	return jstr(addr_info, "p2sh-segwit");
 }
 
-int32_t ln_block_height()
+int32_t ln_block_height(int32_t *block_height)
 {
 	char **argv = NULL;
-	int32_t argc, block_height;
+	int32_t argc, retval = OK;
 	cJSON *ln_info = NULL;
 
 	argc = 2;
 	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "lightning-cli", "getinfo");
 	ln_info = cJSON_CreateObject();
-	make_command(argc, argv, &ln_info);
-	block_height = jint(ln_info, "blockheight");
+	retval = make_command(argc, argv, &ln_info);
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
+	}
+	*block_height = jint(ln_info, "blockheight");
 	bet_dealloc_args(argc, &argv);
-	return block_height;
+	return retval;
 }
 
 int32_t ln_listfunds()
@@ -1512,20 +1549,18 @@ int32_t ln_listfunds()
 	cJSON *list_funds = NULL, *outputs = NULL;
 	int argc;
 	char **argv = NULL;
-	int32_t value = 0;
+	int32_t value = 0, retval = OK;
 
 	argc = 2;
 	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "lightning-cli", "listfunds");
 	list_funds = cJSON_CreateObject();
-	make_command(argc, argv, &list_funds);
-
-	if (jint(list_funds, "code") != 0) {
+	retval = make_command(argc, argv, &list_funds);
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
 		value = 0;
-		dlg_error("LN Error::%s", jstr(list_funds, "message"));
 		goto end;
 	}
-
 	outputs = cJSON_GetObjectItem(list_funds, "outputs");
 	for (int32_t i = 0; i < cJSON_GetArraySize(outputs); i++) {
 		value += jint(cJSON_GetArrayItem(outputs, i), "value");
@@ -1541,20 +1576,18 @@ end:
 char *ln_get_uri(char **uri)
 {
 	cJSON *channel_info = NULL, *addresses = NULL, *address = NULL;
-	int argc, port;
+	int32_t argc, port, retval = OK;
 	char **argv = NULL, port_str[6], *type = NULL;
 
 	argc = 2;
 	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "lightning-cli", "getinfo");
 	channel_info = cJSON_CreateObject();
-	make_command(argc, argv, &channel_info);
-
-	if (jint(channel_info, "code") != 0) {
-		dlg_error("LN Error::%s", jstr(channel_info, "message"));
+	retval = make_command(argc, argv, &channel_info);
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
 		goto end;
 	}
-
 	strcpy(*uri, jstr(channel_info, "id"));
 	strcat(*uri, "@");
 	addresses = cJSON_GetObjectItem(channel_info, "address");
@@ -1573,7 +1606,7 @@ end:
 
 int32_t ln_connect_uri(char *uri)
 {
-	int argc, retval = 1, channel_state;
+	int32_t argc, retval = OK, channel_state;
 	char **argv = NULL, channel_id[ln_uri_length];
 	cJSON *connect_info = NULL;
 	char temp[ln_uri_length];
@@ -1587,22 +1620,18 @@ int32_t ln_connect_uri(char *uri)
 		bet_alloc_args(argc, &argv);
 		argv = bet_copy_args(argc, "lightning-cli", "connect", uri);
 		connect_info = cJSON_CreateObject();
-		make_command(argc, argv, &connect_info);
-
-		if (jint(connect_info, "code") != 0) {
-			retval = -1;
-			dlg_error("LN Error::%s", jstr(connect_info, "method"));
-			goto end;
+		retval = make_command(argc, argv, &connect_info);
+		if (retval != OK) {
+			dlg_error("%s", bet_err_str(retval));
 		}
 	}
-end:
 	bet_dealloc_args(argc, &argv);
 	return retval;
 }
 
 cJSON *ln_fund_channel(char *channel_id, int32_t channel_fund_satoshi)
 {
-	int argc;
+	int32_t argc, retval = OK;
 	char **argv = NULL;
 	cJSON *fund_channel_info = NULL;
 	char channel_satoshis[20];
@@ -1612,42 +1641,35 @@ cJSON *ln_fund_channel(char *channel_id, int32_t channel_fund_satoshi)
 	snprintf(channel_satoshis, 20, "%d", channel_fund_satoshi);
 	argv = bet_copy_args(argc, "lightning-cli", "fundchannel", channel_id, channel_satoshis);
 	fund_channel_info = cJSON_CreateObject();
-	make_command(argc, argv, &fund_channel_info);
+	retval = make_command(argc, argv, &fund_channel_info);
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
+	}
 	bet_dealloc_args(argc, &argv);
 	return fund_channel_info;
 }
 
 int32_t ln_pay(char *bolt11)
 {
-	cJSON *pay_response = NULL;
-	int argc, retval = 1;
+	int32_t argc, retval = OK;
 	char **argv = NULL;
+	cJSON *pay_response = NULL;
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "lightning-cli", "pay", bolt11);
 	pay_response = cJSON_CreateObject();
-	make_command(argc, argv, &pay_response);
-
-	if (jint(pay_response, "code") != 0) {
-		retval = -1;
-		dlg_error("LN Error :: %s", jstr(pay_response, "message"));
-		goto end;
+	retval = make_command(argc, argv, &pay_response);
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
 	}
-
-	if (strcmp(jstr(pay_response, "status"), "complete") == 0) {
-		dlg_info("Payment Success");
-	} else {
-		retval = -1;
-	}
-end:
 	bet_dealloc_args(argc, &argv);
 	return retval;
 }
 
 cJSON *ln_connect(char *id)
 {
-	int argc;
+	int32_t argc, retval = OK;
 	char **argv = NULL;
 	cJSON *connect_info = NULL;
 
@@ -1656,7 +1678,11 @@ cJSON *ln_connect(char *id)
 	connect_info = cJSON_CreateObject();
 
 	argv = bet_copy_args(argc, "lightning-cli", "connect", id);
-	make_command(argc, argv, &connect_info);
+	retval = make_command(argc, argv, &connect_info);
+
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
+	}
 
 	bet_dealloc_args(argc, &argv);
 	return connect_info;
@@ -1673,10 +1699,9 @@ int32_t ln_check_if_address_isof_type(char *type)
 	argv = bet_copy_args(argc, "lightning-cli", "getinfo");
 
 	channel_info = cJSON_CreateObject();
-	make_command(argc, argv, &channel_info);
-
-	if (jint(channel_info, "code") != 0) {
-		retval = ERR_LN;
+	retval = make_command(argc, argv, &channel_info);
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
 		goto end;
 	}
 	addresses = cJSON_GetObjectItem(channel_info, "address");
@@ -1696,9 +1721,9 @@ end:
 	return retval;
 }
 
-void ln_check_peer_and_connect(char *id)
+int32_t ln_check_peer_and_connect(char *id)
 {
-	int argc;
+	int32_t argc, retval = OK;
 	char **argv = NULL;
 	cJSON *list_peers_info = NULL;
 	cJSON *peers_info = NULL;
@@ -1707,7 +1732,11 @@ void ln_check_peer_and_connect(char *id)
 	argc = 2;
 	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "lightning-cli", "listpeers");
-	make_command(argc, argv, &list_peers_info);
+	retval = make_command(argc, argv, &list_peers_info);
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
+		goto end;
+	}
 
 	peers_info = cJSON_GetObjectItem(list_peers_info, "peers");
 	for (int i = 0; i < cJSON_GetArraySize(peers_info); i++) {
@@ -1724,19 +1753,23 @@ void ln_check_peer_and_connect(char *id)
 	if (connected == 0) {
 		ln_connect(id);
 	}
+end:
 	bet_dealloc_args(argc, &argv);
 }
 
 int32_t ln_get_channel_status(char *id)
 {
-	int argc, channel_state = 0;
+	int32_t argc, channel_state = 0, retval = OK;
 	char **argv = NULL;
 	cJSON *channel_state_info = NULL, *channel_states = NULL, *channelState = NULL;
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "lightning-cli", "peer-channel-state", id);
-	make_command(argc, argv, &channel_state_info);
+	retval = make_command(argc, argv, &channel_state_info);
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
+	}
 
 	channel_states = cJSON_GetObjectItem(channel_state_info, "channel-states");
 
@@ -1751,33 +1784,6 @@ int32_t ln_get_channel_status(char *id)
 	if (channel_state_info)
 		cJSON_Delete(channel_state_info);
 	return channel_state;
-}
-
-int32_t ln_wait_for_tx_block_height(int32_t block_height)
-{
-	int argc;
-	char **argv = NULL;
-	cJSON *bh_info = NULL;
-	int32_t count = 0, max_attempts = 60;
-	int32_t ret = 1;
-
-	argc = 2;
-	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "lightning-cli", "getinfo");
-	bh_info = cJSON_CreateObject();
-	make_command(argc, argv, &bh_info);
-	while (jint(bh_info, "blockheight") < block_height) {
-		sleep(2);
-		memset(bh_info, 0x00, sizeof(struct cJSON));
-		make_command(argc, argv, &bh_info);
-		if (count++ > max_attempts)
-			break;
-	}
-	if (count > max_attempts)
-		ret = 0;
-
-	bet_dealloc_args(argc, &argv);
-	return ret;
 }
 
 int32_t ln_establish_channel(char *uri)
@@ -1817,7 +1823,11 @@ int32_t ln_establish_channel(char *uri)
 						chips_get_block_hash_from_txid(cJSON_Print(tx_info)));
 					do {
 						sleep(2);
-						ln_bh = ln_block_height();
+						retval = ln_block_height(&ln_bh);
+						if (retval != OK) {
+							dlg_error("%s", bet_err_str(retval));
+							return retval;
+						}
 					} while (ln_bh < chips_bh);
 				} else {
 					retval = ERR_CHIPS_TX_FAILED;
@@ -1837,7 +1847,7 @@ int32_t ln_establish_channel(char *uri)
 		fund_channel_info = ln_fund_channel(jstr(connect_info, "id"), channel_fund_satoshis);
 		if (jint(fund_channel_info, "code") != 0) {
 			dlg_error("%s", cJSON_Print(fund_channel_info));
-			retval = ERR_LN_CHANNEL_FUNDING_FAILED;
+			retval = ERR_LN_FUNDCHANNEL;
 			goto end;
 		}
 		while ((state = ln_get_channel_status(jstr(connect_info, "id"))) != CHANNELD_NORMAL) {
