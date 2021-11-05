@@ -1565,7 +1565,7 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 	cJSON_AddStringToObject(tx_status, "method", "tx_status");
 	cJSON_AddStringToObject(tx_status, "id", jstr(argjson, "id"));
 	cJSON_AddNumberToObject(tx_status, "tx_validity", retval);
-	cJSON_AddNumberToObject(tx_status, "player_funds", funds);
+	cJSON_AddNumberToObject(tx_status, "player_funds", funds);	
 	bytes = nn_send(bet->pubsock, cJSON_Print(tx_status), strlen(cJSON_Print(tx_status)), 0);
 	if (bytes < 0) {
 		dlg_error("Error in sending the data");
