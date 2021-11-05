@@ -1,4 +1,4 @@
-![example workflow](https://github.com/sg777/bet/actions/workflows/bet-cd.yml/badge.svg)
+[![bet CD](https://github.com/chips-blockchain/bet/actions/workflows/bet-cd.yml/badge.svg?branch=master)](https://github.com/chips-blockchain/bet/actions/workflows/bet-cd.yml)
 # Pangea-Bet
 
 ## Abstract
