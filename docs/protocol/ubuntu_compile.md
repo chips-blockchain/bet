@@ -16,9 +16,9 @@ sudo apt-get install -y libdb4.8-dev libdb4.8++-dev
 If boost is not there install boost library.
 ```
 cd
-wget https://dl.bintray.com/boostorg/release/1.64.0/source/boost_1_64_0.zip
-unzip boost_1_64_0.zip
-cd boost_1_64_0
+wget wget "https://sourceforge.net/projects/boost/files/boost/1.72.0/boost_1_72_0.tar.gz"
+tar -xvf boost_1_72_0.tar.gz
+cd boost_1_72_0
 ./bootstrap.sh
 ./b2
 ./b2 install
