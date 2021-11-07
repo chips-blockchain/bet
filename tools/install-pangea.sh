@@ -1,5 +1,6 @@
 #!/bin/bash
 
+commands=( sudo curl wget systemctl git bzip2 )
 
 # Install if sudo command isn't available
 if ! command -v sudo &> /dev/null
@@ -9,44 +10,21 @@ then
 	apt install -y sudo
 fi
 
-# Install curl command if isn't available
-if ! command -v curl &> /dev/null
-then
-    echo "curl could not be found"
-	if [[ $EUID -eq 0 ]]; then
-		sudo apt update
-		sudo apt install -y curl
-	else
-		apt update
-		apt install -y sudo curl
+# Install commands if isn't available
+for i in "${commands[@]}"
+do
+	if ! command -v $i &> /dev/null
+	then
+		echo "$i could not be found"
+		if [[ $EUID -eq 0 ]]; then
+			sudo apt update
+			sudo apt install -y $i
+		else
+			apt update
+			apt install -y sudo $i
+		fi
 	fi
-fi
-
-# Install wget command if isn't available
-if ! command -v wget &> /dev/null
-then
-    echo "wget could not be found"
-	if [[ $EUID -eq 0 ]]; then
-		sudo apt update
-		sudo apt install -y wget
-	else
-		apt update
-		apt install -y sudo wget
-	fi
-fi
-
-# Install systemctl command if isn't available
-if ! command -v systemctl &> /dev/null
-then
-    echo "systemctl could not be found"
-	if [[ $EUID -eq 0 ]]; then
-		sudo apt update
-		sudo apt install -y systemctl
-	else
-		apt update
-		apt install -y sudo systemctl
-	fi
-fi
+done
 
 # Check if Chips is already installed on system
 # If it's not installed then get the copy of pre-built binaries
@@ -164,3 +142,29 @@ then
     # mv privatebet/config/* $HOME/.pangea/
 fi
 
+
+# Install pangea-poker web UI on system if not found
+if ! [[ -d /opt/pangea-poker ]]
+then
+    echo "/opt/pangea-poker could not be found"
+    cd $HOME
+	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+	export NVM_DIR="$HOME/.nvm"
+	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+	[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+	nvm install 12
+	node -v
+	npm -v
+	git clone https://github.com/chips-blockchain/pangea-poker.git
+	sudo mv pangea-poker /opt/
+	cd /opt/pangea-poker
+	npm install
+	npm run build
+
+	# Install nginx to serve HTML files
+	sudo apt install -y nginx
+	sudo mv /var/www/html /var/www/html_backup
+	sudo ln -s /opt/pangea-poker/build /var/www/html
+	sudo systemctl enable nginx.service
+	sudo systemctl start nginx.service
+fi
