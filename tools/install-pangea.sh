@@ -113,7 +113,7 @@ Requires=chipsd.service
 After=chipsd.service
 
 [Service]
-ExecStart=/usr/local/bin/lightningd --pid-file=$HOME/.lightning/lightning.pid --daemon
+ExecStart=/usr/local/bin/lightningd --pid-file=$HOME/.chipsln/lightning.pid --daemon --log-file=$HOME/.chipsln/lightning.log
 PIDFile=$HOME/.lightning/lightning.pid
 User=$(whoami)
 Type=forking
