@@ -10,6 +10,13 @@ then
 	apt install -y sudo
 fi
 
+# update packages data
+if [[ $EUID -eq 0 ]]; then
+	sudo apt update
+else
+	apt update
+fi
+
 # Install commands if isn't available
 for i in "${commands[@]}"
 do
@@ -17,10 +24,8 @@ do
 	then
 		echo "$i could not be found"
 		if [[ $EUID -eq 0 ]]; then
-			sudo apt update
 			sudo apt install -y $i
 		else
-			apt update
 			apt install -y sudo $i
 		fi
 	fi
