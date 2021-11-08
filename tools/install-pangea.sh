@@ -1,6 +1,7 @@
 #!/bin/bash
 
 commands=( sudo curl wget systemctl git bzip2 )
+PublicIP=$(curl curl ifconfig.io)
 
 # Install if sudo command isn't available
 if ! command -v sudo &> /dev/null
@@ -173,3 +174,42 @@ then
 	sudo systemctl enable nginx.service
 	sudo systemctl start nginx.service
 fi
+
+echo "=============================================="
+echo ""
+echo "At the moment this install script does not verify"
+echo "if everything is installed correctly."
+echo "As it will evolve those checks will be included over time."
+echo "Few things to know:"
+echo ""
+echo "	- The script has installed and started Chips as a systemd service"
+echo "	  which you can control with the following commands:"
+echo ""
+echo "	  sudo systemctl start/restart/stop/status chipsd.service"
+echo ""
+echo "	- c-lightning is also installed as a systemd service,"
+echo "	  but it's not started by default. It is recommended"
+echo "	  you first let Chips blockchain fully sync with your system"
+echo "	  and then start lightning systemd service with the following command:"
+echo ""
+echo "	  sudo systemctl start lightning.service"
+echo ""
+echo "	  Once it's started, check with the following"
+echo "	  command if it's reflecting JSON output"
+echo ""
+echo "	  lightning-cli getinfo"
+echo ""
+echo "	- bet is installed in home directory at following location:"
+echo ""
+echo "	  $HOME/privatebet/"
+echo ""
+echo "	  To start bet as a player node you will need to change"
+echo "	  directory to $HOOME/privatebet/ and then give command as following:"
+echo ""
+echo "	  ./bet player"
+echo ""
+echo "	- Pangea-Poker Web UI is accessible at all local and public IPs:"
+echo ""
+echo "	  http://$PublicIP"
+echo ""
+echo "HAPPY GAMING!"
