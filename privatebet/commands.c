@@ -770,7 +770,7 @@ int32_t chips_get_block_height_from_block_hash(char *block_hash)
 
 cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_ids[][100])
 {
-	int argc, rc;
+	int argc, retval = OK;
 	char **argv = NULL, params[2][arg_size] = { 0 }, *hex_data = NULL, *data = NULL, *msig_addr = NULL;
 	cJSON *listunspent_info = NULL, *player_info = NULL;
 	double amount = 0, value = 0;
@@ -792,9 +792,9 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 		vout = cJSON_GetObjectItem(decoded_raw_tx, "vout");
 
 		hex_data = calloc(1, tx_data_size * 2);
-		rc = chips_extract_data(tx_ids[0], &hex_data);
+		retval = chips_extract_data(tx_ids[0], &hex_data);
 
-		if (rc == 1) {
+		if ((retval == OK) && (hex_data)) {
 			data = calloc(1, tx_data_size);
 			hexstr_to_str(hex_data, data);
 			player_info = cJSON_CreateObject();
@@ -1008,15 +1008,15 @@ void chips_validate_tx(char *tx)
 int32_t chips_extract_data(char *tx, char **rand_str)
 {
 	cJSON *raw_tx = NULL, *decoded_raw_tx = NULL, *vout = NULL, *script_pubkey = NULL;
-	int32_t retval = 0;
+	int32_t retval = OK;
 
 	raw_tx = chips_get_raw_tx(tx);
 	if (raw_tx == NULL) {
-		return retval;
+		return ERR_CHIPS_GET_RAW_TX;
 	}
 	decoded_raw_tx = chips_decode_raw_tx(raw_tx);
 	if (decoded_raw_tx == NULL) {
-		return retval;
+		return ERR_CHIPS_DECODE_TX;
 	}
 	vout = cJSON_GetObjectItem(decoded_raw_tx, "vout");
 	for (int i = 0; i < cJSON_GetArraySize(vout); i++) {
@@ -1029,8 +1029,6 @@ int32_t chips_extract_data(char *tx, char **rand_str)
 			break;
 		}
 	}
-	if (*rand_str)
-		retval = 1;
 	return retval;
 }
 

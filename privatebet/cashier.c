@@ -153,40 +153,36 @@ void bet_check_cashiers_status()
 
 int32_t bet_send_status(struct cashier *cashier_info, char *id)
 {
-	int32_t retval = 1;
+	int32_t retval = OK;
 	cJSON *live_info = NULL;
 
 	live_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(live_info, "method", "live");
 	cJSON_AddStringToObject(live_info, "id", id);
-
-	if ((retval = nn_send(cashier_info->c_pubsock, cJSON_Print(live_info), strlen(cJSON_Print(live_info)), 0)) <
-	    0) {
-		retval = -1;
-		dlg_error("%s", bet_err_str(ERR_NNG_SEND));
-	}
+	retval = (nn_send(cashier_info->c_pubsock, cJSON_Print(live_info), strlen(cJSON_Print(live_info)), 0) < 0) ?
+			 ERR_NNG_SEND :
+			 OK;
 	return retval;
 }
 
 int32_t bet_process_lock_in_tx(cJSON *argjson, struct cashier *cashier_info)
 {
-	int32_t rc, retval = 1, bytes;
+	int32_t retval = OK;
 	cJSON *status = NULL;
 
-	rc = bet_run_query(jstr(argjson, "sql_query"));
+	retval = bet_run_query(jstr(argjson, "sql_query"));
 	status = cJSON_CreateObject();
 	cJSON_AddStringToObject(status, "method", "query_status");
-	cJSON_AddNumberToObject(status, "status", rc);
-	bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(status), strlen(cJSON_Print(status)), 0);
-	if (bytes < 0)
-		retval = -1;
-
+	cJSON_AddNumberToObject(status, "status", retval);
+	retval = (nn_send(cashier_info->c_pubsock, cJSON_Print(status), strlen(cJSON_Print(status)), 0) < 0) ?
+			 ERR_NNG_SEND :
+			 OK;
 	return retval;
 }
 
 int32_t bet_cashier_process_raw_msig_tx(cJSON *argjson, struct cashier *cashier_info)
 {
-	int32_t retval = 1, bytes;
+	int32_t retval = OK;
 	cJSON *signed_tx = NULL;
 	char *tx = NULL;
 
@@ -196,16 +192,15 @@ int32_t bet_cashier_process_raw_msig_tx(cJSON *argjson, struct cashier *cashier_
 	tx = cJSON_Print(cJSON_GetObjectItem(argjson, "tx"));
 	cJSON_AddItemToObject(signed_tx, "signed_tx", chips_sign_raw_tx_with_wallet(tx));
 	dlg_info("signed_tx::%s", cJSON_Print(signed_tx));
-	bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(signed_tx), strlen(cJSON_Print(signed_tx)), 0);
-	if (bytes < 0)
-		retval = -1;
-
+	retval = (nn_send(cashier_info->c_pubsock, cJSON_Print(signed_tx), strlen(cJSON_Print(signed_tx)), 0) < 0) ?
+			 ERR_NNG_SEND :
+			 OK;
 	return retval;
 }
 
 int32_t bet_process_payout_tx(cJSON *argjson, struct cashier *cashier_info)
 {
-	int32_t retval = -1;
+	int32_t retval = OK;
 	char *sql_query = NULL;
 
 	sql_query = calloc(1, 400);
@@ -222,22 +217,18 @@ int32_t bet_process_payout_tx(cJSON *argjson, struct cashier *cashier_info)
 
 int32_t bet_process_game_info(cJSON *argjson, struct cashier *cashier_info)
 {
+	int32_t retval = OK;
 	char *sql_query = NULL;
 	cJSON *game_state = NULL;
-	int32_t rc;
 
 	sql_query = calloc(1, 2000);
-
-	dlg_info("%s", cJSON_Print(argjson));
 	game_state = cJSON_GetObjectItem(argjson, "game_state");
 	sprintf(sql_query, "INSERT into cashier_game_state values(\"%s\", \'%s\');", jstr(argjson, "table_id"),
 		cJSON_Print(game_state));
-	dlg_info("sql_query::%s", sql_query);
-	rc = bet_run_query(sql_query);
+	retval = bet_run_query(sql_query);
 	if (sql_query)
 		free(sql_query);
-
-	return rc;
+	return retval;
 }
 
 cJSON *bet_resolve_game_dispute(cJSON *game_info)
@@ -378,9 +369,10 @@ void bet_process_solve(cJSON *argjson, struct cashier *cashier_info)
 
 int32_t bet_validate_game_details(cJSON *argjson, struct cashier *cashier_info)
 {
-	int rc, bytes;
+	int retval = OK;
 	cJSON *response_info = NULL;
 	int value = 1;
+
 	response_info = cJSON_CreateObject();
 	/*
 	Need to implement the validation logic here - sg777
@@ -388,11 +380,12 @@ int32_t bet_validate_game_details(cJSON *argjson, struct cashier *cashier_info)
 	cJSON_AddStringToObject(response_info, "method", "game_validation_status");
 	cJSON_AddStringToObject(response_info, "id", jstr(argjson, "id"));
 	cJSON_AddNumberToObject(response_info, "status", value);
-	bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(response_info), strlen(cJSON_Print(response_info)), 0);
 
-	if (bytes < 0)
-		rc = -1;
-	return rc;
+	retval = (nn_send(cashier_info->c_pubsock, cJSON_Print(response_info), strlen(cJSON_Print(response_info)), 0) <
+		  0) ?
+			 ERR_NNG_SEND :
+			 OK;
+	return retval;
 }
 
 void bet_cashier_status_loop(void *_ptr)
@@ -431,17 +424,18 @@ void bet_cashier_status_loop(void *_ptr)
 
 static int32_t bet_update_tx_spent(cJSON *argjson)
 {
+	int retval = OK;
 	char *sql_query = NULL;
-	int rc;
 
 	sql_query = calloc(1, sql_query_size);
 	sprintf(sql_query,
 		"UPDATE c_tx_addr_mapping set payin_tx_id_status = 0, payout_tx_id = \'%s\' where payin_tx_id_status =\'%s\';",
 		jstr(argjson, "payout_tx_id"), jstr(argjson, "payin_tx_id"));
-	rc = bet_run_query(sql_query);
+	retval = bet_run_query(sql_query);
 	if (sql_query)
 		free(sql_query);
-	return rc;
+
+	return retval;
 }
 
 static cJSON *bet_reverse_disputed_tx(cJSON *game_info)
@@ -540,19 +534,18 @@ end:
 
 int32_t bet_process_dispute(cJSON *argjson, struct cashier *cashier_info)
 {
-	int rc = 1, bytes;
+	int retval = OK;
 	char *hex_data = NULL, *data = NULL;
-	cJSON *player_info = NULL, *tx = NULL;
-	cJSON *dispute_response = NULL;
+	cJSON *player_info = NULL, *tx = NULL, *dispute_response = NULL;
 
 	dispute_response = cJSON_CreateObject();
 	cJSON_AddStringToObject(dispute_response, "method", "dispute_response");
 	cJSON_AddStringToObject(dispute_response, "id", jstr(argjson, "id"));
 
 	hex_data = calloc(1, tx_data_size * 2);
-	rc = chips_extract_data(jstr(argjson, "tx_id"), &hex_data);
+	retval = chips_extract_data(jstr(argjson, "tx_id"), &hex_data);
 
-	if (rc == 1) {
+	if ((retval == OK) && (hex_data)) {
 		data = calloc(1, tx_data_size);
 		hexstr_to_str(hex_data, data);
 		player_info = cJSON_CreateObject();
@@ -565,25 +558,21 @@ int32_t bet_process_dispute(cJSON *argjson, struct cashier *cashier_info)
 		cJSON_AddItemToObject(dispute_response, "payout_tx", tx);
 	}
 	dlg_info("%s", cJSON_Print(dispute_response));
-	bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(dispute_response), strlen(cJSON_Print(dispute_response)),
-			0);
-
-	if (bytes < 0)
-		rc = -1;
-	return rc;
+	retval = (nn_send(cashier_info->c_pubsock, cJSON_Print(dispute_response), strlen(cJSON_Print(dispute_response)),
+			  0) < 0) ?
+			 ERR_NNG_SEND :
+			 OK;
+	return retval;
 }
 
 static int32_t bet_process_dealer_info(cJSON *argjson)
 {
+	int32_t retval = OK;
 	char *sql_query = NULL;
-	int rc, retval = 0;
 
 	sql_query = calloc(1, sql_query_size);
 	sprintf(sql_query, "INSERT into dealers_info values(\'%s\');", jstr(argjson, "ip"));
-	rc = bet_run_query(sql_query);
-	if ((rc == SQLITE_OK) || (rc == SQLITE_CONSTRAINT)) {
-		retval = 1;
-	}
+	retval = bet_run_query(sql_query);
 	if (sql_query)
 		free(sql_query);
 
@@ -592,12 +581,9 @@ static int32_t bet_process_dealer_info(cJSON *argjson)
 
 static int32_t bet_process_rqst_dealer_info(cJSON *argjson, struct cashier *cashier_info)
 {
-	cJSON *response_info = NULL;
-	int32_t bytes, rc = 0;
-	cJSON *dealer_ips = NULL;
-	cJSON *dcv_state_info = NULL;
-	cJSON *dcv_state_rqst = NULL;
-	cJSON *active_dealers = NULL;
+	int32_t retval = OK;
+	cJSON *dealer_ips = NULL, *response_info = NULL, *dcv_state_info = NULL, *dcv_state_rqst = NULL,
+	      *active_dealers = NULL;
 
 	dealer_ips = cJSON_CreateArray();
 	response_info = cJSON_CreateObject();
@@ -619,24 +605,22 @@ static int32_t bet_process_rqst_dealer_info(cJSON *argjson, struct cashier *cash
 			temp = cJSON_CreateString(unstringify(cJSON_Print(cJSON_GetArrayItem(dealer_ips, i))));
 			cJSON_AddItemToArray(active_dealers, temp);
 		} else {
-			rc = sqlite3_delete_dealer(unstringify(cJSON_Print(cJSON_GetArrayItem(dealer_ips, i))));
+			retval = sqlite3_delete_dealer(unstringify(cJSON_Print(cJSON_GetArrayItem(dealer_ips, i))));
 		}
 	}
 
 	cJSON_AddItemToObject(response_info, "dealer_ips", active_dealers);
-	bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(response_info), strlen(cJSON_Print(response_info)), 0);
-	if (bytes < 0) {
-		dlg_error("There is a problem in sending the %s", cJSON_Print(response_info));
-		rc = -1;
-	}
-	return rc;
+	retval = (nn_send(cashier_info->c_pubsock, cJSON_Print(response_info), strlen(cJSON_Print(response_info)), 0) <
+		  0) ?
+			 ERR_NNG_SEND :
+			 OK;
+	return retval;
 }
 
 static int32_t bet_process_find_bvv(cJSON *argjson, struct cashier *cashier_info)
 {
-	int32_t bytes, rc;
-	cJSON *bvv_status = NULL;
-	cJSON *dcv_state = 0;
+	int32_t retval = OK;
+	cJSON *bvv_status = NULL, *dcv_state = NULL;
 
 	if (bvv_state == 1) {
 		dcv_state = cJSON_CreateObject();
@@ -655,10 +639,10 @@ static int32_t bet_process_find_bvv(cJSON *argjson, struct cashier *cashier_info
 	cJSON_AddNumberToObject(bvv_status, "bvv_state", bvv_state);
 	cJSON_AddStringToObject(bvv_status, "id", jstr(argjson, "id"));
 	cJSON_AddStringToObject(bvv_status, "bvv_unique_id", unique_id);
-	bytes = nn_send(cashier_info->c_pubsock, cJSON_Print(bvv_status), strlen(cJSON_Print(bvv_status)), 0);
-	if (bytes < 0)
-		rc = -1;
-	return rc;
+	retval = (nn_send(cashier_info->c_pubsock, cJSON_Print(bvv_status), strlen(cJSON_Print(bvv_status)), 0) < 0) ?
+			 ERR_NNG_SEND :
+			 OK;
+	return retval;
 }
 
 static void bet_process_add_bvv(cJSON *argjson, struct cashier *cashier_info)
@@ -676,11 +660,11 @@ void bet_cashier_backend_thrd(void *_ptr)
 	struct cashier *cashier_info = _ptr;
 	cJSON *argjson = NULL;
 	char *method = NULL;
-	int32_t retval = 1;
+	int32_t retval = OK;
 
 	argjson = cashier_info->msg;
 	if ((method = jstr(argjson, "method")) != 0) {
-		dlg_info("receiving::%s", method);
+		dlg_info("recv::%s", method);
 		if (strcmp(method, "live") == 0) {
 			retval = bet_send_status(cashier_info, jstr(argjson, "id"));
 		} else if (strcmp(method, "raw_msig_tx") == 0) {
@@ -713,8 +697,8 @@ void bet_cashier_backend_thrd(void *_ptr)
 			dlg_info("msig_info::%s", cJSON_Print(msig_info));
 		}
 	}
-	if (retval != -1) {
-		//This needs to be handled.
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
 	}
 }
 void bet_cashier_server_loop(void *_ptr)
