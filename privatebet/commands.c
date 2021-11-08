@@ -412,9 +412,8 @@ cJSON *chips_sign_raw_tx_with_wallet(char *raw_tx)
 
 int32_t chips_publish_multisig_tx(char *tx)
 {
-	int32_t flag = 0, bytes, retval = 0;
+	int32_t flag = 0, retval = OK;
 	cJSON *tx_info = NULL;
-	char *rendered = NULL;
 
 	tx_info = cJSON_CreateObject();
 	for (int i = 0; i < bet_dcv->numplayers; i++) {
@@ -427,11 +426,9 @@ int32_t chips_publish_multisig_tx(char *tx)
 	if (flag) {
 		cJSON_AddStringToObject(tx_info, "method", "signrawtransaction");
 		cJSON_AddStringToObject(tx_info, "tx", tx);
-		rendered = cJSON_Print(tx_info);
-
-		bytes = nn_send(bet_dcv->pubsock, rendered, strlen(rendered), 0);
-		if (bytes < 0)
-			retval = -1;
+		retval = (nn_send(bet_dcv->pubsock, cJSON_Print(tx_info), strlen(cJSON_Print(tx_info)), 0) < 0) ?
+				 ERR_NNG_SEND :
+				 OK;
 	}
 	return retval;
 }
@@ -1466,7 +1463,6 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 		memset(buf, 0x00, buf_size);
 	}
 	data[new_size - 1] = '\0';
-	dlg_info("%s", data);
 	*argjson = NULL;
 	if (strcmp(argv[0], "git") == 0) {
 		*argjson = cJSON_CreateString((const char *)data);

@@ -6,6 +6,9 @@
 const char *bet_err_str(int32_t err_no)
 {
 	switch (err_no) {
+	case OK:
+		return "No Error";
+		break;
 	case ERR_DECRYPTING_OWN_SHARE:
 		return "Failed failed to decrypt its own shamir secret shard to retrieve the card";
 		break;
