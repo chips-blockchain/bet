@@ -1,6 +1,7 @@
 #include "commands.h"
 #include "storage.h"
 #include "misc.h"
+#include "err.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -281,7 +282,7 @@ end:
 cJSON *bet_show_fail_history()
 {
 	sqlite3_stmt *stmt = NULL;
-	int rc;
+	int retval = OK;
 	sqlite3 *db;
 	char *sql_query = NULL, *data = NULL, *hex_data = NULL;
 	cJSON *game_fail_info = NULL;
@@ -289,9 +290,9 @@ cJSON *bet_show_fail_history()
 	db = bet_get_db_instance();
 	sql_query = calloc(1, sql_query_size);
 	sprintf(sql_query, "SELECT table_id,tx_id FROM player_tx_mapping WHERE payout_tx_id is null;");
-	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
-	if (rc != SQLITE_OK) {
-		dlg_error("error_code :: %d, error msg ::%s, \n query ::%s", rc, sqlite3_errmsg(db), sql_query);
+	retval = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
+	if (retval != SQLITE_OK) {
+		dlg_error("error_code :: %d, error msg ::%s, \n query ::%s", retval, sqlite3_errmsg(db), sql_query);
 		goto end;
 	}
 
@@ -300,7 +301,7 @@ cJSON *bet_show_fail_history()
 	hex_data = calloc(1, tx_data_size * 2);
 	data = calloc(1, tx_data_size);
 
-	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+	while ((retval = sqlite3_step(stmt)) == SQLITE_ROW) {
 		cJSON *game_obj = cJSON_CreateObject();
 		cJSON_AddStringToObject(game_obj, "table_id", (const char *)sqlite3_column_text(stmt, 0));
 		cJSON_AddStringToObject(game_obj, "tx_id", (const char *)sqlite3_column_text(stmt, 1));
@@ -308,7 +309,11 @@ cJSON *bet_show_fail_history()
 		memset(hex_data, 0x00, 2 * tx_data_size);
 		memset(data, 0x00, tx_data_size);
 
-		chips_extract_data(jstr(game_obj, "tx_id"), &hex_data);
+		retval = chips_extract_data(jstr(game_obj, "tx_id"), &hex_data);
+		if (retval != OK) {
+			dlg_error("%s", bet_err_str(retval));
+			goto end;
+		}
 		hexstr_to_str(hex_data, data);
 		cJSON_AddItemToObject(game_obj, "game_details", cJSON_Parse(data));
 		cJSON_AddItemToArray(game_fail_info, game_obj);
@@ -329,20 +334,19 @@ end:
 
 cJSON *bet_show_success_history()
 {
-	sqlite3_stmt *stmt = NULL;
-	int rc;
-	sqlite3 *db;
-	char *sql_query = NULL;
+	int32_t retval = OK;
+	char *sql_query = NULL, *hex_data = NULL, *data = NULL;
 	cJSON *game_success_info = NULL;
-	char *hex_data = NULL, *data = NULL;
+	sqlite3 *db;
+	sqlite3_stmt *stmt = NULL;
 
 	db = bet_get_db_instance();
 	sql_query = calloc(1, sql_query_size);
 	sprintf(sql_query, "SELECT table_id,payout_tx_id FROM player_tx_mapping WHERE payout_tx_id is not null;");
 
-	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
-	if (rc != SQLITE_OK) {
-		dlg_error("error_code :: %d, error msg ::%s, \n query ::%s", rc, sqlite3_errmsg(db), sql_query);
+	retval = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
+	if (retval != SQLITE_OK) {
+		dlg_error("error_code :: %d, error msg ::%s, \n query ::%s", retval, sqlite3_errmsg(db), sql_query);
 		goto end;
 	}
 
@@ -351,7 +355,7 @@ cJSON *bet_show_success_history()
 	hex_data = calloc(1, tx_data_size * 2);
 	data = calloc(1, tx_data_size);
 
-	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+	while ((retval = sqlite3_step(stmt)) == SQLITE_ROW) {
 		cJSON *game_obj = cJSON_CreateObject();
 		cJSON_AddStringToObject(game_obj, "table_id", (const char *)sqlite3_column_text(stmt, 0));
 		cJSON_AddStringToObject(game_obj, "payout_tx_id", (const char *)sqlite3_column_text(stmt, 1));
@@ -359,7 +363,11 @@ cJSON *bet_show_success_history()
 		memset(hex_data, 0x00, 2 * tx_data_size);
 		memset(data, 0x00, tx_data_size);
 
-		chips_extract_data(jstr(game_obj, "payout_tx_id"), &hex_data);
+		retval = chips_extract_data(jstr(game_obj, "payout_tx_id"), &hex_data);
+		if (retval != OK) {
+			dlg_error("%s", bet_err_str(retval));
+			goto end;
+		}
 		hexstr_to_str(hex_data, data);
 		cJSON_AddItemToObject(game_obj, "game_details", cJSON_Parse(data));
 		cJSON_AddItemToArray(game_success_info, game_obj);

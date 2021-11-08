@@ -93,6 +93,12 @@ const char *bet_err_str(int32_t err_no)
 	case ERR_LN_PEERCHANNEL_STATE:
 		return "Error in finding the peer channel state";
 		break;
+	case ERR_CHIPS_GET_RAW_TX:
+		return "Error in getting CHIPS raw TX";
+		break;
+	case ERR_CHIPS_DECODE_TX:
+		return "Error in decoding CHIPS raw TX";
+		break;
 	case ERR_INI_PARSING:
 		return "Error in parsing the ini configuration file";
 		break;

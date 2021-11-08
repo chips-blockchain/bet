@@ -47,6 +47,8 @@ All the errors that come across in bet are defined here. The error numbers are a
 #define ERR_LN_CONNECT 48
 #define ERR_LN_LISTPEERS 49
 #define ERR_LN_PEERCHANNEL_STATE 50
+#define ERR_CHIPS_GET_RAW_TX 51
+#define ERR_CHIPS_DECODE_TX 52
 
 //Parsing Errors
 #define ERR_INI_PARSING 65

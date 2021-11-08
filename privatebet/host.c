@@ -1332,7 +1332,9 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson, struct privatebet_info *bet)
 
 	if (chips_check_if_tx_unspent(cJSON_Print(tx_info)) == 1) {
 		hex_data = calloc(1, tx_data_size * 2);
-		chips_extract_data(cJSON_Print(tx_info), &hex_data);
+		retval = chips_extract_data(cJSON_Print(tx_info), &hex_data);
+		if (retval != OK)
+			goto end;
 		data = calloc(1, tx_data_size);
 		hexstr_to_str(hex_data, data);
 		data_info = cJSON_CreateObject();
@@ -1352,6 +1354,7 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson, struct privatebet_info *bet)
 			}
 		}
 	}
+end:
 	if (data)
 		free(data);
 	if (hex_data)

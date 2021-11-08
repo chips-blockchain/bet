@@ -480,7 +480,7 @@ int main(int argc, char **argv)
 				char *hex_data = NULL, *data = NULL;
 				hex_data = calloc(1, tx_data_size * 2);
 				data = calloc(1, tx_data_size * 2);
-				if (1 == chips_extract_data(argv[2], &hex_data)) {
+				if (chips_extract_data(argv[2], &hex_data) == OK) {
 					hexstr_to_str(hex_data, data);
 					dlg_info("Data part of tx \n %s", data);
 				}

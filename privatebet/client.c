@@ -153,8 +153,8 @@ struct enc_share get_API_enc_share(cJSON *obj)
 
 int32_t bet_bvv_init(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int32_t bytes, retval = 2;
-	char *rendered = NULL, str[65], enc_str[177];
+	int32_t retval = OK;
+	char str[65], enc_str[177];
 	cJSON *cjson_dcv_blind_cards = NULL, *cjson_peer_pubkeys = NULL, *bvv_init_info = NULL,
 	      *cjson_bvv_blind_cards = NULL, *cjson_shamir_shards = NULL;
 	bits256 dcv_blind_cards[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS], peer_pubkeys[CARDS777_MAXPLAYERS];
@@ -200,48 +200,40 @@ int32_t bet_bvv_init(cJSON *argjson, struct privatebet_info *bet, struct private
 			}
 		}
 	}
-	rendered = cJSON_Print(bvv_init_info);
-	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
-
-	if (bytes < 0)
-		retval = -1;
-
+	retval = (nn_send(bet->pushsock, cJSON_Print(bvv_init_info), strlen(cJSON_Print(bvv_init_info)), 0) < 0) ?
+			 ERR_NNG_SEND :
+			 OK;
 	return retval;
 }
 
 static int32_t bet_bvv_join_init(struct privatebet_info *bet)
 {
+	int32_t retval = OK;
 	cJSON *bvv_response_info = NULL;
-	int bytes, retval = 0;
-	char *rendered = NULL;
 
 	bvv_response_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(bvv_response_info, "method", "bvv_join");
-	rendered = cJSON_Print(bvv_response_info);
 	dlg_info("BVV Response Info::%s\n", cJSON_Print(bvv_response_info));
-	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
-
-	if (bytes < 0)
-		retval = -1;
+	retval = (nn_send(bet->pushsock, cJSON_Print(bvv_response_info), strlen(cJSON_Print(bvv_response_info)), 0) <
+		  0) ?
+			 ERR_NNG_SEND :
+			 OK;
 
 	return retval;
 }
 
 int32_t bet_check_bvv_ready(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
+	int32_t retval = OK;
 	cJSON *bvv_ready = NULL;
-	int32_t retval = 0, bytes;
-	char *rendered = NULL;
 
 	bvv_ready = cJSON_CreateObject();
 	cJSON_AddStringToObject(bvv_ready, "method", "bvv_ready");
 
 	dlg_info("BVV ready info::%s\n", cJSON_Print(bvv_ready));
-	rendered = cJSON_Print(bvv_ready);
-	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
-	if (bytes < 0)
-		retval = -1;
-
+	retval = (nn_send(bet->pushsock, cJSON_Print(bvv_ready), strlen(cJSON_Print(bvv_ready)), 0) < 0) ?
+			 ERR_NNG_SEND :
+			 OK;
 	return retval;
 }
 
@@ -257,7 +249,7 @@ void bet_bvv_reset(struct privatebet_info *bet, struct privatebet_vars *vars)
 
 void bet_bvv_backend_loop(void *_ptr)
 {
-	int32_t recvlen, retval = 0;
+	int32_t recvlen, retval = OK;
 	cJSON *argjson = NULL;
 	void *ptr = NULL;
 	struct privatebet_info *bet = _ptr;
@@ -274,9 +266,9 @@ void bet_bvv_backend_loop(void *_ptr)
 		if ((recvlen = nn_recv(bet->subsock, &ptr, NN_MSG, 0)) > 0) {
 			char *tmp = clonestr(ptr);
 			if ((argjson = cJSON_Parse(tmp)) != 0) {
-				if ((retval = bet_bvv_backend(argjson, bet, bvv_vars)) < 0) {
-					dlg_error("Failed to send data\n");
-				} else if (retval == 2) {
+				if ((retval = bet_bvv_backend(argjson, bet, bvv_vars)) != OK) {
+					dlg_error("%s", bet_err_str(retval));
+				} else {
 					bet_bvv_reset(bet, bvv_vars);
 					dlg_info("The role of bvv is done for this hand\n");
 					bvv_state = 0;
@@ -290,7 +282,7 @@ void bet_bvv_backend_loop(void *_ptr)
 int32_t bet_bvv_backend(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	char *method;
-	int32_t retval = 0;
+	int32_t retval = OK;
 
 	if ((method = jstr(argjson, "method")) != 0) {
 		dlg_info("received message::%s\n", method);
