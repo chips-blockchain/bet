@@ -412,21 +412,8 @@ static char *bet_pick_dealer()
 	return NULL;
 }
 
-void test()
-{
-	int argc = 2, retval;
-	char **argv = NULL;
-	cJSON *result = cJSON_CreateObject();
-
-	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "lightning-cli", "pay");
-	retval = make_command(argc, argv, &result);
-	bet_dealloc_args(argc, &argv);
-	dlg_info("%s", bet_err_str(retval));
-}
 int main(int argc, char **argv)
 {
-	test();
 	bet_set_unique_id();
 
 	if (argc >= 2) {

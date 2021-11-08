@@ -860,16 +860,18 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 		}
 		uri = (char *)malloc(sizeof(char) * 100);
 
-		strcpy(uri, jstr(channel_info, "id"));
-		strcat(uri, "@");
-
 		addresses = cJSON_CreateObject();
 		addresses = cJSON_GetObjectItem(channel_info, "address");
 
 		address = cJSON_CreateObject();
 		address = cJSON_GetArrayItem(addresses, 0);
-
-		strcat(uri, jstr(address, "address"));
+		
+		strcpy(uri, jstr(channel_info, "id"));
+		
+		if(jstr(address, "address")) {
+			strcat(uri, "@");
+			strcat(uri, jstr(address, "address"));
+		}	
 		cJSON_AddStringToObject(joininfo, "uri", uri);
 		cJSON_AddNumberToObject(joininfo, "gui_playerID", (jint(argjson, "gui_playerID") - 1));
 		cJSON_AddStringToObject(joininfo, "req_identifier", req_identifier);
