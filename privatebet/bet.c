@@ -555,21 +555,17 @@ struct pair256 deckgen_player(bits256 *playerprivs, bits256 *playercards, int32_
 	}
 	return (key);
 }
+
 int32_t sg777_deckgen_vendor(int32_t playerid, bits256 *cardprods, bits256 *finalcards, int32_t numcards,
 			     bits256 *playercards,
 			     bits256 deckid) // given playercards[], returns cardprods[] and finalcards[]
 {
+	int32_t retval = OK;
 	static struct pair256 randcards[256];
-	static bits256 active_deckid, hash_temp[CARDS777_MAXCARDS];
-	int32_t retval = 1;
+	static bits256 hash_temp[CARDS777_MAXCARDS];
 	bits256 hash, xoverz, tmp[256];
 
-	if (bits256_cmp(deckid, active_deckid) != 0)
-		deckgen_common2(randcards, numcards);
-	else {
-		retval = -1;
-		goto end;
-	}
+	deckgen_common2(randcards, numcards);
 
 	for (int32_t i = 0; i < numcards; i++) {
 		xoverz = xoverz_donna(curve25519(randcards[i].priv, playercards[i]));
@@ -583,7 +579,6 @@ int32_t sg777_deckgen_vendor(int32_t playerid, bits256 *cardprods, bits256 *fina
 		g_hash[playerid][i] = hash_temp[permis_d[i]]; // sg777 hash_temp[permis_d[i]]
 		cardprods[i] = randcards[i].prod; // same cardprods[] returned for each player
 	}
-end:
 	return retval;
 }
 

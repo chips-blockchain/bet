@@ -30,10 +30,9 @@ Here contains the functions which are specific to DCV
 
 int32_t bet_initiate_statemachine(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
+	int32_t retval = OK;
 	cJSON *dealerInfo = NULL;
-	int32_t retval = 1, bytes;
-	char *rendered = NULL;
-	cJSON *temp = NULL;
+
 	vars->turni = 0;
 	vars->round = 0;
 	vars->pot = 0;
@@ -49,20 +48,11 @@ int32_t bet_initiate_statemachine(cJSON *argjson, struct privatebet_info *bet, s
 	cJSON_AddStringToObject(dealerInfo, "method", "dealer");
 	cJSON_AddNumberToObject(dealerInfo, "playerid", vars->dealer);
 
-	temp = cJSON_CreateObject();
-	temp = cJSON_Parse(cJSON_Print(dealerInfo));
+	retval = (nn_send(bet->pubsock, cJSON_Print(dealerInfo), strlen(cJSON_Print(dealerInfo)), 0) < 0) ?
+			 ERR_NNG_SEND :
+			 OK;
+	bet_push_dcv_to_gui(dealerInfo);
 
-	rendered = cJSON_Print(dealerInfo);
-	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
-	if (bytes < 0) {
-		retval = -1;
-		dlg_error("nn_send failed");
-		goto end;
-	}
-
-	bet_push_dcv_to_gui(temp);
-
-end:
 	return retval;
 }
 
@@ -407,9 +397,8 @@ int32_t bet_dcv_small_blind_bet(cJSON *argjson, struct privatebet_info *bet, str
 
 int32_t bet_dcv_small_blind(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
+	int32_t retval = OK;
 	cJSON *smallBlindInfo = NULL;
-	int32_t retval = 1, bytes;
-	char *rendered = NULL;
 
 	vars->last_turn = vars->dealer;
 	vars->turni = (vars->dealer) % bet->maxplayers; // vars->dealer+1 is removed since
@@ -421,15 +410,9 @@ int32_t bet_dcv_small_blind(cJSON *argjson, struct privatebet_info *bet, struct 
 	cJSON_AddNumberToObject(smallBlindInfo, "playerid", vars->turni);
 	cJSON_AddNumberToObject(smallBlindInfo, "round", vars->round);
 	cJSON_AddNumberToObject(smallBlindInfo, "pot", vars->pot);
-	rendered = cJSON_Print(smallBlindInfo);
-	bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
-	if (bytes < 0) {
-		retval = -1;
-		dlg_error("nn_send failed");
-		goto end;
-	}
-
-end:
+	retval = (nn_send(bet->pubsock, cJSON_Print(smallBlindInfo), strlen(cJSON_Print(smallBlindInfo)), 0) < 0) ?
+			 ERR_NNG_SEND :
+			 OK;
 	return retval;
 }
 /***************************************************************
@@ -457,7 +440,7 @@ int32_t bet_player_betting_statemachine(cJSON *argjson, struct privatebet_info *
 				bet_relay(argjson, bet, vars);
 				retval = bet_dcv_small_blind_bet(argjson, bet, vars);
 			} else {
-				bet_player_small_blind_bet(argjson, bet, vars);
+				retval = bet_player_small_blind_bet(argjson, bet, vars);
 			}
 		} else if (strcmp(action, "big_blind_bet") == 0) {
 			if (bet->myplayerid == -2) {

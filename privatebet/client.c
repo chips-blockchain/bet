@@ -865,13 +865,13 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 
 		address = cJSON_CreateObject();
 		address = cJSON_GetArrayItem(addresses, 0);
-		
+
 		strcpy(uri, jstr(channel_info, "id"));
-		
-		if(jstr(address, "address")) {
+
+		if (jstr(address, "address")) {
 			strcat(uri, "@");
 			strcat(uri, jstr(address, "address"));
-		}	
+		}
 		cJSON_AddStringToObject(joininfo, "uri", uri);
 		cJSON_AddNumberToObject(joininfo, "gui_playerID", (jint(argjson, "gui_playerID") - 1));
 		cJSON_AddStringToObject(joininfo, "req_identifier", req_identifier);
@@ -1608,7 +1608,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			if (strcmp(req_identifier, jstr(argjson, "id")) == 0) {
 				bet_player_wallet_info();
 				vars->player_funds = jint(argjson, "player_funds");
-				if (jint(argjson, "tx_validity") == 1) {
+				if (jint(argjson, "tx_validity") == OK) {
 					dlg_info("Dealer verified the TX made by the player");
 					if (backend_status == backend_ready) {
 						/* 
@@ -1688,6 +1688,11 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 				 jint(argjson, "playerid"), bet_err_str(jint(argjson, "err_no")));
 			bet_raise_dispute(player_payin_txid);
 			exit(-1);
+		} else if (strcmp(method, "game_abort_player") == 0) {
+			if (strcmp(req_identifier, jstr(argjson, "id")) == 0) {
+				bet_handle_player_error(bet, jint(argjson, "err_no"));
+				exit(-1);
+			}
 		} else {
 			dlg_info("%s method is not handled in the backend\n", method);
 		}
