@@ -1,4 +1,6 @@
 #include "bet.h"
+
+
 void bet_set_table_id();
 int32_t bet_dcv_deck_init_info(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);
 int32_t bet_dcv_init(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars);

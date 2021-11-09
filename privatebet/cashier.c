@@ -590,7 +590,7 @@ static int32_t bet_process_rqst_dealer_info(cJSON *argjson, struct cashier *cash
 	cJSON_AddStringToObject(response_info, "method", "rqst_dealer_info_response");
 	cJSON_AddStringToObject(response_info, "id", jstr(argjson, "id"));
 	dealer_ips = sqlite3_get_dealer_info_details();
-
+	dlg_info("%s", cJSON_Print(dealer_ips));
 	active_dealers = cJSON_CreateArray();
 
 	dcv_state_rqst = cJSON_CreateObject();
@@ -600,16 +600,13 @@ static int32_t bet_process_rqst_dealer_info(cJSON *argjson, struct cashier *cash
 	for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ips); i++) {
 		dcv_state_info = bet_msg_dealer_with_response_id(
 			dcv_state_rqst, unstringify(cJSON_Print(cJSON_GetArrayItem(dealer_ips, i))), "dcv_state");
-		if ((dcv_state_info) && (jint(dcv_state_info, "dcv_state") == 0)) {
-			cJSON *temp = cJSON_CreateObject();
-			temp = cJSON_CreateString(unstringify(cJSON_Print(cJSON_GetArrayItem(dealer_ips, i))));
-			cJSON_AddItemToArray(active_dealers, temp);
-		} else {
-			retval = sqlite3_delete_dealer(unstringify(cJSON_Print(cJSON_GetArrayItem(dealer_ips, i))));
-		}
+		cJSON *temp = cJSON_CreateObject();
+		cJSON_AddStringToObject(temp,"ip",jstri(dealer_ips, i));
+		cJSON_AddNumberToObject(temp,"dcv_state",jint(dcv_state_info, "dcv_state"));
+		cJSON_AddItemToArray(active_dealers, temp);
 	}
 
-	cJSON_AddItemToObject(response_info, "dealer_ips", active_dealers);
+	cJSON_AddItemToObject(response_info, "dealers_info", active_dealers);	
 	retval = (nn_send(cashier_info->c_pubsock, cJSON_Print(response_info), strlen(cJSON_Print(response_info)), 0) <
 		  0) ?
 			 ERR_NNG_SEND :

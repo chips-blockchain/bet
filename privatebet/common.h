@@ -120,4 +120,6 @@ extern char dcv_hosted_gui_url[128];
 
 int32_t is_table_private;
 char table_password[128];
+
+enum bet_dcv_state { dealer_table_empty = 0, dealer_table_full = 1};
 #endif

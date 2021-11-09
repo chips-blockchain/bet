@@ -394,21 +394,16 @@ static void bet_send_dealer_info_to_cashier(char *dealer_ip)
 static char *bet_pick_dealer()
 {
 	cJSON *available_dealers = NULL;
-	cJSON *dcv_state_rqst = NULL, *dcv_state_info = NULL;
 
 	available_dealers = bet_get_available_dealers();
-	dcv_state_rqst = cJSON_CreateObject();
-	cJSON_AddStringToObject(dcv_state_rqst, "method", "dcv_state");
-	cJSON_AddStringToObject(dcv_state_rqst, "id", unique_id);
+	dlg_info("Available dealers :: %s", cJSON_Print(available_dealers));
 
 	for (int32_t i = 0; i < cJSON_GetArraySize(available_dealers); i++) {
-		dcv_state_info = bet_msg_dealer_with_response_id(
-			dcv_state_rqst, unstringify(cJSON_Print(cJSON_GetArrayItem(available_dealers, i))),
-			"dcv_state");
-		if (jint(dcv_state_info, "dcv_state") == 0) {
-			return unstringify(cJSON_Print(cJSON_GetArrayItem(available_dealers, i)));
-		}
-	}
+		cJSON *temp = cJSON_GetArrayItem(available_dealers, i);
+		if(jint(temp,"dcv_state") == dealer_table_empty) {			
+			return jstr(temp, "ip");
+		} 
+	}	
 	return NULL;
 }
 
@@ -424,8 +419,10 @@ int main(int argc, char **argv)
 			dlg_info("Finding the dealer");
 			do {
 				dealer_ip = bet_pick_dealer();
-				if (!dealer_ip)
-					sleep(2);
+				if (!dealer_ip) {
+					dlg_warn("None of the dealer tables are empty, retrying after 5s...");
+					sleep(5);
+				}	
 			} while (dealer_ip == NULL);
 
 			if (dealer_ip) {
