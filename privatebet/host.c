@@ -1466,8 +1466,8 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 	pthread_mutex_unlock(&mutex);
 
 	double balance = chips_get_balance_on_address_from_tx(addr, jstr(argjson, "tx_info"));
-	funds = (balance * satoshis) / (satoshis_per_unit * normalization_factor);
-
+	//funds = (balance * satoshis) / (satoshis_per_unit * normalization_factor);
+	funds = (balance *2)/ BB_in_chips;
 	char *rand_str = jstr(argjson, "id");
 	for (int i = 0; i < no_of_rand_str; i++) {
 		if (strcmp(tx_rand_str[i], rand_str) == 0)

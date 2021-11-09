@@ -62,8 +62,8 @@ Incase if these values are not mentioned in the dealer_config.json file, the def
 	table_stack_in_chips = 0.01;
 	chips_tx_fee = 0.0005;
 ***********************************************************************************************************/
-
-double table_stack_in_chips = 0.01;
+double BB_in_chips = 0.01;
+double table_stack_in_chips = 2;
 double chips_tx_fee = 0.0001;
 
 char *legacy_m_of_n_msig_addr = NULL;
