@@ -601,12 +601,12 @@ static int32_t bet_process_rqst_dealer_info(cJSON *argjson, struct cashier *cash
 		dcv_state_info = bet_msg_dealer_with_response_id(
 			dcv_state_rqst, unstringify(cJSON_Print(cJSON_GetArrayItem(dealer_ips, i))), "dcv_state");
 		cJSON *temp = cJSON_CreateObject();
-		cJSON_AddStringToObject(temp,"ip",jstri(dealer_ips, i));
-		cJSON_AddNumberToObject(temp,"dcv_state",jint(dcv_state_info, "dcv_state"));
+		cJSON_AddStringToObject(temp, "ip", jstri(dealer_ips, i));
+		cJSON_AddNumberToObject(temp, "dcv_state", jint(dcv_state_info, "dcv_state"));
 		cJSON_AddItemToArray(active_dealers, temp);
 	}
 
-	cJSON_AddItemToObject(response_info, "dealers_info", active_dealers);	
+	cJSON_AddItemToObject(response_info, "dealers_info", active_dealers);
 	retval = (nn_send(cashier_info->c_pubsock, cJSON_Print(response_info), strlen(cJSON_Print(response_info)), 0) <
 		  0) ?
 			 ERR_NNG_SEND :

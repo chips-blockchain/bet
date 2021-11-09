@@ -458,7 +458,8 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 	player_seats_info[jint(argjson, "gui_playerID")].empty = 0;
 	player_seats_info[jint(argjson, "gui_playerID")].chips =
 		vars->funds[vars->req_id_to_player_id_mapping[jint(argjson, "gui_playerID")]];
-
+	if (jstr(argjson, "player_name") && (strlen(jstr(argjson, "player_name")) != 0))
+		strcpy(player_seats_info[jint(argjson, "gui_playerID")].seat_name, jstr(argjson, "player_name"));
 	cJSON *seats_info = NULL;
 
 	dlg_info("bet->maxplayers::%d\n", bet->maxplayers);
@@ -1348,7 +1349,7 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson, struct privatebet_info *bet)
 				} else {
 					strcpy(tx_ids[no_of_txs++], unstringify(cJSON_Print(tx_info)));
 					if (no_of_txs == bet_dcv->maxplayers)
-						dcv_state = dealer_table_full; 
+						dcv_state = dealer_table_full;
 				}
 				pthread_mutex_unlock(&mutex);
 			}

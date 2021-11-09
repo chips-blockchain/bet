@@ -867,6 +867,7 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 		cJSON_AddStringToObject(joininfo, "uri", uri);
 		cJSON_AddNumberToObject(joininfo, "gui_playerID", (jint(argjson, "gui_playerID") - 1));
 		cJSON_AddStringToObject(joininfo, "req_identifier", req_identifier);
+		cJSON_AddStringToObject(joininfo, "player_name", player_name);
 
 		dlg_info("join info::%s\n", cJSON_Print(joininfo));
 		retval = (nn_send(bet->pushsock, cJSON_Print(joininfo), strlen(cJSON_Print(joininfo)), 0) < 0) ?
@@ -1471,6 +1472,7 @@ static void bet_update_seat_info(cJSON *argjson)
 	seats_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(seats_info, "method", "seats");
 	cJSON_AddItemToObject(seats_info, "seats", cJSON_GetObjectItem(argjson, "seats"));
+	dlg_info("%s", cJSON_Print(seats_info));
 	player_lws_write(seats_info);
 }
 
@@ -1856,7 +1858,7 @@ cJSON *bet_get_available_dealers()
 	for (int32_t i = 0; i < no_of_notaries; i++) {
 		if (notary_status[i] == 1) {
 			cashier_response_info = bet_msg_cashier_with_response_id(rqst_dealer_info, notary_node_ips[i],
-										 "rqst_dealer_info_response");			
+										 "rqst_dealer_info_response");
 			if (cashier_response_info == NULL) {
 				dlg_warn("No response from cashier :: %s", notary_node_ips[i]);
 				continue;
@@ -1866,14 +1868,15 @@ cJSON *bet_get_available_dealers()
 			for (int32_t j = 0; j < cJSON_GetArraySize(dealers_ip_info); j++) {
 				cJSON *temp = cJSON_GetArrayItem(dealers_ip_info, j);
 				int flag = 1;
-				for (int32_t k = 0; k < cJSON_GetArraySize(all_dealers_info); k++) {					
-					if (strcmp(jstr(cJSON_GetArrayItem(all_dealers_info, k),"ip"), jstr(temp, "ip")) == 0) {
+				for (int32_t k = 0; k < cJSON_GetArraySize(all_dealers_info); k++) {
+					if (strcmp(jstr(cJSON_GetArrayItem(all_dealers_info, k), "ip"),
+						   jstr(temp, "ip")) == 0) {
 						flag = 0;
 						break;
 					}
 				}
 				if (flag)
-					cJSON_AddItemToArray(all_dealers_info, temp);				 
+					cJSON_AddItemToArray(all_dealers_info, temp);
 			}
 		}
 	}
