@@ -95,6 +95,7 @@ extern int32_t threshold_value;
 extern char **notary_node_ips;
 extern char **notary_node_pubkeys;
 
+extern double BB_in_chips;
 extern double table_stack_in_chips;
 extern double chips_tx_fee;
 
