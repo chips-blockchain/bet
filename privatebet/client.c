@@ -1496,6 +1496,7 @@ static void bet_handle_player_error(struct privatebet_info *bet, int32_t err_no)
 		break;
 	case ERR_DEALER_TABLE_FULL:
 		bet_raise_dispute(player_payin_txid);
+	case ERR_CHIPS_INSUFFICIENT_FUNDS:	
 	case ERR_PT_PLAYER_UNAUTHORIZED:
 	case ERR_DCV_COMMISSION_MISMATCH:
 	case ERR_INI_PARSING:
