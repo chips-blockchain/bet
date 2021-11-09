@@ -1348,7 +1348,7 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson, struct privatebet_info *bet)
 				} else {
 					strcpy(tx_ids[no_of_txs++], unstringify(cJSON_Print(tx_info)));
 					if (no_of_txs == bet_dcv->maxplayers)
-						dcv_state = 1;
+						dcv_state = dealer_table_full; 
 				}
 				pthread_mutex_unlock(&mutex);
 			}
