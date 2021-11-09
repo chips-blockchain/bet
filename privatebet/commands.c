@@ -1749,6 +1749,7 @@ int32_t ln_check_peer_and_connect(char *id)
 	}
 end:
 	bet_dealloc_args(argc, &argv);
+	return retval;
 }
 
 int32_t ln_get_channel_status(char *id)
