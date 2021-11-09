@@ -400,10 +400,10 @@ static char *bet_pick_dealer()
 
 	for (int32_t i = 0; i < cJSON_GetArraySize(available_dealers); i++) {
 		cJSON *temp = cJSON_GetArrayItem(available_dealers, i);
-		if(jint(temp,"dcv_state") == dealer_table_empty) {			
+		if (jint(temp, "dcv_state") == dealer_table_empty) {
 			return jstr(temp, "ip");
-		} 
-	}	
+		}
+	}
 	return NULL;
 }
 
@@ -422,7 +422,7 @@ int main(int argc, char **argv)
 				if (!dealer_ip) {
 					dlg_warn("None of the dealer tables are empty, retrying after 5s...");
 					sleep(5);
-				}	
+				}
 			} while (dealer_ip == NULL);
 
 			if (dealer_ip) {
