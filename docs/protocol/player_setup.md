@@ -47,7 +47,7 @@ All the configurable options for the player can be set in `player_setup.ini` fil
 [player]
 max_allowed_dcv_commission = 5      #This is the max percentage of the dealer commision that the player is willing to pay, if the dealer sets the commission higher than this then the backend node will exit.
 type                       = torv3  #This will enforce LN and CHIPS run on onion address, atm this will be ignored.
-
+name                       =  ""    #Player can  configure any customized names here, which will be displayed over GUI and is visible to other players.
 [gui]                               
 #These are GUI's hosted by the cashier nodes, player can pick any of them in order to connect to its backend from these.
 cashier-1 = http://141.94.227.65:1234/
