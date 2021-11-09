@@ -109,7 +109,8 @@ void bet_parse_player_config_file()
 void bet_parse_dealer_config_ini_file()
 {
 	dictionary *ini = NULL;
-
+	double big_blind = 0.01;
+	
 	ini = iniparser_load(dealer_config_ini_file);
 	if (ini == NULL) {
 		dlg_error("error in parsing %s", dealer_config_ini_file);
@@ -120,6 +121,10 @@ void bet_parse_dealer_config_ini_file()
 		if (0 != iniparser_getdouble(ini, "dealer:table_stack_in_chips", 0)) {
 			table_stack_in_chips = iniparser_getdouble(ini, "dealer:table_stack_in_chips", 0);
 		}
+		if (0 != iniparser_getdouble(ini, "dealer:big_blind", 0)) {
+			big_blind = iniparser_getdouble(ini, "dealer:big_blind", 0);		
+		}
+		table_stack_in_chips = 200 * big_blind;
 		if (0 != iniparser_getdouble(ini, "dealer:chips_tx_fee", 0)) {
 			chips_tx_fee = iniparser_getdouble(ini, "dealer:chips_tx_fee", 0);
 		}
@@ -151,7 +156,6 @@ void bet_parse_player_config_ini_file()
 		}
 		if (0 != iniparser_getstring(ini, "player:name", NULL)) {
 			strcpy(player_name, iniparser_getstring(ini, "player:name", NULL));
-			dlg_info("name::%s", player_name);
 		}
 		if (-1 != iniparser_getboolean(ini, "private table:is_table_private", -1)) {
 			is_table_private = iniparser_getboolean(ini, "private table:is_table_private", -1);
