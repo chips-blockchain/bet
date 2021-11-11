@@ -269,10 +269,12 @@ void bet_bvv_backend_loop(void *_ptr)
 				if ((retval = bet_bvv_backend(argjson, bet, bvv_vars)) != OK) {
 					dlg_error("%s", bet_err_str(retval));
 				} else {
-					bet_bvv_reset(bet, bvv_vars);
-					dlg_info("The role of bvv is done for this hand\n");
-					bvv_state = 0;
-					break;
+					if(strcmp(jstr(argjson,"method"), "check_bvv_ready") == 0) {
+						bet_bvv_reset(bet, bvv_vars);
+						dlg_info("The role of bvv is done for this hand\n");
+						bvv_state = 0;
+						break;
+					}
 				}
 			}
 		}
