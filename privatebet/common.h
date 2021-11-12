@@ -123,6 +123,6 @@ int32_t is_table_private;
 char table_password[128];
 char player_name[128];
 
-enum bet_dcv_state { dealer_table_empty = 0, dealer_table_full = 1, dealer_seat_empty = 2, dealer_seat_full = 3 };
+enum bet_dcv_state { dealer_table_empty = 0, dealer_table_full = 1, pos_on_table_empty = 2, pos_on_table_full = 3 };
 
 #endif
