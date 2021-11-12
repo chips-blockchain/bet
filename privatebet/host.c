@@ -1342,7 +1342,7 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson, struct privatebet_info *bet)
 		data_info = cJSON_Parse(data);
 		if (strcmp(table_id, jstr(data_info, "table_id")) == 0) {
 			if (strcmp(jstr(argjson, "id"), jstr(data_info, "player_id")) == 0) {
-				pthread_mutex_lock(&mutex);
+				//pthread_mutex_lock(&mutex);
 				if (no_of_txs == bet->maxplayers) {
 					bet_send_tx_reverse_rqst(argjson, bet);
 					retval = ERR_DEALER_TABLE_FULL;
@@ -1351,7 +1351,7 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson, struct privatebet_info *bet)
 					if (no_of_txs == bet_dcv->maxplayers)
 						dcv_state = dealer_table_full;
 				}
-				pthread_mutex_unlock(&mutex);
+				//pthread_mutex_unlock(&mutex);
 			}
 		}
 	}
@@ -1375,39 +1375,39 @@ void bet_init_player_seats_info()
 	}
 }
 
-static int32_t bet_dcv_check_pos_status(cJSON *argjson, struct privatebet_info *bet)
+static int32_t bet_dcv_check_pos_status(cJSON *argjson, struct privatebet_info *bet, int32_t *pos_status)
 {
+	int32_t gui_playerID, retval = OK;
 	cJSON *join_res = NULL;
-	char *rendered = NULL;
-	int32_t bytes, pos_status = 0, gui_playerID;
 
 	gui_playerID = jint(argjson, "gui_playerID");
+	if ((gui_playerID < 0) && (gui_playerID >= bet->maxplayers)) {
+		retval = ERR_INVALID_POS;
+	}
 
-	if (player_seats_info[gui_playerID].empty == 0)
-		pos_status = 1;
+	*pos_status = (player_seats_info[gui_playerID].empty == 0) ? dealer_seat_empty : dealer_seat_full;
 
-	if (pos_status == 1) {
+	if (*pos_status == dealer_seat_full) {
 		dlg_warn("Seat Taken\n");
 		join_res = cJSON_CreateObject();
 		cJSON_AddStringToObject(join_res, "method", "join_res");
 		cJSON_AddNumberToObject(join_res, "playerid", gui_playerID);
-		cJSON_AddNumberToObject(join_res, "seat_taken", pos_status);
+		cJSON_AddNumberToObject(join_res, "seat_taken", *pos_status);
 		cJSON_AddStringToObject(join_res, "req_identifier", jstr(argjson, "req_identifier"));
-		rendered = cJSON_Print(join_res);
-		bytes = nn_send(bet->pubsock, rendered, strlen(rendered), 0);
-		if (bytes < 0) {
-			dlg_error("nn_send failed");
-		}
+		retval = (nn_send(bet->pubsock, cJSON_Print(join_res), strlen(cJSON_Print(join_res)), 0) < 0) ?
+				 ERR_NNG_SEND :
+				 OK;
 	}
-	return pos_status;
+	return retval;
 }
 
 static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int32_t retval = OK;
+	int32_t retval = OK, pos_status;
 
-	if (1 == bet_dcv_check_pos_status(argjson, bet))
-		return retval; // the seat is already taken just inform this to player.
+	if (((retval = bet_dcv_check_pos_status(argjson, bet, &pos_status)) == ERR_INVALID_POS) ||
+	    (pos_status == dealer_seat_full))
+		return retval;
 
 	if (bet->numplayers < bet->maxplayers) {
 		char *req_id = jstr(argjson, "req_identifier");
@@ -1460,14 +1460,14 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 		return retval;
 	}
 
-	pthread_mutex_lock(&mutex);
+	//pthread_mutex_lock(&mutex);
 	strcpy(vars->player_chips_addrs[no_of_rand_str], jstr(argjson, "chips_addr"));
 	strcpy(tx_rand_str[no_of_rand_str++], jstr(argjson, "id"));
-	pthread_mutex_unlock(&mutex);
+	//pthread_mutex_unlock(&mutex);
 
 	double balance = chips_get_balance_on_address_from_tx(addr, jstr(argjson, "tx_info"));
 	//funds = (balance * satoshis) / (satoshis_per_unit * normalization_factor);
-	funds = (balance *2)/ BB_in_chips;
+	funds = (balance * 2) / BB_in_chips;
 	char *rand_str = jstr(argjson, "id");
 	for (int i = 0; i < no_of_rand_str; i++) {
 		if (strcmp(tx_rand_str[i], rand_str) == 0)
@@ -1574,17 +1574,14 @@ void bet_dcv_backend_thrd(void *_ptr)
 	if ((method = jstr(argjson, "method")) != 0) {
 		dlg_info("%s", method);
 		if (strcmp(method, "join_req") == 0) {
+			pthread_mutex_lock(&mutex);
 			retval = bet_dcv_process_join_req(argjson, bet, vars);
-		} else if (strcmp(method, "bvv_ready") == 0) {
-			//Start with the player with the player id 0.
-			retval = bet_dcv_start(bet, 0);
+			pthread_mutex_unlock(&mutex);
 		} else if (strcmp(method, "init_p") == 0) {
 			retval = bet_dcv_init(argjson, bet, vars);
 			if (dcv_info.numplayers == dcv_info.maxplayers) {
 				retval = bet_dcv_deck_init_info(argjson, bet, vars);
 			}
-		} else if (strcmp(method, "init_b") == 0) {
-			retval = bet_relay(argjson, bet, vars);
 		} else if (strcmp(method, "player_ready") == 0) {
 			if (bet_check_player_ready(argjson, bet, vars)) {
 				retval = bet_initiate_statemachine(argjson, bet, vars);
@@ -1618,7 +1615,9 @@ void bet_dcv_backend_thrd(void *_ptr)
 				bet_get_dcv_state(argjson, bet);
 			}
 		} else if (strcmp(method, "tx") == 0) {
+			pthread_mutex_lock(&mutex);
 			retval = bet_dcv_process_tx(argjson, bet, vars, legacy_m_of_n_msig_addr);
+			pthread_mutex_unlock(&mutex);
 		} else if (strcmp(method, "live") == 0) {
 			cJSON *live_info = cJSON_CreateObject();
 			cJSON_AddStringToObject(live_info, "method", "live");

@@ -269,7 +269,7 @@ void bet_bvv_backend_loop(void *_ptr)
 				if ((retval = bet_bvv_backend(argjson, bet, bvv_vars)) != OK) {
 					dlg_error("%s", bet_err_str(retval));
 				} else {
-					if(strcmp(jstr(argjson,"method"), "check_bvv_ready") == 0) {
+					if (strcmp(jstr(argjson, "method"), "init_d") == 0) {
 						bet_bvv_reset(bet, bvv_vars);
 						dlg_info("The role of bvv is done for this hand\n");
 						bvv_state = 0;
@@ -837,45 +837,47 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 	struct pair256 key;
 	char **argv = NULL, *uri = NULL;
 
-	if (bet->pushsock >= 0) {
-		key = deckgen_player(player_info.cardprivkeys, player_info.cardpubkeys, player_info.permis, bet->range);
-		player_info.player_key = key;
-		joininfo = cJSON_CreateObject();
-		cJSON_AddStringToObject(joininfo, "method", "join_req");
-		jaddbits256(joininfo, "pubkey", key.prod);
-		argc = 2;
-		bet_alloc_args(argc, &argv);
-		argv = bet_copy_args(argc, "lightning-cli", "getinfo");
-		channel_info = cJSON_CreateObject();
-		retval = make_command(argc, argv, &channel_info);
-		if (retval != OK) {
-			dlg_error("%s", bet_err_str(retval));
-			goto end;
-		}
-		uri = (char *)malloc(sizeof(char) * 100);
-
-		addresses = cJSON_CreateObject();
-		addresses = cJSON_GetObjectItem(channel_info, "address");
-
-		address = cJSON_CreateObject();
-		address = cJSON_GetArrayItem(addresses, 0);
-
-		strcpy(uri, jstr(channel_info, "id"));
-
-		if (jstr(address, "address")) {
-			strcat(uri, "@");
-			strcat(uri, jstr(address, "address"));
-		}
-		cJSON_AddStringToObject(joininfo, "uri", uri);
-		cJSON_AddNumberToObject(joininfo, "gui_playerID", (jint(argjson, "gui_playerID") - 1));
-		cJSON_AddStringToObject(joininfo, "req_identifier", req_identifier);
-		cJSON_AddStringToObject(joininfo, "player_name", player_name);
-
-		dlg_info("join info::%s\n", cJSON_Print(joininfo));
-		retval = (nn_send(bet->pushsock, cJSON_Print(joininfo), strlen(cJSON_Print(joininfo)), 0) < 0) ?
-				 ERR_NNG_SEND :
-				 OK;
+	if ((jint(argjson, "gui_playerID") < 1) || (jint(argjson, "gui_playerID") > bet->maxplayers)) {
+		retval = ERR_INVALID_POS;
+		return retval;
 	}
+	key = deckgen_player(player_info.cardprivkeys, player_info.cardpubkeys, player_info.permis, bet->range);
+	player_info.player_key = key;
+	joininfo = cJSON_CreateObject();
+	cJSON_AddStringToObject(joininfo, "method", "join_req");
+	jaddbits256(joininfo, "pubkey", key.prod);
+	argc = 2;
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, "lightning-cli", "getinfo");
+	channel_info = cJSON_CreateObject();
+	retval = make_command(argc, argv, &channel_info);
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
+		goto end;
+	}
+	uri = (char *)malloc(sizeof(char) * 100);
+
+	addresses = cJSON_CreateObject();
+	addresses = cJSON_GetObjectItem(channel_info, "address");
+
+	address = cJSON_CreateObject();
+	address = cJSON_GetArrayItem(addresses, 0);
+
+	strcpy(uri, jstr(channel_info, "id"));
+
+	if (jstr(address, "address")) {
+		strcat(uri, "@");
+		strcat(uri, jstr(address, "address"));
+	}
+	cJSON_AddStringToObject(joininfo, "uri", uri);
+	cJSON_AddNumberToObject(joininfo, "gui_playerID", (jint(argjson, "gui_playerID") - 1));
+	cJSON_AddStringToObject(joininfo, "req_identifier", req_identifier);
+	cJSON_AddStringToObject(joininfo, "player_name", player_name);
+
+	dlg_info("join info::%s\n", cJSON_Print(joininfo));
+	retval = (nn_send(bet->pushsock, cJSON_Print(joininfo), strlen(cJSON_Print(joininfo)), 0) < 0) ? ERR_NNG_SEND :
+													 OK;
+
 end:
 	if (uri)
 		free(uri);
@@ -885,7 +887,7 @@ end:
 
 static int32_t bet_player_process_player_join(cJSON *argjson)
 {
-	int32_t retval = 1;
+	int32_t retval = OK;
 	cJSON *warning_info = NULL;
 
 	if (player_joined == 0) {
@@ -970,13 +972,13 @@ static void bet_player_process_be_status()
 
 int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 {
-	int32_t retval = 1;
+	int32_t retval = OK;
 	char *method = NULL;
 
 	if ((method = jstr(argjson, "method")) != 0) {
 		dlg_info("Recv from GUI :: %s", cJSON_Print(argjson));
 		if (strcmp(method, "player_join") == 0) {
-			bet_player_process_player_join(argjson);
+			retval = bet_player_process_player_join(argjson);
 		} else if (strcmp(method, "betting") == 0) {
 			retval = bet_player_round_betting(argjson, bet_player, player_vars);
 		} else if (strcmp(method, "reset") == 0) {
@@ -999,6 +1001,8 @@ int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 			bet_player_handle_invalid_method(method);
 		}
 	}
+	if (retval != OK)
+		bet_handle_player_error(bet_player, retval);
 	return retval;
 }
 
@@ -1478,7 +1482,7 @@ static void bet_update_seat_info(cJSON *argjson)
 	player_lws_write(seats_info);
 }
 
-static void bet_handle_player_error(struct privatebet_info *bet, int32_t err_no)
+void bet_handle_player_error(struct privatebet_info *bet, int32_t err_no)
 {
 	cJSON *publish_error = NULL;
 
@@ -1498,7 +1502,8 @@ static void bet_handle_player_error(struct privatebet_info *bet, int32_t err_no)
 		break;
 	case ERR_DEALER_TABLE_FULL:
 		bet_raise_dispute(player_payin_txid);
-	case ERR_CHIPS_INSUFFICIENT_FUNDS:	
+	case ERR_INVALID_POS:
+	case ERR_CHIPS_INSUFFICIENT_FUNDS:
 	case ERR_PT_PLAYER_UNAUTHORIZED:
 	case ERR_DCV_COMMISSION_MISMATCH:
 	case ERR_INI_PARSING:

@@ -36,6 +36,9 @@ const char *bet_err_str(int32_t err_no)
 	case ERR_INVALID_POS:
 		return "Invalid position of the player on table";
 		break;
+	case ERR_NO_TURN:
+		return "Couldn't able to find next turn";
+		break;
 	case ERR_CHIPS_TX_SIGNING:
 		return "Error in signing the CHIPS tx";
 		break;

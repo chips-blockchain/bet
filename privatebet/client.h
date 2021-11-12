@@ -41,3 +41,4 @@ void player_lws_write(cJSON *data);
 void rest_display_cards(cJSON *argjson, int32_t this_playerID);
 cJSON *bet_get_available_dealers();
 int32_t bet_player_stack_info_req(struct privatebet_info *bet);
+void bet_handle_player_error(struct privatebet_info *bet, int32_t err_no);
