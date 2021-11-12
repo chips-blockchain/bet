@@ -1577,12 +1577,13 @@ void bet_dcv_backend_thrd(void *_ptr)
 	struct privatebet_vars *vars = dcv_vars;
 
 	argjson = cJSON_Parse(_ptr);
+	pthread_mutex_lock(&mutex);
 	if ((method = jstr(argjson, "method")) != 0) {
 		dlg_info("%s", method);
 		if (strcmp(method, "join_req") == 0) {
-			pthread_mutex_lock(&mutex);
+			//pthread_mutex_lock(&mutex);
 			retval = bet_dcv_process_join_req(argjson, bet, vars);
-			pthread_mutex_unlock(&mutex);
+			//pthread_mutex_unlock(&mutex);
 		} else if (strcmp(method, "init_p") == 0) {
 			retval = bet_dcv_init(argjson, bet, vars);
 			if (dcv_info.numplayers == dcv_info.maxplayers) {
@@ -1621,9 +1622,9 @@ void bet_dcv_backend_thrd(void *_ptr)
 				bet_get_dcv_state(argjson, bet);
 			}
 		} else if (strcmp(method, "tx") == 0) {
-			pthread_mutex_lock(&mutex);
+			//pthread_mutex_lock(&mutex);
 			retval = bet_dcv_process_tx(argjson, bet, vars, legacy_m_of_n_msig_addr);
-			pthread_mutex_unlock(&mutex);
+			//pthread_mutex_unlock(&mutex);
 		} else if (strcmp(method, "live") == 0) {
 			cJSON *live_info = cJSON_CreateObject();
 			cJSON_AddStringToObject(live_info, "method", "live");
@@ -1659,9 +1660,11 @@ void bet_dcv_backend_thrd(void *_ptr)
 					 OK;
 		}
 	}
+	pthread_mutex_unlock(&mutex);
 	if (retval != OK) {
 		dlg_error("Dealer encountered the error :: %s", bet_err_str(retval));
 	}
+	
 }
 
 void bet_dcv_backend_loop(void *_ptr)
