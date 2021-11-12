@@ -163,9 +163,8 @@ int32_t bet_player_create_invoice_request(cJSON *argjson, struct privatebet_info
 
 int32_t bet_player_invoice_request(cJSON *argjson, cJSON *actionResponse, struct privatebet_info *bet, int32_t amount)
 {
-	int32_t retval = 1, bytes;
+	int32_t retval = OK;
 	cJSON *betInfo = NULL;
-	char *rendered = NULL;
 
 	betInfo = cJSON_CreateObject();
 	cJSON_AddStringToObject(betInfo, "method", "bettingInvoiceRequest");
@@ -174,17 +173,8 @@ int32_t bet_player_invoice_request(cJSON *argjson, cJSON *actionResponse, struct
 	cJSON_AddNumberToObject(betInfo, "invoice_amount", amount);
 	cJSON_AddItemToObject(betInfo, "actionResponse", actionResponse);
 
-	rendered = cJSON_Print(betInfo);
-
-	bytes = nn_send(bet->pushsock, rendered, strlen(rendered), 0);
-
-	if (bytes < 0) {
-		retval = -1;
-		dlg_error("nn_send failed");
-		goto end;
-	}
-
-end:
+	retval =
+		(nn_send(bet->pushsock, cJSON_Print(betInfo), strlen(cJSON_Print(betInfo)), 0) < 0) ? ERR_NNG_SEND : OK;
 	return retval;
 }
 
