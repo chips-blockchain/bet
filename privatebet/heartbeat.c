@@ -22,27 +22,6 @@ void bet_dcv_reset_player_status(struct privatebet_info *bet)
 	}
 }
 
-void bet_dcv_player_disconnection_action(struct privatebet_info *bet)
-{
-	struct privatebet_vars *vars = dcv_vars;
-	int32_t active_players = 0;
-
-	for (int i = 0; i < bet->maxplayers; i++) {
-		if (player_status[i] == 0) {
-			for (int j = vars->round; j < CARDS777_MAXROUNDS; j++) {
-				vars->bet_actions[i][j] = fold;
-			}
-		} else {
-			active_players++;
-		}
-	}
-	if (active_players == 1) {
-		//bet_evaluate_hand(bet, vars); // stopping evaluation hand for when the players gets disconnected as it has to handled by different approach.
-	} else if (active_players == 0) {
-		dlg_info("Using DRP by running ./bet game solve players can claim their funds back\n");
-	}
-}
-
 void bet_dcv_publish_player_active_info(struct privatebet_info *bet)
 {
 	cJSON *active_info = NULL;
