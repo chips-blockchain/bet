@@ -1071,7 +1071,7 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 			max_score = scores[i];
 	}
 	for (int i = 0; i < bet->maxplayers; i++) {
-		if (scores[i] == max_score) {
+		if ((scores[i] == max_score) && (vars->bet_actions[i][(vars->round)] != fold)) {
 			winners[i] = 1;
 			no_of_winners++;
 		} else
