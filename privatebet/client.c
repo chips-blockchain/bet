@@ -952,8 +952,8 @@ static void bet_player_wallet_info()
 	cJSON_AddNumberToObject(wallet_info, "balance", chips_get_balance());
 	cJSON_AddNumberToObject(wallet_info, "backend_status", backend_status);
 	cJSON_AddNumberToObject(wallet_info, "max_players", max_players);
-	cJSON_AddNumberToObject(wallet_info, "table_stack_in_chips",
-				(table_stack_in_chips * satoshis) / (satoshis_per_unit * normalization_factor));
+	//cJSON_AddNumberToObject(wallet_info, "table_stack_in_chips",(table_stack_in_chips * satoshis) / (satoshis_per_unit * normalization_factor));
+	cJSON_AddNumberToObject(wallet_info, "table_stack_in_chips", (table_stack_in_chips / BB_in_chips) * 2);
 	cJSON_AddStringToObject(wallet_info, "table_id", table_id);
 	cJSON_AddNumberToObject(wallet_info, "tx_fee", chips_tx_fee);
 	dlg_info("%s\n", cJSON_Print(wallet_info));
@@ -1028,8 +1028,10 @@ static void bet_gui_init_message(struct privatebet_info *bet)
 	}
 }
 
-int lws_callback_http_player_write(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
+int32_t lws_callback_http_player_write(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in,
+				       size_t len)
 {
+	int32_t retval = OK;
 	cJSON *argjson = NULL;
 
 	switch (reason) {
@@ -1040,8 +1042,8 @@ int lws_callback_http_player_write(struct lws *wsi, enum lws_callback_reasons re
 			break;
 		argjson = cJSON_Parse(lws_buf_1);
 
-		if (bet_player_frontend(wsi, argjson) != 1) {
-			dlg_warn("Failed to process the host command");
+		if ((retval = bet_player_frontend(wsi, argjson)) != OK) {
+			dlg_error("%s", bet_err_str(retval));
 		}
 		memset(lws_buf_1, 0x00, sizeof(lws_buf_1));
 		lws_buf_length_1 = 0;
@@ -1063,11 +1065,13 @@ int lws_callback_http_player_write(struct lws *wsi, enum lws_callback_reasons re
 	default:
 		break;
 	}
-	return 0;
+	return retval;
 }
 
-int lws_callback_http_player_read(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
+int32_t lws_callback_http_player_read(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in,
+				      size_t len)
 {
+	int32_t retval = OK;
 	cJSON *argjson = NULL;
 
 	switch (reason) {
@@ -1078,8 +1082,8 @@ int lws_callback_http_player_read(struct lws *wsi, enum lws_callback_reasons rea
 			break;
 
 		argjson = cJSON_Parse(unstringify(lws_buf_1));
-		if (bet_player_frontend(wsi, argjson) != 1) {
-			dlg_warn("Failed to process the host command");
+		if ((retval = bet_player_frontend(wsi, argjson)) != OK) {
+			dlg_error("%s", bet_err_str(retval));
 		}
 		memset(lws_buf_1, 0x00, sizeof(lws_buf_1));
 		lws_buf_length_1 = 0;
@@ -1100,11 +1104,12 @@ int lws_callback_http_player_read(struct lws *wsi, enum lws_callback_reasons rea
 	default:
 		break;
 	}
-	return 0;
+	return retval;
 }
 
-int lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
+int32_t lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
 {
+	int32_t retval = OK;
 	cJSON *argjson = NULL;
 
 	//dlg_info("callback code::%d\n", (int)reason);
@@ -1116,8 +1121,8 @@ int lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason, 
 			break;
 		argjson = cJSON_Parse(lws_buf_1);
 
-		if (bet_player_frontend(wsi, argjson) != 1) {
-			dlg_warn("Failed to process the host command");
+		if ((retval = bet_player_frontend(wsi, argjson)) != OK) {
+			dlg_error("%s", bet_err_str(retval));
 		}
 		memset(lws_buf_1, 0x00, sizeof(lws_buf_1));
 		lws_buf_length_1 = 0;
@@ -1141,7 +1146,7 @@ int lws_callback_http_player(struct lws *wsi, enum lws_callback_reasons reason, 
 	default:
 		break;
 	}
-	return 0;
+	return retval;
 }
 
 static struct lws_protocols player_http_protocol[] = {
@@ -1290,7 +1295,10 @@ static void bet_push_join_info(cJSON *argjson)
 	join_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(join_info, "method", "info"); //changed to join_info to info
 	cJSON_AddNumberToObject(join_info, "playerid", jint(argjson, "playerid"));
-	cJSON_AddNumberToObject(join_info, "seat_taken", jint(argjson, "seat_taken"));
+	if (jint(argjson, "pos_status") == pos_on_table_full)
+		cJSON_AddNumberToObject(join_info, "seat_taken", 1);
+	else
+		cJSON_AddNumberToObject(join_info, "seat_taken", 0);
 	dlg_info("Writing the availability of the seat info to the GUI \n %s", cJSON_Print(join_info));
 	player_lws_write(join_info);
 }
@@ -1327,6 +1335,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		retval = ERR_CHIPS_INSUFFICIENT_FUNDS;
 	} else {
 		max_players = jint(argjson, "max_players");
+		BB_in_chips = jdouble(argjson, "bb_in_chips");
 		table_stack_in_chips = jdouble(argjson, "table_stack_in_chips");
 		chips_tx_fee = jdouble(argjson, "chips_tx_fee");
 		legacy_m_of_n_msig_addr = (char *)malloc(strlen(jstr(argjson, "legacy_m_of_n_msig_addr")) + 1);
@@ -1537,8 +1546,11 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			bet_update_seat_info(argjson);
 			if (strcmp(jstr(argjson, "req_identifier"), req_identifier) == 0) {
 				bet_push_join_info(argjson);
-				if (jint(argjson, "seat_taken") == 0) {
+				if (jint(argjson, "pos_status") == pos_on_table_empty) {
 					retval = bet_client_join_res(argjson, bet, vars);
+				} else {
+					dlg_warn(
+						"Player selected pos on the talbe is already taken, player need to select another pos to sit in");
 				}
 			}
 		} else if (strcmp(method, "init") == 0) {

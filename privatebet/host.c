@@ -452,7 +452,7 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 	cJSON_AddStringToObject(player_info, "uri", uri);
 	cJSON_AddStringToObject(player_info, "type", type);
 	cJSON_AddNumberToObject(player_info, "dealer", dealerPosition);
-	cJSON_AddNumberToObject(player_info, "seat_taken", 0);
+	cJSON_AddNumberToObject(player_info, "pos_status", pos_on_table_empty);
 	cJSON_AddStringToObject(player_info, "req_identifier", jstr(argjson, "req_identifier"));
 
 	player_seats_info[jint(argjson, "gui_playerID")].empty = 0;
@@ -665,7 +665,8 @@ static int32_t bet_create_betting_invoice(cJSON *argjson, struct privatebet_info
 
 int32_t bet_check_player_ready(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int flag = 1;
+	int32_t flag = 1;
+
 	player_ready[jint(argjson, "playerid")] = 1;
 	for (int i = 0; i < bet->maxplayers; i++) {
 		if (player_ready[i] == 0) {
@@ -1255,6 +1256,7 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 		cJSON_AddStringToObject(stack_info_resp, "method", "stack_info_resp");
 		cJSON_AddStringToObject(stack_info_resp, "id", jstr(argjson, "id"));
 		cJSON_AddNumberToObject(stack_info_resp, "max_players", max_players);
+		cJSON_AddNumberToObject(stack_info_resp, "bb_in_chips", BB_in_chips);
 		cJSON_AddNumberToObject(stack_info_resp, "table_stack_in_chips", table_stack_in_chips);
 		cJSON_AddNumberToObject(stack_info_resp, "dcv_commission", dcv_commission_percentage);
 		cJSON_AddNumberToObject(stack_info_resp, "chips_tx_fee", chips_tx_fee);
@@ -1370,7 +1372,7 @@ void bet_init_player_seats_info()
 		sprintf(player_seats_info[i].seat_name, "player%d", i + 1);
 		player_seats_info[i].seat = i;
 		player_seats_info[i].chips = 0;
-		player_seats_info[i].empty = 1;
+		player_seats_info[i].empty = pos_on_table_empty;
 		player_seats_info[i].playing = 0;
 	}
 }
@@ -1384,15 +1386,17 @@ static int32_t bet_dcv_check_pos_status(cJSON *argjson, struct privatebet_info *
 	if ((gui_playerID < 0) && (gui_playerID >= bet->maxplayers)) {
 		retval = ERR_INVALID_POS;
 	}
+	dlg_info("%d", player_seats_info[gui_playerID].empty);
+	*pos_status =
+		(player_seats_info[gui_playerID].empty == pos_on_table_empty) ? pos_on_table_empty : pos_on_table_full;
+	dlg_info("%d %d", player_seats_info[gui_playerID].empty, *pos_status);
 
-	*pos_status = (player_seats_info[gui_playerID].empty == 0) ? dealer_seat_empty : dealer_seat_full;
-
-	if (*pos_status == dealer_seat_full) {
+	if (*pos_status == pos_on_table_full) {
 		dlg_warn("Seat Taken\n");
 		join_res = cJSON_CreateObject();
 		cJSON_AddStringToObject(join_res, "method", "join_res");
 		cJSON_AddNumberToObject(join_res, "playerid", gui_playerID);
-		cJSON_AddNumberToObject(join_res, "seat_taken", *pos_status);
+		cJSON_AddNumberToObject(join_res, "pos_status", *pos_status);
 		cJSON_AddStringToObject(join_res, "req_identifier", jstr(argjson, "req_identifier"));
 		retval = (nn_send(bet->pubsock, cJSON_Print(join_res), strlen(cJSON_Print(join_res)), 0) < 0) ?
 				 ERR_NNG_SEND :
@@ -1406,9 +1410,11 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 	int32_t retval = OK, pos_status;
 
 	if (((retval = bet_dcv_check_pos_status(argjson, bet, &pos_status)) == ERR_INVALID_POS) ||
-	    (pos_status == dealer_seat_full))
+	    (pos_status == pos_on_table_full)) {
+		dlg_info("%d", retval);
 		return retval;
-
+	}
+	dlg_info("%s", cJSON_Print(argjson));
 	if (bet->numplayers < bet->maxplayers) {
 		char *req_id = jstr(argjson, "req_identifier");
 		for (int32_t i = 0; i < no_of_rand_str; i++) {
