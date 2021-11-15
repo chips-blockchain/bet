@@ -2,6 +2,8 @@
 #include "config.h"
 #include "common.h"
 #include "misc.h"
+#include "err.h"
+#include "commands.h"
 
 char *dealer_config_file = "./config/dealer_config.json";
 char *player_config_file = "./config/player_config.json";
@@ -10,6 +12,7 @@ char *notaries_file = "./config/cashier_nodes.json";
 char *dealer_config_ini_file = "./config/dealer_config.ini";
 char *player_config_ini_file = "./config/player_config.ini";
 char *cashier_config_ini_file = "./config/cashier_config.ini";
+char *bets_config_ini_file = "./config/bets.ini";
 
 cJSON *bet_read_json_file(char *file_name)
 {
@@ -230,4 +233,69 @@ void bet_display_cashier_hosted_gui()
 			sprintf(str, "gui:cashier-%d", ++i);
 		}
 	}
+}
+
+static int32_t ini_sec_exists(dictionary *ini, char *sec_name)
+{
+	int32_t n, retval = -1;
+
+	n = iniparser_getnsec(ini);
+	dlg_info("number of sections:: %d", n);
+	for (int32_t i = 0; i < n; i++) {
+		dlg_info("%s::%s", iniparser_getsecname(ini, i), sec_name);
+		if (strcmp(iniparser_getsecname(ini, i), sec_name) == 0) {
+			retval = OK;
+			break;
+		}
+	}
+	return retval;
+}
+int32_t bet_parse_bets()
+{
+	int32_t retval = OK, bet_no = 0;
+	dictionary *ini = NULL;
+	char key_name[40];
+	cJSON *bets_info = NULL, *info = NULL;
+
+	ini = iniparser_load(bets_config_ini_file);
+	if (ini == NULL) {
+		retval = ERR_INI_PARSING;
+		dlg_error("error in parsing %s", bets_config_ini_file);
+		return retval;
+	}
+	info = cJSON_CreateObject();
+	cJSON_AddStringToObject(info, "method", "bets");
+	cJSON_AddNumberToObject(info, "balance", chips_get_balance());
+	bets_info = cJSON_CreateArray();
+	while (1) {
+		cJSON *bet = cJSON_CreateObject();
+
+		cJSON_AddNumberToObject(bet, "bet_id", bet_no);
+		memset(key_name, 0x00, sizeof(key_name));
+		sprintf(key_name, "bets:%d:desc", bet_no);
+		if (NULL != iniparser_getstring(ini, key_name, NULL)) {
+			cJSON_AddStringToObject(bet, "desc", iniparser_getstring(ini, key_name, NULL));
+		} else {
+			break;
+		}
+		memset(key_name, 0x00, sizeof(key_name));
+		sprintf(key_name, "bets:%d:predictions", bet_no);
+		if (NULL != iniparser_getstring(ini, key_name, NULL)) {
+			cJSON_AddStringToObject(bet, "predictions", iniparser_getstring(ini, key_name, NULL));
+		} else {
+			break;
+		}
+		memset(key_name, 0x00, sizeof(key_name));
+		sprintf(key_name, "bets:%d:range", bet_no);
+		if (NULL != iniparser_getstring(ini, key_name, NULL)) {
+			cJSON_AddStringToObject(bet, "range", iniparser_getstring(ini, key_name, NULL));
+		} else {
+			break;
+		}
+		cJSON_AddItemToArray(bets_info, bet);
+		bet_no++;
+	}
+	cJSON_AddItemToObject(info, "bets_info", bets_info);
+	dlg_info("\n%s", cJSON_Print(info));
+	return retval;
 }

@@ -411,7 +411,6 @@ static char *bet_pick_dealer()
 
 // clang-format off
 static void bet_start(int argc, char **argv){
-	
 	bet_set_unique_id();
 	if(!argv[1])
 		bet_command_info();
