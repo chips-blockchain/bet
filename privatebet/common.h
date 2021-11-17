@@ -53,6 +53,11 @@
 
 #define gui_ws_port 9000
 
+#define default_chips_tx_fee 0.001
+#define default_bb_in_chips 0.01
+#define default_min_stake_in_bb 20
+#define default_max_stake_in_bb 100
+
 extern bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 extern bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 
@@ -96,8 +101,11 @@ extern char **notary_node_ips;
 extern char **notary_node_pubkeys;
 
 extern double BB_in_chips;
-extern double table_stack_in_chips;
+extern double table_stake_in_chips;
 extern double chips_tx_fee;
+extern double table_min_stake;
+extern double table_max_stake;
+extern double table_stack_in_bb;
 
 extern char dev_fund_addr[64];
 extern char *legacy_m_of_n_msig_addr;

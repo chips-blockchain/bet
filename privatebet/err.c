@@ -43,7 +43,7 @@ const char *bet_err_str(int32_t err_no)
 		return "Error in signing the CHIPS tx";
 		break;
 	case ERR_CHIPS_INVALID_TX:
-		return "The tx made by the player marked invalid by the dealer";
+		return "Player tx is invalid";
 		break;
 	case ERR_LN:
 		return "An LN Error in performing the LN operation";

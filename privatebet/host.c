@@ -393,7 +393,9 @@ static int32_t bet_dcv_bvv_join(cJSON *argjson, struct dcv_bvv_sock_info *bet_dc
 	config_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(config_info, "method", "config_data");
 	cJSON_AddNumberToObject(config_info, "max_players", max_players);
-	cJSON_AddNumberToObject(config_info, "table_stack_in_chips", table_stack_in_chips);
+	cJSON_AddNumberToObject(config_info, "bb_in_chips", BB_in_chips);
+	cJSON_AddNumberToObject(config_info, "table_min_stake", table_min_stake);
+	cJSON_AddNumberToObject(config_info, "table_max_stake", table_max_stake);
 	cJSON_AddNumberToObject(config_info, "chips_tx_fee", chips_tx_fee);
 
 	retval = (nn_send(bet_dcv_bvv->pubsock, cJSON_Print(config_info), strlen(cJSON_Print(config_info)), 0) < 0) ?
@@ -1257,7 +1259,8 @@ static int32_t bet_dcv_stack_info_resp(cJSON *argjson, struct privatebet_info *b
 		cJSON_AddStringToObject(stack_info_resp, "id", jstr(argjson, "id"));
 		cJSON_AddNumberToObject(stack_info_resp, "max_players", max_players);
 		cJSON_AddNumberToObject(stack_info_resp, "bb_in_chips", BB_in_chips);
-		cJSON_AddNumberToObject(stack_info_resp, "table_stack_in_chips", table_stack_in_chips);
+		cJSON_AddNumberToObject(stack_info_resp, "table_min_stake", table_min_stake);
+		cJSON_AddNumberToObject(stack_info_resp, "table_max_stake", table_max_stake);
 		cJSON_AddNumberToObject(stack_info_resp, "dcv_commission", dcv_commission_percentage);
 		cJSON_AddNumberToObject(stack_info_resp, "chips_tx_fee", chips_tx_fee);
 		cJSON_AddStringToObject(stack_info_resp, "legacy_m_of_n_msig_addr", legacy_m_of_n_msig_addr);
@@ -1446,30 +1449,14 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 {
 	int32_t funds = 0, retval = OK;
 	char *sql_stmt = NULL;
-	cJSON *msig_addr_nodes = NULL, *game_abort_to_player = NULL, *tx_status = NULL;
+	cJSON *msig_addr_nodes = NULL, *tx_status = NULL;
 
-	if (dcv_state == 1) {
-		retval = ERR_DEALER_TABLE_FULL;
-	}
-	if (retval == OK) {
-		retval = bet_dcv_verify_tx(argjson, bet);
-	}
-	if (retval != OK) {
-		game_abort_to_player = cJSON_CreateObject();
-		cJSON_AddStringToObject(game_abort_to_player, "method", "game_abort_player");
-		cJSON_AddStringToObject(game_abort_to_player, "id", jstr(argjson, "id"));
-		cJSON_AddNumberToObject(game_abort_to_player, "err_no", retval);
-		retval = (nn_send(bet->pubsock, cJSON_Print(game_abort_to_player),
-				  strlen(cJSON_Print(game_abort_to_player)), 0) < 0) ?
-				 ERR_NNG_SEND :
-				 OK;
+	retval = (dcv_state == 1) ? ERR_DEALER_TABLE_FULL : bet_dcv_verify_tx(argjson, bet);
+	if (retval != OK)
 		return retval;
-	}
 
-	//pthread_mutex_lock(&mutex);
 	strcpy(vars->player_chips_addrs[no_of_rand_str], jstr(argjson, "chips_addr"));
 	strcpy(tx_rand_str[no_of_rand_str++], jstr(argjson, "id"));
-	//pthread_mutex_unlock(&mutex);
 
 	double balance = chips_get_balance_on_address_from_tx(addr, jstr(argjson, "tx_info"));
 	//funds = (balance * satoshis) / (satoshis_per_unit * normalization_factor);
@@ -1562,8 +1549,18 @@ static int32_t bet_handle_player_errs_by_dealer(cJSON *argjson, struct privatebe
 			dlg_error("%s", bet_err_str(retval));
 		}
 		exit(-1);
+	case ERR_DEALER_TABLE_FULL:
+	case ERR_CHIPS_INVALID_TX:
+		cJSON_AddStringToObject(game_abort, "method", "game_abort_player");
+		cJSON_AddStringToObject(game_abort, "id", jstr(argjson, "id"));
+		cJSON_AddNumberToObject(game_abort, "err_no", jint(argjson, "err_no"));
+		retval = (nn_send(bet->pubsock, cJSON_Print(game_abort), strlen(cJSON_Print(game_abort)), 0) < 0) ?
+				 ERR_NNG_SEND :
+				 OK;
+		break;
 	default:
-		dlg_warn("No action from dealer is needed for this player error");
+		dlg_warn("The error %s is not yet handled by the dealer or no action is needed from dealer",
+			 bet_err_str(jint(argjson, "err_no")));
 	}
 	return retval;
 }
@@ -1610,8 +1607,8 @@ void bet_dcv_backend_thrd(void *_ptr)
 			retval = bet_player_betting_statemachine(argjson, bet, vars);
 		} else if (strcmp(method, "display_current_state") == 0) {
 			retval = bet_display_current_state(argjson, bet, vars);
-		} else if (strcmp(method, "stack") == 0) {
-			vars->funds[jint(argjson, "playerid")] = jint(argjson, "stack_value");
+		} else if (strcmp(method, "stake") == 0) {
+			vars->funds[jint(argjson, "playerid")] = jint(argjson, "stake_value");
 			retval = bet_relay(argjson, bet, vars);
 		} else if (strcmp(method, "signedrawtransaction") == 0) {
 			retval = bet_dcv_process_signed_raw_tx(argjson);
@@ -1622,9 +1619,7 @@ void bet_dcv_backend_thrd(void *_ptr)
 				bet_get_dcv_state(argjson, bet);
 			}
 		} else if (strcmp(method, "tx") == 0) {
-			//pthread_mutex_lock(&mutex);
 			retval = bet_dcv_process_tx(argjson, bet, vars, legacy_m_of_n_msig_addr);
-			//pthread_mutex_unlock(&mutex);
 		} else if (strcmp(method, "live") == 0) {
 			cJSON *live_info = cJSON_CreateObject();
 			cJSON_AddStringToObject(live_info, "method", "live");
@@ -1662,9 +1657,9 @@ void bet_dcv_backend_thrd(void *_ptr)
 	}
 	pthread_mutex_unlock(&mutex);
 	if (retval != OK) {
-		dlg_error("Dealer encountered the error :: %s", bet_err_str(retval));
+		cJSON_AddNumberToObject(argjson, "err_no", retval);
+		bet_handle_player_errs_by_dealer(argjson, bet);
 	}
-	
 }
 
 void bet_dcv_backend_loop(void *_ptr)

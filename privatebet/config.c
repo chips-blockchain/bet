@@ -60,7 +60,7 @@ void bet_parse_dealer_config_file()
 	config_info = bet_read_json_file(dealer_config_file);
 	if (config_info) {
 		max_players = jint(config_info, "max_players");
-		table_stack_in_chips = jdouble(config_info, "table_stack_in_chips");
+		table_stake_in_chips = jdouble(config_info, "table_stake_in_chips");
 		chips_tx_fee = jdouble(config_info, "chips_tx_fee");
 		dcv_commission_percentage = jdouble(config_info, "dcv_commission");
 		strcpy(type, jstr(config_info, "type"));
@@ -114,13 +114,19 @@ void bet_parse_dealer_config_ini_file()
 	if (ini == NULL) {
 		dlg_error("error in parsing %s", dealer_config_ini_file);
 	} else {
-		if (-1 != iniparser_getint(ini, "dealer:max_players", -1)) {
-			max_players = iniparser_getint(ini, "dealer:max_players", -1);
+		if (-1 != iniparser_getint(ini, "table:max_players", -1)) {
+			max_players = iniparser_getint(ini, "table:max_players", -1);
 		}
-		if (0 != iniparser_getdouble(ini, "dealer:big_blind", 0)) {
-			BB_in_chips = iniparser_getdouble(ini, "dealer:big_blind", 0);
+		if (0 != iniparser_getdouble(ini, "table:big_blind", 0)) {
+			BB_in_chips = iniparser_getdouble(ini, "table:big_blind", 0);
 		}
-		table_stack_in_chips = 200 * BB_in_chips;
+		if (0 != iniparser_getint(ini, "table:min_stake", 0)) {
+			table_min_stake = iniparser_getint(ini, "table:min_stake", 0) * BB_in_chips;
+		}
+		if (0 != iniparser_getint(ini, "table:max_stake", 0)) {
+			table_max_stake = iniparser_getint(ini, "table:max_stake", 0) * BB_in_chips;
+		}
+
 		if (0 != iniparser_getdouble(ini, "dealer:chips_tx_fee", 0)) {
 			chips_tx_fee = iniparser_getdouble(ini, "dealer:chips_tx_fee", 0);
 		}
@@ -130,6 +136,7 @@ void bet_parse_dealer_config_ini_file()
 		if (NULL != iniparser_getstring(ini, "dealer:gui_host", NULL)) {
 			strcpy(dcv_hosted_gui_url, iniparser_getstring(ini, "dealer:gui_host", NULL));
 		}
+
 		if (-1 != iniparser_getboolean(ini, "private table:is_table_private", -1)) {
 			is_table_private = iniparser_getboolean(ini, "private table:is_table_private", -1);
 		}
@@ -149,6 +156,9 @@ void bet_parse_player_config_ini_file()
 	} else {
 		if (0 != iniparser_getdouble(ini, "player:max_allowed_dcv_commission", 0)) {
 			max_allowed_dcv_commission = iniparser_getdouble(ini, "player:max_allowed_dcv_commission", 0);
+		}
+		if (0 != iniparser_getint(ini, "player:table_stake_size", 0)) {
+			table_stack_in_bb = iniparser_getint(ini, "player:table_stake_size", 0);
 		}
 		if (0 != iniparser_getstring(ini, "player:name", NULL)) {
 			strcpy(player_name, iniparser_getstring(ini, "player:name", NULL));
