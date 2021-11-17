@@ -300,7 +300,6 @@ int32_t bet_bvv_backend(cJSON *argjson, struct privatebet_info *bet, struct priv
 		} else if (strcmp(method, "config_data") == 0) {
 			max_players = jint(argjson, "max_players");
 			chips_tx_fee = jdouble(argjson, "chips_tx_fee");
-			table_stack_in_chips = jdouble(argjson, "table_stack_in_chips");
 			bet->maxplayers = max_players;
 			bet->numplayers = max_players;
 			bvv_info.maxplayers = bet->maxplayers;
@@ -816,9 +815,9 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 		player_lws_write(init_info);
 
 		stack_info = cJSON_CreateObject();
-		cJSON_AddStringToObject(stack_info, "method", "stack");
+		cJSON_AddStringToObject(stack_info, "method", "stake");
 		cJSON_AddNumberToObject(stack_info, "playerid", bet->myplayerid);
-		cJSON_AddNumberToObject(stack_info, "stack_value", vars->player_funds);
+		cJSON_AddNumberToObject(stack_info, "stake_value", vars->player_funds);
 
 		dlg_info("stack_info::%s", cJSON_Print(stack_info));
 
@@ -952,8 +951,7 @@ static void bet_player_wallet_info()
 	cJSON_AddNumberToObject(wallet_info, "balance", chips_get_balance());
 	cJSON_AddNumberToObject(wallet_info, "backend_status", backend_status);
 	cJSON_AddNumberToObject(wallet_info, "max_players", max_players);
-	//cJSON_AddNumberToObject(wallet_info, "table_stack_in_chips",(table_stack_in_chips * satoshis) / (satoshis_per_unit * normalization_factor));
-	cJSON_AddNumberToObject(wallet_info, "table_stack_in_chips", (table_stack_in_chips / BB_in_chips) * 2);
+	cJSON_AddNumberToObject(wallet_info, "table_stack_in_chips", (table_stake_in_chips / BB_in_chips) * 2);
 	cJSON_AddStringToObject(wallet_info, "table_id", table_id);
 	cJSON_AddNumberToObject(wallet_info, "tx_fee", chips_tx_fee);
 	dlg_info("%s\n", cJSON_Print(wallet_info));
@@ -1303,12 +1301,42 @@ static void bet_push_join_info(cJSON *argjson)
 	player_lws_write(join_info);
 }
 
+static int32_t bet_update_payin_tx_across_cashiers(cJSON *argjson, cJSON *txid)
+{
+	int32_t retval = OK;
+	char *sql_query = NULL;
+	cJSON *msig_addr_nodes = NULL, *payin_tx_insert_query = NULL;
+
+	sql_query = calloc(1, sql_query_size);
+	sprintf(sql_query, "INSERT INTO player_tx_mapping values(%s,\'%s\',\'%s\',\'%s\',%d,%d, NULL);",
+		cJSON_Print(txid), table_id, req_identifier,
+		cJSON_Print(cJSON_GetObjectItem(argjson, "msig_addr_nodes")), tx_unspent, threshold_value);
+	retval = bet_run_query(sql_query); // This is to update payin_tx in the players DB
+
+	memset(sql_query, 0x00, sizeof(sql_query));
+	msig_addr_nodes = cJSON_CreateArray();
+	msig_addr_nodes = cJSON_GetObjectItem(argjson, "msig_addr_nodes");
+	sprintf(sql_query, "INSERT INTO c_tx_addr_mapping values(%s,\'%s\',%d,\'%s\',\'%s\',1,NULL);",
+		cJSON_Print(txid), legacy_m_of_n_msig_addr, threshold_value, table_id,
+		unstringify(cJSON_Print(cJSON_GetObjectItem(argjson, "msig_addr_nodes"))));
+
+	payin_tx_insert_query = cJSON_CreateObject();
+	cJSON_AddStringToObject(payin_tx_insert_query, "method", "lock_in_tx");
+	cJSON_AddStringToObject(payin_tx_insert_query, "sql_query", sql_query);
+	for (int32_t i = 0; i < cJSON_GetArraySize(msig_addr_nodes); i++) {
+		bet_msg_cashier(payin_tx_insert_query,
+				unstringify(cJSON_Print(cJSON_GetArrayItem(msig_addr_nodes, i))));
+	}
+	if (sql_query)
+		free(sql_query);
+}
+
 static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privatebet_info *bet)
 {
-	cJSON *tx_info = NULL, *txid = NULL;
-	double funds_needed;
 	int32_t retval = OK;
-	char *hex_data = NULL, *sql_query = NULL;
+	double funds_available;
+	char *hex_data = NULL;
+	cJSON *tx_info = NULL, *txid = NULL, *data_info = NULL;
 
 	if (0 == check_url(jstr(argjson, "gui_url"))) {
 		if (0 == strlen(jstr(argjson, "gui_url"))) {
@@ -1323,7 +1351,6 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		dlg_warn("Dealer hosted GUI :: %s, using this you can connect to player backend and interact",
 			 jstr(argjson, "gui_url"));
 	}
-	funds_needed = jdouble(argjson, "table_stack_in_chips");
 	if (jdouble(argjson, "dcv_commission") > max_allowed_dcv_commission) {
 		dlg_warn(
 			"Dealer set the commission %f%% which is more than max commission i.e %f%% set by player, so exiting",
@@ -1331,86 +1358,73 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		retval = ERR_DCV_COMMISSION_MISMATCH;
 		return retval;
 	}
-	if (chips_get_balance() < (funds_needed + chips_tx_fee)) {
+	funds_available = chips_get_balance() - chips_tx_fee;
+	if (funds_available < jdouble(argjson, "table_min_stake")) {
 		retval = ERR_CHIPS_INSUFFICIENT_FUNDS;
-	} else {
-		max_players = jint(argjson, "max_players");
-		BB_in_chips = jdouble(argjson, "bb_in_chips");
-		table_stack_in_chips = jdouble(argjson, "table_stack_in_chips");
-		chips_tx_fee = jdouble(argjson, "chips_tx_fee");
-		legacy_m_of_n_msig_addr = (char *)malloc(strlen(jstr(argjson, "legacy_m_of_n_msig_addr")) + 1);
-		memset(legacy_m_of_n_msig_addr, 0x00, strlen(jstr(argjson, "legacy_m_of_n_msig_addr")) + 1);
-		strncpy(legacy_m_of_n_msig_addr, jstr(argjson, "legacy_m_of_n_msig_addr"),
-			strlen(jstr(argjson, "legacy_m_of_n_msig_addr")));
-		threshold_value = jint(argjson, "threshold_value");
-		memset(table_id, 0x00, sizeof(table_id));
-		strncpy(table_id, jstr(argjson, "table_id"), strlen(jstr(argjson, "table_id")));
-
-		bet->maxplayers = max_players;
-		bet->numplayers = max_players;
-		tx_info = cJSON_CreateObject();
-		cJSON *data_info = NULL;
-		data_info = cJSON_CreateObject();
-		cJSON_AddStringToObject(data_info, "table_id", table_id);
-		cJSON_AddStringToObject(data_info, "msig_addr_nodes",
-					unstringify(cJSON_Print(cJSON_GetObjectItem(argjson, "msig_addr_nodes"))));
-		cJSON_AddNumberToObject(data_info, "min_cashiers", threshold_value);
-		cJSON_AddStringToObject(data_info, "player_id", req_identifier);
-		cJSON_AddStringToObject(data_info, "dispute_addr", chips_get_new_address());
-		cJSON_AddStringToObject(data_info, "msig_addr", legacy_m_of_n_msig_addr);
-
-		hex_data = calloc(1, 2 * tx_data_size);
-		str_to_hexstr(cJSON_Print(data_info), hex_data);
-		txid = cJSON_CreateObject();
-		txid = chips_transfer_funds_with_data(funds_needed, legacy_m_of_n_msig_addr, hex_data);
-
-		dlg_info("tx id::%s", cJSON_Print(txid));
-		memset(player_payin_txid, 0x00, sizeof(player_payin_txid));
-		strcpy(player_payin_txid, cJSON_Print(txid));
-		if (txid) {
-			sql_query = calloc(1, sql_query_size);
-			sprintf(sql_query, "INSERT INTO player_tx_mapping values(%s,\'%s\',\'%s\',\'%s\',%d,%d, NULL);",
-				cJSON_Print(txid), table_id, req_identifier,
-				cJSON_Print(cJSON_GetObjectItem(argjson, "msig_addr_nodes")), tx_unspent,
-				threshold_value);
-			bet_run_query(sql_query);
-
-			cJSON *msig_addr_nodes = cJSON_CreateArray();
-			msig_addr_nodes = cJSON_GetObjectItem(argjson, "msig_addr_nodes");
-			sprintf(sql_query, "INSERT INTO c_tx_addr_mapping values(%s,\'%s\',%d,\'%s\',\'%s\',1,NULL);",
-				cJSON_Print(txid), legacy_m_of_n_msig_addr, threshold_value, table_id,
-				unstringify(cJSON_Print(cJSON_GetObjectItem(argjson, "msig_addr_nodes"))));
-
-			cJSON *temp = cJSON_CreateObject();
-			cJSON_AddStringToObject(temp, "method", "lock_in_tx");
-			cJSON_AddStringToObject(temp, "sql_query", sql_query);
-			for (int32_t i = 0; i < cJSON_GetArraySize(msig_addr_nodes); i++) {
-				bet_msg_cashier(temp, unstringify(cJSON_Print(cJSON_GetArrayItem(msig_addr_nodes, i))));
-			}
-		}
-
-		cJSON_AddStringToObject(tx_info, "method", "tx");
-		cJSON_AddStringToObject(tx_info, "id", req_identifier);
-		cJSON_AddStringToObject(tx_info, "chips_addr", chips_get_new_address());
-		cJSON_AddItemToObject(tx_info, "tx_info", txid);
-		if (txid) {
-			dlg_info("Waiting for tx to confirm");
-			while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
-				sleep(2);
-			}
-			dlg_info("TX ::%s got confirmed", cJSON_Print(txid));
-			cJSON_AddNumberToObject(tx_info, "block_height",
-						chips_get_block_height_from_block_hash(
-							chips_get_block_hash_from_txid(cJSON_Print(txid))));
-		} else {
-			cJSON_AddNumberToObject(tx_info, "block_height", -1);
-		}
-		retval = (nn_send(bet->pushsock, cJSON_Print(tx_info), strlen(cJSON_Print(tx_info)), 0) < 0) ?
-				 ERR_NNG_SEND :
-				 OK;
+		return retval;
 	}
-	if (sql_query)
-		free(sql_query);
+	BB_in_chips = jdouble(argjson, "bb_in_chips");
+	table_stake_in_chips = table_stack_in_bb * BB_in_chips;
+	if (table_stake_in_chips < jdouble(argjson, "table_min_stake")) {
+		table_stake_in_chips = jdouble(argjson, "table_min_stake");
+	}
+	if (table_stake_in_chips > jdouble(argjson, "table_max_stake")) {
+		table_stake_in_chips = jdouble(argjson, "table_max_stake");
+	}
+	max_players = jint(argjson, "max_players");
+	chips_tx_fee = jdouble(argjson, "chips_tx_fee");
+	legacy_m_of_n_msig_addr = (char *)malloc(strlen(jstr(argjson, "legacy_m_of_n_msig_addr")) + 1);
+	memset(legacy_m_of_n_msig_addr, 0x00, strlen(jstr(argjson, "legacy_m_of_n_msig_addr")) + 1);
+	strncpy(legacy_m_of_n_msig_addr, jstr(argjson, "legacy_m_of_n_msig_addr"),
+		strlen(jstr(argjson, "legacy_m_of_n_msig_addr")));
+	threshold_value = jint(argjson, "threshold_value");
+	memset(table_id, 0x00, sizeof(table_id));
+	strncpy(table_id, jstr(argjson, "table_id"), strlen(jstr(argjson, "table_id")));
+
+	bet->maxplayers = max_players;
+	bet->numplayers = max_players;
+	tx_info = cJSON_CreateObject();
+	data_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(data_info, "table_id", table_id);
+	cJSON_AddStringToObject(data_info, "msig_addr_nodes",
+				unstringify(cJSON_Print(cJSON_GetObjectItem(argjson, "msig_addr_nodes"))));
+	cJSON_AddNumberToObject(data_info, "min_cashiers", threshold_value);
+	cJSON_AddStringToObject(data_info, "player_id", req_identifier);
+	cJSON_AddStringToObject(data_info, "dispute_addr", chips_get_new_address());
+	cJSON_AddStringToObject(data_info, "msig_addr", legacy_m_of_n_msig_addr);
+
+	hex_data = calloc(1, 2 * tx_data_size);
+	str_to_hexstr(cJSON_Print(data_info), hex_data);
+	txid = cJSON_CreateObject();
+	dlg_info("funds_needed::%f", table_stake_in_chips);
+	txid = chips_transfer_funds_with_data(table_stake_in_chips, legacy_m_of_n_msig_addr, hex_data);
+	if (txid == NULL) {
+		retval = ERR_CHIPS_INVALID_TX;
+		return retval;
+	}
+	dlg_info("tx id::%s", cJSON_Print(txid));
+	memset(player_payin_txid, 0x00, sizeof(player_payin_txid));
+	strcpy(player_payin_txid, cJSON_Print(txid));
+	retval = bet_update_payin_tx_across_cashiers(argjson, txid);
+	if (retval != OK) {
+		dlg_error("Updating payin_tx across the cashier nodes or in the player DB got failed");
+		retval = OK;
+	}
+	cJSON_AddStringToObject(tx_info, "method", "tx");
+	cJSON_AddStringToObject(tx_info, "id", req_identifier);
+	cJSON_AddStringToObject(tx_info, "chips_addr", chips_get_new_address());
+	cJSON_AddItemToObject(tx_info, "tx_info", txid);
+	dlg_info("Waiting for tx to confirm");
+	while (chips_get_block_hash_from_txid(cJSON_Print(txid)) == NULL) {
+		sleep(2);
+	}
+	dlg_info("TX ::%s got confirmed", cJSON_Print(txid));
+	cJSON_AddNumberToObject(
+		tx_info, "block_height",
+		chips_get_block_height_from_block_hash(chips_get_block_hash_from_txid(cJSON_Print(txid))));
+	retval =
+		(nn_send(bet->pushsock, cJSON_Print(tx_info), strlen(cJSON_Print(tx_info)), 0) < 0) ? ERR_NNG_SEND : OK;
+
 	if (hex_data)
 		free(hex_data);
 	return retval;
@@ -1513,6 +1527,7 @@ void bet_handle_player_error(struct privatebet_info *bet, int32_t err_no)
 		bet_raise_dispute(player_payin_txid);
 	case ERR_INVALID_POS:
 	case ERR_CHIPS_INSUFFICIENT_FUNDS:
+	case ERR_CHIPS_INVALID_TX:
 	case ERR_PT_PLAYER_UNAUTHORIZED:
 	case ERR_DCV_COMMISSION_MISMATCH:
 	case ERR_INI_PARSING:
@@ -1598,8 +1613,8 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			player_lws_write(argjson);
 		} else if (strcmp(method, "finalInfo") == 0) {
 			player_lws_write(argjson);
-		} else if (strcmp(method, "stack") == 0) {
-			vars->funds[jint(argjson, "playerid")] = jint(argjson, "stack_value");
+		} else if (strcmp(method, "stake") == 0) {
+			vars->funds[jint(argjson, "playerid")] = jint(argjson, "stake_value");
 		} else if (strcmp(method, "signrawtransaction") == 0) {
 			if (jint(argjson, "playerid") == bet->myplayerid) {
 				cJSON *temp = cJSON_CreateObject();

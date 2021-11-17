@@ -54,17 +54,12 @@ int32_t live_notaries = 0;
 int32_t *notary_status = NULL;
 int32_t notary_response = 0;
 
-/***********************************************************************************************************
-The values table_stack_in_chips and  chips_tx_fee are read from dealer_config.json file, table_stack_in_chips
-is the amount of chips that are needed by the player in order to play the game, chips_tx_fee is chips n/w 
-tx_fee set by the dealer.
-Incase if these values are not mentioned in the dealer_config.json file, the default values read as
-	table_stack_in_chips = 0.01;
-	chips_tx_fee = 0.0005;
-***********************************************************************************************************/
-double BB_in_chips = 0.01;
-double table_stack_in_chips = 2;
-double chips_tx_fee = 0.0001;
+double BB_in_chips = default_bb_in_chips;
+double table_stack_in_bb = default_min_stake_in_bb;
+double table_stake_in_chips = default_min_stake_in_bb * default_bb_in_chips;
+double chips_tx_fee = default_chips_tx_fee;
+double table_min_stake = default_min_stake_in_bb * default_bb_in_chips;
+double table_max_stake = default_max_stake_in_bb * default_bb_in_chips;
 
 char *legacy_m_of_n_msig_addr = NULL;
 
