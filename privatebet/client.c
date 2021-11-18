@@ -951,7 +951,7 @@ static void bet_player_wallet_info()
 	cJSON_AddNumberToObject(wallet_info, "balance", chips_get_balance());
 	cJSON_AddNumberToObject(wallet_info, "backend_status", backend_status);
 	cJSON_AddNumberToObject(wallet_info, "max_players", max_players);
-	cJSON_AddNumberToObject(wallet_info, "table_stack_in_chips", (table_stake_in_chips / BB_in_chips) * 2);
+	cJSON_AddNumberToObject(wallet_info, "table_stack_in_chips", (table_stake_in_chips / SB_in_chips));
 	cJSON_AddStringToObject(wallet_info, "table_id", table_id);
 	cJSON_AddNumberToObject(wallet_info, "tx_fee", chips_tx_fee);
 	dlg_info("%s\n", cJSON_Print(wallet_info));
@@ -1364,6 +1364,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		return retval;
 	}
 	BB_in_chips = jdouble(argjson, "bb_in_chips");
+	SB_in_chips = BB_in_chips / 2;
 	table_stake_in_chips = table_stack_in_bb * BB_in_chips;
 	if (table_stake_in_chips < jdouble(argjson, "table_min_stake")) {
 		table_stake_in_chips = jdouble(argjson, "table_min_stake");

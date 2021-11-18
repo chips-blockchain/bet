@@ -1164,13 +1164,8 @@ cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids
 	for (int32_t i = 0; i < no_of_txs; i++) {
 		amount_in_txs += chips_get_balance_on_address_from_tx(legacy_m_of_n_msig_addr, tx_ids[i]);
 	}
-	if (fabs((payout_amount + chips_tx_fee) - amount_in_txs) < epsilon) {
-		dlg_info("%f::%f\n", payout_amount, amount_in_txs);
-		for (int32_t i = 0; i < no_of_txs; i++) {
-			dlg_info("%s\n", tx_ids[i]);
-		}
-	} else {
-		dlg_error("Amount mismatch between the payout tx and payin tx\n");
+	if ((amount_in_txs - (payout_amount + chips_tx_fee)) < 0) {
+		dlg_error("Mismatch b/w Payout and Payin amounts");
 		return NULL;
 	}
 	tx_list = cJSON_CreateArray();

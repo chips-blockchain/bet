@@ -55,6 +55,7 @@ int32_t *notary_status = NULL;
 int32_t notary_response = 0;
 
 double BB_in_chips = default_bb_in_chips;
+double SB_in_chips = default_bb_in_chips / 2;
 double table_stack_in_bb = default_min_stake_in_bb;
 double table_stake_in_chips = default_min_stake_in_bb * default_bb_in_chips;
 double chips_tx_fee = default_chips_tx_fee;
