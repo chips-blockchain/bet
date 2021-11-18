@@ -463,8 +463,7 @@ int32_t bet_player_betting_statemachine(cJSON *argjson, struct privatebet_info *
 					totalBet += vars->betamount[i][j];
 				}
 				cJSON_AddItemToArray(player_funds, cJSON_CreateNumber(vars->funds[i] - totalBet));
-			}
-
+			}			
 			player_lws_write(argjson);
 		} else if ((strcmp(action, "check") == 0) || (strcmp(action, "call") == 0) ||
 			   (strcmp(action, "raise") == 0) || (strcmp(action, "fold") == 0) ||
@@ -647,7 +646,7 @@ int32_t bet_player_round_betting(cJSON *argjson, struct privatebet_info *bet, st
 	playerid = jint(argjson, "playerid");
 	round = jint(argjson, "round");
 	min_amount = jint(argjson, "min_amount");
-
+	
 	action_response = cJSON_CreateObject();
 	cJSON_AddStringToObject(action_response, "method", "betting");
 	cJSON_AddNumberToObject(action_response, "playerid", jint(argjson, "playerid"));
@@ -676,16 +675,20 @@ int32_t bet_player_round_betting(cJSON *argjson, struct privatebet_info *bet, st
 
 		retval = bet_player_invoice_request(argjson, action_response, bet, invoice_amount);
 	} else if (jinti(possibilities, (option - 1)) == call) {
-		vars->betamount[playerid][round] += min_amount;
-		vars->player_funds -= min_amount;
-
+		if (min_amount != jint(argjson, "bet_amount")) {
+			vars->betamount[playerid][round] += vars->player_funds;
+			cJSON_AddNumberToObject(action_response, "invoice_amount", vars->player_funds);
+			vars->player_funds = 0;
+		} else {
+			vars->betamount[playerid][round] += min_amount;
+			vars->player_funds -= min_amount;
+			cJSON_AddNumberToObject(action_response, "invoice_amount", min_amount);
+		}
 		if (vars->player_funds == 0) {
 			cJSON_DetachItemFromObject(action_response, "action");
 			cJSON_AddStringToObject(action_response, "action", "allin");
-			dlg_info("action response :: %s\n", cJSON_Print(action_response));
 		}
 		cJSON_AddNumberToObject(action_response, "bet_amount", jint(argjson, "bet_amount"));
-		cJSON_AddNumberToObject(action_response, "invoice_amount", min_amount);
 
 		retval = bet_player_invoice_request(argjson, action_response, bet, min_amount);
 	} else if (jinti(possibilities, (option - 1)) == allin) {

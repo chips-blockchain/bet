@@ -165,14 +165,14 @@ int32_t bet_player_invoice_request(cJSON *argjson, cJSON *actionResponse, struct
 {
 	int32_t retval = OK;
 	cJSON *betInfo = NULL;
-
+	
 	betInfo = cJSON_CreateObject();
 	cJSON_AddStringToObject(betInfo, "method", "bettingInvoiceRequest");
 	cJSON_AddNumberToObject(betInfo, "round", jint(argjson, "round"));
 	cJSON_AddNumberToObject(betInfo, "playerID", bet->myplayerid);
 	cJSON_AddNumberToObject(betInfo, "invoice_amount", amount);
 	cJSON_AddItemToObject(betInfo, "actionResponse", actionResponse);
-
+	dlg_info("%s", cJSON_Print(betInfo));
 	retval =
 		(nn_send(bet->pushsock, cJSON_Print(betInfo), strlen(cJSON_Print(betInfo)), 0) < 0) ? ERR_NNG_SEND : OK;
 	return retval;
