@@ -39,6 +39,15 @@ const char *bet_err_str(int32_t err_no)
 	case ERR_NO_TURN:
 		return "Couldn't able to find next turn";
 		break;
+	case ERR_BET_AMOUNTS_MISMATCH:
+		return "Error in bet amount mismatch";
+		break;
+	case ERR_PAYOUT_TX:
+		return "Error in making Payout TX";
+		break;
+	case ERR_PLAYER_STAKE_MISMATCH:
+		return "There is mismatch b/w the stake value sent by the player with the stake value that is present at the dealer";
+		break;
 	case ERR_CHIPS_TX_SIGNING:
 		return "Error in signing the CHIPS tx";
 		break;

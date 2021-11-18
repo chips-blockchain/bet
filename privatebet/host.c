@@ -87,7 +87,7 @@ char dcv_gui_data[8196];
 int ws_dcv_connection_status = 0;
 
 double dcv_commission_percentage = 0.75;
-double dev_fund_percentage = 0.25;
+double dev_fund_percentage = 1;
 char dcv_hosted_gui_url[128];
 
 int32_t heartbeat_on = 0;
@@ -962,63 +962,54 @@ static cJSON *payout_tx_data_info(struct privatebet_info *bet, struct privatebet
 	return game_info;
 }
 
-static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privatebet_vars *vars, int winners[], int pot)
+static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int32_t no_of_winners = 0, retval = OK/*, funds_left = 0*/;
-	double dcv_commission = 0, dev_commission = 0, winning_pot = 0/*, amount_in_txs = 0.0*/, player_amounts[bet->maxplayers], pot_in_chips = 0.0;
+	int32_t retval = OK;
+	double dcv_commission = 0, dev_commission = 0, player_amounts[bet->maxplayers];
 	cJSON *payout_info = NULL, *dev_info = NULL, *dcv_info = NULL, *payout_tx_info = NULL, *data_info = NULL;
 	char *hex_str = NULL;
 
-	for (int i = 0; i < bet->maxplayers; i++) {
-		//funds_left += vars->funds[i];
-		if (winners[i] == 1)
-			no_of_winners++;
-	}
-	#if 0
-	for (int32_t i = 0; i < no_of_txs; i++) {
-		amount_in_txs += chips_get_balance_on_address_from_tx(legacy_m_of_n_msig_addr, tx_ids[i]);
-	}
-	#endif
+	for (int32_t i = 0; i < bet->maxplayers; i++) {
+		if (vars->win_funds[i] > 0) {
+			double c_dcv, c_dev;
+			c_dcv = ((dcv_commission_percentage * vars->win_funds[i]) / 100) * SB_in_chips;
+			c_dev = ((dev_fund_percentage * vars->win_funds[i]) / 100) * SB_in_chips;
 
-	pot_in_chips = pot * BB_in_chips/2;
-	//amount_in_txs = amount_in_txs - pot_in_chips;
-	pot_in_chips = pot_in_chips - chips_tx_fee;
-	/*		
-	if (pot_in_chips > chips_tx_fee) {
-		pot_in_chips = pot_in_chips - chips_tx_fee;
+			dcv_commission += c_dcv;
+			dev_commission += c_dev;
+			player_amounts[i] = (vars->win_funds[i] * SB_in_chips) - (c_dev + c_dcv);
+			player_amounts[i] += (vars->funds[i] * SB_in_chips);
+		} else {
+			player_amounts[i] = (vars->funds[i] * SB_in_chips);
+		}
+	}
+
+	if (dcv_commission > chips_tx_fee) {
+		dcv_commission -= chips_tx_fee;
+	} else if (dev_commission > chips_tx_fee) {
+		dev_commission -= chips_tx_fee;
 	} else {
-		amount_in_txs = amount_in_txs - chips_tx_fee;
+		for (int32_t i = 0; i < bet->maxplayers; i++) {
+			if (vars->winners[i] == 1) {
+				player_amounts[i] -= chips_tx_fee;
+				break;
+			}
+		}
 	}
-	*/
-	//amount_in_txs = amount_in_txs / bet->numplayers;
-
-	dcv_commission = ((dcv_commission_percentage * pot_in_chips) / 100);
-	dev_commission = ((dev_fund_percentage * pot_in_chips) / 100);
-	winning_pot = pot_in_chips - (dcv_commission + dev_commission);
-	winning_pot = winning_pot / no_of_winners;
-
 	payout_info = cJSON_CreateArray();
 
 	dev_info = cJSON_CreateObject();
 	dcv_info = cJSON_CreateObject();
+	if (dcv_commission > chips_tx_fee) {
+		cJSON_AddStringToObject(dcv_info, "address", chips_get_wallet_address());
+		cJSON_AddNumberToObject(dcv_info, "amount", dcv_commission);
+		cJSON_AddItemToArray(payout_info, dcv_info);
+	}
 
-	cJSON_AddStringToObject(dcv_info, "address", chips_get_wallet_address());
-	cJSON_AddNumberToObject(dcv_info, "amount", dcv_commission);
-
-	cJSON_AddStringToObject(dev_info, "address", dev_fund_addr);
-	cJSON_AddNumberToObject(dev_info, "amount", dev_commission);
-
-	cJSON_AddItemToArray(payout_info, dev_info);
-	cJSON_AddItemToArray(payout_info, dcv_info);
-
-	for (int32_t i = 0; i < bet->maxplayers; i++) {
-		if (vars->funds[i] > 0) {
-			player_amounts[i] = vars->funds[i] * BB_in_chips/2;
-		} else {
-			player_amounts[i] = 0;
-		}
-		if (winners[i] == 1)
-			player_amounts[i] += winning_pot;
+	if (dev_commission > chips_tx_fee) {
+		cJSON_AddStringToObject(dev_info, "address", dev_fund_addr);
+		cJSON_AddNumberToObject(dev_info, "amount", dev_commission);
+		cJSON_AddItemToArray(payout_info, dev_info);
 	}
 
 	for (int32_t i = 0; i < bet->maxplayers; i++) {
@@ -1035,21 +1026,107 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 	str_to_hexstr(cJSON_Print(data_info), hex_str);
 
 	payout_tx_info = chips_create_payout_tx(payout_info, no_of_txs, tx_ids, hex_str);
-	dlg_info("payout_tx_info::%s\n", cJSON_Print(payout_tx_info));
+	if (hex_str)
+		free(hex_str);
 
+	dlg_info("payout_tx_info::%s\n", cJSON_Print(payout_tx_info));
+	if (payout_tx_info == NULL) {
+		retval = ERR_PAYOUT_TX;
+		return retval;
+	}
 	retval = (nn_send(bet->pubsock, cJSON_Print(payout_tx_info), strlen(cJSON_Print(payout_tx_info)), 0) < 0) ?
 			 ERR_NNG_SEND :
 			 OK;
-	if (hex_str)
-		free(hex_str);
+	return retval;
+}
+
+int32_t det_dcv_pot_split(struct privatebet_info *bet, struct privatebet_vars *vars)
+{
+	int32_t retval = OK, eval_players[CARDS777_MAXPLAYERS] = { 0 }, min_win_amount, max_score = 0,
+		no_of_winners = 0, flag = 1, total_init_amount = 0, total_win_amount = 0;
+	unsigned char h[7];
+	unsigned long scores[CARDS777_MAXPLAYERS];
+
+	for (int i = 0; i < bet->maxplayers; i++) {
+		if (vars->bet_actions[i][(vars->round)] == fold)
+			scores[i] = 0;
+		else {
+			for (int j = 0; j < hand_size; j++) {
+				h[j] = (unsigned char)card_values[i][j];
+			}
+			scores[i] = seven_card_draw_score(h);
+		}
+	}
+	for (int32_t i = 0; i < bet->maxplayers; i++) {
+		vars->funds_spent[i] = 0;
+		for (int32_t j = 0; j <= vars->round; j++) {
+			vars->funds_spent[i] += vars->betamount[i][j];
+		}
+	}
+
+	while (flag) {
+		max_score = 0;
+		no_of_winners = 0;
+		for (int i = 0; ((i < bet->maxplayers) && (eval_players[i] == 0)); i++) {
+			if (max_score < scores[i])
+				max_score = scores[i];
+		}
+		min_win_amount = vars->pot;
+		for (int i = 0; ((i < bet->maxplayers) && (eval_players[i] == 0)); i++) {
+			if ((scores[i] == max_score) && (vars->bet_actions[i][(vars->round)] != fold)) {
+				vars->winners[i] = 1;
+				no_of_winners++;
+				if (min_win_amount > vars->funds_spent[i])
+					min_win_amount = vars->funds_spent[i];
+			}
+		}
+		int sub_pot = 0;
+		for (int i = 0; ((i < bet->maxplayers) && (eval_players[i] == 0)); i++) {
+			if (vars->funds_spent[i] >= min_win_amount) {
+				sub_pot += min_win_amount;
+				vars->funds_spent[i] -= min_win_amount;
+			} else {
+				sub_pot += vars->funds_spent[i];
+				vars->funds_spent[i] = 0;
+			}
+		}
+		for (int i = 0; ((i < bet->maxplayers) && (eval_players[i] == 0)); i++) {
+			if (vars->winners[i] == 1) {
+				vars->win_funds[i] += (sub_pot / no_of_winners);
+			}
+			if (vars->funds_spent[i] == 0) {
+				eval_players[i] = 1;
+			}
+		}
+
+		flag = 0;
+		int32_t eval_players_left = 0, eval_player;
+		for (int i = 0; ((i < bet->maxplayers) && (eval_players[i] == 0)); i++) {
+			flag = 1;
+			eval_players_left++;
+			eval_player = i;
+		}
+		if (eval_players_left == 1) {
+			vars->win_funds[eval_player] = vars->funds_spent[eval_player];
+			vars->funds_spent[eval_player] = 0;
+			flag = 0;
+		}
+	}
+
+	for (int i = 0; i < bet->maxplayers; i++) {
+		total_init_amount += vars->ini_funds[i];
+		total_win_amount += (vars->win_funds[i] + vars->funds[i]);
+	}
+	if (total_init_amount != total_win_amount) {
+		dlg_error("Pay_in chips :: %d, Payout_chips :: %d", total_init_amount, total_win_amount);
+		retval = ERR_BET_AMOUNTS_MISMATCH;
+	}
 	return retval;
 }
 
 int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int32_t retval = OK, max_score = 0, no_of_winners = 0, winners[CARDS777_MAXPLAYERS];
-	unsigned char h[7];
-	unsigned long scores[CARDS777_MAXPLAYERS];
+	int32_t retval = OK;
 	cJSON *final_info = NULL, *all_hole_card_info = NULL, *board_card_info = NULL, *hole_card_info = NULL,
 	      *show_info = NULL, *reset_info = NULL;
 	char *cards[52] = { "2C", "3C", "4C", "5C", "6C", "7C", "8C", "9C", "10C", "JC", "QC", "KC", "AC",
@@ -1059,41 +1136,10 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 
 	bet_game_info(bet, vars);
 
-	for (int i = 0; i < bet->maxplayers; i++) {
-		dlg_info("cards:: %s:: %s:: %s:: %s:: %s:: %s:: %s", cards[card_values[i][0]], cards[card_values[i][1]], cards[card_values[i][2]], cards[card_values[i][3]], cards[card_values[i][4]], cards[card_values[i][5]], cards[card_values[i][6]]);
-		if (vars->bet_actions[i][(vars->round)] == fold)
-			scores[i] = 0;
-		else {
-			for (int j = 0; j < hand_size; j++) {
-				h[j] = (unsigned char)card_values[i][j];
-			}
-			scores[i] = seven_card_draw_score(h);
-			dlg_info("player::%d, score::%ld", i, scores[i]);
-		}
-	}
-	for (int i = 0; i < bet->maxplayers; i++) {
-		if (max_score < scores[i])
-			max_score = scores[i];
-	}
-	for (int i = 0; i < bet->maxplayers; i++) {
-		if ((scores[i] == max_score) && (vars->bet_actions[i][(vars->round)] != fold)) {
-			winners[i] = 1;
-			no_of_winners++;
-		} else
-			winners[i] = 0;
-	}
-
-	dlg_info("Winning Amount:%d", (vars->pot / no_of_winners));
-	dlg_info("Winning Players Are:");
-	for (int i = 0; i < bet->maxplayers; i++) {
-		if (winners[i] == 1) {
-			dlg_info("playerid :: %d", i);
-		}
-	}
-	retval = bet_dcv_poker_winner(bet, vars, winners, vars->pot);
-	if (retval != OK) {
-		goto end;
-	}
+	if ((retval = det_dcv_pot_split(bet, vars)) != OK)
+		return retval;
+	if ((retval = bet_dcv_poker_winner(bet, vars)) != OK)
+		return retval;
 
 	final_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(final_info, "method", "finalInfo");
@@ -1122,15 +1168,21 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 	cJSON_AddItemToObject(show_info, "boardCardInfo", board_card_info);
 
 	cJSON_AddItemToObject(final_info, "showInfo", show_info);
-	cJSON_AddNumberToObject(final_info, "win_amount", vars->pot / no_of_winners);
+	cJSON_AddNumberToObject(final_info, "win_amount", vars->pot);
 
 	cJSON *winnersInfo = cJSON_CreateArray();
+	cJSON *winningAmounts = cJSON_CreateArray();
+	cJSON *settleAmounts = cJSON_CreateArray();
 	for (int i = 0; i < bet->maxplayers; i++) {
-		if (winners[i] == 1) {
+		if (vars->winners[i] == 1) {
 			cJSON_AddItemToArray(winnersInfo, cJSON_CreateNumber(i));
+			cJSON_AddItemToArray(winningAmounts, cJSON_CreateNumber(vars->win_funds[i]));
 		}
+		cJSON_AddItemToArray(settleAmounts, cJSON_CreateNumber(vars->win_funds[i] + vars->funds[i]));
 	}
 	cJSON_AddItemToObject(final_info, "winners", winnersInfo);
+	cJSON_AddItemToObject(final_info, "winningAmounts", winningAmounts);
+	cJSON_AddItemToObject(final_info, "settleAmounts", settleAmounts);
 
 	dlg_info("Final Info :: %s\n", cJSON_Print(final_info));
 
@@ -1138,23 +1190,23 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 			 ERR_NNG_SEND :
 			 OK;
 	if (retval != OK)
-		goto end;
+		return retval;
 
 	sleep(5);
 	if (wsi_global_host) {
 		lws_write(wsi_global_host, (unsigned char *)cJSON_Print(final_info), strlen(cJSON_Print(final_info)),
 			  0);
 	}
-end:
-	if (retval == OK) {
-		find_bvv();
-		reset_info = cJSON_CreateObject();
-		cJSON_AddStringToObject(reset_info, "method", "reset");
-		retval = (nn_send(bet->pubsock, cJSON_Print(reset_info), strlen(cJSON_Print(reset_info)), 0) < 0) ?
-				 ERR_NNG_SEND :
-				 OK;
-		bet_dcv_reset(bet, vars);
-	}
+
+	// Reset the params and continue the next hand automatically
+	find_bvv();
+	reset_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(reset_info, "method", "reset");
+	retval = (nn_send(bet->pubsock, cJSON_Print(reset_info), strlen(cJSON_Print(reset_info)), 0) < 0) ?
+			 ERR_NNG_SEND :
+			 OK;
+	bet_dcv_reset(bet, vars);
+
 	return retval;
 }
 
@@ -1242,7 +1294,6 @@ static void bet_push_joinInfo(cJSON *argjson, int32_t numplayers)
 	cJSON_AddStringToObject(join_info, "method", "join_info");
 	cJSON_AddNumberToObject(join_info, "joined_playerid", jint(argjson, "gui_playerID"));
 	cJSON_AddNumberToObject(join_info, "tot_players_joined", numplayers);
-	//bet_push_dcv_to_gui(join_info);
 	bet_dcv_lws_write(join_info);
 }
 
@@ -1434,8 +1485,13 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 			return retval;
 
 		bet_push_joinInfo(argjson, bet->numplayers);
-
 		if (bet->numplayers == bet->maxplayers) {
+			for (int i = 0; i < bet->maxplayers; i++) {
+				vars->funds[i] = vars->ini_funds[vars->req_id_to_player_id_mapping[i]];
+			}
+			for (int i = 0; i < bet->maxplayers; i++) {
+				vars->ini_funds[i] = vars->funds[i];
+			}
 			heartbeat_on = 1;
 			retval = bet_ln_check(bet);
 			if (retval < 0) {
@@ -1450,8 +1506,9 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 
 static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars, char *addr)
 {
-	int32_t funds = 0, retval = OK;
-	char *sql_stmt = NULL;
+	int32_t retval = OK;
+	double payin_tx_amount;
+	char *sql_stmt = NULL, *rand_str = NULL;
 	cJSON *msig_addr_nodes = NULL, *tx_status = NULL;
 
 	retval = (dcv_state == 1) ? ERR_DEALER_TABLE_FULL : bet_dcv_verify_tx(argjson, bet);
@@ -1461,13 +1518,15 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 	strcpy(vars->player_chips_addrs[no_of_rand_str], jstr(argjson, "chips_addr"));
 	strcpy(tx_rand_str[no_of_rand_str++], jstr(argjson, "id"));
 
-	double balance = chips_get_balance_on_address_from_tx(addr, jstr(argjson, "tx_info"));
-	//funds = (balance * satoshis) / (satoshis_per_unit * normalization_factor);
-	funds = (balance * 2) / BB_in_chips;
-	char *rand_str = jstr(argjson, "id");
+	payin_tx_amount = chips_get_balance_on_address_from_tx(addr, jstr(argjson, "tx_info"));
+	rand_str = jstr(argjson, "id");
 	for (int i = 0; i < no_of_rand_str; i++) {
-		if (strcmp(tx_rand_str[i], rand_str) == 0)
-			vars->funds[i] = funds;
+		if (strcmp(tx_rand_str[i], rand_str) == 0) {
+			vars->funds[i] = payin_tx_amount / SB_in_chips;
+			vars->ini_funds[i] = payin_tx_amount / SB_in_chips;
+			vars->win_funds[i] = 0;
+			vars->winners[i] = 0;
+		}
 	}
 	sql_stmt = calloc(1, sql_query_size);
 
@@ -1487,7 +1546,7 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 	cJSON_AddStringToObject(tx_status, "method", "tx_status");
 	cJSON_AddStringToObject(tx_status, "id", jstr(argjson, "id"));
 	cJSON_AddNumberToObject(tx_status, "tx_validity", retval);
-	cJSON_AddNumberToObject(tx_status, "player_funds", funds);
+	cJSON_AddNumberToObject(tx_status, "player_funds", (payin_tx_amount / SB_in_chips));
 
 	retval = (nn_send(bet->pubsock, cJSON_Print(tx_status), strlen(cJSON_Print(tx_status)), 0) < 0) ? ERR_NNG_SEND :
 													  OK;
@@ -1611,8 +1670,12 @@ void bet_dcv_backend_thrd(void *_ptr)
 		} else if (strcmp(method, "display_current_state") == 0) {
 			retval = bet_display_current_state(argjson, bet, vars);
 		} else if (strcmp(method, "stake") == 0) {
-			vars->funds[jint(argjson, "playerid")] = jint(argjson, "stake_value");
-			retval = bet_relay(argjson, bet, vars);
+			//vars->funds[jint(argjson, "playerid")] = jint(argjson, "stake_value");
+			if (vars->funds[jint(argjson, "playerid")] == jint(argjson, "stake_value")) {
+				retval = bet_relay(argjson, bet, vars);
+			} else {
+				retval = ERR_PLAYER_STAKE_MISMATCH;
+			}
 		} else if (strcmp(method, "signedrawtransaction") == 0) {
 			retval = bet_dcv_process_signed_raw_tx(argjson);
 		} else if (strcmp(method, "stack_info_req") == 0) {

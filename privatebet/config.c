@@ -119,6 +119,7 @@ void bet_parse_dealer_config_ini_file()
 		}
 		if (0 != iniparser_getdouble(ini, "table:big_blind", 0)) {
 			BB_in_chips = iniparser_getdouble(ini, "table:big_blind", 0);
+			SB_in_chips = BB_in_chips / 2;
 		}
 		if (0 != iniparser_getint(ini, "table:min_stake", 0)) {
 			table_min_stake = iniparser_getint(ini, "table:min_stake", 0) * BB_in_chips;

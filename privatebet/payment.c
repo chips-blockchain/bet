@@ -165,7 +165,7 @@ int32_t bet_player_invoice_request(cJSON *argjson, cJSON *actionResponse, struct
 {
 	int32_t retval = OK;
 	cJSON *betInfo = NULL;
-	
+
 	betInfo = cJSON_CreateObject();
 	cJSON_AddStringToObject(betInfo, "method", "bettingInvoiceRequest");
 	cJSON_AddNumberToObject(betInfo, "round", jint(argjson, "round"));
