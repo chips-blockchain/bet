@@ -964,31 +964,32 @@ static cJSON *payout_tx_data_info(struct privatebet_info *bet, struct privatebet
 
 static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privatebet_vars *vars, int winners[], int pot)
 {
-	int32_t no_of_winners = 0, retval = OK, funds_left = 0;
-	double dcv_commission = 0, dev_commission = 0, winning_pot = 0, chips_conversion_factor = 0.001,
-	       amount_in_txs = 0.0, player_amounts[bet->maxplayers], pot_in_chips = 0.0;
+	int32_t no_of_winners = 0, retval = OK/*, funds_left = 0*/;
+	double dcv_commission = 0, dev_commission = 0, winning_pot = 0/*, amount_in_txs = 0.0*/, player_amounts[bet->maxplayers], pot_in_chips = 0.0;
 	cJSON *payout_info = NULL, *dev_info = NULL, *dcv_info = NULL, *payout_tx_info = NULL, *data_info = NULL;
 	char *hex_str = NULL;
 
 	for (int i = 0; i < bet->maxplayers; i++) {
-		funds_left += vars->funds[i];
+		//funds_left += vars->funds[i];
 		if (winners[i] == 1)
 			no_of_winners++;
 	}
-
+	#if 0
 	for (int32_t i = 0; i < no_of_txs; i++) {
 		amount_in_txs += chips_get_balance_on_address_from_tx(legacy_m_of_n_msig_addr, tx_ids[i]);
 	}
+	#endif
 
-	pot_in_chips = pot * chips_conversion_factor;
-	amount_in_txs = amount_in_txs - pot_in_chips;
-
+	pot_in_chips = pot * BB_in_chips/2;
+	//amount_in_txs = amount_in_txs - pot_in_chips;
+	pot_in_chips = pot_in_chips - chips_tx_fee;
+	/*		
 	if (pot_in_chips > chips_tx_fee) {
 		pot_in_chips = pot_in_chips - chips_tx_fee;
 	} else {
 		amount_in_txs = amount_in_txs - chips_tx_fee;
 	}
-
+	*/
 	//amount_in_txs = amount_in_txs / bet->numplayers;
 
 	dcv_commission = ((dcv_commission_percentage * pot_in_chips) / 100);
@@ -1011,8 +1012,8 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 	cJSON_AddItemToArray(payout_info, dcv_info);
 
 	for (int32_t i = 0; i < bet->maxplayers; i++) {
-		if (funds_left > 0) {
-			player_amounts[i] = (amount_in_txs * vars->funds[i]) / funds_left;
+		if (vars->funds[i] > 0) {
+			player_amounts[i] = vars->funds[i] * BB_in_chips/2;
 		} else {
 			player_amounts[i] = 0;
 		}
@@ -1059,6 +1060,7 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 	bet_game_info(bet, vars);
 
 	for (int i = 0; i < bet->maxplayers; i++) {
+		dlg_info("cards:: %s:: %s:: %s:: %s:: %s:: %s:: %s", cards[card_values[i][0]], cards[card_values[i][1]], cards[card_values[i][2]], cards[card_values[i][3]], cards[card_values[i][4]], cards[card_values[i][5]], cards[card_values[i][6]]);
 		if (vars->bet_actions[i][(vars->round)] == fold)
 			scores[i] = 0;
 		else {
@@ -1066,6 +1068,7 @@ int32_t bet_evaluate_hand(struct privatebet_info *bet, struct privatebet_vars *v
 				h[j] = (unsigned char)card_values[i][j];
 			}
 			scores[i] = seven_card_draw_score(h);
+			dlg_info("player::%d, score::%ld", i, scores[i]);
 		}
 	}
 	for (int i = 0; i < bet->maxplayers; i++) {
