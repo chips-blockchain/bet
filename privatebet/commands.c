@@ -1188,7 +1188,6 @@ cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids
 
 	argc = 4;
 	bet_alloc_args(argc, &argv);
-	dlg_info("%s\n", cJSON_Print(addr_info));
 	sprintf(params[0], "\'%s\'", cJSON_Print(tx_list));
 	sprintf(params[1], "\'%s\'", cJSON_Print(addr_info));
 

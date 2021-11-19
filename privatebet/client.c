@@ -776,7 +776,7 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 {
 	int32_t retval = OK, channel_state;
 	char channel_id[ln_uri_length], uri[ln_uri_length];
-	cJSON *init_card_info = NULL, *hole_card_info = NULL, *init_info = NULL, *stack_info = NULL;
+	cJSON *init_card_info = NULL, *hole_card_info = NULL, *init_info = NULL;
 
 	if (0 == bits256_cmp(player_info.player_key.prod, jbits256(argjson, "pubkey"))) {
 		bet_player->myplayerid = jint(argjson, "playerid");
@@ -784,14 +784,14 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 
 		dlg_info("%s", cJSON_Print(argjson));
 		if ((retval = ln_check_if_address_isof_type(jstr(argjson, "type"))) != OK)
-			goto end;
+			return retval;
 
 		strcpy(uri, jstr(argjson, "uri"));
 		strcpy(channel_id, strtok(jstr(argjson, "uri"), "@"));
 		channel_state = ln_get_channel_status(channel_id);
 		if ((channel_state != CHANNELD_AWAITING_LOCKIN) && (channel_state != CHANNELD_NORMAL)) {
 			if ((retval = ln_establish_channel(uri)) != OK)
-				goto end;
+				return retval;
 		} else if (0 == channel_state) {
 			dlg_info("There isn't any pre-established channel with the dealer, so creating one now");
 			strcpy(uri, jstr(argjson, "uri"));
@@ -814,6 +814,7 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 		dlg_info("init_info::%s", cJSON_Print(init_info));
 		player_lws_write(init_info);
 
+#if 0
 		stack_info = cJSON_CreateObject();
 		cJSON_AddStringToObject(stack_info, "method", "stake");
 		cJSON_AddNumberToObject(stack_info, "playerid", bet->myplayerid);
@@ -824,8 +825,9 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 		retval = (nn_send(bet->pushsock, cJSON_Print(stack_info), strlen(cJSON_Print(stack_info)), 0) < 0) ?
 				 ERR_NNG_SEND :
 				 OK;
+#endif
 	}
-end:
+	//end:
 	return retval;
 }
 
@@ -1614,8 +1616,13 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 			player_lws_write(argjson);
 		} else if (strcmp(method, "finalInfo") == 0) {
 			player_lws_write(argjson);
-		} else if (strcmp(method, "stake") == 0) {
-			vars->funds[jint(argjson, "playerid")] = jint(argjson, "stake_value");
+		} else if (strcmp(method, "player_stakes_info") == 0) {
+			cJSON *stakes = cJSON_GetObjectItem(argjson, "stakes");
+			dlg_info("Player_stakes");
+			for (int32_t i = 0; i < bet->maxplayers; i++) {
+				vars->funds[i] = jinti(stakes, i);
+				dlg_info("player::%d, stake::%d", i, vars->funds[i]);
+			}
 		} else if (strcmp(method, "signrawtransaction") == 0) {
 			if (jint(argjson, "playerid") == bet->myplayerid) {
 				cJSON *temp = cJSON_CreateObject();

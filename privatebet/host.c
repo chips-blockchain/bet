@@ -1063,7 +1063,10 @@ int32_t det_dcv_pot_split(struct privatebet_info *bet, struct privatebet_vars *v
 			vars->funds_spent[i] += vars->betamount[i][j];
 		}
 	}
-
+	dlg_info("Funds spent");
+	for (int32_t i = 0; i < bet->maxplayers; i++) {
+		dlg_info("player id ::%d::funds_spent::%d", i, vars->funds_spent[i]);
+	}
 	while (flag) {
 		max_score = 0;
 		no_of_winners = 0;
@@ -1075,6 +1078,7 @@ int32_t det_dcv_pot_split(struct privatebet_info *bet, struct privatebet_vars *v
 		for (int i = 0; ((i < bet->maxplayers) && (eval_players[i] == 0)); i++) {
 			if ((scores[i] == max_score) && (vars->bet_actions[i][(vars->round)] != fold)) {
 				vars->winners[i] = 1;
+				dlg_info("winner ::%d", i);
 				no_of_winners++;
 				if (min_win_amount > vars->funds_spent[i])
 					min_win_amount = vars->funds_spent[i];
@@ -1098,7 +1102,7 @@ int32_t det_dcv_pot_split(struct privatebet_info *bet, struct privatebet_vars *v
 				eval_players[i] = 1;
 			}
 		}
-
+		dlg_info("sub_pot::%d", sub_pot);
 		flag = 0;
 		int32_t eval_players_left = 0, eval_player;
 		for (int i = 0; ((i < bet->maxplayers) && (eval_players[i] == 0)); i++) {
@@ -1111,8 +1115,11 @@ int32_t det_dcv_pot_split(struct privatebet_info *bet, struct privatebet_vars *v
 			vars->funds_spent[eval_player] = 0;
 			flag = 0;
 		}
+		for (int i = 0; i < bet->maxplayers; i++) {
+			dlg_info("win_funds::%d, funds::%d, ini_funds::%d", vars->win_funds[i], vars->funds[i],
+				 vars->ini_funds[i]);
+		}
 	}
-
 	for (int i = 0; i < bet->maxplayers; i++) {
 		total_init_amount += vars->ini_funds[i];
 		total_win_amount += (vars->win_funds[i] + vars->funds[i]);
@@ -1486,12 +1493,31 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 
 		bet_push_joinInfo(argjson, bet->numplayers);
 		if (bet->numplayers == bet->maxplayers) {
+			cJSON *stakes_info = cJSON_CreateObject();
+			cJSON *stakes = cJSON_CreateArray();
+			for (int i = 0; i < bet->maxplayers; i++) {
+				dlg_info("player::%d::funds::%d::ini_funds::%d", i, vars->funds[i], vars->ini_funds[i]);
+			}
 			for (int i = 0; i < bet->maxplayers; i++) {
 				vars->funds[i] = vars->ini_funds[vars->req_id_to_player_id_mapping[i]];
 			}
 			for (int i = 0; i < bet->maxplayers; i++) {
 				vars->ini_funds[i] = vars->funds[i];
 			}
+			for (int i = 0; i < bet->maxplayers; i++) {
+				dlg_info("player::%d::funds::%d::ini_funds::%d", i, vars->funds[i], vars->ini_funds[i]);
+			}
+			cJSON_AddStringToObject(stakes_info, "method", "player_stakes_info");
+			for (int i = 0; i < bet->maxplayers; i++) {
+				cJSON_AddItemToArray(stakes, cJSON_CreateNumber(vars->funds[i]));
+			}
+			cJSON_AddItemToObject(stakes_info, "stakes", stakes);
+			dlg_info("%s", cJSON_Print(stakes_info));
+			retval = (nn_send(bet->pubsock, cJSON_Print(stakes_info), strlen(cJSON_Print(stakes_info)), 0) <
+				  0) ?
+					 ERR_NNG_SEND :
+					 OK;
+
 			heartbeat_on = 1;
 			retval = bet_ln_check(bet);
 			if (retval < 0) {
@@ -1669,13 +1695,6 @@ void bet_dcv_backend_thrd(void *_ptr)
 			retval = bet_player_betting_statemachine(argjson, bet, vars);
 		} else if (strcmp(method, "display_current_state") == 0) {
 			retval = bet_display_current_state(argjson, bet, vars);
-		} else if (strcmp(method, "stake") == 0) {
-			//vars->funds[jint(argjson, "playerid")] = jint(argjson, "stake_value");
-			if (vars->funds[jint(argjson, "playerid")] == jint(argjson, "stake_value")) {
-				retval = bet_relay(argjson, bet, vars);
-			} else {
-				retval = ERR_PLAYER_STAKE_MISMATCH;
-			}
 		} else if (strcmp(method, "signedrawtransaction") == 0) {
 			retval = bet_dcv_process_signed_raw_tx(argjson);
 		} else if (strcmp(method, "stack_info_req") == 0) {
