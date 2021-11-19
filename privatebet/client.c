@@ -813,21 +813,7 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 
 		dlg_info("init_info::%s", cJSON_Print(init_info));
 		player_lws_write(init_info);
-
-#if 0
-		stack_info = cJSON_CreateObject();
-		cJSON_AddStringToObject(stack_info, "method", "stake");
-		cJSON_AddNumberToObject(stack_info, "playerid", bet->myplayerid);
-		cJSON_AddNumberToObject(stack_info, "stake_value", vars->player_funds);
-
-		dlg_info("stack_info::%s", cJSON_Print(stack_info));
-
-		retval = (nn_send(bet->pushsock, cJSON_Print(stack_info), strlen(cJSON_Print(stack_info)), 0) < 0) ?
-				 ERR_NNG_SEND :
-				 OK;
-#endif
 	}
-	//end:
 	return retval;
 }
 
