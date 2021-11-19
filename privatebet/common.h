@@ -109,6 +109,7 @@ extern double table_max_stake;
 extern double table_stack_in_bb;
 
 extern char dev_fund_addr[64];
+extern double dev_fund_commission;
 extern char *legacy_m_of_n_msig_addr;
 
 extern int32_t no_of_txs;

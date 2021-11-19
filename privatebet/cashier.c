@@ -48,6 +48,7 @@ This address has been given by jl777, 0.25% of every pot will go to this address
 development purpose.
 ***********************************************************************************************************/
 char dev_fund_addr[64] = { "RSdMRYeeouw3hepxNgUzHn34qFhn1tsubb" };
+double dev_fund_commission = 1;
 
 struct cashier *cashier_info = NULL;
 int32_t live_notaries = 0;

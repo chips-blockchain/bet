@@ -87,7 +87,6 @@ char dcv_gui_data[8196];
 int ws_dcv_connection_status = 0;
 
 double dcv_commission_percentage = 0.75;
-double dev_fund_percentage = 1;
 char dcv_hosted_gui_url[128];
 
 int32_t heartbeat_on = 0;
@@ -973,7 +972,7 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 		if (vars->win_funds[i] > 0) {
 			double c_dcv, c_dev;
 			c_dcv = ((dcv_commission_percentage * vars->win_funds[i]) / 100) * SB_in_chips;
-			c_dev = ((dev_fund_percentage * vars->win_funds[i]) / 100) * SB_in_chips;
+			c_dev = ((dev_fund_commission* vars->win_funds[i]) / 100) * SB_in_chips;
 
 			dcv_commission += c_dcv;
 			dev_commission += c_dev;
