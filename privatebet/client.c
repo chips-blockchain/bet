@@ -1301,7 +1301,7 @@ static int32_t bet_update_payin_tx_across_cashiers(cJSON *argjson, cJSON *txid)
 		cJSON_Print(cJSON_GetObjectItem(argjson, "msig_addr_nodes")), tx_unspent, threshold_value);
 	retval = bet_run_query(sql_query); // This is to update payin_tx in the players DB
 
-	memset(sql_query, 0x00, sizeof(sql_query));
+	memset(sql_query, 0x00, sql_query_size);
 	msig_addr_nodes = cJSON_CreateArray();
 	msig_addr_nodes = cJSON_GetObjectItem(argjson, "msig_addr_nodes");
 	sprintf(sql_query, "INSERT INTO c_tx_addr_mapping values(%s,\'%s\',%d,\'%s\',\'%s\',1,NULL);",
@@ -1317,6 +1317,8 @@ static int32_t bet_update_payin_tx_across_cashiers(cJSON *argjson, cJSON *txid)
 	}
 	if (sql_query)
 		free(sql_query);
+	
+	return retval;
 }
 
 static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privatebet_info *bet)
