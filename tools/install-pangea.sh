@@ -3,6 +3,20 @@
 commands=( sudo curl wget systemctl git bzip2 )
 PublicIP=$(curl curl ifconfig.io)
 
+CHIPS_FILE="chips-bins-linux-amd64.tgz"
+CHIPS_DL_URL="https://github.com/chips-blockchain/chips/releases/download/16.99.0/chips-bins-linux-amd64.tgz"
+
+CHIPS_BOOTSTRAP_FILE="CHIPS-bootstrap.tar.gz"
+CHIPS_BOOTSTRAP_URL="https://eu.bootstrap.dexstats.info/CHIPS-bootstrap.tar.gz"
+
+BET_TAG="v0.1.3-568-ge1ded37"
+BET_FILE="bet-linux-x86_64-$(printf '%s' $BET_TAG).tar.gz"
+BET_DL_URL="https://github.com/chips-blockchain/bet/releases/download/$BET_FILE"
+
+CLN_TAG="v0.5.2-2016-11-21-10051-geafd19526"
+CLN_FILE="c-lightning-linux-x86_64-$(printf '%s' $CLN_TAG).tar.gz"
+CLN_DL_URL="https://github.com/chips-blockchain/lightning/releases/download/$CLN_FILE"
+
 # Install if sudo command isn't available
 if ! command -v sudo &> /dev/null
 then
@@ -42,17 +56,17 @@ if ! command -v chipsd &> /dev/null
 then
     echo "chipsd could not be found"
     cd $HOME
-    wget https://github.com/chips-blockchain/chips/releases/download/16.99.0/chips-bins-linux-amd64.tgz
-	tar xvf chips-bins-linux-amd64.tgz
+    wget $CHIPS_DL_URL
+	tar xvf $CHIPS_FILE
 	sudo mv chips-cli chips-tx chipsd /usr/local/bin/
-	rm -rf qt/ chips-bins-linux-amd64.tgz
+	rm -rf qt/ $CHIPS_FILE
 
 	mkdir $HOME/.chips/
 	cd $HOME/.chips/
 	rm -rf chainstate blocks
-	wget https://eu.bootstrap.dexstats.info/CHIPS-bootstrap.tar.gz
-	tar xvf CHIPS-bootstrap.tar.gz
-	rm CHIPS-bootstrap.tar.gz
+	wget $CHIPS_BOOTSTRAP_URL
+	tar xvf $CHIPS_BOOTSTRAP_FILE
+	rm $CHIPS_BOOTSTRAP_FILE
 
 	echo "server=1
 #daemon=1
@@ -101,9 +115,9 @@ then
     cd $HOME
     sudo apt update
     sudo apt install -y libsodium-dev
-    wget https://github.com/chips-blockchain/lightning/releases/download/v0.5.2-2016-11-21-10051-geafd19526/c-lightning-linux-x86_64-v0.5.2-2016-11-21-10051-geafd19526.tar.gz
-    tar xvf c-lightning-linux-x86_64-v0.5.2-2016-11-21-10051-geafd19526.tar.gz
-    rm c-lightning-linux-x86_64-v0.5.2-2016-11-21-10051-geafd19526.tar.gz
+    wget $CLN_DL_URL
+    tar xvf $CLN_FILE
+    rm $CLN_FILE
     sudo mv dist /opt/lightning
     sudo ln -s /opt/lightning/bin/lightningd /usr/local/bin/
     sudo ln -s /opt/lightning/bin/lightning-cli /usr/local/bin/
@@ -138,9 +152,9 @@ then
     cd $HOME
     sudo apt update
     sudo apt install -y libcurl4-gnutls-dev
-    wget https://github.com/chips-blockchain/bet/releases/download/v0.1.3-529-g70182f2/bet-linux-x86_64-v0.1.3-529-g70182f2.tar.gz
-    tar xvf bet-linux-x86_64-v0.1.3-529-g70182f2.tar.gz
-    rm bet-linux-x86_64-v0.1.3-529-g70182f2.tar.gz
+    wget $BET_DL_URL
+    tar xvf $BET_FILE
+    rm $BET_FILE
     echo "bet is located at $PWD/privatebet/"
     # sudo mv privatebet/bet /usr/local/bin
     # sudo mv privatebet/cashierd /usr/local/bin
