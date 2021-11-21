@@ -11,11 +11,11 @@ CHIPS_BOOTSTRAP_URL="https://eu.bootstrap.dexstats.info/CHIPS-bootstrap.tar.gz"
 
 BET_TAG="v0.1.3-568-ge1ded37"
 BET_FILE="bet-linux-x86_64-$(printf '%s' $BET_TAG).tar.gz"
-BET_DL_URL="https://github.com/chips-blockchain/bet/releases/download/$BET_FILE"
+BET_DL_URL="https://github.com/chips-blockchain/bet/releases/download/$BET_TAG/$BET_FILE"
 
 CLN_TAG="v0.5.2-2016-11-21-10051-geafd19526"
 CLN_FILE="c-lightning-linux-x86_64-$(printf '%s' $CLN_TAG).tar.gz"
-CLN_DL_URL="https://github.com/chips-blockchain/lightning/releases/download/$CLN_FILE"
+CLN_DL_URL="https://github.com/chips-blockchain/lightning/releases/download/$CLN_TAG/$CLN_FILE"
 
 # Install if sudo command isn't available
 if ! command -v sudo &> /dev/null
