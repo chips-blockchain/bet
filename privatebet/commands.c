@@ -1853,19 +1853,3 @@ int32_t ln_establish_channel(char *uri)
 end:
 	return retval;
 }
-
-char *bet_git_version()
-{
-	int argc = 2;
-	char **argv = NULL;
-	cJSON *version = NULL;
-
-	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "git", "describe");
-	version = cJSON_CreateObject();
-	make_command(argc, argv, &version);
-
-	bet_dealloc_args(argc, &argv);
-
-	return unstringify(cJSON_Print(version));
-}

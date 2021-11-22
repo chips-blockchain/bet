@@ -30,6 +30,7 @@
 #include "misc.h"
 #include "help.h"
 #include "err.h"
+#include "bet_version.h"
 
 #include <netinet/in.h>
 #include <stdio.h>
@@ -438,7 +439,7 @@ int main(int argc, char **argv)
 			}
 		} else if ((strcmp(argv[1], "-v") == 0) || (strcmp(argv[1], "v") == 0) ||
 			   (strcmp(argv[1], "--version") == 0) || (strcmp(argv[1], "version") == 0)) {
-			dlg_info("%s", bet_git_version());
+			printf("%s\n", BET_VERSION);
 		} else if (strcmp(argv[1], "spendable") == 0) {
 			cJSON *spendable_tx = chips_spendable_tx();
 			dlg_info("CHIPS Spendable tx's :: %s\n", cJSON_Print(spendable_tx));
