@@ -9,7 +9,7 @@ CHIPS_DL_URL="https://github.com/chips-blockchain/chips/releases/download/16.99.
 CHIPS_BOOTSTRAP_FILE="CHIPS-bootstrap.tar.gz"
 CHIPS_BOOTSTRAP_URL="https://eu.bootstrap.dexstats.info/CHIPS-bootstrap.tar.gz"
 
-BET_TAG="v0.1.3-568-ge1ded37"
+BET_TAG="v0.1.3-571-g521c779"
 BET_FILE="bet-linux-x86_64-$(printf '%s' $BET_TAG).tar.gz"
 BET_DL_URL="https://github.com/chips-blockchain/bet/releases/download/$BET_TAG/$BET_FILE"
 
