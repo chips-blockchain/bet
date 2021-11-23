@@ -14,14 +14,13 @@
 #define NSUITS 4
 #define NFACES 13
 
-#define small_blind_amount 1 // 1000000
-#define big_blind_amount 2 // 2000000
-#define table_stack 200
 
-/*
-#define small_blind_amount 1 // 1mCHIPS
-#define big_blind_amount 2 // 2mCHIPS
-*/
+enum blinds {
+	small_blind_amount = 1,
+	big_blind_amount = 2
+};
+
+#define table_stack 200
 
 #define mchips_msatoshichips 1000000 // 0.01mCHIPS
 #define channel_fund_satoshis 16777215 // 0.167CHIPS this is the mx limit set up the c lightning node
