@@ -55,7 +55,7 @@ $(info $$CC is [${CC}])
 $(info $$BET_VERSION is [${BET_VERSION}])
 
 $(PROJNAME): $(OBJFILES)
-			$(shell echo "char BET_VERSION[200]=\"${BET_VERSION}\";" > bet_version.h)
+			$(shell echo "#define BET_VERSION \"${BET_VERSION}\"" > bet_version.h)
 	        $(CC) $(CFLAGS) -o $@ bet.c $^ ../external/iniparser/libiniparser.a ../crypto777/libcrypto777.a -L$(TARGET_DIR) -I$(LIBWEBSOCKETS_HEADERS) -I$(LIBWALLY_CORE_HEADERS) -I$(LIBJSMN_HEADERS) -I$(LIBINIPARSER_HEADERS) -L$(LIBWEBSOCKETS_LDFLAGS) $(LDFLAGS) $(CPPFLAGS) -lcurl -ldl -lnng -lpthread -lm -lwallycore -lsecp256k1 -ljsmn -lwebsockets -ldlg -L/usr/local/lib -lm -lgmp -lsqlite3 -L/usr/local/lib -lssl -lcrypto -levent -lpthread -lstdc++
 	cp $(PROJNAME) $(CASHIER)
 %.o: %.c
