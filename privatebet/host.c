@@ -972,7 +972,7 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 		if (vars->win_funds[i] > 0) {
 			double c_dcv, c_dev;
 			c_dcv = ((dcv_commission_percentage * vars->win_funds[i]) / 100) * SB_in_chips;
-			c_dev = ((dev_fund_commission* vars->win_funds[i]) / 100) * SB_in_chips;
+			c_dev = ((dev_fund_commission * vars->win_funds[i]) / 100) * SB_in_chips;
 
 			dcv_commission += c_dcv;
 			dev_commission += c_dev;
@@ -1041,8 +1041,8 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 
 int32_t det_dcv_pot_split(struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int32_t retval = OK, eval_players[CARDS777_MAXPLAYERS] = { 0 }, min_win_amount,
-		no_of_winners = 0, flag = 1, total_init_amount = 0, total_win_amount = 0;
+	int32_t retval = OK, eval_players[CARDS777_MAXPLAYERS] = { 0 }, min_win_amount, no_of_winners = 0, flag = 1,
+		total_init_amount = 0, total_win_amount = 0;
 	unsigned char h[7];
 	unsigned long scores[CARDS777_MAXPLAYERS], max_score = 0;
 
@@ -1075,7 +1075,7 @@ int32_t det_dcv_pot_split(struct privatebet_info *bet, struct privatebet_vars *v
 		}
 		min_win_amount = vars->pot;
 		for (int i = 0; ((i < bet->maxplayers) && (eval_players[i] == 0)); i++) {
-			dlg_info("max_score::%ld::score[%d]->%ld", max_score, i,scores[i]);
+			dlg_info("max_score::%ld::score[%d]->%ld", max_score, i, scores[i]);
 			if ((scores[i] == max_score) && (vars->bet_actions[i][(vars->round)] != fold)) {
 				vars->winners[i] = 1;
 				dlg_info("winner ::%d", i);

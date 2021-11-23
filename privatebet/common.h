@@ -14,11 +14,7 @@
 #define NSUITS 4
 #define NFACES 13
 
-
-enum blinds {
-	small_blind_amount = 1,
-	big_blind_amount = 2
-};
+enum blinds { small_blind_amount = 1, big_blind_amount = 2 };
 
 #define table_stack 200
 
