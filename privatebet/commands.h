@@ -54,11 +54,7 @@ int32_t chips_check_tx_exists_in_unspent(char *file_name, char *tx_id);
 int32_t chips_check_tx_exists(char *file_name, char *tx_id);
 int32_t run_command(int argc, char **argv);
 int32_t make_command(int argc, char **argv, cJSON **argjson);
-
 char *ln_get_new_address();
-#if 0 //obsolated in new ln repo
-int32_t ln_dev_block_height();
-#endif
 int32_t ln_block_height(int32_t *block_height);
 int32_t ln_listfunds();
 char *ln_get_uri(char **uri);
@@ -70,5 +66,5 @@ int32_t ln_check_if_address_isof_type(char *type);
 int32_t ln_check_peer_and_connect(char *id);
 int32_t ln_get_channel_status(char *id);
 int32_t ln_establish_channel(char *uri);
-
 char *bet_git_version();
+
