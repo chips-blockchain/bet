@@ -1,1 +1,1 @@
-char BET_VERSION[200]="v0.1.3-570-gfbb5eef";
+#define BET_VERSION "v0.1.3-572-gad4a70a"
