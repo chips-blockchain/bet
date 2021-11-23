@@ -1317,7 +1317,7 @@ static int32_t bet_update_payin_tx_across_cashiers(cJSON *argjson, cJSON *txid)
 	}
 	if (sql_query)
 		free(sql_query);
-	
+
 	return retval;
 }
 

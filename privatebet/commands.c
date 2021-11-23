@@ -1869,4 +1869,3 @@ char *bet_git_version()
 
 	return unstringify(cJSON_Print(version));
 }
-
