@@ -21,7 +21,7 @@ CFLAGS := -g -fPIC -std=c99 $(WARNINGS)
 
 LIGHTNING := lightning
 
-all: $(PROJNAME)
+all: $(PROJNAME) build_dir_tree
 
 clean:
 	$(RM) $(OBJFILES) 
@@ -61,3 +61,5 @@ $(PROJNAME): $(OBJFILES)
 %.o: %.c
 	$(CC) $(CFLAGS) -L$(TARGET_DIR) -I$(LIBINIPARSER_HEADERS) -I$(LIBWEBSOCKETS_HEADERS) -I$(LIBWALLY_CORE_HEADERS) -I$(LIBJSMN_HEADERS) -L$(LIBINIPARSER_LDFLAGS) -L$(LIBWEBSOCKETS_LDFLAGS) $(LDFLAGS) $(CPPFLAGS) -c $< -o $@  -I ../includes/curl
 
+build_dir_tree:
+	sh ./scripts/build_dir_tree.sh
