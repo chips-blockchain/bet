@@ -1646,6 +1646,8 @@ static int32_t bet_handle_player_errs_by_dealer(cJSON *argjson, struct privatebe
 				 ERR_NNG_SEND :
 				 OK;
 		break;
+	case ERR_LN_ADDRESS_TYPE_MISMATCH:
+		break;
 	default:
 		dlg_warn("The error %s is not yet handled by the dealer or no action is needed from dealer",
 			 bet_err_str(jint(argjson, "err_no")));
