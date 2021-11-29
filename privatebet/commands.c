@@ -1680,7 +1680,7 @@ int32_t ln_check_if_address_isof_type(char *type)
 {
 	int32_t argc, retval = OK, flag = 0;
 	char **argv = NULL;
-	cJSON *channel_info = NULL, *addresses = NULL, *address = NULL;
+	cJSON *channel_info = NULL, *addresses = NULL, *binding = NULL;
 
 	argc = 2;
 	bet_alloc_args(argc, &argv);
@@ -1692,13 +1692,23 @@ int32_t ln_check_if_address_isof_type(char *type)
 		dlg_error("%s", bet_err_str(retval));
 		goto end;
 	}
+	addresses =  cJSON_CreateObject();
 	addresses = cJSON_GetObjectItem(channel_info, "address");
-	for (int32_t i = 0; i < cJSON_GetArraySize(addresses); i++) {
-		address = cJSON_GetArrayItem(addresses, i);
-		if (strcmp(jstr(address, "type"), type) == 0) {
+	for (int32_t i = 0; i < cJSON_GetArraySize(addresses); i++) {		
+		if (strcmp(jstr(cJSON_GetArrayItem(addresses, i), "type"), type) == 0) {
 			flag = 1;
 			break;
 		}
+	}
+	if(flag == 0) {
+		binding = cJSON_CreateObject();
+		binding = cJSON_GetObjectItem(channel_info,"binding");
+		for (int32_t i = 0; i < cJSON_GetArraySize(binding); i++) {
+			if (strcmp(jstr(cJSON_GetArrayItem(binding,i), "type"), type) == 0) {
+				flag = 1;
+				break;				
+			}			
+		}	
 	}
 	if (flag == 0) {
 		retval = ERR_LN_ADDRESS_TYPE_MISMATCH;
