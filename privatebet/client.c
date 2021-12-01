@@ -37,6 +37,7 @@
 #include "host.h"
 #include "config.h"
 #include "err.h"
+#include "switchs.h"
 
 #define LWS_PLUGIN_STATIC
 
