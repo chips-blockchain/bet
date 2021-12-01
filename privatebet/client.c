@@ -957,6 +957,7 @@ static void bet_player_process_be_status()
 	player_lws_write(be_info);
 }
 
+// clang-format off
 int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 {
 	int32_t retval = OK;
@@ -1000,6 +1001,7 @@ int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 		bet_handle_player_error(bet_player, retval);
 	return retval;
 }
+// clang-format on
 
 static void bet_gui_init_message(struct privatebet_info *bet)
 {

@@ -919,6 +919,7 @@ void bet_raise_dispute(char *tx_id)
 		free(sql_query);
 }
 
+// clang-format off
 void bet_handle_game(int argc, char **argv)
 {
 	switchs(argv[2]) {
@@ -953,6 +954,7 @@ void bet_handle_game(int argc, char **argv)
 			dlg_info("command %s is not handled", argv[2]);
 	}switchs_end;
 }
+// clang-format on
 
 void find_bvv()
 {

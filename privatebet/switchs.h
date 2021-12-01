@@ -5,6 +5,7 @@
 #include <regex.h>
 #include <stdbool.h>
 
+// clang-format off
 /** Begin a switch for the string x */
 #define switchs(x) \
     { char *__sw = (x); bool __done = false; bool __cont = false; \
@@ -34,6 +35,7 @@
 
 /** Close the switchs */
 #define switchs_end } while ( 0 ); regfree(&__regex); }
+// clang-format on
 
 #endif // __SWITCHS_H__
 

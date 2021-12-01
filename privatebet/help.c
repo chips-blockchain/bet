@@ -151,6 +151,7 @@ void bet_help_extract_tx_data_command_usage()
 		cJSON_Print(command_info));
 }
 
+// clang-format off
 void bet_help_command(char *command)
 {
 	switchs(command) {
@@ -181,3 +182,6 @@ void bet_help_command(char *command)
 			dlg_info("The command %s is not yet supported by bet", command);
 	}switchs_end;
 }
+// clang-format on
+
+
