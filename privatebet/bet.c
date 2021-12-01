@@ -31,6 +31,7 @@
 #include "help.h"
 #include "err.h"
 #include "bet_version.h"
+#include "switchs.h"
 
 #include <netinet/in.h>
 #include <stdio.h>
@@ -408,10 +409,107 @@ static char *bet_pick_dealer()
 	return NULL;
 }
 
+static void bet_start(int argc, char **argv){
+	
+	bet_set_unique_id();
+	if(!argv[1])
+		bet_command_info();
+	switchs(argv[1]) {
+		cases("player")
+			playing_nodes_init();
+			char *dealer_ip = NULL;
+			dlg_info("Finding the dealer");
+			do {
+				dealer_ip = bet_pick_dealer();
+				if (!dealer_ip) {
+					dlg_warn("None of the dealer tables are empty, retrying after 5s...");
+					sleep(5);
+				}
+			} while (dealer_ip == NULL);
+			
+			if (dealer_ip) {
+				dlg_info("The dealer is :: %s", dealer_ip);
+				bet_player_thrd(dealer_ip);
+			}
+			break;
+		cases("h")
+		cases("-h")	
+		cases("help")
+		cases("--help")
+			if (argc == 3) {
+				bet_help_command(argv[2]);
+			} else {
+				bet_command_info();
+			}
+			break;
+		cases("v")
+		cases("-v")
+		cases("version")
+		cases("--version")
+			printf("%s\n", BET_VERSION);
+			break;
+		cases("dcv")
+		cases("dealer")
+			if (argc == 3) {
+				strcpy(dealer_ip, argv[2]);
+				playing_nodes_init();
+				bet_send_dealer_info_to_cashier(dealer_ip);
+				dealer_node_init();
+				find_bvv();
+				bet_dcv_thrd(dealer_ip);
+			} else {
+				bet_help_dcv_command_usage();
+			}
+			break;
+		cases("cashier")
+			if (argc == 3) {
+				strcpy(cashier_ip, argv[2]);
+				cashier_init();
+				bet_cashier_server_thrd(cashier_ip);
+			} else {
+				bet_help_cashier_command_usage();
+			}
+			break;
+		cases("withdraw")		
+			if (argc == 4) {
+				cJSON *tx = NULL;
+				tx = chips_transfer_funds(atof(argv[2]), argv[3]);
+				dlg_info("tx details::%s", cJSON_Print(tx));
+			} else {
+				bet_help_withdraw_command_usage();
+			}
+			break;
+		cases("game")
+			playing_nodes_init();
+			bet_handle_game(argc, argv);
+			break;
+		cases("extract_tx_data")
+			if (argc == 3) {
+				char *hex_data = NULL, *data = NULL;
+				hex_data = calloc(1, tx_data_size * 2);
+				data = calloc(1, tx_data_size * 2);
+				if (chips_extract_data(argv[2], &hex_data) == OK) {
+					hexstr_to_str(hex_data, data);
+					dlg_info("Data part of tx \n %s", data);
+				}
+				if (hex_data)
+					free(hex_data);
+				if (data)
+					free(data);
+			} else {
+				bet_help_extract_tx_data_command_usage();
+			}
+			break;
+		defaults
+			bet_command_info();
+			break;
+	}switchs_end;
+}	
+
 int main(int argc, char **argv)
 {
-	bet_set_unique_id();
-
+	bet_start(argc, argv);
+	#if 0
 	if (argc >= 2) {
 		if (strcmp(argv[1], "player") == 0) {
 			playing_nodes_init();
@@ -489,13 +587,13 @@ int main(int argc, char **argv)
 			} else {
 				bet_help_extract_tx_data_command_usage();
 			}
-		} else {
-			bet_command_info();
-		}
+		} 
 	} else {
 		dlg_info("Invalid Usage, use the flag -h or --help to get more usage details");
 		bet_command_info();
 	}
+	#endif
+	return 0;
 }
 
 bits256 curve25519_fieldelement(bits256 hash)

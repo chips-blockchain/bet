@@ -8,7 +8,7 @@
 /** Begin a switch for the string x */
 #define switchs(x) \
     { char *__sw = (x); bool __done = false; bool __cont = false; \
-        regex_t __regex; regcomp(&__regex, ".*", 0); do {
+        regex_t __regex; regcomp(&__regex, ".*", 0); do { if(!__sw) break;
 
 /** Check if the string matches the cases argument (case sensitive) */
 #define cases(x)    } if ( __cont || !strcmp ( __sw, x ) ) \
