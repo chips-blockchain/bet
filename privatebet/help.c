@@ -1,5 +1,6 @@
 #include "bet.h"
 #include "help.h"
+#include "switchs.h"
 
 void bet_command_info()
 {
