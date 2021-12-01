@@ -9,6 +9,7 @@
 #include "cards777.h"
 #include "common.h"
 #include "err.h"
+#include "switchs.h"
 
 int32_t no_of_notaries;
 
