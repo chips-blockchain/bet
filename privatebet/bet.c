@@ -409,6 +409,7 @@ static char *bet_pick_dealer()
 	return NULL;
 }
 
+// clang-format off
 static void bet_start(int argc, char **argv){
 	
 	bet_set_unique_id();
@@ -505,6 +506,7 @@ static void bet_start(int argc, char **argv){
 			break;
 	}switchs_end;
 }	
+// clang-format on
 
 int main(int argc, char **argv)
 {

@@ -14,9 +14,22 @@
 #define NSUITS 4
 #define NFACES 13
 
-enum blinds { small_blind_amount = 1, big_blind_amount = 2 };
-
 #define table_stack 200
+
+// clang-format off
+enum blinds { 
+	small_blind_amount = 1, 
+	big_blind_amount = 2 
+};
+
+enum bet_dcv_state { 
+	dealer_table_empty = 0, 
+	dealer_table_full = 1, 
+	pos_on_table_empty = 2, 
+	pos_on_table_full = 3 
+};
+
+// clang-format on
 
 #define mchips_msatoshichips 1000000 // 0.01mCHIPS
 #define channel_fund_satoshis 16777215 // 0.167CHIPS this is the mx limit set up the c lightning node
@@ -127,7 +140,4 @@ extern char dcv_hosted_gui_url[128];
 int32_t is_table_private;
 char table_password[128];
 char player_name[128];
-
-enum bet_dcv_state { dealer_table_empty = 0, dealer_table_full = 1, pos_on_table_empty = 2, pos_on_table_full = 3 };
-
 #endif
