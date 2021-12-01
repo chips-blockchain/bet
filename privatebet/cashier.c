@@ -920,8 +920,8 @@ void bet_raise_dispute(char *tx_id)
 
 void bet_handle_game(int argc, char **argv)
 {
-	if (argc > 2) {
-		if (strcmp(argv[2], "info") == 0) {
+	switchs(argv[2]) {
+		cases("info")
 			int32_t opt = -1;
 			if (argc == 4) {
 				if ((strcmp(argv[3], "success") == 0) || (strcmp(argv[3], "0") == 0))
@@ -931,21 +931,26 @@ void bet_handle_game(int argc, char **argv)
 			}
 			cJSON *info = sqlite3_get_game_details(opt);
 			dlg_info("info::%s", cJSON_Print(info));
-		} else if (strcmp(argv[2], "solve") == 0) {
+			break;
+		cases("solve")
 			bet_resolve_disputed_tx();
-		} else if (strcmp(argv[2], "dispute") == 0) {
+			break;
+		cases("dispute")
 			if (argc == 4) {
 				bet_raise_dispute(argv[3]);
 			}
-		} else if (strcmp(argv[2], "history") == 0) {
+			break;
+		cases("history")
 			cJSON *fail_info = bet_show_fail_history();
 			dlg_info(
 				"Below hands played unsuccessfully, you can raise dispute using \'.\\bet game dispute tx_id\'::\n %s\n",
 				cJSON_Print(fail_info));
 			cJSON *success_info = bet_show_success_history();
 			dlg_info("Below hands are played successfully::\n%s\n", cJSON_Print(success_info));
-		}
-	}
+			break;	
+		defaults
+			dlg_info("command %s is not handled", argv[2]);
+	}switchs_end;
 }
 
 void find_bvv()
