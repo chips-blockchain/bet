@@ -961,32 +961,40 @@ int32_t bet_player_frontend(struct lws *wsi, cJSON *argjson)
 	int32_t retval = OK;
 	char *method = NULL;
 
-	if ((method = jstr(argjson, "method")) != 0) {
+	method = jstr(argjson,"method");
+	switchs(method) {
 		dlg_info("Recv from GUI :: %s", cJSON_Print(argjson));
-		if (strcmp(method, "player_join") == 0) {
-			retval = bet_player_process_player_join(argjson);
-		} else if (strcmp(method, "betting") == 0) {
-			retval = bet_player_round_betting(argjson, bet_player, player_vars);
-		} else if (strcmp(method, "reset") == 0) {
-			retval = bet_player_reset(bet_player, player_vars);
-		} else if (strcmp(method, "withdrawRequest") == 0) {
-			bet_player_withdraw_request();
-		} else if (strcmp(method, "withdraw") == 0) {
-			bet_player_withdraw(argjson);
-		} else if (strcmp(method, "get_bal_info") == 0) {
-			player_lws_write(bet_get_chips_ln_bal_info());
-		} else if (strcmp(method, "get_addr_info") == 0) {
-			player_lws_write(bet_get_chips_ln_addr_info());
-		} else if (strcmp(method, "walletInfo") == 0) {
-			bet_player_wallet_info();
-		} else if (strcmp(method, "backend_status") == 0) {
+		cases("backend_status")
 			bet_player_process_be_status();
-		} else if (strcmp(method, "sitout") == 0) {
+			break;
+		cases("betting")
+			retval = bet_player_round_betting(argjson, bet_player, player_vars);
+			break;
+		cases("get_bal_info")
+			player_lws_write(bet_get_chips_ln_bal_info());
+			break;
+		cases("player_join")
+			retval = bet_player_process_player_join(argjson);
+			break;
+		cases("reset")
+			retval = bet_player_reset(bet_player, player_vars);
+			break;
+		cases("sitout")
 			sitout_value = jint(argjson, "value");
-		} else {
+			break;
+		cases("walletInfo") 
+			bet_player_wallet_info();
+			break;
+		cases("withdraw")
+			bet_player_withdraw(argjson);
+			break;
+		cases("withdrawRequest")
+			bet_player_withdraw_request();
+			break;
+		defaults
 			bet_player_handle_invalid_method(method);
-		}
-	}
+	}switchs_end;
+	
 	if (retval != OK)
 		bet_handle_player_error(bet_player, retval);
 	return retval;

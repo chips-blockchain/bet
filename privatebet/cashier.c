@@ -921,6 +921,19 @@ void bet_raise_dispute(char *tx_id)
 void bet_handle_game(int argc, char **argv)
 {
 	switchs(argv[2]) {
+		cases("dispute")
+			if (argc == 4) {
+				bet_raise_dispute(argv[3]);
+			}
+			break;
+		cases("history")
+			cJSON *fail_info = bet_show_fail_history();
+			dlg_info(
+				"Below hands played unsuccessfully, you can raise dispute using \'.\\bet game dispute tx_id\'::\n %s\n",
+				cJSON_Print(fail_info));
+			cJSON *success_info = bet_show_success_history();
+			dlg_info("Below hands are played successfully::\n%s\n", cJSON_Print(success_info));
+			break;	
 		cases("info")
 			int32_t opt = -1;
 			if (argc == 4) {
@@ -935,19 +948,6 @@ void bet_handle_game(int argc, char **argv)
 		cases("solve")
 			bet_resolve_disputed_tx();
 			break;
-		cases("dispute")
-			if (argc == 4) {
-				bet_raise_dispute(argv[3]);
-			}
-			break;
-		cases("history")
-			cJSON *fail_info = bet_show_fail_history();
-			dlg_info(
-				"Below hands played unsuccessfully, you can raise dispute using \'.\\bet game dispute tx_id\'::\n %s\n",
-				cJSON_Print(fail_info));
-			cJSON *success_info = bet_show_success_history();
-			dlg_info("Below hands are played successfully::\n%s\n", cJSON_Print(success_info));
-			break;	
 		defaults
 			dlg_info("command %s is not handled", argv[2]);
 	}switchs_end;
