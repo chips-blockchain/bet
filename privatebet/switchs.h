@@ -14,6 +14,11 @@
 #define cases(x)    } if ( __cont || !strcmp ( __sw, x ) ) \
                         { __done = true; __cont = true;
 
+/** Check if the string matches the cases argument (case sensitive) with break to previous case*/
+#define cases_b(x)    break; } if ( __cont || !strcmp ( __sw, x ) ) \
+                        { __done = true; __cont = true;
+
+
 /** Check if the string matches the icases argument (case insensitive) */
 #define icases(x)    } if ( __cont || !strcasecmp ( __sw, x ) ) { \
                         __done = true; __cont = true;

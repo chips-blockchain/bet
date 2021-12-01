@@ -153,28 +153,28 @@ void bet_help_extract_tx_data_command_usage()
 void bet_help_command(char *command)
 {
 	switchs(command) {
-		cases("dcv")
-		cases("dealer")
-			bet_help_dcv_command_usage();
-			break;
-		cases("player")
-			bet_help_player_command_usage();
-			break;
 		cases("cashier")
 		cases("cashierd")
 			bet_help_cashier_command_usage();
 			break;
+		cases("dcv")
+		cases("dealer")
+			bet_help_dcv_command_usage();
+			break;
+		cases("extract_tx_data")
+			bet_help_extract_tx_data_command_usage();
+			break;
 		cases("game")
 			bet_help_game_command_usage();
 			break;
-		cases("withdraw")
-			bet_help_withdraw_command_usage();
+		cases("player")
+			bet_help_player_command_usage();
 			break;
 		cases("spendable")
 			bet_help_spendable_command_usage();
 			break;
-		cases("extract_tx_data")
-			bet_help_extract_tx_data_command_usage();
+		cases("withdraw")
+			bet_help_withdraw_command_usage();
 			break;
 		defaults
 			dlg_info("The command %s is not yet supported by bet", command);
