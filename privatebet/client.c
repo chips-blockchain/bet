@@ -1527,7 +1527,7 @@ void bet_handle_player_error(struct privatebet_info *bet, int32_t err_no)
 		break;
 	case ERR_DEALER_TABLE_FULL:
 		bet_raise_dispute(player_payin_txid);
-	case ERR_LN_ADDRESS_TYPE_MISMATCH:	
+	case ERR_LN_ADDRESS_TYPE_MISMATCH:
 	case ERR_INVALID_POS:
 	case ERR_CHIPS_INSUFFICIENT_FUNDS:
 	case ERR_CHIPS_INVALID_TX:

@@ -505,13 +505,13 @@ static void bet_start(int argc, char **argv){
 			bet_command_info();
 			break;
 	}switchs_end;
-}	
+}
 // clang-format on
 
 int main(int argc, char **argv)
 {
 	bet_start(argc, argv);
-	#if 0
+#if 0
 	if (argc >= 2) {
 		if (strcmp(argv[1], "player") == 0) {
 			playing_nodes_init();
@@ -594,7 +594,7 @@ int main(int argc, char **argv)
 		dlg_info("Invalid Usage, use the flag -h or --help to get more usage details");
 		bet_command_info();
 	}
-	#endif
+#endif
 	return 0;
 }
 

@@ -38,4 +38,3 @@
 // clang-format on
 
 #endif // __SWITCHS_H__
-

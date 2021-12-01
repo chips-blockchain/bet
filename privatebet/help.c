@@ -183,5 +183,3 @@ void bet_help_command(char *command)
 	}switchs_end;
 }
 // clang-format on
-
-
