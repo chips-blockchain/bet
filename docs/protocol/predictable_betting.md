@@ -111,8 +111,10 @@ Once the outcome of the event is revealed in the real world, the host sends requ
 
 The incentives to the validator nodes are based on the queries it answers. The more queries it answers the more incentives it gets. We discuss in detail about how the system is resilient against the dishonest validator and host nodes, and how the dishonest will be moved out of the network and costs incurred for being dishonest in later sections.
 
+## Lets talk about API's
+
 ### Listing the bets by host
-In `bets.ini` host lists the bets and publish them to the players when the player node connect to the corresponding host. The sample congiguration data in the `bets.ini` looks as follows:
+Host nodes are the ones who are responsible in creating the prediction markets by posting the bets. In `bets.ini` host lists the bets and publish them to the players when the player node connect to the corresponding host. The sample congiguration data in the `bets.ini` looks as follows:
 ```
 [bets]
 [bets:0]
