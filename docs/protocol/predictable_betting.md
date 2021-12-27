@@ -14,7 +14,7 @@ With respect to evaluation of bets, bets can be classfied into two categories.
 1. Evaluating bets based on the prorata basis.
 2. Evaluating bets based on choosen odds.
 
-__Prorata bets__ 
+### Prorata bets
 Lets say a simple bet **A wins on B**. The description of the bet is as follows:
 ```
 {
@@ -68,7 +68,7 @@ Like wise if we recompute all for all the users the final bet settelement table 
 
 If you see above total amount collected is **1100** and the amount distributed to winners is **1070(133.75+535+401.25)** and the remaining **30** is distributed as commission to host and validator nodes.
 
-__Odd based bets__
+### Odds based bets
 These are the bets in which the host defines the odds against the outcome of an event and match/map the bets of the users. Lets take a simple bet **A wins on B** in this scenario and its description is as follows:
 ```
 {
