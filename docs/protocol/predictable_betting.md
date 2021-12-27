@@ -95,10 +95,21 @@ In these type of betting scenarios, bets won't be locked immediately by the host
 	"bet_status": pending 
 }
 ```
- 
+Here the host can make a counterbet to the existng bets to change the status from pending to accepted or the host can just wait for the matching bet from the other users to confirm the pending bets.
 
+## Evaluation of bet query
 
+The most important thing in the predictable betting is the outcome of the event, and how this outcome of the event is legitimately provided to evaluate the bets. Here we are relying on the validator nodes to feed the outcome of bets and in return the validator nodes gets incentives in answering the bet queries. Its important to note here that the validator nodes are elected by the bet community who are trustworthy in the bet environment and in order to become a validator node one must need to meet certain constraints and guidelines set by the bet community.
 
+To become a validator node one must
+a. Go through the election prcess, where the chips holders vote for a specific validator node applicant.
+b. The validator node must show the proof that they possess 50k CHIPS.
+
+Whenever the host posts the bets, those bets are visible to all the validator nodes. The job of the validator nodes is based on the outcome of bet the validator nodes answers the queries and store them in the local in the local DB against the specific bet ID. 
+
+Once the outcome of the event is revealed in the real world, the host sends requests to the validator nodes to get the outcome of the bet and evaluate the bet accordingly to settle the betting amounts. If the host fail to process the bet with in the time window specified, the users can raise dispute requests with the validator nodes where in which the validator nodes will process the outcome of the bet and settle the funds. The validator nodes gets incentivised for being honest in answering the bet queries and for being available in responding to the host nodes.
+
+The incentives to the validator nodes are based on the queries it answers. The more queries it answers the more incentives it gets. We discuss in detail about how the system is resilient against the dishonest validator and host nodes, and how the dishonest will be moved out of the network and costs incurred for being dishonest in later sections.
 
 ### Listing the bets by host
 In `bets.ini` host lists the bets and publish them to the players when the player node connect to the corresponding host. The sample congiguration data in the `bets.ini` looks as follows:
