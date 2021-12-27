@@ -1,6 +1,53 @@
 ## Predicatable Betting
 Here we discuss using bet how one can host and place bets over a predictable outcomes of an event.
 
+## Actors in the system
+The betting market comprises queries, answers to those queries and a mechanism to validate them. The actors in the system are as follows:
+1. Host [Dealer in Poker] 
+2. Validator Nodes [Cashier nodes]
+3. Users
+
+### Host
+Any node can be a Host, the role of the host is to post and accept the bets. Host can also make private bets where it can only authorize few users to pariticipate in betting. All the bets must have the acceptance time window. 
+
+With respect to evaluation of bets, bets can be classfied into two categories.
+1. Evaluating bets based on the prorata basis.
+2. Evaluating bets based on choosen odds.
+
+__Prorata bets__ 
+Lets say a simple bet **A wins on B**. The description of the bet is as follows:
+```
+{
+	"bet_id":	0,
+	"desc":	"A wins on B",
+	"predictions":	"[win,lose]",
+	"range":	"[1, 500]"
+	"time_lapse":   dd/mm/yyyy:ss/mm/hh[UTC]
+}
+```
+Lets say five users make bets on this query and their bets are as follows:
+
+| User        | A wins on B | bet_amount |
+| ----------- | ----------- | ---------- |
+| U1	      | win	    |  100	 | 	
+| U2	      | lose	    |  200	 |
+| U3	      | win	    |  400	 |
+| U4	      | win	    |  300	 |
+| U5	      | lose	    |  100	 |
+
+The cumulative bet amount collected on various possible predictions of the bet is as follows:
+| Predictions | Cumulative bet_amount |
+| ----------- | --------------------- |
+| win	      | 800(100+400+300)      |
+| lose	      | 300(200+100)  	      |
+
+Here in the prorata bets, the winning bet amount is calculated as follows:
+\delta
+winning_bet_amount  = bet_amount+ 
+
+
+
+
 ### Listing the bets by host
 In `bets.ini` host lists the bets and publish them to the players when the player node connect to the corresponding host. The sample congiguration data in the `bets.ini` looks as follows:
 ```
