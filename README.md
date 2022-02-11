@@ -6,6 +6,8 @@ Bet is a decentralized adopatable gaming platform that meet the needs of any car
 
 The detailed technical whitepaper is [here.](https://cdn.discordapp.com/attachments/455737840668770315/456036359870611457/Unsolicited_PANGEA_WP.pdf)
 
+The flow and architecture of bet is [here.](./docs/protocol/architecture_doc.md)
+
 ## Guide to use & understand Bet is as follows
 
 ### Compilation Guidelines
