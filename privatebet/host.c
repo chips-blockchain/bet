@@ -433,25 +433,32 @@ cJSON *bet_get_seats_json(int32_t max_players)
 
 int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int32_t retval = OK;
-	char *uri = NULL, *type = NULL;
+	int32_t retval = OK;	
 	cJSON *player_info = NULL;
 
+	#ifdef BET_WITH_LN
+		char *uri = NULL, *type = NULL;
+	#endif
+	
 	bet->numplayers = ++players_joined;
 	dcv_info.peerpubkeys[jint(argjson, "gui_playerID")] = jbits256(argjson, "pubkey");
-	strcpy((char *)dcv_info.uri[jint(argjson, "gui_playerID")], jstr(argjson, "uri"));
 
-	uri = (char *)malloc(ln_uri_length * sizeof(char));
-	type = ln_get_uri(&uri);
-	dlg_info("%s::\n%s", type, uri);
-
+	#ifdef BET_WITH_LN	
+		strcpy((char *)dcv_info.uri[jint(argjson, "gui_playerID")], jstr(argjson, "uri"));
+		uri = (char *)malloc(ln_uri_length * sizeof(char));
+		type = ln_get_uri(&uri);
+		dlg_info("%s::\n%s", type, uri);
+	#endif
+	
 	player_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(player_info, "method", "join_res");
 
 	cJSON_AddNumberToObject(player_info, "playerid", jint(argjson, "gui_playerID"));
 	jaddbits256(player_info, "pubkey", jbits256(argjson, "pubkey"));
-	cJSON_AddStringToObject(player_info, "uri", uri);
-	cJSON_AddStringToObject(player_info, "type", type);
+	#ifdef BET_WITH_LN
+		cJSON_AddStringToObject(player_info, "uri", uri);
+		cJSON_AddStringToObject(player_info, "type", type);
+	#endif
 	cJSON_AddNumberToObject(player_info, "dealer", dealerPosition);
 	cJSON_AddNumberToObject(player_info, "pos_status", pos_on_table_empty);
 	cJSON_AddStringToObject(player_info, "req_identifier", jstr(argjson, "req_identifier"));
@@ -470,8 +477,10 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 	retval = (nn_send(bet->pubsock, cJSON_Print(player_info), strlen(cJSON_Print(player_info)), 0) < 0) ?
 			 ERR_NNG_SEND :
 			 OK;
-	if (uri)
-		free(uri);
+	#ifdef BET_WITH_LN
+		if (uri)
+			free(uri);
+	#endif
 	return retval;
 }
 
@@ -1668,9 +1677,7 @@ void bet_dcv_backend_thrd(void *_ptr)
 	if ((method = jstr(argjson, "method")) != 0) {
 		dlg_info("%s", method);
 		if (strcmp(method, "join_req") == 0) {
-			//pthread_mutex_lock(&mutex);
 			retval = bet_dcv_process_join_req(argjson, bet, vars);
-			//pthread_mutex_unlock(&mutex);
 		} else if (strcmp(method, "init_p") == 0) {
 			retval = bet_dcv_init(argjson, bet, vars);
 			if (dcv_info.numplayers == dcv_info.maxplayers) {
