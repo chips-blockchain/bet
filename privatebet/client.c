@@ -775,15 +775,21 @@ int32_t bet_client_init(cJSON *argjson, struct privatebet_info *bet, struct priv
 
 int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int32_t retval = OK, channel_state;
-	char channel_id[ln_uri_length], uri[ln_uri_length];
+	int32_t retval = OK;
 	cJSON *init_card_info = NULL, *hole_card_info = NULL, *init_info = NULL;
+
+	#ifdef BET_WITH_LN
+		int32_t channel_state;
+		char channel_id[ln_uri_length], uri[ln_uri_length];
+	#endif
 
 	if (0 == bits256_cmp(player_info.player_key.prod, jbits256(argjson, "pubkey"))) {
 		bet_player->myplayerid = jint(argjson, "playerid");
 		bet->myplayerid = jint(argjson, "playerid");
 
 		dlg_info("%s", cJSON_Print(argjson));
+		
+	#ifdef BET_WITH_LN
 		if ((retval = ln_check_if_address_isof_type(jstr(argjson, "type"))) != OK)
 			return retval;
 
@@ -798,6 +804,7 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 			strcpy(uri, jstr(argjson, "uri"));
 			retval = ln_check_peer_and_connect(uri);
 		}
+	#endif	
 		init_card_info = cJSON_CreateObject();
 		cJSON_AddNumberToObject(init_card_info, "dealer", jint(argjson, "dealer"));
 
@@ -1569,7 +1576,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 		return retval;
 	}
 	if ((method = jstr(argjson, "method")) != 0) {
-		dlg_info("recv :: %s", method);
+		dlg_info("recv :: %s", cJSON_Print(argjson));
 		if (strcmp(method, "join_res") == 0) {
 			bet_update_seat_info(argjson);
 			if (strcmp(jstr(argjson, "req_identifier"), req_identifier) == 0) {
