@@ -66,6 +66,8 @@ enum bet_dcv_state {
 #define default_min_stake_in_bb 20
 #define default_max_stake_in_bb 100
 
+#define BET_WITH_LN
+
 extern bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 extern bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
 
