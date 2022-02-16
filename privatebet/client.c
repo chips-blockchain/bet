@@ -820,11 +820,16 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 
 int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 {
-	int32_t argc, retval = OK;
-	cJSON *joininfo = NULL, *channel_info = NULL, *addresses = NULL, *address = NULL;
+	int32_t retval = OK;
+	cJSON *joininfo = NULL;
 	struct pair256 key;
-	char **argv = NULL, *uri = NULL;
 
+	#ifdef BET_WITH_LN
+	int32_t argc;
+	cJSON *channel_info = NULL, *addresses = NULL, *address = NULL;	
+	char **argv = NULL, *uri = NULL;
+	#endif
+	
 	if ((jint(argjson, "gui_playerID") < 1) || (jint(argjson, "gui_playerID") > bet->maxplayers)) {
 		retval = ERR_INVALID_POS;
 		return retval;
@@ -834,6 +839,8 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 	joininfo = cJSON_CreateObject();
 	cJSON_AddStringToObject(joininfo, "method", "join_req");
 	jaddbits256(joininfo, "pubkey", key.prod);
+	
+	#ifdef BET_WITH_LN
 	argc = 2;
 	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "lightning-cli", "getinfo");
@@ -858,6 +865,7 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 		strcat(uri, jstr(address, "address"));
 	}
 	cJSON_AddStringToObject(joininfo, "uri", uri);
+	#endif	
 	cJSON_AddNumberToObject(joininfo, "gui_playerID", (jint(argjson, "gui_playerID") - 1));
 	cJSON_AddStringToObject(joininfo, "req_identifier", req_identifier);
 	cJSON_AddStringToObject(joininfo, "player_name", player_name);
@@ -867,9 +875,11 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 													 OK;
 
 end:
+	#ifdef BET_WITH_LN
 	if (uri)
 		free(uri);
 	bet_dealloc_args(argc, &argv);
+	#endif
 	return retval;
 }
 
