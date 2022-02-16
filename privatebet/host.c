@@ -1528,11 +1528,13 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 					 OK;
 
 			heartbeat_on = 1;
+			#ifdef BET_WITH_LN
 			retval = bet_ln_check(bet);
 			if (retval < 0) {
 				dlg_error("Issue in establishing the LN channels");
 				return retval;
 			}
+			#endif
 			retval = bet_check_bvv_ready(bet);
 		}
 	}
