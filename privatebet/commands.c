@@ -1420,6 +1420,9 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 		strcat(command, argv[i]);
 		strcat(command, " ");
 	}
+	if (strcmp(argv[0], "lightning-cli") == 0)
+		dlg_info("LN command :: %s\n", command);
+	
 	fp = popen(command, "r");
 	if (fp == NULL) {
 		if (strcmp(argv[0], "chips-cli") == 0)
