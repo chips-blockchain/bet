@@ -487,6 +487,10 @@ static void bet_start(int argc, char **argv){
 				bet_player_thrd(dealer_ip);
 			}
 			break;
+		cases("spendable")
+			cJSON *spendable_tx = chips_spendable_tx();
+			dlg_info("CHIPS Spendable tx's :: %s\n", cJSON_Print(spendable_tx));
+			break;
 		cases("v")
 		cases("-v")
 		cases("version")
