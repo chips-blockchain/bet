@@ -19,6 +19,7 @@
 #include "common.h"
 #include "network.h"
 #include "err.h"
+#include "misc.h"
 /***************************************************************
 Here contains the functions which are specific to DCV
 ****************************************************************/
