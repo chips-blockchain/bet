@@ -235,9 +235,10 @@ int32_t bet_player_log_bet_info(cJSON *argjson, struct privatebet_info *bet, int
 	
 	betInfo = cJSON_CreateObject();
 	cJSON_AddStringToObject(betInfo, "method", "bet");
+	cJSON_AddStringToObject(betInfo,"table_id",table_id);
 	cJSON_AddNumberToObject(betInfo, "round", jint(argjson, "round"));
 	cJSON_AddNumberToObject(betInfo, "playerID", bet->myplayerid);
-	cJSON_AddNumberToObject(betInfo, "betAmount", amount);
+	cJSON_AddNumberToObject(betInfo, "betAmount", amount); 
 
 	
 	hex_data = calloc(1, 2 * tx_data_size);
