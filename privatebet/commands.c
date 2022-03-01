@@ -34,15 +34,15 @@ double epsilon = 0.000000001;
 
 int32_t bet_alloc_args(int argc, char ***argv)
 {
-	int ret = 1;
+	int ret = OK;
 
 	*argv = (char **)malloc(argc * sizeof(char *));
 	if (*argv == NULL)
-		return 0;
+		return ERR_MEMORY_ALLOC; 
 	for (int i = 0; i < argc; i++) {
 		(*argv)[i] = (char *)malloc(arg_size * sizeof(char));
 		if ((*argv)[i] == NULL)
-			return 0;
+			return ERR_MEMORY_ALLOC;
 	}
 	return ret;
 }
@@ -395,25 +395,27 @@ cJSON *chips_transfer_funds(double amount, char *address)
 
 cJSON *chips_send_raw_tx(cJSON *signed_tx)
 {
-	int argc, ret =1;
+	int argc, ret = OK;
 	char **argv = NULL;
 	cJSON *tx_info = NULL;
 
 	argc = 3;
 	ret = bet_alloc_args(argc, &argv);
-	if(0 == ret) {
-		dlg_info("Failed to allocate memory");
+	if(ret != OK) {
+		dlg_error("%s", bet_err_str(ret));
 		return NULL;
 	}
 	dlg_info("size of argument::%ld", strlen(jstr(signed_tx, "hex")));
 	argv = bet_copy_args(argc, "chips-cli", "sendrawtransaction", jstr(signed_tx, "hex"));
 	tx_info = cJSON_CreateObject();
+	
 	ret = make_command(argc, argv, &tx_info);
+	bet_dealloc_args(argc, &argv);
+	
 	if(ret != OK) {
 		dlg_error("%s", bet_err_str(ret));
+		return NULL;
 	}
-	bet_dealloc_args(argc, &argv);
-
 	return tx_info;
 }
 
