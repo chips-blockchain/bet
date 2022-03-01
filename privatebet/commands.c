@@ -70,7 +70,7 @@ static void bet_memset_args(int argc, char ***argv)
 
 char **bet_copy_args(int argc, ...)
 {
-	int32_t ret = 1;
+	int32_t ret = OK;
 	char **argv = NULL;
 	va_list valist, va_copy;
 	
@@ -81,7 +81,7 @@ char **bet_copy_args(int argc, ...)
 
 	for (int i = 0; i < argc; i++) {
 		if(strlen(va_arg(va_copy, char *)) > arg_size) {
-			ret = 0;
+			ret = ERR_ARG_SIZE_TOO_LONG;
 			goto end;
 		}
 		strcpy(argv[i], va_arg(valist, char *));
@@ -89,7 +89,7 @@ char **bet_copy_args(int argc, ...)
 	end:
 		va_end(valist);
 		va_end(va_copy);
-		if(ret == 0) {
+		if(ret != OK) {
 			bet_dealloc_args(argc,&argv);
 			return NULL;
 		} 
