@@ -70,6 +70,7 @@ All the errors that come across in bet are defined here. The error numbers are a
 
 //Standard Errors
 #define ERR_MEMORY_ALLOC 72
+#define ERR_ARGS_NULL 73
 
 const char *bet_err_str(int32_t err_no);
 #endif
