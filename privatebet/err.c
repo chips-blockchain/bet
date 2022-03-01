@@ -135,6 +135,9 @@ const char *bet_err_str(int32_t err_no)
 	case ERR_MEMORY_ALLOC:
 		return "Memory allocation failed";
 		break;
+	case ERR_ARGS_NULL:
+		return "Command arguments are NULL";
+		break;
 	default:
 		return "This error is not handled yet...";
 	}
