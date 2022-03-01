@@ -80,7 +80,7 @@ char **bet_copy_args(int argc, ...)
 	va_copy(va_copy, valist);
 
 	for (int i = 0; i < argc; i++) {
-		if(va_arg(va_copy, char *) > arg_size) {
+		if(strlen(va_arg(va_copy, char *)) > arg_size) {
 			ret = 0;
 			goto end;
 		}
