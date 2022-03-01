@@ -408,7 +408,10 @@ cJSON *chips_send_raw_tx(cJSON *signed_tx)
 	dlg_info("size of argument::%ld", strlen(jstr(signed_tx, "hex")));
 	argv = bet_copy_args(argc, "chips-cli", "sendrawtransaction", jstr(signed_tx, "hex"));
 	tx_info = cJSON_CreateObject();
-	make_command(argc, argv, &tx_info);
+	ret = make_command(argc, argv, &tx_info);
+	if(ret != OK) {
+		dlg_error("%s", bet_err_str(ret));
+	}
 	bet_dealloc_args(argc, &argv);
 
 	return tx_info;
