@@ -70,15 +70,29 @@ static void bet_memset_args(int argc, char ***argv)
 
 char **bet_copy_args(int argc, ...)
 {
-	va_list valist;
+	int32_t ret = 1;
 	char **argv = NULL;
-
+	va_list valist, va_copy;
+	
 	bet_alloc_args(argc, &argv);
+
 	va_start(valist, argc);
+	va_copy(va_copy, valist);
 
 	for (int i = 0; i < argc; i++) {
+		if(va_arg(va_copy, char *) > arg_size) {
+			ret = 0;
+			goto end;
+		}
 		strcpy(argv[i], va_arg(valist, char *));
 	}
+	end:
+		va_end(valist);
+		va_end(va_copy);
+		if(ret == 0) {
+			bet_dealloc_args(argc,&argv);
+			return NULL;
+		} 
 	return argv;
 }
 
