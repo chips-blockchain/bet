@@ -1429,7 +1429,10 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 	char *data = NULL, *command = NULL, *buf = NULL;
 	int32_t retval = OK;
 	unsigned long command_size = 16384, data_size = 262144, buf_size = 1024;
-
+	
+	if(argv == NULL) {
+		return ERR_ARGS_NULL;
+	}
 	command = calloc(command_size, sizeof(char));
 	if (!command) {
 		retval = ERR_MEMORY_ALLOC;
