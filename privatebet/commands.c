@@ -381,12 +381,16 @@ cJSON *chips_transfer_funds(double amount, char *address)
 
 cJSON *chips_send_raw_tx(cJSON *signed_tx)
 {
-	int argc;
+	int argc, ret =1;
 	char **argv = NULL;
 	cJSON *tx_info = NULL;
 
 	argc = 3;
-	bet_alloc_args(argc, &argv);
+	ret = bet_alloc_args(argc, &argv);
+	if(0 == ret) {
+		dlg_info("Failed to allocate memory");
+		return NULL;
+	}
 	argv = bet_copy_args(argc, "chips-cli", "sendrawtransaction", jstr(signed_tx, "hex"));
 	tx_info = cJSON_CreateObject();
 	make_command(argc, argv, &tx_info);
