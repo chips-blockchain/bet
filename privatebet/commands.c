@@ -82,6 +82,7 @@ char **bet_copy_args(int argc, ...)
 	for (int i = 0; i < argc; i++) {
 		if(strlen(va_arg(va_copy, char *)) > arg_size) {
 			ret = ERR_ARG_SIZE_TOO_LONG;
+			dlg_error("Error::%s::\n::%s", bet_err_str(ret), va_arg(valist, char *));
 			goto end;
 		}
 		strcpy(argv[i], va_arg(valist, char *));
