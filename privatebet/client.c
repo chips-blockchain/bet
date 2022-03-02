@@ -1763,6 +1763,9 @@ void bet_player_backend_loop(void *_ptr)
 	struct privatebet_info *bet = _ptr;
 
 	retval = bet_player_stack_info_req(bet);
+	if(retval != OK) {
+		bet_handle_player_error(bet, retval);
+	}
 	while (retval == OK) {
 		if (bet->subsock >= 0 && bet->pushsock >= 0) {
 			ptr = 0;
