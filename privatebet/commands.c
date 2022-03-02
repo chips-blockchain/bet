@@ -74,8 +74,6 @@ char **bet_copy_args_with_size(int argc, ...)
 	char **argv = NULL;
 	va_list valist, va_copy;
 	
-	bet_alloc_args(argc, &argv);
-
 	if(argc <= 0)
 		return NULL;
 
@@ -85,7 +83,8 @@ char **bet_copy_args_with_size(int argc, ...)
 
 	argv = (char **)malloc(argc * sizeof(char *));
 	for (int i = 0; i < argc; i++) {
-		argv[i] = (char *)malloc(strlen(va_arg(va_copy, char *)) * sizeof(char));
+		int arg_length = strlen(va_arg(va_copy, char *));
+		argv[i] = (char *)malloc(arg_length* sizeof(char));		
 		strcpy(argv[i], va_arg(valist, char *));
 	}
 	
@@ -428,15 +427,17 @@ cJSON *chips_send_raw_tx(cJSON *signed_tx)
 	cJSON *tx_info = NULL;
 
 	argc = 3;
+	#if 0 // This snippet is commented because we are using bet_copy_args_with_size to copy the args
 	ret = bet_alloc_args(argc, &argv);
 	if(ret != OK) {
 		dlg_error("%s", bet_err_str(ret));
 		return NULL;
 	}
-	dlg_info("size of argument::%ld", strlen(jstr(signed_tx, "hex")));
 	argv = bet_copy_args(argc, "chips-cli", "sendrawtransaction", jstr(signed_tx, "hex"));
+	#endif
+
+	argv = bet_copy_args_with_size(argc, "chips-cli", "sendrawtransaction", jstr(signed_tx, "hex"));
 	tx_info = cJSON_CreateObject();
-	
 	ret = make_command(argc, argv, &tx_info);
 	bet_dealloc_args(argc, &argv);
 	
