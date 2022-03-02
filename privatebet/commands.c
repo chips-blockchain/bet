@@ -68,6 +68,33 @@ static void bet_memset_args(int argc, char ***argv)
 	}
 }
 
+
+char **bet_copy_args_with_size(int argc, ...)
+{
+	char **argv = NULL;
+	va_list valist, va_copy;
+	
+	bet_alloc_args(argc, &argv);
+
+	if(argc <= 0)
+		return NULL;
+
+	
+	va_start(valist, argc);
+	va_copy(va_copy, valist);
+
+	argv = (char **)malloc(argc * sizeof(char *));
+	for (int i = 0; i < argc; i++) {
+		argv[i] = (char *)malloc(strlen(va_arg(va_copy, char *)) * sizeof(char));
+		strcpy(argv[i], va_arg(valist, char *));
+	}
+	
+	va_end(valist);
+	va_end(va_copy);
+	return argv;
+}
+
+
 char **bet_copy_args(int argc, ...)
 {
 	int32_t ret = OK;
