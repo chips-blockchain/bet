@@ -778,18 +778,18 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 	int32_t retval = OK;
 	cJSON *init_card_info = NULL, *hole_card_info = NULL, *init_info = NULL;
 
-	#ifdef BET_WITH_LN
-		int32_t channel_state;
-		char channel_id[ln_uri_length], uri[ln_uri_length];
-	#endif
+#ifdef BET_WITH_LN
+	int32_t channel_state;
+	char channel_id[ln_uri_length], uri[ln_uri_length];
+#endif
 
 	if (0 == bits256_cmp(player_info.player_key.prod, jbits256(argjson, "pubkey"))) {
 		bet_player->myplayerid = jint(argjson, "playerid");
 		bet->myplayerid = jint(argjson, "playerid");
 
 		dlg_info("%s", cJSON_Print(argjson));
-		
-	#ifdef BET_WITH_LN
+
+#ifdef BET_WITH_LN
 		if ((retval = ln_check_if_address_isof_type(jstr(argjson, "type"))) != OK)
 			return retval;
 
@@ -804,7 +804,7 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 			strcpy(uri, jstr(argjson, "uri"));
 			retval = ln_check_peer_and_connect(uri);
 		}
-	#endif	
+#endif
 		init_card_info = cJSON_CreateObject();
 		cJSON_AddNumberToObject(init_card_info, "dealer", jint(argjson, "dealer"));
 
@@ -831,12 +831,12 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 	cJSON *joininfo = NULL;
 	struct pair256 key;
 
-	#ifdef BET_WITH_LN
+#ifdef BET_WITH_LN
 	int32_t argc;
-	cJSON *channel_info = NULL, *addresses = NULL, *address = NULL;	
+	cJSON *channel_info = NULL, *addresses = NULL, *address = NULL;
 	char **argv = NULL, *uri = NULL;
-	#endif
-	
+#endif
+
 	if ((jint(argjson, "gui_playerID") < 1) || (jint(argjson, "gui_playerID") > bet->maxplayers)) {
 		retval = ERR_INVALID_POS;
 		return retval;
@@ -846,8 +846,8 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 	joininfo = cJSON_CreateObject();
 	cJSON_AddStringToObject(joininfo, "method", "join_req");
 	jaddbits256(joininfo, "pubkey", key.prod);
-	
-	#ifdef BET_WITH_LN
+
+#ifdef BET_WITH_LN
 	argc = 2;
 	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "lightning-cli", "getinfo");
@@ -872,7 +872,7 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 		strcat(uri, jstr(address, "address"));
 	}
 	cJSON_AddStringToObject(joininfo, "uri", uri);
-	#endif	
+#endif
 	cJSON_AddNumberToObject(joininfo, "gui_playerID", (jint(argjson, "gui_playerID") - 1));
 	cJSON_AddStringToObject(joininfo, "req_identifier", req_identifier);
 	cJSON_AddStringToObject(joininfo, "player_name", player_name);
@@ -882,11 +882,11 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 													 OK;
 
 end:
-	#ifdef BET_WITH_LN
+#ifdef BET_WITH_LN
 	if (uri)
 		free(uri);
 	bet_dealloc_args(argc, &argv);
-	#endif
+#endif
 	return retval;
 }
 
@@ -1376,11 +1376,13 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		retval = ERR_DCV_COMMISSION_MISMATCH;
 		return retval;
 	}
+
 	funds_available = chips_get_balance() - chips_tx_fee;
 	if (funds_available < jdouble(argjson, "table_min_stake")) {
 		retval = ERR_CHIPS_INSUFFICIENT_FUNDS;
 		return retval;
 	}
+
 	BB_in_chips = jdouble(argjson, "bb_in_chips");
 	SB_in_chips = BB_in_chips / 2;
 	table_stake_in_chips = table_stack_in_bb * BB_in_chips;
@@ -1763,7 +1765,7 @@ void bet_player_backend_loop(void *_ptr)
 	struct privatebet_info *bet = _ptr;
 
 	retval = bet_player_stack_info_req(bet);
-	if(retval != OK) {
+	if (retval != OK) {
 		bet_handle_player_error(bet, retval);
 	}
 	while (retval == OK) {
