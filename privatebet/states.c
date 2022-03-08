@@ -591,13 +591,13 @@ int32_t bet_player_small_blind(cJSON *argjson, struct privatebet_info *bet, stru
 
 	amount = small_blind_amount;
 	vars->player_funds -= amount;
-	#ifdef BET_WITH_LN
+#ifdef BET_WITH_LN
 	retval = bet_player_invoice_pay(argjson, bet, vars, amount);
 	if (retval != OK)
 		return retval;
-	#else
-		bet_player_log_bet_info(argjson, bet, amount);
-	#endif
+#else
+	bet_player_log_bet_info(argjson, bet, amount);
+#endif
 
 	small_blind_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(small_blind_info, "method", "betting");

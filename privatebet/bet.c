@@ -344,9 +344,9 @@ static void common_init()
 {
 	OS_init();
 	libgfshare_init();
-	#ifdef BET_WITH_LN
-	check_ln_chips_sync(); 
-	#endif
+#ifdef BET_WITH_LN
+	check_ln_chips_sync();
+#endif
 	bet_sqlite3_init();
 	bet_parse_cashier_config_ini_file();
 }

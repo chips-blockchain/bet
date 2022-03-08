@@ -38,7 +38,7 @@ int32_t bet_alloc_args(int argc, char ***argv)
 
 	*argv = (char **)malloc(argc * sizeof(char *));
 	if (*argv == NULL)
-		return ERR_MEMORY_ALLOC; 
+		return ERR_MEMORY_ALLOC;
 	for (int i = 0; i < argc; i++) {
 		(*argv)[i] = (char *)malloc(arg_size * sizeof(char));
 		if ((*argv)[i] == NULL)
@@ -68,58 +68,59 @@ static void bet_memset_args(int argc, char ***argv)
 	}
 }
 
-
 char **bet_copy_args_with_size(int argc, ...)
 {
 	char **argv = NULL;
 	va_list valist, va_copy;
-	
-	if(argc <= 0)
+
+	if (argc <= 0)
 		return NULL;
 
-	
 	va_start(valist, argc);
 	va_copy(va_copy, valist);
 
 	argv = (char **)malloc(argc * sizeof(char *));
 	for (int i = 0; i < argc; i++) {
 		int arg_length = strlen(va_arg(va_copy, char *));
-		argv[i] = (char *)malloc(arg_length* sizeof(char));		
+		argv[i] = (char *)malloc(arg_length * sizeof(char));
 		strcpy(argv[i], va_arg(valist, char *));
 	}
-	
+
 	va_end(valist);
 	va_end(va_copy);
 	return argv;
 }
-
 
 char **bet_copy_args(int argc, ...)
 {
 	int32_t ret = OK;
 	char **argv = NULL;
 	va_list valist, va_copy;
-	
-	bet_alloc_args(argc, &argv);
+
+	ret = bet_alloc_args(argc, &argv);
+	if (ret != OK) {
+		dlg_error("%s", bet_err_str(ret));
+		return NULL;
+	}
 
 	va_start(valist, argc);
 	va_copy(va_copy, valist);
 
 	for (int i = 0; i < argc; i++) {
-		if(strlen(va_arg(va_copy, char *)) > arg_size) {
+		if (strlen(va_arg(va_copy, char *)) > arg_size) {
 			ret = ERR_ARG_SIZE_TOO_LONG;
 			dlg_error("Error::%s::\n::%s", bet_err_str(ret), va_arg(valist, char *));
 			goto end;
 		}
 		strcpy(argv[i], va_arg(valist, char *));
 	}
-	end:
-		va_end(valist);
-		va_end(va_copy);
-		if(ret != OK) {
-			bet_dealloc_args(argc,&argv);
-			return NULL;
-		} 
+end:
+	va_end(valist);
+	va_end(va_copy);
+	if (ret != OK) {
+		bet_dealloc_args(argc, &argv);
+		return NULL;
+	}
 	return argv;
 }
 
@@ -427,21 +428,18 @@ cJSON *chips_send_raw_tx(cJSON *signed_tx)
 	cJSON *tx_info = NULL;
 
 	argc = 3;
-	#if 0 // This snippet is commented because we are using bet_copy_args_with_size to copy the args
 	ret = bet_alloc_args(argc, &argv);
 	if(ret != OK) {
 		dlg_error("%s", bet_err_str(ret));
 		return NULL;
 	}
 	argv = bet_copy_args(argc, "chips-cli", "sendrawtransaction", jstr(signed_tx, "hex"));
-	#endif
 
-	argv = bet_copy_args_with_size(argc, "chips-cli", "sendrawtransaction", jstr(signed_tx, "hex"));
 	tx_info = cJSON_CreateObject();
 	ret = make_command(argc, argv, &tx_info);
 	bet_dealloc_args(argc, &argv);
-	
-	if(ret != OK) {
+
+	if (ret != OK) {
 		dlg_error("%s", bet_err_str(ret));
 		return NULL;
 	}
@@ -701,16 +699,19 @@ cJSON *bet_get_chips_ln_addr_info()
 
 double chips_get_balance()
 {
-	char **argv = NULL;
-	int argc;
+	int32_t argc, retval = OK;
 	double balance = 0;
+	char **argv = NULL;
 	cJSON *getbalanceInfo = NULL;
 
 	argc = 2;
-	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "chips-cli", "getbalance");
-	make_command(argc, argv, &getbalanceInfo);
-	balance = atof(cJSON_Print(getbalanceInfo));
+	retval = make_command(argc, argv, &getbalanceInfo);
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
+	} else {
+		balance = atof(cJSON_Print(getbalanceInfo));
+	}
 	bet_dealloc_args(argc, &argv);
 	return balance;
 }
@@ -1462,23 +1463,29 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 	FILE *fp = NULL;
 	char *data = NULL, *command = NULL, *buf = NULL;
 	int32_t retval = OK;
-	unsigned long command_size = 16384, data_size = 262144, buf_size = 1024;
-	
-	if(argv == NULL) {
+	unsigned long data_size = 262144, buf_size = 1024, cmd_size = 1024;
+
+	if (argv == NULL) {
 		return ERR_ARGS_NULL;
 	}
-	command = calloc(command_size, sizeof(char));
+	for (int32_t i = 0; i < argc; i++) {
+		cmd_size += strlen(argv[i]);
+	}
+
+	command = calloc(cmd_size, sizeof(char));
 	if (!command) {
 		retval = ERR_MEMORY_ALLOC;
 		return retval;
 	}
+
 	for (int32_t i = 0; i < argc; i++) {
 		strcat(command, argv[i]);
 		strcat(command, " ");
 	}
+
 	if (strcmp(argv[0], "lightning-cli") == 0)
 		dlg_info("LN command :: %s\n", command);
-	
+
 	fp = popen(command, "r");
 	if (fp == NULL) {
 		if (strcmp(argv[0], "chips-cli") == 0)
@@ -1487,6 +1494,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 			retval = ERR_LN_COMMAND;
 		return retval;
 	}
+
 	data = calloc(data_size, sizeof(char));
 	if (!data) {
 		retval = ERR_MEMORY_ALLOC;
@@ -1549,7 +1557,8 @@ end:
 		free(data);
 	if (command)
 		free(command);
-	pclose(fp);
+	if (fp)
+		pclose(fp);
 
 	return retval;
 }
