@@ -1423,6 +1423,8 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 	if (txid == NULL) {
 		retval = ERR_CHIPS_INVALID_TX;
 		return retval;
+	} else {
+		retval = bet_store_game_info_details(cJSON_Print(txid), table_id);
 	}
 	dlg_info("tx id::%s", cJSON_Print(txid));
 	memset(player_payin_txid, 0x00, sizeof(player_payin_txid));
@@ -1699,6 +1701,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 				}
 			}
 		} else if (strcmp(method, "payout_tx") == 0) {
+			retval = bet_store_game_info_details(jstr(argjson, "tx_info"), jstr(argjson, "table_id"));
 			retval = bet_player_process_payout_tx(argjson);
 		} else if (strcmp(method, "game_info") == 0) {
 			retval = bet_player_process_game_info(argjson);

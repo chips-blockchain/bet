@@ -20,6 +20,7 @@
 #include "network.h"
 #include "err.h"
 #include "misc.h"
+#include "storage.h"
 /***************************************************************
 Here contains the functions which are specific to DCV
 ****************************************************************/
@@ -227,7 +228,7 @@ void bet_player_paymentloop(void *_ptr)
 	}
 }
 
-int32_t bet_player_log_bet_info(cJSON *argjson, struct privatebet_info *bet, int32_t amount)
+int32_t bet_player_log_bet_info(cJSON *argjson, struct privatebet_info *bet, int32_t amount, int32_t action)
 {
 	int32_t retval = OK;
 	cJSON *bet_info = NULL, *tx_id = NULL;
@@ -239,17 +240,23 @@ int32_t bet_player_log_bet_info(cJSON *argjson, struct privatebet_info *bet, int
 	cJSON_AddNumberToObject(bet_info, "round", jint(argjson, "round"));
 	cJSON_AddNumberToObject(bet_info, "playerID", bet->myplayerid);
 	cJSON_AddNumberToObject(bet_info, "betAmount", amount);
+	cJSON_AddNumberToObject(bet_info, "action", action);
 
 	hex_data = calloc(2 * tx_data_size, sizeof(char));
 	str_to_hexstr(cJSON_Print(bet_info), hex_data);
 	tx_id = cJSON_CreateObject();
 	tx_id = chips_transfer_funds_with_data(0.0, legacy_m_of_n_msig_addr, hex_data);
 
-	if(tx_id == NULL) {
-		retval = ERR_GAME_RECORD_TX;		
-	}
 	dlg_info("Address at which we are recording the game moves::%s", legacy_m_of_n_msig_addr);
-	dlg_info("tx to record the game move info::%s", cJSON_Print(tx_id));
+	if (tx_id == NULL) {
+		retval = ERR_GAME_RECORD_TX;
+	} else {
+		retval = bet_store_game_info_details(cJSON_Print(tx_id), table_id);
+		dlg_info("tx to record the game move info::%s", cJSON_Print(tx_id));
+	}
 
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
+	}
 	return retval;
 }
