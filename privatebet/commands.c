@@ -429,7 +429,7 @@ cJSON *chips_send_raw_tx(cJSON *signed_tx)
 
 	argc = 3;
 	ret = bet_alloc_args(argc, &argv);
-	if(ret != OK) {
+	if (ret != OK) {
 		dlg_error("%s", bet_err_str(ret));
 		return NULL;
 	}
