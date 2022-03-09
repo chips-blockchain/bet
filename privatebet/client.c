@@ -1351,7 +1351,7 @@ static int32_t bet_update_payin_tx_across_cashiers(cJSON *argjson, cJSON *txid)
 
 static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privatebet_info *bet)
 {
-	int32_t retval = OK;
+	int32_t retval = OK, hex_data_len = 0;
 	double funds_available;
 	char *hex_data = NULL;
 	cJSON *tx_info = NULL, *txid = NULL, *data_info = NULL;
@@ -1414,7 +1414,8 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 	cJSON_AddStringToObject(data_info, "dispute_addr", chips_get_new_address());
 	cJSON_AddStringToObject(data_info, "msig_addr", legacy_m_of_n_msig_addr);
 
-	hex_data = calloc(1, 2 * tx_data_size);
+	hex_data_len = 2 * strlen(cJSON_Print(data_info)) + 1;
+	hex_data = calloc(hex_data_len, sizeof(char));
 	str_to_hexstr(cJSON_Print(data_info), hex_data);
 	txid = cJSON_CreateObject();
 	dlg_info("funds_needed::%f", table_stake_in_chips);
