@@ -31,6 +31,7 @@ All the errors that come across in bet are defined here. The error numbers are a
 #define ERR_BET_AMOUNTS_MISMATCH 		12
 #define ERR_PAYOUT_TX 					13
 #define ERR_PLAYER_STAKE_MISMATCH 		14
+#define ERR_GAME_RECORD_TX				15
 
 //Chips LN Errors
 #define ERR_CHIPS_TX_SIGNING 			32
