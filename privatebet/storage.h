@@ -16,3 +16,4 @@ cJSON *sqlite3_get_dealer_info_details();
 cJSON *sqlite3_get_game_details(int32_t opt);
 cJSON *bet_show_fail_history();
 cJSON *bet_show_success_history();
+int32_t bet_store_game_info_details(char *tx_id, char *table_id);

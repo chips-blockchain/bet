@@ -592,18 +592,18 @@ int32_t bet_player_small_blind(cJSON *argjson, struct privatebet_info *bet, stru
 	amount = small_blind_amount;
 	vars->player_funds -= amount;
 	vars->betamount[bet->myplayerid][vars->round] = vars->betamount[bet->myplayerid][vars->round] + amount;
-	
-	#ifdef BET_WITH_LN
-		retval = bet_player_invoice_pay(argjson, bet, vars, amount);
-		if(retval != OK) {
-			return retval;
-		}	
-	#else
-		retval = bet_player_log_bet_info(argjson, bet, amount);
-		if(retval != OK) {
-			dlg_error("%s", bet_err_str(retval));
-		}
-	#endif
+
+#ifdef BET_WITH_LN
+	retval = bet_player_invoice_pay(argjson, bet, vars, amount);
+	if (retval != OK) {
+		return retval;
+	}
+#else
+	retval = bet_player_log_bet_info(argjson, bet, amount, small_blind);
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
+	}
+#endif
 
 	small_blind_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(small_blind_info, "method", "betting");
@@ -630,17 +630,17 @@ int32_t bet_player_big_blind(cJSON *argjson, struct privatebet_info *bet, struct
 	vars->player_funds -= amount;
 	vars->betamount[bet->myplayerid][vars->round] = vars->betamount[bet->myplayerid][vars->round] + amount;
 
-	#ifdef BET_WITH_LN
-		retval = bet_player_invoice_pay(argjson, bet, vars, amount);
-		if (retval != OK) {
-			return retval;
-		}	
-	#else
-		retval = bet_player_log_bet_info(argjson, bet, amount);
-		if(retval != OK) {
-			dlg_error("%s", bet_err_str(retval));
-		}
-	#endif
+#ifdef BET_WITH_LN
+	retval = bet_player_invoice_pay(argjson, bet, vars, amount);
+	if (retval != OK) {
+		return retval;
+	}
+#else
+	retval = bet_player_log_bet_info(argjson, bet, amount, big_blind);
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
+	}
+#endif
 
 	big_blind_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(big_blind_info, "method", "betting");
@@ -691,11 +691,11 @@ int32_t bet_player_round_betting(cJSON *argjson, struct privatebet_info *bet, st
 		}
 		cJSON_AddNumberToObject(action_response, "bet_amount", jint(argjson, "bet_amount"));
 		cJSON_AddNumberToObject(action_response, "invoice_amount", invoice_amount);
-		#ifdef BET_WITH_LN
-			retval = bet_player_invoice_request(argjson, action_response, bet, invoice_amount);
-		#else
-			retval = bet_player_log_bet_info(argjson,bet,invoice_amount);			 
-		#endif		
+#ifdef BET_WITH_LN
+		retval = bet_player_invoice_request(argjson, action_response, bet, invoice_amount);
+#else
+		retval = bet_player_log_bet_info(argjson, bet, invoice_amount, raise);
+#endif
 	} else if (jinti(possibilities, (option - 1)) == call) {
 		if (min_amount > jint(argjson, "bet_amount")) {
 			vars->betamount[playerid][round] += vars->player_funds;
@@ -711,39 +711,42 @@ int32_t bet_player_round_betting(cJSON *argjson, struct privatebet_info *bet, st
 			cJSON_AddStringToObject(action_response, "action", "allin");
 		}
 		cJSON_AddNumberToObject(action_response, "bet_amount", jint(argjson, "bet_amount"));
-		#ifdef BET_WITH_LN
-			retval = bet_player_invoice_request(argjson, action_response, bet, min_amount);
-		#else
-			retval = bet_player_log_bet_info(argjson,bet,min_amount);			 
-		#endif	
+#ifdef BET_WITH_LN
+		retval = bet_player_invoice_request(argjson, action_response, bet, min_amount);
+#else
+		retval = bet_player_log_bet_info(argjson, bet, min_amount, call);
+#endif
 	} else if (jinti(possibilities, (option - 1)) == allin) {
 		vars->betamount[playerid][round] += vars->player_funds;
 		cJSON_AddNumberToObject(action_response, "bet_amount", jint(argjson, "bet_amount"));
 		cJSON_AddNumberToObject(action_response, "invoice_amount", vars->player_funds);
 
-		#ifdef BET_WITH_LN
-			retval = bet_player_invoice_request(argjson, action_response, bet, vars->player_funds);
-		#else
-			retval = bet_player_log_bet_info(argjson,bet,vars->player_funds);			 
-		#endif
+#ifdef BET_WITH_LN
+		retval = bet_player_invoice_request(argjson, action_response, bet, vars->player_funds);
+#else
+		retval = bet_player_log_bet_info(argjson, bet, vars->player_funds, allin);
+#endif
 		vars->player_funds = 0;
 	} else {
+#ifdef BET_WITH_LN
 		dlg_info("action response :: %s\n", cJSON_Print(action_response));
 		retval = (nn_send(bet->pushsock, cJSON_Print(action_response), strlen(cJSON_Print(action_response)),
 				  0) < 0) ?
 				 ERR_NNG_SEND :
 				 OK;
+#else
+		retval = bet_player_log_bet_info(argjson, bet, 0, jinti(possibilities, (option - 1)));
+#endif
 	}
-	#ifndef BET_WITH_LN
-		if(retval != OK) {
-			dlg_error("%s", bet_err_str(retval));
-		}
-		dlg_info("action response :: %s\n", cJSON_Print(action_response));
-		retval = (nn_send(bet->pushsock, cJSON_Print(action_response), strlen(cJSON_Print(action_response)),
-				  0) < 0) ?
-				 ERR_NNG_SEND :
-				 OK;
-	#endif
+#ifndef BET_WITH_LN
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
+	}
+	dlg_info("action response :: %s\n", cJSON_Print(action_response));
+	retval = (nn_send(bet->pushsock, cJSON_Print(action_response), strlen(cJSON_Print(action_response)), 0) < 0) ?
+			 ERR_NNG_SEND :
+			 OK;
+#endif
 	return retval;
 }
 
