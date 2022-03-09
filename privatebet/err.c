@@ -42,6 +42,9 @@ const char *bet_err_str(int32_t err_no)
 	case ERR_BET_AMOUNTS_MISMATCH:
 		return "Error in bet amount mismatch";
 		break;
+	case ERR_GAME_RECORD_TX:
+		return "Error in recording the game moves on to the CHIPS blockchain";
+		break;
 	case ERR_PAYOUT_TX:
 		return "Error in making Payout TX";
 		break;
