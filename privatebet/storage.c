@@ -9,13 +9,13 @@
 #include <sys/types.h>
 #include <pwd.h>
 
-#define no_of_tables 8
+#define no_of_tables 9
 
 char *db_name = NULL;
 
 const char *table_names[no_of_tables] = { "dcv_tx_mapping",     "player_tx_mapping", "cashier_tx_mapping",
 					  "c_tx_addr_mapping",  "dcv_game_state",    "player_game_state",
-					  "cashier_game_state", "dealers_info" };
+					  "cashier_game_state", "dealers_info",      "game_info" };
 
 const char *schemas[no_of_tables] = {
 	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), msig_addr varchar(100), status bool, min_cashiers int)",
@@ -25,7 +25,8 @@ const char *schemas[no_of_tables] = {
 	"(table_id varchar(100) primary key,game_state varchar(1000))",
 	"(table_id varchar(100) primary key,game_state varchar(1000))",
 	"(table_id varchar(100) primary key,game_state varchar(1000))",
-	"(dealer_ip varchar(100) primary key)"
+	"(dealer_ip varchar(100) primary key)",
+	"(tx_id varchar(100) primary key,table_id varchar(100))"
 };
 
 void sqlite3_init_db_name()
@@ -384,4 +385,27 @@ end:
 	sqlite3_close(db);
 
 	return game_success_info;
+}
+
+int32_t bet_store_game_info_details(char *tx_id, char *table_id)
+{
+	int32_t argc, retval = OK;
+	char **argv = NULL, *sql_query = NULL;
+
+	argc = 3;
+	bet_alloc_args(argc, &argv);
+	strcpy(argv[0], "game_info");
+	sprintf(argv[1], "\'%s\'", tx_id);
+	sprintf(argv[2], "\'%s\'", table_id);
+	sql_query = calloc(arg_size, sizeof(char));
+	bet_make_insert_query(argc, argv, &sql_query);
+	retval = bet_run_query(sql_query);
+	if (retval != SQLITE_OK)
+		retval = ERR_SQL;
+
+	bet_dealloc_args(argc, &argv);
+	if (sql_query)
+		free(sql_query);
+
+	return retval;
 }
