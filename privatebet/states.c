@@ -591,19 +591,25 @@ int32_t bet_player_small_blind(cJSON *argjson, struct privatebet_info *bet, stru
 
 	amount = small_blind_amount;
 	vars->player_funds -= amount;
-#ifdef BET_WITH_LN
-	retval = bet_player_invoice_pay(argjson, bet, vars, amount);
-	if (retval != OK)
-		return retval;
-#else
-	bet_player_log_bet_info(argjson, bet, amount);
-#endif
+	vars->betamount[bet->myplayerid][vars->round] = vars->betamount[bet->myplayerid][vars->round] + amount;
+	
+	#ifdef BET_WITH_LN
+		retval = bet_player_invoice_pay(argjson, bet, vars, amount);
+		if(retval != OK) {
+			return retval;
+		}	
+	#else
+		retval = bet_player_log_bet_info(argjson, bet, amount);
+		if(retval != OK) {
+			dlg_error("%s", bet_err_str(retval));
+		}
+	#endif
 
 	small_blind_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(small_blind_info, "method", "betting");
 	cJSON_AddStringToObject(small_blind_info, "action", "small_blind_bet");
 	cJSON_AddNumberToObject(small_blind_info, "amount", amount);
-	vars->betamount[bet->myplayerid][vars->round] = vars->betamount[bet->myplayerid][vars->round] + amount;
+	//vars->betamount[bet->myplayerid][vars->round] = vars->betamount[bet->myplayerid][vars->round] + amount; // Moved this line to top
 	cJSON_AddNumberToObject(small_blind_info, "playerid", jint(argjson, "playerid"));
 	cJSON_AddNumberToObject(small_blind_info, "round", jint(argjson, "round"));
 
@@ -623,9 +629,18 @@ int32_t bet_player_big_blind(cJSON *argjson, struct privatebet_info *bet, struct
 	amount = big_blind_amount;
 	vars->player_funds -= amount;
 	vars->betamount[bet->myplayerid][vars->round] = vars->betamount[bet->myplayerid][vars->round] + amount;
-	retval = bet_player_invoice_pay(argjson, bet, vars, amount);
-	if (retval != OK)
-		return retval;
+
+	#ifdef BET_WITH_LN
+		retval = bet_player_invoice_pay(argjson, bet, vars, amount);
+		if (retval != OK) {
+			return retval;
+		}	
+	#else
+		retval = bet_player_log_bet_info(argjson, bet, amount);
+		if(retval != OK) {
+			dlg_error("%s", bet_err_str(retval));
+		}
+	#endif
 
 	big_blind_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(big_blind_info, "method", "betting");

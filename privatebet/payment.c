@@ -230,23 +230,26 @@ void bet_player_paymentloop(void *_ptr)
 int32_t bet_player_log_bet_info(cJSON *argjson, struct privatebet_info *bet, int32_t amount)
 {
 	int32_t retval = OK;
-	cJSON *betInfo = NULL, *txid = NULL;
+	cJSON *bet_info = NULL, *tx_id = NULL;
 	char *hex_data = NULL;
 
-	betInfo = cJSON_CreateObject();
-	cJSON_AddStringToObject(betInfo, "method", "bet");
-	cJSON_AddStringToObject(betInfo, "table_id", table_id);
-	cJSON_AddNumberToObject(betInfo, "round", jint(argjson, "round"));
-	cJSON_AddNumberToObject(betInfo, "playerID", bet->myplayerid);
-	cJSON_AddNumberToObject(betInfo, "betAmount", amount);
+	bet_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(bet_info, "method", "bet");
+	cJSON_AddStringToObject(bet_info, "table_id", table_id);
+	cJSON_AddNumberToObject(bet_info, "round", jint(argjson, "round"));
+	cJSON_AddNumberToObject(bet_info, "playerID", bet->myplayerid);
+	cJSON_AddNumberToObject(bet_info, "betAmount", amount);
 
-	hex_data = calloc(1, 2 * tx_data_size);
-	str_to_hexstr(cJSON_Print(betInfo), hex_data);
-	txid = cJSON_CreateObject();
-	txid = chips_transfer_funds_with_data(0.0, legacy_m_of_n_msig_addr, hex_data);
+	hex_data = calloc(2 * tx_data_size, sizeof(char));
+	str_to_hexstr(cJSON_Print(bet_info), hex_data);
+	tx_id = cJSON_CreateObject();
+	tx_id = chips_transfer_funds_with_data(0.0, legacy_m_of_n_msig_addr, hex_data);
 
+	if(tx_id == NULL) {
+		retval = ERR_GAME_RECORD_TX;		
+	}
 	dlg_info("Address at which we are recording the game moves::%s", legacy_m_of_n_msig_addr);
-	dlg_info("tx to record the game move info::%s", cJSON_Print(txid));
+	dlg_info("tx to record the game move info::%s", cJSON_Print(tx_id));
 
 	return retval;
 }
