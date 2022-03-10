@@ -2,15 +2,15 @@
 #define COMMON_H
 
 // clang-format off
-#define CHANNELD_AWAITING_LOCKIN 	2
-#define CHANNELD_NORMAL 		 	3
+#define CHANNELD_AWAITING_LOCKIN    2
+#define CHANNELD_NORMAL             3
 
-#define hand_size 					7
-#define no_of_hole_cards 			2
-#define no_of_flop_cards 			3
-#define no_of_turn_card 			1
-#define no_of_river_card 			1
-#define no_of_community_cards 		5
+#define hand_size                   7
+#define no_of_hole_cards            2
+#define no_of_flop_cards            3
+#define no_of_turn_card             1
+#define no_of_river_card            1
+#define no_of_community_cards       5
 
 #define NSUITS 4
 #define NFACES 13
@@ -31,37 +31,37 @@ enum bet_dcv_state {
 };
 
 
-#define mchips_msatoshichips 	1000000 // 0.01mCHIPS
-#define channel_fund_satoshis 	16777215 // 0.167CHIPS this is the mx limit set up the c lightning node
-#define satoshis 				100000000 //10^8 satoshis for 1 COIN
-#define satoshis_per_unit 		1000
-#define normalization_factor 	100
+#define mchips_msatoshichips    1000000 // 0.01mCHIPS
+#define channel_fund_satoshis   16777215 // 0.167CHIPS this is the mx limit set up the c lightning node
+#define satoshis                100000000 //10^8 satoshis for 1 COIN
+#define satoshis_per_unit       1000
+#define normalization_factor    100
 
-#define CARDS777_MAXCARDS 		52 // 52    //
-#define CARDS777_MAXPLAYERS 	10 // 9   //
-#define CARDS777_MAXROUNDS 		4 // 9   //
-#define CARDS777_MAXCHIPS 		1000
-#define CARDS777_CHIPSIZE 		(SATOSHIDEN / CARDS777_MAXCHIPS)
-#define BET_PLAYERTIMEOUT 		15
-#define BET_GAMESTART_DELAY 	10
-#define BET_RESERVERATE 		1.025
-#define LN_FUNDINGERROR 		"\"Cannot afford funding transaction\""
+#define CARDS777_MAXCARDS       52 // 52    //
+#define CARDS777_MAXPLAYERS     10 // 9   //
+#define CARDS777_MAXROUNDS      4 // 9   //
+#define CARDS777_MAXCHIPS       1000
+#define CARDS777_CHIPSIZE       (SATOSHIDEN / CARDS777_MAXCHIPS)
+#define BET_PLAYERTIMEOUT       15
+#define BET_GAMESTART_DELAY     10
+#define BET_RESERVERATE         1.025
+#define LN_FUNDINGERROR         "\"Cannot afford funding transaction\""
 
-#define tx_spent 	0
+#define tx_spent    0
 #define tx_unspent 	1
 
-#define dealer_pub_sub_port 		7797
-#define dealer_push_pull_port 		7798
-#define cashier_pub_sub_port 		7901
-#define cashier_push_pull_port 		7902
-#define dealer_bvv_pub_sub_port 	7903
-#define dealer_bvv_push_pull_port 	7904
-#define gui_ws_port 				9000
+#define dealer_pub_sub_port         7797
+#define dealer_push_pull_port       7798
+#define cashier_pub_sub_port        7901
+#define cashier_push_pull_port      7902
+#define dealer_bvv_pub_sub_port     7903
+#define dealer_bvv_push_pull_port   7904
+#define gui_ws_port                 9000
 
-#define default_chips_tx_fee 		0.001
-#define default_bb_in_chips 		0.01
-#define default_min_stake_in_bb 	20
-#define default_max_stake_in_bb 	100
+#define default_chips_tx_fee        0.001
+#define default_bb_in_chips         0.01
+#define default_min_stake_in_bb     20
+#define default_max_stake_in_bb     100
 
 // clang-format on
 
