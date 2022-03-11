@@ -140,12 +140,14 @@ void bet_parse_dealer_config_ini_file()
 		if (NULL != iniparser_getstring(ini, "dealer:gui_host", NULL)) {
 			strcpy(dcv_hosted_gui_url, iniparser_getstring(ini, "dealer:gui_host", NULL));
 		}
-
 		if (-1 != iniparser_getboolean(ini, "private table:is_table_private", -1)) {
 			is_table_private = iniparser_getboolean(ini, "private table:is_table_private", -1);
 		}
 		if (NULL != iniparser_getstring(ini, "private table:table_password", NULL)) {
 			strcpy(table_password, iniparser_getstring(ini, "private table:table_password", NULL));
+		}
+		if (-1 != iniparser_getboolean(ini, "dealer:bet_ln_config", -1)) {
+			bet_ln_config = iniparser_getboolean(ini, "dealer:bet_ln_config", -1);
 		}
 	}
 }
@@ -172,6 +174,9 @@ void bet_parse_player_config_ini_file()
 		}
 		if (NULL != iniparser_getstring(ini, "private table:table_password", NULL)) {
 			strcpy(table_password, iniparser_getstring(ini, "private table:table_password", NULL));
+		}
+		if (-1 != iniparser_getboolean(ini, "player:bet_ln_config", -1)) {
+			bet_ln_config = iniparser_getboolean(ini, "player:bet_ln_config", -1);
 		}
 	}
 }
