@@ -63,9 +63,8 @@ enum bet_dcv_state {
 #define default_min_stake_in_bb     20
 #define default_max_stake_in_bb     100
 
-// clang-format on
-
-//#define BET_WITH_LN
+#define BET_WITHOUT_LN 0
+#define BET_WITH_LN    1      
 
 extern bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 extern bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
@@ -141,4 +140,6 @@ extern char dcv_hosted_gui_url[128];
 int32_t is_table_private;
 char table_password[128];
 char player_name[128];
+
+int32_t bet_ln_config; 
 #endif

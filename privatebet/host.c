@@ -435,30 +435,29 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 {
 	int32_t retval = OK;
 	cJSON *player_info = NULL;
-
-#ifdef BET_WITH_LN
 	char *uri = NULL, *type = NULL;
-#endif
 
 	bet->numplayers = ++players_joined;
 	dcv_info.peerpubkeys[jint(argjson, "gui_playerID")] = jbits256(argjson, "pubkey");
 
-#ifdef BET_WITH_LN
-	strcpy((char *)dcv_info.uri[jint(argjson, "gui_playerID")], jstr(argjson, "uri"));
-	uri = (char *)malloc(ln_uri_length * sizeof(char));
-	type = ln_get_uri(&uri);
-	dlg_info("%s::\n%s", type, uri);
-#endif
+	if (bet_ln_config == BET_WITH_LN) {
+		strcpy((char *)dcv_info.uri[jint(argjson, "gui_playerID")], jstr(argjson, "uri"));
+		uri = (char *)malloc(ln_uri_length * sizeof(char));
+		type = ln_get_uri(&uri);
+		dlg_info("%s::\n%s", type, uri);
+	}
 
 	player_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(player_info, "method", "join_res");
 
 	cJSON_AddNumberToObject(player_info, "playerid", jint(argjson, "gui_playerID"));
 	jaddbits256(player_info, "pubkey", jbits256(argjson, "pubkey"));
-#ifdef BET_WITH_LN
-	cJSON_AddStringToObject(player_info, "uri", uri);
-	cJSON_AddStringToObject(player_info, "type", type);
-#endif
+
+	if (bet_ln_config == BET_WITH_LN) {
+		cJSON_AddStringToObject(player_info, "uri", uri);
+		cJSON_AddStringToObject(player_info, "type", type);
+	}
+
 	cJSON_AddNumberToObject(player_info, "dealer", dealerPosition);
 	cJSON_AddNumberToObject(player_info, "pos_status", pos_on_table_empty);
 	cJSON_AddStringToObject(player_info, "req_identifier", jstr(argjson, "req_identifier"));
@@ -477,10 +476,9 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 	retval = (nn_send(bet->pubsock, cJSON_Print(player_info), strlen(cJSON_Print(player_info)), 0) < 0) ?
 			 ERR_NNG_SEND :
 			 OK;
-#ifdef BET_WITH_LN
+
 	if (uri)
 		free(uri);
-#endif
 	return retval;
 }
 
@@ -1528,13 +1526,13 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 					 OK;
 
 			heartbeat_on = 1;
-#ifdef BET_WITH_LN
-			retval = bet_ln_check(bet);
-			if (retval < 0) {
-				dlg_error("Issue in establishing the LN channels");
-				return retval;
+			if (bet_ln_config == BET_WITH_LN) {
+				retval = bet_ln_check(bet);
+				if (retval < 0) {
+					dlg_error("Issue in establishing the LN channels");
+					return retval;
+				}
 			}
-#endif
 			retval = bet_check_bvv_ready(bet);
 		}
 	}

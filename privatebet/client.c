@@ -773,38 +773,46 @@ int32_t bet_client_init(cJSON *argjson, struct privatebet_info *bet, struct priv
 	return retval;
 }
 
+static int32_t bet_establish_ln_channel_with_dealer(cJSON *argjson)
+{
+	int32_t channel_state, retval = OK;
+	char channel_id[ln_uri_length], uri[ln_uri_length];
+
+	if ((retval = ln_check_if_address_isof_type(jstr(argjson, "type"))) != OK)
+		return retval;
+
+	strcpy(uri, jstr(argjson, "uri"));
+	strcpy(channel_id, strtok(jstr(argjson, "uri"), "@"));
+	channel_state = ln_get_channel_status(channel_id);
+	if ((channel_state != CHANNELD_AWAITING_LOCKIN) && (channel_state != CHANNELD_NORMAL)) {
+		if ((retval = ln_establish_channel(uri)) != OK)
+			return retval;
+	} else if (0 == channel_state) {
+		dlg_info("There isn't any pre-established channel with the dealer, so creating one now");
+		strcpy(uri, jstr(argjson, "uri"));
+		retval = ln_check_peer_and_connect(uri);
+	}
+	return retval;
+}
+
 int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int32_t retval = OK;
 	cJSON *init_card_info = NULL, *hole_card_info = NULL, *init_info = NULL;
 
-#ifdef BET_WITH_LN
-	int32_t channel_state;
-	char channel_id[ln_uri_length], uri[ln_uri_length];
-#endif
-
 	if (0 == bits256_cmp(player_info.player_key.prod, jbits256(argjson, "pubkey"))) {
 		bet_player->myplayerid = jint(argjson, "playerid");
 		bet->myplayerid = jint(argjson, "playerid");
-
 		dlg_info("%s", cJSON_Print(argjson));
 
-#ifdef BET_WITH_LN
-		if ((retval = ln_check_if_address_isof_type(jstr(argjson, "type"))) != OK)
-			return retval;
-
-		strcpy(uri, jstr(argjson, "uri"));
-		strcpy(channel_id, strtok(jstr(argjson, "uri"), "@"));
-		channel_state = ln_get_channel_status(channel_id);
-		if ((channel_state != CHANNELD_AWAITING_LOCKIN) && (channel_state != CHANNELD_NORMAL)) {
-			if ((retval = ln_establish_channel(uri)) != OK)
+		if (bet_ln_config == BET_WITH_LN) {
+			retval = bet_establish_ln_channel_with_dealer(argjson);
+			if (retval != OK) {
+				dlg_error("%s", bet_err_str(retval));
 				return retval;
-		} else if (0 == channel_state) {
-			dlg_info("There isn't any pre-established channel with the dealer, so creating one now");
-			strcpy(uri, jstr(argjson, "uri"));
-			retval = ln_check_peer_and_connect(uri);
+			}
 		}
-#endif
+
 		init_card_info = cJSON_CreateObject();
 		cJSON_AddNumberToObject(init_card_info, "dealer", jint(argjson, "dealer"));
 
@@ -828,14 +836,9 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 {
 	int32_t retval = OK;
+	char *uri = NULL;
 	cJSON *joininfo = NULL;
 	struct pair256 key;
-
-#ifdef BET_WITH_LN
-	int32_t argc;
-	cJSON *channel_info = NULL, *addresses = NULL, *address = NULL;
-	char **argv = NULL, *uri = NULL;
-#endif
 
 	if ((jint(argjson, "gui_playerID") < 1) || (jint(argjson, "gui_playerID") > bet->maxplayers)) {
 		retval = ERR_INVALID_POS;
@@ -847,32 +850,12 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 	cJSON_AddStringToObject(joininfo, "method", "join_req");
 	jaddbits256(joininfo, "pubkey", key.prod);
 
-#ifdef BET_WITH_LN
-	argc = 2;
-	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "lightning-cli", "getinfo");
-	channel_info = cJSON_CreateObject();
-	retval = make_command(argc, argv, &channel_info);
-	if (retval != OK) {
-		dlg_error("%s", bet_err_str(retval));
-		goto end;
+	if (bet_ln_config == BET_WITH_LN) {
+		uri = (char *)malloc(ln_uri_length * sizeof(char));
+		ln_get_uri(&uri);
+		cJSON_AddStringToObject(joininfo, "uri", uri);
 	}
-	uri = (char *)malloc(sizeof(char) * 100);
 
-	addresses = cJSON_CreateObject();
-	addresses = cJSON_GetObjectItem(channel_info, "address");
-
-	address = cJSON_CreateObject();
-	address = cJSON_GetArrayItem(addresses, 0);
-
-	strcpy(uri, jstr(channel_info, "id"));
-
-	if (jstr(address, "address")) {
-		strcat(uri, "@");
-		strcat(uri, jstr(address, "address"));
-	}
-	cJSON_AddStringToObject(joininfo, "uri", uri);
-#endif
 	cJSON_AddNumberToObject(joininfo, "gui_playerID", (jint(argjson, "gui_playerID") - 1));
 	cJSON_AddStringToObject(joininfo, "req_identifier", req_identifier);
 	cJSON_AddStringToObject(joininfo, "player_name", player_name);
@@ -882,11 +865,8 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 													 OK;
 
 end:
-#ifdef BET_WITH_LN
 	if (uri)
 		free(uri);
-	bet_dealloc_args(argc, &argv);
-#endif
 	return retval;
 }
 
