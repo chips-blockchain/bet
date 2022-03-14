@@ -1,20 +1,18 @@
-Solving mental poker using blockchain is one of the toughest problems to solve in web3 decentralized space. To solve problems like these we need to address the blockchain trilemma. 
+Solving mental poker using blockchain is one of the hardest problems to solve in a decentralized space. To solve problems like these we need to address the blockchain trilemma. In our case we developed the layer2 infrastructure(a.k.a bet) which communicates with chips blockchain over a lightning network for fast, secure and scalable transactions. 
 
-In our case we developed the layer2 infrastructure(a.k.a bet) which communicates with chips blockchain over a lightning network for fast, secure and scalable transactions.
+Use of lightning network comes with certain limitations like portability and setup. Here in our case we using c-lightning over CHIPS blockchain but unfortunately the c-lightning is not portable to windows and it communicates to CHIPS daemon over UNIX socket so that means lightning node should run on the same machine where chips nodes is running. With these constraints playing poker over chips is mainly lacking the user experience part. Here in this article we'll discuss the possible ways to improve the UX. 
 
-Even though we addressed the blockchain trilemma, we lack the user experience part. The possible ways to improve the UX is to either to develop a webapp where users can play poker without any setup or to develop native desktop app.
-
-We discuss the tradeoffs in launching poker using web and desktop apps. Before we jump into exploring the possible solutions to improve the UX, let's take a look into the existing flow diagram of Poker and then we discuss the pain points for the end user in playing the poker using the existing approach. 
-
-In the following flow diagram we showcased only one dealer and cashier node for simplicity.
+We first understand the existing flow and setup needed to play the poker and from then we discuss the possibilities and constraints in developing of full pledged web app or desk app. Lets take a look into the existing flow diagram of poker game, in the following flow diagram we shown only one dealer and cashier node for simplicity.
 
 ![Existing_flow](https://user-images.githubusercontent.com/8114482/158165776-bec9c813-23ee-4e81-8e64-29d49750e320.png)
 
+As of now, in order to play poker using bet on chips, one has to either setup the nodes either by compiling the source code or by taking the release binaries. Both of these approaches are not very ideal for a naive user. As discussed we see how can we minimise this setup process and we discuss the constraints and possibilities of developing the full pledged web or desktop app.
+
 **A complete web app**
 
-The Layer2 infrastructure, i.e bet is written in C. Since mental poker is a crypto intensive task and the platform which we developed uses lots of external crypto and p2p libs, it wasn’t a straightforward thing to rewrite everything in js or to make this whole thing run in the browser. 
+The bet code is written in C which does the deck shuffling and has the necessary functionalities to play the poker. Since mental poker is a very crypto intensive task and for which we using existing efficient implementations of the corresponding libs and that makes rewriting all of it in js is not so straightforward thing. 
 
-For understanding, let's take a look at the flow during deck shuffling:
+For understanding, let's take a look at the flow during deck shuffling to get some fair idea on the complexity of the crypto operations involved:
 
 ![deck shuffling](https://user-images.githubusercontent.com/8114482/158166277-a0b107f1-90c4-4f74-a38c-7971ce93e46f.png)
 
