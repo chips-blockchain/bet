@@ -139,7 +139,7 @@ jobs:
       
     - name: Extract git tag
       shell: bash
-      run: echo "##[set-output name=gittag;]$(array=($(echo $(git describe --always) | tr '-' "\n")) && echo "${array[1]}-${array[2]}")"
+      run: echo "##[set-output name=gittag;]$(array=($(echo $(git describe --always) | tr '-' "\n")) && echo "${array[0]}-${array[1]}")"
       id: extract_git_tag
 
     - name: List files
