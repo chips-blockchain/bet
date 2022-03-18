@@ -34,15 +34,15 @@ double epsilon = 0.000000001;
 
 int32_t bet_alloc_args(int argc, char ***argv)
 {
-	int ret = 1;
+	int ret = OK;
 
 	*argv = (char **)malloc(argc * sizeof(char *));
 	if (*argv == NULL)
-		return 0;
+		return ERR_MEMORY_ALLOC;
 	for (int i = 0; i < argc; i++) {
 		(*argv)[i] = (char *)malloc(arg_size * sizeof(char));
 		if ((*argv)[i] == NULL)
-			return 0;
+			return ERR_MEMORY_ALLOC;
 	}
 	return ret;
 }
@@ -68,16 +68,59 @@ static void bet_memset_args(int argc, char ***argv)
 	}
 }
 
+char **bet_copy_args_with_size(int argc, ...)
+{
+	char **argv = NULL;
+	va_list valist, va_copy;
+
+	if (argc <= 0)
+		return NULL;
+
+	va_start(valist, argc);
+	va_copy(va_copy, valist);
+
+	argv = (char **)malloc(argc * sizeof(char *));
+	for (int i = 0; i < argc; i++) {
+		int arg_length = strlen(va_arg(va_copy, char *)) + 1;
+		argv[i] = (char *)malloc(arg_length * sizeof(char));
+		strcpy(argv[i], va_arg(valist, char *));
+	}
+
+	va_end(valist);
+	va_end(va_copy);
+	return argv;
+}
+
 char **bet_copy_args(int argc, ...)
 {
-	va_list valist;
+	int32_t ret = OK;
 	char **argv = NULL;
+	va_list valist, va_copy;
 
-	bet_alloc_args(argc, &argv);
+	ret = bet_alloc_args(argc, &argv);
+	if (ret != OK) {
+		dlg_error("%s", bet_err_str(ret));
+		return NULL;
+	}
+
 	va_start(valist, argc);
+	va_copy(va_copy, valist);
 
 	for (int i = 0; i < argc; i++) {
+		if (strlen(va_arg(va_copy, char *)) > arg_size) {
+			ret = ERR_ARG_SIZE_TOO_LONG;
+			dlg_error("Error::%s::%s", bet_err_str(ret), va_arg(valist, char *));
+			dlg_error("Error in running the command::%s", argv[1]);
+			goto end;
+		}
 		strcpy(argv[i], va_arg(valist, char *));
+	}
+end:
+	va_end(valist);
+	va_end(va_copy);
+	if (ret != OK) {
+		bet_dealloc_args(argc, &argv);
+		return NULL;
 	}
 	return argv;
 }
@@ -381,17 +424,26 @@ cJSON *chips_transfer_funds(double amount, char *address)
 
 cJSON *chips_send_raw_tx(cJSON *signed_tx)
 {
-	int argc;
+	int argc, ret = OK;
 	char **argv = NULL;
 	cJSON *tx_info = NULL;
 
 	argc = 3;
-	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "chips-cli", "sendrawtransaction", jstr(signed_tx, "hex"));
+	ret = bet_alloc_args(argc, &argv);
+	if (ret != OK) {
+		dlg_error("%s", bet_err_str(ret));
+		return NULL;
+	}
+	argv = bet_copy_args_with_size(argc, "chips-cli", "sendrawtransaction", jstr(signed_tx, "hex"));
+
 	tx_info = cJSON_CreateObject();
-	make_command(argc, argv, &tx_info);
+	ret = make_command(argc, argv, &tx_info);
 	bet_dealloc_args(argc, &argv);
 
+	if (ret != OK) {
+		dlg_error("%s", bet_err_str(ret));
+		return NULL;
+	}
 	return tx_info;
 }
 
@@ -648,16 +700,19 @@ cJSON *bet_get_chips_ln_addr_info()
 
 double chips_get_balance()
 {
-	char **argv = NULL;
-	int argc;
+	int32_t argc, retval = OK;
 	double balance = 0;
+	char **argv = NULL;
 	cJSON *getbalanceInfo = NULL;
 
 	argc = 2;
-	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, "chips-cli", "getbalance");
-	make_command(argc, argv, &getbalanceInfo);
-	balance = atof(cJSON_Print(getbalanceInfo));
+	retval = make_command(argc, argv, &getbalanceInfo);
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
+	} else {
+		balance = atof(cJSON_Print(getbalanceInfo));
+	}
 	bet_dealloc_args(argc, &argv);
 	return balance;
 }
@@ -954,14 +1009,17 @@ static cJSON *chips_spend_msig_tx(cJSON *raw_tx)
 
 cJSON *chips_get_raw_tx(char *tx)
 {
-	int argc;
+	int argc, retval = OK;
 	char **argv = NULL;
 	cJSON *raw_tx = NULL;
 
 	argc = 3;
 	argv = bet_copy_args(argc, "chips-cli", "getrawtransaction", tx);
 	raw_tx = cJSON_CreateObject();
-	make_command(argc, argv, &raw_tx);
+	retval = make_command(argc, argv, &raw_tx);
+	if (retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
+	}
 	bet_dealloc_args(argc, &argv);
 
 	if (jstr(raw_tx, "error") != 0) {
@@ -974,15 +1032,20 @@ cJSON *chips_get_raw_tx(char *tx)
 
 cJSON *chips_decode_raw_tx(cJSON *raw_tx)
 {
-	int argc;
+	int argc, retval = OK;
 	char **argv = NULL;
 	cJSON *decoded_raw_tx = NULL;
 
 	argc = 3;
-	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "chips-cli", "decoderawtransaction", cJSON_Print(raw_tx));
-	decoded_raw_tx = cJSON_CreateObject();
-	make_command(argc, argv, &decoded_raw_tx);
+	argv = bet_copy_args_with_size(argc, "chips-cli", "decoderawtransaction", cJSON_Print(raw_tx));
+
+	if (argv) {
+		decoded_raw_tx = cJSON_CreateObject();
+		retval = make_command(argc, argv, &decoded_raw_tx);
+		if (retval != OK) {
+			dlg_error("%s", bet_err_str(retval));
+		}
+	}
 	bet_dealloc_args(argc, &argv);
 	return decoded_raw_tx;
 }
@@ -1409,17 +1472,29 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 	FILE *fp = NULL;
 	char *data = NULL, *command = NULL, *buf = NULL;
 	int32_t retval = OK;
-	unsigned long command_size = 16384, data_size = 262144, buf_size = 1024;
+	unsigned long data_size = 262144, buf_size = 1024, cmd_size = 1024;
 
-	command = calloc(command_size, sizeof(char));
+	if (argv == NULL) {
+		return ERR_ARGS_NULL;
+	}
+	for (int32_t i = 0; i < argc; i++) {
+		cmd_size += strlen(argv[i]);
+	}
+
+	command = calloc(cmd_size, sizeof(char));
 	if (!command) {
 		retval = ERR_MEMORY_ALLOC;
 		return retval;
 	}
+
 	for (int32_t i = 0; i < argc; i++) {
 		strcat(command, argv[i]);
 		strcat(command, " ");
 	}
+
+	if (strcmp(argv[0], "lightning-cli") == 0)
+		dlg_info("LN command :: %s\n", command);
+
 	fp = popen(command, "r");
 	if (fp == NULL) {
 		if (strcmp(argv[0], "chips-cli") == 0)
@@ -1428,6 +1503,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 			retval = ERR_LN_COMMAND;
 		return retval;
 	}
+
 	data = calloc(data_size, sizeof(char));
 	if (!data) {
 		retval = ERR_MEMORY_ALLOC;
@@ -1490,7 +1566,8 @@ end:
 		free(data);
 	if (command)
 		free(command);
-	pclose(fp);
+	if (fp)
+		pclose(fp);
 
 	return retval;
 }

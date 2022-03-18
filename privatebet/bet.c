@@ -344,7 +344,9 @@ static void common_init()
 {
 	OS_init();
 	libgfshare_init();
-	check_ln_chips_sync();
+	if (bet_ln_config == BET_WITH_LN) {
+		check_ln_chips_sync();
+	}
 	bet_sqlite3_init();
 	bet_parse_cashier_config_ini_file();
 }
@@ -411,7 +413,6 @@ static char *bet_pick_dealer()
 
 // clang-format off
 static void bet_start(int argc, char **argv){
-	
 	bet_set_unique_id();
 	if(!argv[1])
 		bet_command_info();
@@ -485,6 +486,10 @@ static void bet_start(int argc, char **argv){
 				dlg_info("The dealer is :: %s", dealer_ip);
 				bet_player_thrd(dealer_ip);
 			}
+			break;
+		cases("spendable")
+			cJSON *spendable_tx = chips_spendable_tx();
+			dlg_info("CHIPS Spendable tx's :: %s\n", cJSON_Print(spendable_tx));
 			break;
 		cases("v")
 		cases("-v")

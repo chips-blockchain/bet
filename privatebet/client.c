@@ -773,31 +773,46 @@ int32_t bet_client_init(cJSON *argjson, struct privatebet_info *bet, struct priv
 	return retval;
 }
 
+static int32_t bet_establish_ln_channel_with_dealer(cJSON *argjson)
+{
+	int32_t channel_state, retval = OK;
+	char channel_id[ln_uri_length], uri[ln_uri_length];
+
+	if ((retval = ln_check_if_address_isof_type(jstr(argjson, "type"))) != OK)
+		return retval;
+
+	strcpy(uri, jstr(argjson, "uri"));
+	strcpy(channel_id, strtok(jstr(argjson, "uri"), "@"));
+	channel_state = ln_get_channel_status(channel_id);
+	if ((channel_state != CHANNELD_AWAITING_LOCKIN) && (channel_state != CHANNELD_NORMAL)) {
+		if ((retval = ln_establish_channel(uri)) != OK)
+			return retval;
+	} else if (0 == channel_state) {
+		dlg_info("There isn't any pre-established channel with the dealer, so creating one now");
+		strcpy(uri, jstr(argjson, "uri"));
+		retval = ln_check_peer_and_connect(uri);
+	}
+	return retval;
+}
+
 int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
-	int32_t retval = OK, channel_state;
-	char channel_id[ln_uri_length], uri[ln_uri_length];
+	int32_t retval = OK;
 	cJSON *init_card_info = NULL, *hole_card_info = NULL, *init_info = NULL;
 
 	if (0 == bits256_cmp(player_info.player_key.prod, jbits256(argjson, "pubkey"))) {
 		bet_player->myplayerid = jint(argjson, "playerid");
 		bet->myplayerid = jint(argjson, "playerid");
-
 		dlg_info("%s", cJSON_Print(argjson));
-		if ((retval = ln_check_if_address_isof_type(jstr(argjson, "type"))) != OK)
-			return retval;
 
-		strcpy(uri, jstr(argjson, "uri"));
-		strcpy(channel_id, strtok(jstr(argjson, "uri"), "@"));
-		channel_state = ln_get_channel_status(channel_id);
-		if ((channel_state != CHANNELD_AWAITING_LOCKIN) && (channel_state != CHANNELD_NORMAL)) {
-			if ((retval = ln_establish_channel(uri)) != OK)
+		if (bet_ln_config == BET_WITH_LN) {
+			retval = bet_establish_ln_channel_with_dealer(argjson);
+			if (retval != OK) {
+				dlg_error("%s", bet_err_str(retval));
 				return retval;
-		} else if (0 == channel_state) {
-			dlg_info("There isn't any pre-established channel with the dealer, so creating one now");
-			strcpy(uri, jstr(argjson, "uri"));
-			retval = ln_check_peer_and_connect(uri);
+			}
 		}
+
 		init_card_info = cJSON_CreateObject();
 		cJSON_AddNumberToObject(init_card_info, "dealer", jint(argjson, "dealer"));
 
@@ -820,10 +835,10 @@ int32_t bet_client_join_res(cJSON *argjson, struct privatebet_info *bet, struct 
 
 int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 {
-	int32_t argc, retval = OK;
-	cJSON *joininfo = NULL, *channel_info = NULL, *addresses = NULL, *address = NULL;
+	int32_t retval = OK;
+	char *uri = NULL;
+	cJSON *joininfo = NULL;
 	struct pair256 key;
-	char **argv = NULL, *uri = NULL;
 
 	if ((jint(argjson, "gui_playerID") < 1) || (jint(argjson, "gui_playerID") > bet->maxplayers)) {
 		retval = ERR_INVALID_POS;
@@ -834,30 +849,13 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 	joininfo = cJSON_CreateObject();
 	cJSON_AddStringToObject(joininfo, "method", "join_req");
 	jaddbits256(joininfo, "pubkey", key.prod);
-	argc = 2;
-	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "lightning-cli", "getinfo");
-	channel_info = cJSON_CreateObject();
-	retval = make_command(argc, argv, &channel_info);
-	if (retval != OK) {
-		dlg_error("%s", bet_err_str(retval));
-		goto end;
+
+	if (bet_ln_config == BET_WITH_LN) {
+		uri = (char *)malloc(ln_uri_length * sizeof(char));
+		ln_get_uri(&uri);
+		cJSON_AddStringToObject(joininfo, "uri", uri);
 	}
-	uri = (char *)malloc(sizeof(char) * 100);
 
-	addresses = cJSON_CreateObject();
-	addresses = cJSON_GetObjectItem(channel_info, "address");
-
-	address = cJSON_CreateObject();
-	address = cJSON_GetArrayItem(addresses, 0);
-
-	strcpy(uri, jstr(channel_info, "id"));
-
-	if (jstr(address, "address")) {
-		strcat(uri, "@");
-		strcat(uri, jstr(address, "address"));
-	}
-	cJSON_AddStringToObject(joininfo, "uri", uri);
 	cJSON_AddNumberToObject(joininfo, "gui_playerID", (jint(argjson, "gui_playerID") - 1));
 	cJSON_AddStringToObject(joininfo, "req_identifier", req_identifier);
 	cJSON_AddStringToObject(joininfo, "player_name", player_name);
@@ -869,7 +867,6 @@ int32_t bet_client_join(cJSON *argjson, struct privatebet_info *bet)
 end:
 	if (uri)
 		free(uri);
-	bet_dealloc_args(argc, &argv);
 	return retval;
 }
 
@@ -1334,7 +1331,7 @@ static int32_t bet_update_payin_tx_across_cashiers(cJSON *argjson, cJSON *txid)
 
 static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privatebet_info *bet)
 {
-	int32_t retval = OK;
+	int32_t retval = OK, hex_data_len = 0;
 	double funds_available;
 	char *hex_data = NULL;
 	cJSON *tx_info = NULL, *txid = NULL, *data_info = NULL;
@@ -1359,11 +1356,13 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		retval = ERR_DCV_COMMISSION_MISMATCH;
 		return retval;
 	}
+
 	funds_available = chips_get_balance() - chips_tx_fee;
 	if (funds_available < jdouble(argjson, "table_min_stake")) {
 		retval = ERR_CHIPS_INSUFFICIENT_FUNDS;
 		return retval;
 	}
+
 	BB_in_chips = jdouble(argjson, "bb_in_chips");
 	SB_in_chips = BB_in_chips / 2;
 	table_stake_in_chips = table_stack_in_bb * BB_in_chips;
@@ -1395,7 +1394,8 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 	cJSON_AddStringToObject(data_info, "dispute_addr", chips_get_new_address());
 	cJSON_AddStringToObject(data_info, "msig_addr", legacy_m_of_n_msig_addr);
 
-	hex_data = calloc(1, 2 * tx_data_size);
+	hex_data_len = 2 * strlen(cJSON_Print(data_info)) + 1;
+	hex_data = calloc(hex_data_len, sizeof(char));
 	str_to_hexstr(cJSON_Print(data_info), hex_data);
 	txid = cJSON_CreateObject();
 	dlg_info("funds_needed::%f", table_stake_in_chips);
@@ -1403,6 +1403,8 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 	if (txid == NULL) {
 		retval = ERR_CHIPS_INVALID_TX;
 		return retval;
+	} else {
+		retval = bet_store_game_info_details(cJSON_Print(txid), table_id);
 	}
 	dlg_info("tx id::%s", cJSON_Print(txid));
 	memset(player_payin_txid, 0x00, sizeof(player_payin_txid));
@@ -1558,8 +1560,9 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 	if (reset_lock == 1) {
 		return retval;
 	}
+	dlg_info("Player backend thread started...");
 	if ((method = jstr(argjson, "method")) != 0) {
-		dlg_info("recv :: %s", method);
+		dlg_info("recv :: %s", cJSON_Print(argjson));
 		if (strcmp(method, "join_res") == 0) {
 			bet_update_seat_info(argjson);
 			if (strcmp(jstr(argjson, "req_identifier"), req_identifier) == 0) {
@@ -1678,6 +1681,7 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 				}
 			}
 		} else if (strcmp(method, "payout_tx") == 0) {
+			retval = bet_store_game_info_details(jstr(argjson, "tx_info"), jstr(argjson, "table_id"));
 			retval = bet_player_process_payout_tx(argjson);
 		} else if (strcmp(method, "game_info") == 0) {
 			retval = bet_player_process_game_info(argjson);
@@ -1745,6 +1749,9 @@ void bet_player_backend_loop(void *_ptr)
 	struct privatebet_info *bet = _ptr;
 
 	retval = bet_player_stack_info_req(bet);
+	if (retval != OK) {
+		bet_handle_player_error(bet, retval);
+	}
 	while (retval == OK) {
 		if (bet->subsock >= 0 && bet->pushsock >= 0) {
 			ptr = 0;

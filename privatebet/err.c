@@ -42,6 +42,9 @@ const char *bet_err_str(int32_t err_no)
 	case ERR_BET_AMOUNTS_MISMATCH:
 		return "Error in bet amount mismatch";
 		break;
+	case ERR_GAME_RECORD_TX:
+		return "Error in recording the game moves on to the CHIPS blockchain";
+		break;
 	case ERR_PAYOUT_TX:
 		return "Error in making Payout TX";
 		break;
@@ -134,6 +137,12 @@ const char *bet_err_str(int32_t err_no)
 		break;
 	case ERR_MEMORY_ALLOC:
 		return "Memory allocation failed";
+		break;
+	case ERR_ARGS_NULL:
+		return "Command arguments are NULL";
+		break;
+	case ERR_ARG_SIZE_TOO_LONG:
+		return "Argument size is too long";
 		break;
 	default:
 		return "This error is not handled yet...";

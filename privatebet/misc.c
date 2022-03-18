@@ -63,6 +63,9 @@ int check_url(const char *url)
 	CURL *curl = NULL;
 	CURLcode response;
 
+	if ((url == NULL) || (strlen(url) == 0))
+		return 0;
+
 	curl = curl_easy_init();
 
 	if (curl) {
