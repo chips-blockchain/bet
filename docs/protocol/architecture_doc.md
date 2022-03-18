@@ -32,16 +32,17 @@ To summarize here are two main tasks in developing the full scale web app for be
 * Developing web wallet for CHIPS.
 * Rewriting player side bet logic into browser.
 
-So here comes the question: **Can we play poker without the Lightning Network?**
-In our scenario, we are using a lightning network to record bets during the gameplay, and in any turn based games this game info is very crucial to record it in the blockchain for non-repudiation and to resolve the conflicts. One approach i think of is to run a sidechain by the cashier nodes as validators where in which these nodes record the game info on the blockchain and since the player funds are locked with the cashier nodes when player joins the table and if every bet made by the player is recorded in the blockchain run by the cashier nodes, the players can’t deny their moves in this way we can eliminate the use of lightning network. 
+## Bet without LN
+So here comes the question: **Can we play poker without the Lightning Network?** The short answer is yes and we already implemented this.
+Before we jump into the answer lets understand why need LN, in our case we using LN to record bets during the gameplay, and in any turn based games this game info is very crucial to record in the blockchain for non-repudiation purposes to resolve the conflicts. One approach i think of is to run a sidechain by the cashier nodes as validators where in which these nodes record the game info on the blockchain. 
 
-Here is the architecture/flow diagram that depicts how things will work
+Here is the flow diagram that depicts how things will work in the side chain scenario.
 
 ![bet_without_ln](https://user-images.githubusercontent.com/8114482/158166995-7f5f72a5-6e86-432d-8405-5643a387b53f.png)
 
-For this to achieve here are the following major tasks which we need to accomplish:
-1. Develop the player poker logic in a webapp using JS.
-2. Develop the side chain run by validator nodes.
-3. Develop the web wallet for CHIPS.
+But the good thing with chips is its blocktime is less than 10s and you can mine the chips block on your local computer. So that actually makes things much easier for us and we actually can use chips blockchain to record to record the game moves and we did the same thing in bet without ln. 
 
+## Desktop app
 
+In bet without ln, we already seen we can play poker without ln, now in that scenario we only have chips and bet repos. We now can bundle the chips and bet binaries in linux based environments and make a release. 
+For windows, we are able to generate the cross compiled binaries and we make it avialable to the players so that one can simply download the binaries and play.
