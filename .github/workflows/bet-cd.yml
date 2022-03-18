@@ -181,11 +181,11 @@ jobs:
           with:
             path: artifacts
             
-        - name: Display structure of downloaded files
-          run: |
-            pwd && \
-            ls -lhRa
-          working-directory: artifacts
+        # - name: Display structure of downloaded files
+        #   run: |
+        #     pwd && \
+        #     ls -lhRa
+        #   working-directory: artifacts
         
         - name: Extract branch name
           shell: bash
