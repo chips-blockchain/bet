@@ -38,12 +38,13 @@ jobs:
       
     - name: Extract git tag
       shell: bash
-      run: echo "##[set-output name=gittag;]$(echo $(git describe --always))"
+      run: echo "##[set-output name=gittag;]$(IFS='-' read -r -a array <<< $(git describe --always) && echo "${array[0]}-${array[1]}")"
       id: extract_git_tag
 
     - name: List files
       run: |
         pwd && \
+        echo ${{ steps.extract_git_tag.outputs.gittag }}
         tar -czvf bet-linux-x86_64.tar.gz privatebet/bet privatebet/cashierd privatebet/config && \
         ls -lh bet-linux-x86_64.tar.gz
 #        tar -czvf bet-linux-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz privatebet/bet privatebet/cashierd privatebet/config && \
@@ -52,8 +53,10 @@ jobs:
     - name: Upload bet-linux-x86_64 release files
       uses: actions/upload-artifact@v2
       with:
-        name: bet-linux-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
-        path: /home/runner/work/bet/bet/bet-linux-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
+        # name: bet-linux-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
+        # path: /home/runner/work/bet/bet/bet-linux-x86_64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
+        name: bet-linux-x86_64.tar.gz
+        path: /home/runner/work/bet/bet/bet-linux-x86_64.tar.gz
 
 
   # # Build Linux ARM 64bit build
