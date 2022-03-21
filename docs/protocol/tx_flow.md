@@ -1,3 +1,4 @@
+## TX's flow during the game
 Based on the context the tx's happen during the game are classified into [various types](./tx_types.md). Here we see in a typical two player poker game how the transactions happen and will also see the understand the details about what the data part of the tx tells.
 
 Each and every poker game that is played is associated with a unique table_id which is same for all the players during the game. Here i'm taking the example of game that is already played and walk through the details.
@@ -260,20 +261,7 @@ Payout tx
 }
 ```
 
+### TX Scanner
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+So far we seen how various tx's happen during the game. **Here comes the question like how can these be grouped and be available to all the players in the chips explorer?**
+For that we are writting the blockchain scanner, which has be to be run by the explorer node in the backend. What this scanner will do is it groups by all the tx's based on the table_id. So that way all the tables that played will be visible on the explorer. More details of this scanner will be shared soon.
