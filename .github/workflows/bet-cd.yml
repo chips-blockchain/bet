@@ -215,7 +215,7 @@ jobs:
               - SHA: ${{ steps.shortify_commit.outputs.sha_short }}
               - Version tag: ${{ steps.extract_git_tag.outputs.gittag }}
             draft: false
-            prerelease: true
+            prerelease: false
         
         - name: Upload Linux Release Asset
           id: upload-linux-release-asset 
