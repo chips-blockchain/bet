@@ -1,10 +1,9 @@
-There are two types of transactions happen during the game:
-1. Payin_tx
-2. Payout_tx
+There are various types of transactions happen during the game and based on the context we classify them into three types
+* Payin_tx
+* Dust tx's to record game moves
+* Payout_tx
 
-The data part of these two tx's are different from each other. We see the differences in data part of tx's as follows:
-
-Payin_tx
+#### Payin_tx
 At the time of joining the table player locks funds at msig address owned by cashier nodes and this locking tx is called as payin_tx. The data part of this tx contains the enough info needed by the cashier node to resolve any disputes raised by the player.
 
 Any payin_tx's which are unspent are the indication that game didn't progressed successfully. The payin_tx's which are specific to the player node can be retrieved from the player local DB as follows:
@@ -25,17 +24,36 @@ $ ./bet extract_tx_data 018f7aa0afd6321768aaac42c5d4dcee12dbf864d1bd534a36e382cb
 }
 ```
 Lets take a look at what each field in the JSON object refering:
+* table_id: The table id player joined during the game.
+* msig_addr_nodes: The cashier node IP's which took part in this game.
+* min_cashiers: The minimum number of cashier nodes needed to reverse this tx incase of disputes.
+* player_id: ID of the player during the game.
+* dispute_addr: The address to which these tx funds to be deposited incase of disputes.
+* msig_addr: The msig address to which this tx is made.
 
-table_id: The table id player joined during the game.
-msig_addr_nodes: The cashier node IP's which took part in this game.
-min_cashiers: The minimum number of cashier nodes needed to reverse this tx incase of disputes.
-player_id: ID of the player during the game.
-dispute_addr: The address to which these tx funds to be deposited incase of disputes.
-msig_addr: The msig address to which this tx is made.
+### Dust tx's to record game moves
+The data fields of a sample dust tx that happen during the geme looks as follows
+```
+~/bet/privatebet$ ./bet extract_tx_data 58ec6cbcef7a223405d77b78e6fbf0425d2c3333105a586f99160f479e4ca26b
+[bet.c:bet_start:449] Data part of tx 
+ 
+	"method":	"bet",
+	"table_id":	"7e6520211912ac0e1e5c593c93c50991a3408d9adc983b6f81a5d319c1ddda89",
+	"round":	3,
+	"playerID":	1,
+	"betAmount":	2,
+	"action":	4
+}
+```
+Lets take a look into what these fields signifies
+* method - It represents the type of data, genrally to record betting moves during the game the method name should be `bet`.
+* table_id - The table_id for which this betting move is linked to.
+* round - In poker game this tells about at what round the bet of `betAmount` is happened.
+* betAmount - Amount that put in betting.
+* action - The corresponding action under which the betting was made like SB, BB, raise, call, check, fold or allin.
 
-Payout_tx:
+### Payout_tx
 After each hand, the game will be evaluated and the funds will be settled based across the player after evaluation of each player cards. The tx which is made to settle the funds at the end of each hand is called as payout_tx.
-
 The payout_tx's are the indication of successful games that are played and you can see these tx's attached to dealer_address, dev_fund_address, cashier_msig_address and the corresponding players addresses during that hand.
 
 The payout_tx's which are specific to the player are retrieved as follows:
@@ -65,10 +83,9 @@ $ ./bet extract_tx_data c04da4d720cbaa940f5983134816892176ad0e153443db8e39cbe980
 	"msig_addr_nodes":	["141.94.227.65", "141.94.227.66", "141.94.227.67", "141.94.227.68"]
 }
 ```
-
 Lets take a look at what each field in the JSON object refering which are not described above:
-maxplayers: The number of players who played during that game.
-rounds: till which round the game went on, and is defined in the enum is as follows:
+* maxplayers: The number of players who played during that game.
+* rounds: till which round the game went on, and is defined in the enum is as follows:
 ```
 enum betting_round { 
 preflop = 0, 
@@ -77,8 +94,8 @@ turn,
 river
 };
 ```
-game_state: An array of players info during the hand.
-bet_actions: Bet actions is defined by the following enum.
+* game_state: An array of players info during the hand.
+* bet_actions: Bet actions is defined by the following enum.
 ```
 enum action_type { 
 small_blind = 1, 
@@ -92,7 +109,7 @@ fold
 ```
 Lets take `"bet_actions":	[5, 3, 3, 3]`  of player 1 which meaning that in the `preflop round` the players last bet action was `call`, and in the `flop`, `turn` and `river rounds` the players last bet action was `check`.
 
-Player_cards: This is an array of seven numbers, where each index represents the following cards as defined in the enum:
+* Player_cards: This is an array of seven numbers, where each index represents the following cards as defined in the enum:
 ```
 enum card_index { 
 hole_card1 = 0, 
@@ -112,6 +129,3 @@ The number at each index defines the cards as defined below:
 			    "2S", "3S", "4S", "5S", "6S", "7S", "8S", "9S", "10S", "JS", "QS", "KS", "AS" };
 ```
 The corresponding graphic for each of the cards is defined in SVG is available here: https://github.com/chips-blockchain/pangea-poker/blob/master/src/components/Card/svg-sprite.css
-
-
-
