@@ -1075,10 +1075,12 @@ int32_t chips_extract_data(char *tx, char **rand_str)
 
 	raw_tx = chips_get_raw_tx(tx);
 	if (raw_tx == NULL) {
+		dlg_error("%s", bet_err_str(ERR_CHIPS_GET_RAW_TX));
 		return ERR_CHIPS_GET_RAW_TX;
 	}
 	decoded_raw_tx = chips_decode_raw_tx(raw_tx);
 	if (decoded_raw_tx == NULL) {
+		dlg_error("%s", bet_err_str(ERR_CHIPS_DECODE_TX));
 		return ERR_CHIPS_DECODE_TX;
 	}
 	vout = cJSON_GetObjectItem(decoded_raw_tx, "vout");
