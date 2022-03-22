@@ -1303,7 +1303,7 @@ static int32_t bet_update_payin_tx_across_cashiers(cJSON *argjson, cJSON *txid)
 	char *sql_query = NULL;
 	cJSON *msig_addr_nodes = NULL, *payin_tx_insert_query = NULL;
 
-	sql_query = calloc(1, sql_query_size);
+	sql_query = calloc(sql_query_size, sizeof(char));
 	sprintf(sql_query, "INSERT INTO player_tx_mapping values(%s,\'%s\',\'%s\',\'%s\',%d,%d, NULL);",
 		cJSON_Print(txid), table_id, req_identifier,
 		cJSON_Print(cJSON_GetObjectItem(argjson, "msig_addr_nodes")), tx_unspent, threshold_value);
@@ -1393,6 +1393,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 	cJSON_AddStringToObject(data_info, "player_id", req_identifier);
 	cJSON_AddStringToObject(data_info, "dispute_addr", chips_get_new_address());
 	cJSON_AddStringToObject(data_info, "msig_addr", legacy_m_of_n_msig_addr);
+	cJSON_AddStringToObject(data_info, "tx_type", "payin");
 
 	hex_data_len = 2 * strlen(cJSON_Print(data_info)) + 1;
 	hex_data = calloc(hex_data_len, sizeof(char));
@@ -1465,7 +1466,7 @@ static int32_t bet_player_process_payout_tx(cJSON *argjson)
 	int32_t rc = OK;
 
 	dlg_info("%s\n", cJSON_Print(argjson));
-	sql_query = calloc(1, 400);
+	sql_query = calloc(sql_query_size, sizeof(char));
 	sprintf(sql_query, "UPDATE player_tx_mapping set status = 0,payout_tx_id = \'%s\' where table_id = \'%s\'",
 		jstr(argjson, "tx_info"), jstr(argjson, "table_id"));
 	rc = bet_run_query(sql_query);
@@ -1480,7 +1481,7 @@ static int32_t bet_player_process_game_info(cJSON *argjson)
 {
 	int argc = 3, retval = OK;
 	char **argv = NULL;
-	char *sql_query = calloc(1, arg_size);
+	char *sql_query = calloc(sql_query_size, sizeof(char));
 
 	bet_alloc_args(argc, &argv);
 	strcpy(argv[0], "player_game_state");

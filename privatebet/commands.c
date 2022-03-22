@@ -36,11 +36,11 @@ int32_t bet_alloc_args(int argc, char ***argv)
 {
 	int ret = OK;
 
-	*argv = (char **)malloc(argc * sizeof(char *));
+	*argv = calloc(argc, sizeof(char *));
 	if (*argv == NULL)
 		return ERR_MEMORY_ALLOC;
 	for (int i = 0; i < argc; i++) {
-		(*argv)[i] = (char *)malloc(arg_size * sizeof(char));
+		(*argv)[i] = calloc(arg_size, sizeof(char));
 		if ((*argv)[i] == NULL)
 			return ERR_MEMORY_ALLOC;
 	}
@@ -845,11 +845,11 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 		decoded_raw_tx = chips_decode_raw_tx(raw_tx);
 		vout = cJSON_GetObjectItem(decoded_raw_tx, "vout");
 
-		hex_data = calloc(1, tx_data_size * 2);
+		hex_data = calloc(tx_data_size * 2, sizeof(char));
 		retval = chips_extract_data(tx_ids[0], &hex_data);
 
 		if ((retval == OK) && (hex_data)) {
-			data = calloc(1, tx_data_size);
+			data = calloc(tx_data_size, sizeof(char));
 			hexstr_to_str(hex_data, data);
 			player_info = cJSON_CreateObject();
 			player_info = cJSON_Parse(data);
@@ -1101,8 +1101,8 @@ cJSON *chips_extract_tx_data_in_JSON(char *tx)
 	char *hex_data = NULL, *data = NULL;
 	cJSON *tx_data = NULL;
 
-	hex_data = calloc(1, tx_data_size * 2);
-	data = calloc(1, tx_data_size * 2);
+	hex_data = calloc(tx_data_size * 2, sizeof(char));
+	data = calloc(tx_data_size * 2, sizeof(char));
 	if (chips_extract_data(tx, &hex_data) == OK) {
 		hexstr_to_str(hex_data, data);
 		tx_data = cJSON_CreateObject();
@@ -1292,7 +1292,7 @@ cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids
 
 	if (tx) {
 		dlg_info("tx::%s\n", cJSON_Print(tx));
-		sql_query = calloc(1, 400);
+		sql_query = calloc(sql_query_size, sizeof(char));
 		sprintf(sql_query, "UPDATE dcv_tx_mapping set status = 0 where table_id = \"%s\";", table_id);
 		bet_run_query(sql_query);
 		for (int32_t i = 0; i < no_of_notaries; i++) {
@@ -1988,8 +1988,10 @@ int32_t scan_games_info()
 
 	latest_bh = chips_get_block_count();
 	bh = sqlite3_get_highest_bh() + 1;
-	dlg_info("highest block scanned :: %d", bh);
-	bh = sc_start_block;
+	if (bh < sc_start_block)
+		bh = sc_start_block;
+
+	dlg_info("Blocks scanned till bh :: %d", bh);
 	for (; bh <= latest_bh; bh++) {
 		printf("scanning block ::%d\r", bh);
 		block_info = chips_get_block_from_block_height(bh);
@@ -2001,9 +2003,9 @@ int32_t scan_games_info()
 				for (int32_t i = 0; i < cJSON_GetArraySize(tx_info); i++) {
 					tx_data_info = chips_extract_tx_data_in_JSON(jstri(tx_info, i));
 					if (tx_data_info) {
-						dlg_info("%s", cJSON_Print(tx_data_info));
 						retval = bet_insert_sc_game_info(jstri(tx_info, i),
-										 jstr(tx_data_info, "table_id"), bh);
+										 jstr(tx_data_info, "table_id"), bh,
+										 jstr(tx_data_info, "tx_type"));
 					}
 				}
 			}

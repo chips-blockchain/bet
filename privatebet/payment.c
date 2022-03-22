@@ -241,8 +241,9 @@ int32_t bet_player_log_bet_info(cJSON *argjson, struct privatebet_info *bet, int
 	cJSON_AddNumberToObject(bet_info, "playerID", bet->myplayerid);
 	cJSON_AddNumberToObject(bet_info, "betAmount", amount);
 	cJSON_AddNumberToObject(bet_info, "action", action);
+	cJSON_AddStringToObject(bet_info, "tx_type", "game_info");
 
-	hex_data = calloc(2 * tx_data_size, sizeof(char));
+	hex_data = calloc(tx_data_size * 2, sizeof(char));
 	str_to_hexstr(cJSON_Print(bet_info), hex_data);
 	tx_id = cJSON_CreateObject();
 	tx_id = chips_transfer_funds_with_data(0.0, legacy_m_of_n_msig_addr, hex_data);

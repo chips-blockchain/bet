@@ -17,5 +17,5 @@ cJSON *sqlite3_get_game_details(int32_t opt);
 cJSON *bet_show_fail_history();
 cJSON *bet_show_success_history();
 int32_t bet_store_game_info_details(char *tx_id, char *table_id);
-int32_t bet_insert_sc_game_info(char *tx_id, char *table_id, int32_t bh);
+int32_t bet_insert_sc_game_info(char *tx_id, char *table_id, int32_t bh, char *tx_type);
 int32_t sqlite3_get_highest_bh();
