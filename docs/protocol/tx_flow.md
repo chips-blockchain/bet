@@ -95,7 +95,7 @@ Player1 - Small blind
 ```
 ~/bet/privatebet$ ./bet extract_tx_data 07a5e8b04a3b9165e188650af3e387af2387fc9fee55980f9b97dea4913d758e
 [bet.c:bet_start:449] Data part of tx 
- 
+{
 	"method":	"bet",
 	"table_id":	"7e6520211912ac0e1e5c593c93c50991a3408d9adc983b6f81a5d319c1ddda89",
 	"round":	0,
@@ -109,7 +109,7 @@ Player2 - Big blind
 ```
 ~/bet/privatebet$ ./bet extract_tx_data a287c5baa97a60523917a3ef69ec59370176ca38195c3a2759a1e0f56584f113
 [bet.c:bet_start:449] Data part of tx 
- 
+{ 
 	"method":	"bet",
 	"table_id":	"7e6520211912ac0e1e5c593c93c50991a3408d9adc983b6f81a5d319c1ddda89",
 	"round":	0,
@@ -123,7 +123,7 @@ Player1 - Call
 ```
 ~/bet/privatebet$ ./bet extract_tx_data 3f02176f3eb1ca4975e5022ef98d01d5dd6de1f1eb5078539efabf7df4707d8f
 [bet.c:bet_start:449] Data part of tx 
- 
+{
 	"method":	"bet",
 	"table_id":	"7e6520211912ac0e1e5c593c93c50991a3408d9adc983b6f81a5d319c1ddda89",
 	"round":	0,
@@ -137,7 +137,7 @@ Player2- Check
 ```
 ~/bet/privatebet$ ./bet extract_tx_data 71d5406f00f52954e24071d7f95e79b9c1bbb07c4d968a7385aedfdf911477db
 [bet.c:bet_start:449] Data part of tx 
- 
+{
 	"method":	"bet",
 	"table_id":	"7e6520211912ac0e1e5c593c93c50991a3408d9adc983b6f81a5d319c1ddda89",
 	"round":	0,
@@ -155,7 +155,7 @@ Player2 - Raise
 ```
 ~/bet/privatebet$ ./bet extract_tx_data ea55e851a5f5cde07fe67d079dbf3c315eacb75f639a7f0bd2b0dc2c832826db
 [bet.c:bet_start:449] Data part of tx 
- 
+{
 	"method":	"bet",
 	"table_id":	"7e6520211912ac0e1e5c593c93c50991a3408d9adc983b6f81a5d319c1ddda89",
 	"round":	1,
@@ -169,7 +169,7 @@ Player1 - Call
 ```
 ~/bet/privatebet$ ./bet extract_tx_data 7d58e742acbb2b3bc5a1bba0ca36887d80ca52455ea487eaa4154061b6b62680
 [bet.c:bet_start:449] Data part of tx 
- 
+{
 	"method":	"bet",
 	"table_id":	"7e6520211912ac0e1e5c593c93c50991a3408d9adc983b6f81a5d319c1ddda89",
 	"round":	1,
@@ -184,7 +184,7 @@ Player2 - Check
 ```
 ~/bet/privatebet$ ./bet extract_tx_data 7326071fdfdabbdaa500b1a010c995e3c5d4ffbcf961451074f316fe65e10fb5
 [bet.c:bet_start:449] Data part of tx 
- 
+{
 	"method":	"bet",
 	"table_id":	"7e6520211912ac0e1e5c593c93c50991a3408d9adc983b6f81a5d319c1ddda89",
 	"round":	2,
@@ -198,7 +198,7 @@ Player1 - Check
 ```
 ~/bet/privatebet$ ./bet extract_tx_data 7ba82e800b6c9a22a3b576e85fd326a19bbb550dbc0107960f99cfe63504ab25
 [bet.c:bet_start:449] Data part of tx 
- 
+{
 	"method":	"bet",
 	"table_id":	"7e6520211912ac0e1e5c593c93c50991a3408d9adc983b6f81a5d319c1ddda89",
 	"round":	2,
@@ -214,7 +214,7 @@ Player2 - Raise
 ```
 ~/bet/privatebet$ ./bet extract_tx_data 58ec6cbcef7a223405d77b78e6fbf0425d2c3333105a586f99160f479e4ca26b
 [bet.c:bet_start:449] Data part of tx 
- 
+{
 	"method":	"bet",
 	"table_id":	"7e6520211912ac0e1e5c593c93c50991a3408d9adc983b6f81a5d319c1ddda89",
 	"round":	3,
@@ -228,7 +228,7 @@ Player1 - Call
 ```
 ~/bet/privatebet$ ./bet extract_tx_data d420a2a2639dfcec5ba2a37e303ca86c6bb6861787f780580e1ee911941c5df9
 [bet.c:bet_start:449] Data part of tx 
- 
+{
 	"method":	"bet",
 	"table_id":	"7e6520211912ac0e1e5c593c93c50991a3408d9adc983b6f81a5d319c1ddda89",
 	"round":	3,
