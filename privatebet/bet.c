@@ -45,7 +45,7 @@
 /* Bet without LN completed development after this block, so only the tx's which generated 
    after this block contain the info of the games played using bet without ln setup.
 */
-int64_t sc_start_block = 9681589;
+int64_t sc_start_block = 9693174;
 
 struct privatebet_info *bet_player = NULL;
 struct privatebet_vars *player_vars = NULL;
