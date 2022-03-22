@@ -1993,7 +1993,7 @@ int32_t scan_games_info()
 
 	dlg_info("Blocks scanned till bh :: %d", bh);
 	for (; bh <= latest_bh; bh++) {
-		printf("scanning block ::%d\r", bh);
+		printf("Scanning blocks ::%d\r", bh);
 		block_info = chips_get_block_from_block_height(bh);
 		if (block_info) {
 			tx_info = cJSON_GetObjectItem(block_info, "tx");
@@ -2011,5 +2011,6 @@ int32_t scan_games_info()
 			}
 		}
 	}
+	dlg_info("Scanning the blockchain completed, local DB updated.");
 	return retval;
 }
