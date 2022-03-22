@@ -9,13 +9,14 @@
 #include <sys/types.h>
 #include <pwd.h>
 
-#define no_of_tables 9
+#define no_of_tables 10
 
 char *db_name = NULL;
 
 const char *table_names[no_of_tables] = { "dcv_tx_mapping",     "player_tx_mapping", "cashier_tx_mapping",
 					  "c_tx_addr_mapping",  "dcv_game_state",    "player_game_state",
-					  "cashier_game_state", "dealers_info",      "game_info" };
+					  "cashier_game_state", "dealers_info",      "game_info",
+					  "sc_games_info" };
 
 const char *schemas[no_of_tables] = {
 	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), msig_addr varchar(100), status bool, min_cashiers int)",
@@ -26,7 +27,8 @@ const char *schemas[no_of_tables] = {
 	"(table_id varchar(100) primary key,game_state varchar(1000))",
 	"(table_id varchar(100) primary key,game_state varchar(1000))",
 	"(dealer_ip varchar(100) primary key)",
-	"(tx_id varchar(100) primary key,table_id varchar(100))"
+	"(tx_id varchar(100) primary key,table_id varchar(100))",
+	"(tx_id varchar(100) primary key,table_id varchar(100), bh int)"
 };
 
 void sqlite3_init_db_name()
@@ -193,6 +195,7 @@ int32_t sqlite3_delete_dealer(char *dealer_ip)
 		free(sql_query);
 	return rc;
 }
+
 cJSON *sqlite3_get_dealer_info_details()
 {
 	sqlite3_stmt *stmt = NULL;
@@ -221,6 +224,7 @@ end:
 	sqlite3_close(db);
 	return dealers_info;
 }
+
 cJSON *sqlite3_get_game_details(int32_t opt)
 {
 	sqlite3_stmt *stmt = NULL, *sub_stmt = NULL;
@@ -408,4 +412,55 @@ int32_t bet_store_game_info_details(char *tx_id, char *table_id)
 		free(sql_query);
 
 	return retval;
+}
+
+int32_t bet_insert_sc_game_info(char *tx_id, char *table_id, int32_t bh)
+{
+	int32_t argc, retval = OK;
+	char **argv = NULL, *sql_query = NULL;
+
+	argc = 4;
+	bet_alloc_args(argc, &argv);
+	strcpy(argv[0], "sc_games_info");
+	sprintf(argv[1], "\'%s\'", tx_id);
+	sprintf(argv[2], "\'%s\'", table_id);
+	sprintf(argv[3], "%d", bh);
+	sql_query = calloc(arg_size, sizeof(char));
+	bet_make_insert_query(argc, argv, &sql_query);
+	retval = bet_run_query(sql_query);
+	if (retval != SQLITE_OK)
+		retval = ERR_SQL;
+
+	bet_dealloc_args(argc, &argv);
+	if (sql_query)
+		free(sql_query);
+
+	return retval;
+}
+
+int32_t sqlite3_get_highest_bh()
+{
+	sqlite3_stmt *stmt = NULL;
+	int32_t rc, bh = sc_start_block;
+	sqlite3 *db;
+	char *sql_query = NULL;
+
+	db = bet_get_db_instance();
+	sql_query = calloc(1, sql_query_size);
+	sprintf(sql_query, "SELECT max(bh) FROM sc_games_info;");
+	if ((rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL)) != SQLITE_OK) {
+		dlg_error("error_code :: %d, error msg ::%s, \n query ::%s", rc, sqlite3_errmsg(db), sql_query);
+		goto end;
+	} else {
+		if ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+			bh = sqlite3_column_int(stmt, 0);
+		}
+		sqlite3_finalize(stmt);
+	}
+	sqlite3_close(db);
+end:
+	if (sql_query)
+		free(sql_query);
+	sqlite3_close(db);
+	return bh;
 }

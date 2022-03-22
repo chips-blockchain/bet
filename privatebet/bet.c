@@ -42,6 +42,11 @@
 
 //#define LIVE_THREAD 0
 
+/* Bet without LN completed development after this block, so only the tx's which generated 
+   after this block contain the info of the games played using bet without ln setup.
+*/
+int64_t sc_start_block = 9677777;
+
 struct privatebet_info *bet_player = NULL;
 struct privatebet_vars *player_vars = NULL;
 
@@ -441,17 +446,10 @@ static void bet_start(int argc, char **argv){
 			break;
 		cases("extract_tx_data")
 			if (argc == 3) {
-				char *hex_data = NULL, *data = NULL;
-				hex_data = calloc(1, tx_data_size * 2);
-				data = calloc(1, tx_data_size * 2);
-				if (chips_extract_data(argv[2], &hex_data) == OK) {
-					hexstr_to_str(hex_data, data);
-					dlg_info("Data part of tx \n %s", data);
-				}
-				if (hex_data)
-					free(hex_data);
-				if (data)
-					free(data);
+				cJSON *temp= NULL;
+				temp = chips_extract_tx_data_in_JSON(argv[2]);
+				if(temp)
+					dlg_info("%s", cJSON_Print(temp));
 			} else {
 				bet_help_extract_tx_data_command_usage();
 			}
@@ -486,6 +484,10 @@ static void bet_start(int argc, char **argv){
 				dlg_info("The dealer is :: %s", dealer_ip);
 				bet_player_thrd(dealer_ip);
 			}
+			break;
+		cases("scan")
+			bet_sqlite3_init();
+			scan_games_info();
 			break;
 		cases("spendable")
 			cJSON *spendable_tx = chips_spendable_tx();
