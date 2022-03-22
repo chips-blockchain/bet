@@ -639,8 +639,8 @@ cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 
 int32_t chips_get_block_count()
 {
+	int32_t argc, height;
 	char **argv = NULL, *rendered = NULL;
-	int argc, height;
 	cJSON *block_height = NULL;
 
 	argc = 2;
@@ -656,8 +656,7 @@ int32_t chips_get_block_count()
 
 void check_ln_chips_sync()
 {
-	int32_t chips_bh, ln_bh, retval = OK;
-	int32_t threshold_diff = 1000;
+	int32_t threshold_diff = 1000, retval = OK, ln_bh, chips_bh;
 
 	chips_bh = chips_get_block_count();
 	retval = ln_block_height(&ln_bh);
@@ -1088,13 +1087,36 @@ int32_t chips_extract_data(char *tx, char **rand_str)
 		cJSON *temp = cJSON_GetArrayItem(vout, i);
 		script_pubkey = cJSON_GetObjectItem(temp, "scriptPubKey");
 		if (0 == strcmp(jstr(script_pubkey, "type"), "nulldata")) {
-			char *data = jstr(script_pubkey, "hex");
-			strcpy((*rand_str),
-			       data + 8); // first 4 bytes contains OP_RETURN hex code so we are skipping them
+			char *data = jstr(script_pubkey, "asm");
+			strtok(data, " ");
+			strcpy((*rand_str), strtok(NULL, data));
 			break;
 		}
 	}
 	return retval;
+}
+
+cJSON *chips_extract_tx_data_in_JSON(char *tx)
+{
+	char *hex_data = NULL, *data = NULL;
+	cJSON *tx_data = NULL;
+
+	hex_data = calloc(1, tx_data_size * 2);
+	data = calloc(1, tx_data_size * 2);
+	if (chips_extract_data(tx, &hex_data) == OK) {
+		hexstr_to_str(hex_data, data);
+		tx_data = cJSON_CreateObject();
+		tx_data = cJSON_Parse(data);
+		if (!is_cJSON_Object(tx_data)) {
+			tx_data = NULL;
+		}
+	}
+	if (hex_data)
+		free(hex_data);
+	if (data)
+		free(data);
+
+	return tx_data;
 }
 
 cJSON *chips_deposit_to_ln_wallet(double channel_chips)
@@ -1957,4 +1979,35 @@ char *bet_git_version()
 	bet_dealloc_args(argc, &argv);
 
 	return unstringify(cJSON_Print(version));
+}
+
+int32_t scan_games_info()
+{
+	int32_t retval = OK, latest_bh, bh;
+	cJSON *block_info = NULL, *tx_info = NULL, *tx_data_info = NULL;
+
+	latest_bh = chips_get_block_count();
+	bh = sqlite3_get_highest_bh() + 1;
+	dlg_info("highest block scanned :: %d", bh);
+	bh = sc_start_block;
+	for (; bh <= latest_bh; bh++) {
+		printf("scanning block ::%d\r", bh);
+		block_info = chips_get_block_from_block_height(bh);
+		if (block_info) {
+			tx_info = cJSON_GetObjectItem(block_info, "tx");
+			if (cJSON_GetArraySize(tx_info) < 2) {
+				continue;
+			} else {
+				for (int32_t i = 0; i < cJSON_GetArraySize(tx_info); i++) {
+					tx_data_info = chips_extract_tx_data_in_JSON(jstri(tx_info, i));
+					if (tx_data_info) {
+						dlg_info("%s", cJSON_Print(tx_data_info));
+						retval = bet_insert_sc_game_info(jstri(tx_info, i),
+										 jstr(tx_data_info, "table_id"), bh);
+					}
+				}
+			}
+		}
+	}
+	return retval;
 }

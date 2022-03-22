@@ -142,4 +142,5 @@ char table_password[128];
 char player_name[128];
 
 int32_t bet_ln_config; 
+extern int64_t sc_start_block;
 #endif
