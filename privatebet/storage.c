@@ -28,14 +28,14 @@ const char *schemas[no_of_tables] = {
 	"(table_id varchar(100) primary key,game_state varchar(1000))",
 	"(dealer_ip varchar(100) primary key)",
 	"(tx_id varchar(100) primary key,table_id varchar(100))",
-	"(tx_id varchar(100) primary key,table_id varchar(100), bh int)"
+	"(tx_id varchar(100) primary key,table_id varchar(100), bh int, tx_type varchar(20))"
 };
 
 void sqlite3_init_db_name()
 {
 	struct passwd *pw = getpwuid(getuid());
 	char *homedir = pw->pw_dir;
-	db_name = calloc(1, 200);
+	db_name = calloc(sql_query_size, sizeof(char));
 	sprintf(db_name, "%s/.bet/db/pangea.db", homedir);
 	dlg_info("The DB to store game info is ::%s", db_name);
 }
@@ -48,7 +48,7 @@ int32_t sqlite3_check_if_table_id_exists(const char *table_id)
 	int32_t rc, retval = 0;
 
 	db = bet_get_db_instance();
-	sql_query = calloc(1, 200);
+	sql_query = calloc(sql_query_size, sizeof(char));
 
 	sprintf(sql_query, "select count(table_id) from c_tx_addr_mapping where table_id = \"%s\";", table_id);
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
@@ -78,7 +78,7 @@ int32_t sqlite3_check_if_table_exists(sqlite3 *db, const char *table_name)
 	int rc, retval = 0;
 
 	db = bet_get_db_instance();
-	sql_query = calloc(1, sql_query_size);
+	sql_query = calloc(sql_query_size, sizeof(char));
 
 	sprintf(sql_query, "select name from sqlite_master where type = \"table\" and name =\"%s\";", table_name);
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
@@ -117,9 +117,15 @@ sqlite3 *bet_get_db_instance()
 
 void bet_make_insert_query(int argc, char **argv, char **sql_query)
 {
+	char *null_str = "NULL";
 	sprintf(*sql_query, "INSERT INTO %s values(", argv[0]);
 	for (int32_t i = 1; i < argc; i++) {
-		strcat(*sql_query, argv[i]);
+		if (strlen(argv[i]) != 0) {
+			strcat(*sql_query, argv[i]);
+		} else {
+			strcat(*sql_query, null_str);
+			dlg_info("some arg is null");
+		}
 		if ((i + 1) < argc)
 			strcat(*sql_query, ",");
 		else
@@ -156,7 +162,7 @@ void bet_create_schema()
 	char *sql_query = NULL, *err_msg = NULL;
 
 	db = bet_get_db_instance();
-	sql_query = calloc(1, 2000);
+	sql_query = calloc(sql_query_size, sizeof(char));
 	for (int32_t i = 0; i < no_of_tables; i++) {
 		if (sqlite3_check_if_table_exists(db, table_names[i]) == 0) {
 			sprintf(sql_query, "CREATE TABLE %s %s;", table_names[i], schemas[i]);
@@ -187,7 +193,7 @@ int32_t sqlite3_delete_dealer(char *dealer_ip)
 	char *sql_query = NULL;
 	int rc;
 
-	sql_query = calloc(1, sql_query_size);
+	sql_query = calloc(sql_query_size, sizeof(char));
 	sprintf(sql_query, "DELETE FROM dealers_info where dealer_ip = \'%s\';", dealer_ip);
 	rc = bet_run_query(sql_query);
 
@@ -205,7 +211,7 @@ cJSON *sqlite3_get_dealer_info_details()
 	cJSON *dealers_info = NULL;
 
 	db = bet_get_db_instance();
-	sql_query = calloc(1, sql_query_size);
+	sql_query = calloc(sql_query_size, sizeof(char));
 	sprintf(sql_query, "SELECT dealer_ip FROM dealers_info;");
 	rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
@@ -235,8 +241,8 @@ cJSON *sqlite3_get_game_details(int32_t opt)
 
 	game_info = cJSON_CreateArray();
 	db = bet_get_db_instance();
-	sql_query = calloc(1, sql_query_size);
-	sql_sub_query = calloc(1, sql_query_size);
+	sql_query = calloc(sql_query_size, sizeof(char));
+	sql_sub_query = calloc(sql_query_size, sizeof(char));
 	if (opt == -1) {
 		sprintf(sql_query, "select * from player_tx_mapping;");
 	} else {
@@ -293,7 +299,7 @@ cJSON *bet_show_fail_history()
 	cJSON *game_fail_info = NULL;
 
 	db = bet_get_db_instance();
-	sql_query = calloc(1, sql_query_size);
+	sql_query = calloc(sql_query_size, sizeof(char));
 	sprintf(sql_query, "SELECT table_id,tx_id FROM player_tx_mapping WHERE payout_tx_id is null;");
 	retval = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
 	if (retval != SQLITE_OK) {
@@ -303,8 +309,8 @@ cJSON *bet_show_fail_history()
 
 	game_fail_info = cJSON_CreateArray();
 
-	hex_data = calloc(1, tx_data_size * 2);
-	data = calloc(1, tx_data_size);
+	hex_data = calloc(tx_data_size * 2, sizeof(char));
+	data = calloc(tx_data_size, sizeof(char));
 
 	while ((retval = sqlite3_step(stmt)) == SQLITE_ROW) {
 		cJSON *game_obj = cJSON_CreateObject();
@@ -346,7 +352,7 @@ cJSON *bet_show_success_history()
 	sqlite3_stmt *stmt = NULL;
 
 	db = bet_get_db_instance();
-	sql_query = calloc(1, sql_query_size);
+	sql_query = calloc(sql_query_size, sizeof(char));
 	sprintf(sql_query, "SELECT table_id,payout_tx_id FROM player_tx_mapping WHERE payout_tx_id is not null;");
 
 	retval = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL);
@@ -357,8 +363,8 @@ cJSON *bet_show_success_history()
 
 	game_success_info = cJSON_CreateArray();
 
-	hex_data = calloc(1, tx_data_size * 2);
-	data = calloc(1, tx_data_size);
+	hex_data = calloc(tx_data_size * 2, sizeof(char));
+	data = calloc(tx_data_size, sizeof(char));
 
 	while ((retval = sqlite3_step(stmt)) == SQLITE_ROW) {
 		cJSON *game_obj = cJSON_CreateObject();
@@ -401,7 +407,7 @@ int32_t bet_store_game_info_details(char *tx_id, char *table_id)
 	strcpy(argv[0], "game_info");
 	sprintf(argv[1], "\'%s\'", tx_id);
 	sprintf(argv[2], "\'%s\'", table_id);
-	sql_query = calloc(arg_size, sizeof(char));
+	sql_query = calloc(sql_query_size, sizeof(char));
 	bet_make_insert_query(argc, argv, &sql_query);
 	retval = bet_run_query(sql_query);
 	if (retval != SQLITE_OK)
@@ -414,19 +420,30 @@ int32_t bet_store_game_info_details(char *tx_id, char *table_id)
 	return retval;
 }
 
-int32_t bet_insert_sc_game_info(char *tx_id, char *table_id, int32_t bh)
+int32_t bet_insert_sc_game_info(char *tx_id, char *table_id, int32_t bh, char *tx_type)
 {
 	int32_t argc, retval = OK;
 	char **argv = NULL, *sql_query = NULL;
 
-	argc = 4;
+	argc = 5;
+
 	bet_alloc_args(argc, &argv);
 	strcpy(argv[0], "sc_games_info");
-	sprintf(argv[1], "\'%s\'", tx_id);
-	sprintf(argv[2], "\'%s\'", table_id);
+
+	if (tx_id)
+		sprintf(argv[1], "\'%s\'", tx_id);
+
+	if (table_id)
+		sprintf(argv[2], "\'%s\'", table_id);
+
 	sprintf(argv[3], "%d", bh);
-	sql_query = calloc(arg_size, sizeof(char));
+
+	if (tx_type)
+		sprintf(argv[4], "\'%s\'", tx_type);
+
+	sql_query = calloc(sql_query_size, sizeof(char));
 	bet_make_insert_query(argc, argv, &sql_query);
+
 	retval = bet_run_query(sql_query);
 	if (retval != SQLITE_OK)
 		retval = ERR_SQL;
@@ -441,12 +458,12 @@ int32_t bet_insert_sc_game_info(char *tx_id, char *table_id, int32_t bh)
 int32_t sqlite3_get_highest_bh()
 {
 	sqlite3_stmt *stmt = NULL;
-	int32_t rc, bh = sc_start_block;
+	int32_t rc = OK, bh = 0;
 	sqlite3 *db;
 	char *sql_query = NULL;
 
 	db = bet_get_db_instance();
-	sql_query = calloc(1, sql_query_size);
+	sql_query = calloc(sql_query_size, sizeof(char));
 	sprintf(sql_query, "SELECT max(bh) FROM sc_games_info;");
 	if ((rc = sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL)) != SQLITE_OK) {
 		dlg_error("error_code :: %d, error msg ::%s, \n query ::%s", rc, sqlite3_errmsg(db), sql_query);

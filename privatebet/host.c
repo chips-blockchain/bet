@@ -903,7 +903,7 @@ void bet_game_info(struct privatebet_info *bet, struct privatebet_vars *vars)
 
 	int argc = 3;
 	char **argv = NULL;
-	char *sql_query = calloc(1, arg_size);
+	char *sql_query = calloc(sql_query_size, sizeof(char));
 	bet_alloc_args(argc, &argv);
 	strcpy(argv[0], "dcv_game_state");
 	sprintf(argv[1], "\'%s\'", table_id);
@@ -965,6 +965,7 @@ static cJSON *payout_tx_data_info(struct privatebet_info *bet, struct privatebet
 		}
 	}
 	cJSON_AddItemToObject(game_info, "msig_addr_nodes", msig_addr_nodes);
+	cJSON_AddStringToObject(game_info, "tx_type", "payout");
 	return game_info;
 }
 
@@ -1028,7 +1029,7 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 		}
 	}
 	data_info = payout_tx_data_info(bet, vars);
-	hex_str = calloc(1, 2 * tx_data_size);
+	hex_str = calloc(tx_data_size * 2, sizeof(char));
 	str_to_hexstr(cJSON_Print(data_info), hex_str);
 
 	payout_tx_info = chips_create_payout_tx(payout_info, no_of_txs, tx_ids, hex_str);
@@ -1405,11 +1406,11 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson, struct privatebet_info *bet)
 	}
 
 	if (chips_check_if_tx_unspent(cJSON_Print(tx_info)) == 1) {
-		hex_data = calloc(1, tx_data_size * 2);
+		hex_data = calloc(tx_data_size * 2, sizeof(char));
 		retval = chips_extract_data(cJSON_Print(tx_info), &hex_data);
 		if (retval != OK)
 			goto end;
-		data = calloc(1, tx_data_size);
+		data = calloc(tx_data_size, sizeof(char));
 		hexstr_to_str(hex_data, data);
 		data_info = cJSON_CreateObject();
 		data_info = cJSON_Parse(data);
@@ -1563,7 +1564,7 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 			vars->winners[i] = 0;
 		}
 	}
-	sql_stmt = calloc(1, sql_query_size);
+	sql_stmt = calloc(sql_query_size, sizeof(char));
 
 	msig_addr_nodes = cJSON_CreateArray();
 	for (int32_t i = 0; i < no_of_notaries; i++) {
