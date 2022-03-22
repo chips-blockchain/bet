@@ -18,6 +18,8 @@ void bet_command_info()
 		 "withdraw amount \"chips address\" \n"
 		 "spendable \n"
 		 "extract_tx_data tx_id \n"
+		 "\n==Blockchain scanner for Explorer==\n"
+		 "scan \n"
 		 "\nTo get more info about a specific command try ./bet help command \n");
 }
 
@@ -151,6 +153,19 @@ void bet_help_extract_tx_data_command_usage()
 		cJSON_Print(command_info));
 }
 
+void bet_help_scan_command_usage()
+{
+	dlg_info(
+		"\nCommand: \n"
+		"scan \n"
+		"\nDescription: \n"
+		"It scans the entire chips blockchain and look for tx's that contain game_info and store them in the Local DB which further can be used by the explorer nodes to showcase the graphical representation of the games played \n"
+		"\nResult: \n"
+		"Updates the local DB located at the path ~/.bet/db/pangea.db, to be specific it updates sc_games_info table which has stores all the games played info \n"
+		"\nExample: \n"
+		"./bet scan \n");
+}
+
 // clang-format off
 void bet_help_command(char *command)
 {
@@ -174,6 +189,9 @@ void bet_help_command(char *command)
 			break;
 		cases("spendable")
 			bet_help_spendable_command_usage();
+			break;
+		cases("scan")
+			bet_help_scan_command_usage();
 			break;
 		cases("withdraw")
 			bet_help_withdraw_command_usage();
