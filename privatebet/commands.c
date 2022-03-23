@@ -285,25 +285,19 @@ cJSON *chips_get_block_from_block_height(int64_t block_height)
 
 int32_t chips_if_tx_vin_of_tx(cJSON *txid, char *vin_tx_id)
 {
-	int argc;
-	char **argv = NULL;
-	cJSON *raw_tx_info = NULL;
-	cJSON *decoded_raw_tx_info = NULL;
-	cJSON *vin = NULL;
 	int32_t retval = 0;
+	cJSON *raw_tx_info = NULL, *decoded_raw_tx_info = NULL, *vin = NULL;
 
-	argc = 3;
-	argv = bet_copy_args(argc, "chips-cli", "getrawtransaction", unstringify(cJSON_Print(txid)));
-	raw_tx_info = cJSON_CreateObject();
-	make_command(argc, argv, &raw_tx_info);
-
-	if (raw_tx_info == NULL)
-		goto end;
-
-	bet_memset_args(argc, &argv);
-	argv = bet_copy_args(argc, "chips-cli", "decoderawtransaction", unstringify(cJSON_Print(raw_tx_info)));
-	decoded_raw_tx_info = cJSON_CreateObject();
-	make_command(argc, argv, &decoded_raw_tx_info);
+	raw_tx_info = chips_get_raw_tx(unstringify(cJSON_Print(txid)));
+	if (raw_tx_info == NULL) {
+		dlg_error("%s", bet_err_str(ERR_CHIPS_GET_RAW_TX));
+		return retval;
+	}
+	decoded_raw_tx_info = chips_decode_raw_tx(raw_tx_info);
+	if (decoded_raw_tx_info == NULL) {
+		dlg_error("%s", bet_err_str(ERR_CHIPS_DECODE_TX));
+		return retval;
+	}
 
 	vin = cJSON_CreateArray();
 	vin = cJSON_GetObjectItem(decoded_raw_tx_info, "vin");
@@ -315,8 +309,6 @@ int32_t chips_if_tx_vin_of_tx(cJSON *txid, char *vin_tx_id)
 			break;
 		}
 	}
-end:
-	bet_dealloc_args(argc, &argv);
 	return retval;
 }
 cJSON *chips_find_parent_tx(int64_t block_height, char *vin_tx_id)
@@ -347,27 +339,23 @@ cJSON *chips_find_parent_tx(int64_t block_height, char *vin_tx_id)
 
 cJSON *chips_get_vin_from_tx(char *txid)
 {
-	int argc;
-	char **argv = NULL;
 	cJSON *wallet_tx_details = NULL, *decoded_tx_details = NULL, *vin = NULL, *vin_tx_id = NULL;
 
-	argc = 3;
-	argv = bet_copy_args(argc, "chips-cli", "gettransaction", txid);
-	wallet_tx_details = cJSON_CreateObject();
-	make_command(argc, argv, &wallet_tx_details);
-	if (jstr(wallet_tx_details, "error message") == NULL) {
-		bet_memset_args(argc, &argv);
-		argv = bet_copy_args(argc, "chips-cli", "decoderawtransaction", jstr(wallet_tx_details, "hex"));
-		decoded_tx_details = cJSON_CreateObject();
-		make_command(argc, argv, &decoded_tx_details);
-		vin = cJSON_CreateArray();
-		vin = cJSON_GetObjectItem(decoded_tx_details, "vin");
-		if (cJSON_GetArraySize(vin) > 0) {
-			vin_tx_id = cJSON_CreateObject();
-			vin_tx_id = cJSON_GetArrayItem(vin, 0);
-		}
+	wallet_tx_details = chips_get_raw_tx(txid);
+	if (wallet_tx_details == NULL) {
+		dlg_error("%s", bet_err_str(ERR_CHIPS_GET_RAW_TX));
 	}
-	bet_dealloc_args(argc, &argv);
+	decoded_tx_details = chips_decode_raw_tx(wallet_tx_details);
+	if (decoded_tx_details == NULL) {
+		dlg_error("%s", bet_err_str(ERR_CHIPS_DECODE_TX));
+	}
+
+	vin = cJSON_CreateArray();
+	vin = cJSON_GetObjectItem(decoded_tx_details, "vin");
+	if (cJSON_GetArraySize(vin) > 0) {
+		vin_tx_id = cJSON_CreateObject();
+		vin_tx_id = cJSON_GetArrayItem(vin, 0);
+	}
 	return vin_tx_id;
 }
 
@@ -1157,22 +1145,19 @@ static int32_t find_address_in_addresses(char *address, cJSON *argjson)
 
 double chips_get_balance_on_address_from_tx(char *address, char *tx)
 {
-	int argc;
-	char **argv = NULL;
 	cJSON *raw_tx = NULL, *decoded_raw_tx = NULL, *vout = NULL;
 	double balance = 0;
 
-	argc = 3;
-	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "chips-cli", "getrawtransaction", tx);
-	raw_tx = cJSON_CreateObject();
-	make_command(argc, argv, &raw_tx);
-
-	bet_memset_args(argc, &argv);
-
-	argv = bet_copy_args(argc, "chips-cli", "decoderawtransaction", cJSON_Print(raw_tx));
-	decoded_raw_tx = cJSON_CreateObject();
-	make_command(argc, argv, &decoded_raw_tx);
+	raw_tx = chips_get_raw_tx(tx);
+	if (raw_tx == NULL) {
+		dlg_error("%s", bet_err_str(ERR_CHIPS_GET_RAW_TX));
+		return ERR_CHIPS_GET_RAW_TX;
+	}
+	decoded_raw_tx = chips_decode_raw_tx(raw_tx);
+	if (decoded_raw_tx == NULL) {
+		dlg_error("%s", bet_err_str(ERR_CHIPS_DECODE_TX));
+		return ERR_CHIPS_DECODE_TX;
+	}
 
 	vout = cJSON_GetObjectItem(decoded_raw_tx, "vout");
 
@@ -1211,18 +1196,19 @@ char *chips_get_wallet_address()
 static int32_t chips_get_vout_from_tx(char *tx_id)
 {
 	cJSON *raw_tx_info = NULL, *decode_raw_tx_info = NULL, *vout = NULL;
-	int argc, retval = -1;
-	char **argv = NULL;
+	int retval = -1;
 	double value = 0.01;
 
-	argc = 3;
-	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "chips-cli", "getrawtransaction", tx_id);
-	make_command(argc, argv, &raw_tx_info);
-
-	bet_memset_args(argc, &argv);
-	argv = bet_copy_args(argc, "chips-cli", "decoderawtransaction", cJSON_Print(raw_tx_info));
-	make_command(argc, argv, &decode_raw_tx_info);
+	raw_tx_info = chips_get_raw_tx(tx_id);
+	if (raw_tx_info == NULL) {
+		dlg_error("%s", bet_err_str(ERR_CHIPS_GET_RAW_TX));
+		return retval;
+	}
+	decode_raw_tx_info = chips_decode_raw_tx(raw_tx_info);
+	if (decode_raw_tx_info == NULL) {
+		dlg_error("%s", bet_err_str(ERR_CHIPS_DECODE_TX));
+		return retval;
+	}
 
 	vout = cJSON_GetObjectItem(decode_raw_tx_info, "vout");
 	for (int i = 0; i < cJSON_GetArraySize(vout); i++) {
@@ -1232,7 +1218,6 @@ static int32_t chips_get_vout_from_tx(char *tx_id)
 			break;
 		}
 	}
-	bet_dealloc_args(argc, &argv);
 	return retval;
 }
 
