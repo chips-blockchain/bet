@@ -344,10 +344,12 @@ cJSON *chips_get_vin_from_tx(char *txid)
 	wallet_tx_details = chips_get_raw_tx(txid);
 	if (wallet_tx_details == NULL) {
 		dlg_error("%s", bet_err_str(ERR_CHIPS_GET_RAW_TX));
+		goto end;
 	}
 	decoded_tx_details = chips_decode_raw_tx(wallet_tx_details);
 	if (decoded_tx_details == NULL) {
 		dlg_error("%s", bet_err_str(ERR_CHIPS_DECODE_TX));
+		goto end;
 	}
 
 	vin = cJSON_CreateArray();
@@ -356,7 +358,8 @@ cJSON *chips_get_vin_from_tx(char *txid)
 		vin_tx_id = cJSON_CreateObject();
 		vin_tx_id = cJSON_GetArrayItem(vin, 0);
 	}
-	return vin_tx_id;
+	end:
+		return vin_tx_id;
 }
 
 cJSON *validate_given_tx(int64_t block_height, char *txid)
