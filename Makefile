@@ -21,7 +21,7 @@ PKGNAME = bet
 
 SORT=LC_ALL=C sort
 
--include config
+-include config.vars
 
 ifeq ($V,1)
 VERBOSE = $(ECHO) '$(2)'; $(2)
@@ -99,7 +99,7 @@ endif
 
 default: show-flags all-programs
 
-show-flags: config
+show-flags: config.vars
 	@$(ECHO) "CC: $(CC) $(CFLAGS) -c -o"
 	@$(ECHO) "LD: $(LINK.o) $(filter-out %.a,$^) $(LOADLIBES) $(EXTERNAL_LDLIBS) $(LDLIBS) -o"
 
