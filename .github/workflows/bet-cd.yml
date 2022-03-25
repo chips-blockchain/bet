@@ -17,7 +17,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       with:
-          ref: 'master'
+          ref: 'dev'
     - run: git fetch --prune --unshallow
     
     - name: apt update
@@ -62,7 +62,7 @@ jobs:
      - name: Checkout code
        uses: actions/checkout@v2
        with:
-           ref: 'master'
+           ref: 'dev'
      - run: git fetch --prune --unshallow
        
      - name: configure
@@ -101,7 +101,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       with:
-          ref: 'master'
+          ref: 'dev'
     - run: git fetch --prune --unshallow
     
     - name: Install deps (macOS)
