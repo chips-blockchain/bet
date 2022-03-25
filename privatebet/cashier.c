@@ -201,7 +201,7 @@ int32_t bet_process_payout_tx(cJSON *argjson, struct cashier *cashier_info)
 	int32_t retval = OK;
 	char *sql_query = NULL;
 
-	sql_query = calloc(1, 400);
+	sql_query = calloc(sql_query_size, sizeof(char));
 	sprintf(sql_query,
 		"UPDATE c_tx_addr_mapping set payin_tx_id_status = 0, payout_tx_id = %s where table_id = \"%s\";",
 		cJSON_Print(cJSON_GetObjectItem(argjson, "tx_info")), jstr(argjson, "table_id"));
@@ -219,7 +219,7 @@ int32_t bet_process_game_info(cJSON *argjson, struct cashier *cashier_info)
 	char *sql_query = NULL;
 	cJSON *game_state = NULL;
 
-	sql_query = calloc(1, 2000);
+	sql_query = calloc(sql_query_size, sizeof(char));
 	game_state = cJSON_GetObjectItem(argjson, "game_state");
 	sprintf(sql_query, "INSERT into cashier_game_state values(\"%s\", \'%s\');", jstr(argjson, "table_id"),
 		cJSON_Print(game_state));
@@ -236,21 +236,21 @@ cJSON *bet_resolve_game_dispute(cJSON *game_info)
 	int *cashier_node_status = NULL;
 	int *validation_status = NULL;
 	char **cashier_node_ips = NULL;
-	int32_t no_of_cashier_nodes, approved_cashiers_count = 0;
+	int32_t no_of_cashier_nodes, approved_cashiers_count = 0, ip_length = 20;
 
 	msig_addr_nodes = cJSON_CreateArray();
 	msig_addr_nodes = cJSON_Parse(jstr(game_info, "msig_addr_nodes"));
 
 	no_of_cashier_nodes = cJSON_GetArraySize(msig_addr_nodes);
-	cashier_node_status = (int *)malloc(no_of_cashier_nodes * sizeof(int));
-	validation_status = (int *)malloc(no_of_cashier_nodes * sizeof(int));
-	cashier_node_ips = (char **)malloc(no_of_cashier_nodes * sizeof(int *));
+	cashier_node_status = calloc(no_of_cashier_nodes, sizeof(int));
+	validation_status = calloc(no_of_cashier_nodes, sizeof(int));
+	cashier_node_ips = calloc(no_of_cashier_nodes, sizeof(char *));
 
 	min_cashiers = jint(game_info, "min_cashiers");
 
 	for (int32_t i = 0; i < cJSON_GetArraySize(msig_addr_nodes); i++) {
 		cashier_node_status[i] = 0;
-		cashier_node_ips[i] = calloc(1, 20);
+		cashier_node_ips[i] = calloc(ip_length, sizeof(char));
 		strcpy(cashier_node_ips[i], unstringify(cJSON_Print(cJSON_GetArrayItem(msig_addr_nodes, i))));
 		for (int32_t j = 0; j < no_of_notaries; j++) {
 			if (notary_status[j] == 1) {
@@ -338,7 +338,7 @@ cJSON *bet_resolve_game_dispute(cJSON *game_info)
 			cJSON_AddStringToObject(update_tx_info, "payout_tx_id", unstringify(cJSON_Print(tx)));
 			bet_msg_multiple_cashiers(update_tx_info, cashier_node_ips, no_of_cashier_nodes);
 			char *sql_query = NULL;
-			sql_query = calloc(1, sql_query_size);
+			sql_query = calloc(sql_query_size, sizeof(char));
 			sprintf(sql_query, "UPDATE player_tx_mapping set status = 0 where tx_id = \'%s\';",
 				jstr(game_info, "tx_id"));
 			bet_run_query(sql_query);
@@ -425,7 +425,7 @@ static int32_t bet_update_tx_spent(cJSON *argjson)
 	int retval = OK;
 	char *sql_query = NULL;
 
-	sql_query = calloc(1, sql_query_size);
+	sql_query = calloc(sql_query_size, sizeof(char));
 	sprintf(sql_query,
 		"UPDATE c_tx_addr_mapping set payin_tx_id_status = 0, payout_tx_id = \'%s\' where payin_tx_id_status =\'%s\';",
 		jstr(argjson, "payout_tx_id"), jstr(argjson, "payin_tx_id"));
@@ -442,21 +442,21 @@ static cJSON *bet_reverse_disputed_tx(cJSON *game_info)
 	int min_cashiers, active_cashiers = 0;
 	int *cashier_node_status = NULL;
 	char **cashier_node_ips = NULL;
-	int32_t no_of_cashier_nodes;
+	int32_t no_of_cashier_nodes, ip_addr_len = 20;
 	cJSON *tx = NULL;
 
 	msig_addr_nodes = cJSON_CreateArray();
 	msig_addr_nodes = cJSON_Parse(jstr(game_info, "msig_addr_nodes"));
 
 	no_of_cashier_nodes = cJSON_GetArraySize(msig_addr_nodes);
-	cashier_node_status = (int *)malloc(no_of_cashier_nodes * sizeof(int));
-	cashier_node_ips = (char **)malloc(no_of_cashier_nodes * sizeof(int *));
+	cashier_node_status = calloc(no_of_cashier_nodes, sizeof(int));
+	cashier_node_ips = calloc(no_of_cashier_nodes, sizeof(char *));
 
 	min_cashiers = jint(game_info, "min_cashiers");
 
 	for (int32_t i = 0; i < cJSON_GetArraySize(msig_addr_nodes); i++) {
 		cashier_node_status[i] = 0;
-		cashier_node_ips[i] = calloc(1, 20);
+		cashier_node_ips[i] = calloc(ip_addr_len, sizeof(char));
 		strcpy(cashier_node_ips[i], unstringify(cJSON_Print(cJSON_GetArrayItem(msig_addr_nodes, i))));
 		for (int32_t j = 0; j < no_of_notaries; j++) {
 			if (notary_status[j] == 1) {
@@ -540,11 +540,11 @@ int32_t bet_process_dispute(cJSON *argjson, struct cashier *cashier_info)
 	cJSON_AddStringToObject(dispute_response, "method", "dispute_response");
 	cJSON_AddStringToObject(dispute_response, "id", jstr(argjson, "id"));
 
-	hex_data = calloc(1, tx_data_size * 2);
+	hex_data = calloc(tx_data_size * 2, sizeof(char));
 	retval = chips_extract_data(jstr(argjson, "tx_id"), &hex_data);
 
 	if ((retval == OK) && (hex_data)) {
-		data = calloc(1, tx_data_size);
+		data = calloc(tx_data_size, sizeof(char));
 		hexstr_to_str(hex_data, data);
 		player_info = cJSON_CreateObject();
 		player_info = cJSON_Parse(data);
@@ -568,7 +568,7 @@ static int32_t bet_process_dealer_info(cJSON *argjson)
 	int32_t retval = OK;
 	char *sql_query = NULL;
 
-	sql_query = calloc(1, sql_query_size);
+	sql_query = calloc(sql_query_size, sizeof(char));
 	sprintf(sql_query, "INSERT into dealers_info values(\'%s\');", jstr(argjson, "ip"));
 	retval = bet_run_query(sql_query);
 	if (sql_query)
@@ -901,7 +901,7 @@ void bet_raise_dispute(char *tx_id)
 		}
 	}
 
-	sql_query = calloc(1, sql_query_size);
+	sql_query = calloc(sql_query_size, sizeof(char));
 	if ((response_info) && (jstr(response_info, "payout_tx"))) {
 		dlg_info("The tx::%s has been reversed with the payout_tx::%s", jstr(dispute_info, "tx_id"),
 			 jstr(response_info, "payout_tx"));
@@ -993,7 +993,7 @@ int32_t bet_clear_tables()
 	int32_t retval = -1;
 	char *sql_query = NULL;
 
-	sql_query = calloc(1, 400);
+	sql_query = calloc(sql_query_size, sizeof(char));
 	sprintf(sql_query, "DELETE from dealers_info");
 	retval = bet_run_query(sql_query);
 	if (sql_query)

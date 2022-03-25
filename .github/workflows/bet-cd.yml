@@ -38,7 +38,7 @@ jobs:
       
     - name: Extract git tag
       shell: bash
-      run: echo "##[set-output name=gittag;]$(echo $(git describe --always))"
+      run: echo "##[set-output name=gittag;]$(IFS='-' read -r -a array <<< $(git describe --always) && echo "${array[0]}-${array[1]}")"
       id: extract_git_tag
 
     - name: List files
@@ -73,7 +73,7 @@ jobs:
        
      - name: Extract git tag
        shell: bash
-       run: echo "##[set-output name=gittag;]$(echo $(git describe --always))"
+       run: echo "##[set-output name=gittag;]$(IFS='-' read -r -a array <<< $(git describe --always) && echo "${array[0]}-${array[1]}")"
        id: extract_git_tag
   
      - name: List files
@@ -82,14 +82,14 @@ jobs:
          tar -czvf bet-linux-aarch64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz privatebet/bet privatebet/cashierd privatebet/config && \
          ls -lh bet-linux-aarch64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
   
+     - name: Cleanup after build
+       run: sed -i 's/clean=.*/clean=1/' /home/pi/trigger
+       
      - name: Upload bet-linux release files
        uses: actions/upload-artifact@v2
        with:
          name: bet-linux-aarch64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
          path: /home/pi/actions-runner/_work/bet/bet/bet-linux-aarch64-${{ steps.extract_git_tag.outputs.gittag }}.tar.gz
-
-#      - name: Cleanup after build
-#        run: rm -rf /home/pi/actions-runner/_work/bet
 
 
 
@@ -139,7 +139,7 @@ jobs:
       
     - name: Extract git tag
       shell: bash
-      run: echo "##[set-output name=gittag;]$(echo $(git describe --always))"
+      run: echo "##[set-output name=gittag;]$(array=($(echo $(git describe --always) | tr '-' "\n")) && echo "${array[0]}-${array[1]}")"
       id: extract_git_tag
 
     - name: List files
@@ -171,7 +171,7 @@ jobs:
 
         - name: Extract git tag
           shell: bash
-          run: echo "##[set-output name=gittag;]$(echo $(git describe --always))"
+          run: echo "##[set-output name=gittag;]$(IFS='-' read -r -a array <<< $(git describe --always) && echo "${array[0]}-${array[1]}")"
           id: extract_git_tag
 
         - uses: actions/download-artifact@v2
@@ -215,7 +215,7 @@ jobs:
               - SHA: ${{ steps.shortify_commit.outputs.sha_short }}
               - Version tag: ${{ steps.extract_git_tag.outputs.gittag }}
             draft: false
-            prerelease: true
+            prerelease: false
         
         - name: Upload Linux Release Asset
           id: upload-linux-release-asset 

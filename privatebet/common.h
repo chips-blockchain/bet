@@ -1,70 +1,70 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#define CHANNELD_AWAITING_LOCKIN 2
-#define CHANNELD_NORMAL 3
+// clang-format off
+#define CHANNELD_AWAITING_LOCKIN    2
+#define CHANNELD_NORMAL             3
 
-#define hand_size 7
-#define no_of_hole_cards 2
-#define no_of_flop_cards 3
-#define no_of_turn_card 1
-#define no_of_river_card 1
-#define no_of_community_cards 5
+#define hand_size                   7
+#define no_of_hole_cards            2
+#define no_of_flop_cards            3
+#define no_of_turn_card             1
+#define no_of_river_card            1
+#define no_of_community_cards       5
 
 #define NSUITS 4
 #define NFACES 13
 
 #define table_stack 200
 
-// clang-format off
+
 enum blinds { 
 	small_blind_amount = 1, 
-	big_blind_amount = 2 
+	big_blind_amount   = 2 
 };
 
 enum bet_dcv_state { 
 	dealer_table_empty = 0, 
-	dealer_table_full = 1, 
+	dealer_table_full  = 1, 
 	pos_on_table_empty = 2, 
-	pos_on_table_full = 3 
+	pos_on_table_full  = 3 
 };
 
-// clang-format on
 
-#define mchips_msatoshichips 1000000 // 0.01mCHIPS
-#define channel_fund_satoshis 16777215 // 0.167CHIPS this is the mx limit set up the c lightning node
-#define satoshis 100000000 //10^8 satoshis for 1 COIN
-#define satoshis_per_unit 1000
-#define normalization_factor 100
+#define mchips_msatoshichips    1000000 // 0.01mCHIPS
+#define channel_fund_satoshis   16777215 // 0.167CHIPS this is the mx limit set up the c lightning node
+#define satoshis                100000000 //10^8 satoshis for 1 COIN
+#define satoshis_per_unit       1000
+#define normalization_factor    100
 
-#define CARDS777_MAXCARDS 52 // 52    //
-#define CARDS777_MAXPLAYERS 10 // 9   //
-#define CARDS777_MAXROUNDS 4 // 9   //
-#define CARDS777_MAXCHIPS 1000
-#define CARDS777_CHIPSIZE (SATOSHIDEN / CARDS777_MAXCHIPS)
-#define BET_PLAYERTIMEOUT 15
-#define BET_GAMESTART_DELAY 10
-#define BET_RESERVERATE 1.025
-#define LN_FUNDINGERROR "\"Cannot afford funding transaction\""
+#define CARDS777_MAXCARDS       52 // 52    //
+#define CARDS777_MAXPLAYERS     10 // 9   //
+#define CARDS777_MAXROUNDS      4 // 9   //
+#define CARDS777_MAXCHIPS       1000
+#define CARDS777_CHIPSIZE       (SATOSHIDEN / CARDS777_MAXCHIPS)
+#define BET_PLAYERTIMEOUT       15
+#define BET_GAMESTART_DELAY     10
+#define BET_RESERVERATE         1.025
+#define LN_FUNDINGERROR         "\"Cannot afford funding transaction\""
 
-#define tx_spent 0
-#define tx_unspent 1
+#define tx_spent    0
+#define tx_unspent 	1
 
-#define dealer_pub_sub_port 7797
-#define dealer_push_pull_port 7798
+#define dealer_pub_sub_port         7797
+#define dealer_push_pull_port       7798
+#define cashier_pub_sub_port        7901
+#define cashier_push_pull_port      7902
+#define dealer_bvv_pub_sub_port     7903
+#define dealer_bvv_push_pull_port   7904
+#define gui_ws_port                 9000
 
-#define cashier_pub_sub_port 7901
-#define cashier_push_pull_port 7902
+#define default_chips_tx_fee        0.001
+#define default_bb_in_chips         0.01
+#define default_min_stake_in_bb     20
+#define default_max_stake_in_bb     100
 
-#define dealer_bvv_pub_sub_port 7903
-#define dealer_bvv_push_pull_port 7904
-
-#define gui_ws_port 9000
-
-#define default_chips_tx_fee 0.001
-#define default_bb_in_chips 0.01
-#define default_min_stake_in_bb 20
-#define default_max_stake_in_bb 100
+#define BET_WITHOUT_LN 0
+#define BET_WITH_LN    1      
 
 extern bits256 v_hash[CARDS777_MAXCARDS][CARDS777_MAXCARDS];
 extern bits256 g_hash[CARDS777_MAXPLAYERS][CARDS777_MAXCARDS];
@@ -140,4 +140,7 @@ extern char dcv_hosted_gui_url[128];
 int32_t is_table_private;
 char table_password[128];
 char player_name[128];
+
+int32_t bet_ln_config; 
+extern int64_t sc_start_block;
 #endif

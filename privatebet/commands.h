@@ -6,6 +6,7 @@
 
 int32_t bet_alloc_args(int argc, char ***argv);
 void bet_dealloc_args(int argc, char ***argv);
+char **bet_copy_args_with_size(int argc, ...);
 char **bet_copy_args(int argc, ...);
 int32_t chips_iswatchonly(char *address);
 void chips_spend_multi_sig_address(char *address, double amount);
@@ -44,6 +45,7 @@ cJSON *chips_get_raw_tx(char *tx);
 cJSON *chips_decode_raw_tx(cJSON *raw_tx);
 void chips_validate_tx(char *tx);
 int32_t chips_extract_data(char *tx, char **rand_str);
+cJSON *chips_extract_tx_data_in_JSON(char *tx);
 cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data);
 cJSON *chips_transfer_funds_with_data(double amount, char *address, char *data);
 cJSON *chips_deposit_to_ln_wallet(double channel_chips);
@@ -67,3 +69,4 @@ int32_t ln_check_peer_and_connect(char *id);
 int32_t ln_get_channel_status(char *id);
 int32_t ln_establish_channel(char *uri);
 char *bet_git_version();
+int32_t scan_games_info();

@@ -434,24 +434,30 @@ cJSON *bet_get_seats_json(int32_t max_players)
 int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct privatebet_vars *vars)
 {
 	int32_t retval = OK;
-	char *uri = NULL, *type = NULL;
 	cJSON *player_info = NULL;
+	char *uri = NULL, *type = NULL;
 
 	bet->numplayers = ++players_joined;
 	dcv_info.peerpubkeys[jint(argjson, "gui_playerID")] = jbits256(argjson, "pubkey");
-	strcpy((char *)dcv_info.uri[jint(argjson, "gui_playerID")], jstr(argjson, "uri"));
 
-	uri = (char *)malloc(ln_uri_length * sizeof(char));
-	type = ln_get_uri(&uri);
-	dlg_info("%s::\n%s", type, uri);
+	if (bet_ln_config == BET_WITH_LN) {
+		strcpy((char *)dcv_info.uri[jint(argjson, "gui_playerID")], jstr(argjson, "uri"));
+		uri = (char *)malloc(ln_uri_length * sizeof(char));
+		type = ln_get_uri(&uri);
+		dlg_info("%s::\n%s", type, uri);
+	}
 
 	player_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(player_info, "method", "join_res");
 
 	cJSON_AddNumberToObject(player_info, "playerid", jint(argjson, "gui_playerID"));
 	jaddbits256(player_info, "pubkey", jbits256(argjson, "pubkey"));
-	cJSON_AddStringToObject(player_info, "uri", uri);
-	cJSON_AddStringToObject(player_info, "type", type);
+
+	if (bet_ln_config == BET_WITH_LN) {
+		cJSON_AddStringToObject(player_info, "uri", uri);
+		cJSON_AddStringToObject(player_info, "type", type);
+	}
+
 	cJSON_AddNumberToObject(player_info, "dealer", dealerPosition);
 	cJSON_AddNumberToObject(player_info, "pos_status", pos_on_table_empty);
 	cJSON_AddStringToObject(player_info, "req_identifier", jstr(argjson, "req_identifier"));
@@ -470,6 +476,7 @@ int32_t bet_player_join_req(cJSON *argjson, struct privatebet_info *bet, struct 
 	retval = (nn_send(bet->pubsock, cJSON_Print(player_info), strlen(cJSON_Print(player_info)), 0) < 0) ?
 			 ERR_NNG_SEND :
 			 OK;
+
 	if (uri)
 		free(uri);
 	return retval;
@@ -896,7 +903,7 @@ void bet_game_info(struct privatebet_info *bet, struct privatebet_vars *vars)
 
 	int argc = 3;
 	char **argv = NULL;
-	char *sql_query = calloc(1, arg_size);
+	char *sql_query = calloc(sql_query_size, sizeof(char));
 	bet_alloc_args(argc, &argv);
 	strcpy(argv[0], "dcv_game_state");
 	sprintf(argv[1], "\'%s\'", table_id);
@@ -958,6 +965,7 @@ static cJSON *payout_tx_data_info(struct privatebet_info *bet, struct privatebet
 		}
 	}
 	cJSON_AddItemToObject(game_info, "msig_addr_nodes", msig_addr_nodes);
+	cJSON_AddStringToObject(game_info, "tx_type", "payout");
 	return game_info;
 }
 
@@ -1021,7 +1029,7 @@ static int32_t bet_dcv_poker_winner(struct privatebet_info *bet, struct privateb
 		}
 	}
 	data_info = payout_tx_data_info(bet, vars);
-	hex_str = calloc(1, 2 * tx_data_size);
+	hex_str = calloc(tx_data_size * 2, sizeof(char));
 	str_to_hexstr(cJSON_Print(data_info), hex_str);
 
 	payout_tx_info = chips_create_payout_tx(payout_info, no_of_txs, tx_ids, hex_str);
@@ -1398,11 +1406,11 @@ static int32_t bet_dcv_verify_tx(cJSON *argjson, struct privatebet_info *bet)
 	}
 
 	if (chips_check_if_tx_unspent(cJSON_Print(tx_info)) == 1) {
-		hex_data = calloc(1, tx_data_size * 2);
+		hex_data = calloc(tx_data_size * 2, sizeof(char));
 		retval = chips_extract_data(cJSON_Print(tx_info), &hex_data);
 		if (retval != OK)
 			goto end;
-		data = calloc(1, tx_data_size);
+		data = calloc(tx_data_size, sizeof(char));
 		hexstr_to_str(hex_data, data);
 		data_info = cJSON_CreateObject();
 		data_info = cJSON_Parse(data);
@@ -1519,10 +1527,12 @@ static int32_t bet_dcv_process_join_req(cJSON *argjson, struct privatebet_info *
 					 OK;
 
 			heartbeat_on = 1;
-			retval = bet_ln_check(bet);
-			if (retval < 0) {
-				dlg_error("Issue in establishing the LN channels");
-				return retval;
+			if (bet_ln_config == BET_WITH_LN) {
+				retval = bet_ln_check(bet);
+				if (retval < 0) {
+					dlg_error("Issue in establishing the LN channels");
+					return retval;
+				}
 			}
 			retval = bet_check_bvv_ready(bet);
 		}
@@ -1554,7 +1564,7 @@ static int32_t bet_dcv_process_tx(cJSON *argjson, struct privatebet_info *bet, s
 			vars->winners[i] = 0;
 		}
 	}
-	sql_stmt = calloc(1, sql_query_size);
+	sql_stmt = calloc(sql_query_size, sizeof(char));
 
 	msig_addr_nodes = cJSON_CreateArray();
 	for (int32_t i = 0; i < no_of_notaries; i++) {
@@ -1668,9 +1678,7 @@ void bet_dcv_backend_thrd(void *_ptr)
 	if ((method = jstr(argjson, "method")) != 0) {
 		dlg_info("%s", method);
 		if (strcmp(method, "join_req") == 0) {
-			//pthread_mutex_lock(&mutex);
 			retval = bet_dcv_process_join_req(argjson, bet, vars);
-			//pthread_mutex_unlock(&mutex);
 		} else if (strcmp(method, "init_p") == 0) {
 			retval = bet_dcv_init(argjson, bet, vars);
 			if (dcv_info.numplayers == dcv_info.maxplayers) {
