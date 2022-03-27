@@ -79,7 +79,7 @@ jobs:
        uses: actions/checkout@v2
        with:
         ref: ${{ steps.extract_branch.outputs.branch }}
-       run: git fetch --prune --unshallow
+     - run: git fetch --prune --unshallow
        
      - name: configure
        run: ./configure --enable-static
@@ -126,7 +126,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         ref: ${{ steps.extract_branch.outputs.branch }}
-      run: git fetch --prune --unshallow
+    - run: git fetch --prune --unshallow
     
     - name: Install deps (macOS)
       run: |
