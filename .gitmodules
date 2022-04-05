@@ -13,7 +13,7 @@
 	url = https://github.com/sg777/dlg
 [submodule "external/libwebsockets"]
 	path = external/libwebsockets
-	url = https://github.com/warmcat/libwebsockets
+	url = https://github.com/sg777/libwebsockets
 [submodule "external/cmake"]
 	path = external/cmake
 	url = https://github.com/Kitware/CMake.git
