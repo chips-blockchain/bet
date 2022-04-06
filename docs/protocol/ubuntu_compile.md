@@ -50,7 +50,8 @@ Navigate to the file atomic.h that is in the dbinc directory. Somewhere around l
 You will also do something simolar around line 179. After that, re-run make to build Berkeley DB 4.8.
 ```
 
-If boost is not there install boost library.
+### Installing boost library
+If boost is not there install it as follows:
 ```
 cd
 wget wget "https://sourceforge.net/projects/boost/files/boost/1.72.0/boost_1_72_0.tar.gz"
