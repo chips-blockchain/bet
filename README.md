@@ -13,10 +13,11 @@ Bet can be played with or without LN. please go through the [existing tradeoffs]
 There are many different ways in which you can setup the nodes to play the poker using bet. Here are some of the ways in which you can setup the nodes:
 * The easy approach - Using the docker 
 * The hardway way -  By compiling the chips and bet repos all the way. 
+* Using the precompiled binaries
 * Using the compilation script
 
 Irrespective of whichever approach you follow, the prerequisites and configuration of nodes remain same
-### Prerequisites
+## Prerequisites
 ##### For Player and Dealer nodes
 * Ports used by the respective entities must be open. Below are the list of the ports used and should be remained open incase if you have any firewall configurations.
 ```
@@ -29,9 +30,14 @@ Irrespective of whichever approach you follow, the prerequisites and configurati
 #### For Dealer and Cashier nodes
 * The dealer and cashier nodes should need the static public IP for the nodes on which they setup.
 
+## Configuring the nodes
+The behaviour of the node is based on how you configure it. Each node comes up with the default configurations which you can check in the respective links, based on the type of the node which you running its highly advisable to check on these configuration settings.
+1. [Configuring Player Node](./docs/protocol/player_setup.md)
+2. [Configuring Dealer Node](./docs/protocol/dealer_setup.md)
+   <br/>In this we discuss more details about how to setup the dealer node and also steps to host a private table. 
+3. [Configuring Cashier Node](./docs/protocol/cashier_setup.md)
 
-
-Lets take a look into one by one approach and you can follow either of these approaches to setup the chips and bet nodes.
+Now lets take a look into one by one approach and you can follow either of these approaches to setup the chips and bet nodes.
 
 ## Approach1 :- Playing using Docker - It all takes few commands with the setup time <5 mins 
 The docker image is built on top of the ubuntu 20.04 base image for bet. The simplest way to play poker is using the docker images. All the docker images for the bet are maintained here
@@ -75,24 +81,19 @@ cd
 2. [Compiling all the repos needed on Ubuntu](./docs/protocol/ubuntu_compile.md)
 3. [Detailed compilation of all the repos needed on various platforms](./docs/protocol/compile.md)
 
+## Approach3 :- Using the precompiled binaries
+We making automated [ binary releases](https://github.com/chips-blockchain/bet/releases) for various platforms. The latest binaries from here can be taken to setup the nodes.
 ### Downloading precomipled binaries & CHIPS bootstrap node
 1. [Precompiled binaries](./docs/protocol/release.md#downloading-precombiled-binaries-for-linux)
 2. [CHIPS bootstrap node](./docs/protocol/release.md#downloading-chips-bootstrap-node)
 
-## Approach3 :- Using the installation script
+## Approach4 :- Using the installation script
 
 If you wish to install everything required for setting up Pangea Poker, you can use the following command to auto-install Pangea Poker:
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/chips-blockchain/bet/master/tools/install-pangea.sh)"
 ```
-
-
-## Setting up Bet Nodes
-1. [Setting Up Player Node](./docs/protocol/player_setup.md)
-2. [Setting Up Dealer Node](./docs/protocol/dealer_setup.md)
-   <br/>In this we discuss more details about how to setup the dealer node and also steps to host a private table. 
-3. [Setting Up Cashier Node](./docs/protocol/cashier_setup.md)
 
 ## Coomunication b/w Bet Nodes
 The communication b/w the nodes at very high level is described [here](./docs/protocol/node_communication.md). 
