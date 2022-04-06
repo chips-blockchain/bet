@@ -39,13 +39,13 @@ If you wish to install everything required for setting up Pangea Poker, you can 
 * 9000 - This port is used to have websocket communication between GUI and {player,dealer} nodes.
 ```
 
-### Setting up Bet Nodes
+## Setting up Bet Nodes
 1. [Setting Up Player Node](./docs/protocol/player_setup.md)
 2. [Setting Up Dealer Node](./docs/protocol/dealer_setup.md)
    <br/>In this we discuss more details about how to setup the dealer node and also steps to host a private table. 
 3. [Setting Up Cashier Node](./docs/protocol/cashier_setup.md)
 
-### Playing using Docker
+## Playing using Docker
 The docker image is built on top of the ubuntu 20.04 base image for bet. The simplest way to play poker is using the docker images. All the docker images for the bet are maintained here
 ```
 https://hub.docker.com/r/sg777/bet/tags
@@ -75,10 +75,11 @@ cd
 ./bet/privatebet/bet dcv <host_ip>
 
 ```
+## Coomunication b/w Bet Nodes
+The communication b/w the nodes at very high level is described [here](./docs/protocol/node_communication.md). 
 
+## CHIPS & LN Upgrade
+[Here](./docs/protocol/upgrade.md) contains the list of API's that bet uses from chips and ln. So whenever any upstream changes made to either chips and ln repos one must be careful to check if there is any change in these API functionalities, inputs and outputs.
 
-### [Coomunication b/w Bet Nodes](./docs/protocol/node_communication.md) 
-
-### [CHIPS & LN Upgrade](./docs/protocol/upgrade.md)
-
-### [Glossary](./docs/protocol/glossary.md) 
+## Glossary
+Many of the times we use short hand abbreviations, so glossary for it is [here](./docs/protocol/glossary.md). 
