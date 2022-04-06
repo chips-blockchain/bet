@@ -56,7 +56,7 @@ docker run -it --name poker --net=host sg777/bet:v1.2
 #### step3 :- Running chips node
 Once you have access to the docker shell, you can load the chips from the [chips bootstrap node](./docs/protocol/release.md#downloading-chips-bootstrap-node). Running the below script pulls the bootstrap node and configures the chips node.
 ```
-cd && load_bootstrap_node.sh
+cd && ./load_bootstrap_node.sh
 ```
 Then run the chips daemon
 ```
