@@ -59,17 +59,17 @@ docker pull sg777/bet:v1
 ```
 docker run -it --name poker --net=host sg777/bet:v1
 ```
-Once you access the shell of docker image run the chips node
+#### Once you access the shell of docker image run the chips node
 ```
 cd
 ./chips/src/chipsd &
 ```
-If you are a player run the player as follows
+#### If you are a player run the player as follows
 ```
 cd
 ./bet/privatebet/bet player
 ```
-If you are the dealer run the dealer as follows
+#### If you are the dealer run the dealer as follows
 ```
 cd
 ./bet/privatebet/bet dcv <host_ip>
