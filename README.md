@@ -9,7 +9,66 @@ The detailed technical whitepaper is [here.](https://cdn.discordapp.com/attachme
 ## Configuration
 Bet can be played with or without LN. please go through the [existing tradeoffs](./docs/protocol/architecture_doc.md) we have at the moment to understand the ecosystem in a better way also please go through the [bet without ln](./docs/protocol/bet_without_ln.md) on how to play poker without using ln and it contains some nice info about various methods and info about [various tx's](./docs/protocol/tx_flow.md) involved during the gameplay.
 
-## Guide to use & understand Bet is as follows
+## Setup
+There are many different ways in which you can setup the nodes to play the poker using bet. Here are some of the ways in which you can setup the nodes:
+* The easy approach - Using the docker 
+* The hardway way -  By compiling the chips and bet repos all the way. 
+* Using the compilation script
+
+Irrespective of whichever approach you follow, the prerequisites and configuration of nodes remain same
+### Prerequisites
+##### For Player and Dealer nodes
+* Ports used by the respective entities must be open. Below are the list of the ports used and should be remained open incase if you have any firewall configurations.
+```
+* 7797 - This port is used to have pub-sub communication between Dealer and player nodes.
+* 7798 - This port is used to have pull-push communication between Dealer and player nodes.
+* 7901 - This port is used to have pub-sub communication between Cashier and any other{player,dealer} nodes.
+* 7902 - This port is used to have push-pull communication between Cashier and any other{player,dealer} nodes.
+* 9000 - This port is used to have websocket communication between GUI and {player,dealer} nodes.
+```
+#### For Dealer and Cashier nodes
+* The dealer and cashier nodes should need the static public IP for the nodes on which they setup.
+
+
+
+Lets take a look into one by one approach and you can follow either of these approaches to setup the chips and bet nodes.
+
+## Approach1 :- Playing using Docker - It all takes few commands with the setup time <5 mins 
+The docker image is built on top of the ubuntu 20.04 base image for bet. The simplest way to play poker is using the docker images. All the docker images for the bet are maintained here
+```
+https://hub.docker.com/r/sg777/bet/tags
+```
+Pull the latest tag (at the time of writing this **v1.2** is the latest tag) and do the following to setup the nodes and play
+#### step1 :- Pulling the docker image 
+```
+docker pull sg777/bet:v1.2
+```
+#### step2 :- Running the docker image 
+```
+docker run -it --name poker --net=host sg777/bet:v1.2
+```
+#### step3 :- Running chips node
+Once you have access to the docker shell, you can load the chips from the [chips bootstrap node](./docs/protocol/release.md#downloading-chips-bootstrap-node). Running the below script pulls the bootstrap node and configures the chips node.
+```
+cd && load_bootstrap_node.sh
+```
+Then run the chips daemon
+```
+./chips/src/chipsd &
+```
+#### step4 :- If you are a player run the player as follows
+```
+cd
+./bet/privatebet/bet player
+```
+#### step4 :-  If you are the dealer run the dealer as follows
+```
+cd
+./bet/privatebet/bet dcv <host_ip>
+
+```
+
+## Approach2 :- Compiling the repos from scratch
 
 ### Compilation Guidelines
 1. [Compiling only bet repo](./docs/protocol/ubuntu_compile.md#building-bet)
@@ -20,7 +79,7 @@ Bet can be played with or without LN. please go through the [existing tradeoffs]
 1. [Precompiled binaries](./docs/protocol/release.md#downloading-precombiled-binaries-for-linux)
 2. [CHIPS bootstrap node](./docs/protocol/release.md#downloading-chips-bootstrap-node)
 
-### Installing using auto-install shell script
+## Approach3 :- Using the installation script
 
 If you wish to install everything required for setting up Pangea Poker, you can use the following command to auto-install Pangea Poker:
 
@@ -28,16 +87,6 @@ If you wish to install everything required for setting up Pangea Poker, you can 
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/chips-blockchain/bet/master/tools/install-pangea.sh)"
 ```
 
-### Prerequisites
-1. You need public IP to play the game.
-2. Ports used by the respective entities must be open. Below are the list of the ports used and should be remained open incase if you have any firewall configurations.
-```
-* 7797 - This port is used to have pub-sub communication between Dealer and player nodes.
-* 7798 - This port is used to have pull-push communication between Dealer and player nodes.
-* 7901 - This port is used to have pub-sub communication between Cashier and any other{player,dealer} nodes.
-* 7902 - This port is used to have push-pull communication between Cashier and any other{player,dealer} nodes.
-* 9000 - This port is used to have websocket communication between GUI and {player,dealer} nodes.
-```
 
 ## Setting up Bet Nodes
 1. [Setting Up Player Node](./docs/protocol/player_setup.md)
@@ -45,36 +94,6 @@ If you wish to install everything required for setting up Pangea Poker, you can 
    <br/>In this we discuss more details about how to setup the dealer node and also steps to host a private table. 
 3. [Setting Up Cashier Node](./docs/protocol/cashier_setup.md)
 
-## Playing using Docker
-The docker image is built on top of the ubuntu 20.04 base image for bet. The simplest way to play poker is using the docker images. All the docker images for the bet are maintained here
-```
-https://hub.docker.com/r/sg777/bet/tags
-```
-Pull the latest tag (at the time of writing this **v1** is the latest tag) and do the following to setup the nodes and play
-#### Pulling the docker image
-```
-docker pull sg777/bet:v1
-```
-#### Running the docker image
-```
-docker run -it --name poker --net=host sg777/bet:v1
-```
-#### Once you access the shell of docker image run the chips node
-```
-cd
-./chips/src/chipsd &
-```
-#### If you are a player run the player as follows
-```
-cd
-./bet/privatebet/bet player
-```
-#### If you are the dealer run the dealer as follows
-```
-cd
-./bet/privatebet/bet dcv <host_ip>
-
-```
 ## Coomunication b/w Bet Nodes
 The communication b/w the nodes at very high level is described [here](./docs/protocol/node_communication.md). 
 
