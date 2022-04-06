@@ -45,6 +45,37 @@ If you wish to install everything required for setting up Pangea Poker, you can 
    <br/>In this we discuss more details about how to setup the dealer node and also steps to host a private table. 
 3. [Setting Up Cashier Node](./docs/protocol/cashier_setup.md)
 
+### Playing using Docker
+The docker image is built on top of the ubuntu 20.04 base image for bet. The simplest way to play poker is using the docker images. All the docker images for the bet are maintained here
+```
+https://hub.docker.com/r/sg777/bet/tags
+```
+Pull the latest tag (at the time of writing this **v1** is the latest tag) and do the following to setup the nodes and play
+#### Pulling the docker image
+```
+docker pull sg777/bet:v1
+```
+#### Running the docker image
+```
+docker run -it --name poker --net=host sg777/bet:v1
+```
+Once you access the shell of docker image run the chips node
+```
+cd
+./chips/src/chipsd &
+```
+If you are a player run the player as follows
+```
+cd
+./bet/privatebet/bet player
+```
+If you are the dealer run the dealer as follows
+```
+cd
+./bet/privatebet/bet dcv <host_ip>
+
+```
+
 
 ### [Coomunication b/w Bet Nodes](./docs/protocol/node_communication.md) 
 
