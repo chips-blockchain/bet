@@ -9,6 +9,26 @@ The detailed technical whitepaper is [here.](https://cdn.discordapp.com/attachme
 ## Configuration
 Bet can be played with or without LN. please go through the [existing tradeoffs](./docs/protocol/architecture_doc.md) we have at the moment to understand the ecosystem in a better way also please go through the [bet without ln](./docs/protocol/bet_without_ln.md) on how to play poker without using ln and it contains some nice info about various methods and info about [various tx's](./docs/protocol/tx_flow.md) involved during the gameplay.
 
+## To Play
+
+It's simple, just follow these steps to play poker on bet plarform using CHIPS.
+* **Setup:** Setup the nodes by following any of the approaches mentioned in the [setup documentation](./README.md#setup).
+* **Load the funds:** Load the chips wallet with whatever the amount of the CHIPS that you willing to play. Lets say if you are joining the talbe of stake_size 10 CHIPS, its always advisable to load the CHIPS wallet with >10 CHIPS why because the actions occur during the game are recorded in the CHIPS blockchain and every action of user costs 0.0005 CHIPS tx_fee to the user. 
+```
+To get the chips address on the setup node run
+$chips-cli getnewaddress
+You will get an address and to this address deposit CHIPS to play.
+
+```
+*  **Withdraw funds:** Needless to say, once the game is done, its always advisable to move funds back to your secure wallet. Before withdrawing the funds, if there is any issues like player disconnection, loss of funds like that happens then raise the dispute with the cashier node as mentioned below and then withdraw the funds. 
+```
+cd
+cd bet/privatebet
+./bet game solve
+
+Withdraw using the following command
+./bet withdraw <amount> <to_your_chips_address>
+```
 ## Setup
 There are many different ways in which you can setup the nodes to play the poker using bet. Here are some of the ways in which you can setup the nodes:
 * The easy approach - Using the docker 
