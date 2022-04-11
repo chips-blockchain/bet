@@ -93,6 +93,33 @@ cd
 ./bet/privatebet/bet dcv <host_ip>
 
 ```
+#### step5 :-  Hosting the GUI
+##### Using the GUI hosted by the cashier and dealer nodes
+GUI can be hosted by anyone, by default the GUI is hosted by all the cashier nodes and dealer nodes can also host the GUI as a service they provide to its players. After starting the player node with `./bet player` in the above step, in the logs you see the list of the servers where the GUI hosted something like below:
+```
+[client.c:bet_player_handle_stack_info_resp:1345] Player can use any of the GUI's hosted by cashiers to connect to backend
+[config.c:bet_display_cashier_hosted_gui:236] http://141.94.227.65:1234/
+[config.c:bet_display_cashier_hosted_gui:236] http://141.94.227.66:1234/
+[config.c:bet_display_cashier_hosted_gui:236] http://141.94.227.67:1234/
+[config.c:bet_display_cashier_hosted_gui:236] http://141.94.227.68:1234/
+[config.c:bet_display_cashier_hosted_gui:236] http://159.69.23.30:1234/
+```
+You can access any of these links in your browser and from which you can connect to the players backend which you setup in the step 4.
+
+##### Hosting own GUI
+
+In case if you like to host the GUI, please note that the GUI server is running on the port `1234`, so for this you need to start the docker image as mentioned below: 
+```
+docker run -it -p 1234:1234 sg777/bet:gui_v1.1
+
+Note: gui_v1.1 is latest tag at the time of this writing, always pull the docker image with the latest tag to avoid the manual process of updating and compiling the git repos manually.
+
+cd
+cd pangea-poker
+npm start &
+```
+
+Once you hosted your own GUI, from your local browser you can access the GUI using `http://localhost:1234/`.
 
 ## Approach2 :- Compiling the repos from scratch
 
