@@ -66,14 +66,14 @@ The docker image is built on top of the ubuntu 20.04 base image for bet. The sim
 ```
 https://hub.docker.com/r/sg777/bet/tags
 ```
-Pull the latest tag (at the time of writing this **v1.2** is the latest tag) and do the following to setup the nodes and play
+Pull the latest tag (at the time of writing this **gui_v1.1** is the latest tag) and do the following to setup the nodes and play
 #### step1 :- Pulling the docker image 
 ```
-docker pull sg777/bet:v1.2
+docker pull sg777/bet:gui_v1.1
 ```
 #### step2 :- Running the docker image 
 ```
-docker run -it --name poker --net=host sg777/bet:v1.2
+docker run -it --name poker --net=host sg777/bet:gui_v1.1
 ```
 #### step3 :- Running chips node
 Once you have access to the docker shell, you can load the chips from the [chips bootstrap node](./docs/protocol/release.md#downloading-chips-bootstrap-node). Running the below script pulls the bootstrap node and configures the chips node.
