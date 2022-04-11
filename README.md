@@ -46,6 +46,7 @@ Irrespective of whichever approach you follow, the prerequisites and configurati
 * 7901 - This port is used to have pub-sub communication between Cashier and any other{player,dealer} nodes.
 * 7902 - This port is used to have push-pull communication between Cashier and any other{player,dealer} nodes.
 * 9000 - This port is used to have websocket communication between GUI and {player,dealer} nodes.
+* 1234 - This is the port on which the webserver runs on, this port should be opened if the player is hosting its own GUI.
 ```
 #### For Dealer and Cashier nodes
 * The dealer and cashier nodes should need the static public IP for the nodes on which they setup.
