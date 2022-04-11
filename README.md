@@ -126,6 +126,7 @@ Once you hosted your own GUI, from your local browser you can access the GUI usi
 #### step6 :-  Playing
 Now we have everything ready to play. All you need to just connect to player backend from GUI and play. [Lets play](./docs/protocol/player_gui.md)
 
+***NOTE: Irrespective of whichever approach you follow in setting up the nodes, the steps3-6 remains same.***
 
 ### Approach2 :- Compiling the repos from scratch
 
