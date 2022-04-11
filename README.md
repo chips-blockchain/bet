@@ -69,8 +69,9 @@ Each node comes up with the default configurations which you can check in the re
 3. [Configuring Cashier Node](./docs/protocol/cashier_setup.md)
 
 Now lets take a look into one by one approach and you can follow either of these approaches to setup the chips and bet nodes.
+## Setting up the nodes
 
-## Approach1 :- Playing using Docker - It all takes few commands with the setup time <5 mins 
+### Approach1 :- Playing using Docker - It all takes few commands with the setup time <5 mins 
 The docker image is built on top of the ubuntu 20.04 base image for bet. The simplest way to play poker is using the docker images. All the docker images for the bet are maintained here
 ```
 https://hub.docker.com/r/sg777/bet/tags
@@ -132,20 +133,20 @@ npm start &
 
 Once you hosted your own GUI, from your local browser you can access the GUI using `http://localhost:1234/`.
 
-## Approach2 :- Compiling the repos from scratch
+### Approach2 :- Compiling the repos from scratch
 
-### Compilation Guidelines
+#### Compilation Guidelines
 1. [Compiling only bet repo](./docs/protocol/ubuntu_compile.md#building-bet)
 2. [Compiling all the repos needed on Ubuntu](./docs/protocol/ubuntu_compile.md)
 3. [Detailed compilation of all the repos needed on various platforms](./docs/protocol/compile.md)
 
-## Approach3 :- Using the precompiled binaries
+### Approach3 :- Using the precompiled binaries
 We making automated [ binary releases](https://github.com/chips-blockchain/bet/releases) for various platforms. The latest binaries from here can be taken to setup the nodes.
-### Downloading precomipled binaries & CHIPS bootstrap node
+#### Downloading precomipled binaries & CHIPS bootstrap node
 1. [Precompiled binaries](./docs/protocol/release.md#downloading-precombiled-binaries-for-linux)
 2. [CHIPS bootstrap node](./docs/protocol/release.md#downloading-chips-bootstrap-node)
 
-## Approach4 :- Using the installation script
+### Approach4 :- Using the installation script
 
 If you wish to install everything required for setting up Pangea Poker, you can use the following command to auto-install Pangea Poker:
 
