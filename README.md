@@ -59,18 +59,8 @@ Lets take a look into the details of what these configuration settings mean:
 2. For Dealer configuration follow this [link](./docs/protocol/dealer_configuration.md)
 3. For Cashier configuration follow this [link](./docs/protocol/cashier_configuration.md)
 
-
-
-
-Each node comes up with the default configurations which you can check in the respective links, based on the type of the node which you running its highly advisable to check on these configuration settings.
-1. [Configuring Player Node](./docs/protocol/player_setup.md)
-2. [Configuring Dealer Node](./docs/protocol/dealer_setup.md)
-   <br/>In this we discuss more details about how to setup the dealer node and also steps to host a private table. 
-3. [Configuring Cashier Node](./docs/protocol/cashier_setup.md)
-
-Now lets take a look into one by one approach and you can follow either of these approaches to setup the chips and bet nodes.
 ## Setting up the nodes
-
+Now lets take a look into one by one approach and you can follow either of these approaches to setup the chips and bet nodes.
 ### Approach1 :- Playing using Docker - It all takes few commands with the setup time <5 mins 
 The docker image is built on top of the ubuntu 20.04 base image for bet. The simplest way to play poker is using the docker images. All the docker images for the bet are maintained here
 ```
@@ -133,6 +123,10 @@ npm start &
 
 Once you hosted your own GUI, from your local browser you can access the GUI using `http://localhost:1234/`.
 
+#### step6 :-  Playing
+Now we have everything ready to play. All you need to just connect to player backend from GUI and play. [Lets play](./docs/protocol/player_gui.md)
+
+
 ### Approach2 :- Compiling the repos from scratch
 
 #### Compilation Guidelines
@@ -153,6 +147,7 @@ If you wish to install everything required for setting up Pangea Poker, you can 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/chips-blockchain/bet/master/tools/install-pangea.sh)"
 ```
+
 
 ## Coomunication b/w Bet Nodes
 The communication b/w the nodes at very high level is described [here](./docs/protocol/node_communication.md). 
