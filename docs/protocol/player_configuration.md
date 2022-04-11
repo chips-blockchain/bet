@@ -1,1 +1,25 @@
+## Configuring the player node
 
+All the configurable options for the player can be set in `player_setup.ini` file, which is located at the path `~/bet/privatebet/config`. The default configuration settings are as follows: 
+```
+[player]
+max_allowed_dcv_commission = 5      #This is the max percentage of the dealer commision that the player is willing to pay, if the dealer sets the commission higher than this then the backend node will exit.
+type                       = ipv4   #This will enforce LN and CHIPS run on onion address, atm this will be ignored.
+name                       = ""     #Player can  configure any customized names here, which will be displayed over GUI and is visible to other players.
+table_stake_size		   = 20     #If its x, then it means player is willing to join the table with xBB Chips. This should be in the range of [20-100]. If this is not set then the minimum table stake size which is 20BB will be used by the player to join the table.	
+bet_ln_config              = N      #Set to N if the player willing to use CHIPS blockchain to record game info instead of LN, else Y.
+
+[gui]
+#These are GUI's hosted by the cashier nodes, player can pick any of them in order to connect to its backend from these.
+cashier-1 = http://141.94.227.65:1234/
+cashier-2 = http://141.94.227.66:1234/
+cashier-3 = http://141.94.227.67:1234/
+cashier-4 = http://141.94.227.68:1234/
+cashier-5 = http://159.69.23.30:1234/
+
+[private table]
+is_table_private     = N           #By default this is set to "N", meaning that player can only join the public tables run by the dealer. If this is set to "Y" then it means player only joins the private tables from the dealer.
+table_password       = pangea      #If the player wishes to join the private table, then the player has to set the password that is received from the dealer by any offline/online escrow mechanism, which is outside scope of bet. 
+```
+
+**NOTE:** The default configurations are good enough to play poker using bet without ln. 
