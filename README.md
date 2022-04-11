@@ -51,7 +51,17 @@ Irrespective of whichever approach you follow, the prerequisites and configurati
 * The dealer and cashier nodes should need the static public IP for the nodes on which they setup.
 
 ## Configuring the nodes
-The behaviour of the node is based on how you configure it. Each node comes up with the default configurations which you can check in the respective links, based on the type of the node which you running its highly advisable to check on these configuration settings.
+The behaviour of the node is based on how you configure it. We can enable/disable few functionalities of the players and dealers by making corresponding settings in the configuration files. All the configuration files are located in the path`./bet/privatebet/config`.
+
+Lets take a look into the details of what these configuration settings mean:
+1. For Player configuration follow this [link](./docs/protocol/player_configuration.md)
+2. For Dealer configuration follow this [link](./docs/protocol/dealer_setup.md)
+3. For Cashier configuration follow this [link](./docs/protocol/cashier_setup.md)
+
+
+
+
+Each node comes up with the default configurations which you can check in the respective links, based on the type of the node which you running its highly advisable to check on these configuration settings.
 1. [Configuring Player Node](./docs/protocol/player_setup.md)
 2. [Configuring Dealer Node](./docs/protocol/dealer_setup.md)
    <br/>In this we discuss more details about how to setup the dealer node and also steps to host a private table. 
