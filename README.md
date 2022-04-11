@@ -55,8 +55,8 @@ The behaviour of the node is based on how you configure it. We can enable/disabl
 
 Lets take a look into the details of what these configuration settings mean:
 1. For Player configuration follow this [link](./docs/protocol/player_configuration.md)
-2. For Dealer configuration follow this [link](./docs/protocol/dealer_setup.md)
-3. For Cashier configuration follow this [link](./docs/protocol/cashier_setup.md)
+2. For Dealer configuration follow this [link](./docs/protocol/dealer_configuration.md)
+3. For Cashier configuration follow this [link](./docs/protocol/cashier_configuration.md)
 
 
 
