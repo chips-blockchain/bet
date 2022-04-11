@@ -18,5 +18,7 @@ max_stake            = 100		   #The max table stake size is 100BB.
 is_table_private     = N           #By default the dealer tables are public anyone can join the dealer table, if is_table_private set to "Y" then the dealer table is considered private and players has to provide the table_password in order to join the table.
 table_password       = pangea      #If the table is private dealer must share this password with the players by any offline/online mechanism which is outside bet scope.
 ```
+### To become a dealer
+There are no conditions/constraints to become a dealer are set yet. If you have a machine with the static public IP you can simply host your own dealer node and become a dealer. You even can host private poker tables to play with closed groups, friends and family. 
 
-**NOTE:** There are no conditions/constraints to become a dealer. If you have a machine with the static public IP you can simply host your own dealer node and become a dealer. You even can host private poker tables to play with closed groups, friends and family. 
+In relation to this there is some discussion going on [here](https://github.com/chips-blockchain/bet/issues/193). It's still open, you can share your views on it.
