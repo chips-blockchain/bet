@@ -72,6 +72,7 @@ Pull the latest tag (at the time of writing this **gui_v1.1** is the latest tag)
 docker pull sg777/bet:gui_v1.1
 ```
 #### step2 :- Running the docker image 
+**Note:** Since you sharing the host network with the docker please be make sure to stop chipsd and bet if any running in the host machine.
 ```
 docker run -it --name poker --net=host sg777/bet:gui_v1.1
 ```
