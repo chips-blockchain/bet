@@ -105,11 +105,13 @@ static void cJSON_freenode(cJSON *item)
 static char* cJSON_strdup(const char* str)
 {
     size_t len;
-    char* copy;
-    
-    len = strlen(str) + 1;
-    if (!(copy = (char*)cJSON_mallocstr((int32_t)len+1))) return 0;
-    memcpy(copy,str,len);
+    char* copy = NULL;
+
+	if(str != NULL) {
+	    len = strlen(str) + 1;
+	    if (!(copy = (char*)cJSON_mallocstr((int32_t)len+1))) return 0;
+	    memcpy(copy,str,len);
+	}
     return copy;
 }
 
