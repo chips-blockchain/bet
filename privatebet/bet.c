@@ -190,9 +190,9 @@ void bet_bvv_thrd(char *dcv_ip, const int32_t port)
 	bet_bvv_deinitialize();
 }
 
-static void bet_dcv_bvv_initialize(char *dcv_ip)
+static int32_t bet_dcv_bvv_initialize(char *dcv_ip)
 {
-	int32_t pubsock = -1, pullsock = -1;
+	int32_t pubsock = -1, pullsock = -1, retval = OK;
 	char bind_pub_addr[128], bind_pull_addr[128];
 
 	bet_tcp_sock_address(0, bind_pub_addr, dcv_ip, dealer_bvv_pub_sub_port);
@@ -201,14 +201,21 @@ static void bet_dcv_bvv_initialize(char *dcv_ip)
 	bet_tcp_sock_address(0, bind_pull_addr, dcv_ip, dealer_bvv_push_pull_port);
 	pullsock = bet_nanosock(1, bind_pull_addr, NN_PULL);
 
+	if((pubsock == -1) || (pullsock == -1)) {
+		retval = ERR_PORT_BINDING;
+		return retval;
+	}
+
 	bet_dcv_bvv = calloc(1, sizeof(struct dcv_bvv_sock_info));
 	bet_dcv_bvv->pubsock = pubsock;
 	bet_dcv_bvv->pullsock = pullsock;
+
+	return retval;
 }
 
-static void bet_dcv_initialize(char *dcv_ip)
+static int32_t bet_dcv_initialize(char *dcv_ip)
 {
-	int32_t pubsock = -1, pullsock = -1;
+	int32_t pubsock = -1, pullsock = -1, retval = OK;
 	char bind_pub_addr[128], bind_pull_addr[128];
 
 	bet_tcp_sock_address(0, bind_pub_addr, dcv_ip, dealer_pub_sub_port);
@@ -217,6 +224,11 @@ static void bet_dcv_initialize(char *dcv_ip)
 	bet_tcp_sock_address(0, bind_pull_addr, dcv_ip, dealer_push_pull_port);
 	pullsock = bet_nanosock(1, bind_pull_addr, NN_PULL);
 
+	if((pubsock == -1) || (pullsock == -1)) {
+		retval = ERR_PORT_BINDING;
+		return retval;
+	}
+	
 	bet_dcv = calloc(1, sizeof(struct privatebet_info));
 	bet_dcv->pubsock = pubsock;
 	bet_dcv->pullsock = pullsock;
@@ -249,6 +261,7 @@ static void bet_dcv_initialize(char *dcv_ip)
 	for (int32_t i = 0; i < CARDS777_MAXPLAYERS; i++) {
 		player_pos[i] = 0;
 	}
+	return retval;
 }
 
 static void bet_dcv_deinitialize()
@@ -261,14 +274,24 @@ static void bet_dcv_deinitialize()
 
 static void bet_dcv_thrd(char *dcv_ip)
 {
+	int32_t retval = OK;
 	pthread_t dcv_backend, dcv_thrd, dcv_bvv_thrd;
 
 #ifdef LIVE_THREAD
 	pthread_t live_thrd;
 #endif
 
-	bet_dcv_initialize(dcv_ip);
-	bet_dcv_bvv_initialize(dcv_ip);
+	retval = bet_dcv_initialize(dcv_ip);
+	if(retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
+		exit(-1);
+	}
+	retval = bet_dcv_bvv_initialize(dcv_ip);
+	if(retval != OK) {
+		dlg_error("%s", bet_err_str(retval));
+		exit(-1);
+	}
+
 #ifdef LIVE_THREAD
 	if (OS_thread_create(&live_thrd, NULL, (void *)bet_dcv_heartbeat_loop, (void *)bet_dcv) != 0) {
 		dlg_error("%s", bet_err_str(ERR_PTHREAD_LAUNCHING));
