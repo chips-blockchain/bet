@@ -201,7 +201,7 @@ static int32_t bet_dcv_bvv_initialize(char *dcv_ip)
 	bet_tcp_sock_address(0, bind_pull_addr, dcv_ip, dealer_bvv_push_pull_port);
 	pullsock = bet_nanosock(1, bind_pull_addr, NN_PULL);
 
-	if((pubsock == -1) || (pullsock == -1)) {
+	if ((pubsock == -1) || (pullsock == -1)) {
 		retval = ERR_PORT_BINDING;
 		return retval;
 	}
@@ -224,11 +224,11 @@ static int32_t bet_dcv_initialize(char *dcv_ip)
 	bet_tcp_sock_address(0, bind_pull_addr, dcv_ip, dealer_push_pull_port);
 	pullsock = bet_nanosock(1, bind_pull_addr, NN_PULL);
 
-	if((pubsock == -1) || (pullsock == -1)) {
+	if ((pubsock == -1) || (pullsock == -1)) {
 		retval = ERR_PORT_BINDING;
 		return retval;
 	}
-	
+
 	bet_dcv = calloc(1, sizeof(struct privatebet_info));
 	bet_dcv->pubsock = pubsock;
 	bet_dcv->pullsock = pullsock;
@@ -282,12 +282,12 @@ static void bet_dcv_thrd(char *dcv_ip)
 #endif
 
 	retval = bet_dcv_initialize(dcv_ip);
-	if(retval != OK) {
+	if (retval != OK) {
 		dlg_error("%s", bet_err_str(retval));
 		exit(-1);
 	}
 	retval = bet_dcv_bvv_initialize(dcv_ip);
-	if(retval != OK) {
+	if (retval != OK) {
 		dlg_error("%s", bet_err_str(retval));
 		exit(-1);
 	}
