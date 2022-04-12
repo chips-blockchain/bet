@@ -144,6 +144,9 @@ const char *bet_err_str(int32_t err_no)
 	case ERR_ARG_SIZE_TOO_LONG:
 		return "Argument size is too long";
 		break;
+	case ERR_PORT_BINDING:
+		return "Error in binding to the port";
+		break;
 	default:
 		return "This error is not handled yet...";
 	}

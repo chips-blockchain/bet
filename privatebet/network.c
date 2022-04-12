@@ -56,7 +56,7 @@ char *bet_tcp_sock_address(int32_t bindflag, char *str, char *ipaddr, uint16_t p
 
 int32_t bet_nanosock(int32_t bindflag, char *endpoint, int32_t nntype)
 {
-	int32_t sock, timeout;
+	int32_t sock, timeout, err = OK;
 	if ((sock = nn_socket(AF_SP, nntype)) >= 0) {
 		if (bindflag == 0) {
 			if (nn_connect(sock, endpoint) < 0) {
@@ -66,6 +66,7 @@ int32_t bet_nanosock(int32_t bindflag, char *endpoint, int32_t nntype)
 			}
 		} else {
 			if (nn_bind(sock, endpoint) < 0) {
+				err = ERR_PORT_BINDING;
 				dlg_error("bind to %s error for %s\n", endpoint, nn_strerror(nn_errno()));
 				nn_close(sock);
 				return (-1);
