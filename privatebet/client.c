@@ -1910,6 +1910,7 @@ cJSON *bet_get_available_dealers()
 		if (notary_status[i] == 1) {
 			cashier_response_info = bet_msg_cashier_with_response_id(rqst_dealer_info, notary_node_ips[i],
 										 "rqst_dealer_info_response");
+			dlg_info("cashier ip ::%s \n, response::%s", notary_node_ips[i], cJSON_Print(cashier_response_info));
 			if (cashier_response_info == NULL) {
 				dlg_warn("No response from cashier :: %s", notary_node_ips[i]);
 				continue;

@@ -833,7 +833,7 @@ cJSON *bet_msg_cashier_with_response_id(cJSON *argjson, char *cashier_ip, char *
 
 int32_t bet_msg_cashier(cJSON *argjson, char *cashier_ip)
 {
-	int32_t c_pushsock, bytes, retval = 1;
+	int32_t c_pushsock, bytes, retval = OK;
 	char bind_push_addr[128] = { 0 };
 
 	memset(bind_push_addr, 0x00, sizeof(bind_push_addr));
@@ -842,10 +842,10 @@ int32_t bet_msg_cashier(cJSON *argjson, char *cashier_ip)
 	c_pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
 
 	bytes = nn_send(c_pushsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
-	if (bytes < 0) {
-		retval = -1;
+	if (bytes < 0) {		
+		retval = ERR_NNG_SEND;
+		dlg_error("%s", bet_err_str(ERR_NNG_SEND));
 	}
-
 	nn_close(c_pushsock);
 
 	return retval;
