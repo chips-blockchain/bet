@@ -842,7 +842,7 @@ int32_t bet_msg_cashier(cJSON *argjson, char *cashier_ip)
 	c_pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
 
 	bytes = nn_send(c_pushsock, cJSON_Print(argjson), strlen(cJSON_Print(argjson)), 0);
-	if (bytes < 0) {		
+	if (bytes < 0) {
 		retval = ERR_NNG_SEND;
 		dlg_error("%s", bet_err_str(ERR_NNG_SEND));
 	}
