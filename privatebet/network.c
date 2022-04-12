@@ -31,6 +31,7 @@
 #include "cards777.h"
 #include "common.h"
 #include "gfshare.h"
+#include "err.h"
 
 char *bet_get_etho_ip()
 {
