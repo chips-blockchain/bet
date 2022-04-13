@@ -1561,9 +1561,8 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 	if (reset_lock == 1) {
 		return retval;
 	}
-	dlg_info("Player backend thread started...");
 	if ((method = jstr(argjson, "method")) != 0) {
-		dlg_info("recv :: %s", cJSON_Print(argjson));
+		dlg_info("recv :: %s", method);
 		if (strcmp(method, "join_res") == 0) {
 			bet_update_seat_info(argjson);
 			if (strcmp(jstr(argjson, "req_identifier"), req_identifier) == 0) {
