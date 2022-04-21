@@ -383,11 +383,18 @@ cJSON *validate_given_tx(int64_t block_height, char *txid)
 
 cJSON *chips_transfer_funds_with_data(double amount, char *address, char *data)
 {
-	cJSON *tx_info = NULL, *signed_tx = NULL;
+	cJSON *tx_info = NULL, *signed_tx = NULL, *raw_tx_info = NULL;
 	char *raw_tx = NULL;
 
 	raw_tx = calloc(arg_size, sizeof(char));
-	strncpy(raw_tx, cJSON_str(chips_create_raw_tx_with_data(amount, address, data)), arg_size);
+
+	raw_tx_info = chips_create_raw_tx_with_data(amount, address, data);
+	if(raw_tx_info == NULL) {
+		dlg_error("%s", bet_err_str(ERR_CHIPS_CREATE_RAW_TX));
+		return NULL;
+	}
+	
+	strncpy(raw_tx, cJSON_str(raw_tx_info), arg_size);
 	signed_tx = cJSON_CreateObject();
 	signed_tx = chips_sign_raw_tx_with_wallet(raw_tx);
 	if (jstr(signed_tx, "error") == NULL) {
@@ -610,6 +617,9 @@ cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 					}
 				}
 			}
+		}
+		if(amount < temp_balance) {
+			return NULL;
 		}
 		if (change != 0) {
 			cJSON_AddNumberToObject(address_info, changeAddress, change);
@@ -1503,7 +1513,6 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 		strcat(command, argv[i]);
 		strcat(command, " ");
 	}
-
 	if (strcmp(argv[0], "lightning-cli") == 0)
 		dlg_info("LN command :: %s\n", command);
 
