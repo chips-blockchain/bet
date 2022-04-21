@@ -33,28 +33,33 @@ All the errors that come across in bet are defined here. The error numbers are a
 #define ERR_PLAYER_STAKE_MISMATCH 		14
 #define ERR_GAME_RECORD_TX				15
 
-//Chips LN Errors
-#define ERR_CHIPS_TX_SIGNING 			32
-#define ERR_CHIPS_INVALID_TX 			33
-#define ERR_LN 							34
-#define ERR_LN_CHANNEL_ESTABLISHMENT 	35
-#define ERR_LN_IS_NOT_OVER_TOR 			36
-#define ERR_CHIPS_INSUFFICIENT_FUNDS 	37
-#define ERR_LN_INSUFFICIENT_FUNDS 		38
+//Chips Errors (33-48)
+#define ERR_CHIPS_CREATE_RAW_TX			33
+#define ERR_CHIPS_GET_RAW_TX 			34
+#define ERR_CHIPS_DECODE_TX 			35
+#define ERR_CHIPS_TX_SIGNING 			36
+#define ERR_CHIPS_INVALID_TX 			37
+#define ERR_CHIPS_INSUFFICIENT_FUNDS 	38
 #define ERR_CHIPS_TX_FAILED 			39
-#define ERR_LN_FUNDCHANNEL 				40
-#define ERR_LN_PAY 						41
-#define ERR_LN_ADDRESS_TYPE_MISMATCH 	42
-#define ERR_LN_COMMAND 					43
-#define ERR_CHIPS_COMMAND 				44
-#define ERR_LN_INVOICE_CREATE 			45
-#define ERR_LN_NEWADDR 					46
-#define ERR_LN_LISTFUNDS 				47
-#define ERR_LN_CONNECT 					48
-#define ERR_LN_LISTPEERS 				49
-#define ERR_LN_PEERCHANNEL_STATE 		50
-#define ERR_CHIPS_GET_RAW_TX 			51
-#define ERR_CHIPS_DECODE_TX 			52
+#define ERR_CHIPS_COMMAND 				40
+
+
+//LN Errors (49-64)
+#define ERR_LN 							49
+#define ERR_LN_CHANNEL_ESTABLISHMENT 	50
+#define ERR_LN_IS_NOT_OVER_TOR 			51
+#define ERR_LN_INSUFFICIENT_FUNDS 		52
+#define ERR_LN_FUNDCHANNEL 				53
+#define ERR_LN_PAY 						54
+#define ERR_LN_ADDRESS_TYPE_MISMATCH 	55
+#define ERR_LN_COMMAND 					56
+#define ERR_LN_INVOICE_CREATE 			57
+#define ERR_LN_NEWADDR 					58
+#define ERR_LN_LISTFUNDS 				59
+#define ERR_LN_CONNECT 					60
+#define ERR_LN_LISTPEERS 				61
+#define ERR_LN_PEERCHANNEL_STATE 		62
+
 
 //Parsing Errors
 #define ERR_INI_PARSING 				65

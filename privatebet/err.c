@@ -66,6 +66,9 @@ const char *bet_err_str(int32_t err_no)
 	case ERR_LN_IS_NOT_OVER_TOR:
 		return "The LN channel is not established over TOR";
 		break;
+	case ERR_CHIPS_CREATE_RAW_TX:
+		return "Error while creating chips raw transaction";
+		break;
 	case ERR_CHIPS_INSUFFICIENT_FUNDS:
 		return "CHIPS Wallet doesn't have sufficient funds";
 		break;
