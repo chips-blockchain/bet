@@ -66,16 +66,41 @@ The docker image is built on top of the ubuntu 20.04 base image for bet. The sim
 ```
 https://hub.docker.com/r/sg777/bet/tags
 ```
-Pull the latest tag (at the time of writing this **gui_v1.1** is the latest tag) and do the following to setup the nodes and play
+Pull the latest tag (at the time of writing this **v1.5** is the latest tag) and do the following to setup the nodes and play
 #### step1 :- Pulling the docker image 
 ```
-docker pull sg777/bet:gui_v1.1
+docker pull sg777/bet:v1.5
 ```
 #### step2 :- Running the docker image 
-**Note:** Since you sharing the host network with the docker please be make sure to stop chipsd and bet if any running in the host machine.
+**Note:** At the moment the docker setup only works if the host network is shared with the docker image. Since you sharing the host network with the docker please be make sure to stop chipsd and bet if any running in the host machine.
+
+The docker image can be run with various options, here we see few such ways which are important to know. 
+##### To share host n/w
 ```
-docker run -it --name poker --net=host sg777/bet:gui_v1.1
+docker run -it --name poker --net=host sg777/bet:v1.5
 ```
+##### To share host n/w and to run bet using gdb
+```
+docker run -it --net=host --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --name test sg777/bet:v1.5
+```
+##### To share host n/w, to run bet using gdb and to use locally available preloaded chips blocks
+
+Lets say your machine already has chips installed in you can mount the path of **.chips** directory path on to the docker image, else follow these steps to download the chips bootstrap node.
+```
+cd && mkdir chips_bootstrap
+cd chips_bootstrap
+wget https://eu.bootstrap.dexstats.info/CHIPS-bootstrap.tar.gz
+tar --overwrite -xvf "$bootstrap_node"
+wget https://raw.githubusercontent.com/chips-blockchain/bet/master/privatebet/config/chips.conf
+```
+Then run the docker as follows:
+```
+docker run -it --net=host --cap-add=SYS_PTRACE --security-opt seccomp=unconfined -v /root/chips_bootstrap:/root/.chips:rw --name test sg777/bet:v1.5
+
+cd && ./chips/src/chipsd &
+```
+**Note:** Here _**/root/chips_bootstrap**_ is the path on my local machine where(Here you have to provide the path on your machine) in which i downloaded chips bootstrap as mentioned above and i'm mounting this to the path _**/root/.chips**_ on the docker image. If you start the docker image with this approach you can simply skip **step3**.
+
 #### step3 :- Running chips node
 Once you have access to the docker shell, you can load the chips from the [chips bootstrap node](./docs/protocol/release.md#downloading-chips-bootstrap-node). Running the below script pulls the bootstrap node and configures the chips node.
 ```
@@ -113,9 +138,9 @@ You can access any of these links in your browser and from which you can connect
 
 In case if you like to host the GUI, please note that the GUI server is running on the port `1234`, so for this you need to start the docker image as mentioned below: 
 ```
-docker run -it -p 1234:1234 sg777/bet:gui_v1.1
+docker run -it -p 1234:1234 sg777/bet:v1.5
 
-Note: gui_v1.1 is latest tag at the time of this writing, always pull the docker image with the latest tag to avoid the manual process of updating and compiling the git repos manually.
+Note: v1.5 is latest tag at the time of this writing, always pull the docker image with the latest tag to avoid the manual process of updating and compiling the git repos manually.
 
 cd
 cd pangea-poker
