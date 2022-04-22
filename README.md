@@ -77,11 +77,15 @@ docker pull sg777/bet:v1.5
 The docker image can be run with various options, here we see few such ways which are important to know. 
 ##### To share host n/w
 ```
+docker run -it --net=host sg777/bet:v1.5
+
+--OR with chosen name to a container
+
 docker run -it --name poker --net=host sg777/bet:v1.5
 ```
 ##### To share host n/w and to run bet using gdb
 ```
-docker run -it --net=host --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --name test sg777/bet:v1.5
+docker run -it --net=host --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --name poker sg777/bet:v1.5
 ```
 ##### To share host n/w, to run bet using gdb and to use locally available preloaded chips blocks
 
@@ -95,7 +99,11 @@ wget https://raw.githubusercontent.com/chips-blockchain/bet/master/privatebet/co
 ```
 Then run the docker as follows:
 ```
-docker run -it --net=host --cap-add=SYS_PTRACE --security-opt seccomp=unconfined -v /root/chips_bootstrap:/root/.chips:rw --name test sg777/bet:v1.5
+docker run -it --net=host --cap-add=SYS_PTRACE --security-opt seccomp=unconfined -v /root/chips_bootstrap:/root/.chips:rw --name poker sg777/bet:v1.5
+
+--OR without debug option
+
+docker run -it --net=host -v /root/chips_bootstrap:/root/.chips:rw --name poker sg777/bet:v1.5
 
 cd && ./chips/src/chipsd &
 ```
