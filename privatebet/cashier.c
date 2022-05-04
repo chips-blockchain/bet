@@ -599,7 +599,7 @@ static int32_t bet_process_rqst_dealer_info(cJSON *argjson, struct cashier *cash
 		dcv_state_info = bet_msg_dealer_with_response_id(
 			dcv_state_rqst, unstringify(cJSON_Print(cJSON_GetArrayItem(dealer_ips, i))), "dcv_state");
 		dlg_info("dcv_state_info::%s", cJSON_Print(dcv_state_info));
-		if(dcv_state_info) {
+		if (dcv_state_info) {
 			cJSON *temp = cJSON_CreateObject();
 			cJSON_AddStringToObject(temp, "ip", jstri(dealer_ips, i));
 			cJSON_AddNumberToObject(temp, "dcv_state", jint(dcv_state_info, "dcv_state"));
