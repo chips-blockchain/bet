@@ -156,19 +156,16 @@ void chips_spend_multi_sig_address(char *address, double amount)
 	}
 }
 
-cJSON *chips_import_address(char *address)
+void chips_import_address(char *address)
 {
 	int argc;
 	char **argv = NULL;
-	cJSON *import_address = NULL;
 
 	argc = 3;
-	bet_alloc_args(argc, &argv);
+
 	argv = bet_copy_args(argc, "chips-cli", "importaddress", address);
-	import_address = cJSON_CreateObject();
-	make_command(argc, argv, &import_address);
+	make_command(argc, argv, NULL);
 	bet_dealloc_args(argc, &argv);
-	return import_address;
 }
 
 char *chips_get_new_address()
@@ -1552,15 +1549,14 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 		memset(buf, 0x00, buf_size);
 	}
 	data[new_size - 1] = '\0';
-	*argjson = NULL;
 	if (strcmp(argv[0], "git") == 0) {
 		*argjson = cJSON_CreateString((const char *)data);
 	} else if (strcmp(argv[0], "lightning-cli") == 0) {
 		retval = process_ln_data(data, argv[1], argjson);
 	} else if (strcmp(argv[0], "chips-cli") == 0) {
 		if (strlen(data) == 0) {
-			if (strcmp(argv[1], "importaddress") == 0) {
-				cJSON_AddNumberToObject(*argjson, "code", 0);
+			if (strcmp(argv[1], "importaddress") == 0) {				
+				// Do nothing
 			} else if (strcmp(argv[1], "listunspent") == 0) {
 				chips_read_valid_unspent(argv[3], argjson);
 			} else {
