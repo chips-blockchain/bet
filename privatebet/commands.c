@@ -151,7 +151,7 @@ void chips_spend_multi_sig_address(char *address, double amount)
 		if (chips_iswatchonly(address) == 0) {
 			chips_import_address(address);
 		}
-		raw_tx = chips_create_raw_tx(amount, address);
+		raw_tx = chips_create_raw_tx_with_data(amount, address, NULL);
 		dlg_info("%s\n", cJSON_Print(raw_tx));
 	}
 }
@@ -386,11 +386,11 @@ cJSON *chips_transfer_funds_with_data(double amount, char *address, char *data)
 	raw_tx = calloc(arg_size, sizeof(char));
 
 	raw_tx_info = chips_create_raw_tx_with_data(amount, address, data);
-	if(raw_tx_info == NULL) {
+	if (raw_tx_info == NULL) {
 		dlg_error("%s", bet_err_str(ERR_CHIPS_CREATE_RAW_TX));
 		return NULL;
 	}
-	
+
 	strncpy(raw_tx, cJSON_str(raw_tx_info), arg_size);
 	signed_tx = cJSON_CreateObject();
 	signed_tx = chips_sign_raw_tx_with_wallet(raw_tx);
@@ -410,7 +410,7 @@ cJSON *chips_transfer_funds(double amount, char *address)
 	char *raw_tx = NULL;
 
 	if (address) {
-		raw_tx = cJSON_str(chips_create_raw_tx(amount, address));
+		raw_tx = cJSON_str(chips_create_raw_tx_with_data(amount, address, NULL));
 		signed_tx = chips_sign_raw_tx_with_wallet(raw_tx);
 		tx_info = chips_send_raw_tx(signed_tx);
 	}
@@ -504,73 +504,13 @@ cJSON *chips_spendable_tx()
 	return spendable_txs;
 }
 
-cJSON *chips_create_raw_tx(double amount, char *address)
+cJSON *chips_create_raw_tx_with_data(double amount_to_transfer, char *address, char *data)
 {
 	char **argv = NULL, *changeAddress = NULL, params[2][arg_size] = { 0 };
 	int argc;
 	cJSON *listunspent_info = NULL, *address_info = NULL, *tx_list = NULL, *tx = NULL;
-	double balance, change, temp_balance = 0;
-	char *temp_file = "utxo.log";
-
-	balance = chips_get_balance();
-	tx_list = cJSON_CreateArray();
-	address_info = cJSON_CreateObject();
-
-	if ((balance + chips_tx_fee) < amount) {
-		return NULL;
-	} else {
-		cJSON_AddNumberToObject(address_info, address, amount);
-		amount += chips_tx_fee;
-
-		argc = 4;
-		bet_alloc_args(argc, &argv);
-		argv = bet_copy_args(argc, "chips-cli", "listunspent", ">", temp_file);
-		make_command(argc, argv, &listunspent_info);
-		bet_dealloc_args(argc, &argv);
-
-		for (int i = 0; i < cJSON_GetArraySize(listunspent_info); i++) {
-			cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
-			cJSON *tx_info = cJSON_CreateObject();
-			if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "spendable")), "true") == 0) {				
-				if (jdouble(temp, "amount") > 0.0005) {
-					temp_balance += jdouble(temp, "amount");
-					if (temp_balance >= amount) {
-						changeAddress = jstr(temp, "address");
-						change = temp_balance - amount;
-						cJSON_AddStringToObject(tx_info, "txid", jstr(temp, "txid"));
-						cJSON_AddNumberToObject(tx_info, "vout", jint(temp, "vout"));
-						cJSON_AddItemToArray(tx_list, tx_info);
-						break;
-					} else {
-						cJSON_AddStringToObject(tx_info, "txid", jstr(temp, "txid"));
-						cJSON_AddNumberToObject(tx_info, "vout", jint(temp, "vout"));
-						cJSON_AddItemToArray(tx_list, tx_info);
-					}
-				}
-			}
-		}
-		if (change != 0) {
-			cJSON_AddNumberToObject(address_info, changeAddress, change);
-		}
-		argc = 4;
-		bet_alloc_args(argc, &argv);
-		snprintf(params[0], arg_size, "\'%s\'", cJSON_Print(tx_list));
-		snprintf(params[1], arg_size, "\'%s\'", cJSON_Print(address_info));
-		argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
-		make_command(argc, argv, &tx);
-		bet_dealloc_args(argc, &argv);
-		delete_file(temp_file);
-		return tx;
-	}
-}
-
-cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
-{
-	char **argv = NULL, *changeAddress = NULL, params[2][arg_size] = { 0 };
-	int argc;
-	cJSON *listunspent_info = NULL, *address_info = NULL, *tx_list = NULL, *tx = NULL;
-	double balance, change, temp_balance = 0;
-	char *temp_file = "utxo.log";
+	double balance, change, amount_in_txs = 0;
+	char *utxo_temp_file = "utxo.log";
 
 	balance = chips_get_balance();
 	tx_list = cJSON_CreateArray();
@@ -580,59 +520,58 @@ cJSON *chips_create_raw_tx_with_data(double amount, char *address, char *data)
 		dlg_error("Address to transfer funds in NULL");
 		return NULL;
 	}
-	if ((balance + chips_tx_fee) < amount) {
+	if ((balance + chips_tx_fee) < amount_to_transfer) {
+		dlg_warn("Doesn't have sufficient funds to make the tx");
 		return NULL;
-	} else {
-		cJSON_AddNumberToObject(address_info, address, amount);
-		amount += chips_tx_fee;
+	}
+	cJSON_AddNumberToObject(address_info, address, amount_to_transfer);
+	amount_to_transfer += chips_tx_fee;
 
-		argc = 4;
-		bet_alloc_args(argc, &argv);
-		argv = bet_copy_args(argc, "chips-cli", "listunspent", ">", temp_file);
-		listunspent_info = cJSON_CreateArray();
-		make_command(argc, argv, &listunspent_info);
-		bet_dealloc_args(argc, &argv);
+	argc = 4;
+	argv = bet_copy_args(argc, "chips-cli", "listunspent", ">", utxo_temp_file);
+	listunspent_info = cJSON_CreateArray();
+	make_command(argc, argv, &listunspent_info);
+	bet_dealloc_args(argc, &argv);
 
-		for (int i = 0; i < cJSON_GetArraySize(listunspent_info); i++) {
-			cJSON *temp = cJSON_GetArrayItem(listunspent_info, i);
+	for (int i = 0; i < cJSON_GetArraySize(listunspent_info); i++) {
+		cJSON *utxo = cJSON_GetArrayItem(listunspent_info, i);
+		if ((strcmp(cJSON_Print(jobj(utxo, "spendable")), "true") == 0) &&
+		    (jdouble(utxo, "amount") >
+		     0.0001)) { // This check was added to avoid mining and dust transactions in creating raw tx.
 			cJSON *tx_info = cJSON_CreateObject();
-			char *state = cJSON_Print(cJSON_GetObjectItem(temp, "spendable"));
-			if (strcmp(state, "true") == 0) {
-				if (jdouble(temp, "amount") > 0.0001) {
-					temp_balance += jdouble(temp, "amount");
-					if (temp_balance >= amount) {
-						changeAddress = jstr(temp, "address");
-						change = temp_balance - amount;
-						cJSON_AddStringToObject(tx_info, "txid", jstr(temp, "txid"));
-						cJSON_AddNumberToObject(tx_info, "vout", jint(temp, "vout"));
-						cJSON_AddItemToArray(tx_list, tx_info);
-						break;
-					} else {
-						cJSON_AddStringToObject(tx_info, "txid", jstr(temp, "txid"));
-						cJSON_AddNumberToObject(tx_info, "vout", jint(temp, "vout"));
-						cJSON_AddItemToArray(tx_list, tx_info);
-					}
-				}
+			cJSON_AddStringToObject(tx_info, "txid", jstr(utxo, "txid"));
+			cJSON_AddNumberToObject(tx_info, "vout", jint(utxo, "vout"));
+			cJSON_AddItemToArray(tx_list, tx_info);
+
+			amount_in_txs += jdouble(utxo, "amount");
+			if (amount_in_txs >= amount_to_transfer) {
+				changeAddress = jstr(utxo, "address");
+				change = amount_in_txs - amount_to_transfer;
+				break;
 			}
 		}
-		if(amount < temp_balance) {
-			return NULL;
-		}
-		if (change != 0) {
-			cJSON_AddNumberToObject(address_info, changeAddress, change);
-		}
-		cJSON_AddStringToObject(address_info, "data", data);
-		argc = 4;
-		bet_alloc_args(argc, &argv);
-		snprintf(params[0], arg_size, "\'%s\'", cJSON_Print(tx_list));
-		snprintf(params[1], arg_size, "\'%s\'", cJSON_Print(address_info));
-		argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
-		tx = cJSON_CreateObject();
-		make_command(argc, argv, &tx);
-		bet_dealloc_args(argc, &argv);
-		delete_file(temp_file);
-		return tx;
 	}
+	if (amount_to_transfer > amount_in_txs) {
+		dlg_warn("Possibly there exists too many dust tx's and system is not considering them to make tx");
+		return NULL;
+	}
+	if (change > 0) {
+		cJSON_AddNumberToObject(address_info, changeAddress, change);
+	}
+	if (data) {
+		cJSON_AddStringToObject(address_info, "data", data);
+	}
+
+	argc = 4;
+	snprintf(params[0], arg_size, "\'%s\'", cJSON_Print(tx_list));
+	snprintf(params[1], arg_size, "\'%s\'", cJSON_Print(address_info));
+	argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
+	tx = cJSON_CreateObject();
+	make_command(argc, argv, &tx);
+	bet_dealloc_args(argc, &argv);
+	delete_file(utxo_temp_file);
+
+	return tx;
 }
 
 int32_t chips_get_block_count()
@@ -1555,7 +1494,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 		retval = process_ln_data(data, argv[1], argjson);
 	} else if (strcmp(argv[0], "chips-cli") == 0) {
 		if (strlen(data) == 0) {
-			if (strcmp(argv[1], "importaddress") == 0) {				
+			if (strcmp(argv[1], "importaddress") == 0) {
 				// Do nothing
 			} else if (strcmp(argv[1], "listunspent") == 0) {
 				chips_read_valid_unspent(argv[3], argjson);
