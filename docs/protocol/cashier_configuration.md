@@ -29,22 +29,6 @@ node-4 = {                                                                      
 		"pubkey":	"03d0a6326bcf918aed07557462963953f2125a11cfcb9a7b05630f930e8e554956",    \
 		"ip":	"159.69.23.31"                                                               \
 }                                                                                            #
-node-5 = {                                                                                   \
-		"pubkey":	"03ec3475afbb7b0a241101ecbfba55f39862f7b9b5d77e492ba8354016e3379456",    \
-		"ip":	"141.94.227.65"                                                              \
-}                                                                                            #
-node-6 = {                                                                                   \
-		"pubkey":	"03ec892625ccd75710b68cf9f67f5c7a88936cd15215ba5a6071a5ed98717eca52",    \
-		"ip":	"141.94.227.66"                                                              \
-}                                                                                            #
-node-7 = {                                                                                   \
-		"pubkey":	"03086147692189929685b17b950f34bfef8158426f8475de9b0b20b8dcea17e7c4",    \
-		"ip":	"141.94.227.67"                                                              \
-}                                                                                            #
-node-8 = {                                                                                   \
-		"pubkey":	"025485b01a7bc485894ac6f31f4e9b6f9c6a8cf97a4927c6bad1a4128d5ae80800",    \
-		"ip":	"141.94.227.68"                                                              \
-}  
 ```
 
 ### To become a cashier node
