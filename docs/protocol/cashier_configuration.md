@@ -1,5 +1,15 @@
 ## Configuring the cashier nodes
-These are the nodes elected by the community and these nodes play very crucial role in establishing the trust in the ecosystem. The configuration details of these nodes are found in `cashier_nodes.ini` which is located at the path `~/bet/privatebet/config`. These configuration settings can't be modified and changes made to it are ignored. 
+These are the nodes elected by the community and these nodes play very crucial role in establishing the trust in the ecosystem. The configuration details of these nodes are found in `cashier_nodes.ini` which is located at the path `~/bet/privatebet/config`. Since these nodes are elected by the CHIPS community so changes to this cashier configuration file is not allowed. 
+
+Since there isn't any election for the cashier nodes is happened so no checks on the cashier nodes enforced either on the player or dealer side yet, so for now anyone can configure their own cashier nodes. 
+
+To add more context, here is the overview of who read this file for what purpose:
+1. Dealer picks up the ips from this config file and finds which are all reachable to it and compute msig from the pubkey of the reachable cashier nodes and this address is given to players to deposit their funds during the game.
+2. Players use this config file, to check whether if the dealer provides the msig address from the nodes which are in the config file.
+3. Dealer chooses the first available cashier node from this config file as the BVV for the deck shuffling process.
+ 
+
+the changes to this configuration fileThese configuration settings can't be modified and any changes to it either by the dealer or the player nodes may result by the and changes made to it are ignored. 
 
 ```
 [cashier]
