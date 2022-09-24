@@ -33,3 +33,13 @@ node-4 = {                                                                      
 
 ### To become a cashier node
 The rules are not set yet, but there is a good discussion going on [here](https://github.com/chips-blockchain/bet/issues/193). Please feel free to share your views on it. Atm, I'm(sg777) hosting few nodes as cashier nodes and using them, going forward its going to be changed. 
+
+### Running cashier node
+The cashier node can be launched using either `cashierd` or `bet`. Right now, there isn't any difference between these two utilities so you can launch cashier node using either of these two. 
+```
+./bet cashier <ipv4_addr>
+or
+./cashierd cashier <ipv4_addr>
+
+Here ipv4_addr is the ipv4 address of the node on which you are launching the cashier node. Make sure this IP is the public IP then only the other nodes in the network will be able to connect to it.
+```
