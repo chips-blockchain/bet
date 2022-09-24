@@ -31,6 +31,7 @@
 #include <inttypes.h>
 
 double epsilon = 0.000000001;
+char *blockchain_cli = "chips-cli";
 
 int32_t bet_alloc_args(int argc, char ***argv)
 {
@@ -133,7 +134,7 @@ int32_t chips_iswatchonly(char *address)
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "chips-cli", "getaddressinfo", address);
+	argv = bet_copy_args(argc, blockchain_cli, "getaddressinfo", address);
 	is_watch_only = cJSON_CreateObject();
 	make_command(argc, argv, &is_watch_only);
 
@@ -163,7 +164,7 @@ void chips_import_address(char *address)
 
 	argc = 3;
 
-	argv = bet_copy_args(argc, "chips-cli", "importaddress", address);
+	argv = bet_copy_args(argc, blockchain_cli, "importaddress", address);
 	make_command(argc, argv, NULL);
 	bet_dealloc_args(argc, &argv);
 }
@@ -176,7 +177,7 @@ char *chips_get_new_address()
 
 	argc = 2;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "chips-cli", "getnewaddress");
+	argv = bet_copy_args(argc, blockchain_cli, "getnewaddress");
 	new_address = cJSON_CreateObject();
 	make_command(argc, argv, &new_address);
 	bet_dealloc_args(argc, &argv);
@@ -191,7 +192,7 @@ int chips_validate_address(char *address)
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "chips-cli", "getaddressinfo", address);
+	argv = bet_copy_args(argc, blockchain_cli, "getaddressinfo", address);
 	address_info = cJSON_CreateObject();
 	make_command(argc, argv, &address_info);
 	cJSON *temp = cJSON_GetObjectItem(address_info, "ismine");
@@ -210,7 +211,7 @@ cJSON *chips_list_address_groupings()
 
 	argc = 2;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "chips-cli", "listaddressgroupings");
+	argv = bet_copy_args(argc, blockchain_cli, "listaddressgroupings");
 	list_address_groupings = cJSON_CreateObject();
 	make_command(argc, argv, &list_address_groupings);
 
@@ -240,7 +241,7 @@ cJSON *chips_get_block_hash_from_height(int64_t block_height)
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
-	strcpy(argv[0], "chips-cli");
+	strcpy(argv[0], blockchain_cli);
 	strcpy(argv[1], "getblockhash");
 	// https://stackoverflow.com/questions/31534474/format-lld-expects-type-long-long-int-but-argument-4-has-type-int64-t/31534505
 	// using PRId64 instead of lld or ld, since on Darwin compiler
@@ -259,7 +260,7 @@ cJSON *chips_get_block_from_block_hash(char *block_hash_info)
 	cJSON *block_info = NULL;
 
 	argc = 3;
-	argv = bet_copy_args(argc, "chips-cli", "getblock", block_hash_info);
+	argv = bet_copy_args(argc, blockchain_cli, "getblock", block_hash_info);
 	block_info = cJSON_CreateObject();
 	make_command(argc, argv, &block_info);
 	bet_dealloc_args(argc, &argv);
@@ -429,7 +430,7 @@ cJSON *chips_send_raw_tx(cJSON *signed_tx)
 		dlg_error("%s", bet_err_str(ret));
 		return NULL;
 	}
-	argv = bet_copy_args_with_size(argc, "chips-cli", "sendrawtransaction", jstr(signed_tx, "hex"));
+	argv = bet_copy_args_with_size(argc, blockchain_cli, "sendrawtransaction", jstr(signed_tx, "hex"));
 
 	tx_info = cJSON_CreateObject();
 	ret = make_command(argc, argv, &tx_info);
@@ -450,7 +451,7 @@ cJSON *chips_sign_raw_tx_with_wallet(char *raw_tx)
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "chips-cli", "signrawtransactionwithwallet", raw_tx);
+	argv = bet_copy_args(argc, blockchain_cli, "signrawtransactionwithwallet", raw_tx);
 	signed_tx = cJSON_CreateObject();
 	make_command(argc, argv, &signed_tx);
 	bet_dealloc_args(argc, &argv);
@@ -489,7 +490,7 @@ cJSON *chips_spendable_tx()
 
 	argc = 4;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "chips-cli", "listunspent", ">", temp_file);
+	argv = bet_copy_args(argc, blockchain_cli, "listunspent", ">", temp_file);
 	make_command(argc, argv, &listunspent_info);
 	bet_dealloc_args(argc, &argv);
 
@@ -528,7 +529,7 @@ cJSON *chips_create_raw_tx_with_data(double amount_to_transfer, char *address, c
 	amount_to_transfer += chips_tx_fee;
 
 	argc = 4;
-	argv = bet_copy_args(argc, "chips-cli", "listunspent", ">", utxo_temp_file);
+	argv = bet_copy_args(argc, blockchain_cli, "listunspent", ">", utxo_temp_file);
 	listunspent_info = cJSON_CreateArray();
 	make_command(argc, argv, &listunspent_info);
 	bet_dealloc_args(argc, &argv);
@@ -565,7 +566,7 @@ cJSON *chips_create_raw_tx_with_data(double amount_to_transfer, char *address, c
 	argc = 4;
 	snprintf(params[0], arg_size, "\'%s\'", cJSON_Print(tx_list));
 	snprintf(params[1], arg_size, "\'%s\'", cJSON_Print(address_info));
-	argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
+	argv = bet_copy_args(argc, blockchain_cli, "createrawtransaction", params[0], params[1]);
 	tx = cJSON_CreateObject();
 	make_command(argc, argv, &tx);
 	bet_dealloc_args(argc, &argv);
@@ -582,7 +583,7 @@ int32_t chips_get_block_count()
 
 	argc = 2;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "chips-cli", "getblockcount");
+	argv = bet_copy_args(argc, blockchain_cli, "getblockcount");
 	make_command(argc, argv, &block_height);
 
 	rendered = cJSON_Print(block_height);
@@ -642,7 +643,7 @@ double chips_get_balance()
 	cJSON *getbalanceInfo = NULL;
 
 	argc = 2;
-	argv = bet_copy_args(argc, "chips-cli", "getbalance");
+	argv = bet_copy_args(argc, blockchain_cli, "getbalance");
 	retval = make_command(argc, argv, &getbalanceInfo);
 	if (retval != OK) {
 		dlg_error("%s", bet_err_str(retval));
@@ -675,7 +676,7 @@ cJSON *chips_add_multisig_address()
 			cJSON_AddItemToArray(addr_list, cJSON_CreateString_Length(notary_node_pubkeys[i], 67));
 	}
 
-	argv = bet_copy_args(argc, "chips-cli", "addmultisigaddress", param,
+	argv = bet_copy_args(argc, blockchain_cli, "addmultisigaddress", param,
 			     cJSON_Print(cJSON_CreateString(cJSON_Print(addr_list)))); //"-addresstype legacy"
 
 	msig_address = cJSON_CreateObject();
@@ -693,7 +694,7 @@ cJSON *chips_add_multisig_address_from_list(int32_t threshold_value, cJSON *addr
 	argc = 4;
 	snprintf(param, arg_size, "%d", threshold_value);
 
-	argv = bet_copy_args(argc, "chips-cli", "addmultisigaddress", param,
+	argv = bet_copy_args(argc, blockchain_cli, "addmultisigaddress", param,
 			     cJSON_Print(cJSON_CreateString(cJSON_Print(addr_list)))); //, "-addresstype legacy"
 	msig_address = cJSON_CreateObject();
 
@@ -711,7 +712,7 @@ int32_t chips_check_if_tx_unspent(char *input_tx)
 
 	argc = 4;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "chips-cli", "listunspent", ">", temp_file);
+	argv = bet_copy_args(argc, blockchain_cli, "listunspent", ">", temp_file);
 
 	run_command(argc, argv);
 	tx_exists = chips_check_tx_exists(temp_file, input_tx);
@@ -728,7 +729,7 @@ char *chips_get_block_hash_from_txid(char *txid)
 	char *block_hash = NULL;
 
 	argc = 4;
-	argv = bet_copy_args(argc, "chips-cli", "getrawtransaction", txid, "1");
+	argv = bet_copy_args(argc, blockchain_cli, "getrawtransaction", txid, "1");
 	raw_tx_info = cJSON_CreateObject();
 	make_command(argc, argv, &raw_tx_info);
 
@@ -751,7 +752,7 @@ int32_t chips_get_block_height_from_block_hash(char *block_hash)
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "chips-cli", "getblock", block_hash);
+	argv = bet_copy_args(argc, blockchain_cli, "getblock", block_hash);
 	block_info = cJSON_CreateObject();
 	make_command(argc, argv, &block_info);
 	block_height = jint(block_info, "height");
@@ -772,7 +773,7 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 	to_addr_info = cJSON_CreateObject();
 	tx_list = cJSON_CreateArray();
 	argc = 4;
-	argv = bet_copy_args(argc, "chips-cli", "listunspent", ">", temp_file);
+	argv = bet_copy_args(argc, blockchain_cli, "listunspent", ">", temp_file);
 	listunspent_info = cJSON_CreateObject();
 	make_command(argc, argv, &listunspent_info);
 	bet_dealloc_args(argc, &argv);
@@ -820,7 +821,7 @@ cJSON *chips_create_tx_from_tx_list(char *to_addr, int32_t no_of_txs, char tx_id
 	argc = 4;
 	sprintf(params[0], "\'%s\'", cJSON_Print(tx_list));
 	sprintf(params[1], "\'%s\'", cJSON_Print(to_addr_info));
-	argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
+	argv = bet_copy_args(argc, blockchain_cli, "createrawtransaction", params[0], params[1]);
 	dlg_info("%s", params[0]);
 	dlg_info("%s", params[1]);
 	tx = cJSON_CreateObject();
@@ -950,7 +951,7 @@ cJSON *chips_get_raw_tx(char *tx)
 	cJSON *raw_tx = NULL;
 
 	argc = 3;
-	argv = bet_copy_args(argc, "chips-cli", "getrawtransaction", tx);
+	argv = bet_copy_args(argc, blockchain_cli, "getrawtransaction", tx);
 	raw_tx = cJSON_CreateObject();
 	retval = make_command(argc, argv, &raw_tx);
 	if (retval != OK) {
@@ -973,7 +974,7 @@ cJSON *chips_decode_raw_tx(cJSON *raw_tx)
 	cJSON *decoded_raw_tx = NULL;
 
 	argc = 3;
-	argv = bet_copy_args_with_size(argc, "chips-cli", "decoderawtransaction", cJSON_Print(raw_tx));
+	argv = bet_copy_args_with_size(argc, blockchain_cli, "decoderawtransaction", cJSON_Print(raw_tx));
 
 	if (argv) {
 		decoded_raw_tx = cJSON_CreateObject();
@@ -1126,7 +1127,7 @@ char *chips_get_wallet_address()
 
 	argc = 2;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, "chips-cli", "listaddressgroupings");
+	argv = bet_copy_args(argc, blockchain_cli, "listaddressgroupings");
 	make_command(argc, argv, &addresses);
 
 	for (int32_t i = 0; i < cJSON_GetArraySize(addresses); i++) {
@@ -1212,7 +1213,7 @@ cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids
 	sprintf(params[0], "\'%s\'", cJSON_Print(tx_list));
 	sprintf(params[1], "\'%s\'", cJSON_Print(addr_info));
 
-	argv = bet_copy_args(argc, "chips-cli", "createrawtransaction", params[0], params[1]);
+	argv = bet_copy_args(argc, blockchain_cli, "createrawtransaction", params[0], params[1]);
 	make_command(argc, argv, &tx_details);
 
 	dlg_info("raw_tx::%s\n", cJSON_Print(tx_details));
@@ -1454,7 +1455,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 
 	fp = popen(command, "r");
 	if (fp == NULL) {
-		if (strcmp(argv[0], "chips-cli") == 0)
+		if (strcmp(argv[0], blockchain_cli) == 0)
 			retval = ERR_CHIPS_COMMAND;
 		if (strcmp(argv[0], "lightning-cli") == 0)
 			retval = ERR_LN_COMMAND;
@@ -1492,7 +1493,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 		*argjson = cJSON_CreateString((const char *)data);
 	} else if (strcmp(argv[0], "lightning-cli") == 0) {
 		retval = process_ln_data(data, argv[1], argjson);
-	} else if (strcmp(argv[0], "chips-cli") == 0) {
+	} else if (strcmp(argv[0], blockchain_cli) == 0) {
 		if (strlen(data) == 0) {
 			if (strcmp(argv[1], "importaddress") == 0) {
 				// Do nothing
