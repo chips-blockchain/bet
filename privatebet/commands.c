@@ -31,7 +31,7 @@
 #include <inttypes.h>
 
 double epsilon = 0.000000001;
-char *blockchain_cli = "chips-cli";
+char *blockchain_cli = "verus -chain=chipstensec"; //repalcing chips-cli with verus -chain=chipstensec for testing.
 
 int32_t bet_alloc_args(int argc, char ***argv)
 {
