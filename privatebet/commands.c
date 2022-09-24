@@ -451,7 +451,7 @@ cJSON *chips_sign_raw_tx_with_wallet(char *raw_tx)
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, blockchain_cli, "signrawtransactionwithwallet", raw_tx);
+	argv = bet_copy_args(argc, blockchain_cli, "signrawtransaction", raw_tx); //sg777: signrawtransactionwithwallet is replaced with signrawtransaction and these changes are temporary for testing chipstensec chain.
 	signed_tx = cJSON_CreateObject();
 	make_command(argc, argv, &signed_tx);
 	bet_dealloc_args(argc, &argv);
