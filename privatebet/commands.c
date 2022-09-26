@@ -1507,6 +1507,17 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 				retval = ERR_CHIPS_COMMAND;
 			}
 		} else {
+			if(strcmp(argv[1], "addmultisigaddress") == 0) {
+				if(strcmp(chips_cli, blockchain_cli) == 0) {					
+					*argjson = cJSON_Parse(data);
+					cJSON_AddNumberToObject(*argjson, "code", 0);	
+				} else if(strcmp(verus_cli, blockchain_cli) == 0){
+					if (data[strlen(data) - 1] == '\n')
+						data[strlen(data) - 1] = '\0';
+					*argjson = cJSON_CreateString(data);
+				}
+				goto end;
+			}
 			if ((strcmp(argv[1], "createrawtransaction") == 0) ||
 			    (strcmp(argv[1], "sendrawtransaction") == 0) || (strcmp(argv[1], "getnewaddress") == 0) ||
 			    (strcmp(argv[1], "getrawtransaction") == 0) || (strcmp(argv[1], "getblockhash") == 0)) {
