@@ -454,7 +454,9 @@ cJSON *chips_sign_raw_tx_with_wallet(char *raw_tx)
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, blockchain_cli, "signrawtransaction", raw_tx); //sg777: signrawtransactionwithwallet is replaced with signrawtransaction and these changes are temporary for testing chipstensec chain.
+	argv = bet_copy_args(
+		argc, blockchain_cli, "signrawtransaction",
+		raw_tx); //sg777: signrawtransactionwithwallet is replaced with signrawtransaction and these changes are temporary for testing chipstensec chain.
 	signed_tx = cJSON_CreateObject();
 	make_command(argc, argv, &signed_tx);
 	bet_dealloc_args(argc, &argv);
@@ -1507,11 +1509,11 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 				retval = ERR_CHIPS_COMMAND;
 			}
 		} else {
-			if(strcmp(argv[1], "addmultisigaddress") == 0) {
-				if(strcmp(chips_cli, blockchain_cli) == 0) {					
+			if (strcmp(argv[1], "addmultisigaddress") == 0) {
+				if (strcmp(chips_cli, blockchain_cli) == 0) {
 					*argjson = cJSON_Parse(data);
-					cJSON_AddNumberToObject(*argjson, "code", 0);	
-				} else if(strcmp(verus_cli, blockchain_cli) == 0){
+					cJSON_AddNumberToObject(*argjson, "code", 0);
+				} else if (strcmp(verus_cli, blockchain_cli) == 0) {
 					if (data[strlen(data) - 1] == '\n')
 						data[strlen(data) - 1] = '\0';
 					*argjson = cJSON_CreateString(data);
