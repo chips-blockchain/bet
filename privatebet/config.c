@@ -140,6 +140,9 @@ void bet_parse_dealer_config_ini_file()
 		if (NULL != iniparser_getstring(ini, "dealer:gui_host", NULL)) {
 			strcpy(dcv_hosted_gui_url, iniparser_getstring(ini, "dealer:gui_host", NULL));
 		}
+		if (NULL != iniparser_getstring(ini, "dealer:min_cashiers", NULL)) {
+			threshold_value = iniparser_getint(ini, "dealer:min_cashiers", threshold_value);
+		}
 		if (-1 != iniparser_getboolean(ini, "private table:is_table_private", -1)) {
 			is_table_private = iniparser_getboolean(ini, "private table:is_table_private", -1);
 		}
