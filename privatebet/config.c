@@ -5,10 +5,6 @@
 #include "err.h"
 #include "commands.h"
 
-char *dealer_config_file = "./config/dealer_config.json";
-char *player_config_file = "./config/player_config.json";
-char *notaries_file = "./config/cashier_nodes.json";
-
 char *dealer_config_ini_file = "./config/dealer_config.ini";
 char *player_config_ini_file = "./config/player_config.ini";
 char *cashier_config_ini_file = "./config/cashier_config.ini";
@@ -53,60 +49,6 @@ end:
 	if (data)
 		free(data);
 	return json_data;
-}
-
-void bet_parse_dealer_config_file()
-{
-	cJSON *config_info = NULL;
-	char type[10];
-
-	config_info = bet_read_json_file(dealer_config_file);
-	if (config_info) {
-		max_players = jint(config_info, "max_players");
-		table_stake_in_chips = jdouble(config_info, "table_stake_in_chips");
-		chips_tx_fee = jdouble(config_info, "chips_tx_fee");
-		dcv_commission_percentage = jdouble(config_info, "dcv_commission");
-		strcpy(type, jstr(config_info, "type"));
-		dlg_info("The maxplayers for the table set by dealer is :: %d, dealers can change this in the %s",
-			 max_players, dealer_config_file);
-	}
-}
-
-void bet_parse_cashier_nodes_file()
-{
-	cJSON *notaries_info = NULL;
-
-	notaries_info = bet_read_json_file(notaries_file);
-	if (notaries_info) {
-		no_of_notaries = cJSON_GetArraySize(notaries_info);
-		notary_node_ips = (char **)malloc(no_of_notaries * sizeof(char *));
-		notary_node_pubkeys = (char **)malloc(no_of_notaries * sizeof(char *));
-		notary_status = (int *)malloc(no_of_notaries * sizeof(int));
-
-		for (int32_t i = 0; i < no_of_notaries; i++) {
-			cJSON *node_info = cJSON_CreateObject();
-			node_info = cJSON_GetArrayItem(notaries_info, i);
-
-			notary_node_ips[i] = (char *)malloc(strlen(jstr(node_info, "ip")) + 1);
-			memset(notary_node_ips[i], 0x00, strlen(jstr(node_info, "ip")) + 1);
-
-			notary_node_pubkeys[i] = (char *)malloc(strlen(jstr(node_info, "pubkey")) + 1);
-			memset(notary_node_pubkeys[i], 0x00, strlen(jstr(node_info, "pubkey")) + 1);
-
-			strncpy(notary_node_ips[i], jstr(node_info, "ip"), strlen(jstr(node_info, "ip")));
-			strncpy(notary_node_pubkeys[i], jstr(node_info, "pubkey"), strlen(jstr(node_info, "pubkey")));
-		}
-	}
-}
-
-void bet_parse_player_config_file()
-{
-	cJSON *config_info = NULL;
-
-	config_info = bet_read_json_file(player_config_file);
-	if (config_info) {
-		max_allowed_dcv_commission = jdouble(config_info, "max_allowed_dcv_commission");
-	}
 }
 
 void bet_parse_dealer_config_ini_file()
