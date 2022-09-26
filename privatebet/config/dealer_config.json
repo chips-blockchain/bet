@@ -1,8 +1,0 @@
-{
-		"max_players":	3,
-		"table_stack_in_chips":	0.01000000,
-		"dcv_commission": 0.5,
-		"chips_tx_fee":	0.00050000,
-		"type": "torv3"
-}
-
