@@ -133,15 +133,15 @@ int32_t chips_iswatchonly(char *address)
 {
 	int argc, retval = 0;
 	char **argv = NULL;
-	cJSON *is_watch_only = NULL;
+	cJSON *addressInfo = NULL;
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, blockchain_cli, "getaddressinfo", address);
-	is_watch_only = cJSON_CreateObject();
-	make_command(argc, argv, &is_watch_only);
+	addressInfo = cJSON_CreateObject();
+	make_command(argc, argv, &addressInfo);
 
-	cJSON *temp = cJSON_GetObjectItem(is_watch_only, "iswatchonly");
+	cJSON *temp = cJSON_GetObjectItem(addressInfo, "iswatchonly");
 	if (strcmp(cJSON_Print(temp), "true") == 0)
 		retval = 1;
 	bet_dealloc_args(argc, &argv);
