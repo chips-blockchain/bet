@@ -33,6 +33,9 @@
 double epsilon = 0.000000001;
 char *blockchain_cli = "verus -chain=chipstensec"; //repalcing chips-cli with verus -chain=chipstensec for testing.
 
+char *chips_cli = "chips-cli";
+char *verus_cli = "verus -chain=chipstensec";
+
 int32_t bet_alloc_args(int argc, char ***argv)
 {
 	int ret = OK;
