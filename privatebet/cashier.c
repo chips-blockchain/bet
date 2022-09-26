@@ -107,7 +107,9 @@ void bet_compute_m_of_n_msig_addr()
 				chips_import_address(legacy_m_of_n_msig_addr);
 			}
 		} else if(0 == strcmp(verus_cli, blockchain_cli)) {
-			dlg_info("sg :: %s", cJSON_Print(msig_addr));	
+			legacy_m_of_n_msig_addr = calloc(strlen(cJSON_Print(msig_addr)), sizeof(char));
+			strncpy(legacy_m_of_n_msig_addr, unstringify(cJSON_Print(msig_addr)), strlen(cJSON_Print(msig_addr)));
+			dlg_info("sg legacy_m_of_n_msig_addr:: %s", legacy_m_of_n_msig_addr);	
 		}
 	}
 }
