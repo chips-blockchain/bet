@@ -394,7 +394,6 @@ static void playing_nodes_init()
 
 static void dealer_node_init()
 {
-	bet_parse_dealer_config_ini_file();
 	if (0 == strlen(dcv_hosted_gui_url)) {
 		sprintf(dcv_hosted_gui_url, "http://%s:1234/", dealer_ip);
 	}
@@ -458,6 +457,7 @@ static void bet_start(int argc, char **argv){
 		cases("dealer")
 			if (argc == 3) {
 				strcpy(dealer_ip, argv[2]);
+				bet_parse_dealer_config_ini_file();
 				playing_nodes_init();
 				bet_send_dealer_info_to_cashier(dealer_ip);
 				dealer_node_init();
