@@ -137,7 +137,7 @@ int32_t chips_iswatchonly(char *address)
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, blockchain_cli, "getaddressinfo", address);
+	argv = bet_copy_args(argc, blockchain_cli, "validateaddress", address);
 	addressInfo = cJSON_CreateObject();
 	make_command(argc, argv, &addressInfo);
 
@@ -195,7 +195,7 @@ int chips_validate_address(char *address)
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, blockchain_cli, "getaddressinfo", address);
+	argv = bet_copy_args(argc, blockchain_cli, "validateaddress", address);
 	address_info = cJSON_CreateObject();
 	make_command(argc, argv, &address_info);
 	cJSON *temp = cJSON_GetObjectItem(address_info, "ismine");
