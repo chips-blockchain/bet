@@ -98,21 +98,15 @@ void bet_compute_m_of_n_msig_addr()
 	msig_addr = chips_add_multisig_address();
 	dlg_info("The msig_address of the cashier nodes for payin tx \n %s", cJSON_Print(msig_addr));
 	if (msig_addr) {
-		if (0 == strcmp(chips_cli, blockchain_cli)) {
-			legacy_m_of_n_msig_addr = (char *)malloc(strlen(jstr(msig_addr, "address")) + 1);
-			memset(legacy_m_of_n_msig_addr, 0x00, strlen(jstr(msig_addr, "address")) + 1);
-			strncpy(legacy_m_of_n_msig_addr, jstr(msig_addr, "address"),
-				strlen(jstr(msig_addr, "address")));
-			if (chips_iswatchonly(legacy_m_of_n_msig_addr) == 0) {
-				dlg_info("Importing msig_address ::%s, it takes a while", legacy_m_of_n_msig_addr);
-				chips_import_address(legacy_m_of_n_msig_addr);
-			}
-		} else if (0 == strcmp(verus_cli, blockchain_cli)) {
-			legacy_m_of_n_msig_addr = calloc(strlen(cJSON_Print(msig_addr)), sizeof(char));
-			strncpy(legacy_m_of_n_msig_addr, unstringify(cJSON_Print(msig_addr)),
-				strlen(cJSON_Print(msig_addr)));
-			dlg_info("sg legacy_m_of_n_msig_addr:: %s", legacy_m_of_n_msig_addr);
+		legacy_m_of_n_msig_addr = (char *)malloc(strlen(jstr(msig_addr, "address")) + 1);
+		memset(legacy_m_of_n_msig_addr, 0x00, strlen(jstr(msig_addr, "address")) + 1);
+		strncpy(legacy_m_of_n_msig_addr, jstr(msig_addr, "address"),
+			strlen(jstr(msig_addr, "address")));
+		if (chips_iswatchonly(legacy_m_of_n_msig_addr) == 0) {
+			dlg_info("Importing msig_address ::%s, it takes a while", legacy_m_of_n_msig_addr);
+			chips_import_address(legacy_m_of_n_msig_addr);
 		}
+		
 	}
 }
 

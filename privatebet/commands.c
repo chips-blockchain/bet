@@ -1516,7 +1516,9 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 				} else if (strcmp(verus_cli, blockchain_cli) == 0) {
 					if (data[strlen(data) - 1] == '\n')
 						data[strlen(data) - 1] = '\0';
-					*argjson = cJSON_CreateString(data);
+					*argjson = cJSON_CreateObject();
+					cJSON_AddStringToObject(*argjson,"address",data);
+					cJSON_AddNumberToObject(*argjson, "code", 0);
 				}
 				goto end;
 			}
