@@ -19,7 +19,7 @@ game. As the number of notary nodes gets increased this value will be increased 
 threshold_value means more trust.
 ***********************************************************************************************************/
 
-int32_t threshold_value = 1;
+int32_t threshold_value = 2;
 
 /***********************************************************************************************************
 The notary_node_ips and notary_node_pubkeys values are read from the config file named cashier_nodes.json. 
