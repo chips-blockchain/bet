@@ -129,6 +129,26 @@ end:
 	return argv;
 }
 
+int32_t chips_ismine(char *address)
+{
+	int argc, retval = 0;
+	char **argv = NULL;
+	cJSON *addressInfo = NULL;
+
+	argc = 3;
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, blockchain_cli, "validateaddress", address);
+	addressInfo = cJSON_CreateObject();
+	make_command(argc, argv, &addressInfo);
+
+	cJSON *temp = cJSON_GetObjectItem(addressInfo, "ismine");
+	if (strcmp(cJSON_Print(temp), "true") == 0)
+		retval = 1;
+	bet_dealloc_args(argc, &argv);
+	return retval;
+}
+
+
 int32_t chips_iswatchonly(char *address)
 {
 	int argc, retval = 0;
