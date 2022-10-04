@@ -1513,7 +1513,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 				if (strcmp(chips_cli, blockchain_cli) == 0) {
 					*argjson = cJSON_Parse(data);
 					cJSON_AddNumberToObject(*argjson, "code", 0);
-				} else if (strcmp(verus_cli, blockchain_cli) == 0) {
+				} else if (strcmp(verus_chips_cli, blockchain_cli) == 0) {
 					if (data[strlen(data) - 1] == '\n')
 						data[strlen(data) - 1] = '\0';
 					*argjson = cJSON_CreateObject();
