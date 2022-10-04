@@ -115,11 +115,25 @@ void bet_check_cashier_nodes()
 {
 	bet_check_cashiers_status();
 
+	if(live_notaries < 1) {
+		dlg_warn("The player node must be able to reach atleast one notary node, otherwise it can't be having BVV during deck shuffling, so exiting");
+		exit(0);
+	}
+
+	dlg_info("Notary node status");
+	for (int i = 0; i < no_of_notaries; i++) {
+		if (notary_status[i] == 1) {
+			dlg_info("%d. %s active", i + 1, notary_node_ips[i]);
+		} else {
+			dlg_info("%d. %s not active", i + 1, notary_node_ips[i]);
+		}
+	}
+
+	/*
 	if (live_notaries < threshold_value) {
 		dlg_warn(
 			"The cashier nodes available are :: %d  whic is less than the required number of cashier nodes i.e ::%d",
 			live_notaries, threshold_value);
-		exit(0);
 	} else {
 		dlg_info("Notary node status");
 		for (int i = 0; i < no_of_notaries; i++) {
@@ -130,6 +144,7 @@ void bet_check_cashier_nodes()
 			}
 		}
 	}
+	*/
 }
 
 void bet_check_cashiers_status()
