@@ -8,6 +8,7 @@ int32_t bet_alloc_args(int argc, char ***argv);
 void bet_dealloc_args(int argc, char ***argv);
 char **bet_copy_args_with_size(int argc, ...);
 char **bet_copy_args(int argc, ...);
+int32_t chips_ismine(char *address);
 int32_t chips_iswatchonly(char *address);
 void chips_spend_multi_sig_address(char *address, double amount);
 void chips_import_address(char *address);
