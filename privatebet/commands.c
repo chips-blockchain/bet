@@ -31,10 +31,10 @@
 #include <inttypes.h>
 
 double epsilon = 0.000000001;
-char *blockchain_cli = "verus -chain=chipstensec"; //repalcing chips-cli with verus -chain=chipstensec for testing.
+char *blockchain_cli = "verus -chain=chips"; //repalcing chips-cli with verus -chain=chipstensec for testing.
 
 char *chips_cli = "chips-cli";
-char *verus_cli = "verus -chain=chipstensec";
+char *verus_chips_cli = "verus -chain=chips";
 
 int32_t bet_alloc_args(int argc, char ***argv)
 {
