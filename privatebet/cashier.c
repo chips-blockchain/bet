@@ -457,7 +457,7 @@ static int32_t bet_update_tx_spent(cJSON *argjson)
 static cJSON *bet_reverse_disputed_tx(cJSON *game_info)
 {
 	cJSON *msig_addr_nodes = NULL;
-	int min_cashiers, active_cashiers = 0;
+	int min_cashiers, active_cashiers = 0, fully_signed = 0;
 	int *cashier_node_status = NULL;
 	char **cashier_node_ips = NULL;
 	int32_t no_of_cashier_nodes, ip_addr_len = 20;
@@ -492,7 +492,7 @@ static cJSON *bet_reverse_disputed_tx(cJSON *game_info)
 		int no_of_in_txs = 1;
 		cJSON *raw_tx = NULL;
 		int signers = 0;
-		cJSON *hex = NULL;
+		cJSON *tx_to_sign = NULL;
 
 		strcpy(tx_ids[0], jstr(game_info, "tx_id"));
 		if (chips_iswatchonly(jstr(game_info, "msig_addr")) == 0) {
@@ -503,23 +503,35 @@ static cJSON *bet_reverse_disputed_tx(cJSON *game_info)
 						      tx_ids);
 		if (raw_tx == NULL)
 			return NULL;
-		dlg_info("raw_tx::%s", cJSON_Print(raw_tx));
+		tx_to_sign = raw_tx;
+		dlg_info("tx_to_sign::%s", cJSON_Print(tx_to_sign));
+		
 		for (int i = 0; i < no_of_cashier_nodes; i++) {
 			if (cashier_node_status[i] == 1) {
-				if (signers == 0) {
-					cJSON *temp = chips_sign_msig_tx(cashier_node_ips[i], raw_tx);
-					if (temp == NULL)
-						continue;
-					dlg_info("signed_tx::%s", cJSON_Print(temp));
-					if (cJSON_GetObjectItem(temp, "signed_tx") != NULL) {
-						hex = cJSON_GetObjectItem(cJSON_GetObjectItem(temp, "signed_tx"),
-									  "hex");
-						signers++;
-					} else {
-						dlg_error("error in signing at %s happened", cashier_node_ips[i]);
-						goto end;
+				cJSON *temp = chips_sign_msig_tx(cashier_node_ips[i], tx_to_sign);
+				if (temp == NULL)
+					continue;
+				dlg_info("signed_tx::%s", cJSON_Print(temp));
+				if (cJSON_GetObjectItem(temp, "signed_tx") != NULL) {
+					tx_to_sign = cJSON_GetObjectItem(cJSON_GetObjectItem(temp, "signed_tx"),
+								  "hex");
+					signers++;
+					if(signers == min_cashiers) {
+						cJSON *status = cJSON_GetObjectItem(
+							cJSON_GetObjectItem(temp, "signed_tx"), "complete");						
+						if (strcmp(cJSON_Print(status), "true") == 0) {
+							tx = chips_send_raw_tx(cJSON_GetObjectItem(temp, "signed_tx"));
+						}
+						if(tx)
+							fully_signed = 1;
+						break;
 					}
-				} else if (signers == 1) {
+				} else {
+					dlg_error("error in signing at %s happened", cashier_node_ips[i]);
+					goto end;
+				}
+				/*	
+				else if (signers == 1) {
 					cJSON *temp1 = chips_sign_msig_tx(cashier_node_ips[i], hex);
 					if (temp1 == NULL)
 						continue;
@@ -537,9 +549,10 @@ static cJSON *bet_reverse_disputed_tx(cJSON *game_info)
 						goto end;
 					}
 				}
+				*/
 			}
 		}
-		if (tx) {
+		if (1 == fully_signed) {
 			dlg_info("Final payout tx::%s", cJSON_Print(tx));
 		}
 	}
