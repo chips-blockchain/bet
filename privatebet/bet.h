@@ -195,7 +195,7 @@ extern struct privatebet_vars *player_vars;
 
 extern int32_t heartbeat_on;
 
-extern char *blockchain_cli;
+extern char blockchain_cli[1024];
 extern char *chips_cli;
 extern char *verus_chips_cli;
 
