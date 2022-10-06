@@ -568,8 +568,7 @@ cJSON *chips_create_raw_tx_with_data(double amount_to_transfer, char *address, c
 		}
 	}
 	if (amount_to_transfer > amount_in_txs) {
-		dlg_warn("Unable to make tx, this can happen in couple of instances: \n1. If there are too many dust tx's this happens if you might be running the 
-			mining node on the same node itself.\n2. Trying to spend the tx which is present in the mempool");
+		dlg_warn("Unable to make tx, this can happen in couple of instances: \n1. If there are too many dust tx's this happens if you might be running the mining node on the same node itself.\n2. Trying to spend the tx which is present in the mempool");
 		return NULL;
 	}
 	if (change > 0) {
