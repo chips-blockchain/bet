@@ -168,18 +168,6 @@ int32_t chips_iswatchonly(char *address)
 	return retval;
 }
 
-void chips_spend_multi_sig_address(char *address, double amount)
-{
-	cJSON *raw_tx = NULL;
-	if (address) {
-		if (chips_iswatchonly(address) == 0) {
-			chips_import_address(address);
-		}
-		raw_tx = chips_create_raw_tx_with_data(amount, address, NULL);
-		dlg_info("%s\n", cJSON_Print(raw_tx));
-	}
-}
-
 void chips_import_address(char *address)
 {
 	int argc;
@@ -435,6 +423,8 @@ cJSON *chips_transfer_funds(double amount, char *address)
 
 	if (address) {
 		raw_tx = cJSON_str(chips_create_raw_tx_with_data(amount, address, NULL));
+		if(NULL == raw_tx)
+			return NULL;
 		signed_tx = chips_sign_raw_tx_with_wallet(raw_tx);
 		tx_info = chips_send_raw_tx(signed_tx);
 	}
@@ -542,8 +532,6 @@ cJSON *chips_create_raw_tx_with_data(double amount_to_transfer, char *address, c
 	tx_list = cJSON_CreateArray();
 	address_info = cJSON_CreateObject();
 
-	dlg_info("balance ::%f", balance);
-	
 	if (address == NULL) {
 		dlg_error("Address to transfer funds in NULL");
 		return NULL;
@@ -560,10 +548,9 @@ cJSON *chips_create_raw_tx_with_data(double amount_to_transfer, char *address, c
 	listunspent_info = cJSON_CreateArray();
 	make_command(argc, argv, &listunspent_info);
 	bet_dealloc_args(argc, &argv);
-	dlg_info("listunspent_info::%s\n", cJSON_Print(listunspent_info));
+
 	for (int i = 0; i < cJSON_GetArraySize(listunspent_info); i++) {
 		cJSON *utxo = cJSON_GetArrayItem(listunspent_info, i);
-		dlg_info("utxo::%s\n", cJSON_Print(utxo));
 		if ((strcmp(cJSON_Print(jobj(utxo, "spendable")), "true") == 0) &&
 		    (jdouble(utxo, "amount") >
 		     0.0001)) { // This check was added to avoid mining and dust transactions in creating raw tx.
@@ -580,9 +567,9 @@ cJSON *chips_create_raw_tx_with_data(double amount_to_transfer, char *address, c
 			}
 		}
 	}
-	dlg_info("tx_list::%s", cJSON_Print(tx_list));
 	if (amount_to_transfer > amount_in_txs) {
-		dlg_warn("Possibly there exists too many dust tx's and system is not considering them to make tx, amount_to_transfer ::%f, amount_in_txs:;%f",amount_to_transfer,amount_in_txs);
+		dlg_warn("Unable to make tx, this can happen in couple of instances: \n1. If there are too many dust tx's this happens if you might be running the 
+			mining node on the same node itself.\n2. Trying to spend the tx which is present in the mempool");
 		return NULL;
 	}
 	if (change > 0) {
