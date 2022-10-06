@@ -148,7 +148,6 @@ int32_t chips_ismine(char *address)
 	return retval;
 }
 
-
 int32_t chips_iswatchonly(char *address)
 {
 	int argc, retval = 0;
@@ -423,7 +422,7 @@ cJSON *chips_transfer_funds(double amount, char *address)
 
 	if (address) {
 		raw_tx = cJSON_str(chips_create_raw_tx_with_data(amount, address, NULL));
-		if(NULL == raw_tx)
+		if (NULL == raw_tx)
 			return NULL;
 		signed_tx = chips_sign_raw_tx_with_wallet(raw_tx);
 		tx_info = chips_send_raw_tx(signed_tx);
@@ -558,7 +557,7 @@ cJSON *chips_create_raw_tx_with_data(double amount_to_transfer, char *address, c
 			cJSON_AddStringToObject(tx_info, "txid", jstr(utxo, "txid"));
 			cJSON_AddNumberToObject(tx_info, "vout", jint(utxo, "vout"));
 			cJSON_AddItemToArray(tx_list, tx_info);
-			
+
 			amount_in_txs += jdouble(utxo, "amount");
 			if (amount_in_txs >= amount_to_transfer) {
 				changeAddress = jstr(utxo, "address");
@@ -568,7 +567,8 @@ cJSON *chips_create_raw_tx_with_data(double amount_to_transfer, char *address, c
 		}
 	}
 	if (amount_to_transfer > amount_in_txs) {
-		dlg_warn("Unable to make tx, this can happen in couple of instances: \n1. If there are too many dust tx's this happens if you might be running the mining node on the same node itself.\n2. Trying to spend the tx which is present in the mempool");
+		dlg_warn(
+			"Unable to make tx, this can happen in couple of instances: \n1. If there are too many dust tx's this happens if you might be running the mining node on the same node itself.\n2. Trying to spend the tx which is present in the mempool");
 		return NULL;
 	}
 	if (change > 0) {
@@ -1527,7 +1527,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 					if (data[strlen(data) - 1] == '\n')
 						data[strlen(data) - 1] = '\0';
 					*argjson = cJSON_CreateObject();
-					cJSON_AddStringToObject(*argjson,"address",data);
+					cJSON_AddStringToObject(*argjson, "address", data);
 					cJSON_AddNumberToObject(*argjson, "code", 0);
 				}
 				goto end;
