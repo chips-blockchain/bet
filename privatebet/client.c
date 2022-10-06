@@ -1400,6 +1400,10 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 	str_to_hexstr(cJSON_Print(data_info), hex_data);
 	txid = cJSON_CreateObject();
 	dlg_info("funds_needed::%f", table_stake_in_chips);
+	dlg_info("Will wait for a while till the tx's in mempool gets cleared");
+	while(!chips_is_mempool_empty()){
+		sleep(2);
+	}
 	txid = chips_transfer_funds_with_data(table_stake_in_chips, legacy_m_of_n_msig_addr, hex_data);
 	if (txid == NULL) {
 		retval = ERR_CHIPS_INVALID_TX;
