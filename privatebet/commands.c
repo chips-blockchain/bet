@@ -1295,7 +1295,6 @@ static void chips_read_valid_unspent(char *file_name, cJSON **argjson)
 							buf[len++] = ch;
 							buf[len] = '\0';
 							temp = cJSON_Parse(buf);
-							dlg_info("temp::%s\n", cJSON_Print(temp));
 							if (strcmp(cJSON_Print(cJSON_GetObjectItem(temp, "spendable")),
 								   "true") == 0) {
 								cJSON_AddItemToArray(*argjson, temp);
