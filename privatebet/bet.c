@@ -555,8 +555,9 @@ static void bet_start(int argc, char **argv)
 		} else if ((strcmp(argv[1], "dcv") == 0) || (strcmp(argv[1], "dealer") == 0)) {
 			if (argc == 3) {
 				strcpy(dealer_ip, argv[2]);
+				common_init();
 				bet_parse_dealer_config_ini_file();
-				playing_nodes_init();
+				bet_check_cashier_nodes(); 
 				bet_send_dealer_info_to_cashier(dealer_ip);
 				dealer_node_init();
 				find_bvv();

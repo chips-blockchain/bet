@@ -106,6 +106,9 @@ void bet_compute_m_of_n_msig_addr()
 			dlg_info("Importing msig_address ::%s, it takes a while", legacy_m_of_n_msig_addr);
 			chips_import_address(legacy_m_of_n_msig_addr);
 		}
+	} else {
+		dlg_error("Error in computation of m-of-n multisig address");
+		exit(0);
 	}
 }
 
@@ -128,22 +131,12 @@ void bet_check_cashier_nodes()
 		}
 	}
 
-	/*
 	if (live_notaries < threshold_value) {
 		dlg_warn(
-			"The cashier nodes available are :: %d  whic is less than the required number of cashier nodes i.e ::%d",
-			live_notaries, threshold_value);
-	} else {
-		dlg_info("Notary node status");
-		for (int i = 0; i < no_of_notaries; i++) {
-			if (notary_status[i] == 1) {
-				dlg_info("%d. %s active", i + 1, notary_node_ips[i]);
-			} else {
-				dlg_info("%d. %s not active", i + 1, notary_node_ips[i]);
-			}
-		}
-	}
-	*/
+			"Cashier available:: %d \n Cashier needed ::%d\n so readjusting cashiers needed to live_notaries :: %d", live_notaries, threshold_value);
+		threshold_value = live_notaries;				
+	}	
+
 }
 
 void bet_check_cashiers_status()
