@@ -560,9 +560,10 @@ cJSON *chips_create_raw_tx_with_data(double amount_to_transfer, char *address, c
 	listunspent_info = cJSON_CreateArray();
 	make_command(argc, argv, &listunspent_info);
 	bet_dealloc_args(argc, &argv);
-
+	dlg_info("listunspent_info::%s\n", cJSON_Print(listunspent_info));
 	for (int i = 0; i < cJSON_GetArraySize(listunspent_info); i++) {
 		cJSON *utxo = cJSON_GetArrayItem(listunspent_info, i);
+		dlg_info("utxo::%s\n", cJSON_Print(utxo));
 		if ((strcmp(cJSON_Print(jobj(utxo, "spendable")), "true") == 0) &&
 		    (jdouble(utxo, "amount") >
 		     0.0001)) { // This check was added to avoid mining and dust transactions in creating raw tx.
@@ -570,7 +571,7 @@ cJSON *chips_create_raw_tx_with_data(double amount_to_transfer, char *address, c
 			cJSON_AddStringToObject(tx_info, "txid", jstr(utxo, "txid"));
 			cJSON_AddNumberToObject(tx_info, "vout", jint(utxo, "vout"));
 			cJSON_AddItemToArray(tx_list, tx_info);
-
+			
 			amount_in_txs += jdouble(utxo, "amount");
 			if (amount_in_txs >= amount_to_transfer) {
 				changeAddress = jstr(utxo, "address");
@@ -579,6 +580,7 @@ cJSON *chips_create_raw_tx_with_data(double amount_to_transfer, char *address, c
 			}
 		}
 	}
+	dlg_info("tx_list::%s", cJSON_Print(tx_list));
 	if (amount_to_transfer > amount_in_txs) {
 		dlg_warn("Possibly there exists too many dust tx's and system is not considering them to make tx, amount_to_transfer ::%f, amount_in_txs:;%f",amount_to_transfer,amount_in_txs);
 		return NULL;
