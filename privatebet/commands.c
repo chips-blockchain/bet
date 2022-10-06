@@ -1380,7 +1380,7 @@ int32_t chips_check_tx_exists(char *file_name, char *tx_id)
 int32_t chips_is_mempool_empty()
 {
 	int32_t argc, is_empty = 1;
-	char **argv = NULL, *rendered = NULL;
+	char **argv = NULL;
 	cJSON *mempool_info = NULL;
 
 	argc = 2;
