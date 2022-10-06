@@ -100,14 +100,12 @@ void bet_compute_m_of_n_msig_addr()
 	if (msig_addr) {
 		legacy_m_of_n_msig_addr = (char *)malloc(strlen(jstr(msig_addr, "address")) + 1);
 		memset(legacy_m_of_n_msig_addr, 0x00, strlen(jstr(msig_addr, "address")) + 1);
-		strncpy(legacy_m_of_n_msig_addr, jstr(msig_addr, "address"),
-			strlen(jstr(msig_addr, "address")));
+		strncpy(legacy_m_of_n_msig_addr, jstr(msig_addr, "address"), strlen(jstr(msig_addr, "address")));
 		//Import the multisig address incase if its not 1-of-1 and not belong to the local wallet.
-		if ((!chips_ismine(legacy_m_of_n_msig_addr))&&(chips_iswatchonly(legacy_m_of_n_msig_addr) == 0)) { 
+		if ((!chips_ismine(legacy_m_of_n_msig_addr)) && (chips_iswatchonly(legacy_m_of_n_msig_addr) == 0)) {
 			dlg_info("Importing msig_address ::%s, it takes a while", legacy_m_of_n_msig_addr);
 			chips_import_address(legacy_m_of_n_msig_addr);
 		}
-		
 	}
 }
 
@@ -115,8 +113,9 @@ void bet_check_cashier_nodes()
 {
 	bet_check_cashiers_status();
 
-	if(live_notaries < 1) {
-		dlg_warn("The player node must be able to reach atleast one notary node, otherwise it can't be having BVV during deck shuffling, so exiting");
+	if (live_notaries < 1) {
+		dlg_warn(
+			"The player node must be able to reach atleast one notary node, otherwise it can't be having BVV during deck shuffling, so exiting");
 		exit(0);
 	}
 
@@ -505,7 +504,7 @@ static cJSON *bet_reverse_disputed_tx(cJSON *game_info)
 			return NULL;
 		tx_to_sign = raw_tx;
 		dlg_info("tx_to_sign::%s", cJSON_Print(tx_to_sign));
-		
+
 		for (int i = 0; i < no_of_cashier_nodes; i++) {
 			if (cashier_node_status[i] == 1) {
 				cJSON *temp = chips_sign_msig_tx(cashier_node_ips[i], tx_to_sign);
@@ -513,16 +512,15 @@ static cJSON *bet_reverse_disputed_tx(cJSON *game_info)
 					continue;
 				dlg_info("signed_tx::%s", cJSON_Print(temp));
 				if (cJSON_GetObjectItem(temp, "signed_tx") != NULL) {
-					tx_to_sign = cJSON_GetObjectItem(cJSON_GetObjectItem(temp, "signed_tx"),
-								  "hex");
+					tx_to_sign = cJSON_GetObjectItem(cJSON_GetObjectItem(temp, "signed_tx"), "hex");
 					signers++;
-					if(signers == min_cashiers) {
+					if (signers == min_cashiers) {
 						cJSON *status = cJSON_GetObjectItem(
-							cJSON_GetObjectItem(temp, "signed_tx"), "complete");						
+							cJSON_GetObjectItem(temp, "signed_tx"), "complete");
 						if (strcmp(cJSON_Print(status), "true") == 0) {
 							tx = chips_send_raw_tx(cJSON_GetObjectItem(temp, "signed_tx"));
 						}
-						if(tx)
+						if (tx)
 							fully_signed = 1;
 						break;
 					}

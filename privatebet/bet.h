@@ -199,7 +199,6 @@ extern char *blockchain_cli;
 extern char *chips_cli;
 extern char *verus_chips_cli;
 
-
 bits256 xoverz_donna(bits256 a);
 bits256 crecip_donna(bits256 a);
 bits256 fmul_donna(bits256 a, bits256 b);
