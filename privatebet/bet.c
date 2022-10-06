@@ -544,6 +544,7 @@ static void bet_start(int argc, char **argv)
 {
 	bet_set_unique_id();
 	if (!argv[1]) {
+		bet_parse_blockchain_config_ini_file();
 		if (strcmp(argv[1], "cashier") == 0) {
 			if (argc == 3) {
 				strcpy(cashier_ip, argv[2]);

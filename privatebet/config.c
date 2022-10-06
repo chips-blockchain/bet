@@ -9,6 +9,8 @@ char *dealer_config_ini_file = "./config/dealer_config.ini";
 char *player_config_ini_file = "./config/player_config.ini";
 char *cashier_config_ini_file = "./config/cashier_config.ini";
 char *bets_config_ini_file = "./config/bets.ini";
+char *blockchain_config_ini_file = "./config/blockchain_config.ini";
+
 
 cJSON *bet_read_json_file(char *file_name)
 {
@@ -246,4 +248,26 @@ int32_t bet_parse_bets()
 	cJSON_AddItemToObject(info, "bets_info", bets_info);
 	dlg_info("\n%s", cJSON_Print(info));
 	return retval;
+}
+
+
+void bet_parse_blockchain_config_ini_file()
+{
+	dictionary *ini = NULL;
+
+	ini = iniparser_load(blockchain_config_ini_file);
+	if (ini == NULL) {
+		dlg_error("error in parsing %s", blockchain_config_ini_file);
+	} else {
+		if (NULL != iniparser_getstring(ini, "blockchain:blockchain_cli", NULL)) {
+			memset(blockchain_cli,0x00, strlen(blockchain_cli));
+			strcpy(blockchain_cli, iniparser_getstring(ini, "blockchain:blockchain_cli", "chips-cli"));
+			if(!((strcmp(blockchain_cli, chips_cli) == 0) || (strcmp(blockchain_cli, verus_chips_cli) == 0))){
+				dlg_warn("The blockchain client configured in ./config/blockchain_config.ini is not in the supported list of clients, so setting it do default chips-cli");
+				memset(blockchain_cli,0x00, strlen(blockchain_cli));
+				strncpy(blockchain_cli, chips_cli, strlen(chips_cli));
+								
+			}
+		}
+	}
 }
