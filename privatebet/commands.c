@@ -1390,7 +1390,6 @@ int32_t chips_is_mempool_empty()
 	argv = bet_copy_args(argc, blockchain_cli, "getrawmempool");
 	make_command(argc, argv, &mempool_info);
 
-	dlg_info("mempool_info::%s", cJSON_Print(mempool_info));
 	if ((mempool_info) && (cJSON_GetArraySize(mempool_info) != 0))
 		is_empty = 0;
 
