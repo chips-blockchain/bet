@@ -1390,6 +1390,7 @@ int32_t chips_is_mempool_empty()
 	argv = bet_copy_args(argc, blockchain_cli, "getrawmempool");
 	make_command(argc, argv, &mempool_info);
 
+	dlg_info("mempool_info::%s", cJSON_Print(mempool_info));
 	if ((mempool_info) && (cJSON_GetArraySize(mempool_info) != 0))
 		is_empty = 0;
 
@@ -1551,14 +1552,17 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 					cJSON_AddNumberToObject(*argjson, "code", 0);
 				}
 				goto end;
-			}
-			if ((strcmp(argv[1], "createrawtransaction") == 0) ||
+			} else if ((strcmp(argv[1], "createrawtransaction") == 0) ||
 			    (strcmp(argv[1], "sendrawtransaction") == 0) || (strcmp(argv[1], "getnewaddress") == 0) ||
 			    (strcmp(argv[1], "getrawtransaction") == 0) || (strcmp(argv[1], "getblockhash") == 0)) {
 				if (data[strlen(data) - 1] == '\n')
 					data[strlen(data) - 1] = '\0';
 
 				*argjson = cJSON_CreateString(data);
+			} else if(strcmp(argv[1], "getrawmempool") == 0){
+				if (data[strlen(data) - 1] == '\n')
+					data[strlen(data) - 1] = '\0';
+				*argjson = cJSON_Parse(data);
 			} else {
 				*argjson = cJSON_Parse(data);
 				cJSON_AddNumberToObject(*argjson, "code", 0);
