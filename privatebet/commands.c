@@ -578,7 +578,7 @@ cJSON *chips_create_raw_tx_with_data(double amount_to_transfer, char *address, c
 		}
 	}
 	if (amount_to_transfer > amount_in_txs) {
-		dlg_warn("Possibly there exists too many dust tx's and system is not considering them to make tx");
+		dlg_warn("Possibly there exists too many dust tx's and system is not considering them to make tx, amount_to_transfer ::%f, amount_in_txs:;%f",amount_to_transfer,amount_in_txs);
 		return NULL;
 	}
 	if (change > 0) {
