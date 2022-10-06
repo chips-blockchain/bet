@@ -543,9 +543,9 @@ static void bet_start(int argc, char **argv){
 static void bet_start(int argc, char **argv)
 {
 	bet_set_unique_id();
-	if(argc < 2)
+	if (argc < 2)
 		bet_command_info();
-	
+
 	bet_parse_blockchain_config_ini_file();
 	if (strcmp(argv[1], "cashier") == 0) {
 		if (argc == 3) {
@@ -580,8 +580,8 @@ static void bet_start(int argc, char **argv)
 	} else if (strcmp(argv[1], "game") == 0) {
 		playing_nodes_init();
 		bet_handle_game(argc, argv);
-	} else if ((strcmp(argv[1], "h") == 0) || (strcmp(argv[1], "-h") == 0) ||
-		   (strcmp(argv[1], "help") == 0) || (strcmp(argv[1], "--help") == 0)) {
+	} else if ((strcmp(argv[1], "h") == 0) || (strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "help") == 0) ||
+		   (strcmp(argv[1], "--help") == 0)) {
 		if (argc == 3) {
 			bet_help_command(argv[2]);
 		} else {
@@ -609,8 +609,8 @@ static void bet_start(int argc, char **argv)
 	} else if (strcmp(argv[1], "spendable") == 0) {
 		cJSON *spendable_tx = chips_spendable_tx();
 		dlg_info("CHIPS Spendable tx's :: %s\n", cJSON_Print(spendable_tx));
-	} else if ((strcmp(argv[1], "v") == 0) || (strcmp(argv[1], "-v") == 0) ||
-		   (strcmp(argv[1], "version") == 0) || (strcmp(argv[1], "--version") == 0)) {
+	} else if ((strcmp(argv[1], "v") == 0) || (strcmp(argv[1], "-v") == 0) || (strcmp(argv[1], "version") == 0) ||
+		   (strcmp(argv[1], "--version") == 0)) {
 		printf("%s\n", BET_VERSION);
 	} else if (strcmp(argv[1], "withdraw") == 0) {
 		if (argc == 4) {
@@ -623,7 +623,6 @@ static void bet_start(int argc, char **argv)
 	} else {
 		bet_command_info();
 	}
-	
 }
 
 int main(int argc, char **argv)

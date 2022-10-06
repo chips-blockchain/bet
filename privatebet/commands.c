@@ -32,8 +32,7 @@
 
 double epsilon = 0.000000001;
 
-
-char blockchain_cli[1024]; 
+char blockchain_cli[1024];
 
 char *chips_cli = "chips-cli";
 char *verus_chips_cli = "verus -chain=chips";
@@ -1552,13 +1551,15 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 				}
 				goto end;
 			} else if ((strcmp(argv[1], "createrawtransaction") == 0) ||
-			    (strcmp(argv[1], "sendrawtransaction") == 0) || (strcmp(argv[1], "getnewaddress") == 0) ||
-			    (strcmp(argv[1], "getrawtransaction") == 0) || (strcmp(argv[1], "getblockhash") == 0)) {
+				   (strcmp(argv[1], "sendrawtransaction") == 0) ||
+				   (strcmp(argv[1], "getnewaddress") == 0) ||
+				   (strcmp(argv[1], "getrawtransaction") == 0) ||
+				   (strcmp(argv[1], "getblockhash") == 0)) {
 				if (data[strlen(data) - 1] == '\n')
 					data[strlen(data) - 1] = '\0';
 
 				*argjson = cJSON_CreateString(data);
-			} else if(strcmp(argv[1], "getrawmempool") == 0){
+			} else if (strcmp(argv[1], "getrawmempool") == 0) {
 				if (data[strlen(data) - 1] == '\n')
 					data[strlen(data) - 1] = '\0';
 				*argjson = cJSON_Parse(data);

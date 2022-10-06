@@ -11,7 +11,6 @@ char *cashier_config_ini_file = "./config/cashier_config.ini";
 char *bets_config_ini_file = "./config/bets.ini";
 char *blockchain_config_ini_file = "./config/blockchain_config.ini";
 
-
 cJSON *bet_read_json_file(char *file_name)
 {
 	FILE *fp = NULL;
@@ -250,7 +249,6 @@ int32_t bet_parse_bets()
 	return retval;
 }
 
-
 void bet_parse_blockchain_config_ini_file()
 {
 	dictionary *ini = NULL;
@@ -260,13 +258,15 @@ void bet_parse_blockchain_config_ini_file()
 		dlg_error("error in parsing %s", blockchain_config_ini_file);
 	} else {
 		if (NULL != iniparser_getstring(ini, "blockchain:blockchain_cli", NULL)) {
-			memset(blockchain_cli,0x00, sizeof(blockchain_cli));
-			strncpy(blockchain_cli, iniparser_getstring(ini, "blockchain:blockchain_cli", "chips-cli"), sizeof(blockchain_cli));
-			if(!((strcmp(blockchain_cli, chips_cli) == 0) || (strcmp(blockchain_cli, verus_chips_cli) == 0))){
-				dlg_warn("The blockchain client configured in ./config/blockchain_config.ini is not in the supported list of clients, so setting it do default chips-cli");
-				memset(blockchain_cli,0x00, sizeof(blockchain_cli));
+			memset(blockchain_cli, 0x00, sizeof(blockchain_cli));
+			strncpy(blockchain_cli, iniparser_getstring(ini, "blockchain:blockchain_cli", "chips-cli"),
+				sizeof(blockchain_cli));
+			if (!((strcmp(blockchain_cli, chips_cli) == 0) ||
+			      (strcmp(blockchain_cli, verus_chips_cli) == 0))) {
+				dlg_warn(
+					"The blockchain client configured in ./config/blockchain_config.ini is not in the supported list of clients, so setting it do default chips-cli");
+				memset(blockchain_cli, 0x00, sizeof(blockchain_cli));
 				strncpy(blockchain_cli, chips_cli, sizeof(blockchain_cli));
-								
 			}
 		}
 	}
