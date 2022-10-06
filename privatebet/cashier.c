@@ -132,7 +132,7 @@ void bet_check_cashier_nodes()
 	}
 
 	if (live_notaries < threshold_value) {
-		dlg_warn("Cashier available:: %d \n Cashier needed ::%d\n so readjusting cashiers needed to live_notaries :: %d", live_notaries, threshold_value);
+		dlg_warn("Cashier available:: %d \n Cashier needed ::%d\n so readjusting cashiers needed to :: %d", live_notaries, threshold_value, live_notaries);
 		threshold_value = live_notaries;				
 	}	
 
