@@ -542,6 +542,8 @@ cJSON *chips_create_raw_tx_with_data(double amount_to_transfer, char *address, c
 	tx_list = cJSON_CreateArray();
 	address_info = cJSON_CreateObject();
 
+	dlg_info("balance ::%f", balance);
+	
 	if (address == NULL) {
 		dlg_error("Address to transfer funds in NULL");
 		return NULL;
