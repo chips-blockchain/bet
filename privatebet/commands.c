@@ -31,7 +31,7 @@
 #include <inttypes.h>
 
 double epsilon = 0.000000001;
-char *blockchain_cli = "verus -chain=chips"; //repalcing chips-cli with verus -chain=chipstensec for testing.
+char *blockchain_cli = "chips-cli"; 
 
 char *chips_cli = "chips-cli";
 char *verus_chips_cli = "verus -chain=chips";
