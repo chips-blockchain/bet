@@ -557,7 +557,7 @@ static void bet_start(int argc, char **argv)
 				strcpy(dealer_ip, argv[2]);
 				common_init();
 				bet_parse_dealer_config_ini_file();
-				bet_check_cashier_nodes(); 
+				bet_check_cashier_nodes();
 				bet_send_dealer_info_to_cashier(dealer_ip);
 				dealer_node_init();
 				find_bvv();
