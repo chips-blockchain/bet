@@ -623,7 +623,7 @@ static void bet_start(int argc, char **argv){
 int main(int argc, char **argv)
 {
 	bet_start(argc, argv);
-	return OK
+	return OK;
 }
 
 bits256 curve25519_fieldelement(bits256 hash)
