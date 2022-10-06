@@ -53,6 +53,7 @@ char *chips_get_wallet_address();
 cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids[][100], char *data);
 int32_t chips_check_tx_exists_in_unspent(char *file_name, char *tx_id);
 int32_t chips_check_tx_exists(char *file_name, char *tx_id);
+int32_t chips_is_mempool_empty();
 int32_t run_command(int argc, char **argv);
 int32_t make_command(int argc, char **argv, cJSON **argjson);
 char *ln_get_new_address();

@@ -1377,6 +1377,24 @@ int32_t chips_check_tx_exists(char *file_name, char *tx_id)
 	return tx_exists;
 }
 
+int32_t chips_is_mempool_empty()
+{
+	int32_t argc, is_empty = 1;
+	char **argv = NULL, *rendered = NULL;
+	cJSON *mempool_info = NULL;
+
+	argc = 2;
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, blockchain_cli, "getrawmempool");
+	make_command(argc, argv, &mempool_info);
+
+	if((mempool_info) && (cJSON_GetArraySize(mempool_info) != 0))
+		is_empty = 0;
+
+	bet_dealloc_args(argc,&argv);
+	return is_empty;
+}
+
 int32_t run_command(int argc, char **argv)
 {
 	char *command = NULL;
