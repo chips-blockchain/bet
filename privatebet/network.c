@@ -94,6 +94,11 @@ cJSON *bet_msg_dealer_with_response_id(cJSON *argjson, char *dealer_ip, char *me
 	memset(bind_sub_addr, 0x00, sizeof(bind_sub_addr));
 	memset(bind_push_addr, 0x00, sizeof(bind_push_addr));
 
+	if((dealer_ip == NULL)||(strlen(dealer_ip) == 0)) {
+		dlg_info("Invalid dealer IP");
+		return NULL;
+	}
+	
 	bet_tcp_sock_address(0, bind_sub_addr, dealer_ip, dealer_bvv_pub_sub_port);
 	c_subsock = bet_nanosock(0, bind_sub_addr, NN_SUB);
 
