@@ -670,7 +670,7 @@ static void bet_process_add_bvv(cJSON *argjson, struct cashier *cashier_info)
 		bvv_state = 1;
 		bet_bvv_thrd(jstr(argjson, "dealer_ip"), dealer_bvv_pub_sub_port);
 		memset(dealer_ip_for_bvv, 0x00, sizeof(dealer_ip_for_bvv));
-		strcpy(dealer_ip_for_bvv, jstr(argjson, "dealer_ip"));
+		strncpy(dealer_ip_for_bvv, jstr(argjson, "dealer_ip"),sizeof(dealer_ip_for_bvv));
 	}
 }
 
