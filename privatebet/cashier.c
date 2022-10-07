@@ -641,6 +641,8 @@ static int32_t bet_process_find_bvv(cJSON *argjson, struct cashier *cashier_info
 	int32_t retval = OK;
 	cJSON *bvv_status = NULL, *dcv_state = NULL;
 
+	dlg_info("dealer_ip_for_bvv::%s", dealer_ip_for_bvv);
+
 	if (bvv_state == 1) {
 		dcv_state = cJSON_CreateObject();
 		cJSON_AddStringToObject(dcv_state, "method", "live");
