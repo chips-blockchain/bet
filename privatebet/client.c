@@ -1685,8 +1685,13 @@ int32_t bet_player_backend(cJSON *argjson, struct privatebet_info *bet, struct p
 				}
 			}
 		} else if (strcmp(method, "payout_tx") == 0) {
-			retval = bet_store_game_info_details(jstr(argjson, "tx_info"), jstr(argjson, "table_id"));
-			retval = bet_player_process_payout_tx(argjson);
+			if(jstr(argjson,"tx_info")) {
+				retval = bet_store_game_info_details(jstr(argjson, "tx_info"), jstr(argjson, "table_id"));
+				retval = bet_player_process_payout_tx(argjson);
+			} else {
+				dlg_warn("Error occured in payout_tx, so raising the dispute for payin_tx");
+				bet_raise_dispute(player_payin_txid);				
+			}
 		} else if (strcmp(method, "game_info") == 0) {
 			retval = bet_player_process_game_info(argjson);
 		} else if (strcmp(method, "dcv_state") == 0) {
