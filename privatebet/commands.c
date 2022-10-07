@@ -923,39 +923,31 @@ static cJSON *chips_spend_msig_tx(cJSON *raw_tx)
 	dlg_info("%s\n", cJSON_Print(raw_tx));
 
 	bet_check_cashiers_status();
+	hex = raw_tx;
 	for (int i = 0; i < no_of_notaries; i++) {
-		if (notary_status[i] == 1) {
-			if (signers == 0) {
-				cJSON *temp = chips_sign_msig_tx(notary_node_ips[i], raw_tx);
-				if (temp == NULL) {
-					continue;
-				}
-				if (cJSON_GetObjectItem(temp, "signed_tx") != NULL) {
-					hex = cJSON_GetObjectItem(cJSON_GetObjectItem(temp, "signed_tx"), "hex");
-					signers++;
-				} else {
-					dlg_error("%s\n", jstr(temp, "err_str"));
-					return NULL;
-				}
-			} else if (signers == 1) {
-				cJSON *temp1 = chips_sign_msig_tx(notary_node_ips[i], hex);
-				if (temp1 == NULL) {
-					continue;
-				}
-				if (cJSON_GetObjectItem(temp1, "signed_tx") != NULL) {
-					cJSON *status = cJSON_GetObjectItem(cJSON_GetObjectItem(temp1, "signed_tx"),
-									    "complete");
-					if (strcmp(cJSON_Print(status), "true") == 0) {
-						tx = chips_send_raw_tx(cJSON_GetObjectItem(temp1, "signed_tx"));
-						signers++;
-						break;
-					}
-				} else {
-					dlg_info("%s\n", jstr(temp1, "err_str"));
-					return NULL;
-				}
+		if (notary_status[i] == 1) {			
+			cJSON *temp = chips_sign_msig_tx(notary_node_ips[i], hex);
+			if (temp == NULL) {
+				continue;
 			}
+			if (cJSON_GetObjectItem(temp, "signed_tx") != NULL) {
+				hex = cJSON_GetObjectItem(cJSON_GetObjectItem(temp, "signed_tx"), "hex");
+				signers++;
+			} else {
+				dlg_error("%s\n", jstr(temp, "err_str"));
+				return NULL;
+			}
+			if(signers == threshold_value) {
+				cJSON *status = cJSON_GetObjectItem(cJSON_GetObjectItem(temp, "signed_tx"), "complete");
+				if (strcmp(cJSON_Print(status), "true") == 0) {
+					tx = chips_send_raw_tx(cJSON_GetObjectItem(temp, "signed_tx"));
+					break;
+				}
+			}				
 		}
+	}
+	if(tx == NULL){
+		dlg_error("Error in making payout tx");
 	}
 	return tx;
 }
@@ -1190,7 +1182,7 @@ static int32_t chips_get_vout_from_tx(char *tx_id)
 cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids[][100], char *data)
 {
 	double payout_amount = 0, amount_in_txs = 0;
-	cJSON *tx_list = NULL, *addr_info = NULL, *tx_details = NULL, *payout_tx_info = NULL;
+	cJSON *tx_list = NULL, *addr_info = NULL, *tx_details = NULL, *payout_tx_info = NULL, *payout_tx = NULL;
 	int argc, vout;
 	char **argv = NULL, params[2][arg_size] = { 0 }, *sql_query = NULL;
 
@@ -1234,15 +1226,15 @@ cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids
 
 	dlg_info("raw_tx::%s\n", cJSON_Print(tx_details));
 
-	cJSON *tx = chips_spend_msig_tx(tx_details);
+	payout_tx= chips_spend_msig_tx(tx_details);
 
 	payout_tx_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(payout_tx_info, "method", "payout_tx");
 	cJSON_AddStringToObject(payout_tx_info, "table_id", table_id);
-	cJSON_AddItemToObject(payout_tx_info, "tx_info", tx);
+	cJSON_AddItemToObject(payout_tx_info, "tx_info", payout_tx);
 
-	if (tx) {
-		dlg_info("tx::%s\n", cJSON_Print(tx));
+	if (payout_tx) {
+		dlg_info("tx::%s\n", cJSON_Print(payout_tx));
 		sql_query = calloc(sql_query_size, sizeof(char));
 		sprintf(sql_query, "UPDATE dcv_tx_mapping set status = 0 where table_id = \"%s\";", table_id);
 		bet_run_query(sql_query);
