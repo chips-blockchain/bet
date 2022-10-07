@@ -590,7 +590,7 @@ static int32_t bet_process_dealer_info(cJSON *argjson)
 	char *sql_query = NULL;
 
 	sql_query = calloc(sql_query_size, sizeof(char));
-	sprintf(sql_query, "INSERT into dealers_info values(\'%s\');", jstr(argjson, "ip"));
+	sprintf(sql_query, "INSERT OR IGNORE into dealers_info values(\'%s\');", jstr(argjson, "ip"));
 	retval = bet_run_query(sql_query);
 	if (sql_query)
 		free(sql_query);
