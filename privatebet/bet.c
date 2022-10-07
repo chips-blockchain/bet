@@ -543,8 +543,10 @@ static void bet_start(int argc, char **argv){
 static void bet_start(int argc, char **argv)
 {
 	bet_set_unique_id();
-	if (argc < 2)
+	if (argc < 2) {
 		bet_command_info();
+		exit(0);
+	}	
 
 	bet_parse_blockchain_config_ini_file();
 	if (strcmp(argv[1], "cashier") == 0) {
