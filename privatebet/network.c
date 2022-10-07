@@ -98,12 +98,17 @@ cJSON *bet_msg_dealer_with_response_id(cJSON *argjson, char *dealer_ip, char *me
 		dlg_info("Invalid dealer IP");
 		return NULL;
 	}
-	
-	bet_tcp_sock_address(0, bind_sub_addr, dealer_ip, dealer_bvv_pub_sub_port);
-	c_subsock = bet_nanosock(0, bind_sub_addr, NN_SUB);
 
-	bet_tcp_sock_address(0, bind_push_addr, dealer_ip, dealer_bvv_push_pull_port);
-	c_pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
+	if(strcmp(dealer_ip, dealer_ip_for_bvv) == 0){
+		c_subsock = bet_bvv->subsock;
+		c_pushsock = bet_bvv->pushsock;
+	} else {
+		bet_tcp_sock_address(0, bind_sub_addr, dealer_ip, dealer_bvv_pub_sub_port);
+		c_subsock = bet_nanosock(0, bind_sub_addr, NN_SUB);
+		
+		bet_tcp_sock_address(0, bind_push_addr, dealer_ip, dealer_bvv_push_pull_port);
+		c_pushsock = bet_nanosock(0, bind_push_addr, NN_PUSH);
+	}
 
 	dlg_info("c_pushsock::%d, c_subsock ::%d, data::%s", c_pushsock, c_subsock, cJSON_Print(argjson));
 	
