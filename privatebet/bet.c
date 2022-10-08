@@ -617,7 +617,13 @@ static void bet_start(int argc, char **argv)
 	} else if (strcmp(argv[1], "withdraw") == 0) {
 		if (argc == 4) {
 			cJSON *tx = NULL;
-			tx = chips_transfer_funds(atof(argv[2]), argv[3]);
+			double amount =0;
+			if(strcmp(argv[2], "all") == 0){
+				amount = chips_get_balance() - chips_tx_fee;				
+			} else {
+				amount = atof(argv[2]);
+			}
+			tx = chips_transfer_funds(amount, argv[3]);
 			dlg_info("tx details::%s", cJSON_Print(tx));
 		} else {
 			bet_help_withdraw_command_usage();
