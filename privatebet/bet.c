@@ -546,7 +546,7 @@ static void bet_start(int argc, char **argv)
 	if (argc < 2) {
 		bet_command_info();
 		exit(0);
-	}	
+	}
 
 	bet_parse_blockchain_config_ini_file();
 	if (strcmp(argv[1], "cashier") == 0) {
@@ -617,14 +617,14 @@ static void bet_start(int argc, char **argv)
 	} else if (strcmp(argv[1], "withdraw") == 0) {
 		if (argc == 4) {
 			cJSON *tx = NULL;
-			double amount =0;
-			if(strcmp(argv[2], "all") == 0){
-				amount = chips_get_balance() - chips_tx_fee;				
+			double amount = 0;
+			if (strcmp(argv[2], "all") == 0) {
+				amount = chips_get_balance() - chips_tx_fee;
 			} else {
 				amount = atof(argv[2]);
 			}
 			tx = chips_transfer_funds(amount, argv[3]);
-			if(tx)
+			if (tx)
 				dlg_info("tx details::%s", cJSON_Print(tx));
 		} else {
 			bet_help_withdraw_command_usage();
@@ -632,8 +632,8 @@ static void bet_start(int argc, char **argv)
 	} else if (strcmp(argv[1], "consolidate") == 0) {
 		cJSON *tx = NULL;
 		double amount = chips_get_balance() - chips_tx_fee;
-		tx  = chips_transfer_funds(amount,chips_get_new_address());
-		if(tx)
+		tx = chips_transfer_funds(amount, chips_get_new_address());
+		if (tx)
 			dlg_info("Consolidated tx::%s", cJSON_Print(tx));
 	} else {
 		bet_command_info();

@@ -925,7 +925,7 @@ static cJSON *chips_spend_msig_tx(cJSON *raw_tx)
 	bet_check_cashiers_status();
 	hex = raw_tx;
 	for (int i = 0; i < no_of_notaries; i++) {
-		if (notary_status[i] == 1) {			
+		if (notary_status[i] == 1) {
 			cJSON *temp = chips_sign_msig_tx(notary_node_ips[i], hex);
 			if (temp == NULL) {
 				continue;
@@ -937,16 +937,16 @@ static cJSON *chips_spend_msig_tx(cJSON *raw_tx)
 				dlg_error("%s\n", jstr(temp, "err_str"));
 				return NULL;
 			}
-			if(signers == threshold_value) {
+			if (signers == threshold_value) {
 				cJSON *status = cJSON_GetObjectItem(cJSON_GetObjectItem(temp, "signed_tx"), "complete");
 				if (strcmp(cJSON_Print(status), "true") == 0) {
 					tx = chips_send_raw_tx(cJSON_GetObjectItem(temp, "signed_tx"));
 					break;
 				}
-			}				
+			}
 		}
 	}
-	if(tx == NULL){
+	if (tx == NULL) {
 		dlg_error("Error in making payout tx");
 	}
 	return tx;
@@ -1226,7 +1226,7 @@ cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids
 
 	dlg_info("raw_tx::%s\n", cJSON_Print(tx_details));
 
-	payout_tx= chips_spend_msig_tx(tx_details);
+	payout_tx = chips_spend_msig_tx(tx_details);
 
 	payout_tx_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(payout_tx_info, "method", "payout_tx");
