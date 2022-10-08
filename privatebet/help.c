@@ -119,7 +119,8 @@ void bet_help_withdraw_command_usage()
 		 "\nDescription: \n"
 		 "Withdraws CHIPS to the address specified \n"
 		 "\nExample: \n"
-		 "./bet withdraw amount \"chips address\" \n");
+		 "./bet withdraw amount \"chips address\" \n"
+		 "./bet withdraw all \"chips address\" \n");
 }
 
 void bet_help_spendable_command_usage()
