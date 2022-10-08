@@ -624,10 +624,17 @@ static void bet_start(int argc, char **argv)
 				amount = atof(argv[2]);
 			}
 			tx = chips_transfer_funds(amount, argv[3]);
-			dlg_info("tx details::%s", cJSON_Print(tx));
+			if(tx)
+				dlg_info("tx details::%s", cJSON_Print(tx));
 		} else {
 			bet_help_withdraw_command_usage();
 		}
+	} else if (strcmp(argv[1], "consolidate") == 0) {
+		cJSON *tx = NULL;
+		double amount = chips_get_balance() - chips_tx_fee;
+		tx  = chips_transfer_funds(amount,chips_get_new_address());
+		if(tx)
+			dlg_info("Consolidated tx::%s", cJSON_Print(tx));
 	} else {
 		bet_command_info();
 	}
