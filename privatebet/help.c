@@ -16,6 +16,7 @@ void bet_command_info()
 		 "game dispute \" Disputed tx to resolve\" \n"
 		 "\n==Wallet==\n"
 		 "withdraw amount \"chips address\" \n"
+		 "withdraw all \"chips address\" \n"
 		 "spendable \n"
 		 "extract_tx_data tx_id \n"
 		 "\n==Blockchain scanner for Explorer==\n"
