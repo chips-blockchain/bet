@@ -18,6 +18,7 @@ void bet_command_info()
 		 "withdraw amount \"chips address\" \n"
 		 "withdraw all \"chips address\" \n"
 		 "spendable \n"
+		 "consolidate \n"
 		 "extract_tx_data tx_id \n"
 		 "\n==Blockchain scanner for Explorer==\n"
 		 "scan \n"
