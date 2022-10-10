@@ -1499,34 +1499,32 @@ int32_t chips_is_mempool_empty()
 	return is_empty;
 }
 
-
-struct cJSON* do_split_tx_amount(double amount, int32_t no_of_splits)
+struct cJSON *do_split_tx_amount(double amount, int32_t no_of_splits)
 {
 	cJSON *vout_info = NULL, *tx_id = NULL;
 	double tx_amount = 0;
-	if((amount+chips_tx_fee) > chips_get_balance()){
+	if ((amount + chips_tx_fee) > chips_get_balance()) {
 		dlg_warn("Not enough utxo's of amount ::%f are available", amount);
 		return NULL;
 	}
-	tx_amount = amount/no_of_splits;
+	tx_amount = amount / no_of_splits;
 
 	vout_info = cJSON_CreateArray();
-	for(int32_t i=0; i<no_of_splits; i++){
+	for (int32_t i = 0; i < no_of_splits; i++) {
 		cJSON *temp = cJSON_CreateObject();
-		cJSON_AddStringToObject(temp,"addr",chips_get_new_address());
-		cJSON_AddNumberToObject(temp,"amount", tx_amount);
-		cJSON_AddItemToArray(vout_info,temp);
+		cJSON_AddStringToObject(temp, "addr", chips_get_new_address());
+		cJSON_AddNumberToObject(temp, "amount", tx_amount);
+		cJSON_AddItemToArray(vout_info, temp);
 	}
 
-	tx_id = chips_transfer_funds_with_data1(vout_info,NULL);
+	tx_id = chips_transfer_funds_with_data1(vout_info, NULL);
 
-	if(tx_id) {
+	if (tx_id) {
 		dlg_info("The split tx is :: %s", cJSON_Print(tx_id));
 	} else {
 		dlg_error("Error occured in doing tx_split");
 	}
 	return tx_id;
-	
 }
 
 int32_t run_command(int argc, char **argv)
