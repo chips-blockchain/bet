@@ -1443,7 +1443,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		sleep(2);
 	}
 
-	vout_addresses = add_tx_split_vouts(table_stake_in_chips,legacy_m_of_n_msig_addr,100)
+	vout_addresses = add_tx_split_vouts(table_stake_in_chips,legacy_m_of_n_msig_addr,100);
 	txid = chips_transfer_funds_with_data(vout_addresses, hex_data);
 	//txid = chips_transfer_funds_with_data(table_stake_in_chips, legacy_m_of_n_msig_addr, hex_data);
 	if (txid == NULL) {
