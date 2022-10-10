@@ -1330,7 +1330,7 @@ static int32_t bet_update_payin_tx_across_cashiers(cJSON *argjson, cJSON *txid)
 }
 
 static int32_t check_funds_for_poker(double table_stake){
-	int32_t no_of_possible_moves = 100, retval = 0;
+	int32_t no_of_possible_moves = 20, retval = 0;
 	double game_fee = 0, funds_needed = 0, balance = 0;
 
 	game_fee = no_of_possible_moves * chips_tx_fee;
@@ -1346,18 +1346,20 @@ static int32_t check_funds_for_poker(double table_stake){
 	return retval;	
 }
 
-static struct cJSON* add_tx_split_vouts(double amount, char *address, int n){
+static struct cJSON* add_tx_split_vouts(double amount, char *address){
 	cJSON *vout_addresses = NULL;
+	int no_of_split_tx = 20;
 
 	vout_addresses = cJSON_CreateArray();
 	cJSON * payin_vout = cJSON_CreateObject();
 	cJSON_AddStringToObject(payin_vout,"addr",address);
 		cJSON_AddNumberToObject(payin_vout, "amount", amount);
 	cJSON_AddItemToArray(vout_addresses,payin_vout);
-	for(int32_t i = 0; i<n; i++){
+	for(int32_t i = 0; i<no_of_split_tx; i++){
 		cJSON *fee_vout = cJSON_CreateObject();
 		cJSON_AddStringToObject(fee_vout,"addr", chips_get_new_address());
 		cJSON_AddNumberToObject(fee_vout,"amount", chips_tx_fee);
+		cJSON_AddItemToArray(vout_addresses,fee_vout);
 	}
 	return vout_addresses;
 }
@@ -1443,7 +1445,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		sleep(2);
 	}
 
-	vout_addresses = add_tx_split_vouts(table_stake_in_chips,legacy_m_of_n_msig_addr,100);
+	vout_addresses = add_tx_split_vouts(table_stake_in_chips,legacy_m_of_n_msig_addr);
 	txid = chips_transfer_funds_with_data1(vout_addresses, hex_data);
 	//txid = chips_transfer_funds_with_data(table_stake_in_chips, legacy_m_of_n_msig_addr, hex_data);
 	if (txid == NULL) {
