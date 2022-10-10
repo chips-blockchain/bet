@@ -390,8 +390,6 @@ cJSON *validate_given_tx(int64_t block_height, char *txid)
 	return tx;
 }
 
-
-
 cJSON *chips_transfer_funds_with_data1(cJSON *vout_info, char *data)
 {
 	cJSON *tx_info = NULL, *signed_tx = NULL, *raw_tx_info = NULL;
@@ -417,7 +415,6 @@ cJSON *chips_transfer_funds_with_data1(cJSON *vout_info, char *data)
 	}
 	return NULL;
 }
-
 
 cJSON *chips_transfer_funds_with_data(double amount, char *address, char *data)
 {
@@ -549,7 +546,6 @@ cJSON *chips_spendable_tx()
 	return spendable_txs;
 }
 
-
 cJSON *chips_create_raw_tx_with_data1(cJSON *vout_info, char *data)
 {
 	char **argv = NULL, *changeAddress = NULL, params[2][arg_size] = { 0 };
@@ -562,7 +558,6 @@ cJSON *chips_create_raw_tx_with_data1(cJSON *vout_info, char *data)
 	tx_list = cJSON_CreateArray();
 	address_info = cJSON_CreateObject();
 
-
 	/*	
 	if (address == NULL) {
 		dlg_error("Address to transfer funds in NULL");
@@ -570,17 +565,18 @@ cJSON *chips_create_raw_tx_with_data1(cJSON *vout_info, char *data)
 	}
 	*/
 
-	for(int32_t i = 0; i< cJSON_GetArraySize(vout_info); i++){
-		amount_to_transfer += jdouble(cJSON_GetArrayItem(vout_info,i),"amount");
+	for (int32_t i = 0; i < cJSON_GetArraySize(vout_info); i++) {
+		amount_to_transfer += jdouble(cJSON_GetArrayItem(vout_info, i), "amount");
 	}
-	
+
 	if ((balance + chips_tx_fee) < amount_to_transfer) {
 		dlg_warn("Doesn't have sufficient funds to make the tx");
 		return NULL;
 	}
 
-	for(int32_t i = 0; i< cJSON_GetArraySize(vout_info); i++){
-		cJSON_AddNumberToObject(address_info, jstr(cJSON_GetArrayItem(vout_info,i),"addr"), jdouble(cJSON_GetArrayItem(vout_info,i),"amount"));
+	for (int32_t i = 0; i < cJSON_GetArraySize(vout_info); i++) {
+		cJSON_AddNumberToObject(address_info, jstr(cJSON_GetArrayItem(vout_info, i), "addr"),
+					jdouble(cJSON_GetArrayItem(vout_info, i), "amount"));
 	}
 
 	amount_to_transfer += chips_tx_fee;
@@ -615,7 +611,6 @@ cJSON *chips_create_raw_tx_with_data1(cJSON *vout_info, char *data)
 		return NULL;
 	}
 
-	
 	if (change > 0) {
 		cJSON_AddNumberToObject(address_info, changeAddress, change);
 	}
@@ -634,8 +629,6 @@ cJSON *chips_create_raw_tx_with_data1(cJSON *vout_info, char *data)
 
 	return tx;
 }
-
-
 
 cJSON *chips_create_raw_tx_with_data(double amount_to_transfer, char *address, char *data)
 {
@@ -690,7 +683,6 @@ cJSON *chips_create_raw_tx_with_data(double amount_to_transfer, char *address, c
 		return NULL;
 	}
 
-	
 	if (change > 0) {
 		cJSON_AddNumberToObject(address_info, changeAddress, change);
 	}
