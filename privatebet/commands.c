@@ -1523,7 +1523,7 @@ struct cJSON* do_split_tx_amount(double amount, int32_t no_of_splits)
 	if(tx_id) {
 		dlg_info("The split tx is :: %s", cJSON_Print(tx_id));
 	} else {
-		dlf_error("Error occured in doing tx_split");
+		dlg_error("Error occured in doing tx_split");
 	}
 	return tx_id;
 	
