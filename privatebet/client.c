@@ -1338,7 +1338,8 @@ static int32_t check_funds_for_poker(double table_stake){
 	funds_needed = table_stake + game_fee + chips_tx_fee;
 
 	balance = chips_get_balance();
-	
+
+	dlg_info("table_stake ::%f\n, reserved_game_fee ::%f\n, funds_available::%f", table_stake, game_fee, balance);
 	if(balance >=funds_needed){
 		retval = 1;
 	}
@@ -1364,13 +1365,7 @@ static struct cJSON* add_tx_split_vouts(double amount, char *address){
 	return vout_addresses;
 }
 
-static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privatebet_info *bet)
-{
-	int32_t retval = OK, hex_data_len = 0;
-	//double funds_available;
-	char *hex_data = NULL;
-	cJSON *tx_info = NULL, *txid = NULL, *data_info = NULL, *vout_addresses = NULL;
-
+static void bet_player_check_dealer_gui_url(cJSON *argjson){
 	if (0 == check_url(jstr(argjson, "gui_url"))) {
 		if (0 == strlen(jstr(argjson, "gui_url"))) {
 			dlg_warn("Dealer is not hosting the GUI");
@@ -1384,6 +1379,10 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		dlg_warn("Dealer hosted GUI :: %s, using this you can connect to player backend and interact",
 			 jstr(argjson, "gui_url"));
 	}
+}
+
+static int32_t bet_do_player_checks(cJSON *argjson, struct privatebet_info *bet) {
+	int32_t retval = OK;
 	if (jdouble(argjson, "dcv_commission") > max_allowed_dcv_commission) {
 		dlg_warn(
 			"Dealer set the commission %f%% which is more than max commission i.e %f%% set by player, so exiting",
@@ -1396,13 +1395,11 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 		retval = ERR_CHIPS_INSUFFICIENT_FUNDS;
 		return retval;
 	}
-	/*
-	funds_available = chips_get_balance() - chips_tx_fee;
-	if (funds_available < jdouble(argjson, "table_min_stake")) {
-		retval = ERR_CHIPS_INSUFFICIENT_FUNDS;
-		return retval;
-	}
-	*/
+		
+}
+
+static int32_t bet_player_initialize_table_params(cJSON *argjson, struct privatebet_info *bet){
+
 	BB_in_chips = jdouble(argjson, "bb_in_chips");
 	SB_in_chips = BB_in_chips / 2;
 	table_stake_in_chips = table_stack_in_bb * BB_in_chips;
@@ -1424,27 +1421,65 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 
 	bet->maxplayers = max_players;
 	bet->numplayers = max_players;
-	tx_info = cJSON_CreateObject();
-	data_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(data_info, "table_id", table_id);
-	cJSON_AddStringToObject(data_info, "msig_addr_nodes",
-				unstringify(cJSON_Print(cJSON_GetObjectItem(argjson, "msig_addr_nodes"))));
-	cJSON_AddNumberToObject(data_info, "min_cashiers", threshold_value);
-	cJSON_AddStringToObject(data_info, "player_id", req_identifier);
-	cJSON_AddStringToObject(data_info, "dispute_addr", chips_get_new_address());
-	cJSON_AddStringToObject(data_info, "msig_addr", legacy_m_of_n_msig_addr);
-	cJSON_AddStringToObject(data_info, "tx_type", "payin");
 
-	hex_data_len = 2 * strlen(cJSON_Print(data_info)) + 1;
+	
+}
+
+static int32_t bet_player_make_payin_tx_data(cJSON *argjson, struct privatebet_info *bet){
+	cJSON *payin_tx_data = NULL;
+	
+	payin_tx_data = cJSON_CreateObject();
+	cJSON_AddStringToObject(payin_tx_data, "table_id", table_id);
+	cJSON_AddStringToObject(payin_tx_data, "msig_addr_nodes",
+				unstringify(cJSON_Print(cJSON_GetObjectItem(argjson, "msig_addr_nodes"))));
+	cJSON_AddNumberToObject(payin_tx_data, "min_cashiers", threshold_value);
+	cJSON_AddStringToObject(payin_tx_data, "player_id", req_identifier);
+	cJSON_AddStringToObject(payin_tx_data, "dispute_addr", chips_get_new_address());
+	cJSON_AddStringToObject(payin_tx_data, "msig_addr", legacy_m_of_n_msig_addr);
+	cJSON_AddStringToObject(payin_tx_data, "tx_type", "payin");
+
+	return payin_tx_data;
+}
+
+static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privatebet_info *bet)
+{
+	int32_t retval = OK, hex_data_len = 0;
+	//double funds_available;
+	char *hex_data = NULL;
+	cJSON *tx_info = NULL, *txid = NULL, *payin_tx_data = NULL, *vout_addresses = NULL;
+
+
+	bet_player_check_dealer_gui_url(argjson);
+
+	retval = bet_do_player_checks(argjson,bet);
+	if(retval != OK)
+		return retval;
+
+	bet_player_initialize_table_params(argjson,bet);
+	
+	/*
+	funds_available = chips_get_balance() - chips_tx_fee;
+	if (funds_available < jdouble(argjson, "table_min_stake")) {
+		retval = ERR_CHIPS_INSUFFICIENT_FUNDS;
+		return retval;
+	}
+	*/
+	
+	
+	payin_tx_data = bet_player_make_payin_tx_data(argjson,bet)
+
+	hex_data_len = 2 * strlen(cJSON_Print(payin_tx_data)) + 1;
 	hex_data = calloc(hex_data_len, sizeof(char));
-	str_to_hexstr(cJSON_Print(data_info), hex_data);
-	txid = cJSON_CreateObject();
+	str_to_hexstr(cJSON_Print(payin_tx_data), hex_data);
+
+	/*
 	dlg_info("funds_needed::%f", table_stake_in_chips);
+	
 	dlg_info("Will wait for a while till the tx's in mempool gets cleared");
 	while (!chips_is_mempool_empty()) {
 		sleep(2);
 	}
-
+	*/
 	vout_addresses = add_tx_split_vouts(table_stake_in_chips,legacy_m_of_n_msig_addr);
 	txid = chips_transfer_funds_with_data1(vout_addresses, hex_data);
 	//txid = chips_transfer_funds_with_data(table_stake_in_chips, legacy_m_of_n_msig_addr, hex_data);
@@ -1457,11 +1492,14 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 	dlg_info("tx id::%s", cJSON_Print(txid));
 	memset(player_payin_txid, 0x00, sizeof(player_payin_txid));
 	strcpy(player_payin_txid, cJSON_Print(txid));
+
 	retval = bet_update_payin_tx_across_cashiers(argjson, txid);
 	if (retval != OK) {
 		dlg_error("Updating payin_tx across the cashier nodes or in the player DB got failed");
 		retval = OK;
 	}
+	
+	tx_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(tx_info, "method", "tx");
 	cJSON_AddStringToObject(tx_info, "id", req_identifier);
 	cJSON_AddStringToObject(tx_info, "chips_addr", chips_get_new_address());
