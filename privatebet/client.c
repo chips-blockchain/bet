@@ -1354,7 +1354,7 @@ static struct cJSON *add_tx_split_vouts(double amount, char *address)
 	int no_of_split_tx = 20;
 
 	vout_addresses = cJSON_CreateArray();
-	if(address) {
+	if (address) {
 		cJSON *payin_vout = cJSON_CreateObject();
 		cJSON_AddStringToObject(payin_vout, "addr", address);
 		cJSON_AddNumberToObject(payin_vout, "amount", amount);
