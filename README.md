@@ -2,9 +2,12 @@
 # Pangea-Bet
 
 ## Abstract
-Bet is a decentralized adopatable gaming platform that meet the needs of any card game and predictable betting scenarios. The initial draft is written by jl777 is [here](./docs/BET_Initial_Draft.md). The underlying cryptocurrency that bet uses is [CHIPS](https://github.com/chips-blockchain/chips) and for real time betting and bet uses [CHIPS over LN](https://github.com/chips-blockchain/lightning). 
+Bet is a decentralized adopatable gaming platform that meet the needs of any card game and predictable betting scenarios. The initial draft is written by jl777 is [here](./docs/BET_Initial_Draft.md). The detailed technical whitepaper is [here.](https://cdn.discordapp.com/attachments/455737840668770315/456036359870611457/Unsolicited_PANGEA_WP.pdf)
 
-The detailed technical whitepaper is [here.](https://cdn.discordapp.com/attachments/455737840668770315/456036359870611457/Unsolicited_PANGEA_WP.pdf)
+## Underlying Blockchain
+The underlying blockchain and cryptocurrency that bet uses is [CHIPS](https://github.com/chips-blockchain/chips).  CHIPS is initially a bitcoin fork and jl777 made improvements to it to have the reduced blocktime to 10 seconds and for security chips chain is notarized on komodo and which is further notarized on bitcoin blockchain. For real time betting initially CHIPS is integrated with [lightning network]((https://github.com/chips-blockchain/lightning)) but later due to the portability issues with LN across the platforms the design changes are made to bet such that it can also be worked without LN.  
+
+Now the development work is going on to launch the PBaaS chain of chips on verus. The reason to launch is to improve the usability in using the bet platform. 
 
 ## Configuration
 Bet can be played with or without LN. please go through the [existing tradeoffs](./docs/protocol/architecture_doc.md) we have at the moment to understand the ecosystem in a better way also please go through the [bet without ln](./docs/protocol/bet_without_ln.md) on how to play poker without using ln and it contains some nice info about various methods and info about [various tx's](./docs/protocol/tx_flow.md) involved during the gameplay.
