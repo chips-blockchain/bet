@@ -1395,7 +1395,7 @@ static int32_t bet_do_player_checks(cJSON *argjson, struct privatebet_info *bet)
 		retval = ERR_CHIPS_INSUFFICIENT_FUNDS;
 		return retval;
 	}
-		
+	return retval;	
 }
 
 static int32_t bet_player_initialize_table_params(cJSON *argjson, struct privatebet_info *bet){
