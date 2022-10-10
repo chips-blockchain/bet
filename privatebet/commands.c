@@ -390,6 +390,35 @@ cJSON *validate_given_tx(int64_t block_height, char *txid)
 	return tx;
 }
 
+
+
+cJSON *chips_transfer_funds_with_data1(cJSON *vout_info, char *data)
+{
+	cJSON *tx_info = NULL, *signed_tx = NULL, *raw_tx_info = NULL;
+	char *raw_tx = NULL;
+
+	raw_tx = calloc(arg_size, sizeof(char));
+
+	raw_tx_info = chips_create_raw_tx_with_data1(vout_info, data);
+	if (raw_tx_info == NULL) {
+		dlg_error("%s", bet_err_str(ERR_CHIPS_CREATE_RAW_TX));
+		return NULL;
+	}
+
+	strncpy(raw_tx, cJSON_str(raw_tx_info), arg_size);
+	signed_tx = cJSON_CreateObject();
+	signed_tx = chips_sign_raw_tx_with_wallet(raw_tx);
+	if (jstr(signed_tx, "error") == NULL) {
+		tx_info = cJSON_CreateObject();
+		tx_info = chips_send_raw_tx(signed_tx);
+		if (jstr(tx_info, "error") == NULL) {
+			return tx_info;
+		}
+	}
+	return NULL;
+}
+
+
 cJSON *chips_transfer_funds_with_data(double amount, char *address, char *data)
 {
 	cJSON *tx_info = NULL, *signed_tx = NULL, *raw_tx_info = NULL;
@@ -520,6 +549,94 @@ cJSON *chips_spendable_tx()
 	return spendable_txs;
 }
 
+
+cJSON *chips_create_raw_tx_with_data1(cJSON *vout_info, char *data)
+{
+	char **argv = NULL, *changeAddress = NULL, params[2][arg_size] = { 0 };
+	int argc;
+	cJSON *listunspent_info = NULL, *address_info = NULL, *tx_list = NULL, *tx = NULL;
+	double balance, change, amount_in_txs = 0, amount_to_transfer = 0;
+	char *utxo_temp_file = "utxo.log";
+
+	balance = chips_get_balance();
+	tx_list = cJSON_CreateArray();
+	address_info = cJSON_CreateObject();
+
+
+	/*	
+	if (address == NULL) {
+		dlg_error("Address to transfer funds in NULL");
+		return NULL;
+	}
+	*/
+
+	for(int32_t i = 0; i< cJSON_GetArraySize(vout_info); i++){
+		amount_to_transfer += jdouble(cJSON_GetArrayItem(vout_info,i),"amount");
+	}
+	
+	if ((balance + chips_tx_fee) < amount_to_transfer) {
+		dlg_warn("Doesn't have sufficient funds to make the tx");
+		return NULL;
+	}
+
+	for(int32_t i = 0; i< cJSON_GetArraySize(vout_info); i++){
+		cJSON_AddNumberToObject(address_info, jstr(cJSON_GetArrayItem(vout_info,i),"addr"), jdouble(cJSON_GetArrayItem(vout_info,i),"amount"));
+	}
+
+	amount_to_transfer += chips_tx_fee;
+
+	argc = 4;
+	argv = bet_copy_args(argc, blockchain_cli, "listunspent", ">", utxo_temp_file);
+	listunspent_info = cJSON_CreateArray();
+	make_command(argc, argv, &listunspent_info);
+	bet_dealloc_args(argc, &argv);
+
+	for (int i = 0; i < cJSON_GetArraySize(listunspent_info); i++) {
+		cJSON *utxo = cJSON_GetArrayItem(listunspent_info, i);
+		if ((strcmp(cJSON_Print(jobj(utxo, "spendable")), "true") == 0) &&
+		    (jdouble(utxo, "amount") >
+		     0.0001)) { // This check was added to avoid mining and dust transactions in creating raw tx.
+			cJSON *tx_info = cJSON_CreateObject();
+			cJSON_AddStringToObject(tx_info, "txid", jstr(utxo, "txid"));
+			cJSON_AddNumberToObject(tx_info, "vout", jint(utxo, "vout"));
+			cJSON_AddItemToArray(tx_list, tx_info);
+
+			amount_in_txs += jdouble(utxo, "amount");
+			if (amount_in_txs >= amount_to_transfer) {
+				changeAddress = jstr(utxo, "address");
+				change = amount_in_txs - amount_to_transfer;
+				break;
+			}
+		}
+	}
+	if (amount_to_transfer > amount_in_txs) {
+		dlg_warn(
+			"Unable to make tx, this can happen in couple of instances: \n1. If there are too many dust tx's this happens if you might be running the mining node on the same node itself.\n2. Trying to spend the tx which is present in the mempool");
+		return NULL;
+	}
+
+	
+	if (change > 0) {
+		cJSON_AddNumberToObject(address_info, changeAddress, change);
+	}
+	if (data) {
+		cJSON_AddStringToObject(address_info, "data", data);
+	}
+
+	argc = 4;
+	snprintf(params[0], arg_size, "\'%s\'", cJSON_Print(tx_list));
+	snprintf(params[1], arg_size, "\'%s\'", cJSON_Print(address_info));
+	argv = bet_copy_args(argc, blockchain_cli, "createrawtransaction", params[0], params[1]);
+	tx = cJSON_CreateObject();
+	make_command(argc, argv, &tx);
+	bet_dealloc_args(argc, &argv);
+	delete_file(utxo_temp_file);
+
+	return tx;
+}
+
+
+
 cJSON *chips_create_raw_tx_with_data(double amount_to_transfer, char *address, char *data)
 {
 	char **argv = NULL, *changeAddress = NULL, params[2][arg_size] = { 0 };
@@ -572,6 +689,8 @@ cJSON *chips_create_raw_tx_with_data(double amount_to_transfer, char *address, c
 			"Unable to make tx, this can happen in couple of instances: \n1. If there are too many dust tx's this happens if you might be running the mining node on the same node itself.\n2. Trying to spend the tx which is present in the mempool");
 		return NULL;
 	}
+
+	
 	if (change > 0) {
 		cJSON_AddNumberToObject(address_info, changeAddress, change);
 	}
