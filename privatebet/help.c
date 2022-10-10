@@ -19,6 +19,7 @@ void bet_command_info()
 		 "withdraw all \"chips address\" \n"
 		 "spendable \n"
 		 "consolidate \n"
+		 "tx_split m n #Where m is splitted into n parts\n"
 		 "extract_tx_data tx_id \n"
 		 "\n==Blockchain scanner for Explorer==\n"
 		 "scan \n"
