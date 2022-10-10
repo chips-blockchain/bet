@@ -654,7 +654,7 @@ cJSON *chips_create_raw_tx_with_data(double amount_to_transfer, char *address, c
 		return NULL;
 	}
 	if ((balance + chips_tx_fee) < amount_to_transfer) {
-		dlg_warn("Doesn't have sufficient funds to make the tx");
+		dlg_warn("Insufficient funds\n Funds available::%f \n Funds needed::%f\n", balance, amount_to_transfer);
 		return NULL;
 	}
 	cJSON_AddNumberToObject(address_info, address, amount_to_transfer);
