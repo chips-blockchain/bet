@@ -1504,7 +1504,7 @@ struct cJSON* do_split_tx_amount(double amount, int32_t no_of_splits)
 {
 	cJSON *vout_info = NULL, *tx_id = NULL;
 	double tx_amount = 0;
-	if((amount+chips_tx_fee) < chips_get_balance()){
+	if((amount+chips_tx_fee) > chips_get_balance()){
 		dlg_warn("Not enough utxo's of amount ::%f are available", amount);
 		return NULL;
 	}
