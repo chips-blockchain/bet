@@ -56,6 +56,7 @@ cJSON *chips_create_payout_tx(cJSON *payout_addr, int32_t no_of_txs, char tx_ids
 int32_t chips_check_tx_exists_in_unspent(char *file_name, char *tx_id);
 int32_t chips_check_tx_exists(char *file_name, char *tx_id);
 int32_t chips_is_mempool_empty();
+struct cJSON* do_split_tx_amount(double amount, int32_t no_of_splits);
 int32_t run_command(int argc, char **argv);
 int32_t make_command(int argc, char **argv, cJSON **argjson);
 char *ln_get_new_address();

@@ -635,6 +635,10 @@ static void bet_start(int argc, char **argv)
 		tx = chips_transfer_funds(amount, chips_get_new_address());
 		if (tx)
 			dlg_info("Consolidated tx::%s", cJSON_Print(tx));
+	} else if (strcmp(argv[1], "tx_split") == 0) {
+		if(argc == 4) {
+			do_split_tx_amount(atof(argv[2]), atoi(argv[3]));		
+		}
 	} else {
 		bet_command_info();
 	}

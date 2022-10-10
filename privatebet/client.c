@@ -1354,10 +1354,12 @@ static struct cJSON *add_tx_split_vouts(double amount, char *address)
 	int no_of_split_tx = 20;
 
 	vout_addresses = cJSON_CreateArray();
-	cJSON *payin_vout = cJSON_CreateObject();
-	cJSON_AddStringToObject(payin_vout, "addr", address);
-	cJSON_AddNumberToObject(payin_vout, "amount", amount);
-	cJSON_AddItemToArray(vout_addresses, payin_vout);
+	if(address) {
+		cJSON *payin_vout = cJSON_CreateObject();
+		cJSON_AddStringToObject(payin_vout, "addr", address);
+		cJSON_AddNumberToObject(payin_vout, "amount", amount);
+		cJSON_AddItemToArray(vout_addresses, payin_vout);
+	}
 	for (int32_t i = 0; i < no_of_split_tx; i++) {
 		cJSON *fee_vout = cJSON_CreateObject();
 		cJSON_AddStringToObject(fee_vout, "addr", chips_get_new_address());
