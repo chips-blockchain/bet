@@ -1467,7 +1467,7 @@ static int32_t bet_player_handle_stack_info_resp(cJSON *argjson, struct privateb
 	*/
 	
 	
-	payin_tx_data = bet_player_make_payin_tx_data(argjson,bet)
+	payin_tx_data = bet_player_make_payin_tx_data(argjson,bet);
 
 	hex_data_len = 2 * strlen(cJSON_Print(payin_tx_data)) + 1;
 	hex_data = calloc(hex_data_len, sizeof(char));
