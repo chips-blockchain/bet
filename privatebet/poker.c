@@ -54,8 +54,8 @@ static char *handstrs[16] = { "high card",
 			      "err",
 			      "err",
 			      "err" };
-static char *kickerstrs[16] = { "",	"kickers", "kicker", "kickers", "high", "high", "full of", "kicker",
-				"high", "err",	   "err",    "err",	"err",	"err",	"err",	   "err" };
+static char *kickerstrs[16] = { "",     "kickers", "kicker", "kickers", "high", "high", "full of", "kicker",
+				"high", "err",     "err",    "err",     "err",  "err",  "err",     "err" };
 
 static u32 CardValue[52] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
 			     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
