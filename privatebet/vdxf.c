@@ -54,9 +54,12 @@ void update_cashiers(char *ip)
 	argc = 3;
 	bet_alloc_args(argc,&argv);
 
+	
+	
 	dlg_info("\nstr::%s\n", cJSON_str(update_info));
 	
-	argv = bet_copy_args(argc,verus_chips_cli, "updateidentity", cJSON_str(update_info));
+	argv = bet_copy_args(argc,verus_chips_cli, "updateidentity", cJSON_Print(update_info));
+	
 	argjson = cJSON_CreateObject();
 	make_command(argc,argv,&argjson);
 	dlg_info("\n%s\n", cJSON_Print(argjson));
