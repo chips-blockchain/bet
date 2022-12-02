@@ -553,8 +553,7 @@ static void bet_start(int argc, char **argv)
 	if (strcmp(argv[1], "cashier") == 0) {
 		if (argc == 3) {
 			strcpy(cashier_ip, argv[2]);
-			cashier_init();
-			get_cashiers();
+			cashier_init();			
 			bet_cashier_server_thrd(cashier_ip);
 		} else {
 			bet_help_cashier_command_usage();
