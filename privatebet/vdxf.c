@@ -78,18 +78,16 @@ void update_cashiers(char *ip)
 	cJSON_AddStringToObject(ip_obj, STRING_VDXF_ID, ip);
 
 	cJSON_AddItemToArray(cashier_ips, ip_obj);	
-		
-	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(cashier_ips));
-	#if 0
+	cJSON_AddItemToObject(cashiers_info,CASHIERS_KEY,cashier_ips);
+
+			
+	#if 1
 	update_info = cJSON_CreateObject();
 
 	cJSON_AddStringToObject(update_info, "name", "cashiers");
 	cJSON_AddStringToObject(update_info, "parent", CASHIERS_CASHIERS_VDXF_ID);
 
-	ip_obj = cJSON_CreateObject();
-	cJSON_AddStringToObject(ip_obj, STRING_VDXF_ID, ip);
-	cJSON_AddItemToObject(cashiers_info,CASHIERS_KEY,ip_obj);
-	
+
 	cJSON_AddItemToObject(update_info,"contentmultimap",cashiers_info);
 
 	dlg_info("%s::%d::\n%s\n", __FUNCTION__, __LINE__, cJSON_Print(update_info));
@@ -106,7 +104,7 @@ void update_cashiers(char *ip)
 	
 	argjson = cJSON_CreateObject();
 	make_command(argc,argv,&argjson);
-	dlg_info("\n%s\n", cJSON_Print(argjson));
+	dlg_info("\n%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 	
 	end:
 		bet_dealloc_args(argc, &argv);
