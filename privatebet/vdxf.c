@@ -8,7 +8,7 @@ cJSON* get_cashiers()
 	cJSON *argjson = NULL;
 	
 	bet_alloc_args(argc,&argv);
-	bet_copy_args(argc,verus_chips_cli, "getidentity", CASHIERS_ID);
+	argv = bet_copy_args(argc,verus_chips_cli, "getidentity", CASHIERS_ID);
 	argjson = cJSON_CreateObject();
 	make_command(argc, argv, &argjson);
 	dlg_info("%s::%d:: cashiers_info::\n%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
