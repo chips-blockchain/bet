@@ -351,6 +351,7 @@ static void bet_cashier_server_thrd(char *node_ip)
 	pthread_t server_thrd;
 
 	bet_cashier_server_initialize(node_ip);
+	update_cashiers(node_ip);
 	if (OS_thread_create(&server_thrd, NULL, (void *)bet_cashier_server_loop, (void *)cashier_info) != 0) {
 		dlg_error("%s", bet_err_str(ERR_PTHREAD_LAUNCHING));
 		exit(-1);
@@ -647,9 +648,7 @@ static void bet_start(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-	update_cashiers("w.x.y.z");
-	//get_cashiers();	
-	//bet_start(argc, argv);
+	bet_start(argc, argv);
 	return OK;
 }
 
