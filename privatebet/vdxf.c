@@ -11,8 +11,8 @@ cJSON* get_cashiers()
 	strncpy(blockchain_cli, verus_chips_cli, strlen(verus_chips_cli));
 	argv = bet_copy_args(argc,verus_chips_cli, "getidentity", CASHIERS_ID);
 	argjson = cJSON_CreateObject();
-	make_command(argc, argv, &argjson);
-	contentmultimap  = cJSON_GetObjectItem(argjson, "contentmultimap");
+	make_command(argc, argv, &argjson);	
+	contentmultimap  = cJSON_GetObjectItem(cJSON_GetObjectItem(argjson,"identity"), "contentmultimap");
 
 	dlg_info("\ncontentmultimap :: %s\n", cJSON_Print(contentmultimap));
 	
