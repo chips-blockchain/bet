@@ -30,11 +30,36 @@ cJSON* get_cashiers()
 	
 }
 
-void update_cashiers()
+
+void update_cashiers(char *ip)
 {
-	cJSON *cashiers_info = NULL;
+	cJSON *cashiers_info = NULL, *update_info = NULL, *ip_obj = NULL, *argjson = NULL;
+	int argc;
+	char **argv = NULL;
 
 	cashiers_info  = cJSON_CreateObject();
-	cashiers_info = get_cashiers();
+	update_info = cJSON_CreateObject();
+
+	cJSON_AddStringToObject(update_info, "name", "cashiers");
+	cJSON_AddStringToObject(update_info, "parent", CASHIERS_CASHIERS_VDXF_ID);
+
+	ip_obj = cJSON_CreateObject();
+	cJSON_AddStringToObject(ip_obj, STRING_VDXF_ID, ip);
+	cJSON_AddItemToObject(cashiers_info,CASHIERS_KEY,ip_obj);
+	
+	cJSON_AddItemToObject(update_info,"contentmultimap",cashiers_info);
+
+	dlg_info("%s::%d::\n%s\n", __FUNCTION__, __LINE__, cJSON_Print(update_info));
+
+	argc = 3;
+	bet_alloc_args(argc,&argv);
+	argv = bet_copy_args(argc,verus_chips_cli, "updateidentity", cJSON_str(update_info));
+	argjson = cJSON_CreateObject();
+	make_command(argc,argv,&argjson);
+	dlg_info("\n%s\n", cJSON_Print(argjson));
+	
+	end:
+		bet_dealloc_args(argc, &argv);
+
 }
 
