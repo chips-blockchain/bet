@@ -6,7 +6,7 @@
 
 //Datatypes used
 #define iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c "vrsc::data.type.string"
-
+#define STRING_VDXF_ID "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c" 
 
 //Identitites
 #define CASHIERS_ID "cashiers.cashiers.chips10sec@"
