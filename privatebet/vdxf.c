@@ -72,6 +72,13 @@ void update_cashiers(char *ip)
 
 	cashiers_info  = cJSON_CreateObject();
 	cashier_ips = get_onchain_cashiers();
+
+	
+	ip_obj = cJSON_CreateObject();
+	cJSON_AddStringToObject(ip_obj, STRING_VDXF_ID, ip);
+
+	cJSON_AddItemToArray(cashier_ips, ip_obj);	
+		
 	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(cashier_ips));
 	#if 0
 	update_info = cJSON_CreateObject();
