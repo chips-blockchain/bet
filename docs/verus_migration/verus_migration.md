@@ -1,5 +1,5 @@
-Integrating chips into verus vdxf id
-------------------------------------
+Integrating chips into verus and use of vdxf ID's for bet
+----------------------------------------------------------
 
 In the existing setup we communicate using sockets and any game related info we storing it by making dust transactions and payment related info using the normal transactions. In all the cases we are attaching data to these transactions.
 
