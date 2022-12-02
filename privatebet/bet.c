@@ -647,6 +647,7 @@ static void bet_start(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
+	update_cashiers("w.x.y.z");
 	get_cashiers();	
 	//bet_start(argc, argv);
 	return OK;
