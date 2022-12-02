@@ -16,6 +16,8 @@ cJSON* get_cashiers()
 	cashiers = cJSON_CreateArray();
 	cashiers = cJSON_GetObjectItem(contentmultimap,"iJ3WZocnjG9ufv7GKUA4LijQno5gTMb7tP");
 
+	dlg_info("\ncashiers :: %s\n", cJSON_Print(cashiers));
+	
 	for(int32_t i=0; i<cJSON_GetArraySize(cashiers); i++){		
 		dlg_info("IP :: %s\n", cJSON_Print(cJSON_GetObjectItem(cJSON_GetArrayItem(cashiers,i),STRING_VDXF_ID)));
 	}	
