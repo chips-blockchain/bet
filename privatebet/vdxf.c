@@ -8,6 +8,7 @@ cJSON* get_cashiers()
 	cJSON *argjson = NULL;
 	
 	bet_alloc_args(argc,&argv);
+	strncpy(blockchain_cli, verus_chips_cli, strlen(verus_chips_cli));
 	argv = bet_copy_args(argc,verus_chips_cli, "getidentity", CASHIERS_ID);
 	argjson = cJSON_CreateObject();
 	make_command(argc, argv, &argjson);
