@@ -36,7 +36,7 @@ void update_cashiers(char *ip)
 	cJSON *cashiers_info = NULL, *update_info = NULL, *ip_obj = NULL, *argjson = NULL;
 	int argc;
 	char **argv = NULL;
-	char params[arg_size] = { 0 }
+	char params[arg_size] = { 0 };
 
 	cashiers_info  = cJSON_CreateObject();
 	update_info = cJSON_CreateObject();
