@@ -36,6 +36,7 @@ void update_cashiers(char *ip)
 	cJSON *cashiers_info = NULL, *update_info = NULL, *ip_obj = NULL, *argjson = NULL;
 	int argc;
 	char **argv = NULL;
+	char params[arg_size] = { 0 }
 
 	cashiers_info  = cJSON_CreateObject();
 	update_info = cJSON_CreateObject();
@@ -55,13 +56,11 @@ void update_cashiers(char *ip)
 	bet_alloc_args(argc,&argv);
 
 	
+	snprintf(params, arg_size, "\'%s\'", cJSON_Print(update_info));
 	
-	dlg_info("\nstr::%s\n", stringify(cJSON_Print(update_info)));
+	dlg_info("\nstr::%s\n", params);
 	
-
-
-	
-	argv = bet_copy_args(argc,verus_chips_cli, "updateidentity", stringify(cJSON_Print(update_info)));
+	argv = bet_copy_args(argc,verus_chips_cli, "updateidentity", params);
 	
 	argjson = cJSON_CreateObject();
 	make_command(argc,argv,&argjson);
