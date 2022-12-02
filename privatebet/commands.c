@@ -1696,7 +1696,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 					data[strlen(data) - 1] = '\0';
 				*argjson = cJSON_Parse(data);
 			} else if (strcmp(argv[1], "updateidentity") == 0) {
-				*argjson = cJSON_CreateString((const char *)data);		
+				*argjson = cJSON_CreateString((const char *)data);
 			} else {
 				*argjson = cJSON_Parse(data);
 				cJSON_AddNumberToObject(*argjson, "code", 0);
