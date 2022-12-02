@@ -16,4 +16,5 @@
 
 
 cJSON* get_cashiers();
+cJSON* get_onchain_cashiers();
 void update_cashiers();
