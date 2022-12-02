@@ -13,6 +13,9 @@ cJSON* get_cashiers()
 	argjson = cJSON_CreateObject();
 	make_command(argc, argv, &argjson);
 	contentmultimap  = cJSON_GetObjectItem(argjson, "contentmultimap");
+
+	dlg_info("\ncontentmultimap :: %s\n", cJSON_Print(contentmultimap));
+	
 	cashiers = cJSON_CreateArray();
 	cashiers = cJSON_GetObjectItem(contentmultimap,"iJ3WZocnjG9ufv7GKUA4LijQno5gTMb7tP");
 
