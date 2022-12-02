@@ -74,6 +74,9 @@ void update_cashiers(char *ip)
 	ip_obj = cJSON_CreateObject();
 	cJSON_AddStringToObject(ip_obj, STRING_VDXF_ID, ip);
 
+	if(NULL == cashier_ips)
+		cashier_ips = cJSON_CreateArray();
+	
 	cJSON_AddItemToArray(cashier_ips, ip_obj);
 	cJSON_AddItemToObject(cashiers_info, CASHIERS_KEY, cashier_ips);
 
