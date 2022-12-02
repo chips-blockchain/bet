@@ -56,7 +56,7 @@ void update_cashiers(char *ip)
 
 	
 	
-	dlg_info("\nstr::%s\n", stringify(cJSON_str(update_info)));
+	dlg_info("\nstr::%s\n", stringify(cJSON_Print(update_info)));
 	
 
 
