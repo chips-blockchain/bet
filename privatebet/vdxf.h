@@ -51,7 +51,6 @@ Any entity in the bet ecosystem can register the identities under chips, like fo
 under chips as sg777.chips@ which basically been used to hold the tokens. 
 */
 #define CASHIERS_ID "cashiers.poker.chips10sec@"
-
 #define POKER_CHIPS_VDXF_ID "i6gViGxt7YinkJZoubKdbWBrqdRCb1Rkvs"
 
 cJSON *get_cashiers();
