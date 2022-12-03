@@ -17,7 +17,7 @@ cJSON *get_cashiers()
 	dlg_info("\ncontentmultimap :: %s\n", cJSON_Print(contentmultimap));
 
 	cashiers = cJSON_CreateArray();
-	cashiers = cJSON_GetObjectItem(contentmultimap, "iJ3WZocnjG9ufv7GKUA4LijQno5gTMb7tP");
+	cashiers = cJSON_GetObjectItem(contentmultimap, CASHIERS_KEY);
 
 	dlg_info("\ncashiers :: %s\n", cJSON_Print(cashiers));
 
@@ -46,7 +46,7 @@ cJSON *get_onchain_cashiers()
 	dlg_info("\ncontentmultimap :: %s\n", cJSON_Print(contentmultimap));
 
 	cashiers = cJSON_CreateArray();
-	cashiers = cJSON_GetObjectItem(contentmultimap, "iJ3WZocnjG9ufv7GKUA4LijQno5gTMb7tP");
+	cashiers = cJSON_GetObjectItem(contentmultimap, CASHIERS_KEY);
 
 	dlg_info("\ncashiers :: %s\n", cJSON_Print(cashiers));
 
@@ -91,7 +91,7 @@ void update_cashiers(char *ip)
 
 	update_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(update_info, "name", "cashiers");
-	cJSON_AddStringToObject(update_info, "parent", CASHIERS_CASHIERS_VDXF_ID);
+	cJSON_AddStringToObject(update_info, "parent", POKER_CHIPS_VDXF_ID);
 	cJSON_AddItemToObject(update_info, "contentmultimap", cashiers_info);
 
 	argc = 3;
