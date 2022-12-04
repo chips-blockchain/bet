@@ -74,18 +74,18 @@ void update_cashiers(char *ip)
 	ip_obj = cJSON_CreateObject();
 	cJSON_AddStringToObject(ip_obj, STRING_VDXF_ID, ip);
 
-	if(NULL == cashier_ips)
+	if (NULL == cashier_ips)
 		cashier_ips = cJSON_CreateArray();
 	else {
-		for(int i=0; i< cJSON_GetArraySize(cashier_ips); i++) {
-				if(0 == strcmp(jstr(cJSON_GetArrayItem(cashier_ips,i),STRING_VDXF_ID), ip)) {
-					dlg_info("%s::%d::The latest data of this ID contains this %s\n",__FUNCTION__, __LINE__,ip);
-					goto end;
-				}
-				
+		for (int i = 0; i < cJSON_GetArraySize(cashier_ips); i++) {
+			if (0 == strcmp(jstr(cJSON_GetArrayItem(cashier_ips, i), STRING_VDXF_ID), ip)) {
+				dlg_info("%s::%d::The latest data of this ID contains this %s\n", __FUNCTION__,
+					 __LINE__, ip);
+				goto end;
+			}
 		}
 	}
-	
+
 	cJSON_AddItemToArray(cashier_ips, ip_obj);
 	cJSON_AddItemToObject(cashiers_info, CASHIERS_KEY, cashier_ips);
 

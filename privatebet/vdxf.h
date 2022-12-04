@@ -30,11 +30,11 @@ We majorly use bytevector defined as vrsc::data.type.bytevector in verus.
 */
 
 //vrsc::data.type.string -->  	iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c
-#define STRING_VDXF_ID		 	"iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c"
+#define STRING_VDXF_ID "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c"
 //vrsc::data.type.byte -->  	iBXUHbh4iacbeZnzDRxishvBSrYk2S2k7t
-#define BYTE_VDXF_ID 	   		"iBXUHbh4iacbeZnzDRxishvBSrYk2S2k7t"
+#define BYTE_VDXF_ID "iBXUHbh4iacbeZnzDRxishvBSrYk2S2k7t"
 //vrsc::data.type.bytevector --> iKMhRLX1JHQihVZx2t2pAWW2uzmK6AzwW3
-#define BYTEVECTOR_VDXF_ID      "iKMhRLX1JHQihVZx2t2pAWW2uzmK6AzwW3"
+#define BYTEVECTOR_VDXF_ID "iKMhRLX1JHQihVZx2t2pAWW2uzmK6AzwW3"
 
 /*
 Identitites
