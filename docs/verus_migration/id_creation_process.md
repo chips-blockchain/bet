@@ -10,7 +10,9 @@ Those few standard ID's are created at the time of launch of a specific game typ
 
 In the following sections of this document we will in detail about each of these ID's, like how they be created, what these ID's will be holding, who are the actors that manage these ID's, etc...
 
-In the context of development we been using `revoke_2(idaddress: iSCt7uQBePbTSJUSPAuQqv3Qjw1YZmj6FX)` and `recovery_2(idaddress: iGXhgDHN7GBmbPPXcvNoj4Lc99pQEoA8Fj)`, which we created [here](./rec_rev.md) as the revocation and recovery authorities for all the ID's which we create for the development purposes.
+In the context of development we been using `revoke_2(idaddress: iSCt7uQBePbTSJUSPAuQqv3Qjw1YZmj6FX)` and `recovery_2(idaddress: iGXhgDHN7GBmbPPXcvNoj4Lc99pQEoA8Fj)`, which we created [here](./rec_rev.md) as the revocation and recovery authorities for all the ID's which we create for the development purposes. 
+
+For all these ID's to create there needs to be a control address, typically we need to figure it out who can owns that controladdress that initially been used to create the ID's. But this control address may not have much significance in all the ID's after the initial creation because the ID's primaryaddresses are going to be updated with the addresses of the corresponding actors that involve in updating the ID's.
 
 ## Cashiers
 
@@ -55,3 +57,44 @@ Here is example cashiers ID, which has 4 nodes and minimumsignatures is set to o
   "vout": 0
 }
 ```
+
+## Dealers
+
+The identity of the dealers looks as follows:
+```
+# verus -chain=chips10sec getidentity dealers.poker.chips10sec@
+{
+  "identity": {
+    "version": 3,
+    "flags": 0,
+    "primaryaddresses": [
+      "RNZFJQfWSwAu4QhM4AiPxLdBK9bFKb24n5"
+    ],
+    "minimumsignatures": 1,
+    "name": "dealers",
+    "identityaddress": "iAvw8ebtNggc2k6YHSG3rdbh75W9UHaVNT",
+    "parent": "i6gViGxt7YinkJZoubKdbWBrqdRCb1Rkvs",
+    "systemid": "iLThsqsgwFRKzRG11j7QaYgNQJ9q16VGpg",
+    "contentmap": {
+    },
+    "contentmultimap": {
+    },
+    "revocationauthority": "iAvw8ebtNggc2k6YHSG3rdbh75W9UHaVNT",
+    "recoveryauthority": "iAvw8ebtNggc2k6YHSG3rdbh75W9UHaVNT",
+    "timelock": 0
+  },
+  "status": "active",
+  "canspendfor": true,
+  "cansignfor": true,
+  "blockheight": 133448,
+  "txid": "9c480c29fb2afab94a1c105ad4270216f3087cda0a8ac3da172b221a64e15b6c",
+  "vout": 0
+}
+```
+
+Typically dealers hold the information about the list of the dealers available that are registered in the eco system. Right now we only be storing the dealer ID names as a string array, going forward the idea is to store more authorized statistics about the dealer and this info is updated by either the cashiers or by the authorized entities. 
+
+If someone wants to become a dealer, they should make a request to register as a dealer. Since this registration is one time activity and dealer may get charged a fee for getting registered. 
+All the dealer ID names should end with `_d` for readability and to avoid any potential conflicts with ID's. Lets say you have two dealers named `sg777_d` and `biz_d` then the contentmultimap of the dealers ID looks as follows:
+
+
