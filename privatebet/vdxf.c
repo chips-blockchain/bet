@@ -5,7 +5,7 @@ cJSON *get_cashiers()
 {
 	int argc = 3;
 	char **argv = NULL;
-	cJSON *argjson = NULL, *contentmultimap = NULL, *cashiers = NULL;
+	cJSON *argjson = NULL, *contentmultimap = NULL, *cashiers = NULL, *cashier_ips = NULL;
 
 	bet_alloc_args(argc, &argv);
 	strncpy(blockchain_cli, verus_chips_cli, strlen(verus_chips_cli));
@@ -14,17 +14,15 @@ cJSON *get_cashiers()
 	make_command(argc, argv, &argjson);
 	contentmultimap = cJSON_GetObjectItem(cJSON_GetObjectItem(argjson, "identity"), "contentmultimap");
 
-	dlg_info("\ncontentmultimap :: %s\n", cJSON_Print(contentmultimap));
-
 	cashiers = cJSON_CreateArray();
 	cashiers = cJSON_GetObjectItem(contentmultimap, CASHIERS_KEY);
 
-	dlg_info("\ncashiers :: %s\n", cJSON_Print(cashiers));
 
+	cashier_ips = cJSON_CreateArray();
 	for (int32_t i = 0; i < cJSON_GetArraySize(cashiers); i++) {
-		dlg_info("IP :: %s\n",
-			 cJSON_Print(cJSON_GetObjectItem(cJSON_GetArrayItem(cashiers, i), STRING_VDXF_ID)));
+		cJSON_AddItemToArray(cashier_ips, cJSON_GetObjectItem(cJSON_GetArrayItem(cashiers, i), STRING_VDXF_ID));
 	}
+	dlg_info("%s::%d::cashier ips::%s\n", __FUNCTION__, __LINE__, cJSON_Print(cashier_ips));
 
 end:
 	bet_dealloc_args(argc, &argv);
