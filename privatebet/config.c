@@ -315,6 +315,16 @@ void bet_parse_verus_dealer()
 			dcv_commission_percentage = iniparser_getdouble(ini, "dealer:dcv_commission", 0);
 		}
 		#endif
-		dlg_info("%s::%d::%d::%f::%f::%f\n", __FUNCTION__, __LINE__, t.max_players, t.big_blind, t.min_stake, t.max_stake);
+		typedef union {
+ 	    	float f;
+		  	struct {
+		    	unsigned int mantisa : 23;
+			    unsigned int exponent : 8;
+			    unsigned int sign : 1;
+			} parts;
+		} big_blind;
+		big_blind temp;
+		temp.f = t.big_blind;
+		dlg_info("%s::%d::%d::%f::%f::%f\n", __FUNCTION__, __LINE__, t.max_players, temp.f, t.min_stake, t.max_stake);
 	}
 }
