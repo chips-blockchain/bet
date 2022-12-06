@@ -308,7 +308,11 @@ void bet_parse_verus_dealer()
 		if (0 != iniparser_getdouble(ini, "table:big_blind", 0)) {
 			int s,m,e;
 			getSME(&s,&m,&e,iniparser_getdouble(ini, "table:big_blind", 0));
+			t.big_blind.sign = s;
+			t.big_blind.mantisa = m;
+			t.big_blind.exponent = e;
 			dlg_info("s::%x, m::%x, e::%x", s, m, e);
+			dlg_info("s::%x, m::%x, e::%x", t.big_blind.sign, t.big_blind.mantisa, t.big_blind.exponent);
 		}
 		#if 0
 		if (0 != iniparser_getint(ini, "table:min_stake", 0)) {
