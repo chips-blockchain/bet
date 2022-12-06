@@ -187,13 +187,12 @@ struct seat_info {
 	int32_t playing;
 };
 
-
 extern char dealer_ID[256];
 
 struct float_num {
-   uint32_t mantisa : 23;
-   uint32_t exponent : 8;
-   uint32_t sign : 1;
+	uint32_t mantisa : 23;
+	uint32_t exponent : 8;
+	uint32_t sign : 1;
 };
 
 struct table {
