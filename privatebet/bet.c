@@ -648,7 +648,8 @@ static void bet_start(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-	bet_start(argc, argv);
+	bet_parse_verus_dealer();
+	//bet_start(argc, argv);
 	return OK;
 }
 

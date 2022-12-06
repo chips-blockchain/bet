@@ -17,7 +17,6 @@ cJSON *get_cashiers()
 	cashiers = cJSON_CreateArray();
 	cashiers = cJSON_GetObjectItem(contentmultimap, CASHIERS_KEY);
 
-
 	cashier_ips = cJSON_CreateArray();
 	for (int32_t i = 0; i < cJSON_GetArraySize(cashiers); i++) {
 		cJSON_AddItemToArray(cashier_ips, cJSON_GetObjectItem(cJSON_GetArrayItem(cashiers, i), STRING_VDXF_ID));
