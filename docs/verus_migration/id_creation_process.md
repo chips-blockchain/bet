@@ -95,6 +95,84 @@ The identity of the dealers looks as follows:
 Typically dealers hold the information about the list of the dealers available that are registered in the eco system. Right now we only be storing the dealer ID names as a string array, going forward the idea is to store more authorized statistics about the dealer and this info is updated by either the cashiers or by the authorized entities. 
 
 If someone wants to become a dealer, they should make a request to register as a dealer. Since this registration is one time activity and dealer may get charged a fee for getting registered. 
-All the dealer ID names should end with `_d` for readability and to avoid any potential conflicts with ID's. Lets say you have two dealers named `sg777_d` and `biz_d` then the contentmultimap of the dealers ID looks as follows:
+All the dealer ID names should end with `_d` for readability and to avoid any potential conflicts with other ID's. The contentmultimap of dealer stores the array of strings and key using which this array of dealers stored is `chips.vrsc::poker.dealers`. The vdxfid for `chips.vrsc::poker.dealers` is shown as below:
+```
+ # verus -chain=chips10sec getvdxfid chips.vrsc::poker.dealers
+{
+  "vdxfid": "iSgEvATbNF3ZR6Kyj6nn8zVp3adPQxPnFJ",
+  "indexid": "xXWMNxtgDZGE3GD1anSw7P2M5EeQH9biyX",
+  "hash160result": "bca2ee47a59af321a73ed79907d0db8c111982fe",
+  "qualifiedname": {
+    "namespace": "iJ3WZocnjG9ufv7GKUA4LijQno5gTMb7tP",
+    "name": "chips.vrsc::poker.dealers"
+  }
+}
+```
+
+Lets say you have two dealers named `sg777_d` and `biz_d`, upon verification these dealer names updated to contentmultimap of the dealers ID as follows:
+```
+verus -chain=chips10sec updateidentity '{"name": "dealers", "parent":"i6gViGxt7YinkJZoubKdbWBrqdRCb1Rkvs", "contentmultimap":{
+      "iSgEvATbNF3ZR6Kyj6nn8zVp3adPQxPnFJ": [
+        {
+          "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "sg777_d"
+        },
+		{
+          "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "biz_d"
+        }
+      ]
+    }
+}'
+```
+
+After updating the dealer names the contentmultimap of dealers looks as follows:
+```
+# verus -chain=chips10sec getidentity dealers.poker.chips10sec@
+{
+  "identity": {
+    "version": 3,
+    "flags": 0,
+    "primaryaddresses": [
+      "RNZFJQfWSwAu4QhM4AiPxLdBK9bFKb24n5"
+    ],
+    "minimumsignatures": 1,
+    "name": "dealers",
+    "identityaddress": "iAvw8ebtNggc2k6YHSG3rdbh75W9UHaVNT",
+    "parent": "i6gViGxt7YinkJZoubKdbWBrqdRCb1Rkvs",
+    "systemid": "iLThsqsgwFRKzRG11j7QaYgNQJ9q16VGpg",
+    "contentmap": {
+    },
+    "contentmultimap": {
+      "iSgEvATbNF3ZR6Kyj6nn8zVp3adPQxPnFJ": [
+        {
+          "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "sg777_d"
+        },
+        {
+          "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "biz_d"
+        }
+      ]
+    },
+    "revocationauthority": "iAvw8ebtNggc2k6YHSG3rdbh75W9UHaVNT",
+    "recoveryauthority": "iAvw8ebtNggc2k6YHSG3rdbh75W9UHaVNT",
+    "timelock": 0
+  },
+  "status": "active",
+  "canspendfor": true,
+  "cansignfor": true,
+  "blockheight": 138846,
+  "txid": "8c0bc36196941c141ac8b19fe8e6aab8a6d0ee9504acee9dfde7dbab601ea0bc",
+  "vout": 0
+}
+```
+
+After optimization the data of contentmultimap contains only the bytearray, and the underlying bet has the logic to decode and encode that bytearray.
+
+Once the dealer name gets registered with the dealers ID, the corresponding ID for that dealer name will be created and handover control of that ID to that specific dealer and where in which dealer updates information about its status, about the tables its hosting, about the fee it charges, etc... We will update the template of information what dealers store in its ID and the this template of dealer information is mapped to the key `chips.vrsc::poker.dealer`.
+
+## Dealer
+Upon the registration request from the dealer, the `registration authority(RA)` verifies the information about the dealer and upon acceptance, RA updates the dealer name to the dealers ID and creates the dealer ID with that specific name. 
+Lets say for example a dealer with the name `sg777_d` applies to be a dealer, then RA adds `sg777_d` to dealers and creates the ID `sg777_d` with the `primaryaddress` provided by `sg777_d`.
+
+After the creation of an ID with the name  of dealer with the name `sg777_d` by RA, it looks as follows:
+
 
 
