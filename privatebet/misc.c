@@ -113,8 +113,8 @@ void uint32_s_to_float(struct float_num t, float *number)
 	m = t.mantisa;
 	e = t.exponent;
 
-	s <<== 31;
-	e <<== 23;
+	s <<= 31;
+	e <<= 23;
 
 	*ptr = s | e | m;	
 }
