@@ -12,7 +12,7 @@ UNAME_P := $(shell uname -p)
 ifeq ($(UNAME_S),Darwin)
 WARNINGS := -Werror -Qunused-arguments
 else
-WARNINGS := -Werror -Wunused-variable
+#WARNINGS := -Werror -Wunused-variable
 endif
 
 CFLAGS := -g -fPIC -std=c99 $(WARNINGS)
