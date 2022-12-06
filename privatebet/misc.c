@@ -119,21 +119,14 @@ void uint32_s_to_float(struct float_num t, float *number)
 	*ptr = s | e | m;	
 }
 
-uint8_t* struct_to_byte_arr(const void *object, size_t size)
+void struct_to_byte_arr(const void *object, size_t size, uint8_t *out)
 {
 	const uint8_t *byte;
-	uint8_t *out = NULL;
-
-	out = calloc(1, size);
-	if(NULL == out) {
-		return out;
-	}
 	for (byte = object; size--; ++byte) {
 		dlg_info("%x ", *byte);
 		*out = *byte;
 		++out;
 	}
-	return out;
 }
 
 void byte_arr_to_table_struct(const uint8_t *byte_arr, size_t size, struct table *t)
