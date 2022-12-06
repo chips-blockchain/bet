@@ -276,48 +276,54 @@ void bet_parse_blockchain_config_ini_file()
 	dlg_info("Blockchain client :: %s\n", blockchain_cli);
 }
 
+void USARTWrite(const void *object, size_t size)
+{
+	const unsigned char *byte;
+	for (byte = object; size--; ++byte) {
+		printf("%02X", *byte);
+	}
+	putchar('\n');
+}
+
 void bet_parse_verus_dealer()
 {
 	dictionary *ini = NULL;
 
 	struct table t;
-	
+
 	ini = iniparser_load(verus_dealer_config);
 	if (ini == NULL) {
 		dlg_error("error in parsing %s", verus_dealer_config);
 	} else {
 		if (NULL != iniparser_getstring(ini, "verus:id", NULL)) {
-			strncpy(dealer_ID, iniparser_getstring(ini, "verus:id", NULL),sizeof(dealer_ID));
+			strncpy(dealer_ID, iniparser_getstring(ini, "verus:id", NULL), sizeof(dealer_ID));
 			dlg_info("%s::%d::dealer_ID::%s\n", __FUNCTION__, __LINE__, dealer_ID);
 		}
 		if (-1 != iniparser_getint(ini, "table:max_players", -1)) {
-			t.max_players = (uint8_t) iniparser_getint(ini, "table:max_players", -1); 
+			t.max_players = (uint8_t)iniparser_getint(ini, "table:max_players", -1);
 			//max_players = iniparser_getint(ini, "table:max_players", -1);
 			dlg_info("\n max players::%x\n", t.max_players);
 		}
 		if (0 != iniparser_getdouble(ini, "table:big_blind", 0)) {
-			float_to_uint32_s(&t.big_blind,iniparser_getdouble(ini, "table:big_blind", 0));
+			float_to_uint32_s(&t.big_blind, iniparser_getdouble(ini, "table:big_blind", 0));
 			dlg_info("s::%x, m::%x, e::%x", t.big_blind.sign, t.big_blind.mantisa, t.big_blind.exponent);
 		}
 		if (0 != iniparser_getint(ini, "table:min_stake", 0)) {
-			float_to_uint32_s(&t.min_stake,(iniparser_getint(ini, "table:min_stake", 0) * BB_in_chips));
+			float_to_uint32_s(&t.min_stake, (iniparser_getint(ini, "table:min_stake", 0) * BB_in_chips));
 			//t.min_stake = iniparser_getint(ini, "table:min_stake", 0) * BB_in_chips;
 		}
 		if (0 != iniparser_getint(ini, "table:max_stake", 0)) {
-			float_to_uint32_s(&t.max_stake,(iniparser_getint(ini, "table:max_stake", 0) * BB_in_chips));
+			float_to_uint32_s(&t.max_stake, (iniparser_getint(ini, "table:max_stake", 0) * BB_in_chips));
 			//t.max_stake = iniparser_getint(ini, "table:max_stake", 0) * BB_in_chips;
-		}	
-		#if 0
+		}
+#if 0
 		if (0 != iniparser_getdouble(ini, "dealer:chips_tx_fee", 0)) {
 			chips_tx_fee = iniparser_getdouble(ini, "dealer:chips_tx_fee", 0);
 		}
 		if (0 != iniparser_getdouble(ini, "dealer:dcv_commission", 0)) {
 			dcv_commission_percentage = iniparser_getdouble(ini, "dealer:dcv_commission", 0);
 		}
-		#endif
-		void *ptr = t;
-		for(int32_t i =0; i<sizeof(t); i++){
-			dlg_info("%02x ", *ptr[i]);
-		}
+#endif
+		USARTWrite(&t, sizeof(t));
 	}
 }
