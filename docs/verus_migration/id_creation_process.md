@@ -173,6 +173,38 @@ Upon the registration request from the dealer, the `registration authority(RA)` 
 Lets say for example a dealer with the name `sg777_d` applies to be a dealer, then RA adds `sg777_d` to dealers and creates the ID `sg777_d` with the `primaryaddress` provided by `sg777_d`.
 
 After the creation of an ID with the name  of dealer with the name `sg777_d` by RA, it looks as follows:
+```
+# verus -chain=chips10sec getidentity sg777_d.poker.chips10sec@
+{
+  "identity": {
+    "version": 3,
+    "flags": 0,
+    "primaryaddresses": [
+      "RGgmpgoQcnptWEshhuhg3jGkYiotvLnswN"
+    ],
+    "minimumsignatures": 1,
+    "name": "sg777_d",
+    "identityaddress": "iHChMSKzFU7TcvURCjFwGzkBYLQ1MvrkYL",
+    "parent": "i6gViGxt7YinkJZoubKdbWBrqdRCb1Rkvs",
+    "systemid": "iLThsqsgwFRKzRG11j7QaYgNQJ9q16VGpg",
+    "contentmap": {
+    },
+    "contentmultimap": {
+    },
+    "revocationauthority": "iHChMSKzFU7TcvURCjFwGzkBYLQ1MvrkYL",
+    "recoveryauthority": "iHChMSKzFU7TcvURCjFwGzkBYLQ1MvrkYL",
+    "timelock": 0
+  },
+  "status": "active",
+  "canspendfor": true,
+  "cansignfor": true,
+  "blockheight": 138976,
+  "txid": "3276b236dff02e08988d6566d2244616c034af02bc3be740cf9b7662be504f35",
+  "vout": 0
+}
+```
+Here in the above example the primaryaddress `RGgmpgoQcnptWEshhuhg3jGkYiotvLnswN` is belongs to the dealer, i.e `sg777_d`, so once after the creation of dealer ID now the dealer can update it with the information specific to it.
+
 
 
 
