@@ -104,10 +104,12 @@ void float_to_uint32_s(struct float_num *t, float number)
 	t->exponent = e;
 }
 
-void uint32_s_to_float(struct float_num t, float *number)
+float uint32_s_to_float(struct float_num t)
 {
 	uint32_t s, e, m;
-	uint32_t *ptr = (uint32_t *)number;	
+	float number;
+	
+	uint32_t *ptr = (uint32_t *)&number;	
 
 	s = t.sign;
 	m = t.mantisa;
@@ -117,6 +119,8 @@ void uint32_s_to_float(struct float_num t, float *number)
 	e <<= 23;
 
 	*ptr = s | e | m;	
+	
+	return number;	
 }
 
 void struct_to_byte_arr(const void *object, size_t size, uint8_t *out)
@@ -128,14 +132,3 @@ void struct_to_byte_arr(const void *object, size_t size, uint8_t *out)
 		++out;
 	}
 }
-
-void byte_arr_to_table_struct(const uint8_t *byte_arr, size_t size, struct table *t)
-{
-	uint8_t *ptr = (uint8_t *)t;
-	while(size > 0){
-		*ptr = *byte_arr;
-		++ptr;
-		++byte_arr;
-	}
-}
-
