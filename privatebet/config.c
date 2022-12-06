@@ -319,7 +319,7 @@ void bet_parse_verus_dealer()
 		struct table *temp;
 		
 		for(int32_t i=0; i<sizeof(t); i++){
-			dlg_info("%c", byte_arr[i]);
+			dlg_info("%x", byte_arr[i]);
 		}
 #if 0
 		//byte_arr_to_table_struct(byte_arr,sizeof(t),&temp);
