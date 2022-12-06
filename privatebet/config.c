@@ -276,17 +276,6 @@ void bet_parse_blockchain_config_ini_file()
 	dlg_info("Blockchain client :: %s\n", blockchain_cli);
 }
 
-static void getSME(int *s, int *m, int *e, float number)
-{
-    unsigned int* ptr = (unsigned int*)&number;
-
-    *s = *ptr >> 31;
-    *e = *ptr & 0x7f800000;
-    *e >>= 23;
-    *m = *ptr & 0x007fffff;
-}
-
-
 void bet_parse_verus_dealer()
 {
 	dictionary *ini = NULL;
@@ -306,12 +295,14 @@ void bet_parse_verus_dealer()
 			//max_players = iniparser_getint(ini, "table:max_players", -1);
 		}
 		if (0 != iniparser_getdouble(ini, "table:big_blind", 0)) {
-			int s,m,e;
-			getSME(&s,&m,&e,iniparser_getdouble(ini, "table:big_blind", 0));
+			#if 0
+			int s,m,e;						
+			float_to_uint32(&s,&m,&e,iniparser_getdouble(ini, "table:big_blind", 0));
 			t.big_blind.sign = s;
 			t.big_blind.mantisa = m;
 			t.big_blind.exponent = e;
-			dlg_info("s::%x, m::%x, e::%x", s, m, e);
+			#endif
+			float_to_uint32_s(&t.big_blind,iniparser_getdouble(ini, "table:big_blind", 0));
 			dlg_info("s::%x, m::%x, e::%x", t.big_blind.sign, t.big_blind.mantisa, t.big_blind.exponent);
 		}
 		#if 0
