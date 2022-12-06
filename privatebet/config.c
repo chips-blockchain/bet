@@ -315,7 +315,9 @@ void bet_parse_verus_dealer()
 			dcv_commission_percentage = iniparser_getdouble(ini, "dealer:dcv_commission", 0);
 		}
 #endif
-		uint8_t *byte_arr = struct_to_byte_arr(&t,sizeof(t));
+		uint8_t *byte_arr = NULL;
+		byte_arr = calloc(1, sizeof(t));		
+		struct_to_byte_arr(&t,sizeof(t),byte_arr);
 		struct table *temp;
 		
 		for(int32_t i=0; i<sizeof(t); i++){
