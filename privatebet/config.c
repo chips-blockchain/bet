@@ -276,14 +276,14 @@ void bet_parse_blockchain_config_ini_file()
 	dlg_info("Blockchain client :: %s\n", blockchain_cli);
 }
 
-static void getSME(int& s, int& m, int& e, float number)
+static void getSME(int *s, int *m, int *e, float number)
 {
     unsigned int* ptr = (unsigned int*)&number;
 
-    s = *ptr >> 31;
-    e = *ptr & 0x7f800000;
-    e >>= 23;
-    m = *ptr & 0x007fffff;
+    *s = *ptr >> 31;
+    *e = *ptr & 0x7f800000;
+    *e >>= 23;
+    *m = *ptr & 0x007fffff;
 }
 
 
