@@ -191,9 +191,9 @@ struct seat_info {
 extern char dealer_ID[256];
 struct table {
 	uint8_t max_players;
-	double min_stake;
-	double max_stake;
-	double big_blind;
+	float min_stake;
+	float max_stake;
+	float big_blind;
 };
 
 extern int32_t player_pos[CARDS777_MAXPLAYERS];
