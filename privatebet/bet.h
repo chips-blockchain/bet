@@ -189,11 +189,18 @@ struct seat_info {
 
 
 extern char dealer_ID[256];
+
+struct float_num {
+   uint32_t mantisa : 23;
+   uint32_t exponent : 8;
+   uint32_t sign : 1;
+};
+
 struct table {
 	uint8_t max_players;
-	float min_stake;
-	float max_stake;
-	float big_blind;
+	struct float_num min_stake;
+	struct float_num max_stake;
+	struct float_num big_blind;
 };
 
 extern int32_t player_pos[CARDS777_MAXPLAYERS];
