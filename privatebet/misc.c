@@ -134,3 +134,13 @@ uint8_t* struct_to_byte_arr(const void *object, size_t size)
 	}
 }
 
+void byte_arr_to_table_struct(const uint8_t *byte_arr, size_t size, struct table *t)
+{
+	uint8_t *ptr = (uint8_t)t;
+	while(size > 0){
+		*ptr = *byte_arr;
+		++ptr;
+		++byte_arr;
+	}
+}
+

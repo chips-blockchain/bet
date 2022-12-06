@@ -316,14 +316,14 @@ void bet_parse_verus_dealer()
 		}
 #endif
 		uint8_t *byte_arr = struct_to_byte_arr(&t,sizeof(t));
+		struct table temp;
 
-		struct table *temp = NULL;
-		temp = (struct table*)byte_arr;
+		byte_arr_to_table_struct(byte_arr,sizeof(byte_arr),&temp);
 
 		float bb;
-		uint32_s_to_float(temp->big_blind,&bb);
+		uint32_s_to_float(temp.big_blind,&bb);
 		
-		dlg_info("\ns::%x, m::%x, e::%x\n", temp->big_blind.sign, temp->big_blind.mantisa, temp->big_blind.exponent);
+		dlg_info("\ns::%x, m::%x, e::%x\n", temp.big_blind.sign, temp.big_blind.mantisa, temp.big_blind.exponent);
 		dlg_info("\nbb::%f", bb);
 		
 	}
