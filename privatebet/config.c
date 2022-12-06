@@ -316,11 +316,11 @@ void bet_parse_verus_dealer()
 		}
 #endif
 		uint8_t *byte_arr = NULL;
-		byte_arr = calloc(1, sizeof(t));		
-		struct_to_byte_arr(&t,sizeof(t),byte_arr);
+		byte_arr = calloc(1, sizeof(t));
+		struct_to_byte_arr(&t, sizeof(t), byte_arr);
 		struct table *temp;
-		
-		temp =(struct table*)byte_arr;
+
+		temp = (struct table *)byte_arr;
 		dlg_info("max players::%d\n", temp->max_players);
 		dlg_info("bb::%f\n", uint32_s_to_float(temp->big_blind));
 		dlg_info("min_stake::%f\n", uint32_s_to_float(temp->min_stake));
