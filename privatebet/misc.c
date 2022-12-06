@@ -108,8 +108,8 @@ float uint32_s_to_float(struct float_num t)
 {
 	uint32_t s, e, m;
 	float number;
-	
-	uint32_t *ptr = (uint32_t *)&number;	
+
+	uint32_t *ptr = (uint32_t *)&number;
 
 	s = t.sign;
 	m = t.mantisa;
@@ -118,9 +118,9 @@ float uint32_s_to_float(struct float_num t)
 	s <<= 31;
 	e <<= 23;
 
-	*ptr = s | e | m;	
-	
-	return number;	
+	*ptr = s | e | m;
+
+	return number;
 }
 
 void struct_to_byte_arr(const void *object, size_t size, uint8_t *out)
