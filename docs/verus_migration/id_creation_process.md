@@ -205,6 +205,24 @@ After the creation of an ID with the name  of dealer with the name `sg777_d` by 
 ```
 Here in the above example the primaryaddress `RGgmpgoQcnptWEshhuhg3jGkYiotvLnswN` is belongs to the dealer, i.e `sg777_d`, so once after the creation of dealer ID now the dealer can update it with the information specific to it.
 
+Dealer Contentmultimap Update
+-----------------------------
+When the bet node starts as a dealer, it reads the information from `verus_dealer.ini` and update this information to the dealer contentmultimap. Basically here in this configuration file the dealer mention its ID and the information about the tables its hosting. Right now we limit our discussion to one dealer hosting one table.
+The sample contents of `verus_dealer.ini` looks as follows:
+```
+[verus]
+id = sg777_d   #This is the ID for which the dealer owns the primaryaddress and to which it updates the info.
+
+[table]
+max_players                      = 2               #This is the maximun number of players that dealer will allow them to join the table. Atm, dealer waits for this number of players to join before starting hand.
+big_blind                        = 0.001           #If this value is set the table stake size is calculated based on this which is 200BB, if this value is not set the default value is 0.01.
+min_stake            = 20                  #The min table stake size is 20BB.
+max_stake            = 100                 #The max table stake size is 100BB.
+```
+
+
+
+
 
 
 
