@@ -127,7 +127,6 @@ void struct_to_byte_arr(const void *object, size_t size, uint8_t *out)
 {
 	const uint8_t *byte;
 	for (byte = object; size--; ++byte) {
-		dlg_info("%x ", *byte);
 		*out = *byte;
 		++out;
 	}
