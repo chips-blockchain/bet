@@ -316,15 +316,21 @@ void bet_parse_verus_dealer()
 		}
 #endif
 		uint8_t *byte_arr = struct_to_byte_arr(&t,sizeof(t));
-		struct table temp;
-
-		byte_arr_to_table_struct(byte_arr,sizeof(byte_arr),&temp);
-
-		float bb;
-		uint32_s_to_float(temp.big_blind,&bb);
+		struct table *temp;
 		
-		dlg_info("\ns::%x, m::%x, e::%x\n", temp.big_blind.sign, temp.big_blind.mantisa, temp.big_blind.exponent);
+		for(int32_t i=0; i<sizeof(t); i++){
+			dlg_info("%c", byte_arr[i]);
+		}
+#if 0
+		//byte_arr_to_table_struct(byte_arr,sizeof(t),&temp);
+		temp =(struct table*)byte_arr;
+		dlg_info("max players::%d\n", temp->max_players);
+		float bb;
+		uint32_s_to_float(temp->big_blind,&bb);
+		
+		dlg_info("\ns::%x, m::%x, e::%x\n", temp->big_blind.sign, temp->big_blind.mantisa, temp->big_blind.exponent);
 		dlg_info("\nbb::%f", bb);
+#endif
 		
 	}
 }
