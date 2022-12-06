@@ -129,6 +129,7 @@ uint8_t* struct_to_byte_arr(const void *object, size_t size)
 		return out;
 	}
 	for (byte = object; size--; ++byte) {
+		dlg_info("%x ", *byte);
 		*out = *byte;
 		++out;
 	}
