@@ -78,9 +78,9 @@ int check_url(const char *url)
 	return (response == CURLE_OK) ? 1 : 0;
 }
 
-void float_to_uint32(int *s, int *m, int *e, float number)
+void float_to_uint32(uint32_t *s, uint32_t *m, uint32_t *e, float number)
 {
-	unsigned int *ptr = (unsigned int *)&number;
+	uint32_t *ptr = (uint32_t *)&number;
 
 	*s = *ptr >> 31;
 	*e = *ptr & 0x7f800000;
@@ -90,9 +90,9 @@ void float_to_uint32(int *s, int *m, int *e, float number)
 
 void float_to_uint32_s(struct float_num *t, float number)
 {
-	int s, e, m;
+	uint32_t s, e, m;
 
-	unsigned int *ptr = (unsigned int *)&number;
+	uint32_t *ptr = (uint32_t *)&number;
 
 	s = *ptr >> 31;
 	e = *ptr & 0x7f800000;
@@ -103,3 +103,34 @@ void float_to_uint32_s(struct float_num *t, float number)
 	t->mantisa = m;
 	t->exponent = e;
 }
+
+void uint32_s_to_float(struct float_num t, float *number)
+{
+	uint32_t s, e, m;
+	uint32_t *ptr = (uint32_t *)number;	
+
+	s = t.sign;
+	m = t.mantisa;
+	e = t.exponent;
+
+	s <<== 31;
+	e <<== 23;
+
+	*ptr = s | e | m;	
+}
+
+uint8_t* struct_to_byte_arr(const void *object, size_t size)
+{
+	const uint8_t *byte;
+	uint8_t *out = NULL;
+
+	out = calloc(1, size);
+	if(NULL == out) {
+		return out;
+	}
+	for (byte = object; size--; ++byte) {
+		*out = *byte;
+		++out;
+	}
+}
+

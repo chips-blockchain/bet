@@ -276,15 +276,6 @@ void bet_parse_blockchain_config_ini_file()
 	dlg_info("Blockchain client :: %s\n", blockchain_cli);
 }
 
-void USARTWrite(const void *object, size_t size)
-{
-	const unsigned char *byte;
-	for (byte = object; size--; ++byte) {
-		printf("%02X", *byte);
-	}
-	putchar('\n');
-}
-
 void bet_parse_verus_dealer()
 {
 	dictionary *ini = NULL;
@@ -324,6 +315,16 @@ void bet_parse_verus_dealer()
 			dcv_commission_percentage = iniparser_getdouble(ini, "dealer:dcv_commission", 0);
 		}
 #endif
-		USARTWrite(&t, sizeof(t));
+		uint8_t *byte_arr = struct_to_byte_arr(&t,sizeof(t));
+
+		struct table *temp = NULL;
+		temp = (struct table*)byte_arr;
+
+		float bb;
+		uint32_s_to_float(temp->big_blind,&bb);
+		
+		dlg_info("\ns::%x, m::%x, e::%x\n", temp->big_blind.sign, temp->big_blind.mantisa, temp->big_blind.exponent);
+		dlg_info("\nbb::%f", bb);
+		
 	}
 }
