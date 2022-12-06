@@ -320,10 +320,6 @@ void bet_parse_verus_dealer()
 		struct_to_byte_arr(&t,sizeof(t),byte_arr);
 		struct table *temp;
 		
-		for(int32_t i=0; i<sizeof(t); i++){
-			dlg_info("%x", byte_arr[i]);
-		}
-
 		temp =(struct table*)byte_arr;
 		dlg_info("max players::%d\n", temp->max_players);
 		dlg_info("bb::%f\n", uint32_s_to_float(temp->big_blind));
