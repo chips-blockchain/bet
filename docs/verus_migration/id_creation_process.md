@@ -205,8 +205,7 @@ After the creation of an ID with the name  of dealer with the name `sg777_d` by 
 ```
 Here in the above example the primaryaddress `RGgmpgoQcnptWEshhuhg3jGkYiotvLnswN` is belongs to the dealer, i.e `sg777_d`, so once after the creation of dealer ID now the dealer can update it with the information specific to it.
 
-Dealer Contentmultimap Update
------------------------------
+### Dealer Contentmultimap Update
 When the bet node starts as a dealer, it reads the information from `verus_dealer.ini` and update this information to the dealer contentmultimap. Basically here in this configuration file the dealer mention its ID and the information about the tables its hosting. Right now we limit our discussion to one dealer hosting one table.
 The sample contents of `verus_dealer.ini` looks as follows:
 ```
