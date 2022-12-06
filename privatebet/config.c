@@ -276,6 +276,17 @@ void bet_parse_blockchain_config_ini_file()
 	dlg_info("Blockchain client :: %s\n", blockchain_cli);
 }
 
+void getSME( int& s, int& m, int& e, float number )
+{
+    unsigned int* ptr = (unsigned int*)&number;
+
+    s = *ptr >> 31;
+    e = *ptr & 0x7f800000;
+    e >>= 23;
+    m = *ptr & 0x007fffff;
+}
+
+
 void bet_parse_verus_dealer()
 {
 	dictionary *ini = NULL;
@@ -295,10 +306,10 @@ void bet_parse_verus_dealer()
 			//max_players = iniparser_getint(ini, "table:max_players", -1);
 		}
 		if (0 != iniparser_getdouble(ini, "table:big_blind", 0)) {
-			t.big_blind = iniparser_getdouble(ini, "table:big_blind", 0);
-			//BB_in_chips = iniparser_getdouble(ini, "table:big_blind", 0);
-			//SB_in_chips = BB_in_chips / 2;
+			getSME(&t.big_blind.sign,&t.big_blind.mantisa,&t.big_blind.exponent,iniparser_getdouble(ini, "table:big_blind", 0));
+			dlg_info("s::%x, m::%x, e::%x", t.big_blind.sign, t.big_blind.mantisa, t.big_blind.exponent);
 		}
+		#if 0
 		if (0 != iniparser_getint(ini, "table:min_stake", 0)) {
 			t.min_stake = iniparser_getint(ini, "table:min_stake", 0) * BB_in_chips;
 			//table_min_stake = iniparser_getint(ini, "table:min_stake", 0) * BB_in_chips;
@@ -306,7 +317,8 @@ void bet_parse_verus_dealer()
 		if (0 != iniparser_getint(ini, "table:max_stake", 0)) {
 			t.max_stake = iniparser_getint(ini, "table:max_stake", 0) * BB_in_chips;
 			//table_max_stake = iniparser_getint(ini, "table:max_stake", 0) * BB_in_chips;
-		}		
+		}	
+		#endif
 		#if 0
 		if (0 != iniparser_getdouble(ini, "dealer:chips_tx_fee", 0)) {
 			chips_tx_fee = iniparser_getdouble(ini, "dealer:chips_tx_fee", 0);
@@ -315,16 +327,5 @@ void bet_parse_verus_dealer()
 			dcv_commission_percentage = iniparser_getdouble(ini, "dealer:dcv_commission", 0);
 		}
 		#endif
-		typedef union {
- 	    	float f;
-		  	struct {
-		    	unsigned int mantisa : 23;
-			    unsigned int exponent : 8;
-			    unsigned int sign : 1;
-			} parts;
-		} big_blind;
-		big_blind temp;
-		temp.f = t.big_blind;
-		dlg_info("%s::%d::%d::%f::%f::%f\n", __FUNCTION__, __LINE__, t.max_players, temp.f, t.min_stake, t.max_stake);
 	}
 }
