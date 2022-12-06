@@ -10,6 +10,9 @@ char *player_config_ini_file = "./config/player_config.ini";
 char *cashier_config_ini_file = "./config/cashier_config.ini";
 char *bets_config_ini_file = "./config/bets.ini";
 char *blockchain_config_ini_file = "./config/blockchain_config.ini";
+char *verus_dealer_config = "./config/verus_dealer.ini";
+
+char dealer_ID[256];
 
 cJSON *bet_read_json_file(char *file_name)
 {
@@ -271,4 +274,47 @@ void bet_parse_blockchain_config_ini_file()
 		}
 	}
 	dlg_info("Blockchain client :: %s\n", blockchain_cli);
+}
+
+void bet_parse_verus_dealer()
+{
+	dictionary *ini = NULL;
+
+	struct table t;
+	
+	ini = iniparser_load(verus_dealer_config);
+	if (ini == NULL) {
+		dlg_error("error in parsing %s", verus_dealer_config);
+	} else {
+		if (NULL != iniparser_getstring(ini, "verus:id", NULL)) {
+			strncpy(dealer_ID, iniparser_getstring(ini, "verus:id", NULL),sizeof(dealer_ID));
+			dlg_info("%s::%d::dealer_ID::%s\n", __FUNCTION__, __LINE__, dealer_ID);
+		}
+		if (-1 != iniparser_getint(ini, "table:max_players", -1)) {
+			t.max_players = (uint8_t) iniparser_getint(ini, "table:max_players", -1); 
+			//max_players = iniparser_getint(ini, "table:max_players", -1);
+		}
+		if (0 != iniparser_getdouble(ini, "table:big_blind", 0)) {
+			t.big_blind = iniparser_getdouble(ini, "table:big_blind", 0);
+			//BB_in_chips = iniparser_getdouble(ini, "table:big_blind", 0);
+			//SB_in_chips = BB_in_chips / 2;
+		}
+		if (0 != iniparser_getint(ini, "table:min_stake", 0)) {
+			t.min_stake = iniparser_getint(ini, "table:min_stake", 0) * BB_in_chips;
+			//table_min_stake = iniparser_getint(ini, "table:min_stake", 0) * BB_in_chips;
+		}
+		if (0 != iniparser_getint(ini, "table:max_stake", 0)) {
+			t.max_stake = iniparser_getint(ini, "table:max_stake", 0) * BB_in_chips;
+			//table_max_stake = iniparser_getint(ini, "table:max_stake", 0) * BB_in_chips;
+		}		
+		#if 0
+		if (0 != iniparser_getdouble(ini, "dealer:chips_tx_fee", 0)) {
+			chips_tx_fee = iniparser_getdouble(ini, "dealer:chips_tx_fee", 0);
+		}
+		if (0 != iniparser_getdouble(ini, "dealer:dcv_commission", 0)) {
+			dcv_commission_percentage = iniparser_getdouble(ini, "dealer:dcv_commission", 0);
+		}
+		#endif
+		dlg_info("%s::%d::%d::%f::%f::%f\n", __FUNCTION__, __LINE__, t.max_players, t.big_blind, t.min_stake, t.max_stake);
+	}
 }
