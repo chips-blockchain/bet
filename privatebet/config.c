@@ -343,10 +343,20 @@ void bet_parse_verus_dealer()
 		dlg_info("%s::%d::temp_json::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp_json));		
 		dlg_info("%s::%d::dealer_config::%s\n", __FUNCTION__, __LINE__, jstr(cJSON_GetArrayItem(cJSON_GetObjectItem(temp_json,DEALERS_KEY),0), BYTEVECTOR_VDXF_ID));
 				
-		#if 1		
-		struct table *temp;
+		char *str = jstr(cJSON_GetArrayItem(cJSON_GetObjectItem(temp_json,DEALERS_KEY),0), BYTEVECTOR_VDXF_ID);
+		dlg_info("Length of str ::%lu\n", strlen(str));
+		uint8_t *rev = NULL;
+		rev =calloc(1, strlen((str+1)/2));
+		decode_hex(rev,strlen((str+1)/2),str);
 
-		temp = (struct table *)jstr(cJSON_GetArrayItem(cJSON_GetObjectItem(temp_json,DEALERS_KEY),0), BYTEVECTOR_VDXF_ID);
+		
+		for(int32_t i=0; i<sizeof(t); i++){
+			dlg_info("%x::%x\n",byte_arr[i], rev[i]);
+		}
+		
+#if 1		
+		struct table *temp;
+		temp = (struct table *)rev;
 		dlg_info("max players::%d\n", temp->max_players);
 		dlg_info("bb::%f\n", uint32_s_to_float(temp->big_blind));
 		dlg_info("min_stake::%f\n", uint32_s_to_float(temp->min_stake));
