@@ -140,7 +140,7 @@ cJSON* get_cmm(char *id, int16_t full_id)
 	int argc;
 	char **argv = NULL;
 	char params[128] = { 0 };
-	cJSON *id_info = NULL, *argjson = NULL;
+	cJSON *id_info = NULL, *argjson = NULL, *cmm = NULL;
 	
 	if(NULL == id){
 		return NULL;
@@ -155,12 +155,13 @@ cJSON* get_cmm(char *id, int16_t full_id)
 	argv = bet_copy_args(argc, verus_chips_cli, "getidentity", params);
 
 	argjson = cJSON_CreateObject();
-	make_command(argc, argv, &argjson);
+	make_command(argc, argv, &argjson);
+
+	cmm = cJSON_CreateObject();
+	cmm = cJSON_GetObjectItem(cJSON_GetObjectItem(argjson, "identity"), "contentmultimap");	
 
 	end:
 		bet_dealloc_args(argc, &argv);
-		
-		dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
-		return argjson;
+		return cmm;
 	
 }
