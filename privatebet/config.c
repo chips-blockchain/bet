@@ -320,7 +320,7 @@ void bet_parse_verus_dealer()
 		byte_arr = calloc(1, sizeof(t));
 		struct_to_byte_arr(&t, sizeof(t), byte_arr);
 
-		for(int32_t i=0; i<sizeof(t), i++){
+		for(int32_t i=0; i<sizeof(t); i++){
 			dlg_info("%x",byte_arr[i]);
 		}
 
