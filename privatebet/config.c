@@ -328,9 +328,14 @@ void bet_parse_verus_dealer()
 		init_hexbytes_noT(hexstr,byte_arr,sizeof(t));
 
 	
-		cJSON *dealer_info = cJSON_CreateObject();
-		cJSON_AddStringToObject(dealer_info, BYTEVECTOR_VDXF_ID, hexstr);
-		dlg_info("\ndealer_info::%s\n", cJSON_Print(dealer_info));
+		cJSON *dealer_cmm = cJSON_CreateObject();
+		cJSON_AddStringToObject(dealer_cmm, BYTEVECTOR_VDXF_ID, hexstr);
+		dlg_info("\ndealer_info::%s\n", cJSON_Print(dealer_cmm));
+
+		cJSON *out = NULL;
+		out = update_cmm(dealer_ID, dealer_cmm);
+
+		dlg_info("\n%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(out));
 		
 		#if 0		
 		struct table *temp;

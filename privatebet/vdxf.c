@@ -103,3 +103,29 @@ void update_cashiers(char *ip)
 end:
 	bet_dealloc_args(argc, &argv);
 }
+
+cJSON* update_cmm(char *id, cJSON *cmm)
+{
+	cJSON *id_info = NULL, *argjson = NULL;
+	int argc;
+	char **argv = NULL;
+	char params[arg_size] = { 0 };
+
+	id_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(id_info, "name", dealer_ID);
+	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
+	cJSON_AddItemToObject(id_info, "contentmultimap", cmm);
+
+	argc = 3;
+	bet_alloc_args(argc, &argv);
+	snprintf(params, arg_size, "\'%s\'", cJSON_Print(id_info));
+	argv = bet_copy_args(argc, verus_chips_cli, "updateidentity", params);
+
+	argjson = cJSON_CreateObject();
+	make_command(argc, argv, &argjson);
+
+	end:
+		bet_dealloc_args(argc,&argv);
+		
+	return argjson;
+}

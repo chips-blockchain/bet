@@ -56,3 +56,4 @@ under chips as sg777.chips@ which basically been used to hold the tokens.
 cJSON *get_cashiers();
 cJSON *get_onchain_cashiers();
 void update_cashiers();
+cJSON* update_cmm(char *id, cJSON *cmm);
