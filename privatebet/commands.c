@@ -32,7 +32,7 @@
 
 double epsilon = 0.000000001;
 
-char blockchain_cli[1024];
+char blockchain_cli[1024] = "verus -chain=chips10sec";
 
 char *chips_cli = "chips-cli";
 char *verus_chips_cli = "verus -chain=chips10sec";
@@ -1697,6 +1697,8 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 				*argjson = cJSON_Parse(data);
 			} else if (strcmp(argv[1], "updateidentity") == 0) {
 				*argjson = cJSON_CreateString((const char *)data);
+			} else if (strcmp(argv[1], "getidentity") == 0) {
+				*argjson = cJSON_Parse(data);
 			} else {
 				*argjson = cJSON_Parse(data);
 				cJSON_AddNumberToObject(*argjson, "code", 0);
