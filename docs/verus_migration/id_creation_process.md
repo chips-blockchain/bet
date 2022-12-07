@@ -219,9 +219,57 @@ min_stake            = 20              #The min table stake size is 20BB.
 max_stake            = 100             #The max table stake size is 100BB.
 ```
 
-
-
-
-
-
-
+How this information is processing from the configuration file to the ID, for every configuration data there mostly be an underlying structure that holds the information. Here in this the `struct` named `table` holds this information and is defined in the code as below:
+```
+struct table {
+	uint8_t max_players;
+	struct float_num min_stake;
+	struct float_num max_stake;
+	struct float_num big_blind;
+};
+```
+Note, here there isn't any support to store the float values into the ID's, so we represent the float values using `struct float_num` which basically defined as follows:
+```
+struct float_num {
+	uint32_t mantisa : 23;
+	uint32_t exponent : 8;
+	uint32_t sign : 1;
+};
+```
+Once the information is stored from the config file to the underlying structure, then the struct data is converted to hex and is stored into the ID. After storing the above information into the dealer ID `sg777_d` it looks as follows:
+```
+# verus -chain=chips10sec getidentity sg777_d.poker.chips10sec@
+{
+  "identity": {
+    "version": 3,
+    "flags": 0,
+    "primaryaddresses": [
+      "RGgmpgoQcnptWEshhuhg3jGkYiotvLnswN"
+    ],
+    "minimumsignatures": 1,
+    "name": "sg777_d",
+    "identityaddress": "iHChMSKzFU7TcvURCjFwGzkBYLQ1MvrkYL",
+    "parent": "i6gViGxt7YinkJZoubKdbWBrqdRCb1Rkvs",
+    "systemid": "iLThsqsgwFRKzRG11j7QaYgNQJ9q16VGpg",
+    "contentmap": {
+    },
+    "contentmultimap": {
+      "iSgEvATbNF3ZR6Kyj6nn8zVp3adPQxPnFJ": [
+        {
+          "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "02cf30c7cdcc4c3e0000803f6f12833a"
+        }
+      ]
+    },
+    "revocationauthority": "iHChMSKzFU7TcvURCjFwGzkBYLQ1MvrkYL",
+    "recoveryauthority": "iHChMSKzFU7TcvURCjFwGzkBYLQ1MvrkYL",
+    "timelock": 0
+  },
+  "status": "active",
+  "canspendfor": true,
+  "cansignfor": true,
+  "blockheight": 144569,
+  "txid": "1abd56c4135fc498695c87ac6c90402eacb6fbee9d0fcd2c6b184e6fd7c555bc",
+  "vout": 0
+}
+```
+Since we storing only data into ID, the data may not look readable but anyways that's not our aim at this point. Possibly we can have our own explorer where in which we integrate our data decoders but that's for later.
