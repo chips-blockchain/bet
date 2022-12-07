@@ -217,6 +217,7 @@ max_players          = 2               #This is the maximun number of players th
 big_blind            = 0.001           #If this value is set the table stake size is calculated based on this which is 200BB, if this value is not set the default value is 0.01.
 min_stake            = 20              #The min table stake size is 20BB.
 max_stake            = 100             #The max table stake size is 100BB.
+table_id 	     = sg777_t         #This is the table ID to which all the game info is to be committed. This table info is controlled by the players. 	
 ```
 
 How this information is processing from the configuration file to the ID, for every configuration data there mostly be an underlying structure that holds the information. Here in this the `struct` named `table` holds this information and is defined in the code as below:
@@ -226,6 +227,7 @@ struct table {
 	struct float_num min_stake;
 	struct float_num max_stake;
 	struct float_num big_blind;
+	char table_id[16];
 };
 ```
 Note, here there isn't any support to store the float values into the ID's, so we represent the float values using `struct float_num` which basically defined as follows:
