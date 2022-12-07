@@ -318,6 +318,13 @@ void bet_parse_verus_dealer()
 		uint8_t *byte_arr = NULL;
 		byte_arr = calloc(1, sizeof(t));
 		struct_to_byte_arr(&t, sizeof(t), byte_arr);
+
+		cJSON *dealer_info = cJSON_CreateObject();
+		cJSON *str = cJSON_CreateString((char*)byte_arr);
+		cJSON_AddItemToObject(dealer_info, BYTEVECTOR_VDXF_ID, str);
+		dlg_info("\ndealer_info::%s\n", cJSON_Print(dealer_info));
+		
+		#if 0		
 		struct table *temp;
 
 		temp = (struct table *)byte_arr;
@@ -325,5 +332,6 @@ void bet_parse_verus_dealer()
 		dlg_info("bb::%f\n", uint32_s_to_float(temp->big_blind));
 		dlg_info("min_stake::%f\n", uint32_s_to_float(temp->min_stake));
 		dlg_info("max_stake::%f\n", uint32_s_to_float(temp->max_stake));
+		#endif
 	}
 }
