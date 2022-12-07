@@ -173,6 +173,8 @@ cJSON* get_cmm_key_data(char *id, int16_t full_id, char *key)
 
 	cmm = get_cmm(id,full_id);
 
+	dlg_info("%s::%d::cmm::%s\n", __FUNCTION__, __LINE__, cJSON_Print(cmm));
+	
 	if(NULL == cmm) {
 		return NULL;
 	}
