@@ -336,7 +336,7 @@ void bet_parse_verus_dealer()
 		dlg_info("\ndealer_info::%s\n", cJSON_Print(dealer_cmm_key));
 
 		cJSON *out = NULL;
-		out = update_cmm(dealer_ID, dealer_cmm);
+		out = update_cmm(dealer_ID, dealer_cmm_key);
 
 		dlg_info("\n%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(out));
 		
