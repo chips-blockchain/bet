@@ -165,3 +165,31 @@ cJSON* update_cashiers(char *ip)
 end:
 	return out;
 }
+
+cJSON* get_dealers()
+{
+	cJSON *dealers_cmm = NULL, *dealer_ids = NULL;
+
+
+	dealers_cmm = cJSON_CreateObject();
+	dealers_cmm = get_cmm_key_data("dealers", 0, DEALERS_KEY);
+
+	dealer_ids = cJSON_CreateArray();
+	for(int32_t i=0; i<cJSON_GetArraySize(dealers_cmm); i++){
+		cJSON_AddItemToArray(dealer_ids, cJSON_GetObjectItem(cJSON_GetArrayItem(dealers_cmm,i),STRING_VDXF_ID));
+	}
+	return dealer_ids;
+}
+
+cJSON* find_table()
+{
+	cJSON *dealer_ids = NULL;
+	char *preferred = "sg777_d";
+
+	dealer_ids = cJSON_CreateArray();
+	dealer_ids = get_dealers();
+
+	for(int32_t i=0; i<cJSON_GetArraySize(dealer_ids); i++){
+		dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(cJSON_GetArrayItem(dealer_ids,i)));
+	}
+}
