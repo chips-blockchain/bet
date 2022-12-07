@@ -4,6 +4,7 @@
 #include "misc.h"
 #include "err.h"
 #include "commands.h"
+#include "vdxf.h"
 
 char *dealer_config_ini_file = "./config/dealer_config.ini";
 char *player_config_ini_file = "./config/player_config.ini";
