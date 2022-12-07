@@ -196,12 +196,19 @@ struct table* get_dealers_config_table(char *dealer_id)
 	dealer_cmm_data = cJSON_CreateObject();
 	dealer_cmm_data = get_cmm_key_data(dealer_id, 0 , DEALERS_KEY);
 
-	str = jstr(cJSON_GetArrayItem(dealer_cmm_data,0),STRING_VDXF_ID);
-	if(NULL == str)
-		goto end;
+	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(dealer_cmm_data));
+	
+	str = jstr(cJSON_GetArrayItem(dealer_cmm_data,0), STRING_VDXF_ID);
+
+	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, str);
 	
 	table_data = calloc(1, (strlen(str)+1)/2);
 	decode_hex(table_data,(strlen(str)+1)/2,str);
+
+	for(int32_t i=0; i<(strlen(str)+1)/2; i++){
+		dlg_info("%x", table_data[i]);
+	}
+	dlg_info("\n");
 	
 	t= calloc(1, sizeof(struct table));			
 	t = (struct table *)table_data;
