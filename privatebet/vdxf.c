@@ -173,8 +173,6 @@ cJSON* get_cmm_key_data(char *id, int16_t full_id, char *key)
 
 	cmm = get_cmm(id,full_id);
 
-	dlg_info("%s::%d::cmm::%s\n", __FUNCTION__, __LINE__, cJSON_Print(cmm));
-	
 	if(NULL == cmm) {
 		return NULL;
 	}
@@ -184,6 +182,30 @@ cJSON* get_cmm_key_data(char *id, int16_t full_id, char *key)
 	return cmm_key_data;
 	
 }
+
+cJSON* update_dealers_config_table(char *dealer_id, struct table t)
+{
+	uint8_t *byte_arr = NULL;
+	char hexstr[arg_size];
+	cJSON *dealer_cmm = NULL, *dealer_cmm_key = NULL, *out = NULL;
+		
+	byte_arr = calloc(1, sizeof(t));
+	struct_to_byte_arr(&t, sizeof(t), byte_arr);
+	
+	init_hexbytes_noT(hexstr,byte_arr,sizeof(t));
+	
+	dealer_cmm = cJSON_CreateObject();
+	cJSON_AddStringToObject(dealer_cmm, STRING_VDXF_ID, hexstr);
+
+	dealer_cmm_key = cJSON_CreateObject();
+	cJSON_AddItemToObject(dealer_cmm_key, DEALERS_KEY, dealer_cmm);
+	
+	out = cJSON_CreateObject();
+	out = update_cmm(dealer_ID, dealer_cmm_key);
+	
+	return out;
+}
+
 
 struct table* get_dealers_config_table(char *dealer_id)
 {
@@ -198,20 +220,11 @@ struct table* get_dealers_config_table(char *dealer_id)
 	dealer_cmm_data = cJSON_CreateObject();
 	dealer_cmm_data = get_cmm_key_data(dealer_id, 0 , DEALERS_KEY);
 
-	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(dealer_cmm_data));
-	
 	str = jstr(cJSON_GetArrayItem(dealer_cmm_data,0), STRING_VDXF_ID);
-
-	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, str);
 	
 	table_data = calloc(1, (strlen(str)+1)/2);
 	decode_hex(table_data,(strlen(str)+1)/2,str);
 
-	for(int32_t i=0; i<(strlen(str)+1)/2; i++){
-		dlg_info("%x", table_data[i]);
-	}
-	dlg_info("\n");
-	
 	t= calloc(1, sizeof(struct table));			
 	t = (struct table *)table_data;
 
