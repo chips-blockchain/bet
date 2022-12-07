@@ -141,7 +141,7 @@ cJSON *get_cmm(char *id, int16_t full_id)
 	int argc;
 	char **argv = NULL;
 	char params[128] = { 0 };
-	cJSON *id_info = NULL, *argjson = NULL, *cmm = NULL;
+	cJSON *argjson = NULL, *cmm = NULL;
 
 	if (NULL == id) {
 		return NULL;
