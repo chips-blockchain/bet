@@ -55,11 +55,11 @@ under chips as sg777.chips@ which basically been used to hold the tokens.
 #define CASHIERS_ID "cashiers.poker.chips10sec@"
 #define POKER_CHIPS_VDXF_ID "i6gViGxt7YinkJZoubKdbWBrqdRCb1Rkvs"
 
-cJSON *get_cashiers();
-cJSON *get_onchain_cashiers();
-void update_cashiers();
+
 cJSON *update_cmm(char *id, cJSON *cmm);
 cJSON *get_cmm(char *id, int16_t full_id);
 cJSON *get_cmm_key_data(char *id, int16_t full_id, char *key);
 cJSON *update_dealers_config_table(char *dealer_id, struct table t);
 struct table *get_dealers_config_table(char *dealer_id);
+cJSON* get_cashiers_info(char *cashier_id);
+cJSON* update_cashiers(char *ip);
