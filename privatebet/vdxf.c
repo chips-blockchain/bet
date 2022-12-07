@@ -130,7 +130,8 @@ cJSON* update_cmm(char *id, cJSON *cmm)
 
 	end:
 		bet_dealloc_args(argc,&argv);
-		
+
+	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));	
 	return argjson;
 }
 
@@ -145,7 +146,7 @@ cJSON* get_cmm(char *id, int16_t full_id)
 		return NULL;
 	}
 
-	strncpy(params,id,strlen(params));
+	strncpy(params,id,strlen(id));
 	if(0 == full_id){
 		strcat(params, ".poker.chips10sec@");	
 	}
@@ -158,7 +159,8 @@ cJSON* get_cmm(char *id, int16_t full_id)
 
 	end:
 		bet_dealloc_args(argc, &argv);
-
+		
+		dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 		return argjson;
 	
 }
