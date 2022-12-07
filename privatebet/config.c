@@ -280,7 +280,6 @@ void bet_parse_blockchain_config_ini_file()
 void bet_parse_verus_dealer()
 {
 	dictionary *ini = NULL;
-
 	struct table t;
 
 	ini = iniparser_load(verus_dealer_config);
@@ -289,52 +288,19 @@ void bet_parse_verus_dealer()
 	} else {
 		if (NULL != iniparser_getstring(ini, "verus:id", NULL)) {
 			strncpy(dealer_ID, iniparser_getstring(ini, "verus:id", NULL), sizeof(dealer_ID));
-			dlg_info("%s::%d::dealer_ID::%s\n", __FUNCTION__, __LINE__, dealer_ID);
 		}
 		if (-1 != iniparser_getint(ini, "table:max_players", -1)) {
 			t.max_players = (uint8_t)iniparser_getint(ini, "table:max_players", -1);
-			//max_players = iniparser_getint(ini, "table:max_players", -1);
-			dlg_info("\n max players::%x\n", t.max_players);
 		}
 		if (0 != iniparser_getdouble(ini, "table:big_blind", 0)) {
 			float_to_uint32_s(&t.big_blind, iniparser_getdouble(ini, "table:big_blind", 0));
-			dlg_info("s::%x, m::%x, e::%x", t.big_blind.sign, t.big_blind.mantisa, t.big_blind.exponent);
 		}
 		if (0 != iniparser_getint(ini, "table:min_stake", 0)) {
 			float_to_uint32_s(&t.min_stake, (iniparser_getint(ini, "table:min_stake", 0) * BB_in_chips));
-			//t.min_stake = iniparser_getint(ini, "table:min_stake", 0) * BB_in_chips;
 		}
 		if (0 != iniparser_getint(ini, "table:max_stake", 0)) {
 			float_to_uint32_s(&t.max_stake, (iniparser_getint(ini, "table:max_stake", 0) * BB_in_chips));
-			//t.max_stake = iniparser_getint(ini, "table:max_stake", 0) * BB_in_chips;
 		}
-#if 0
-		if (0 != iniparser_getdouble(ini, "dealer:chips_tx_fee", 0)) {
-			chips_tx_fee = iniparser_getdouble(ini, "dealer:chips_tx_fee", 0);
-		}
-		if (0 != iniparser_getdouble(ini, "dealer:dcv_commission", 0)) {
-			dcv_commission_percentage = iniparser_getdouble(ini, "dealer:dcv_commission", 0);
-		}
-#endif
-		uint8_t *byte_arr = NULL;
-		byte_arr = calloc(1, sizeof(t));
-		struct_to_byte_arr(&t, sizeof(t), byte_arr);
-
-		char hexstr[100];
-		init_hexbytes_noT(hexstr,byte_arr,sizeof(t));
-
-	
-		cJSON *dealer_cmm = NULL, *dealer_cmm_key = NULL;
-		dealer_cmm = cJSON_CreateObject();
-		dealer_cmm_key = cJSON_CreateObject();
-		cJSON_AddStringToObject(dealer_cmm, STRING_VDXF_ID, hexstr);
-		cJSON_AddItemToObject(dealer_cmm_key, DEALERS_KEY, dealer_cmm);
-		dlg_info("\ndealer_info::%s\n", cJSON_Print(dealer_cmm_key));
-
-		cJSON *out = NULL;
-		out = update_cmm(dealer_ID, dealer_cmm_key);
-
-		struct table *t = get_dealers_config_table(dealer_ID);	
-		
+		update_dealers_config_table(dealer_ID, t);
 	}
 }
