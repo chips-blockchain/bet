@@ -346,8 +346,8 @@ void bet_parse_verus_dealer()
 		char *str = jstr(cJSON_GetArrayItem(cJSON_GetObjectItem(temp_json,DEALERS_KEY),0), BYTEVECTOR_VDXF_ID);
 		dlg_info("Length of str ::%lu\n", strlen(str));
 		uint8_t *rev = NULL;
-		rev =calloc(1, strlen((str+1)/2));
-		decode_hex(rev,strlen((str+1)/2),str);
+		rev =calloc(1, (strlen(str)+1)/2);
+		decode_hex(rev,(strlen(str)+1)/2,str);
 
 		
 		for(int32_t i=0; i<sizeof(t); i++){
