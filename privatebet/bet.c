@@ -390,7 +390,9 @@ static void cashier_init()
 static void playing_nodes_init()
 {
 	common_init();
+	#if 0
 	bet_check_cashier_nodes();
+	#endif
 	bet_parse_player_config_ini_file();
 }
 
@@ -655,7 +657,8 @@ static void bet_start(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-	bet_start(argc, argv);
+	find_table();
+	//bet_start(argc, argv);
 	return OK;
 }
 
