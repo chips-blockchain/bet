@@ -301,6 +301,9 @@ void bet_parse_verus_dealer()
 		if (0 != iniparser_getint(ini, "table:max_stake", 0)) {
 			float_to_uint32_s(&t.max_stake, (iniparser_getint(ini, "table:max_stake", 0) * BB_in_chips));
 		}
+		if (NULL != iniparser_getstring(ini, "table:table_id", NULL)) {
+			strncpy(t.table_id, iniparser_getstring(ini, "table:table_id", NULL), sizeof(t.table_id));
+		}	
 		update_dealers_config_table(dealer_ID, t);
 	}
 }

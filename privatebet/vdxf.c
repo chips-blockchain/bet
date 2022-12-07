@@ -201,4 +201,5 @@ cJSON* find_table()
 	dlg_info("big_blind :: %f", uint32_s_to_float(t->big_blind));
 	dlg_info("min_stake :: %f", uint32_s_to_float(t->min_stake));
 	dlg_info("max_stake :: %f", uint32_s_to_float(t->max_stake));
+	dlg_info("table_id :: %s", t->table_id);
 }

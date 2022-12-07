@@ -657,8 +657,7 @@ static void bet_start(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-	find_table();
-	//bet_start(argc, argv);
+	bet_start(argc, argv);
 	return OK;
 }
 
