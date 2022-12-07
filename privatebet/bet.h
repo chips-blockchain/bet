@@ -200,6 +200,7 @@ struct table {
 	struct float_num min_stake;
 	struct float_num max_stake;
 	struct float_num big_blind;
+	char table_id[16];
 };
 
 extern int32_t player_pos[CARDS777_MAXPLAYERS];
