@@ -111,8 +111,12 @@ cJSON* update_cmm(char *id, cJSON *cmm)
 	char **argv = NULL;
 	char params[arg_size] = { 0 };
 
+	if((NULL == id) || (NULL == cmm) || (NULL == verus_chips_cli)) {
+		return NULL;
+	}
+	
 	id_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(id_info, "name", dealer_ID);
+	cJSON_AddStringToObject(id_info, "name", id);
 	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
 	cJSON_AddItemToObject(id_info, "contentmultimap", cmm);
 
@@ -128,4 +132,33 @@ cJSON* update_cmm(char *id, cJSON *cmm)
 		bet_dealloc_args(argc,&argv);
 		
 	return argjson;
+}
+
+cJSON* get_cmm(char *id, int16_t full_id)
+{
+	int argc;
+	char **argv = NULL;
+	char params[128] = { 0 };
+	cJSON *id_info = NULL, *argjson = NULL;
+	
+	if(NULL == id){
+		return NULL;
+	}
+
+	strncpy(params,id,strlen(params));
+	if(0 == full_id){
+		strcat(params, ".poker.chips10sec@");	
+	}
+	argc = 3;
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, verus_chips_cli, "getidentity", params);
+
+	argjson = cJSON_CreateObject();
+	make_command(argc, argv, &argjson);
+
+	end:
+		bet_dealloc_args(argc, &argv);
+
+		return argjson;
+	
 }
