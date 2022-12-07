@@ -320,9 +320,16 @@ void bet_parse_verus_dealer()
 		byte_arr = calloc(1, sizeof(t));
 		struct_to_byte_arr(&t, sizeof(t), byte_arr);
 
+		for(int32_t i=0; i<sizeof(t), i++){
+			dlg_info("%x",byte_arr[i]);
+		}
+
+		char hexstr[100];
+		init_hexbytes_noT(hexstr,byte_arr,sizeof(t));
+
+	
 		cJSON *dealer_info = cJSON_CreateObject();
-		cJSON *str = cJSON_CreateString((char*)byte_arr);
-		cJSON_AddItemToObject(dealer_info, BYTEVECTOR_VDXF_ID, str);
+		cJSON_AddStringToObject(dealer_info, BYTEVECTOR_VDXF_ID, hexstr);
 		dlg_info("\ndealer_info::%s\n", cJSON_Print(dealer_info));
 		
 		#if 0		
