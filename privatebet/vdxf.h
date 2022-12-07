@@ -21,6 +21,8 @@ key is represented as chips.vrsc::poker.cashiers.
 
 //chips.vrsc::poker.cashiers --> iJ3WZocnjG9ufv7GKUA4LijQno5gTMb7tP
 #define CASHIERS_KEY "iH6n3SW9hpou8LW4nEAzJZXDb4AG4tLnQN"
+//chips.vrsc::poker.dealers --> iSgEvATbNF3ZR6Kyj6nn8zVp3adPQxPnFJ
+#define DEALERS_KEY "iSgEvATbNF3ZR6Kyj6nn8zVp3adPQxPnFJ"
 
 /*
 Datatypes used
