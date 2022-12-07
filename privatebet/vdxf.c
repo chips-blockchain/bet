@@ -165,3 +165,53 @@ cJSON* get_cmm(char *id, int16_t full_id)
 		return cmm;
 	
 }
+
+cJSON* get_cmm_key_data(char *id, int16_t full_id, char *key)
+{
+	cJSON *cmm = NULL, *cmm_key_data = NULL;
+
+	cmm = get_cmm(id,full_id);
+
+	if(NULL == cmm) {
+		return NULL;
+	}
+	cmm_key_data = cJSON_CreateObject();
+	cmm_key_data = cJSON_GetObjectItem(cmm,"key");
+	
+	return cmm_key_data;
+	
+}
+
+struct table* get_dealers_config_table(char *dealer_id)
+{
+	cJSON *dealer_cmm_data = NULL;
+	char *str = NULL;
+	uint8_t *table_data = NULL;	
+	struct table *t = NULL;
+	
+	if(NULL == dealer_id)
+		goto end;
+	
+	dealer_cmm_data = cJSON_CreateObject();
+	dealer_cmm_data = get_cmm_key_data(dealer_id, 0 , DEALERS_KEY);
+
+	str = jstr(cJSON_GetArrayItem(dealer_cmm_data,0),STRING_VDXF_ID);
+	if(NULL == str)
+		goto end;
+	
+	table_data = calloc(1, (strlen(str)+1)/2);
+	decode_hex(table_data,(strlen(str)+1)/2,str);
+	
+	t= calloc(1, sizeof(struct table));			
+	t = (struct table *)table_data;
+
+	
+	dlg_info("max players::%d\n", t->max_players);
+	dlg_info("bb::%f\n", uint32_s_to_float(t->big_blind));
+	dlg_info("min_stake::%f\n", uint32_s_to_float(t->min_stake));
+	dlg_info("max_stake::%f\n", uint32_s_to_float(t->max_stake));
+	
+	end:
+		return t;
+
+}

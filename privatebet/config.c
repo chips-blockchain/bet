@@ -320,10 +320,6 @@ void bet_parse_verus_dealer()
 		byte_arr = calloc(1, sizeof(t));
 		struct_to_byte_arr(&t, sizeof(t), byte_arr);
 
-		for(int32_t i=0; i<sizeof(t); i++){
-			dlg_info("%x",byte_arr[i]);
-		}
-
 		char hexstr[100];
 		init_hexbytes_noT(hexstr,byte_arr,sizeof(t));
 
@@ -331,36 +327,14 @@ void bet_parse_verus_dealer()
 		cJSON *dealer_cmm = NULL, *dealer_cmm_key = NULL;
 		dealer_cmm = cJSON_CreateObject();
 		dealer_cmm_key = cJSON_CreateObject();
-		cJSON_AddStringToObject(dealer_cmm, BYTEVECTOR_VDXF_ID, hexstr);
+		cJSON_AddStringToObject(dealer_cmm, STRING_VDXF_ID, hexstr);
 		cJSON_AddItemToObject(dealer_cmm_key, DEALERS_KEY, dealer_cmm);
 		dlg_info("\ndealer_info::%s\n", cJSON_Print(dealer_cmm_key));
 
 		cJSON *out = NULL;
 		out = update_cmm(dealer_ID, dealer_cmm_key);
-		dlg_info("\n%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(out));
-		
-		cJSON *temp_json = get_cmm(dealer_ID, 0);
-		dlg_info("%s::%d::temp_json::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp_json));		
-		dlg_info("%s::%d::dealer_config::%s\n", __FUNCTION__, __LINE__, jstr(cJSON_GetArrayItem(cJSON_GetObjectItem(temp_json,DEALERS_KEY),0), BYTEVECTOR_VDXF_ID));
-				
-		char *str = jstr(cJSON_GetArrayItem(cJSON_GetObjectItem(temp_json,DEALERS_KEY),0), BYTEVECTOR_VDXF_ID);
-		dlg_info("Length of str ::%lu\n", strlen(str));
-		uint8_t *rev = NULL;
-		rev =calloc(1, (strlen(str)+1)/2);
-		decode_hex(rev,(strlen(str)+1)/2,str);
 
+		struct table *t = get_dealers_config_table(dealer_ID);	
 		
-		for(int32_t i=0; i<sizeof(t); i++){
-			dlg_info("%x::%x\n",byte_arr[i], rev[i]);
-		}
-		
-#if 1		
-		struct table *temp;
-		temp = (struct table *)rev;
-		dlg_info("max players::%d\n", temp->max_players);
-		dlg_info("bb::%f\n", uint32_s_to_float(temp->big_blind));
-		dlg_info("min_stake::%f\n", uint32_s_to_float(temp->min_stake));
-		dlg_info("max_stake::%f\n", uint32_s_to_float(temp->max_stake));
-		#endif
 	}
 }
