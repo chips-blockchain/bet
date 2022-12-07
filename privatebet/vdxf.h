@@ -63,3 +63,5 @@ cJSON *update_dealers_config_table(char *dealer_id, struct table t);
 struct table *get_dealers_config_table(char *dealer_id);
 cJSON* get_cashiers_info(char *cashier_id);
 cJSON* update_cashiers(char *ip);
+cJSON* get_dealers();
+cJSON* find_table();
