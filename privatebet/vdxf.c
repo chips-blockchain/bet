@@ -225,11 +225,6 @@ struct table *get_dealers_config_table(char *dealer_id)
 	t = calloc(1, sizeof(struct table));
 	t = (struct table *)table_data;
 
-	dlg_info("max players::%d\n", t->max_players);
-	dlg_info("bb::%f\n", uint32_s_to_float(t->big_blind));
-	dlg_info("min_stake::%f\n", uint32_s_to_float(t->min_stake));
-	dlg_info("max_stake::%f\n", uint32_s_to_float(t->max_stake));
-
 end:
 	return t;
 }
