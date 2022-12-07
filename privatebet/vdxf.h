@@ -65,3 +65,4 @@ cJSON* get_cashiers_info(char *cashier_id);
 cJSON* update_cashiers(char *ip);
 cJSON* get_dealers();
 cJSON* find_table();
+bool is_id_exists(char *id, int16_t full_id);

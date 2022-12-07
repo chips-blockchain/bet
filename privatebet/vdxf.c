@@ -203,3 +203,27 @@ cJSON* find_table()
 	dlg_info("max_stake :: %f", uint32_s_to_float(t->max_stake));
 	dlg_info("table_id :: %s", t->table_id);
 }
+
+bool is_id_exists(char *id, int16_t full_id)
+{
+	int argc = 3, retval = 1;
+	char **argv = NULL;
+	char params[128] ={0};
+	cJSON *argjson = NULL;
+	
+	strncpy(params, id, strlen(id));
+	if (0 == full_id) {
+		strcat(params, ".poker.chips10sec@");
+	}
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, verus_chips_cli, "getidentity", id);
+
+	argjson = cJSON_CreateObject();
+	make_command(argc, argv, &argjson);
+
+	if(jint(argjson,"error code") != 0) {
+		dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
+		retval = !retval;
+	}
+	return retval;
+}
