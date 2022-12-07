@@ -179,7 +179,7 @@ cJSON* get_cmm_key_data(char *id, int16_t full_id, char *key)
 		return NULL;
 	}
 	cmm_key_data = cJSON_CreateObject();
-	cmm_key_data = cJSON_GetObjectItem(cmm,"key");
+	cmm_key_data = cJSON_GetObjectItem(cmm, key);
 	
 	return cmm_key_data;
 	
