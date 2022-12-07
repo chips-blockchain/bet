@@ -185,11 +185,20 @@ cJSON* find_table()
 {
 	cJSON *dealer_ids = NULL;
 	char *preferred = "sg777_d";
+	struct table *t;
 
 	dealer_ids = cJSON_CreateArray();
 	dealer_ids = get_dealers();
 
 	for(int32_t i=0; i<cJSON_GetArraySize(dealer_ids); i++){
-		dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(cJSON_GetArrayItem(dealer_ids,i)));
+		if(0 == strcmp(preferred, cJSON_Print(cJSON_GetArrayItem(dealer_ids,i)))){
+			dlg_info("%s::%d::The preferred dealer id exists::%s\n", __FUNCTION__, __LINE__,cJSON_Print(cJSON_GetArrayItem(dealer_ids,i)));
+			break;
+		}
 	}
+	t = get_dealers_config_table(preferred);
+	dlg_info("max_players :: %d", t->max_players);
+	dlg_info("big_blind :: %f", uint32_s_to_float(t->big_blind));
+	dlg_info("min_stake :: %f", uint32_s_to_float(t->min_stake));
+	dlg_info("max_stake :: %f", uint32_s_to_float(t->max_stake));
 }
