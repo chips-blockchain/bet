@@ -59,3 +59,4 @@ cJSON *get_cashiers();
 cJSON *get_onchain_cashiers();
 void update_cashiers();
 cJSON* update_cmm(char *id, cJSON *cmm);
+cJSON* get_cmm(char *id, int16_t full_id);

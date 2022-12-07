@@ -337,9 +337,12 @@ void bet_parse_verus_dealer()
 
 		cJSON *out = NULL;
 		out = update_cmm(dealer_ID, dealer_cmm_key);
-
 		dlg_info("\n%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(out));
 		
+		cJSON *temp = get_cmm(dealer_ID, 0);
+
+		dlg_info("%s::%d::temp::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
+				
 		#if 0		
 		struct table *temp;
 
