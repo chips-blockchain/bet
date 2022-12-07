@@ -1,5 +1,6 @@
 #include "vdxf.h"
 #include "commands.h"
+#include "misc.h"
 
 cJSON *get_cashiers()
 {
