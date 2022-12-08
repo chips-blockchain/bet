@@ -182,7 +182,7 @@ cJSON *get_dealers()
 	return dealer_ids;
 }
 
-struct table* find_table()
+struct table *find_table()
 {
 	cJSON *dealer_ids = NULL;
 	char *preferred = "sg777_d";
@@ -234,35 +234,33 @@ void verus_sendcurrency_data(cJSON *data)
 {
 	int32_t hex_data_len, argc, minconf = 1;
 	double fee = 0.0001;
-	char *hex_data = NULL, **argv = NULL, params[4][arg_size] = {0};
+	char *hex_data = NULL, **argv = NULL, params[4][arg_size] = { 0 };
 	cJSON *currency_detail = NULL, *argjson = NULL;
-	
+
 	hex_data_len = 2 * strlen(cJSON_Print(data)) + 1;
 	hex_data = calloc(hex_data_len, sizeof(char));
 	str_to_hexstr(cJSON_Print(data), hex_data);
 
 	currency_detail = cJSON_CreateObject();
-	cJSON_AddStringToObject(currency_detail,"currency","chips10sec");
-	cJSON_AddNumberToObject(currency_detail, "amount",0.0001);
-	cJSON_AddStringToObject(currency_detail,"address","cashiers.poker.chips10sec@");
+	cJSON_AddStringToObject(currency_detail, "currency", "chips10sec");
+	cJSON_AddNumberToObject(currency_detail, "amount", 0.0001);
+	cJSON_AddStringToObject(currency_detail, "address", "cashiers.poker.chips10sec@");
 
 	cJSON *temp = cJSON_CreateArray();
-	cJSON_AddItemToArray(temp,currency_detail);
-	
+	cJSON_AddItemToArray(temp, currency_detail);
+
 	dlg_info("%s::%d::%s", __FUNCTION__, __LINE__, cJSON_Print(temp));
 
 	snprintf(params[0], arg_size, "\'*\'");
-	snprintf(params[1], arg_size, "\'%s\'",cJSON_Print(temp));
-	snprintf(params[2], arg_size, "%d %f false",minconf, fee);
-	snprintf(params[3], arg_size, "\'%s\'",hex_data);
+	snprintf(params[1], arg_size, "\'%s\'", cJSON_Print(temp));
+	snprintf(params[2], arg_size, "%d %f false", minconf, fee);
+	snprintf(params[3], arg_size, "\'%s\'", hex_data);
 
 	argc = 6;
-	bet_alloc_args(argc,&argv);
+	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, verus_chips_cli, "sendcurrency", params[0], params[1], params[2], params[3]);
 
 	argjson = cJSON_CreateObject();
-	make_command(argc,argv,&argjson);
+	make_command(argc, argv, &argjson);
 	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
-	
-	
 }
