@@ -203,11 +203,18 @@ struct table {
 	char table_id[16];
 };
 
+
+struct bet_payin_tx_data {
+	char table_id[16];
+	char primaryaddress[128];
+};
+
 extern int32_t player_pos[CARDS777_MAXPLAYERS];
 
 extern struct seat_info player_seats_info[CARDS777_MAXPLAYERS];
 extern struct privatebet_info *bet_player;
 extern struct privatebet_vars *player_vars;
+extern struct bet_payin_tx_data payin_tx_data;
 
 extern int32_t heartbeat_on;
 
