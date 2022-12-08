@@ -222,7 +222,7 @@ bool is_id_exists(char *id, int16_t full_id)
 	argjson = cJSON_CreateObject();
 	make_command(argc, argv, &argjson);
 
-	cJSON *out = cJSON_GetObjectItem(argjson,"identity");
+	out = cJSON_GetObjectItem(argjson,"identity");
 	dlg_info("%s::%d::id::%s\n", __FUNCTION__, __LINE__, cJSON_Print(out));
 	if(out) {
 		dlg_info("%s::%d::id_exists\n", __FUNCTION__, __LINE__);
