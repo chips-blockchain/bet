@@ -125,10 +125,10 @@ end:
 	return t;
 }
 
-cJSON* get_cashiers_info(char *cashier_id)
+cJSON *get_cashiers_info(char *cashier_id)
 {
 	cJSON *cashier_cmm_data = NULL;
-	
+
 	cashier_cmm_data = cJSON_CreateObject();
 	cashier_cmm_data = get_cmm_key_data(cashier_id, 0, CASHIERS_KEY);
 
@@ -136,7 +136,7 @@ end:
 	return cashier_cmm_data;
 }
 
-cJSON* update_cashiers(char *ip)
+cJSON *update_cashiers(char *ip)
 {
 	cJSON *cashiers_info = NULL, *out = NULL, *ip_obj = NULL, *cashier_ips = NULL;
 
@@ -160,28 +160,28 @@ cJSON* update_cashiers(char *ip)
 
 	cJSON_AddItemToArray(cashier_ips, ip_obj);
 	cJSON_AddItemToObject(cashiers_info, CASHIERS_KEY, cashier_ips);
-	out = update_cmm("cashiers",cashiers_info);
-	
+	out = update_cmm("cashiers", cashiers_info);
+
 end:
 	return out;
 }
 
-cJSON* get_dealers()
+cJSON *get_dealers()
 {
 	cJSON *dealers_cmm = NULL, *dealer_ids = NULL;
-
 
 	dealers_cmm = cJSON_CreateObject();
 	dealers_cmm = get_cmm_key_data("dealers", 0, DEALERS_KEY);
 
 	dealer_ids = cJSON_CreateArray();
-	for(int32_t i=0; i<cJSON_GetArraySize(dealers_cmm); i++){
-		cJSON_AddItemToArray(dealer_ids, cJSON_GetObjectItem(cJSON_GetArrayItem(dealers_cmm,i),STRING_VDXF_ID));
+	for (int32_t i = 0; i < cJSON_GetArraySize(dealers_cmm); i++) {
+		cJSON_AddItemToArray(dealer_ids,
+				     cJSON_GetObjectItem(cJSON_GetArrayItem(dealers_cmm, i), STRING_VDXF_ID));
 	}
 	return dealer_ids;
 }
 
-cJSON* find_table()
+cJSON *find_table()
 {
 	cJSON *dealer_ids = NULL;
 	char *preferred = "sg777_d";
@@ -190,9 +190,10 @@ cJSON* find_table()
 	dealer_ids = cJSON_CreateArray();
 	dealer_ids = get_dealers();
 
-	for(int32_t i=0; i<cJSON_GetArraySize(dealer_ids); i++){
-		if(0 == strcmp(preferred, cJSON_Print(cJSON_GetArrayItem(dealer_ids,i)))){
-			dlg_info("%s::%d::The preferred dealer id exists::%s\n", __FUNCTION__, __LINE__,cJSON_Print(cJSON_GetArrayItem(dealer_ids,i)));
+	for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ids); i++) {
+		if (0 == strcmp(preferred, cJSON_Print(cJSON_GetArrayItem(dealer_ids, i)))) {
+			dlg_info("%s::%d::The preferred dealer id exists::%s\n", __FUNCTION__, __LINE__,
+				 cJSON_Print(cJSON_GetArrayItem(dealer_ids, i)));
 			break;
 		}
 	}
@@ -208,10 +209,9 @@ bool is_id_exists(char *id, int16_t full_id)
 {
 	int argc = 3, retval = 1;
 	char **argv = NULL;
-	char params[128] ={0};
+	char params[128] = { 0 };
 	cJSON *argjson = NULL, *out = NULL;
-	
-	
+
 	strncpy(params, id, strlen(id));
 	if (0 == full_id) {
 		strcat(params, ".poker.chips10sec@");
@@ -222,8 +222,8 @@ bool is_id_exists(char *id, int16_t full_id)
 	argjson = cJSON_CreateObject();
 	make_command(argc, argv, &argjson);
 
-	if(NULL == cJSON_GetObjectItem(argjson,"identity")){
+	if (NULL == cJSON_GetObjectItem(argjson, "identity")) {
 		retval = !retval;
-	}	
+	}
 	return retval;
 }
