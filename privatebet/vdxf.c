@@ -93,7 +93,6 @@ end:
 	return argjson;
 }
 
-
 cJSON *get_cmm_key_data(char *id, int16_t full_id, char *key)
 {
 	cJSON *cmm = NULL, *cmm_key_data = NULL;
@@ -296,17 +295,17 @@ void verus_sendcurrency_data(cJSON *data)
 	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 }
 
-cJSON* getaddressutxos(char verus_addresses[][100], int n)
+cJSON *getaddressutxos(char verus_addresses[][100], int n)
 {
 	int argc;
-	char **argv = NULL, params[arg_size] = {0};
+	char **argv = NULL, params[arg_size] = { 0 };
 	cJSON *addresses = NULL, *addr_info = NULL, *argjson = NULL;
-	
+
 	addresses = cJSON_CreateArray();
 	addr_info = cJSON_CreateObject();
 
-	for(int32_t i=0; i<n; i++) {
-		cJSON_AddItemToArray(addresses,cJSON_CreateString(verus_addresses[i]));
+	for (int32_t i = 0; i < n; i++) {
+		cJSON_AddItemToArray(addresses, cJSON_CreateString(verus_addresses[i]));
 	}
 
 	cJSON_AddItemToObject(addr_info, "addresses", addresses);
@@ -317,38 +316,39 @@ cJSON* getaddressutxos(char verus_addresses[][100], int n)
 	argv = bet_copy_args(argc, verus_chips_cli, "getaddressutxos", params);
 
 	argjson = cJSON_CreateObject();
-	make_command(argc,argv,&argjson);
+	make_command(argc, argv, &argjson);
 
-	end:
-		bet_dealloc_args(argc,&argv);
-		return argjson;
-	
+end:
+	bet_dealloc_args(argc, &argv);
+	return argjson;
 }
 
 void test_loop()
 {
-	char verus_addr[1][100] = {"cashiers.poker.chips10sec@"};
-	int32_t blockcount = 149267,temp;
-	
-	while(1) {
-		sleep(5);
-		temp =blockcount;
-		cJSON *argjson = cJSON_CreateObject();
-		argjson = getaddressutxos(verus_addr,1);
+	char verus_addr[1][100] = { "cashiers.poker.chips10sec@" };
+	int32_t blockcount = 149267, temp;
 
-		for(int32_t i=0; i<cJSON_GetArraySize(argjson); i++){
-			if(jint(cJSON_GetArrayItem(argjson,i),"height")>blockcount){
-				if(temp<jint(cJSON_GetArrayItem(argjson,i),"height")){
-					temp = jint(cJSON_GetArrayItem(argjson,i),"height");
+	while (1) {
+		sleep(5);
+		temp = blockcount;
+		cJSON *argjson = cJSON_CreateObject();
+		argjson = getaddressutxos(verus_addr, 1);
+
+		for (int32_t i = 0; i < cJSON_GetArraySize(argjson); i++) {
+			if (jint(cJSON_GetArrayItem(argjson, i), "height") > blockcount) {
+				if (temp < jint(cJSON_GetArrayItem(argjson, i), "height")) {
+					temp = jint(cJSON_GetArrayItem(argjson, i), "height");
 				}
-				dlg_info("%s::%d::tx_to_process::%s\n", __FUNCTION__, __LINE__, cJSON_Print(cJSON_GetArrayItem(argjson,i)));
-				cJSON *temp = chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson,i), "txid"));
+				dlg_info("%s::%d::tx_to_process::%s\n", __FUNCTION__, __LINE__,
+					 cJSON_Print(cJSON_GetArrayItem(argjson, i)));
+				cJSON *temp =
+					chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 				dlg_info("%s::%d::tx_data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
 				cJSON *primaryaddress = cJSON_CreateArray();
-				cJSON_AddItemToArray(primaryaddress,cJSON_CreateString(jstr(temp,"primaryaddress")));
-				cJSON *temp2 = update_primaryaddress(jstr(temp,"table_id"),primaryaddress);
+				cJSON_AddItemToArray(primaryaddress, cJSON_CreateString(jstr(temp, "primaryaddress")));
+				cJSON *temp2 = update_primaryaddress(jstr(temp, "table_id"), primaryaddress);
 				dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp2));
-			}			
+			}
 		}
 		blockcount = temp;
 	}
