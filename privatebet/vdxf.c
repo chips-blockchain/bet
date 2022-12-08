@@ -265,7 +265,7 @@ void verus_sendcurrency_data(cJSON *data)
 	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 }
 
-cJSON* getaddressutxos(char[][] verus_addresses, int n)
+cJSON* getaddressutxos(char verus_addresses[][], int n)
 {
 	int argc;
 	char **argv = NULL, params[arg_size] = {0};
@@ -296,7 +296,7 @@ cJSON* getaddressutxos(char[][] verus_addresses, int n)
 
 void test_loop()
 {
-	char[1][] verus_addr = {"cashiers.poker.chips10sec@"};
+	char[1][] verus_addr = ["cashiers.poker.chips10sec@"];
 	int32_t blockcount = 149267;
 	
 	while(1) {
