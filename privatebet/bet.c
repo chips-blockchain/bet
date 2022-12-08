@@ -390,9 +390,9 @@ static void cashier_init()
 static void playing_nodes_init()
 {
 	common_init();
-	#if 0
+#if 0
 	bet_check_cashier_nodes();
-	#endif
+#endif
 	bet_parse_player_config_ini_file();
 }
 
@@ -406,10 +406,10 @@ static void dealer_node_init()
 		memset(dcv_hosted_gui_url, 0x00, sizeof(dcv_hosted_gui_url));
 
 	bet_set_table_id();
-	#if 0
+#if 0
 	bet_compute_m_of_n_msig_addr();
 	bet_game_multisigaddress();
-	#endif
+#endif
 	bet_init_player_seats_info();
 }
 
@@ -565,7 +565,7 @@ static void bet_start(int argc, char **argv)
 		}
 	} else if ((strcmp(argv[1], "dcv") == 0) || (strcmp(argv[1], "dealer") == 0)) {
 		if (argc == 3) {
-			#if 0
+#if 0
 			strcpy(dealer_ip, argv[2]);
 			common_init();
 			bet_parse_dealer_config_ini_file();
@@ -574,7 +574,7 @@ static void bet_start(int argc, char **argv)
 			dealer_node_init();
 			find_bvv();
 			bet_dcv_thrd(dealer_ip);
-			#endif
+#endif
 			bet_parse_verus_dealer();
 			dealer_node_init();
 			bet_dcv_thrd(dealer_ip);
