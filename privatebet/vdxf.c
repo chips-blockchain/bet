@@ -63,6 +63,37 @@ end:
 	return cmm;
 }
 
+cJSON *update_primaryaddress(char *id, cJSON *primaryaddress)
+{
+	cJSON *id_info = NULL, *argjson = NULL;
+	int argc;
+	char **argv = NULL;
+	char params[arg_size] = { 0 };
+
+	if ((NULL == id) || (NULL == primaryaddress) || (NULL == verus_chips_cli)) {
+		return NULL;
+	}
+
+	id_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(id_info, "name", id);
+	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
+	cJSON_AddItemToObject(id_info, "primaryaddress", primaryaddress);
+
+	argc = 3;
+	bet_alloc_args(argc, &argv);
+	snprintf(params, arg_size, "\'%s\'", cJSON_Print(id_info));
+	argv = bet_copy_args(argc, verus_chips_cli, "updateidentity", params);
+
+	argjson = cJSON_CreateObject();
+	make_command(argc, argv, &argjson);
+
+end:
+	bet_dealloc_args(argc, &argv);
+	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
+	return argjson;
+}
+
+
 cJSON *get_cmm_key_data(char *id, int16_t full_id, char *key)
 {
 	cJSON *cmm = NULL, *cmm_key_data = NULL;
@@ -313,6 +344,10 @@ void test_loop()
 				dlg_info("%s::%d::tx_to_process::%s\n", __FUNCTION__, __LINE__, cJSON_Print(cJSON_GetArrayItem(argjson,i)));
 				cJSON *temp = chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson,i), "txid"));
 				dlg_info("%s::%d::tx_data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
+				cJSON *primaryaddress = cJSON_CreateArray();
+				cJSON_AddItemToArray(primaryaddress,jstr(temp,"primaryaddress"));
+				cJSON *temp2 = update_primaryaddress(jstr(temp,table_id),primaryaddress);
+				dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp2));
 			}			
 		}
 		blockcount = temp;
