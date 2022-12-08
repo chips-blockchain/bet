@@ -602,6 +602,9 @@ static void bet_start(int argc, char **argv)
 		}
 	} else if (strcmp(argv[1], "player") == 0) {
 		playing_nodes_init();
+		bet_parse_verus_player();
+		find_table();
+		#if 0
 		char *dealer_ip = NULL;
 		dlg_info("Finding the dealer");
 		do {
@@ -616,6 +619,7 @@ static void bet_start(int argc, char **argv)
 			dlg_info("The dealer is :: %s", dealer_ip);
 			bet_player_thrd(dealer_ip);
 		}
+		#endif
 	} else if (strcmp(argv[1], "scan") == 0) {
 		bet_sqlite3_init();
 		scan_games_info();
