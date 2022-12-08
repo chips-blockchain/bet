@@ -264,3 +264,52 @@ void verus_sendcurrency_data(cJSON *data)
 	make_command(argc, argv, &argjson);
 	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 }
+
+cJSON* getaddressutxos(char[][] verus_addresses, int n)
+{
+	int argc;
+	char **argv = NULL, params[arg_size] = {0};
+	cJSON *addresses = NULL, *addr_info = NULL, *argjson = NULL;
+	
+	addresses = cJSON_CreateArray();
+	addr_info = cJSON_CreateObject();
+
+	for(int32_t i=0; i<n; i++) {
+		cJSON_AddItemToArray(addresses,cJSON_CreateString(verus_addresses[i]));
+	}
+
+	cJSON_AddItemToObject(addr_info, "addresses", addresses);
+	snprintf(params, arg_size, "\'%s\'", cJSON_Print(addr_info));
+
+	argc = 3;
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, verus_chips_cli, "getaddressutxos", params);
+
+	argjson = cJSON_CreateObject();
+	make_command(argc,argv,&argjson);
+
+	end:
+		bet_dealloc_args(argc,&argv);
+		return argjson;
+	
+}
+
+void test_loop()
+{
+	char[1][] verus_addr = {"cashiers.poker.chips10sec@"};
+	int32_t blockcount = 149267;
+	
+	while(1) {
+		sleep(5);
+		cJSON *argjson = cJSON_CreateObject();
+		argjson = getaddressutxos(verus_addr,1);
+
+		for(int32_t i=0; i<cJSON_GetArraySize(argjson); i++){
+			if(jint(cJSON_GetArrayItem(argjson,i),"height")>blockcount){
+				dlg_info("%s::%d::tx_to_process::%s\n", __FUNCTION__, __LINE__, cJSON_Print(cJSON_GetArrayItem(argjson,i)));
+			}
+			
+		}
+		
+	}
+}
