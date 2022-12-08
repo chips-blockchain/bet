@@ -209,7 +209,8 @@ bool is_id_exists(char *id, int16_t full_id)
 	int argc = 3, retval = 1;
 	char **argv = NULL;
 	char params[128] ={0};
-	cJSON *argjson = NULL;
+	cJSON *argjson = NULL, *out = NULL;
+	
 	
 	strncpy(params, id, strlen(id));
 	if (0 == full_id) {
@@ -221,6 +222,14 @@ bool is_id_exists(char *id, int16_t full_id)
 	argjson = cJSON_CreateObject();
 	make_command(argc, argv, &argjson);
 
+	cJSON *out = cJSON_GetObjectItem(argjson,"identity");
+	dlg_info("%s::%d::id::%s\n", __FUNCTION__, __LINE__, cJSON_Print(out));
+	if(out) {
+		dlg_info("%s::%d::id_exists\n", __FUNCTION__, __LINE__);
+	} else {
+			dlg_info("%s::%d::id_doesn't_exists\n", __FUNCTION__, __LINE__);
+	}
+	
 	dlg_info("%s::%d::%d\n", __FUNCTION__, __LINE__, jint(argjson,"error code"));
 	if(jint(argjson,"error code") != 0) {
 		dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
