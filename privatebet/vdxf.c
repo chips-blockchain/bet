@@ -65,7 +65,7 @@ end:
 
 cJSON *append_primaryaddresses(char *id, cJSON *primaryaddress)
 {
-	cJSON *id_info = NULL, *argjson = NULL, *pa = NULL, *pa_recv = NULL;
+	cJSON *id_info = NULL, *argjson = NULL, *pa = NULL, *final_pa = NULL;
 	int argc;
 	char **argv = NULL;
 	char params[arg_size] = { 0 };
@@ -73,20 +73,22 @@ cJSON *append_primaryaddresses(char *id, cJSON *primaryaddress)
 	if ((NULL == id) || (NULL == primaryaddress) || (NULL == verus_chips_cli)) {
 		return NULL;
 	}
-	pa = cJSON_CreateArray();
 	pa =get_primaryaddresses(id,0);
-	pa_recv = cJSON_GetObjectItem(primaryaddress,"primaryaddress");
-	for(int32_t i=0; i<cJSON_GetArraySize(pa_recv); i++){
-			dlg_info("%s::%d::%s\n",__FUNCTION__,__LINE__,cJSON_Print(cJSON_GetArrayItem(pa_recv,i)));
-	}
+	final_pa = cJSON_CreateArray();
+	
 	for(int32_t i=0; i<cJSON_GetArraySize(pa); i++){
-		cJSON_AddItemToArray(pa_recv,cJSON_GetArrayItem(pa,i));
+		cJSON_AddItemToArray(final_pa,cJSON_GetArrayItem(pa,i));
 	}
+	for(int32_t i=0; i<cJSON_GetArraySize(primaryaddress); i++){
+		cJSON_AddItemToArray(final_pa,cJSON_GetArrayItem(primaryaddress,i));
+	}
+
+	dlg_info("%s::%d::final_pa::%s\n", __FUNCTION__,__LINE__,cJSON_Print(final_pa));	
 		
 	id_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(id_info, "name", id);
 	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
-	cJSON_AddItemToObject(id_info, "primaryaddresses", pa_recv);
+	cJSON_AddItemToObject(id_info, "primaryaddresses", final_pa);
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
@@ -138,7 +140,7 @@ cJSON *get_primaryaddresses(char *id, int16_t full_id)
 	int argc;
 	char **argv = NULL;
 	char params[128] = { 0 };
-	cJSON *argjson = NULL, *pa = NULL;
+	cJSON *argjson = NULL, *pa = NULL, *id_obj = NULL;
 
 	if (NULL == id) {
 		return NULL;
@@ -155,8 +157,9 @@ cJSON *get_primaryaddresses(char *id, int16_t full_id)
 	argjson = cJSON_CreateObject();
 	make_command(argc, argv, &argjson);
 
-	pa = cJSON_CreateObject();
-	pa = cJSON_GetObjectItem(cJSON_GetObjectItem(argjson, "identity"), "primaryaddresses");
+
+	id_obj = cJSON_GetObjectItem(argjson, "identity");
+	pa = cJSON_GetObjectItem(id_obj, "primaryaddresses");
 
 end:
 	bet_dealloc_args(argc, &argv);
@@ -414,11 +417,9 @@ void test_loop()
 				cJSON *temp =
 					chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 				dlg_info("%s::%d::tx_data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
-				cJSON *primaryaddress_obj = cJSON_CreateObject();
 				cJSON *primaryaddress = cJSON_CreateArray();
 				cJSON_AddItemToArray(primaryaddress, cJSON_CreateString(jstr(temp, "primaryaddress")));
-				cJSON_AddItemToObject(primaryaddress_obj,"primaryaddress",primaryaddress);
-				cJSON *temp2 = append_primaryaddresses(jstr(temp, "table_id"), primaryaddress_obj);
+				cJSON *temp2 = append_primaryaddresses(jstr(temp, "table_id"), primaryaddress);
 				dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp2));
 			}
 		}
