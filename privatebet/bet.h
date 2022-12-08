@@ -203,7 +203,6 @@ struct table {
 	char table_id[16];
 };
 
-
 struct bet_payin_tx_data {
 	char table_id[16];
 	char primaryaddress[128];

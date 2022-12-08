@@ -1686,7 +1686,8 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 				   (strcmp(argv[1], "sendrawtransaction") == 0) ||
 				   (strcmp(argv[1], "getnewaddress") == 0) ||
 				   (strcmp(argv[1], "getrawtransaction") == 0) ||
-				   (strcmp(argv[1], "getblockhash") == 0) || (strcmp(argv[1], "updateidentity") == 0) || (strcmp(argv[1], "sendcurrency") == 0)) {
+				   (strcmp(argv[1], "getblockhash") == 0) || (strcmp(argv[1], "updateidentity") == 0) ||
+				   (strcmp(argv[1], "sendcurrency") == 0)) {
 				if (data[strlen(data) - 1] == '\n')
 					data[strlen(data) - 1] = '\0';
 

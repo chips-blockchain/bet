@@ -63,6 +63,6 @@ struct table *get_dealers_config_table(char *dealer_id);
 cJSON *get_cashiers_info(char *cashier_id);
 cJSON *update_cashiers(char *ip);
 cJSON *get_dealers();
-struct table* find_table();
+struct table *find_table();
 bool is_id_exists(char *id, int16_t full_id);
 void verus_sendcurrency_data(cJSON *data);

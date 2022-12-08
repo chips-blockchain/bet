@@ -14,7 +14,6 @@ char *blockchain_config_ini_file = "./config/blockchain_config.ini";
 char *verus_dealer_config = "./config/verus_dealer.ini";
 char *verus_player_config = "./config/verus_player.ini";
 
-
 char dealer_ID[256];
 struct bet_payin_tx_data payin_tx_data;
 char wallet_addr[64];
@@ -321,15 +320,14 @@ void bet_parse_verus_player()
 		dlg_error("error in parsing %s", verus_player_config);
 	} else {
 		if (NULL != iniparser_getstring(ini, "verus:table_id", NULL)) {
-			
-			strncpy(payin_tx_data.table_id, iniparser_getstring(ini, "verus:table_id", NULL), sizeof(payin_tx_data.table_id));
+			strncpy(payin_tx_data.table_id, iniparser_getstring(ini, "verus:table_id", NULL),
+				sizeof(payin_tx_data.table_id));
 		}
 		if (NULL != iniparser_getstring(ini, "verus:primaryaddress", NULL)) {
-			
-			strncpy(payin_tx_data.primaryaddress, iniparser_getstring(ini, "verus:primaryaddress", NULL), sizeof(payin_tx_data.primaryaddress));
+			strncpy(payin_tx_data.primaryaddress, iniparser_getstring(ini, "verus:primaryaddress", NULL),
+				sizeof(payin_tx_data.primaryaddress));
 		}
 		if (NULL != iniparser_getstring(ini, "verus:wallet_addr", NULL)) {
-			
 			strncpy(wallet_addr, iniparser_getstring(ini, "verus:wallet_addr", NULL), sizeof(wallet_addr));
 		}
 	}
