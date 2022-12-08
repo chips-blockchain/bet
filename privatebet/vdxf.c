@@ -408,33 +408,39 @@ end:
 	return argjson;
 }
 
-void test_loop()
+void test_loop(char *blockhash)
 {
+        dlg_info("%s called!",__FUNCTION__);
 	char verus_addr[1][100] = { "cashiers.poker.chips10sec@" };
-	int32_t blockcount = 149267, temp;
-
-	while (1) {
-		sleep(5);
-		temp = blockcount;
-		cJSON *argjson = cJSON_CreateObject();
-		argjson = getaddressutxos(verus_addr, 1);
-
-		for (int32_t i = 0; i < cJSON_GetArraySize(argjson); i++) {
-			if (jint(cJSON_GetArrayItem(argjson, i), "height") > blockcount) {
-				if (temp < jint(cJSON_GetArrayItem(argjson, i), "height")) {
-					temp = jint(cJSON_GetArrayItem(argjson, i), "height");
-				}
-				dlg_info("%s::%d::tx_to_process::%s\n", __FUNCTION__, __LINE__,
-					 cJSON_Print(cJSON_GetArrayItem(argjson, i)));
-				cJSON *temp =
-					chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
-				dlg_info("%s::%d::tx_data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
-				cJSON *primaryaddress = cJSON_CreateArray();
-				cJSON_AddItemToArray(primaryaddress, cJSON_CreateString(jstr(temp, "primaryaddress")));
-				cJSON *temp2 = append_primaryaddresses(jstr(temp, "table_id"), primaryaddress);
-				dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp2));
-			}
+	int32_t blockcount = 0;
+	cJSON *blockjson = cJSON_CreateObject();
+	blockjson = chips_get_block_from_block_hash(blockhash);
+        dlg_info("%s::%d::block_data::%s",__FUNCTION__,__LINE__,cJSON_Print(blockjson));
+   	for (int32_t i = 0; i < cJSON_GetArraySize(blockjson); i++) {
+		blockcount = jint(cJSON_GetArrayItem(blockjson,i), "height");
+		if (blockcount > 0) {
+			dlg_info("%s: received blockhash in test_loop, found at height = %d",__FUNCTION__,blockcount);
+			break;
 		}
-		blockcount = temp;
+	}
+
+	cJSON *argjson = cJSON_CreateObject();
+	argjson = getaddressutxos(verus_addr, 1);
+
+	for (int32_t i = 0; i < cJSON_GetArraySize(argjson); i++) {
+		if (jint(cJSON_GetArrayItem(argjson, i), "height") != 0) {
+		//if (jint(cJSON_GetArrayItem(argjson, i), "height") == blockcount) {
+			//TODO: condition above seems error-prone with 10s blocks...
+			// also, it won't update on init, since prior update may well be in past
+			dlg_info("%s::%d::tx_to_process::%s\n", __FUNCTION__, __LINE__,
+				 cJSON_Print(cJSON_GetArrayItem(argjson, i)));
+			cJSON *temp =
+				chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
+			dlg_info("%s::%d::tx_data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
+			cJSON *primaryaddress = cJSON_CreateArray();
+			cJSON_AddItemToArray(primaryaddress, cJSON_CreateString(jstr(temp, "primaryaddress")));
+			cJSON *temp2 = append_primaryaddresses(jstr(temp, "table_id"), primaryaddress);
+			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp2));
+		}
 	}
 }

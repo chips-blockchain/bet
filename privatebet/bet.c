@@ -489,11 +489,19 @@ static void bet_start(int argc, char **argv){
 			bet_handle_game(argc, argv);
 			break;
 		cases("h")
-		cases("-h") 
+		cases("-h")
 		cases("help")
 		cases("--help")
 			if (argc == 3) {
 				bet_help_command(argv[2]);
+			} else {
+				bet_command_info();
+			}
+			break;
+		cases("newblock")
+			if (argc == 3) {
+				dlg_info("Received new block notification for block with hash: %s...",argv[2]);
+                                test_loop(argv[2]);
 			} else {
 				bet_command_info();
 			}
@@ -509,7 +517,7 @@ static void bet_start(int argc, char **argv){
 					sleep(5);
 				}
 			} while (dealer_ip == NULL);
-			
+
 			if (dealer_ip) {
 				dlg_info("The dealer is :: %s", dealer_ip);
 				bet_player_thrd(dealer_ip);
@@ -600,6 +608,13 @@ static void bet_start(int argc, char **argv)
 		} else {
 			bet_command_info();
 		}
+	} else if (strcmp(argv[1], "newblock") == 0) {
+		if (argc == 3) {
+			dlg_info("Received new block notification for block with hash: %s...",argv[2]);
+                        test_loop(argv[2]);
+		} else {
+			bet_command_info();
+		}
 	} else if (strcmp(argv[1], "player") == 0) {
 		playing_nodes_init();
 		bet_parse_verus_player();
@@ -668,7 +683,7 @@ static void bet_start(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-	test_loop();
+	//test_loop();
 	bet_start(argc, argv);
 	return OK;
 }
