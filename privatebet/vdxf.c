@@ -243,7 +243,7 @@ void verus_sendcurrency_data(cJSON *data)
 
 	currency_detail = cJSON_CreateObject();
 	cJSON_AddStringToObject(currency_detail,"currency","chips10sec");
-	cJSON_AddNumberToObject(currency_detail,"amount",cJSON_CreateNumber(0.0001));
+	//cJSON_AddNumberToObject(currency_detail,"amount",cJSON_CreateNumber(0.0001));
 	cJSON_AddStringToObject(currency_detail,"address","cashiers.poker.chips10sec@");
 
 	cJSON *temp = cJSON_CreateArray();
