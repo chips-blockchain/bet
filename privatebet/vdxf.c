@@ -63,7 +63,43 @@ end:
 	return cmm;
 }
 
-cJSON *update_primaryaddress(char *id, cJSON *primaryaddress)
+cJSON *append_primaryaddresses(char *id, cJSON *primaryaddress)
+{
+	cJSON *id_info = NULL, *argjson = NULL, *pa = NULL;
+	int argc;
+	char **argv = NULL;
+	char params[arg_size] = { 0 };
+
+	if ((NULL == id) || (NULL == primaryaddress) || (NULL == verus_chips_cli)) {
+		return NULL;
+	}
+	pa = cJSON_CreateArray();
+	pa =get_primaryaddresses(id,0);
+	for(int32_t i=0; i<cJSON_GetArraySize(primaryaddress); i++){
+		cJSON_AddItemToArray(pa,cJSON_GetArrayItem(primaryaddress,i));
+	}
+		
+	id_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(id_info, "name", id);
+	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
+	cJSON_AddItemToObject(id_info, "primaryaddresses", pa);
+
+	argc = 3;
+	bet_alloc_args(argc, &argv);
+	snprintf(params, arg_size, "\'%s\'", cJSON_Print(id_info));
+	argv = bet_copy_args(argc, verus_chips_cli, "updateidentity", params);
+
+	argjson = cJSON_CreateObject();
+	make_command(argc, argv, &argjson);
+
+end:
+	bet_dealloc_args(argc, &argv);
+	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
+	return argjson;
+}
+
+
+cJSON *update_primaryaddresses(char *id, cJSON *primaryaddress)
 {
 	cJSON *id_info = NULL, *argjson = NULL;
 	int argc;
@@ -91,6 +127,36 @@ end:
 	bet_dealloc_args(argc, &argv);
 	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 	return argjson;
+}
+
+cJSON *get_primaryaddresses(char *id, int16_t full_id)
+{
+	int argc;
+	char **argv = NULL;
+	char params[128] = { 0 };
+	cJSON *argjson = NULL, *pa = NULL;
+
+	if (NULL == id) {
+		return NULL;
+	}
+
+	strncpy(params, id, strlen(id));
+	if (0 == full_id) {
+		strcat(params, ".poker.chips10sec@");
+	}
+	argc = 3;
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, verus_chips_cli, "getidentity", params);
+
+	argjson = cJSON_CreateObject();
+	make_command(argc, argv, &argjson);
+
+	pa = cJSON_CreateObject();
+	pa = cJSON_GetObjectItem(cJSON_GetObjectItem(argjson, "identity"), "primaryaddresses");
+
+end:
+	bet_dealloc_args(argc, &argv);
+	return pa;
 }
 
 cJSON *get_cmm_key_data(char *id, int16_t full_id, char *key)
@@ -346,7 +412,7 @@ void test_loop()
 				dlg_info("%s::%d::tx_data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
 				cJSON *primaryaddress = cJSON_CreateArray();
 				cJSON_AddItemToArray(primaryaddress, cJSON_CreateString(jstr(temp, "primaryaddress")));
-				cJSON *temp2 = update_primaryaddress(jstr(temp, "table_id"), primaryaddress);
+				cJSON *temp2 = append_primaryaddresses(jstr(temp, "table_id"), primaryaddress);
 				dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp2));
 			}
 		}
