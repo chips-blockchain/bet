@@ -67,6 +67,5 @@ cJSON *get_dealers();
 struct table *find_table();
 bool is_id_exists(char *id, int16_t full_id);
 void verus_sendcurrency_data(cJSON *data);
-cJSON* getaddressutxos(char verus_addresses[][100], int n);
+cJSON *getaddressutxos(char verus_addresses[][100], int n);
 void test_loop();
-

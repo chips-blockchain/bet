@@ -668,6 +668,7 @@ static void bet_start(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
+	test_loop();
 	bet_start(argc, argv);
 	return OK;
 }
