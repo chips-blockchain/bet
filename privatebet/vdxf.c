@@ -296,7 +296,7 @@ cJSON* getaddressutxos(char verus_addresses[][100], int n)
 
 void test_loop()
 {
-	char verus_addr[1][100] = ["cashiers.poker.chips10sec@"];
+	char verus_addr[1][100] = {"cashiers.poker.chips10sec@"};
 	int32_t blockcount = 149267;
 	
 	while(1) {
