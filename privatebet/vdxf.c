@@ -77,7 +77,7 @@ cJSON *update_primaryaddress(char *id, cJSON *primaryaddress)
 	id_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(id_info, "name", id);
 	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
-	cJSON_AddItemToObject(id_info, "primaryaddress", primaryaddress);
+	cJSON_AddItemToObject(id_info, "primaryaddresses", primaryaddress);
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
