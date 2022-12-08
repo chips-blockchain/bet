@@ -297,19 +297,22 @@ cJSON* getaddressutxos(char verus_addresses[][100], int n)
 void test_loop()
 {
 	char verus_addr[1][100] = {"cashiers.poker.chips10sec@"};
-	int32_t blockcount = 149267;
+	int32_t blockcount = 149267,temp;
 	
 	while(1) {
 		sleep(5);
+		temp =blockcount;
 		cJSON *argjson = cJSON_CreateObject();
 		argjson = getaddressutxos(verus_addr,1);
 
 		for(int32_t i=0; i<cJSON_GetArraySize(argjson); i++){
 			if(jint(cJSON_GetArrayItem(argjson,i),"height")>blockcount){
+				if(temp<jint(cJSON_GetArrayItem(argjson,i),"height")){
+					temp = jint(cJSON_GetArrayItem(argjson,i),"height");
+				}
 				dlg_info("%s::%d::tx_to_process::%s\n", __FUNCTION__, __LINE__, cJSON_Print(cJSON_GetArrayItem(argjson,i)));
-			}
-			
+			}			
 		}
-		
+		blockcount = temp;
 	}
 }
