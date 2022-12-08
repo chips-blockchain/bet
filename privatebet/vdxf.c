@@ -75,14 +75,14 @@ cJSON *append_primaryaddresses(char *id, cJSON *primaryaddress)
 	}
 	pa = cJSON_CreateArray();
 	pa =get_primaryaddresses(id,0);
-	for(int32_t i=0; i<cJSON_GetArraySize(primaryaddress); i++){
-		cJSON_AddItemToArray(pa,cJSON_GetArrayItem(primaryaddress,i));
+	for(int32_t i=0; i<cJSON_GetArraySize(pa); i++){
+		cJSON_AddItemToArray(primaryaddress,cJSON_GetArrayItem(pa,i));
 	}
 		
 	id_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(id_info, "name", id);
 	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
-	cJSON_AddItemToObject(id_info, "primaryaddresses", pa);
+	cJSON_AddItemToObject(id_info, "primaryaddresses", primaryaddress);
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
