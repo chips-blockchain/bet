@@ -346,7 +346,7 @@ void test_loop()
 				dlg_info("%s::%d::tx_data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
 				cJSON *primaryaddress = cJSON_CreateArray();
 				cJSON_AddItemToArray(primaryaddress,cJSON_CreateString(jstr(temp,"primaryaddress")));
-				cJSON *temp2 = update_primaryaddress(jstr(temp,table_id),primaryaddress);
+				cJSON *temp2 = update_primaryaddress(jstr(temp,"table_id"),primaryaddress);
 				dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp2));
 			}			
 		}
