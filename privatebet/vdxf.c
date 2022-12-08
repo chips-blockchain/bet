@@ -1,3 +1,4 @@
+#include "bet.h"
 #include "vdxf.h"
 #include "commands.h"
 #include "misc.h"
