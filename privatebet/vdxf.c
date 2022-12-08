@@ -249,7 +249,7 @@ void verus_sendcurrency_data(cJSON *data)
 	cJSON_AddItemToArray(temp,currency_detail);
 	
 	dlg_info("%s::%d::%s", __FUNCTION__, __LINE__, cJSON_Print(temp));
-	snprintf(params,"\'%s\'",cJSON_Print(temp));
+	snprintf(params, arg_size, "\'%s\'",cJSON_Print(temp));
 
 	argc = 8;
 	bet_alloc_args(argc,&argv);
