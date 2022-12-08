@@ -345,7 +345,7 @@ void test_loop()
 				cJSON *temp = chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson,i), "txid"));
 				dlg_info("%s::%d::tx_data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
 				cJSON *primaryaddress = cJSON_CreateArray();
-				cJSON_AddItemToArray(primaryaddress,jstr(temp,"primaryaddress"));
+				cJSON_AddItemToArray(primaryaddress,cJSON_CreateString(jstr(temp,"primaryaddress")));
 				cJSON *temp2 = update_primaryaddress(jstr(temp,table_id),primaryaddress);
 				dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp2));
 			}			
