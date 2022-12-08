@@ -252,9 +252,9 @@ void verus_sendcurrency_data(cJSON *data)
 	dlg_info("%s::%d::%s", __FUNCTION__, __LINE__, cJSON_Print(temp));
 	snprintf(params, arg_size, "\'%s\'",cJSON_Print(temp));
 
-	argc = 8;
+	argc = 7;
 	bet_alloc_args(argc,&argv);
-	argv = bet_copy_args(argc, "verus", verus_chips_cli, "*", params, minconf, fee, "false", hex_data);
+	argv = bet_copy_args(argc, verus_chips_cli, "*", params, minconf, fee, "false", hex_data);
 
 	argjson = cJSON_CreateObject();
 	make_command(argc,argv,&argjson);
