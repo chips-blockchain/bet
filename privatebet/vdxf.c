@@ -311,6 +311,8 @@ void test_loop()
 					temp = jint(cJSON_GetArrayItem(argjson,i),"height");
 				}
 				dlg_info("%s::%d::tx_to_process::%s\n", __FUNCTION__, __LINE__, cJSON_Print(cJSON_GetArrayItem(argjson,i)));
+				cJSON *temp = chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson,i), "txid"));
+				dlg_info("%s::%d::tx_data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
 			}			
 		}
 		blockcount = temp;
