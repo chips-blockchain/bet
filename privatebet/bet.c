@@ -604,6 +604,13 @@ static void bet_start(int argc, char **argv)
 		playing_nodes_init();
 		bet_parse_verus_player();
 		find_table();
+		cJSON * data = NULL;
+		data = cJSON_CreateObject();
+		cJSON_AddStringToObject(data, "table_id", payin_tx_data.table_id);
+		cJSON_AddStringToObject(data, "primaryaddress", payin_tx_data.primaryaddress);
+		verus_sendcurrency_data(data);
+		bet_player_thrd(dealer_ip);
+		
 		#if 0
 		char *dealer_ip = NULL;
 		dlg_info("Finding the dealer");

@@ -17,6 +17,7 @@ char *verus_player_config = "./config/verus_player.ini";
 
 char dealer_ID[256];
 struct bet_payin_tx_data payin_tx_data;
+char wallet_addr[64];
 
 cJSON *bet_read_json_file(char *file_name)
 {
@@ -326,6 +327,10 @@ void bet_parse_verus_player()
 		if (NULL != iniparser_getstring(ini, "verus:primaryaddress", NULL)) {
 			
 			strncpy(payin_tx_data.primaryaddress, iniparser_getstring(ini, "verus:primaryaddress", NULL), sizeof(payin_tx_data.primaryaddress));
+		}
+		if (NULL != iniparser_getstring(ini, "verus:wallet_addr", NULL)) {
+			
+			strncpy(wallet_addr, iniparser_getstring(ini, "verus:wallet_addr", NULL), sizeof(wallet_addr));
 		}
 	}
 }

@@ -228,3 +228,36 @@ bool is_id_exists(char *id, int16_t full_id)
 	}
 	return retval;
 }
+
+void verus_sendcurrency_data(cJSON *data)
+{
+	int32_t hex_data_len, argc, minconf = 1;
+	double fee = 0.0001;
+	char *hex_data = NULL, **argv = NULL, params[arg_size] = {0};
+	cJSON *currency_detail = NULL, *argjson = NULL;
+	
+	hex_data_len = 2 * strlen(cJSON_Print(data)) + 1;
+	hex_data = calloc(hex_data_len, sizeof(char));
+	str_to_hexstr(cJSON_Print(data), hex_data);
+
+	currency_detail = cJSON_CreateObject();
+	cJSON_AddStringToObject(currency_detail,"currency","chips10sec");
+	cJSON_AddNumberToObject(currency_detail,"amount",cJSON_CreateNumber("0.0001"));
+	cJSON_AddStringToObject(currency_detail,"address","cashiers.poker.chips10sec@");
+
+	cJSON *temp = cJSON_CreateArray();
+	cJSON_AddItemToArray(temp,currency_detail);
+	
+	dlg_info("%s::%d::%s", __FUNCTION__, __LINE__, cJSON_Print(temp));
+	snprintf(params,"\'%s\'",cJSON_Print(temp));
+
+	argc = 8;
+	bet_alloc_args(argc,&argv);
+	argv = bet_copy_args(argc, "verus", verus_chips_cli, "*", params, minconf, fee, "false", hex_data);
+
+	argjson = cJSON_CreateObject();
+	make_command(argc,argv,&argjson);
+	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
+	
+	
+}
