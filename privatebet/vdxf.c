@@ -75,12 +75,11 @@ cJSON *append_primaryaddresses(char *id, cJSON *primaryaddress)
 	}
 	pa =get_primaryaddresses(id,0);
 	final_pa = cJSON_CreateArray();
-	
 	for(int32_t i=0; i<cJSON_GetArraySize(pa); i++){		
-		cJSON_AddItemToArray(final_pa,jstri(pa,i));
+		cJSON_AddItemToArray(final_pa,cJSON_CreateString(jstri(pa,i)));
 	}
 	for(int32_t i=0; i<cJSON_GetArraySize(primaryaddress); i++){
-		cJSON_AddItemToArray(final_pa,jstri(primaryaddress,i));
+		cJSON_AddItemToArray(final_pa,cJSON_CreateString(jstri(primaryaddress,i)));
 	}
 
 	dlg_info("%s::%d::final_pa::%s\n", __FUNCTION__,__LINE__,cJSON_Print(final_pa));	
