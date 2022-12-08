@@ -236,6 +236,7 @@ void verus_sendcurrency_data(cJSON *data)
 	double fee = 0.0001;
 	char *hex_data = NULL, **argv = NULL, params[arg_size] = {0};
 	cJSON *currency_detail = NULL, *argjson = NULL;
+	char *some_str = "1 0.0001 false";
 	
 	hex_data_len = 2 * strlen(cJSON_Print(data)) + 1;
 	hex_data = calloc(hex_data_len, sizeof(char));
@@ -252,9 +253,9 @@ void verus_sendcurrency_data(cJSON *data)
 	dlg_info("%s::%d::%s", __FUNCTION__, __LINE__, cJSON_Print(temp));
 	snprintf(params, arg_size, "\'%s\'",cJSON_Print(temp));
 
-	argc = 7;
+	argc = 5;
 	bet_alloc_args(argc,&argv);
-	argv = bet_copy_args(argc, verus_chips_cli, "*", params, minconf, fee, "false", hex_data);
+	argv = bet_copy_args(argc, verus_chips_cli, "*", params, some_str, hex_data);
 
 	argjson = cJSON_CreateObject();
 	make_command(argc,argv,&argjson);
