@@ -274,4 +274,6 @@ Once the information is stored from the config file to the underlying structure,
   "vout": 0
 }
 ```
-Since we storing only data into ID, the data may not look readable but anyways that's not our aim at this point. Possibly we can have our own explorer where in which we integrate our data decoders but that's for later.
+Since we storing only data into ID, the data may not look readable but anyways that's not our aim at this point. Possibly we can have our own explorer where in which we integrate our data decoders but that's for later. 
+
+I'll break this page here, will discuss more details about tables and how players joins the tables [here](./player_joining.md).
