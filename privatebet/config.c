@@ -10,7 +10,7 @@ char *dealer_config_ini_file = "./config/dealer_config.ini";
 char *player_config_ini_file = "./config/player_config.ini";
 char *cashier_config_ini_file = "./config/cashier_config.ini";
 char *bets_config_ini_file = "./config/bets.ini";
-char *blockchain_config_ini_file = "$HOME/bet/privatebet/config/blockchain_config.ini";
+char *blockchain_config_ini_file = "./config/blockchain_config.ini";
 char *verus_dealer_config = "./config/verus_dealer.ini";
 char *verus_player_config = "./config/verus_player.ini";
 
