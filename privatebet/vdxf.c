@@ -454,5 +454,5 @@ void test_loop(char *blockhash)
 		}
 	}
 	end:
-		//Do nothing for now.
+		dlg_info("at end, do nothing atm");
 }
