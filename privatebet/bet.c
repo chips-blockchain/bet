@@ -610,8 +610,8 @@ static void bet_start(int argc, char **argv)
 		}
 	} else if (strcmp(argv[1], "newblock") == 0) {
 		if (argc == 3) {
-			dlg_info("Received new block notification for block with hash: %s...",argv[2]);
-                        test_loop(argv[2]);
+			dlg_info("Received new block notification for block with hash: %s...", argv[2]);
+			test_loop(argv[2]);
 		} else {
 			bet_command_info();
 		}

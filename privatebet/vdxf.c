@@ -73,30 +73,30 @@ cJSON *append_primaryaddresses(char *id, cJSON *primaryaddress)
 	if ((NULL == id) || (NULL == primaryaddress) || (NULL == verus_chips_cli)) {
 		return NULL;
 	}
-	pa =get_primaryaddresses(id,0);
+	pa = get_primaryaddresses(id, 0);
 	final_pa = cJSON_CreateArray();
-	for(int32_t i=0; i<cJSON_GetArraySize(pa); i++){		
-		cJSON_AddItemToArray(final_pa,cJSON_CreateString(jstri(pa,i)));
+	for (int32_t i = 0; i < cJSON_GetArraySize(pa); i++) {
+		cJSON_AddItemToArray(final_pa, cJSON_CreateString(jstri(pa, i)));
 	}
 	int g_flag = 1;
-	for(int32_t i=0; i<cJSON_GetArraySize(primaryaddress); i++){
+	for (int32_t i = 0; i < cJSON_GetArraySize(primaryaddress); i++) {
 		int flag = 1;
-		for(int32_t j=0; j<cJSON_GetArraySize(pa); j++){		
-			if(strcmp(jstri(primaryaddress,i),jstri(pa,j)) == 0){
+		for (int32_t j = 0; j < cJSON_GetArraySize(pa); j++) {
+			if (strcmp(jstri(primaryaddress, i), jstri(pa, j)) == 0) {
 				flag = 0;
 				break;
 			}
 		}
-		if(flag) {
+		if (flag) {
 			g_flag = 0;
-			cJSON_AddItemToArray(final_pa,cJSON_CreateString(jstri(primaryaddress,i)));
-		}	
+			cJSON_AddItemToArray(final_pa, cJSON_CreateString(jstri(primaryaddress, i)));
+		}
 	}
-	if(g_flag)
+	if (g_flag)
 		return NULL;
-	
-	dlg_info("%s::%d::final_pa::%s\n", __FUNCTION__,__LINE__,cJSON_Print(final_pa));	
-		
+
+	dlg_info("%s::%d::final_pa::%s\n", __FUNCTION__, __LINE__, cJSON_Print(final_pa));
+
 	id_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(id_info, "name", id);
 	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
@@ -115,7 +115,6 @@ end:
 	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 	return argjson;
 }
-
 
 cJSON *update_primaryaddresses(char *id, cJSON *primaryaddress)
 {
@@ -168,7 +167,6 @@ cJSON *get_primaryaddresses(char *id, int16_t full_id)
 
 	argjson = cJSON_CreateObject();
 	make_command(argc, argv, &argjson);
-
 
 	id_obj = cJSON_GetObjectItem(argjson, "identity");
 	pa = cJSON_GetObjectItem(id_obj, "primaryaddresses");
@@ -410,12 +408,12 @@ end:
 
 void test_loop(char *blockhash)
 {
-    dlg_info("%s called!",__FUNCTION__);
+	dlg_info("%s called!", __FUNCTION__);
 	char verus_addr[1][100] = { "cashiers.poker.chips10sec@" };
 	int32_t blockcount = 0;
 	cJSON *blockjson = cJSON_CreateObject();
 	blockjson = chips_get_block_from_block_hash(blockhash);
-	#if 0
+#if 0
     dlg_info("%s::%d::block_data::%s",__FUNCTION__,__LINE__,cJSON_Print(blockjson));
    	for (int32_t i = 0; i < cJSON_GetArraySize(blockjson); i++) {
 		blockcount = jint(cJSON_GetArrayItem(blockjson,i), "height");
@@ -424,28 +422,27 @@ void test_loop(char *blockhash)
 			break;
 		}
 	}
-	#endif
-	if(blockjson == NULL)
-		goto end;
-	
-	blockcount = jint(blockjson, "height");
-	if(blockcount <= 0)
+#endif
+	if (blockjson == NULL)
 		goto end;
 
-	dlg_info("%s: received blockhash in test_loop, found at height = %d",__FUNCTION__,blockcount);
+	blockcount = jint(blockjson, "height");
+	if (blockcount <= 0)
+		goto end;
+
+	dlg_info("%s: received blockhash in test_loop, found at height = %d", __FUNCTION__, blockcount);
 	cJSON *argjson = cJSON_CreateObject();
 	argjson = getaddressutxos(verus_addr, 1);
 
 	for (int32_t i = 0; i < cJSON_GetArraySize(argjson); i++) {
 		if (jint(cJSON_GetArrayItem(argjson, i), "height") == blockcount) {
-		//if (jint(cJSON_GetArrayItem(argjson, i), "height") == blockcount) {
+			//if (jint(cJSON_GetArrayItem(argjson, i), "height") == blockcount) {
 			//TODO: condition above seems error-prone with 10s blocks...
 			// also, it won't update on init, since prior update may well be in past
-			
+
 			dlg_info("%s::%d::tx_to_process::%s\n", __FUNCTION__, __LINE__,
 				 cJSON_Print(cJSON_GetArrayItem(argjson, i)));
-			cJSON *temp =
-				chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
+			cJSON *temp = chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 			dlg_info("%s::%d::tx_data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
 			cJSON *primaryaddress = cJSON_CreateArray();
 			cJSON_AddItemToArray(primaryaddress, cJSON_CreateString(jstr(temp, "primaryaddress")));
@@ -453,6 +450,6 @@ void test_loop(char *blockhash)
 			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp2));
 		}
 	}
-	end:
-		dlg_info("at end, do nothing atm");
+end:
+	dlg_info("at end, do nothing atm");
 }
