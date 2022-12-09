@@ -428,7 +428,7 @@ void test_loop(char *blockhash)
 	if(blockjson == NULL)
 		goto end;
 	
-	blockcount = jint(cJSON_GetArrayItem(blockjson,i), "height");
+	blockcount = jint(blockjson, "height");
 	if(blockcount <= 0)
 		goto end;
 
