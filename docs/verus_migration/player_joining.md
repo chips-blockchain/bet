@@ -3,7 +3,7 @@ Players Joining
 
 This is an important phase in game setup. In the ID creation document we discussed about how cashiers and dealers are registered by the RA(Registration Authority). Here we see more details about the tables and how player finds and joins the tables. 
 
-### table
+### Table
 
 The initial thought was dealers create the tables whenever the dealer want to host the table. Some drawbacks we saw with that approach are:
 1. The control should be given to the dealer to create the ID's, and we definetely don't any spam of ID's incase if the intentional behavior of any entity changed to malicious.
