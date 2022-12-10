@@ -676,6 +676,15 @@ static void bet_start(int argc, char **argv)
 		if (argc == 4) {
 			do_split_tx_amount(atof(argv[2]), atoi(argv[3]));
 		}
+	} else if (strcmp(argv[1], "extract_cmm") == 0) {
+		if (argc == 3) {
+			cJSON *cmm = NULL;
+			cmm = get_cmm(argv[2], 0);
+			if(cmm)
+				decode_dealers_cmm(cmm);
+		} else {
+			dlg_info("\nUsage:: ./bet extract_cmm id\n ex: ./bet extract_cmm sg777_d\n");
+		}
 	} else {
 		bet_command_info();
 	}
