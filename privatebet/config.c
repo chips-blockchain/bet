@@ -205,6 +205,7 @@ static int32_t ini_sec_exists(dictionary *ini, char *sec_name)
 	}
 	return retval;
 }
+
 int32_t bet_parse_bets()
 {
 	int32_t retval = OK, bet_no = 0;

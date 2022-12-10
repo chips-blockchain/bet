@@ -2,6 +2,7 @@
 #include "vdxf.h"
 #include "commands.h"
 #include "misc.h"
+#include "err.h"
 
 struct table player_t;
 
