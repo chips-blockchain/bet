@@ -202,6 +202,7 @@ struct table {
 	struct float_num big_blind;
 	char table_id[16];
 };
+extern struct table player_t;
 
 struct bet_payin_tx_data {
 	char table_id[16];
