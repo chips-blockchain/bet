@@ -323,11 +323,11 @@ struct table *find_table()
 	dlg_info("table_id :: %s", t->table_id);
 	#endif
 	
-	dlg_info("max_players :: %d", player_t->max_players);
-	dlg_info("big_blind :: %f", uint32_s_to_float(player_t->big_blind));
-	dlg_info("min_stake :: %f", uint32_s_to_float(player_t->min_stake));
-	dlg_info("max_stake :: %f", uint32_s_to_float(player_t->max_stake));
-	dlg_info("table_id :: %s", t->table_id);
+	dlg_info("max_players :: %d", player_t.max_players);
+	dlg_info("big_blind :: %f", uint32_s_to_float(player_t.big_blind));
+	dlg_info("min_stake :: %f", uint32_s_to_float(player_t.min_stake));
+	dlg_info("max_stake :: %f", uint32_s_to_float(player_t.max_stake));
+	dlg_info("table_id :: %s", player_t.table_id);
 
 	return t;
 }
