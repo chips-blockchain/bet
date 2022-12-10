@@ -300,20 +300,21 @@ cJSON *get_dealers()
 	return dealer_ids;
 }
 
-bool is_dealer_exists(char *dealer_id){
+bool is_dealer_exists(char *dealer_id)
+{
 	cJSON *dealer_ids = NULL;
 	bool dealer_exists = false;
 
-	if((dealer_id == NULL)||(strlen(dealer_id) == 0)) {
+	if ((dealer_id == NULL) || (strlen(dealer_id) == 0)) {
 		return dealer_exists;
 	}
 
 	dealer_ids = cJSON_CreateArray();
-	dealer_ids = get_dealers(); 
-	if(dealer_ids == NULL) {
+	dealer_ids = get_dealers();
+	if (dealer_ids == NULL) {
 		return dealer_exists;
 	}
-	
+
 	for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ids); i++) {
 		if (0 == strcmp(dealer_id, cJSON_Print(cJSON_GetArrayItem(dealer_ids, i)))) {
 			dlg_info("%s::%d::The preferred dealer id exists::%s\n", __FUNCTION__, __LINE__,
@@ -321,7 +322,7 @@ bool is_dealer_exists(char *dealer_id){
 			dealer_exists = true;
 			break;
 		}
-	}	
+	}
 	return dealer_exists;
 }
 
@@ -332,26 +333,27 @@ int32_t find_table()
 	int32_t retval = OK;
 
 	//If the user didn't configured any dealer_id, then take the first dealer id available.
-	if(!is_dealer_exists(player_config.dealer_id)) {		
+	if (!is_dealer_exists(player_config.dealer_id)) {
 		dealer_ids = cJSON_CreateArray();
-		dealer_ids = get_dealers(); 
-		if(dealer_ids == NULL){
+		dealer_ids = get_dealers();
+		if (dealer_ids == NULL) {
 			dlg_info("No dealers found");
 			retval = ERR_NO_DEALERS_FOUND;
 			goto end;
 		}
 		for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ids); i++) {
 			//TODO: Need to check if the dealer tables are empty or not.
-			strncpy(player_config.dealer_id, cJSON_Print(cJSON_GetArrayItem(dealer_ids, i)),sizeof(player_config.dealer_id));
+			strncpy(player_config.dealer_id, cJSON_Print(cJSON_GetArrayItem(dealer_ids, i)),
+				sizeof(player_config.dealer_id));
 			break;
 		}
 	}
 	t = get_dealers_config_table(player_config.dealer_id, player_config.table_id);
-	if(t == NULL) {
+	if (t == NULL) {
 		retval = ERR_NO_TABLES_FOUND;
 		goto end;
 	}
-	memcpy((void*)&player_t, (void*)t, sizeof(player_t));
+	memcpy((void *)&player_t, (void *)t, sizeof(player_t));
 
 	dlg_info("max_players :: %d", player_t.max_players);
 	dlg_info("big_blind :: %f", uint32_s_to_float(player_t.big_blind));
@@ -359,7 +361,7 @@ int32_t find_table()
 	dlg_info("max_stake :: %f", uint32_s_to_float(player_t.max_stake));
 	dlg_info("table_id :: %s", player_t.table_id);
 
-	end:		
+end:
 	return retval;
 }
 
