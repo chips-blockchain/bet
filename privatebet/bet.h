@@ -195,6 +195,14 @@ struct float_num {
 	uint32_t sign : 1;
 };
 
+struct verus_player_config {
+	char dealer_id[16];
+	char table_id[16];
+	char primaryaddress[128];
+	char wallet_addr[64];
+};
+extern struct verus_player_config player_config;
+
 struct table {
 	uint8_t max_players;
 	struct float_num min_stake;
@@ -203,13 +211,6 @@ struct table {
 	char table_id[16];
 };
 extern struct table player_t;
-
-struct bet_payin_tx_data {
-	char table_id[16];
-	char primaryaddress[128];
-};
-extern struct bet_payin_tx_data payin_tx_data;
-extern char wallet_addr[64];
 
 extern int32_t player_pos[CARDS777_MAXPLAYERS];
 
