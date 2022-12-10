@@ -1124,6 +1124,7 @@ void chips_validate_tx(char *tx)
 	}
 }
 
+#if 0
 int32_t chips_extract_data(char *tx, char **rand_str)
 {
 	cJSON *raw_tx = NULL, *decoded_raw_tx = NULL, *vout = NULL, *script_pubkey = NULL;
@@ -1150,6 +1151,39 @@ int32_t chips_extract_data(char *tx, char **rand_str)
 			break;
 		}
 	}
+	return retval;
+}
+#endif
+
+int32_t chips_extract_data(char *tx, char **rand_str)
+{
+	cJSON *raw_tx = NULL, *decoded_raw_tx = NULL, *vout = NULL, *script_pubkey = NULL;
+	int32_t retval = OK;
+
+	raw_tx = chips_get_raw_tx(tx);
+	if (raw_tx == NULL) {
+		dlg_error("%s", bet_err_str(ERR_CHIPS_GET_RAW_TX));
+		return ERR_CHIPS_GET_RAW_TX;
+	}
+	decoded_raw_tx = chips_decode_raw_tx(raw_tx);
+	if (decoded_raw_tx == NULL) {
+		dlg_error("%s", bet_err_str(ERR_CHIPS_DECODE_TX));
+		return ERR_CHIPS_DECODE_TX;
+	}
+	vout = cJSON_GetObjectItem(decoded_raw_tx, "vout");
+	for (int i = 0; i < cJSON_GetArraySize(vout); i++) {
+		cJSON *temp = cJSON_GetArrayItem(vout, i);
+		dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__,cJSON_Print(temp));
+		double value  = jdouble(temp,"value");
+		//script_pubkey = cJSON_GetObjectItem(temp, "scriptPubKey");
+		if (value == 0.0) {
+			char *data = jstr(script_pubkey, "asm");
+			strtok(data, " ");
+			strcpy((*rand_str), strtok(NULL, data));
+			break;
+		}
+	}
+	dlg_info("%s::%d::str::%s\n", __FUNCTION__, __LINE__, *rand_str);
 	return retval;
 }
 
