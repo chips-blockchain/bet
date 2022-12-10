@@ -679,7 +679,9 @@ static void bet_start(int argc, char **argv)
 	} else if (strcmp(argv[1], "extract_cmm") == 0) {
 		if (argc == 3) {
 			cJSON *cmm = NULL;
+			cmm = cJSON_CreateObject();
 			cmm = get_cmm(argv[2], 0);
+			dlg_info("cmm::%s\n", cJSON_Print(cmm));
 			if(cmm)
 				decode_dealers_cmm(cmm);
 		} else {
