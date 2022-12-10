@@ -31,4 +31,38 @@ With that intro about tables, here are the steps that player follows to finds ou
 
 ### What goes into table
 Off all the ID's we have table is a very complex ID and this is where all the game info goes into. The complete map of contents that goes into the table is not yet fully identified and at this moment I'll write about the initial thought process and we improve further upon it.
-All the actors like players, dealers, cashiers/bvv updates the table ID at different stages during the game. The main tasks that get accomplished here are deck shuffling, game play and final settlement. The nature of the data that flows to handle all these tasks is significantly different and data that is used to accomplish one task may not be relevant on other task. For these reasons we need to define some keys that are very specific to accomplish a specific task and some key values may be relavant across all the tasks.
+All the actors like players, dealers, cashiers/bvv updates the table ID at different stages during the game. The main tasks that get accomplished here are deck shuffling, game play and final settlement. The nature of the data that flows to handle all these tasks is significantly different and data that is used to accomplish one task may not be relevant on other task. For these reasons we need to define some keys that are very specific to accomplish a specific task and some keys which may be relavant across all the tasks.
+For incremental updates of the same key, we read the existing info from contentmultimap and we append our data publish whole data again. But those incremental updates are not efficient here and since there is going to be tens of updates among tens of keys and these updates happen concurrently, so its just not reliable to read all, append and update. For these reasons we are specifically looking for an API from verus and if that doesn't exists we need to figure it out a way where in which we can only retrive the data associated with the specific key value.
+Here is an example about what we are looking to have. Lets say I have the table ID `sg777_t` and to which lets say using five keys im storing the data as shown below, and the keys names used in this example are `table_info`, `player_info`, `cashier_id`, `player_1` and `player_2`. All these keys are updated by different entities either at the same time or at differnt times. So basically if I do getidentity I can only retrive the last updated key value, but what I'm looking is to get the last updated value of all these keys or any specific key that I pass.
+```
+verus -chain=chips10sec updateidentity '{"name": "sg777_t", "parent":"i6gViGxt7YinkJZoubKdbWBrqdRCb1Rkvs", "contentmultimap":{
+      "table_info": [
+        {
+          "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "max_players:2",
+          "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "players_occupied:2"
+        }
+      ],
+      "player_info": [
+        {
+          "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "id:1",
+          "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "id:2"
+        }
+      ],
+      "cashier_id": [
+        {
+          "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "sg777_c"
+        }
+      ],
+      "player_1": [
+        {
+          "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "some_data_of_player1"
+        }
+      ],
+      "player_2": [
+        {
+          "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "some_data_of_player2"
+        }
+      ]
+    }
+}' 
+```  
