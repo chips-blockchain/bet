@@ -216,7 +216,7 @@ cJSON *update_dealers_config_table(char *dealer_id, struct table t)
 	return out;
 }
 
-struct table *get_dealers_config_table(char *dealer_id)
+struct table *get_dealers_config_table(char *dealer_id, char *table_id)
 {
 	cJSON *dealer_cmm_data = NULL;
 	char *str = NULL;
@@ -228,6 +228,9 @@ struct table *get_dealers_config_table(char *dealer_id)
 
 	dealer_cmm_data = cJSON_CreateObject();
 	dealer_cmm_data = get_cmm_key_data(dealer_id, 0, DEALERS_KEY);
+
+	//TODO:Right now we dealing with single table, when multi table support comes,
+	// we need to make checks whether the table with the specific name exists or not.
 
 	str = jstr(cJSON_GetArrayItem(dealer_cmm_data, 0), STRING_VDXF_ID);
 
@@ -297,39 +300,67 @@ cJSON *get_dealers()
 	return dealer_ids;
 }
 
-struct table *find_table()
-{
+bool is_dealer_exists(char *dealer_id){
 	cJSON *dealer_ids = NULL;
-	char *preferred = "sg777_d";
-	struct table *t;
+	bool dealer_exists = false;
+
+	if((dealer_id == NULL)||(strlen(dealer_id) == 0)) {
+		return dealer_exists;
+	}
 
 	dealer_ids = cJSON_CreateArray();
-	dealer_ids = get_dealers();
-
+	dealer_ids = get_dealers(); 
+	if(dealer_ids == NULL) {
+		return dealer_exists;
+	}
+	
 	for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ids); i++) {
-		if (0 == strcmp(preferred, cJSON_Print(cJSON_GetArrayItem(dealer_ids, i)))) {
+		if (0 == strcmp(dealer_id, cJSON_Print(cJSON_GetArrayItem(dealer_ids, i)))) {
 			dlg_info("%s::%d::The preferred dealer id exists::%s\n", __FUNCTION__, __LINE__,
 				 cJSON_Print(cJSON_GetArrayItem(dealer_ids, i)));
+			dealer_exists = true;
+			break;
+		}
+	}	
+	return dealer_exists;
+}
+
+int32_t find_table()
+{
+	cJSON *dealer_ids = NULL;
+	struct table *t;
+	int32_t retval = OK;
+
+	//If the user didn't configured any dealer_id, then take the first dealer id available.
+	if(!is_dealer_exists(player_config.dealer_id)) {		
+		dealer_ids = cJSON_CreateArray();
+		dealer_ids = get_dealers(); 
+		if(dealer_ids == NULL){
+			dlg_info("No dealers found");
+			retval = ERR_NO_DEALERS_FOUND;
+			goto end;
+		}
+		for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ids); i++) {
+			//TODO: Need to check if the dealer tables are empty or not.
+			strncpy(player_config.dealer_id, cJSON_Print(cJSON_GetArrayItem(dealer_ids, i)),sizeof(player_config.dealer_id));
 			break;
 		}
 	}
-	t = get_dealers_config_table(preferred);
+	t = get_dealers_config_table(player_config.dealer_id, player_config.table_id);
+	if(t == NULL) {
+		retval = ERR_NO_TABLES_FOUND;
+		goto end;
+	}
 	memcpy((void*)&player_t, (void*)t, sizeof(player_t));
-	#if 0
-	dlg_info("max_players :: %d", t->max_players);
-	dlg_info("big_blind :: %f", uint32_s_to_float(t->big_blind));
-	dlg_info("min_stake :: %f", uint32_s_to_float(t->min_stake));
-	dlg_info("max_stake :: %f", uint32_s_to_float(t->max_stake));
-	dlg_info("table_id :: %s", t->table_id);
-	#endif
-	
+
 	dlg_info("max_players :: %d", player_t.max_players);
 	dlg_info("big_blind :: %f", uint32_s_to_float(player_t.big_blind));
 	dlg_info("min_stake :: %f", uint32_s_to_float(player_t.min_stake));
 	dlg_info("max_stake :: %f", uint32_s_to_float(player_t.max_stake));
 	dlg_info("table_id :: %s", player_t.table_id);
 
-	return t;
+	end:		
+	return retval;
 }
 
 bool is_id_exists(char *id, int16_t full_id)

@@ -12,11 +12,10 @@ char *cashier_config_ini_file = "./config/cashier_config.ini";
 char *bets_config_ini_file = "./config/bets.ini";
 char *blockchain_config_ini_file = "./config/blockchain_config.ini";
 char *verus_dealer_config = "./config/verus_dealer.ini";
-char *verus_player_config = "./config/verus_player.ini";
+char *verus_player_config_file = "./config/verus_player.ini";
 
 char dealer_ID[256];
-struct bet_payin_tx_data payin_tx_data;
-char wallet_addr[64];
+struct verus_player_config player_config;
 
 cJSON *bet_read_json_file(char *file_name)
 {
@@ -315,20 +314,24 @@ void bet_parse_verus_player()
 {
 	dictionary *ini = NULL;
 
-	ini = iniparser_load(verus_player_config);
+	ini = iniparser_load(verus_player_config_file);
 	if (ini == NULL) {
-		dlg_error("error in parsing %s", verus_player_config);
+		dlg_error("error in parsing %s", verus_player_config_file);
 	} else {
+		if (NULL != iniparser_getstring(ini, "verus:dealer_id", NULL)) {
+			strncpy(player_config.dealer_id, iniparser_getstring(ini, "verus:dealer_id", NULL),
+				sizeof(player_config.dealer_id));
+		}
 		if (NULL != iniparser_getstring(ini, "verus:table_id", NULL)) {
-			strncpy(payin_tx_data.table_id, iniparser_getstring(ini, "verus:table_id", NULL),
-				sizeof(payin_tx_data.table_id));
+			strncpy(player_config.table_id, iniparser_getstring(ini, "verus:table_id", NULL),
+				sizeof(player_config.table_id));
 		}
 		if (NULL != iniparser_getstring(ini, "verus:primaryaddress", NULL)) {
-			strncpy(payin_tx_data.primaryaddress, iniparser_getstring(ini, "verus:primaryaddress", NULL),
-				sizeof(payin_tx_data.primaryaddress));
+			strncpy(player_config.primaryaddress, iniparser_getstring(ini, "verus:primaryaddress", NULL),
+				sizeof(player_config.primaryaddress));
 		}
 		if (NULL != iniparser_getstring(ini, "verus:wallet_addr", NULL)) {
-			strncpy(wallet_addr, iniparser_getstring(ini, "verus:wallet_addr", NULL), sizeof(wallet_addr));
+			strncpy(player_config.wallet_addr, iniparser_getstring(ini, "verus:wallet_addr", NULL), sizeof(player_config.wallet_addr));
 		}
 	}
 }
