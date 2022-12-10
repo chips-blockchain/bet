@@ -72,3 +72,4 @@ bool is_id_exists(char *id, int16_t full_id);
 void verus_sendcurrency_data(cJSON *data);
 cJSON *getaddressutxos(char verus_addresses[][100], int n);
 void test_loop(char *block_hash);
+struct table *decode_dealers_cmm(cJSON *dealer_cmm_data);
