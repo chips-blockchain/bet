@@ -621,8 +621,8 @@ static void bet_start(int argc, char **argv)
 		find_table();
 		cJSON *data = NULL;
 		data = cJSON_CreateObject();
-		cJSON_AddStringToObject(data, "table_id", payin_tx_data.table_id);
-		cJSON_AddStringToObject(data, "primaryaddress", payin_tx_data.primaryaddress);
+		cJSON_AddStringToObject(data, "table_id", player_config.table_id);
+		cJSON_AddStringToObject(data, "primaryaddress", player_config.primaryaddress);
 		verus_sendcurrency_data(data);
 		bet_player_thrd(dealer_ip);
 
