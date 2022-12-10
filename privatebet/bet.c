@@ -680,7 +680,6 @@ static void bet_start(int argc, char **argv)
 		if (argc == 3) {
 			cJSON *cmm = NULL;
 			cmm = get_cmm_key_data(argv[2], 0, DEALERS_KEY);
-			cmm = get_cmm(argv[2], 0);
 			if(cmm) {
 				decode_dealers_cmm(cmm);
 			}	
