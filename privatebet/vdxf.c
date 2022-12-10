@@ -452,6 +452,30 @@ end:
 	return argjson;
 }
 
+struct table *decode_dealers_cmm(cJSON *dealer_cmm_data)
+{
+	char *str = NULL;
+	uint8_t *table_data = NULL;
+	struct table *t = NULL;
+
+	str = jstr(cJSON_GetArrayItem(dealer_cmm_data, 0), STRING_VDXF_ID);
+
+	table_data = calloc(1, (strlen(str) + 1) / 2);
+	decode_hex(table_data, (strlen(str) + 1) / 2, str);
+
+	t = calloc(1, sizeof(struct table));
+	t = (struct table *)table_data;
+
+	dlg_info("max_players :: %d", t->max_players);
+	dlg_info("big_blind :: %f", uint32_s_to_float(t->big_blind));
+	dlg_info("min_stake :: %f", uint32_s_to_float(t->min_stake));
+	dlg_info("max_stake :: %f", uint32_s_to_float(t->max_stake));
+	dlg_info("table_id :: %s", t->table_id);
+
+end:
+	return t;
+}
+
 void test_loop(char *blockhash)
 {
 	dlg_info("%s called!", __FUNCTION__);
@@ -498,28 +522,4 @@ void test_loop(char *blockhash)
 	}
 end:
 	dlg_info("at end, do nothing atm");
-}
-
-struct table *decode_dealers_cmm(cJSON *dealer_cmm_data)
-{
-	char *str = NULL;
-	uint8_t *table_data = NULL;
-	struct table *t = NULL;
-
-	str = jstr(cJSON_GetArrayItem(dealer_cmm_data, 0), STRING_VDXF_ID);
-
-	table_data = calloc(1, (strlen(str) + 1) / 2);
-	decode_hex(table_data, (strlen(str) + 1) / 2, str);
-
-	t = calloc(1, sizeof(struct table));
-	t = (struct table *)table_data;
-
-	dlg_info("max_players :: %d", t->max_players);
-	dlg_info("big_blind :: %f", uint32_s_to_float(t->big_blind));
-	dlg_info("min_stake :: %f", uint32_s_to_float(t->min_stake));
-	dlg_info("max_stake :: %f", uint32_s_to_float(t->max_stake));
-	dlg_info("table_id :: %s", t->table_id);
-
-end:
-	return t;
 }

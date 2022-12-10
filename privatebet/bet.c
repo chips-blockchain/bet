@@ -676,7 +676,7 @@ static void bet_start(int argc, char **argv)
 		if (argc == 4) {
 			do_split_tx_amount(atof(argv[2]), atoi(argv[3]));
 		}
-	} else if (strcmp(argv[1], "extract_cmm") == 0) {
+	} else if (strcmp(argv[1], "extract_dealers_cmm") == 0) {
 		if (argc == 3) {
 			cJSON *cmm = NULL;
 			cmm = get_cmm_key_data(argv[2], 0, DEALERS_KEY);
