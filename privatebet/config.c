@@ -331,7 +331,8 @@ void bet_parse_verus_player()
 				sizeof(player_config.primaryaddress));
 		}
 		if (NULL != iniparser_getstring(ini, "verus:wallet_addr", NULL)) {
-			strncpy(player_config.wallet_addr, iniparser_getstring(ini, "verus:wallet_addr", NULL), sizeof(player_config.wallet_addr));
+			strncpy(player_config.wallet_addr, iniparser_getstring(ini, "verus:wallet_addr", NULL),
+				sizeof(player_config.wallet_addr));
 		}
 	}
 }
