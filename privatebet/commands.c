@@ -1175,7 +1175,7 @@ int32_t chips_extract_data(char *tx, char **rand_str)
 		cJSON *temp = cJSON_GetArrayItem(vout, i);
 		dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__,cJSON_Print(temp));
 		double value  = jdouble(temp,"value");
-		//script_pubkey = cJSON_GetObjectItem(temp, "scriptPubKey");
+		script_pubkey = cJSON_GetObjectItem(temp, "scriptPubKey");
 		if (value == 0.0) {
 			char *data = jstr(script_pubkey, "asm");
 			strtok(data, " ");
