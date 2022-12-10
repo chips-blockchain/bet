@@ -592,7 +592,8 @@ static void bet_start(int argc, char **argv)
 	} else if (strcmp(argv[1], "extract_tx_data") == 0) {
 		if (argc == 3) {
 			cJSON *temp = NULL;
-			temp = chips_extract_tx_data_in_JSON(argv[2]);
+			temp = cJSON_Parse("04030e0101150499bbbd7cf6b1c16f07eb1cb8d9f92ceb489a11b34cc003000000000000000414a1d69701d28ab5c8b755aedef835a13ec9eece1e14a1d69701d28ab5c8b755aedef835a13ec9eece1e14a1d69701d28ab5c8b755aedef835a13ec9eece1e14a1d69701d28ab5c8b755aedef835a13ec9eece1e01000000232beeb9dd0ccce6951d2d89966bf161166403490773673737375f740000f9558189e48ff6c461c965da870377ff683f19958f336f21578794e00922605a18318d0f4ea3449d00ba5270d765535b4afaa44f23ab334fcb31c967da000000001b04030f01011504f9558189e48ff6c461c965da870377ff683f19951b040310010115048f336f21578794e00922605a18318d0f4ea3449d");
+			//temp = chips_extract_tx_data_in_JSON(argv[2]);
 			if (temp)
 				dlg_info("%s", cJSON_Print(temp));
 		} else {
