@@ -494,10 +494,10 @@ static cJSON* get_t_player_info(char *table_id)
 
 static cJSON *update_t_player_info(char *id, cJSON *t_player_info)
 {
-	cJSON *id_info = NULL, *argjson = NULL, *cmm = NULL;
+	cJSON *id_info = NULL, *argjson = NULL, *cmm = NULL, *player_info = NULL;
 	int argc;
 	char **argv = NULL;
-	char params[arg_size] = { 0 };
+	char params[arg_size] = { 0 }, *hexstr = NULL;
 
 	if ((NULL == id) || (NULL == t_player_info) || (NULL == verus_chips_cli)) {
 		return NULL;
@@ -506,9 +506,13 @@ static cJSON *update_t_player_info(char *id, cJSON *t_player_info)
 	id_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(id_info, "name", id);
 	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
+
+	cJSON_hex(t_player_info, hexstr);
+	player_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(player_info,STRING_VDXF_ID,hexstr);
 	
 	cmm = cJSON_CreateObject();
-	cJSON_AddItemToObject(cmm,T_PLAYER_INFO_KEY,t_player_info);
+	cJSON_AddItemToObject(cmm,T_PLAYER_INFO_KEY,player_info);
 	cJSON_AddItemToObject(id_info, "contentmultimap", cmm);
 
 	argc = 3;
