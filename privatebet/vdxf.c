@@ -491,6 +491,37 @@ static cJSON* get_t_player_info(char *table_id)
 	return t_player_info;
 }
 
+
+static cJSON *update_t_player_info(char *id, cJSON *t_player_info)
+{
+	cJSON *id_info = NULL, *argjson = NULL;
+	int argc;
+	char **argv = NULL;
+	char params[arg_size] = { 0 };
+
+	if ((NULL == id) || (NULL == t_player_info) || (NULL == verus_chips_cli)) {
+		return NULL;
+	}
+
+	id_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(id_info, "name", id);
+	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
+	cJSON_AddItemToObject(id_info, T_PLAYER_INFO_KEY, t_player_info);
+
+	argc = 3;
+	bet_alloc_args(argc, &argv);
+	snprintf(params, arg_size, "\'%s\'", cJSON_Print(id_info));
+	argv = bet_copy_args(argc, verus_chips_cli, "updateidentity", params);
+
+	argjson = cJSON_CreateObject();
+	make_command(argc, argv, &argjson);
+
+end:
+	bet_dealloc_args(argc, &argv);
+	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
+	return argjson;
+}
+
 void test_loop(char *blockhash)
 {
 	dlg_info("%s called!", __FUNCTION__);
@@ -531,12 +562,15 @@ void test_loop(char *blockhash)
 			cJSON_AddNumberToObject(t_player_info,"num_players",num_players);
 			cJSON_AddNumberToObject(t_player_info,jstr(temp,"primaryaddress"),num_players);
 			dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_player_info));
-
+			cJSON *temp1 = update_t_player_info(jstr(temp,"table_id"),t_player_info);
+			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp1));
 			
+			#if 0
 			cJSON *primaryaddress = cJSON_CreateArray();
 			cJSON_AddItemToArray(primaryaddress, cJSON_CreateString(jstr(temp, "primaryaddress")));
 			cJSON *temp2 = append_primaryaddresses(jstr(temp, "table_id"), primaryaddress);
 			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp2));
+			#endif
 		}
 	}
 end:
