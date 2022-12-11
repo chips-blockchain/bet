@@ -718,8 +718,7 @@ static void sg()
 }
 int main(int argc, char **argv)
 {
-	sg();
-	//bet_start(argc, argv);
+	bet_start(argc, argv);
 	return OK;
 }
 
