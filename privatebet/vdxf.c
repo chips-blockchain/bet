@@ -476,7 +476,7 @@ end:
 	return t;
 }
 
-static void get_t_player_info(char *table_id)
+static cJSON* get_t_player_info(char *table_id)
 {
 	cJSON *cmm = NULL;
 	cJSON *t_player_info = NULL;
