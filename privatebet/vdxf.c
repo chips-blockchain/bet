@@ -476,20 +476,20 @@ end:
 	return t;
 }
 
-static cJSON* get_t_player_info(char *table_id)
+static cJSON *get_t_player_info(char *table_id)
 {
 	cJSON *cmm = NULL;
 	cJSON *t_player_info = NULL, *player_info = NULL;
-	
+
 	cmm = cJSON_CreateObject();
 	cmm = get_cmm(table_id, 0);
-	if(cmm) {
+	if (cmm) {
 		t_player_info = cJSON_CreateObject();
-		t_player_info = cJSON_GetObjectItem(cmm,T_PLAYER_INFO_KEY);	
-		if(t_player_info) {
-			char *in = jstr(cJSON_GetArrayItem(t_player_info,0),STRING_VDXF_ID);
-			char *out = calloc(1,strlen(in));
-			hexstr_to_str(in,out);
+		t_player_info = cJSON_GetObjectItem(cmm, T_PLAYER_INFO_KEY);
+		if (t_player_info) {
+			char *in = jstr(cJSON_GetArrayItem(t_player_info, 0), STRING_VDXF_ID);
+			char *out = calloc(1, strlen(in));
+			hexstr_to_str(in, out);
 			player_info = cJSON_CreateObject();
 			player_info = cJSON_Parse(out);
 		}
@@ -497,7 +497,6 @@ static cJSON* get_t_player_info(char *table_id)
 	dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(player_info));
 	return player_info;
 }
-
 
 static cJSON *update_t_player_info(char *id, cJSON *t_player_info)
 {
@@ -516,10 +515,10 @@ static cJSON *update_t_player_info(char *id, cJSON *t_player_info)
 
 	cJSON_hex(t_player_info, &hexstr);
 	player_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(player_info,STRING_VDXF_ID,hexstr);
-	
+	cJSON_AddStringToObject(player_info, STRING_VDXF_ID, hexstr);
+
 	cmm = cJSON_CreateObject();
-	cJSON_AddItemToObject(cmm,T_PLAYER_INFO_KEY,player_info);
+	cJSON_AddItemToObject(cmm, T_PLAYER_INFO_KEY, player_info);
 	cJSON_AddItemToObject(id_info, "contentmultimap", cmm);
 
 	argc = 3;
@@ -556,7 +555,7 @@ void test_loop(char *blockhash)
 	dlg_info("%s: received blockhash in test_loop, found at height = %d", __FUNCTION__, blockcount);
 	cJSON *argjson = cJSON_CreateObject();
 	argjson = getaddressutxos(verus_addr, 1);
-	
+
 	t_player_info = cJSON_CreateObject();
 	for (int32_t i = 0; i < cJSON_GetArraySize(argjson); i++) {
 		if (jint(cJSON_GetArrayItem(argjson, i), "height") == blockcount) {
@@ -564,27 +563,27 @@ void test_loop(char *blockhash)
 				 cJSON_Print(cJSON_GetArrayItem(argjson, i)));
 			cJSON *temp = chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 			dlg_info("%s::%d::tx_data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
-			
-			t_player_info = get_t_player_info(jstr(temp,"table_id"));
-			if(t_player_info == NULL){
+
+			t_player_info = get_t_player_info(jstr(temp, "table_id"));
+			if (t_player_info == NULL) {
 				t_player_info = cJSON_CreateObject();
-				cJSON_AddNumberToObject(t_player_info,"num_players",0);						
+				cJSON_AddNumberToObject(t_player_info, "num_players", 0);
 			}
-			int32_t num_players = jint(t_player_info,"num_players");
-			cJSON_DeleteItemFromObject(t_player_info,"num_players");
-			num_players = num_players+1;
-			cJSON_AddNumberToObject(t_player_info,"num_players",num_players);
-			cJSON_AddNumberToObject(t_player_info,jstr(temp,"primaryaddress"),num_players);
+			int32_t num_players = jint(t_player_info, "num_players");
+			cJSON_DeleteItemFromObject(t_player_info, "num_players");
+			num_players = num_players + 1;
+			cJSON_AddNumberToObject(t_player_info, "num_players", num_players);
+			cJSON_AddNumberToObject(t_player_info, jstr(temp, "primaryaddress"), num_players);
 			dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_player_info));
-			cJSON *temp1 = update_t_player_info(jstr(temp,"table_id"),t_player_info);
+			cJSON *temp1 = update_t_player_info(jstr(temp, "table_id"), t_player_info);
 			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp1));
-			
-			#if 0
+
+#if 0
 			cJSON *primaryaddress = cJSON_CreateArray();
 			cJSON_AddItemToArray(primaryaddress, cJSON_CreateString(jstr(temp, "primaryaddress")));
 			cJSON *temp2 = append_primaryaddresses(jstr(temp, "table_id"), primaryaddress);
 			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp2));
-			#endif
+#endif
 		}
 	}
 end:

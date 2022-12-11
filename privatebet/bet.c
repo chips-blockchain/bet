@@ -680,9 +680,9 @@ static void bet_start(int argc, char **argv)
 		if (argc == 3) {
 			cJSON *cmm = NULL;
 			cmm = get_cmm_key_data(argv[2], 0, DEALERS_KEY);
-			if(cmm) {
+			if (cmm) {
 				decode_dealers_cmm(cmm);
-			}	
+			}
 		} else {
 			dlg_info("\nUsage:: ./bet extract_cmm id\n ex: ./bet extract_cmm sg777_d\n");
 		}
@@ -690,15 +690,14 @@ static void bet_start(int argc, char **argv)
 		if (argc == 3) {
 			cJSON *cmm = NULL;
 			cmm = get_cmm_key_data(argv[2], 0, T_PLAYER_INFO_KEY);
-			
-			if(cmm) {
-				char *in = jstr(cJSON_GetArrayItem(cmm,0),STRING_VDXF_ID);
-				char *out = calloc(1,strlen(in));
-				hexstr_to_str(in,out);
+
+			if (cmm) {
+				char *in = jstr(cJSON_GetArrayItem(cmm, 0), STRING_VDXF_ID);
+				char *out = calloc(1, strlen(in));
+				hexstr_to_str(in, out);
 				cJSON *temp1 = cJSON_Parse(out);
-				dlg_info("%s::%d::%s\n", __FUNCTION__,__LINE__,cJSON_Print(temp1));
-				
-			}	
+				dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp1));
+			}
 		} else {
 			dlg_info("\nUsage:: ./bet extract_cmm id\n ex: ./bet extract_cmm sg777_d\n");
 		}
@@ -711,9 +710,9 @@ static void sg()
 {
 	char *hexstr = NULL;
 	cJSON *temp = cJSON_CreateObject();
-	cJSON_AddNumberToObject(temp,"some_num",2);
-	cJSON_AddStringToObject(temp,"str","some_str");
-	cJSON_hex(temp,&hexstr);
+	cJSON_AddNumberToObject(temp, "some_num", 2);
+	cJSON_AddStringToObject(temp, "str", "some_str");
+	cJSON_hex(temp, &hexstr);
 	dlg_info("hexstr::%s\n", hexstr);
 }
 int main(int argc, char **argv)
