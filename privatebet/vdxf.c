@@ -478,8 +478,8 @@ end:
 
 static cJSON *get_t_player_info(char *table_id)
 {
-	cJSON *cmm = NULL;
-	cJSON *t_player_info = NULL, *player_info = NULL;
+	cJSON *t_player_info = NULL, *player_info = NULL, *cmm = NULL;
+	char *hexstr = NULL, *t_player_info_str = NULL;
 
 	cmm = cJSON_CreateObject();
 	cmm = get_cmm(table_id, 0);
@@ -487,14 +487,15 @@ static cJSON *get_t_player_info(char *table_id)
 		t_player_info = cJSON_CreateObject();
 		t_player_info = cJSON_GetObjectItem(cmm, T_PLAYER_INFO_KEY);
 		if (t_player_info) {
-			char *in = jstr(cJSON_GetArrayItem(t_player_info, 0), STRING_VDXF_ID);
-			char *out = calloc(1, strlen(in));
-			hexstr_to_str(in, out);
+			hexstr = jstr(cJSON_GetArrayItem(t_player_info, 0), STRING_VDXF_ID);
+			t_player_info_str = calloc(1, strlen(hexstr));
+			hexstr_to_str(hexstr, t_player_info_str);
 			player_info = cJSON_CreateObject();
-			player_info = cJSON_Parse(out);
+			player_info = cJSON_Parse(t_player_info_str);
 		}
 	}
 	dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(player_info));
+	free(t_player_info_str);
 	return player_info;
 }
 
@@ -577,6 +578,8 @@ void test_loop(char *blockhash)
 			dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_player_info));
 			cJSON *temp1 = update_t_player_info(jstr(temp, "table_id"), t_player_info);
 			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp1));
+
+			//TODO: Update the t_player_info along with the primaryaddress when the cashier receives the payment. 
 
 #if 0
 			cJSON *primaryaddress = cJSON_CreateArray();
