@@ -70,3 +70,4 @@ verus -chain=chips10sec updateidentity '{"name": "sg777_t", "parent":"i6gViGxt7Y
     }
 }' 
 ```  
+After learning the fact that concurrent updates to the ID is not possible in the same block, we got to revisit our approach on storing the game information.
