@@ -687,7 +687,7 @@ static void bet_start(int argc, char **argv)
 			dlg_info("\nUsage:: ./bet extract_cmm id\n ex: ./bet extract_cmm sg777_d\n");
 		}
 	} else if (strcmp(argv[1], "extract_t_player_data") == 0) {
-		if (argc == 2) {
+		if (argc == 3) {
 			cJSON *cmm = NULL;
 			cmm = get_cmm_key_data(argv[2], 0, T_PLAYER_INFO_KEY);
 			
