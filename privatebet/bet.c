@@ -707,10 +707,19 @@ static void bet_start(int argc, char **argv)
 	}
 }
 
+static void sg()
+{
+	char *hexstr = NULL;
+	cJSON *temp = cJSON_CreateObject();
+	cJSON_AddNumberToObject(temp,"some_num",2);
+	cJSON_AddStringToObject(temp,"str","some_str");
+	cJSON_hex(temp,hexstr);
+	dlg_info("hexstr::%s\n", hexstr);
+}
 int main(int argc, char **argv)
 {
-	//test_loop();
-	bet_start(argc, argv);
+	sg();
+	//bet_start(argc, argv);
 	return OK;
 }
 
