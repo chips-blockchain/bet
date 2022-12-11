@@ -494,7 +494,7 @@ static cJSON* get_t_player_info(char *table_id)
 
 static cJSON *update_t_player_info(char *id, cJSON *t_player_info)
 {
-	cJSON *id_info = NULL, *argjson = NULL;
+	cJSON *id_info = NULL, *argjson = NULL, *cmm = NULL;
 	int argc;
 	char **argv = NULL;
 	char params[arg_size] = { 0 };
@@ -506,7 +506,10 @@ static cJSON *update_t_player_info(char *id, cJSON *t_player_info)
 	id_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(id_info, "name", id);
 	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
-	cJSON_AddItemToObject(id_info, T_PLAYER_INFO_KEY, t_player_info);
+	
+	cmm = cJSON_CreateObject();
+	cJSON_AddItemToObject(cmm,T_PLAYER_INFO_KEY,t_player_info);
+	cJSON_AddItemToObject(id_info, "contentmultimap", cmm);
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
