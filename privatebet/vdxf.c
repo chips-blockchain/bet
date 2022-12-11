@@ -520,7 +520,7 @@ void test_loop(char *blockhash)
 			cJSON *temp = chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 			dlg_info("%s::%d::tx_data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
 			
-			t_player_info = get_t_player_info(cJSON_GetObjectItem(temp,"table_id"));
+			t_player_info = get_t_player_info(jstr(temp,"table_id"));
 			if(t_player_info == NULL){
 				t_player_info = cJSON_CreateObject();
 				cJSON_AddNumberToObject(t_player_info,"num_players",0);				
