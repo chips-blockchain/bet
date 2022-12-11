@@ -486,11 +486,13 @@ static cJSON* get_t_player_info(char *table_id)
 	if(cmm) {
 		t_player_info = cJSON_CreateObject();
 		t_player_info = cJSON_GetObjectItem(cmm,T_PLAYER_INFO_KEY);	
-		char *in = jstr(cJSON_GetArrayItem(t_player_info,0),STRING_VDXF_ID);
-		char *out = calloc(1,strlen(in));
-		hexstr_to_str(in,out);
-		player_info = cJSON_CreateObject();
-		player_info = cJSON_Parse(out);
+		if(t_player_info) {
+			char *in = jstr(cJSON_GetArrayItem(t_player_info,0),STRING_VDXF_ID);
+			char *out = calloc(1,strlen(in));
+			hexstr_to_str(in,out);
+			player_info = cJSON_CreateObject();
+			player_info = cJSON_Parse(out);
+		}
 	}
 	dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(player_info));
 	return player_info;
