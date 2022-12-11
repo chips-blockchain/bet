@@ -686,6 +686,22 @@ static void bet_start(int argc, char **argv)
 		} else {
 			dlg_info("\nUsage:: ./bet extract_cmm id\n ex: ./bet extract_cmm sg777_d\n");
 		}
+	} else if (strcmp(argv[1], "extract_t_player_data") == 0) {
+		if (argc == 2) {
+			cJSON *cmm = NULL;
+			cmm = get_cmm_key_data(argv[2], 0, T_PLAYER_INFO_KEY);
+			
+			if(cmm) {
+				char *in = jstr(cmm,STRING_VDXF_ID);
+				char *out = calloc(1,strlen(in));
+				hexstr_to_str(in,out);
+				cJSON *temp1 = cJSON_Parse(out);
+				dlg_info("%s::%d::%s\n", __FUNCTION__,__LINE__,cJSON_Print(temp1));
+				
+			}	
+		} else {
+			dlg_info("\nUsage:: ./bet extract_cmm id\n ex: ./bet extract_cmm sg777_d\n");
+		}
 	} else {
 		bet_command_info();
 	}

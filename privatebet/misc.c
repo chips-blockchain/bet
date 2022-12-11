@@ -131,3 +131,12 @@ void struct_to_byte_arr(const void *object, size_t size, uint8_t *out)
 		++out;
 	}
 }
+
+void cJSON_hex(cJSON *argjson, char *hexstr)
+{
+	int32_t hex_data_len;
+	
+	hex_data_len = 2 * strlen(cJSON_Print(argjson)) + 1;
+	hexstr = calloc(hex_data_len, sizeof(char));
+	str_to_hexstr(cJSON_Print(argjson), hexstr);
+}
