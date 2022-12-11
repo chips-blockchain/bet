@@ -11,9 +11,11 @@ Is everything good with vdxf ID's, not absolutely. The update of data takes bloc
 
 I see vdxf ID is like a well organized restricted public database(ah..did I mean blockchain?) where in which we can store and retrive the data. We can organize this data under ID's, sub ID's with multiple levels of nesting. Under each ID one can store the data by attaching it to a specific key values. It's like basket having paritition to store apples and oranges separately and even more. 
 
-Every ID is associated with an utxo, updateidentity is nothing but spending the utxo, when multiple authorized partities tries to update the identity, its like a race, whoever submits the spending tx first that one gets accepted and others get rejected, so that mean the ID gets updated with the values who spending tx got accepted and other partities has to submit their changes in next block by making a new spending tx again. So with that in mind its important to keep in mind the following properties w.r.t updating the ID's as mentioned below:
-1. 
-
+Every ID is associated with an utxo, updateidentity is nothing but spending the utxo associated with that ID, when multiple authorized parties tries to update the ID, its like a race, whoever submits the spending tx first that one gets accepted and others get rejected, that means the ID gets updated with the values who spending tx got accepted and other parties has to submit their changes in next block by making a new spending tx again. 
+So with that in mind its important to notedown the following characteristics of ID updates:
+1. When multiple partities trying to update either the same key or multiple keys of the ID at the same time(or you can say in the same block), then only the update tx that network sees first gets a chance and others simply gets rejected. 
+2. For concurrent updates, one possible approach is always first check if there is any spent tx in mempool with regard to that ID, and make a spend tx on top of that mempool tx then in which case the multiple updates to the ID happens in the same block.`[Note: How this to be achieved is yet to test].`
+3. As we know that we can store multiple key value sets in contentmultimap, but while designing itself to the possible extent always make sure that if any data that needs concurrent updates handle with multiple ID's, subID's. Many applications can't afford the waittime of one blocktime for every update to ID to happen.
 
 For communications in bet we encoding it in JSON format and storing it on data part of blockchain, since we are not using any sockets when we migrate to use vdxf ID's its obvious that we need to be storing more info on to the vdxf ID's. To minimize the storage space on blockchain, we encode them as compact strucutres and store and retrive using with binary format.
 
