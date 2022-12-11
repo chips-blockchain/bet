@@ -507,7 +507,7 @@ static cJSON *update_t_player_info(char *id, cJSON *t_player_info)
 	cJSON_AddStringToObject(id_info, "name", id);
 	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
 
-	cJSON_hex(t_player_info, hexstr);
+	cJSON_hex(t_player_info, &hexstr);
 	player_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(player_info,STRING_VDXF_ID,hexstr);
 	

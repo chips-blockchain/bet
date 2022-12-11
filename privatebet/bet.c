@@ -713,7 +713,7 @@ static void sg()
 	cJSON *temp = cJSON_CreateObject();
 	cJSON_AddNumberToObject(temp,"some_num",2);
 	cJSON_AddStringToObject(temp,"str","some_str");
-	cJSON_hex(temp,hexstr);
+	cJSON_hex(temp,&hexstr);
 	dlg_info("hexstr::%s\n", hexstr);
 }
 int main(int argc, char **argv)
