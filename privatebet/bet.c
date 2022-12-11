@@ -692,7 +692,7 @@ static void bet_start(int argc, char **argv)
 			cmm = get_cmm_key_data(argv[2], 0, T_PLAYER_INFO_KEY);
 			
 			if(cmm) {
-				char *in = jstr(cmm,STRING_VDXF_ID);
+				char *in = jstr(cJSON_GetArrayItem(cmm,0),STRING_VDXF_ID);
 				char *out = calloc(1,strlen(in));
 				hexstr_to_str(in,out);
 				cJSON *temp1 = cJSON_Parse(out);
