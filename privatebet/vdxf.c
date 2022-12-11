@@ -523,9 +523,10 @@ void test_loop(char *blockhash)
 			t_player_info = get_t_player_info(jstr(temp,"table_id"));
 			if(t_player_info == NULL){
 				t_player_info = cJSON_CreateObject();
-				cJSON_AddNumberToObject(t_player_info,"num_players",0);				
+				cJSON_AddNumberToObject(t_player_info,"num_players",0);						
 			}
 			int32_t num_players = jint(t_player_info,"num_players");
+			cJSON_DeleteItemFromObject(t_player_info,"num_players");
 			num_players = num_players+1;
 			cJSON_AddNumberToObject(t_player_info,"num_players",num_players);
 			cJSON_AddNumberToObject(t_player_info,jstr(temp,"primaryaddress"),num_players);
