@@ -476,23 +476,31 @@ end:
 	return t;
 }
 
+static void get_t_player_info(char *table_id)
+{
+	cJSON *cmm = NULL;
+	cJSON *t_player_info = NULL;
+	
+	cmm = cJSON_CreateObject();
+	cmm = get_cmm(table_id, 0);
+	if(cmm) {
+		t_player_info = cJSON_CreateObject();
+		t_player_info = cJSON_GetObjectItem(cmm,T_PLAYER_INFO_KEY);		
+	}
+	dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_player_info));
+	return t_player_info;
+}
+
 void test_loop(char *blockhash)
 {
 	dlg_info("%s called!", __FUNCTION__);
 	char verus_addr[1][100] = { "cashiers.poker.chips10sec@" };
 	int32_t blockcount = 0;
-	cJSON *blockjson = cJSON_CreateObject();
+	cJSON *blockjson = NULL, *t_player_info = NULL;
+
+	blockjson = cJSON_CreateObject();
 	blockjson = chips_get_block_from_block_hash(blockhash);
-#if 0
-    dlg_info("%s::%d::block_data::%s",__FUNCTION__,__LINE__,cJSON_Print(blockjson));
-   	for (int32_t i = 0; i < cJSON_GetArraySize(blockjson); i++) {
-		blockcount = jint(cJSON_GetArrayItem(blockjson,i), "height");
-		if (blockcount > 0) {
-			dlg_info("%s: received blockhash in test_loop, found at height = %d",__FUNCTION__,blockcount);
-			break;
-		}
-	}
-#endif
+
 	if (blockjson == NULL)
 		goto end;
 
@@ -503,17 +511,27 @@ void test_loop(char *blockhash)
 	dlg_info("%s: received blockhash in test_loop, found at height = %d", __FUNCTION__, blockcount);
 	cJSON *argjson = cJSON_CreateObject();
 	argjson = getaddressutxos(verus_addr, 1);
-
+	
+	t_player_info = cJSON_CreateObject();
 	for (int32_t i = 0; i < cJSON_GetArraySize(argjson); i++) {
 		if (jint(cJSON_GetArrayItem(argjson, i), "height") == blockcount) {
-			//if (jint(cJSON_GetArrayItem(argjson, i), "height") == blockcount) {
-			//TODO: condition above seems error-prone with 10s blocks...
-			// also, it won't update on init, since prior update may well be in past
-
 			dlg_info("%s::%d::tx_to_process::%s\n", __FUNCTION__, __LINE__,
 				 cJSON_Print(cJSON_GetArrayItem(argjson, i)));
 			cJSON *temp = chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 			dlg_info("%s::%d::tx_data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
+			
+			t_player_info = get_t_player_info(cJSON_GetObjectItem(temp,"table_id"));
+			if(t_player_info == NULL){
+				t_player_info = cJSON_CreateObject();
+				cJSON_AddNumberToObject(t_player_info,"num_players",0);				
+			}
+			int32_t num_players = jint(t_player_info,"num_players");
+			num_players = num_players+1;
+			cJSON_AddNumberToObject(t_player_info,"num_players",num_players);
+			cJSON_AddNumberToObject(t_player_info,jstr(temp,"primaryaddress"),num_players);
+			dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_player_info));
+
+			
 			cJSON *primaryaddress = cJSON_CreateArray();
 			cJSON_AddItemToArray(primaryaddress, cJSON_CreateString(jstr(temp, "primaryaddress")));
 			cJSON *temp2 = append_primaryaddresses(jstr(temp, "table_id"), primaryaddress);
