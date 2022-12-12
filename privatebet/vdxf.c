@@ -584,14 +584,13 @@ void test_loop(char *blockhash)
 
 			cJSON *primaryaddress = cJSON_CreateArray();
 			primaryaddress = get_primaryaddresses(jstr(temp,"table_id"), 0);
-			if(primaryaddress->type == cJSON_Array) {
-				dlg_info("%s::%d::array returned\n", __FUNCTION__, __LINE__);
-			}
+
 			cJSON *t_pa = cJSON_CreateArray();
 			for(int32_t i=0; i<cJSON_GetArraySize(primaryaddress); i++) {
+				jaddistr(t_pa,jstri(primaryaddress,i));
 				cJSON_AddItemToArray(t_pa,cJSON_GetArrayItem(primaryaddress, i));
 			}
-			cJSON_AddItemToArray(t_pa, cJSON_CreateString(jstr(temp, "primaryaddress")));
+			jaddistr(t_pa,jstr(temp, "primaryaddress"));
 			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_pa));
 
 #if 0
