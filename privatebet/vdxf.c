@@ -172,7 +172,7 @@ cJSON *get_primaryaddresses(char *id, int16_t full_id)
 	make_command(argc, argv, &argjson);
 
 	id_obj = cJSON_GetObjectItem(argjson, "identity");
-	pa = cJSON_CreateObject();
+	pa = cJSON_CreateArray();
 	pa = cJSON_GetObjectItem(id_obj, "primaryaddresses");
 
 end:
@@ -582,8 +582,11 @@ void test_loop(char *blockhash)
 
 			//TODO: Update the t_player_info along with the primaryaddress when the cashier receives the payment. 
 
-			cJSON *primaryaddress = cJSON_CreateObject();
+			cJSON *primaryaddress = cJSON_CreateArray();
 			primaryaddress = get_primaryaddresses(jstr(temp,"table_id"), 0);
+			if(primaryaddress->type == cJSON_Array) {
+				dlg_info("%s::%d::array returned\n", __FUNCTION__, __LINE__);
+			}
 			cJSON *t_pa = cJSON_CreateArray();
 			for(int32_t i=0; i<cJSON_GetArraySize(primaryaddress); i++) {
 				cJSON_AddItemToArray(t_pa,cJSON_GetArrayItem(primaryaddress, i));
