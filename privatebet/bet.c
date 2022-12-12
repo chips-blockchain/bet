@@ -708,15 +708,19 @@ static void bet_start(int argc, char **argv)
 
 static void sg()
 {
-	char *hexstr = NULL;
-	cJSON *temp = cJSON_CreateObject();
-	cJSON_AddNumberToObject(temp, "some_num", 2);
-	cJSON_AddStringToObject(temp, "str", "some_str");
-	cJSON_hex(temp, &hexstr);
-	dlg_info("hexstr::%s\n", hexstr);
+	cJSON *t_pa = cJSON_CreateArray();
+	cJSON *primaryaddress = cJSON_CreateArray();
+	primaryaddress = get_primaryaddresses("sg777_t", 0);
+	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(primaryaddress));
+	for (int32_t i = 0; i < cJSON_GetArraySize(primaryaddress); i++) {
+		cJSON *temp = cJSON_GetArrayItem(primaryaddress, i);
+		dlg_info("%s::%d::%s::temp->type::%d\n", __FUNCTION__, __LINE__, jstri(primaryaddress, i), temp->type);
+		jaddistr(t_pa, jstri(primaryaddress, i));
+	}
+	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_pa));
 }
 int main(int argc, char **argv)
-{
+{ //sg();
 	bet_start(argc, argv);
 	return OK;
 }
