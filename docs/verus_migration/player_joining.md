@@ -71,5 +71,6 @@ When player makes the payin_tx by depositing funds to the cashier address, the c
 2. Cashier reads the `table_info` and `player_info` keys from the table and figure it out whats the max players allowed and see if this player can be accomodated in the table or not.
   a. If the seats are left on the table, then the cashier adds the primaryaddress of the player to the `primaryaddresses` of the table and in `player_info` cashier updates the information about the player along with its position number on the table. 
   b. If the table is full, then the cashier simply deposit funds back to the primaryaddress mentioned by the player. 
-  
-In either case we should communicate that out come to the player. Yet to figure this out.
+ 3. No two join requests from the same primaryaddress are accepted, so that way if a player makes multiple join requests accidentally only one gets accepted. To avoid single player using multiple primaryadddress to join the table, going forward we will allow the players to register and provide an ID to the players and also provide an option to the dealer to allow only players with specific ID can join the table, that way we can elimincate the possibility of same player taking multiple seats.
+
+In either case we should communicate that outcome player_join to the player. 
