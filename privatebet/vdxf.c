@@ -537,8 +537,6 @@ end:
 	return argjson;
 }
 
-
-
 static cJSON *update_t_player_info_pa(char *id, cJSON *t_player_info, cJSON *primaryaddresses)
 {
 	cJSON *id_info = NULL, *argjson = NULL, *cmm = NULL, *player_info = NULL;
@@ -603,7 +601,8 @@ void test_loop(char *blockhash)
 		if (jint(cJSON_GetArrayItem(argjson, i), "height") == blockcount) {
 			dlg_info("%s::%d::tx_to_process::%s\n", __FUNCTION__, __LINE__,
 				 cJSON_Print(cJSON_GetArrayItem(argjson, i)));
-			cJSON *payin_tx_data = chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
+			cJSON *payin_tx_data =
+				chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 			dlg_info("%s::%d::tx_data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(payin_tx_data));
 
 			t_player_info = get_t_player_info(jstr(payin_tx_data, "table_id"));
@@ -614,25 +613,23 @@ void test_loop(char *blockhash)
 			int32_t num_players = jint(t_player_info, "num_players");
 			cJSON_DeleteItemFromObject(t_player_info, "num_players");
 			num_players = num_players + 1;
-			cJSON_AddNumberToObject(t_player_info, "num_players", num_players);			
+			cJSON_AddNumberToObject(t_player_info, "num_players", num_players);
 			cJSON_AddNumberToObject(t_player_info, jstr(payin_tx_data, "primaryaddress"), num_players);
 			dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_player_info));
 
-		
-			//TODO: Update the t_player_info along with the primaryaddress when the cashier receives the payment. 
+			//TODO: Update the t_player_info along with the primaryaddress when the cashier receives the payment.
 
 			cJSON *primaryaddress = cJSON_CreateArray();
-			primaryaddress = get_primaryaddresses(jstr(payin_tx_data,"table_id"), 0);
+			primaryaddress = get_primaryaddresses(jstr(payin_tx_data, "table_id"), 0);
 
 			cJSON *t_pa = cJSON_CreateArray();
-			for(int32_t i=0; i<cJSON_GetArraySize(primaryaddress); i++) {
-				jaddistr(t_pa,jstri(primaryaddress,i));
+			for (int32_t i = 0; i < cJSON_GetArraySize(primaryaddress); i++) {
+				jaddistr(t_pa, jstri(primaryaddress, i));
 			}
-			jaddistr(t_pa,jstr(payin_tx_data, "primaryaddress"));
+			jaddistr(t_pa, jstr(payin_tx_data, "primaryaddress"));
 			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_pa));
 
-			
-			cJSON *temp1 = update_t_player_info_pa(jstr(payin_tx_data, "table_id"), t_player_info,t_pa);
+			cJSON *temp1 = update_t_player_info_pa(jstr(payin_tx_data, "table_id"), t_player_info, t_pa);
 			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp1));
 
 #if 0
