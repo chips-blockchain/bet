@@ -588,7 +588,6 @@ void test_loop(char *blockhash)
 			cJSON *t_pa = cJSON_CreateArray();
 			for(int32_t i=0; i<cJSON_GetArraySize(primaryaddress); i++) {
 				jaddistr(t_pa,jstri(primaryaddress,i));
-				cJSON_AddItemToArray(t_pa,cJSON_GetArrayItem(primaryaddress, i));
 			}
 			jaddistr(t_pa,jstr(temp, "primaryaddress"));
 			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_pa));
