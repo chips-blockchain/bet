@@ -35,21 +35,16 @@ Off all the ID's we have table is a very complex ID and this is where all the ga
 
 All the actors like players, dealers, cashiers/bvv updates the table ID at different stages during the game. The main tasks that get accomplished with the data on table ID are deck shuffling, game play and final settlement. The nature of the data that flows to handle all these tasks is significantly different and data that is used to accomplish one task may not be relevant on other task. For these reasons we need to define some keys that are very specific to accomplish a specific task and some keys which may be relavant across all the tasks. But there is catch here, since there is a single utxo attached to an ID, so only one can spend that ID. If multiple updates to an ID needs to happen in the same block, then while updating the ID we need to check in the mempool if there is any spend tx exists for the given ID, if so then that utxo needs to be spent to make an update to the ID. Since soon we going to have an API that spends the ID from the utxo's of mempool that enables us to make multiple updates to the ID in the same block.
 
-For incremental updates of the same key, we read the existing info from contentmultimap and we append our data publish whole data again. But those incremental updates are not efficient here and since there is going to be tens of updates among tens of keys and these updates happen concurrently, so its just not reliable to read all, append and update. For these reasons we are specifically looking for an API from verus and if that doesn't exists we need to figure it out a way where in which we can only retrive the data associated with the specific key value.
+For incremental updates of the same key, we read the existing info from contentmultimap and we append our data publish whole data again. But those incremental updates are not efficient here and since there is going to be tens of updates among tens of keys and these updates might going to happen in the same block when the support to spend tx from mempool is available. For these reasons we need to have an API's to read a specific key of an ID which is not the latest. There is an API like `getaddresstxids` which list all the tx's associated with a specific ID, need to do some workaround which by parsing all these tx's associated with an ID to get the value of a specifc key of a given ID. 
 
-Here is an example about what we are looking to have. Lets say I have the table ID `sg777_t` and to which lets say using five keys im storing the data as shown below, and the keys names used in this example are `table_info`, `player_info`, `cashier_id`, `player_1` and `player_2`. All these keys are updated by different entities either at the same time or at differnt times. So basically if I do getidentity I can only retrive the last updated key value, but what I'm looking is to get the last updated value of all these keys or any specific key that I pass.
+Here is an example about what we are looking to have. Lets say I have the table ID `sg777_t` and to which lets say using four keys im storing the data as shown below, and the keys names used in this example are `player_info`, `cashier_id`, `player_1` and `player_2`. All these keys are updated by different entities either at the same time or at differnt times. So basically if I do getidentity I can only retrive the last updated key value, but what I'm looking is to get the last updated value of all these keys or for any specific key.
 ```
 verus -chain=chips10sec updateidentity '{"name": "sg777_t", "parent":"i6gViGxt7YinkJZoubKdbWBrqdRCb1Rkvs", "contentmultimap":{
-      "table_info": [
-        {
-          "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "max_players:2",
-          "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "players_occupied:2"
-        }
-      ],
       "player_info": [
         {
-          "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "id:1",
-          "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "id:2"
+          num_players : 2;
+          "primary_address_1": id_1; #position of a player on the table.
+          "primary_address_2": id_2; #position of a player on the table.
         }
       ],
       "cashier_id": [
@@ -70,4 +65,11 @@ verus -chain=chips10sec updateidentity '{"name": "sg777_t", "parent":"i6gViGxt7Y
     }
 }' 
 ```  
-After learning the fact that concurrent updates to the ID is not possible in the same block, we got to revisit our approach on storing the game information.
+
+When player makes the payin_tx by depositing funds to the cashier address, the cashier does the following thing upon receiving the payin_tx.
+1. Cashier reads the data part of payin_tx, the data part contains table_id and primaryaddress.
+2. Cashier reads the `table_info` and `player_info` keys from the table and figure it out whats the max players allowed and see if this player can be accomodated in the table or not.
+  a. If the seats are left on the table, then the cashier adds the primaryaddress of the player to the `primaryaddresses` of the table and in `player_info` cashier updates the information about the player along with its position number on the table. 
+  b. If the table is full, then the cashier simply deposit funds back to the primaryaddress mentioned by the player. 
+  
+In either case we should communicate that out come to the player. Yet to figure this out.
