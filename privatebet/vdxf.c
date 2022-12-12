@@ -580,7 +580,7 @@ void test_loop(char *blockhash)
 	dlg_info("%s called!", __FUNCTION__);
 	char verus_addr[1][100] = { "cashiers.poker.chips10sec@" };
 	int32_t blockcount = 0;
-	cJSON *blockjson = NULL, *t_player_info = NULL;
+	cJSON *blockjson = NULL, *t_player_info = NULL, *primaryaddress = NULL;
 
 	blockjson = cJSON_CreateObject();
 	blockjson = chips_get_block_from_block_hash(blockhash);
@@ -617,9 +617,7 @@ void test_loop(char *blockhash)
 			cJSON_AddNumberToObject(t_player_info, jstr(payin_tx_data, "primaryaddress"), num_players);
 			dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_player_info));
 
-			//TODO: Update the t_player_info along with the primaryaddress when the cashier receives the payment.
-
-			cJSON *primaryaddress = cJSON_CreateArray();
+			primaryaddress = cJSON_CreateArray();
 			primaryaddress = get_primaryaddresses(jstr(payin_tx_data, "table_id"), 0);
 
 			cJSON *t_pa = cJSON_CreateArray();
@@ -632,12 +630,6 @@ void test_loop(char *blockhash)
 			cJSON *temp1 = update_t_player_info_pa(jstr(payin_tx_data, "table_id"), t_player_info, t_pa);
 			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp1));
 
-#if 0
-			cJSON *primaryaddress = cJSON_CreateArray();
-			cJSON_AddItemToArray(primaryaddress, cJSON_CreateString(jstr(temp, "primaryaddress")));
-			cJSON *temp2 = append_primaryaddresses(jstr(temp, "table_id"), primaryaddress);
-			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp2));
-#endif
 		}
 	}
 end:
