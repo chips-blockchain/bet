@@ -622,17 +622,17 @@ void test_loop(char *blockhash)
 			//TODO: Update the t_player_info along with the primaryaddress when the cashier receives the payment. 
 
 			cJSON *primaryaddress = cJSON_CreateArray();
-			primaryaddress = get_primaryaddresses(jstr(temp,"table_id"), 0);
+			primaryaddress = get_primaryaddresses(jstr(payin_tx_data,"table_id"), 0);
 
 			cJSON *t_pa = cJSON_CreateArray();
 			for(int32_t i=0; i<cJSON_GetArraySize(primaryaddress); i++) {
 				jaddistr(t_pa,jstri(primaryaddress,i));
 			}
-			jaddistr(t_pa,jstr(temp, "primaryaddress"));
+			jaddistr(t_pa,jstr(payin_tx_data, "primaryaddress"));
 			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_pa));
 
 			
-			cJSON *temp1 = update_t_player_info_pa(jstr(temp, "table_id"), t_player_info,t_pa);
+			cJSON *temp1 = update_t_player_info_pa(jstr(payin_tx_data, "table_id"), t_player_info,t_pa);
 			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp1));
 
 #if 0
