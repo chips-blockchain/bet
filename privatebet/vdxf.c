@@ -6,6 +6,24 @@
 
 struct table player_t;
 
+
+char* get_vdxf_id(char *key_name)
+{	
+	int argc = 3;
+	char full_key[128] = {0}, **argv = NULL;
+	cJSON *argjson = NULL;
+
+	strcpy(full_key, "chips.vrsc::poker.");
+	strncat(full_key, key_name, strlen(full_key));
+
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, verus_chips_cli, "getvdxfid", full_key);
+	argjson = cJSON_CreateObject();
+	make_command(argc,argv,&argjson);
+	
+	return jstr(argjson,"vdxfid");
+}
+
 cJSON *update_cmm(char *id, cJSON *cmm)
 {
 	cJSON *id_info = NULL, *argjson = NULL;
@@ -453,7 +471,7 @@ end:
 	return argjson;
 }
 
-struct table *decode_dealers_cmm(cJSON *dealer_cmm_data)
+struct table *decode_table_info(cJSON *dealer_cmm_data)
 {
 	char *str = NULL;
 	uint8_t *table_data = NULL;
@@ -472,6 +490,7 @@ struct table *decode_dealers_cmm(cJSON *dealer_cmm_data)
 	dlg_info("min_stake :: %f", uint32_s_to_float(t->min_stake));
 	dlg_info("max_stake :: %f", uint32_s_to_float(t->max_stake));
 	dlg_info("table_id :: %s", t->table_id);
+	dlg_info("dealer_id :: %s", t->dealer_id);
 
 end:
 	return t;
