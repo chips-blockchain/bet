@@ -118,9 +118,9 @@ static void bet_player_thrd(char *dcv_ip)
 {
 	pthread_t player_thrd, player_backend_write, player_backend_read;
 
-	#if 0
+#if 0
 	bet_player_initialize(dcv_ip);
-	#endif
+#endif
 	if (OS_thread_create(&player_thrd, NULL, (void *)bet_player_backend_loop, (void *)bet_player) != 0) {
 		dlg_error("%s", bet_err_str(ERR_PTHREAD_LAUNCHING));
 		exit(-1);
@@ -678,12 +678,13 @@ static void bet_start(int argc, char **argv)
 		if (argc == 4) {
 			do_split_tx_amount(atof(argv[2]), atoi(argv[3]));
 		}
-	} else if ((strcmp(argv[1], "extract_id_info") == 0) && (argc == 4)){
+	} else if ((strcmp(argv[1], "extract_id_info") == 0) && (argc == 4)) {
 		cJSON *cmm = NULL;
-		if((strcmp(get_vdxf_id(argv[3]), DEALERS_KEY) == 0)||(strcmp(get_vdxf_id(argv[3]), T_PLAYER_INFO_KEY) == 0)) {
+		if ((strcmp(get_vdxf_id(argv[3]), DEALERS_KEY) == 0) ||
+		    (strcmp(get_vdxf_id(argv[3]), T_PLAYER_INFO_KEY) == 0)) {
 			cmm = get_cmm_key_data(argv[2], 0, get_vdxf_id(argv[3]));
 			decode_table_info(cmm);
-		} else if(strcmp(get_vdxf_id(argv[3]), T_PLAYER_INFO_KEY) == 0) {
+		} else if (strcmp(get_vdxf_id(argv[3]), T_PLAYER_INFO_KEY) == 0) {
 			cmm = get_cmm_key_data(argv[2], 0, get_vdxf_id(argv[3]));
 			if (cmm) {
 				char *in = jstr(cJSON_GetArrayItem(cmm, 0), STRING_VDXF_ID);
@@ -693,7 +694,7 @@ static void bet_start(int argc, char **argv)
 				dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp1));
 			}
 		}
-	}  else {
+	} else {
 		bet_command_info();
 	}
 }

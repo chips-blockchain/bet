@@ -6,11 +6,10 @@
 
 struct table player_t;
 
-
-char* get_vdxf_id(char *key_name)
-{	
+char *get_vdxf_id(char *key_name)
+{
 	int argc = 3;
-	char full_key[128] = {0}, **argv = NULL;
+	char full_key[128] = { 0 }, **argv = NULL;
 	cJSON *argjson = NULL;
 
 	strcpy(full_key, "chips.vrsc::poker.");
@@ -19,9 +18,9 @@ char* get_vdxf_id(char *key_name)
 	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, verus_chips_cli, "getvdxfid", full_key);
 	argjson = cJSON_CreateObject();
-	make_command(argc,argv,&argjson);
-	
-	return jstr(argjson,"vdxfid");
+	make_command(argc, argv, &argjson);
+
+	return jstr(argjson, "vdxfid");
 }
 
 cJSON *update_cmm(char *id, cJSON *cmm)
@@ -648,7 +647,6 @@ void test_loop(char *blockhash)
 
 			cJSON *temp1 = update_t_player_info_pa(jstr(payin_tx_data, "table_id"), t_player_info, t_pa);
 			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp1));
-
 		}
 	}
 end:
