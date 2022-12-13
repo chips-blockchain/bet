@@ -310,7 +310,6 @@ void bet_parse_verus_dealer()
 		}
 		update_dealers_config_table(t.dealer_id, DEALERS_KEY, t);
 		update_dealers_config_table(t.table_id, T_TABLE_INFO_KEY, t);
-		
 	}
 }
 

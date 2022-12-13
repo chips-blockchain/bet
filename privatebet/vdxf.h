@@ -68,7 +68,7 @@ under chips as sg777.chips@ which basically been used to hold the tokens.
 #define CASHIERS_ID "cashiers.poker.chips10sec@"
 #define POKER_CHIPS_VDXF_ID "i6gViGxt7YinkJZoubKdbWBrqdRCb1Rkvs"
 
-char* get_vdxf_id(char *key_name);
+char *get_vdxf_id(char *key_name);
 cJSON *update_cmm(char *id, cJSON *cmm);
 cJSON *get_cmm(char *id, int16_t full_id);
 cJSON *append_primaryaddresses(char *id, cJSON *primaryaddress);
