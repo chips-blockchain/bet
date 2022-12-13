@@ -693,6 +693,8 @@ static void bet_start(int argc, char **argv)
 				cJSON *temp1 = cJSON_Parse(out);
 				dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp1));
 			}
+		} else {
+			dlg_info("The key::%s(%s), is not present in the ID::%s\n",argv[3],get_vdxf_id(argv[3]),argv[2]);
 		}
 	} else {
 		bet_command_info();
