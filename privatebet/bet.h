@@ -209,6 +209,7 @@ struct table {
 	struct float_num max_stake;
 	struct float_num big_blind;
 	char table_id[16];
+	char dealer_id[16];
 };
 extern struct table player_t;
 

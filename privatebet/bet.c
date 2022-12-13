@@ -118,7 +118,9 @@ static void bet_player_thrd(char *dcv_ip)
 {
 	pthread_t player_thrd, player_backend_write, player_backend_read;
 
+	#if 0
 	bet_player_initialize(dcv_ip);
+	#endif
 	if (OS_thread_create(&player_thrd, NULL, (void *)bet_player_backend_loop, (void *)bet_player) != 0) {
 		dlg_error("%s", bet_err_str(ERR_PTHREAD_LAUNCHING));
 		exit(-1);
