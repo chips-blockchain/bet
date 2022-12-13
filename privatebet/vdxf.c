@@ -13,7 +13,7 @@ char *get_vdxf_id(char *key_name)
 	cJSON *argjson = NULL;
 
 	strcpy(full_key, "chips.vrsc::poker.");
-	strncat(full_key, key_name, strlen(full_key));
+	strncat(full_key, key_name, strlen(key_name));
 
 	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, verus_chips_cli, "getvdxfid", full_key);
