@@ -25,7 +25,6 @@ key is represented as chips.vrsc::poker.cashiers.
 #define DEALERS_KEY "iSgEvATbNF3ZR6Kyj6nn8zVp3adPQxPnFJ"
 //chips.vrsc::poker.table --> iD28KEADk5B329adB2CkY5wx1C2TWbSMut
 #define TABLE_KEY "iD28KEADk5B329adB2CkY5wx1C2TWbSMut"
-
 //chips.vrsc::poker.t_player_info --> i8qHmsn6VGrPm7F6YRy6DV8nWTn3eCWXdJ
 /*
 {
@@ -35,6 +34,8 @@ key is represented as chips.vrsc::poker.cashiers.
 }
 */
 #define T_PLAYER_INFO_KEY "i8qHmsn6VGrPm7F6YRy6DV8nWTn3eCWXdJ"
+//chips.vrsc::poker.t_table_info --> iG2v2NKwrswDtkTHoH98ac5JqvSBG1HZnE
+#define T_TABLE_INFO_KEY "iG2v2NKwrswDtkTHoH98ac5JqvSBG1HZnE"
 
 /*
 Datatypes used
@@ -73,7 +74,7 @@ cJSON *append_primaryaddresses(char *id, cJSON *primaryaddress);
 cJSON *update_primaryaddresses(char *id, cJSON *primaryaddress);
 cJSON *get_primaryaddresses(char *id, int16_t full_id);
 cJSON *get_cmm_key_data(char *id, int16_t full_id, char *key);
-cJSON *update_dealers_config_table(char *dealer_id, struct table t);
+cJSON *update_dealers_config_table(char *dealer_id, char *key, struct table t);
 struct table *get_dealers_config_table(char *dealer_id, char *table_id);
 cJSON *get_cashiers_info(char *cashier_id);
 cJSON *update_cashiers(char *ip);
