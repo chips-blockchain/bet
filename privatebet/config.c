@@ -289,8 +289,9 @@ void bet_parse_verus_dealer()
 	if (ini == NULL) {
 		dlg_error("error in parsing %s", verus_dealer_config);
 	} else {
-		if (NULL != iniparser_getstring(ini, "verus:id", NULL)) {
-			strncpy(dealer_ID, iniparser_getstring(ini, "verus:id", NULL), sizeof(dealer_ID));
+		if (NULL != iniparser_getstring(ini, "verus:dealer_id", NULL)) {
+			strncpy(t.dealer_id, iniparser_getstring(ini, "verus:dealer_id", NULL), sizeof(t.dealer_id));
+			strncpy(dealer_ID, t.dealer_id, sizeof(t.dealer_id));
 		}
 		if (-1 != iniparser_getint(ini, "table:max_players", -1)) {
 			t.max_players = (uint8_t)iniparser_getint(ini, "table:max_players", -1);
@@ -307,7 +308,9 @@ void bet_parse_verus_dealer()
 		if (NULL != iniparser_getstring(ini, "table:table_id", NULL)) {
 			strncpy(t.table_id, iniparser_getstring(ini, "table:table_id", NULL), sizeof(t.table_id));
 		}
-		update_dealers_config_table(dealer_ID, t);
+		update_dealers_config_table(t.dealer_id, DEALERS_KEY, t);
+		update_dealers_config_table(t.dealer_id, T_TABLE_INFO_KEY, t);
+		
 	}
 }
 

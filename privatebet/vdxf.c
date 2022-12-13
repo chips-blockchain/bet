@@ -79,7 +79,7 @@ cJSON *append_primaryaddresses(char *id, cJSON *primaryaddress)
 	pa = get_primaryaddresses(id, 0);
 	final_pa = cJSON_CreateArray();
 	for (int32_t i = 0; i < cJSON_GetArraySize(pa); i++) {
-		cJSON_AddItemToArray(final_pa, cJSON_CreateString(jstri(pa, i)));
+		jaddistr(final_pa, jstri(pa, i));
 	}
 	int g_flag = 1;
 	for (int32_t i = 0; i < cJSON_GetArraySize(primaryaddress); i++) {
@@ -92,7 +92,7 @@ cJSON *append_primaryaddresses(char *id, cJSON *primaryaddress)
 		}
 		if (flag) {
 			g_flag = 0;
-			cJSON_AddItemToArray(final_pa, cJSON_CreateString(jstri(primaryaddress, i)));
+			jaddistr(final_pa, jstri(primaryaddress, i));
 		}
 	}
 	if (g_flag)
@@ -195,7 +195,7 @@ cJSON *get_cmm_key_data(char *id, int16_t full_id, char *key)
 	return cmm_key_data;
 }
 
-cJSON *update_dealers_config_table(char *dealer_id, struct table t)
+cJSON *update_dealers_config_table(char *dealer_id, char *key, struct table t)
 {
 	uint8_t *byte_arr = NULL;
 	char hexstr[arg_size];
@@ -210,10 +210,10 @@ cJSON *update_dealers_config_table(char *dealer_id, struct table t)
 	cJSON_AddStringToObject(dealer_cmm, STRING_VDXF_ID, hexstr);
 
 	dealer_cmm_key = cJSON_CreateObject();
-	cJSON_AddItemToObject(dealer_cmm_key, DEALERS_KEY, dealer_cmm);
+	cJSON_AddItemToObject(dealer_cmm_key, key, dealer_cmm);
 
 	out = cJSON_CreateObject();
-	out = update_cmm(dealer_ID, dealer_cmm_key);
+	out = update_cmm(dealer_id, dealer_cmm_key);
 
 	return out;
 }
