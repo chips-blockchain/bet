@@ -679,24 +679,21 @@ static void bet_start(int argc, char **argv)
 			do_split_tx_amount(atof(argv[2]), atoi(argv[3]));
 		}
 	} else if ((strcmp(argv[1], "extract_id_info") == 0) && (argc == 4)){
-			cJSON *cmm = NULL;
-			if((strcmp(get_vdxf_id(argv[3]), DEALERS_KEY) == 0)||(strcmp(get_vdxf_id(argv[3]), T_PLAYER_INFO_KEY) == 0)) {
-				cmm = get_cmm_key_data(argv[2], 0, get_vdxf_id(argv[3]));
-				decode_table_info(cmm);
-			} else if(strcmp(get_vdxf_id(argv[3]), T_PLAYER_INFO_KEY) == 0) {
-				cmm = get_cmm_key_data(argv[2], 0, get_vdxf_id(argv[3]));
-				if (cmm) {
-					char *in = jstr(cJSON_GetArrayItem(cmm, 0), STRING_VDXF_ID);
-					char *out = calloc(1, strlen(in));
-					hexstr_to_str(in, out);
-					cJSON *temp1 = cJSON_Parse(out);
-					dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp1));
-				}
+		cJSON *cmm = NULL;
+		if((strcmp(get_vdxf_id(argv[3]), DEALERS_KEY) == 0)||(strcmp(get_vdxf_id(argv[3]), T_PLAYER_INFO_KEY) == 0)) {
+			cmm = get_cmm_key_data(argv[2], 0, get_vdxf_id(argv[3]));
+			decode_table_info(cmm);
+		} else if(strcmp(get_vdxf_id(argv[3]), T_PLAYER_INFO_KEY) == 0) {
+			cmm = get_cmm_key_data(argv[2], 0, get_vdxf_id(argv[3]));
+			if (cmm) {
+				char *in = jstr(cJSON_GetArrayItem(cmm, 0), STRING_VDXF_ID);
+				char *out = calloc(1, strlen(in));
+				hexstr_to_str(in, out);
+				cJSON *temp1 = cJSON_Parse(out);
+				dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp1));
 			}
-		} else {
-			dlg_info("\nUsage:: ./bet extract_cmm id\n ex: ./bet extract_cmm sg777_d\n");
 		}
-	} else {
+	}  else {
 		bet_command_info();
 	}
 }
