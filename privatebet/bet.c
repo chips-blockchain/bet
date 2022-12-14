@@ -703,6 +703,10 @@ static void bet_start(int argc, char **argv)
 
 static void sg()
 {
+	double amount = chips_get_balance_on_address_from_tx(VDXF_CASHIERS_ID, "4436bde440f046d9c43a2eaae62a03636a4104043abd9ca495970a7b1ac0649c");
+	dlg_info("amount::%f\n", amount);
+		
+	#if 0
 	cJSON *t_pa = cJSON_CreateArray();
 	cJSON *primaryaddress = cJSON_CreateArray();
 	primaryaddress = get_primaryaddresses("sg777_t", 0);
@@ -713,6 +717,7 @@ static void sg()
 		jaddistr(t_pa, jstri(primaryaddress, i));
 	}
 	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_pa));
+	#endif
 }
 int main(int argc, char **argv)
 { //sg();
