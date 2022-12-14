@@ -400,7 +400,7 @@ int32_t find_table()
 	dlg_info(
 		"max_players :: %d,  big_blind :: %f, min_stake :: %f, max_stake :: %f, table_id :: %s, dealer_id :: %s\n",
 		player_t.max_players, uint32_s_to_float(player_t.big_blind), uint32_s_to_float(player_t.min_stake),
-		player_t.table_id, player_t.dealer_id);
+		uint32_s_to_float(player_t.max_stake), player_t.table_id, player_t.dealer_id);
 
 end:
 	return retval;
