@@ -204,11 +204,14 @@ cJSON *get_cmm_key_data(char *id, int16_t full_id, char *key)
 	cmm = get_cmm(id, full_id);
 
 	if (NULL == cmm) {
+		dlg_info("%s::%d::cmm for id::%s is null",__FUNCTION__, __LINE__, id);
 		return NULL;
 	}
 	cmm_key_data = cJSON_CreateObject();
 	cmm_key_data = cJSON_GetObjectItem(cmm, key);
-
+	if(NULL == cmm_key_data) {
+		dlg_info("%s::%d:: The data of key ::%s for the id::%s is null", __FUNCTION__, __LINE__, key, id);
+	}
 	return cmm_key_data;
 }
 
@@ -620,7 +623,10 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 
 	amount = chips_get_balance_on_address_from_tx(VDXF_CASHIERS_ID, txid);
 	t_table_info = cJSON_CreateObject();
-	t_table_info = get_id_key_data(jstr(payin_tx_data, "table_id"), 0, T_TABLE_INFO_KEY);
+	t_table_info = get_cmm_key_data(jstr(payin_tx_data, "table_id"), 0, T_TABLE_INFO_KEY);
+	if(t_table_info == NULL) {
+		goto end;	
+	}
 	t = decode_table_info(t_table_info);
 	if (t == NULL) {
 		retval = 0;
