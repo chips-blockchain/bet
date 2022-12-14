@@ -14,8 +14,7 @@ char *blockchain_config_ini_file = "./config/blockchain_config.ini";
 char *verus_dealer_config = "./config/verus_dealer.ini";
 char *verus_player_config_file = "./config/verus_player.ini";
 
-char dealer_ID[256];
-struct verus_player_config player_config;
+struct verus_player_config player_config = {0};
 
 cJSON *bet_read_json_file(char *file_name)
 {
@@ -291,7 +290,6 @@ void bet_parse_verus_dealer()
 	} else {
 		if (NULL != iniparser_getstring(ini, "verus:dealer_id", NULL)) {
 			strncpy(t.dealer_id, iniparser_getstring(ini, "verus:dealer_id", NULL), sizeof(t.dealer_id));
-			strncpy(dealer_ID, t.dealer_id, sizeof(t.dealer_id));
 		}
 		if (-1 != iniparser_getint(ini, "table:max_players", -1)) {
 			t.max_players = (uint8_t)iniparser_getint(ini, "table:max_players", -1);
