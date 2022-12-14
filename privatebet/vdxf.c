@@ -625,17 +625,19 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 	t_table_info = cJSON_CreateObject();
 	t_table_info = get_cmm_key_data(jstr(payin_tx_data, "table_id"), 0, T_TABLE_INFO_KEY);
 	if(t_table_info == NULL) {
+		dlg_error("%s::%d::The info of table %s of key %s is not avaialble\n",__FUNCTION__, __LINE__,jstr(payin_tx_data, "table_id"),T_TABLE_INFO_KEY);
 		retval = 0;
 		goto end;	
 	}
 	t = decode_table_info(t_table_info);
 	if (t == NULL) {
+		dlg_error("%s::%d::Decoding of table info into table struct is failed\n",__FUNCTION__, __LINE__);
 		retval = 0;
 		goto end;
 	}
 	if ((amount < uint32_s_to_float(t->min_stake)) && (amount > uint32_s_to_float(t->max_stake))) {
 		retval = 0;
-		dlg_info(
+		dlg_error(
 			"%s::%d::Checks on funds deposit is failed, funds deposited ::%f should be in the range %f::%f\n",
 			__FUNCTION__, __LINE__, amount, uint32_s_to_float(t->min_stake),
 			uint32_s_to_float(t->max_stake));
@@ -651,17 +653,17 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 					strcpy(pa_tx_hash, strtok(NULL, "_"));
 					dlg_info("%s::%d ::%s::%s\n",__FUNCTION__,__LINE__,pa_tx_hash, txid);		
 					if(strncmp(pa_tx_hash, txid, strlen(pa_tx_hash)) == 0){
-						dlg_info("%s::%d::This tx details are already updated\n", __FUNCTION__, __LINE__);		
+						dlg_warn("%s::%d::This tx details are already updated\n", __FUNCTION__, __LINE__);		
 						retval = 2; // Do nothing
 						break;
 					} else {
 						retval = 0; //	
-						dlg_info("%s::%d::The primaryaddress is already exists\n", __FUNCTION__, __LINE__);
+						dlg_error("%s::%d::The primaryaddress is already exists\n", __FUNCTION__, __LINE__);
 						break;
 					}
 				} else {
 					retval =0;
-					dlg_info("%s::%d::Probably the format of pa::%s might be wrong\n", __FUNCTION__,__LINE__,jstri(primaryaddresses, i));
+					dlg_error("%s::%d::Probably the format of pa::%s might be wrong\n", __FUNCTION__,__LINE__,jstri(primaryaddresses, i));
 					break;
 				}
 			}
