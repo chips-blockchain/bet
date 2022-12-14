@@ -608,44 +608,46 @@ end:
 	return argjson;
 }
 
-
 int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 {
 	int32_t retval = 1;
 	double amount = 0;
 	cJSON *t_table_info = NULL, *primaryaddresses = NULL;
 	struct table *t = NULL;
-	
-	if((!txid)||(!payin_tx_data)){
+
+	if ((!txid) || (!payin_tx_data)) {
 		retval = 0;
 		goto end;
 	}
-	
+
 	amount = chips_get_balance_on_address_from_tx(VDXF_CASHIERS_ID, txid);
 	t_table_info = cJSON_CreateObject();
-	t_table_info = get_id_key_data(jstr(payin_tx_data, "table_id"),0,T_TABLE_INFO_KEY);
+	t_table_info = get_id_key_data(jstr(payin_tx_data, "table_id"), 0, T_TABLE_INFO_KEY);
 	t = decode_table_info(t_table_info);
-	if(t == NULL){
+	if (t == NULL) {
 		retval = 0;
 		goto end;
 	}
-	if((amount < uint32_s_to_float(t->min_stake)) && (amount > uint32_s_to_float(t->max_stake))) {
+	if ((amount < uint32_s_to_float(t->min_stake)) && (amount > uint32_s_to_float(t->max_stake))) {
 		retval = 0;
-		dlg_info("%s::%d::Checks on funds deposit is failed, funds deposited ::%f should be in the range %f::%f\n", __FUNCTION__,__LINE__,amount, uint32_s_to_float(t->min_stake), uint32_s_to_float(t->max_stake));
+		dlg_info(
+			"%s::%d::Checks on funds deposit is failed, funds deposited ::%f should be in the range %f::%f\n",
+			__FUNCTION__, __LINE__, amount, uint32_s_to_float(t->min_stake),
+			uint32_s_to_float(t->max_stake));
 		goto end;
 	}
-	
-	primaryaddresses = get_primaryaddresses(jstr(payin_tx_data, "table_id"),0);
-	if(primaryaddresses) {
-		for(int32_t i=0; i<cJSON_GetArraySize(primaryaddresses); i++){
-			if(strcmp(jstri(primaryaddresses,i),jstr(payin_tx_data,"primaryaddress")) == 0){
+
+	primaryaddresses = get_primaryaddresses(jstr(payin_tx_data, "table_id"), 0);
+	if (primaryaddresses) {
+		for (int32_t i = 0; i < cJSON_GetArraySize(primaryaddresses); i++) {
+			if (strcmp(jstri(primaryaddresses, i), jstr(payin_tx_data, "primaryaddress")) == 0) {
 				retval = 0;
 				dlg_info("%s::%d::The primaryaddress is already exists\n", __FUNCTION__, __LINE__);
 				break;
 			}
 		}
 	}
-	
+
 	dlg_info("max_players :: %d", t->max_players);
 	dlg_info("big_blind :: %f", uint32_s_to_float(t->big_blind));
 	dlg_info("min_stake :: %f", uint32_s_to_float(t->min_stake));
@@ -653,8 +655,8 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 	dlg_info("table_id :: %s", t->table_id);
 	dlg_info("dealer_id :: %s", t->dealer_id);
 
-	end:
-		return retval;
+end:
+	return retval;
 }
 
 void test_loop(char *blockhash)
@@ -686,15 +688,15 @@ void test_loop(char *blockhash)
 			cJSON *payin_tx_data =
 				chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 			dlg_info("%s::%d::tx_data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(payin_tx_data));
-			retval = do_payin_tx_checks(payin_tx_data,jstr(cJSON_GetArrayItem(argjson, i), "txid"));
-			if(retval == 0){
+			retval = do_payin_tx_checks(payin_tx_data, jstr(cJSON_GetArrayItem(argjson, i), "txid"));
+			if (retval == 0) {
 				dlg_info("%s::%d::Checks on player payin_tx got failed\n", __FUNCTION__, __LINE__);
 				goto end;
 			}
-			t_player_info = get_cmm_key_data(jstr(payin_tx_data, "table_id"),0,T_PLAYER_INFO_KEY);
+			t_player_info = get_cmm_key_data(jstr(payin_tx_data, "table_id"), 0, T_PLAYER_INFO_KEY);
 			int32_t num_players = 0;
 			if (t_player_info == NULL) {
-				t_player_info = cJSON_CreateObject();				
+				t_player_info = cJSON_CreateObject();
 			} else {
 				num_players = jint(t_player_info, "num_players");
 				cJSON_DeleteItemFromObject(t_player_info, "num_players");
