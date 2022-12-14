@@ -308,7 +308,7 @@ void bet_parse_verus_dealer()
 		if (NULL != iniparser_getstring(ini, "table:table_id", NULL)) {
 			strncpy(t.table_id, iniparser_getstring(ini, "table:table_id", NULL), sizeof(t.table_id));
 		}
-		update_dealers_config_table(t.dealer_id, DEALERS_KEY, t);
+		update_dealers_config_table(t.dealer_id, T_TABLE_INFO_KEY, t);
 		update_dealers_config_table(t.table_id, T_TABLE_INFO_KEY, t);
 	}
 }
