@@ -1173,7 +1173,7 @@ int32_t chips_extract_data(char *tx, char **rand_str)
 	vout = cJSON_GetObjectItem(decoded_raw_tx, "vout");
 	for (int i = 0; i < cJSON_GetArraySize(vout); i++) {
 		cJSON *temp = cJSON_GetArrayItem(vout, i);
-		dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
+		//dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp));
 		double value = jdouble(temp, "value");
 		script_pubkey = cJSON_GetObjectItem(temp, "scriptPubKey");
 		if (value == 0.0) {
@@ -1183,7 +1183,7 @@ int32_t chips_extract_data(char *tx, char **rand_str)
 			break;
 		}
 	}
-	dlg_info("%s::%d::str::%s\n", __FUNCTION__, __LINE__, *rand_str);
+	//dlg_info("%s::%d::str::%s\n", __FUNCTION__, __LINE__, *rand_str);
 	return retval;
 }
 
