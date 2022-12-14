@@ -14,7 +14,7 @@ char *blockchain_config_ini_file = "./config/blockchain_config.ini";
 char *verus_dealer_config = "./config/verus_dealer.ini";
 char *verus_player_config_file = "./config/verus_player.ini";
 
-struct verus_player_config player_config = {0};
+struct verus_player_config player_config = { 0 };
 
 cJSON *bet_read_json_file(char *file_name)
 {
