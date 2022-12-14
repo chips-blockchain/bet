@@ -572,7 +572,7 @@ end:
 
 static cJSON *update_t_player_info_pa(char *id, cJSON *t_player_info, cJSON *primaryaddresses)
 {
-	cJSON *id_info = NULL, *argjson = NULL, *cmm = NULL, *player_info = NULL;
+	cJSON *id_info = NULL, *argjson = NULL, *cmm = NULL, *player_info = NULL, *t_table_info = NULL;
 	int argc;
 	char **argv = NULL;
 	char params[arg_size] = { 0 }, *hexstr = NULL;
@@ -590,6 +590,16 @@ static cJSON *update_t_player_info_pa(char *id, cJSON *t_player_info, cJSON *pri
 	cJSON_AddStringToObject(player_info, STRING_VDXF_ID, hexstr);
 
 	cmm = cJSON_CreateObject();
+
+	/*
+		Reupdating t_table_info
+	*/
+	t_table_info = get_cmm_key_data(id,0,T_TABLE_INFO_KEY);
+	if(t_table_info) {
+		cJSON_AddItemToObject(cmm, T_TABLE_INFO_KEY, t_table_info);		
+	}
+
+	
 	cJSON_AddItemToObject(cmm, T_PLAYER_INFO_KEY, player_info);
 	cJSON_AddItemToObject(id_info, "contentmultimap", cmm);
 	cJSON_AddItemToObject(id_info, "primaryaddresses", primaryaddresses);
@@ -774,8 +784,8 @@ void test_loop(char *blockhash)
 			jaddistr(t_pa, jstr(payin_tx_data, "primaryaddress"));
 			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_pa));
 
-			//cJSON *temp1 = update_t_player_info_pa(jstr(payin_tx_data, "table_id"), updated_player_info, t_pa);
-			//dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp1));
+			cJSON *temp1 = update_t_player_info_pa(jstr(payin_tx_data, "table_id"), updated_player_info, t_pa);
+			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp1));
 		}
 	}
 end:
