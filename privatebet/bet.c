@@ -739,7 +739,8 @@ static void sg()
 }
 int main(int argc, char **argv)
 { //sg();
-	bet_start(argc, argv);
+	test_loop("000000de236cb0e20b625da47a5f62b424916a59483de9eb3bbd13add8d695ba");
+	//bet_start(argc, argv);
 	return OK;
 }
 
