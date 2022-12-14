@@ -773,8 +773,8 @@ void test_loop(char *blockhash)
 			jaddistr(t_pa, jstr(payin_tx_data, "primaryaddress"));
 			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_pa));
 
-			cJSON *temp1 = update_t_player_info_pa(jstr(payin_tx_data, "table_id"), updated_player_info, t_pa);
-			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp1));
+			//cJSON *temp1 = update_t_player_info_pa(jstr(payin_tx_data, "table_id"), updated_player_info, t_pa);
+			//dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp1));
 		}
 	}
 end:
