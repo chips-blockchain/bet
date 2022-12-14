@@ -612,8 +612,8 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 {
 	int32_t retval = 1;
 	double amount = 0;
-	char pa_tx_hash[10] = { 0 };
-	cJSON *t_table_info = NULL, *primaryaddresses = NULL;
+	char pa_tx_hash[10] = { 0 }, pa[128] = {0};
+	cJSON *t_table_info = NULL, *primaryaddresses = NULL, *t_player_info = NULL, *pa_arr = NULL;
 	struct table *t = NULL;
 
 	if ((!txid) || (!payin_tx_data)) {
@@ -644,7 +644,32 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 			uint32_s_to_float(t->max_stake));
 		goto end;
 	}
-
+	t_player_info = cJSON_CreateObject();
+	t_player_info = get_cmm_key_data(jstr(payin_tx_data, "table_id"), 0, T_PLAYER_INFO_KEY);
+	if(t_player_info) {
+		dlg_info("%s::%d::Players joined so far::%d\n", __FUNCTION__,__LINE__,jint(t_player_info,"num_players"));
+		if(jint(t_player_info,"num_players")>t->max_players) {
+			dlg_error("%s::%d::Table ::%s is full\n", __FUNCTION__, __LINE__,jstr(payin_tx_data, "table_id"));
+			retval = 0;
+			goto end;
+		}
+		
+		pa_arr = cJSON_CreateArray();
+		pa_arr = cJSON_GetObjectItem(pa_arr, "player_info");
+		strncpy(pa, jstr(payin_tx_data,"primaryaddress"), sizeof(pa));
+		for(int32_t i=0; i<cJSON_GetArraySize(pa_arr); i++) {
+			if(0 == strncmp(jstri(pa_arr,i),pa,strlen(pa))) {
+				dlg_info("%s::%d :: %s::%s\n", __FUNCTION__, __LINE__, jstri(pa_arr, i),pa);
+				retval =0;
+				goto end;
+				
+			}
+		}
+		
+	}
+	
+	
+	#if 0
 	primaryaddresses = get_primaryaddresses(jstr(payin_tx_data, "table_id"), 0);
 	if (primaryaddresses) {
 		for (int32_t i = 0; i < cJSON_GetArraySize(primaryaddresses); i++) {
@@ -675,7 +700,7 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 			}
 		}
 	}
-
+	#endif
 end:
 	return retval;
 }
@@ -714,22 +739,29 @@ void test_loop(char *blockhash)
 				dlg_info("%s::%d::Checks on player payin_tx got failed\n", __FUNCTION__, __LINE__);
 				goto end;
 			}
+
+
+
+			
+
+
+			
 			t_player_info = get_cmm_key_data(jstr(payin_tx_data, "table_id"), 0, T_PLAYER_INFO_KEY);
+			cJSON *updated_player_info = cJSON_CreateObject();
+			cJSON *player_info = cJSON_CreateArray();
 			int32_t num_players = 0;
-			if (t_player_info == NULL) {
-				t_player_info = cJSON_CreateObject();
-			} else {
+			if(t_player_info) {
 				num_players = jint(t_player_info, "num_players");
-				cJSON_DeleteItemFromObject(t_player_info, "num_players");
+				player_info = cJSON_GetObjectItem(t_player_info,"player_info");				
 			}
-			num_players = num_players + 1;
-			cJSON_AddNumberToObject(t_player_info, "num_players", num_players);
+			num_players++;
 			char hash[10] = { 0 };
 			strncpy(hash, jstr(cJSON_GetArrayItem(argjson, i), "txid"), 4);
-			sprintf(pa_tx_hash, "%s_%s", jstr(payin_tx_data, "primaryaddress"), hash);
-			//cJSON_AddNumberToObject(t_player_info, jstr(payin_tx_data, "primaryaddress"), num_players);
-			cJSON_AddNumberToObject(t_player_info, pa_tx_hash, num_players);
-			dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_player_info));
+			sprintf(pa_tx_hash, "%s_%s_%d", jstr(payin_tx_data, "primaryaddress"), hash, num_players);
+			cJSON_AddNumberToObject(updated_player_info,"num_players",num_players);
+			cJSON_AddItemToObject(updated_player_info,"player_info",player_info);
+
+			dlg_info("%s::%d::updated_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(updated_player_info));
 
 			primaryaddress = cJSON_CreateArray();
 			primaryaddress = get_primaryaddresses(jstr(payin_tx_data, "table_id"), 0);
@@ -741,7 +773,7 @@ void test_loop(char *blockhash)
 			jaddistr(t_pa, jstr(payin_tx_data, "primaryaddress"));
 			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_pa));
 
-			cJSON *temp1 = update_t_player_info_pa(jstr(payin_tx_data, "table_id"), t_player_info, t_pa);
+			cJSON *temp1 = update_t_player_info_pa(jstr(payin_tx_data, "table_id"), updated_player_info, t_pa);
 			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp1));
 		}
 	}
