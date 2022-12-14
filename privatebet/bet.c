@@ -683,7 +683,15 @@ static void bet_start(int argc, char **argv)
 		if (strcmp(get_vdxf_id(argv[3]), T_TABLE_INFO_KEY) == 0) {
 			cmm = get_cmm_key_data(argv[2], 0, get_vdxf_id(argv[3]));
 			if (cmm) {
-				decode_table_info(cmm);
+				struct table *t = decode_table_info(cmm);
+				if(t) {
+					dlg_info("max_players :: %d", t->max_players);
+					dlg_info("big_blind :: %f", uint32_s_to_float(t->big_blind));
+					dlg_info("min_stake :: %f", uint32_s_to_float(t->min_stake));
+					dlg_info("max_stake :: %f", uint32_s_to_float(t->max_stake));
+					dlg_info("table_id :: %s", t->table_id);
+					dlg_info("dealer_id :: %s", t->dealer_id);
+				}
 			} else {
 				dlg_info("There isn't any data with the key ::%s(%s) on the ID::%s\n", argv[3],
 					 get_vdxf_id(argv[3]), argv[2]);
