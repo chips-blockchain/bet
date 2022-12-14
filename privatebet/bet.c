@@ -680,10 +680,8 @@ static void bet_start(int argc, char **argv)
 		}
 	} else if ((strcmp(argv[1], "extract_id_info") == 0) && (argc == 4)) {
 		cJSON *cmm = NULL;
-		dlg_info("%s::%d::%s::%s\n", __FUNCTION__, __LINE__, get_vdxf_id(argv[3]), T_TABLE_INFO_KEY);
 		if (strcmp(get_vdxf_id(argv[3]), T_TABLE_INFO_KEY) == 0) {
 			cmm = get_cmm_key_data(argv[2], 0, get_vdxf_id(argv[3]));
-			dlg_info("%s::%d::cmm::%s\n", __FUNCTION__, __LINE__, cJSON_Print(cmm));
 			if (cmm) {
 				decode_table_info(cmm);
 			} else {
@@ -698,6 +696,9 @@ static void bet_start(int argc, char **argv)
 				hexstr_to_str(in, out);
 				cJSON *temp1 = cJSON_Parse(out);
 				dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp1));
+			} else {
+				dlg_info("There isn't any data with the key ::%s(%s) on the ID::%s\n", argv[3],
+					 get_vdxf_id(argv[3]), argv[2]);
 			}
 		} else {
 			dlg_info("The key::%s(%s), is not present in the ID::%s\n", argv[3], get_vdxf_id(argv[3]),
