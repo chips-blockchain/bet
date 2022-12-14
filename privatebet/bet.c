@@ -682,10 +682,11 @@ static void bet_start(int argc, char **argv)
 		cJSON *cmm = NULL;
 		if (strcmp(get_vdxf_id(argv[3]), T_TABLE_INFO_KEY) == 0) {
 			cmm = get_cmm_key_data(argv[2], 0, get_vdxf_id(argv[3]));
-			if(cmm) {
+			if (cmm) {
 				decode_table_info(cmm);
 			} else {
-				dlg_info("There isn't any data with the key ::%s(%s) on the ID::%s\n", argv[3], get_vdxf_id(argv[3]), argv[2]);
+				dlg_info("There isn't any data with the key ::%s(%s) on the ID::%s\n", argv[3],
+					 get_vdxf_id(argv[3]), argv[2]);
 			}
 		} else if (strcmp(get_vdxf_id(argv[3]), T_PLAYER_INFO_KEY) == 0) {
 			cmm = get_cmm_key_data(argv[2], 0, get_vdxf_id(argv[3]));
@@ -707,10 +708,11 @@ static void bet_start(int argc, char **argv)
 
 static void sg()
 {
-	double amount = chips_get_balance_on_address_from_tx(VDXF_CASHIERS_ID, "4436bde440f046d9c43a2eaae62a03636a4104043abd9ca495970a7b1ac0649c");
+	double amount = chips_get_balance_on_address_from_tx(
+		VDXF_CASHIERS_ID, "4436bde440f046d9c43a2eaae62a03636a4104043abd9ca495970a7b1ac0649c");
 	dlg_info("amount::%f\n", amount);
-		
-	#if 0
+
+#if 0
 	cJSON *t_pa = cJSON_CreateArray();
 	cJSON *primaryaddress = cJSON_CreateArray();
 	primaryaddress = get_primaryaddresses("sg777_t", 0);
@@ -721,7 +723,7 @@ static void sg()
 		jaddistr(t_pa, jstri(primaryaddress, i));
 	}
 	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_pa));
-	#endif
+#endif
 }
 int main(int argc, char **argv)
 { //sg();
