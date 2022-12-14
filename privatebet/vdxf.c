@@ -503,13 +503,6 @@ struct table *decode_table_info(cJSON *dealer_cmm_data)
 	t = calloc(1, sizeof(struct table));
 	t = (struct table *)table_data;
 
-	dlg_info("max_players :: %d", t->max_players);
-	dlg_info("big_blind :: %f", uint32_s_to_float(t->big_blind));
-	dlg_info("min_stake :: %f", uint32_s_to_float(t->min_stake));
-	dlg_info("max_stake :: %f", uint32_s_to_float(t->max_stake));
-	dlg_info("table_id :: %s", t->table_id);
-	dlg_info("dealer_id :: %s", t->dealer_id);
-
 end:
 	return t;
 }
@@ -616,6 +609,7 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 {
 	int32_t retval = 1;
 	double amount = 0;
+	char pa_tx_hash[10] ={0};
 	cJSON *t_table_info = NULL, *primaryaddresses = NULL;
 	struct table *t = NULL;
 
@@ -644,20 +638,28 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 	primaryaddresses = get_primaryaddresses(jstr(payin_tx_data, "table_id"), 0);
 	if (primaryaddresses) {
 		for (int32_t i = 0; i < cJSON_GetArraySize(primaryaddresses); i++) {
-			if (strcmp(jstri(primaryaddresses, i), jstr(payin_tx_data, "primaryaddress")) == 0) {
-				retval = 0;
-				dlg_info("%s::%d::The primaryaddress is already exists\n", __FUNCTION__, __LINE__);
-				break;
+			if (strncmp(jstri(primaryaddresses, i), jstr(payin_tx_data, "primaryaddress"), strlen(jstr(payin_tx_data, "primaryaddress"))) == 0) {
+				dlg_info("%s::%d ::%s::%s\n",__FUNCTION__,__LINE__,jstri(primaryaddresses, i), jstr(payin_tx_data, "primaryaddress"));		
+				if(strtok(jstri(primaryaddresses, i), "_")){					
+					strcpy(pa_tx_hash, strtok(NULL, "_"));
+					dlg_info("%s::%d ::%s::%s\n",__FUNCTION__,__LINE__,pa_tx_hash, txid);		
+					if(strncmp(pa_tx_hash, txid, strlen(pa_tx_hash)) == 0){
+						dlg_info("%s::%d::This tx details are already updated\n", __FUNCTION__, __LINE__);		
+						retval = 2; // Do nothing
+						break;
+					} else {
+						retval = 0; //	
+						dlg_info("%s::%d::The primaryaddress is already exists\n", __FUNCTION__, __LINE__);
+						break;
+					}
+				} else {
+					retval =0;
+					dlg_info("%s::%d::Probably the format of pa::%s might be wrong\n", __FUNCTION__,__LINE__,jstri(primaryaddresses, i));
+					break;
+				}
 			}
 		}
 	}
-
-	dlg_info("max_players :: %d", t->max_players);
-	dlg_info("big_blind :: %f", uint32_s_to_float(t->big_blind));
-	dlg_info("min_stake :: %f", uint32_s_to_float(t->min_stake));
-	dlg_info("max_stake :: %f", uint32_s_to_float(t->max_stake));
-	dlg_info("table_id :: %s", t->table_id);
-	dlg_info("dealer_id :: %s", t->dealer_id);
 
 end:
 	return retval;
@@ -666,7 +668,7 @@ end:
 void test_loop(char *blockhash)
 {
 	dlg_info("%s called!", __FUNCTION__);
-	char verus_addr[1][100] = { CASHIERS_ID };
+	char verus_addr[1][100] = { CASHIERS_ID }, pa_tx_hash[128] = {0};
 	int32_t blockcount = 0, retval = 0;
 	cJSON *blockjson = NULL, *t_player_info = NULL, *primaryaddress = NULL;
 
@@ -707,9 +709,14 @@ void test_loop(char *blockhash)
 			}
 			num_players = num_players + 1;
 			cJSON_AddNumberToObject(t_player_info, "num_players", num_players);
-			cJSON_AddNumberToObject(t_player_info, jstr(payin_tx_data, "primaryaddress"), num_players);
+			char hash[10] = {0};
+			strncpy(hash,jstr(cJSON_GetArrayItem(argjson, i), "txid"),4);
+			sprintf(pa_tx_hash,"%s_%s",jstr(payin_tx_data, "primaryaddress"),hash);
+			//cJSON_AddNumberToObject(t_player_info, jstr(payin_tx_data, "primaryaddress"), num_players);
+			cJSON_AddNumberToObject(t_player_info, pa_tx_hash, num_players);
 			dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_player_info));
 
+			
 			primaryaddress = cJSON_CreateArray();
 			primaryaddress = get_primaryaddresses(jstr(payin_tx_data, "table_id"), 0);
 
