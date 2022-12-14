@@ -261,7 +261,11 @@ struct table *get_dealers_config_table(char *dealer_id, char *table_id)
 		goto end;
 
 	dealer_cmm_data = cJSON_CreateObject();
-	dealer_cmm_data = get_cmm_key_data(dealer_id, 0, DEALERS_KEY);
+	dealer_cmm_data = get_cmm_key_data(dealer_id, 0, T_TABLE_INFO_KEY);
+	if(dealer_cmm_data == NULL){
+		dlg_info("%s::%d::The key ::%s is not found in the cmm of id ::%s\n", __FUNCTION__, __LINE__, T_TABLE_INFO_KEY, dealer_id);
+		goto end;
+	}
 
 	//TODO:Right now we dealing with single table, when multi table support comes,
 	// we need to make checks whether the table with the specific name exists or not.
