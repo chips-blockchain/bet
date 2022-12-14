@@ -680,6 +680,7 @@ static void bet_start(int argc, char **argv)
 		}
 	} else if ((strcmp(argv[1], "extract_id_info") == 0) && (argc == 4)) {
 		cJSON *cmm = NULL;
+		dlg_info("%s::%d::%s::%s\n", __FUNCTION__, __LINE__, get_vdxf_id(argv[3]), T_TABLE_INFO_KEY);
 		if (strcmp(get_vdxf_id(argv[3]), T_TABLE_INFO_KEY) == 0) {
 			cmm = get_cmm_key_data(argv[2], 0, get_vdxf_id(argv[3]));
 			dlg_info("%s::%d::cmm::%s\n", __FUNCTION__, __LINE__, cJSON_Print(cmm));
