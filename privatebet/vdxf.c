@@ -625,6 +625,7 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 	t_table_info = cJSON_CreateObject();
 	t_table_info = get_cmm_key_data(jstr(payin_tx_data, "table_id"), 0, T_TABLE_INFO_KEY);
 	if(t_table_info == NULL) {
+		retval = 0;
 		goto end;	
 	}
 	t = decode_table_info(t_table_info);
