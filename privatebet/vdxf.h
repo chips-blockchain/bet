@@ -29,8 +29,8 @@ key is represented as chips.vrsc::poker.cashiers.
 /*
 {
 	no_of_players: 2;
-	primaryaddress_1:0;
-	primaryaddress_2:1;
+	primaryaddress_4_byte_tx_hash:0;
+	primaryaddress_4_byte_tx_hash:1;
 }
 */
 #define T_PLAYER_INFO_KEY "i8qHmsn6VGrPm7F6YRy6DV8nWTn3eCWXdJ"
