@@ -67,10 +67,12 @@ verus -chain=chips10sec updateidentity '{"name": "sg777_t", "parent":"i6gViGxt7Y
 ```  
 
 When player makes the payin_tx by depositing funds to the cashier address, the cashier does the following thing upon receiving the payin_tx.
-1. Cashier reads the data part of payin_tx, the data part contains table_id and primaryaddress.
-2. Cashier reads the `table_info` and `player_info` keys from the table and figure it out whats the max players allowed and see if this player can be accomodated in the table or not.
-  a. If the seats are left on the table, then the cashier adds the primaryaddress of the player to the `primaryaddresses` of the table and in `player_info` cashier updates the information about the player along with its position number on the table. 
-  b. If the table is full, then the cashier simply deposit funds back to the primaryaddress mentioned by the player. 
- 3. No two join requests from the same primaryaddress are accepted, so that way if a player makes multiple join requests accidentally only one gets accepted. To avoid single player using multiple primaryadddress to join the table, going forward we will allow the players to register and provide an ID to the players and also provide an option to the dealer to allow only players with specific ID can join the table, that way we can elimincate the possibility of same player taking multiple seats.
+1. Cashier reads the data part of payin_tx, the data part contains dealer_id, table_id and primaryaddress.
+2. Cashier reads the `t_table_info` and `t_player_info` keys from the table_id and checks if there exists any vacant spot left on the table and also checks if the player has deposited required funds to join the table and based on these checks cashier do one of the following:
+  a. If there exists a vacant seat on the table, then the cashier adds the primaryaddress of the player to the `primaryaddresses` of the table and also updates the  `t_player_info` key with the information about the player by assigning a spot(with the pos_num) on the table. Now the cashier on incremental basis assigning the position number to the players, going forward players can choose where to sit on the table. 
+  b. If the table is full or if the player hasn't made enough funds deposited to the cashiers address, then the cashier simply deposit funds back to the primaryaddress of the player. 
+ 3. No multiple join requests from the same primaryaddress are accepted, if by any reason player makes multiple join requests to the table only one is accepted. Ofcourse this is not a good enough check to prevent the player using multiple primaryaddress and competing to join the multiple spots on the same table. To avoid single player using multiple primaryadddress to join the table, going forward we will allow the players to register and provide an ID to the players and also provide an option to the dealer to allow only players with specific ID can join the table, that way we elimincate the possibility of same player taking multiple seats.
+
+The next important aspect is how the player be communicated about the outcome of player_join. For which after making the payn_tx, the player continuously polls on the table_id for about five blocks to see if its information is added to the primaryaddresses of the table_id. This can be done even more efficiently but for now I'm bruteforcing the search on table_id in the code.
 
 In either case we should communicate that outcome player_join to the player. 
