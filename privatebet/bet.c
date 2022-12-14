@@ -623,7 +623,7 @@ static void bet_start(int argc, char **argv)
 		find_table();
 		cJSON *data = NULL;
 		data = cJSON_CreateObject();
-		cJSON_AddStringToObject(data,"dealer_id",player_config.dealer_id);
+		cJSON_AddStringToObject(data, "dealer_id", player_config.dealer_id);
 		cJSON_AddStringToObject(data, "table_id", player_config.table_id);
 		cJSON_AddStringToObject(data, "primaryaddress", player_config.primaryaddress);
 		verus_sendcurrency_data(data);
@@ -685,7 +685,7 @@ static void bet_start(int argc, char **argv)
 			cmm = get_cmm_key_data(argv[2], 0, get_vdxf_id(argv[3]));
 			if (cmm) {
 				struct table *t = decode_table_info(cmm);
-				if(t) {
+				if (t) {
 					dlg_info("max_players :: %d", t->max_players);
 					dlg_info("big_blind :: %f", uint32_s_to_float(t->big_blind));
 					dlg_info("min_stake :: %f", uint32_s_to_float(t->min_stake));
@@ -739,8 +739,8 @@ static void sg()
 }
 int main(int argc, char **argv)
 { //sg();
-	test_loop("000000de236cb0e20b625da47a5f62b424916a59483de9eb3bbd13add8d695ba");
-	//bet_start(argc, argv);
+	//test_loop("000000de236cb0e20b625da47a5f62b424916a59483de9eb3bbd13add8d695ba");
+	bet_start(argc, argv);
 	return OK;
 }
 

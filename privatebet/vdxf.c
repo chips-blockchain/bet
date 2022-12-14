@@ -4,7 +4,7 @@
 #include "misc.h"
 #include "err.h"
 
-struct table player_t = {0};
+struct table player_t = { 0 };
 
 char *get_vdxf_id(char *key_name)
 {
@@ -204,12 +204,12 @@ cJSON *get_cmm_key_data(char *id, int16_t full_id, char *key)
 	cmm = get_cmm(id, full_id);
 
 	if (NULL == cmm) {
-		dlg_info("%s::%d::cmm for id::%s is null",__FUNCTION__, __LINE__, id);
+		dlg_info("%s::%d::cmm for id::%s is null", __FUNCTION__, __LINE__, id);
 		return NULL;
 	}
 	cmm_key_data = cJSON_CreateObject();
 	cmm_key_data = cJSON_GetObjectItem(cmm, key);
-	if(NULL == cmm_key_data) {
+	if (NULL == cmm_key_data) {
 		dlg_info("%s::%d:: The data of key ::%s for the id::%s is null", __FUNCTION__, __LINE__, key, id);
 	}
 	return cmm_key_data;
@@ -265,8 +265,9 @@ struct table *get_dealers_config_table(char *dealer_id, char *table_id)
 
 	dealer_cmm_data = cJSON_CreateObject();
 	dealer_cmm_data = get_cmm_key_data(dealer_id, 0, T_TABLE_INFO_KEY);
-	if(dealer_cmm_data == NULL){
-		dlg_info("%s::%d::The key ::%s is not found in the cmm of id ::%s\n", __FUNCTION__, __LINE__, T_TABLE_INFO_KEY, dealer_id);
+	if (dealer_cmm_data == NULL) {
+		dlg_info("%s::%d::The key ::%s is not found in the cmm of id ::%s\n", __FUNCTION__, __LINE__,
+			 T_TABLE_INFO_KEY, dealer_id);
 		goto end;
 	}
 
@@ -357,10 +358,9 @@ bool is_dealer_exists(char *dealer_id)
 	}
 
 	for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ids); i++) {
-		
-		if (0 == strcmp(dealer_id, jstri(dealer_ids,i))) {
+		if (0 == strcmp(dealer_id, jstri(dealer_ids, i))) {
 			dlg_info("%s::%d::The preferred dealer id exists::%s\n", __FUNCTION__, __LINE__,
-				 jstri(dealer_ids,i));
+				 jstri(dealer_ids, i));
 			dealer_exists = true;
 			break;
 		}
@@ -384,8 +384,8 @@ int32_t find_table()
 			goto end;
 		}
 		for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ids); i++) {
-			//TODO: Need to check if the dealer tables are empty or not.			
-			strncpy(player_config.dealer_id, jstri(dealer_ids,i), sizeof(player_config.dealer_id));
+			//TODO: Need to check if the dealer tables are empty or not.
+			strncpy(player_config.dealer_id, jstri(dealer_ids, i), sizeof(player_config.dealer_id));
 			dlg_info("%s::%d::Dealer chosen::%s\n", __FUNCTION__, __LINE__, player_config.dealer_id);
 			break;
 		}
@@ -397,7 +397,10 @@ int32_t find_table()
 	}
 	memcpy((void *)&player_t, (void *)t, sizeof(player_t));
 
-	dlg_info("max_players :: %d,  big_blind :: %f, min_stake :: %f, max_stake :: %f, table_id :: %s, dealer_id :: %s\n", player_t.max_players,uint32_s_to_float(player_t.big_blind), uint32_s_to_float(player_t.min_stake), player_t.table_id, player_t.dealer_id);
+	dlg_info(
+		"max_players :: %d,  big_blind :: %f, min_stake :: %f, max_stake :: %f, table_id :: %s, dealer_id :: %s\n",
+		player_t.max_players, uint32_s_to_float(player_t.big_blind), uint32_s_to_float(player_t.min_stake),
+		player_t.table_id, player_t.dealer_id);
 
 end:
 	return retval;
@@ -609,7 +612,7 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 {
 	int32_t retval = 1;
 	double amount = 0;
-	char pa_tx_hash[10] ={0};
+	char pa_tx_hash[10] = { 0 };
 	cJSON *t_table_info = NULL, *primaryaddresses = NULL;
 	struct table *t = NULL;
 
@@ -621,14 +624,15 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 	amount = chips_get_balance_on_address_from_tx(VDXF_CASHIERS_ID, txid);
 	t_table_info = cJSON_CreateObject();
 	t_table_info = get_cmm_key_data(jstr(payin_tx_data, "table_id"), 0, T_TABLE_INFO_KEY);
-	if(t_table_info == NULL) {
-		dlg_error("%s::%d::The info of table %s of key %s is not avaialble\n",__FUNCTION__, __LINE__,jstr(payin_tx_data, "table_id"),T_TABLE_INFO_KEY);
+	if (t_table_info == NULL) {
+		dlg_error("%s::%d::The info of table %s of key %s is not avaialble\n", __FUNCTION__, __LINE__,
+			  jstr(payin_tx_data, "table_id"), T_TABLE_INFO_KEY);
 		retval = 0;
-		goto end;	
+		goto end;
 	}
 	t = decode_table_info(t_table_info);
 	if (t == NULL) {
-		dlg_error("%s::%d::Decoding of table info into table struct is failed\n",__FUNCTION__, __LINE__);
+		dlg_error("%s::%d::Decoding of table info into table struct is failed\n", __FUNCTION__, __LINE__);
 		retval = 0;
 		goto end;
 	}
@@ -644,23 +648,28 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 	primaryaddresses = get_primaryaddresses(jstr(payin_tx_data, "table_id"), 0);
 	if (primaryaddresses) {
 		for (int32_t i = 0; i < cJSON_GetArraySize(primaryaddresses); i++) {
-			if (strncmp(jstri(primaryaddresses, i), jstr(payin_tx_data, "primaryaddress"), strlen(jstr(payin_tx_data, "primaryaddress"))) == 0) {
-				dlg_info("%s::%d ::%s::%s\n",__FUNCTION__,__LINE__,jstri(primaryaddresses, i), jstr(payin_tx_data, "primaryaddress"));		
-				if(strtok(jstri(primaryaddresses, i), "_")){					
+			if (strncmp(jstri(primaryaddresses, i), jstr(payin_tx_data, "primaryaddress"),
+				    strlen(jstr(payin_tx_data, "primaryaddress"))) == 0) {
+				dlg_info("%s::%d ::%s::%s\n", __FUNCTION__, __LINE__, jstri(primaryaddresses, i),
+					 jstr(payin_tx_data, "primaryaddress"));
+				if (strtok(jstri(primaryaddresses, i), "_")) {
 					strcpy(pa_tx_hash, strtok(NULL, "_"));
-					dlg_info("%s::%d ::%s::%s\n",__FUNCTION__,__LINE__,pa_tx_hash, txid);		
-					if(strncmp(pa_tx_hash, txid, strlen(pa_tx_hash)) == 0){
-						dlg_warn("%s::%d::This tx details are already updated\n", __FUNCTION__, __LINE__);		
+					dlg_info("%s::%d ::%s::%s\n", __FUNCTION__, __LINE__, pa_tx_hash, txid);
+					if (strncmp(pa_tx_hash, txid, strlen(pa_tx_hash)) == 0) {
+						dlg_warn("%s::%d::This tx details are already updated\n", __FUNCTION__,
+							 __LINE__);
 						retval = 2; // Do nothing
 						break;
 					} else {
-						retval = 0; //	
-						dlg_error("%s::%d::The primaryaddress is already exists\n", __FUNCTION__, __LINE__);
+						retval = 0; //
+						dlg_error("%s::%d::The primaryaddress is already exists\n",
+							  __FUNCTION__, __LINE__);
 						break;
 					}
 				} else {
-					retval =0;
-					dlg_error("%s::%d::Probably the format of pa::%s might be wrong\n", __FUNCTION__,__LINE__,jstri(primaryaddresses, i));
+					retval = 0;
+					dlg_error("%s::%d::Probably the format of pa::%s might be wrong\n",
+						  __FUNCTION__, __LINE__, jstri(primaryaddresses, i));
 					break;
 				}
 			}
@@ -674,7 +683,7 @@ end:
 void test_loop(char *blockhash)
 {
 	dlg_info("%s called!", __FUNCTION__);
-	char verus_addr[1][100] = { CASHIERS_ID }, pa_tx_hash[128] = {0};
+	char verus_addr[1][100] = { CASHIERS_ID }, pa_tx_hash[128] = { 0 };
 	int32_t blockcount = 0, retval = 0;
 	cJSON *blockjson = NULL, *t_player_info = NULL, *primaryaddress = NULL;
 
@@ -695,7 +704,8 @@ void test_loop(char *blockhash)
 	t_player_info = cJSON_CreateObject();
 	for (int32_t i = 0; i < cJSON_GetArraySize(argjson); i++) {
 		if (jint(cJSON_GetArrayItem(argjson, i), "height") == blockcount) {
-			dlg_info("%s::%d::tx_id::%s\n", __FUNCTION__, __LINE__,jstr(cJSON_GetArrayItem(argjson, i), "txid"));
+			dlg_info("%s::%d::tx_id::%s\n", __FUNCTION__, __LINE__,
+				 jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 			cJSON *payin_tx_data =
 				chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 			dlg_info("%s::%d::tx_data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(payin_tx_data));
@@ -714,14 +724,13 @@ void test_loop(char *blockhash)
 			}
 			num_players = num_players + 1;
 			cJSON_AddNumberToObject(t_player_info, "num_players", num_players);
-			char hash[10] = {0};
-			strncpy(hash,jstr(cJSON_GetArrayItem(argjson, i), "txid"),4);
-			sprintf(pa_tx_hash,"%s_%s",jstr(payin_tx_data, "primaryaddress"),hash);
+			char hash[10] = { 0 };
+			strncpy(hash, jstr(cJSON_GetArrayItem(argjson, i), "txid"), 4);
+			sprintf(pa_tx_hash, "%s_%s", jstr(payin_tx_data, "primaryaddress"), hash);
 			//cJSON_AddNumberToObject(t_player_info, jstr(payin_tx_data, "primaryaddress"), num_players);
 			cJSON_AddNumberToObject(t_player_info, pa_tx_hash, num_players);
 			dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_player_info));
 
-			
 			primaryaddress = cJSON_CreateArray();
 			primaryaddress = get_primaryaddresses(jstr(payin_tx_data, "table_id"), 0);
 
