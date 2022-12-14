@@ -64,8 +64,9 @@ verus -chain=chips10sec updateidentity '{"name": "sg777_t", "parent":"i6gViGxt7Y
       ]
     }
 }' 
-```  
+```
 
+### How Cashiers are updating the players info
 When player makes the payin_tx by depositing funds to the cashier address, the cashier does the following thing upon receiving the payin_tx.
 1. Cashier reads the data part of payin_tx, the data part contains dealer_id, table_id and primaryaddress.
 2. Cashier reads the `t_table_info` and `t_player_info` keys from the table_id and checks if there exists any vacant spot left on the table and also checks if the player has deposited required funds to join the table and based on these checks cashier do one of the following:
@@ -75,4 +76,14 @@ When player makes the payin_tx by depositing funds to the cashier address, the c
 
 The next important aspect is how the player be communicated about the outcome of player_join. For which after making the payn_tx, the player continuously polls on the table_id for about five blocks to see if its information is added to the primaryaddresses of the table_id. This can be done even more efficiently but for now I'm bruteforcing the search on table_id in the code.
 
-In either case we should communicate that outcome player_join to the player. 
+### How multiple cashiers coordinate in updating the players info
+While updating the players info in `t_table_info` key of the `table_id`, cashiers append 4 byte hash of the tx to the primary addresses as mentioned below:
+```
+{
+	no_of_players: 2;
+	primaryaddress_4_byte_tx_hash:0;
+	primaryaddress_4_byte_tx_hash:1;
+}
+```
+When cashiers update the `t_player_info` for a given `payin_tx` first they check for the duplicacy of the primaryaddress, if the primaryaddress is already found in the `primaryaddresses` key of the talbe_id, then the cashiers computes the tx hash and compare it with the tx hash appended to the primaryaddress. If tx hash match found, it simply means that the cashier is trying to update the `t_player_info` for the tx whose details are already been updated(by another cashier) and in that case the cashier node simply drop its updation process and does nothing and incase if the tx hash is different then the cashier simply deposit back the funds in that tx to the primaryaddress that the data part of that tx contains.
+
