@@ -682,7 +682,11 @@ static void bet_start(int argc, char **argv)
 		cJSON *cmm = NULL;
 		if (strcmp(get_vdxf_id(argv[3]), T_TABLE_INFO_KEY) == 0) {
 			cmm = get_cmm_key_data(argv[2], 0, get_vdxf_id(argv[3]));
-			decode_table_info(cmm);
+			if(cmm) {
+				decode_table_info(cmm);
+			} else {
+				dlg_info("There isn't any data with the key ::%s(%s) on the ID::%s\n", argv[3], get_vdxf_id(argv[3]), argv[2]);
+			}
 		} else if (strcmp(get_vdxf_id(argv[3]), T_PLAYER_INFO_KEY) == 0) {
 			cmm = get_cmm_key_data(argv[2], 0, get_vdxf_id(argv[3]));
 			if (cmm) {

@@ -203,7 +203,7 @@ cJSON *get_cmm_key_data(char *id, int16_t full_id, char *key)
 
 	cmm = get_cmm(id, full_id);
 
-	if (NULL == cmm) {
+	if (cmm == NULL) {
 		return NULL;
 	}
 	cmm_key_data = cJSON_CreateObject();
