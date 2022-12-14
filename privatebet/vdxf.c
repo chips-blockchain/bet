@@ -4,7 +4,7 @@
 #include "misc.h"
 #include "err.h"
 
-struct table player_t;
+struct table player_t = {0};
 
 char *get_vdxf_id(char *key_name)
 {
@@ -357,9 +357,10 @@ bool is_dealer_exists(char *dealer_id)
 	}
 
 	for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ids); i++) {
-		if (0 == strcmp(dealer_id, cJSON_Print(cJSON_GetArrayItem(dealer_ids, i)))) {
+		
+		if (0 == strcmp(dealer_id, jstri(dealer_ids,i))) {
 			dlg_info("%s::%d::The preferred dealer id exists::%s\n", __FUNCTION__, __LINE__,
-				 cJSON_Print(cJSON_GetArrayItem(dealer_ids, i)));
+				 jstri(dealer_ids,i));
 			dealer_exists = true;
 			break;
 		}
@@ -370,7 +371,7 @@ bool is_dealer_exists(char *dealer_id)
 int32_t find_table()
 {
 	cJSON *dealer_ids = NULL;
-	struct table *t;
+	struct table *t = NULL;
 	int32_t retval = OK;
 
 	//If the user didn't configured any dealer_id, then take the first dealer id available.
@@ -378,14 +379,14 @@ int32_t find_table()
 		dealer_ids = cJSON_CreateArray();
 		dealer_ids = get_dealers();
 		if (dealer_ids == NULL) {
-			dlg_info("No dealers found");
+			dlg_error("%s::%d::No dealers found\n", __FUNCTION__, __LINE__);
 			retval = ERR_NO_DEALERS_FOUND;
 			goto end;
 		}
 		for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ids); i++) {
-			//TODO: Need to check if the dealer tables are empty or not.
-			strncpy(player_config.dealer_id, cJSON_Print(cJSON_GetArrayItem(dealer_ids, i)),
-				sizeof(player_config.dealer_id));
+			//TODO: Need to check if the dealer tables are empty or not.			
+			strncpy(player_config.dealer_id, jstri(dealer_ids,i), sizeof(player_config.dealer_id));
+			dlg_info("%s::%d::Dealer chosen::%s\n", __FUNCTION__, __LINE__, player_config.dealer_id);
 			break;
 		}
 	}
@@ -396,11 +397,7 @@ int32_t find_table()
 	}
 	memcpy((void *)&player_t, (void *)t, sizeof(player_t));
 
-	dlg_info("max_players :: %d", player_t.max_players);
-	dlg_info("big_blind :: %f", uint32_s_to_float(player_t.big_blind));
-	dlg_info("min_stake :: %f", uint32_s_to_float(player_t.min_stake));
-	dlg_info("max_stake :: %f", uint32_s_to_float(player_t.max_stake));
-	dlg_info("table_id :: %s", player_t.table_id);
+	dlg_info("max_players :: %d,  big_blind :: %f, min_stake :: %f, max_stake :: %f, table_id :: %s, dealer_id :: %s\n", player_t.max_players,uint32_s_to_float(player_t.big_blind), uint32_s_to_float(player_t.min_stake), player_t.table_id, player_t.dealer_id);
 
 end:
 	return retval;
