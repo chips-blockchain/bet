@@ -680,8 +680,7 @@ static void bet_start(int argc, char **argv)
 		}
 	} else if ((strcmp(argv[1], "extract_id_info") == 0) && (argc == 4)) {
 		cJSON *cmm = NULL;
-		if ((strcmp(get_vdxf_id(argv[3]), DEALERS_KEY) == 0) ||
-		    (strcmp(get_vdxf_id(argv[3]), T_TABLE_INFO_KEY) == 0)) {
+		if (strcmp(get_vdxf_id(argv[3]), T_TABLE_INFO_KEY) == 0) {
 			cmm = get_cmm_key_data(argv[2], 0, get_vdxf_id(argv[3]));
 			decode_table_info(cmm);
 		} else if (strcmp(get_vdxf_id(argv[3]), T_PLAYER_INFO_KEY) == 0) {
