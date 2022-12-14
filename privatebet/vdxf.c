@@ -698,8 +698,7 @@ void test_loop(char *blockhash)
 	t_player_info = cJSON_CreateObject();
 	for (int32_t i = 0; i < cJSON_GetArraySize(argjson); i++) {
 		if (jint(cJSON_GetArrayItem(argjson, i), "height") == blockcount) {
-			dlg_info("%s::%d::tx_to_process::%s\n", __FUNCTION__, __LINE__,
-				 cJSON_Print(cJSON_GetArrayItem(argjson, i)));
+			dlg_info("%s::%d::tx_id::%s\n", __FUNCTION__, __LINE__,jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 			cJSON *payin_tx_data =
 				chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 			dlg_info("%s::%d::tx_data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(payin_tx_data));
