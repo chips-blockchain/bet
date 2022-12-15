@@ -585,12 +585,16 @@ static cJSON *update_t_player_info_pa(char *id, cJSON *t_player_info, cJSON *pri
 	cJSON_AddStringToObject(id_info, "name", id);
 	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
 
+	
+	dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_player_info));	
 	cJSON_hex(t_player_info, &hexstr);
 	player_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(player_info, STRING_VDXF_ID, hexstr);
 
 	cmm = cJSON_CreateObject();
+	cJSON_AddItemToObject(cmm, T_PLAYER_INFO_KEY, player_info);
 
+	dlg_info("%s::%d::cmm::%s\n", __FUNCTION__, __LINE__, cJSON_Print(cmm));	
 	/*
 		Reupdating t_table_info
 	*/
@@ -599,8 +603,8 @@ static cJSON *update_t_player_info_pa(char *id, cJSON *t_player_info, cJSON *pri
 		cJSON_AddItemToObject(cmm, T_TABLE_INFO_KEY, t_table_info);		
 	}
 
-	
-	cJSON_AddItemToObject(cmm, T_PLAYER_INFO_KEY, player_info);
+	dlg_info("%s::%d::cmm::%s\n", __FUNCTION__, __LINE__, cJSON_Print(cmm));	
+
 	cJSON_AddItemToObject(id_info, "contentmultimap", cmm);
 	cJSON_AddItemToObject(id_info, "primaryaddresses", primaryaddresses);
 
