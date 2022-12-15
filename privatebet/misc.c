@@ -140,3 +140,19 @@ void cJSON_hex(cJSON *argjson, char **hexstr)
 	*hexstr = calloc(hex_data_len, sizeof(char));
 	str_to_hexstr(cJSON_Print(argjson), *hexstr);
 }
+
+cJSON* hex_cJSON(char *hex_data)
+{
+	char *data = NULL;
+	cJSON *out = NULL;
+
+	out = cJSON_CreateObject();
+	out = cJSON_Parse(data);
+	if (!is_cJSON_Object(out)) {
+		out = NULL;
+	}
+	if(data)
+		free(data);
+
+	return out;
+}

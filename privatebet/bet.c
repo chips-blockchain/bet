@@ -701,9 +701,8 @@ static void bet_start(int argc, char **argv)
 			cmm = get_cmm_key_data(argv[2], 0, get_vdxf_id(argv[3]));
 			if (cmm) {
 				char *in = jstr(cJSON_GetArrayItem(cmm, 0), STRING_VDXF_ID);
-				char *out = calloc(1, strlen(in));
-				hexstr_to_str(in, out);
-				cJSON *temp1 = cJSON_Parse(out);
+				dlg_info("%s::%d::in::%s\n", __FUNCTION__, __LINE__, in);
+				cJSON *temp1 = hex_cJSON(in);
 				dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp1));
 			} else {
 				dlg_info("There isn't any data with the key ::%s(%s) on the ID::%s\n", argv[3],
