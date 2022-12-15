@@ -8,3 +8,4 @@ void float_to_uint32_s(struct float_num *t, float number);
 float uint32_s_to_float(struct float_num t);
 void struct_to_byte_arr(const void *object, size_t size, uint8_t *out);
 void cJSON_hex(cJSON *argjson, char **hexstr);
+cJSON* hex_cJSON(char *hex_data);
