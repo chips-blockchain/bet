@@ -673,7 +673,7 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 		strncpy(pa, jstr(payin_tx_data,"primaryaddress"), sizeof(pa));
 		for(int32_t i=0; i<cJSON_GetArraySize(pa_arr); i++) {
 			if(0 == strncmp(jstri(pa_arr,i),pa,strlen(pa))) {
-				dlg_info("%s::%d :: %s::%s\n", __FUNCTION__, __LINE__, jstri(pa_arr, i),pa);
+				dlg_info("%s::%d ::Primaryaddress is exists on the ID %s::%s\n", __FUNCTION__, __LINE__, jstri(pa_arr, i),pa);
 				retval =0;
 				goto end;
 				
