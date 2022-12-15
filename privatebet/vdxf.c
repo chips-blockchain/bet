@@ -731,7 +731,7 @@ void test_loop(char *blockhash)
 	dlg_info("%s called!", __FUNCTION__);
 	char verus_addr[1][100] = { CASHIERS_ID }, pa_tx_hash[128] = { 0 };
 	int32_t blockcount = 0, retval = 0;
-	cJSON *blockjson = NULL, *t_player_info = NULL, *primaryaddress = NULL;
+	cJSON *blockjson = NULL, *t_player_info = NULL, *primaryaddress = NULL, *payin_tx_data = NULL;
 
 	blockjson = cJSON_CreateObject();
 	blockjson = chips_get_block_from_block_hash(blockhash);
@@ -752,8 +752,10 @@ void test_loop(char *blockhash)
 		if (jint(cJSON_GetArrayItem(argjson, i), "height") == blockcount) {
 			dlg_info("%s::%d::tx_id::%s\n", __FUNCTION__, __LINE__,
 				 jstr(cJSON_GetArrayItem(argjson, i), "txid"));
-			cJSON *payin_tx_data =
-				chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
+			payin_tx_data = chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
+			if(payin_tx_data == NULL) {
+				goto end;
+			}
 			retval = do_payin_tx_checks(payin_tx_data, jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 			if (retval == 0) {
 				dlg_error("%s::%d::Payin_tx checks are failed, Reversing the tx\n", __FUNCTION__, __LINE__);
@@ -763,35 +765,6 @@ void test_loop(char *blockhash)
 			}
 			
 			cJSON *updated_player_info = add_player_t_player_info(jstr(cJSON_GetArrayItem(argjson, i), "txid"), payin_tx_data);
-			#if 0 
-			t_player_info = get_t_player_info(jstr(payin_tx_data, "table_id"));
-			cJSON *updated_player_info = cJSON_CreateObject();
-			cJSON *player_info = cJSON_CreateArray();
-			int32_t num_players = 0;
-			if (t_player_info) {
-				dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__,
-					 cJSON_Print(t_player_info));
-				num_players = jint(t_player_info, "num_players");
-				player_info = cJSON_GetObjectItem(t_player_info, "player_info");
-				if (player_info == NULL) {
-					dlg_error("%s::%d::Players info was not updated properly\n", __FUNCTION__,
-						  __LINE__);
-				}
-			}
-			num_players++;
-			char hash[10] = { 0 };
-			strncpy(hash, jstr(cJSON_GetArrayItem(argjson, i), "txid"), 4);
-			sprintf(pa_tx_hash, "%s_%s_%d", jstr(payin_tx_data, "primaryaddress"), hash, num_players);
-			if (player_info == NULL)
-				player_info = cJSON_CreateArray();
-			jaddistr(player_info, pa_tx_hash);
-			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(player_info));
-			cJSON_AddNumberToObject(updated_player_info, "num_players", num_players);
-			cJSON_AddItemToObject(updated_player_info, "player_info", player_info);
-
-			dlg_info("%s::%d::updated_player_info::%s\n", __FUNCTION__, __LINE__,
-				 cJSON_Print(updated_player_info));
-			#endif
 			
 			primaryaddress = cJSON_CreateArray();
 			primaryaddress = get_primaryaddresses(jstr(payin_tx_data, "table_id"), 0);
