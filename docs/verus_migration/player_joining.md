@@ -4,8 +4,8 @@ Players Joining
 This is an important phase in game setup. In the ID creation document we discussed about how cashiers and dealers are registered by the RA(Registration Authority). Here we see more details about the tables and how player finds and joins the tables. 
 
 ### Table
-
-The initial thought was dealers create the tables whenever the dealer want to host the table. Some drawbacks we saw with that approach are:
+---------
+The initial thought was dealers will create the tables whenever the dealer want to host the table. We observed some drawbacks with that approach:
 1. The control should be given to the dealer to create the ID's, and we definetely don't any spam of ID's incase if the intentional behavior of any entity changed to malicious.
 2. If a new table ID gets created for game that is played then it won't be possible to use catchy names for the tables. The fixed table names provides lots flexibility either in hosting them for the dealers and for the players in configuring them.
 3. With new table ID's for every game its difficult host the private tables.
@@ -15,7 +15,7 @@ So by observing the limitations, first we taken away(not given) the ability to c
 The good thing with the fixed table names is that, players can configure them in their `verus_player.ini` configuration file and can be choosy about the table the player wants to join. 
 
 ### How players find the table
-
+-------------------------------
 With that intro about tables, here are the steps that player follows to finds out and joins the table:
 
 1. Players get to know about the list of avaiable from dealers ID `dealers.poker.chips10sec@`.
@@ -30,7 +30,7 @@ With that intro about tables, here are the steps that player follows to finds ou
 4. Cashier nodes periodically checks if any deposits are made to the address `cashiers.poker.chips10sec@` using `blocknotify`. The moment cashiers detect any deposits made to the cashiers address, they immediately parse the data part of the tx, and add players `primaryaddress` mentioned in the data part of tx to the `table_id` which is also mentioned by the player in the same data part. Once after cashier adds the players primaryaddress to the `primaryaddresses` of the table_id, from that moment the player can be able to update corresponding `table_id`.
 
 ### What goes into table
-
+------------------------
 Off all the ID's we have table is a very complex ID and this is where all the game info goes into. The complete map of contents that goes into the table is not yet fully identified and at this moment I'll write about the initial thought process and we improve further upon it.
 
 All the actors like players, dealers, cashiers/bvv updates the table ID at different stages during the game. The main tasks that get accomplished with the data on table ID are deck shuffling, game play and final settlement. The nature of the data that flows to handle all these tasks is significantly different and data that is used to accomplish one task may not be relevant on other task. For these reasons we need to define some keys that are very specific to accomplish a specific task and some keys which may be relavant across all the tasks. But there is catch here, since there is a single utxo attached to an ID, so only one can spend that ID. If multiple updates to an ID needs to happen in the same block, then while updating the ID we need to check in the mempool if there is any spend tx exists for the given ID, if so then that utxo needs to be spent to make an update to the ID. Since soon we going to have an API that spends the ID from the utxo's of mempool that enables us to make multiple updates to the ID in the same block.
@@ -67,6 +67,7 @@ verus -chain=chips10sec updateidentity '{"name": "sg777_t", "parent":"i6gViGxt7Y
 ```
 
 ### How Cashiers are updating the players info
+-----------------------------------------------
 When player makes the payin_tx by depositing funds to the cashier address, the cashier does the following thing upon receiving the payin_tx.
 1. Cashier reads the data part of payin_tx, the data part contains dealer_id, table_id and primaryaddress.
 2. Cashier reads the `t_table_info` and `t_player_info` keys from the table_id and checks if there exists any vacant spot left on the table and also checks if the player has deposited required funds to join the table and based on these checks cashier do one of the following:
@@ -74,9 +75,10 @@ When player makes the payin_tx by depositing funds to the cashier address, the c
   b. If the table is full or if the player hasn't made enough funds deposited to the cashiers address, then the cashier simply deposit funds back to the primaryaddress of the player. 
  3. No multiple join requests from the same primaryaddress are accepted, if by any reason player makes multiple join requests to the table only one is accepted. Ofcourse this is not a good enough check to prevent the player using multiple primaryaddress and competing to join the multiple spots on the same table. To avoid single player using multiple primaryadddress to join the table, going forward we will allow the players to register and provide an ID to the players and also provide an option to the dealer to allow only players with specific ID can join the table, that way we elimincate the possibility of same player taking multiple seats.
 
-The next important aspect is how the player be communicated about the outcome of player_join. For which after making the payn_tx, the player continuously polls on the table_id for about five blocks to see if its information is added to the primaryaddresses of the table_id. This can be done even more efficiently but for now I'm bruteforcing the search on table_id in the code.
+The next important aspect is how the player be communicated about the outcome of player_join. For which after making the payn_tx, the player continuously polls on the table_id for about five blocks to see if its primaryaddress is added to the primaryaddresses of the table_id and its information is updated in the `t_player_info` key of the `table_id` and if that happens player is joined the table. This can be done even more efficiently but for now I'm bruteforcing the search on table_id in the code.
 
 ### How multiple cashiers coordinate in updating the players info
+------------------------------------------------------------------
 While updating the players info in `t_table_info` key of the `table_id`, cashiers append 4 byte hash of the tx to the primary addresses as mentioned below:
 ```
 {
