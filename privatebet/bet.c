@@ -586,8 +586,8 @@ static void bet_start(int argc, char **argv)
 			bet_dcv_thrd(dealer_ip);
 #endif
 			bet_parse_verus_dealer();
-			dealer_node_init();
-			bet_dcv_thrd(dealer_ip);
+			//dealer_node_init();
+			//bet_dcv_thrd(dealer_ip);
 		} else {
 			bet_help_dcv_command_usage();
 		}
