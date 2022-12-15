@@ -230,7 +230,7 @@ cJSON *get_id_key_data(char *id, int16_t full_id, char *key)
 	return cmm_key_data;
 }
 
-cJSON *update_dealers_config_table(char *dealer_id, char *key, struct table t)
+cJSON *update_t_table_info(char *dealer_id, char *key, struct table t)
 {
 	uint8_t *byte_arr = NULL;
 	char hexstr[arg_size];

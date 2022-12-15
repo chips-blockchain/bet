@@ -1712,6 +1712,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 					if (data[strlen(data) - 1] == '\n')
 						data[strlen(data) - 1] = '\0';
 					*argjson = cJSON_CreateObject();
+					
 					cJSON_AddStringToObject(*argjson, "address", data);
 					cJSON_AddNumberToObject(*argjson, "code", 0);
 				}
@@ -1720,7 +1721,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 				   (strcmp(argv[1], "sendrawtransaction") == 0) ||
 				   (strcmp(argv[1], "getnewaddress") == 0) ||
 				   (strcmp(argv[1], "getrawtransaction") == 0) ||
-				   (strcmp(argv[1], "getblockhash") == 0) || (strcmp(argv[1], "updateidentity") == 0) ||
+				   (strcmp(argv[1], "getblockhash") == 0) || 
 				   (strcmp(argv[1], "sendcurrency") == 0)) {
 				if (data[strlen(data) - 1] == '\n')
 					data[strlen(data) - 1] = '\0';
@@ -1730,6 +1731,15 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 				if (data[strlen(data) - 1] == '\n')
 					data[strlen(data) - 1] = '\0';
 				*argjson = cJSON_Parse(data);
+			} else if(strcmp(argv[1], "updateidentity") == 0) {
+				if (data[strlen(data) - 1] == '\n')
+					data[strlen(data) - 1] = '\0';
+				int err_no =0;
+				if (strstr(data, "error") != NULL) {
+					err_no = 1;
+				} 
+				jaddnum(*argjson,"error", err_no);
+				jaddstr(*argjson,"tx",data);			
 			} else if (strcmp(argv[1], "getidentity") == 0) {
 				*argjson = cJSON_Parse(data);
 			} else {

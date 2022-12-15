@@ -77,7 +77,7 @@ cJSON *update_primaryaddresses(char *id, cJSON *primaryaddress);
 cJSON *get_primaryaddresses(char *id, int16_t full_id);
 cJSON *get_cmm_key_data(char *id, int16_t full_id, char *key);
 cJSON *get_id_key_data(char *id, int16_t full_id, char *key);
-cJSON *update_dealers_config_table(char *dealer_id, char *key, struct table t);
+cJSON *update_t_table_info(char *dealer_id, char *key, struct table t);
 struct table *get_dealers_config_table(char *dealer_id, char *table_id);
 cJSON *get_cashiers_info(char *cashier_id);
 cJSON *update_cashiers(char *ip);
