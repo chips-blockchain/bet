@@ -653,8 +653,7 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 	t_player_info = cJSON_CreateObject();
 	t_player_info = get_t_player_info(jstr(payin_tx_data, "table_id"));
 	if (t_player_info) {
-		dlg_info("%s::%d::%d::%d\n", __func__, __LINE__, jint(t_player_info, "num_players"), t->max_players);
-		if (jint(t_player_info, "num_players") > t->max_players) {
+		if (jint(t_player_info, "num_players") >= t->max_players) {
 			dlg_error("%s::%d::Table ::%s is full\n", __FUNCTION__, __LINE__,
 				  jstr(payin_tx_data, "table_id"));
 			retval = 0;
