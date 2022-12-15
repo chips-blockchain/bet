@@ -613,7 +613,7 @@ static void bet_start(int argc, char **argv)
 	} else if (strcmp(argv[1], "newblock") == 0) {
 		if (argc == 3) {
 			dlg_info("Received new block notification for block with hash: %s...", argv[2]);
-			//test_loop(argv[2]);
+			test_loop(argv[2]);
 		} else {
 			bet_command_info();
 		}
@@ -738,10 +738,16 @@ static void sg()
 #endif
 }
 int main(int argc, char **argv)
-{ //sg();
+{ 	
+	//sg();
 	//test_loop("000000d71d08651c567b50c836cf25e85931c37b5a8bb2295074d5270ee4969f");
+	if((argc ==3)&&(strcmp(argv[1], "newblock") == 0)){
+		goto end;
+	}
 	bet_start(argc, argv);
-	return OK;
+
+	end:
+		return OK;
 }
 
 bits256 curve25519_fieldelement(bits256 hash)
