@@ -584,7 +584,6 @@ static cJSON *update_t_player_info_pa(char *id, cJSON *t_player_info, cJSON *pri
 	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
 
 	
-	dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_player_info));	
 	cJSON_hex(t_player_info, &hexstr);
 	player_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(player_info, STRING_VDXF_ID, hexstr);
@@ -592,7 +591,6 @@ static cJSON *update_t_player_info_pa(char *id, cJSON *t_player_info, cJSON *pri
 	cmm = cJSON_CreateObject();
 	cJSON_AddItemToObject(cmm, T_PLAYER_INFO_KEY, player_info);
 
-	dlg_info("%s::%d::cmm::%s\n", __FUNCTION__, __LINE__, cJSON_Print(cmm));	
 	/*
 		Reupdating t_table_info
 	*/
@@ -601,7 +599,6 @@ static cJSON *update_t_player_info_pa(char *id, cJSON *t_player_info, cJSON *pri
 		cJSON_AddItemToObject(cmm, T_TABLE_INFO_KEY, t_table_info);		
 	}
 
-	dlg_info("%s::%d::cmm::%s\n", __FUNCTION__, __LINE__, cJSON_Print(cmm));	
 
 	cJSON_AddItemToObject(id_info, "contentmultimap", cmm);
 	cJSON_AddItemToObject(id_info, "primaryaddresses", primaryaddresses);
@@ -616,7 +613,6 @@ static cJSON *update_t_player_info_pa(char *id, cJSON *t_player_info, cJSON *pri
 
 end:
 	bet_dealloc_args(argc, &argv);
-	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 	return argjson;
 }
 
@@ -658,9 +654,7 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 	}
 	t_player_info = cJSON_CreateObject();
 	t_player_info = get_t_player_info(jstr(payin_tx_data, "table_id"));					
-	dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_player_info));
 	if(t_player_info) {
-		dlg_info("%s::%d::Players joined so far::%d\n", __FUNCTION__,__LINE__,jint(t_player_info,"num_players"));
 		if(jint(t_player_info,"num_players")>t->max_players) {
 			dlg_error("%s::%d::Table ::%s is full\n", __FUNCTION__, __LINE__,jstr(payin_tx_data, "table_id"));
 			retval = 0;
@@ -672,45 +666,8 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 		strncpy(pa, jstr(payin_tx_data,"primaryaddress"), sizeof(pa));
 		for(int32_t i=0; i<cJSON_GetArraySize(player_info); i++) {
 			if(0 == strncmp(jstri(player_info,i),pa,strlen(pa))) {
-				dlg_info("%s::%d ::Primaryaddress is exists on the ID %s::%s\n", __FUNCTION__, __LINE__, jstri(player_info, i),pa);
-
 				if(strtok(jstri(player_info,i),"_")) {
 					strcpy(pa_tx_hash, strtok(NULL, "_"));
-					dlg_info("%s::%d ::%s::%s\n", __FUNCTION__, __LINE__, pa_tx_hash, txid);
-					if (strncmp(pa_tx_hash, txid, strlen(pa_tx_hash)) == 0) {
-						dlg_warn("%s::%d::This tx details are already updated\n", __FUNCTION__,
-							 __LINE__);
-						retval = 2; // Do nothing
-						break;
-					} else {
-						retval = 0; //
-						dlg_error("%s::%d::The primaryaddress is already exists\n",
-							  __FUNCTION__, __LINE__);
-						break;
-					}
-				} else {
-					retval = 0;
-					dlg_error("%s::%d::Probably the format of pa::%s might be wrong\n",
-						  __FUNCTION__, __LINE__, jstri(primaryaddresses, i));
-					break;
-				}
-			}
-		}
-		
-	}
-	
-	
-	#if 0
-	primaryaddresses = get_primaryaddresses(jstr(payin_tx_data, "table_id"), 0);
-	if (primaryaddresses) {
-		for (int32_t i = 0; i < cJSON_GetArraySize(primaryaddresses); i++) {
-			if (strncmp(jstri(primaryaddresses, i), jstr(payin_tx_data, "primaryaddress"),
-				    strlen(jstr(payin_tx_data, "primaryaddress"))) == 0) {
-				dlg_info("%s::%d ::%s::%s\n", __FUNCTION__, __LINE__, jstri(primaryaddresses, i),
-					 jstr(payin_tx_data, "primaryaddress"));
-				if (strtok(jstri(primaryaddresses, i), "_")) {
-					strcpy(pa_tx_hash, strtok(NULL, "_"));
-					dlg_info("%s::%d ::%s::%s\n", __FUNCTION__, __LINE__, pa_tx_hash, txid);
 					if (strncmp(pa_tx_hash, txid, strlen(pa_tx_hash)) == 0) {
 						dlg_warn("%s::%d::This tx details are already updated\n", __FUNCTION__,
 							 __LINE__);
@@ -731,7 +688,7 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 			}
 		}
 	}
-	#endif
+	
 end:
 	return retval;
 }
@@ -766,18 +723,10 @@ void test_loop(char *blockhash)
 				chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 			retval = do_payin_tx_checks(payin_tx_data, jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 			if (retval == 0) {
-				dlg_info("%s::%d::Checks on player payin_tx got failed\n", __FUNCTION__, __LINE__);
+				dlg_error("%s::%d::Checks on player payin_tx got failed\n", __FUNCTION__, __LINE__);
 				goto end;
 			}
-
-
-
-			
-
-
-			
 			t_player_info = get_t_player_info(jstr(payin_tx_data, "table_id"));
-			//get_cmm_key_data(jstr(payin_tx_data, "table_id"), 0, T_PLAYER_INFO_KEY);
 			cJSON *updated_player_info = cJSON_CreateObject();
 			cJSON *player_info = cJSON_CreateArray();
 			int32_t num_players = 0;
