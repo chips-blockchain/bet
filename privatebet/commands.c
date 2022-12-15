@@ -1735,9 +1735,10 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 				if (data[strlen(data) - 1] == '\n')
 					data[strlen(data) - 1] = '\0';
 				int err_no =0;
+				dlg_info("%s::%d::data::%s\n", __FUNCTION__, __LINE__, data);
 				if (strstr(data, "error") != NULL) {
 					err_no = 1;
-				} 
+				}  
 				jaddnum(*argjson,"error", err_no);
 				jaddstr(*argjson,"tx",data);			
 			} else if (strcmp(argv[1], "getidentity") == 0) {
