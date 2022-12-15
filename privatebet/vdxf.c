@@ -760,11 +760,13 @@ void test_loop(char *blockhash)
 
 
 			
-			t_player_info = get_cmm_key_data(jstr(payin_tx_data, "table_id"), 0, T_PLAYER_INFO_KEY);
+			t_player_info = get_t_player_info(jstr(payin_tx_data, "table_id"));
+			//get_cmm_key_data(jstr(payin_tx_data, "table_id"), 0, T_PLAYER_INFO_KEY);
 			cJSON *updated_player_info = cJSON_CreateObject();
 			cJSON *player_info = cJSON_CreateArray();
 			int32_t num_players = 0;
 			if(t_player_info) {
+				dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_player_info));
 				num_players = jint(t_player_info, "num_players");
 				player_info = cJSON_GetObjectItem(t_player_info,"player_info");				
 			}
