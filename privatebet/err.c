@@ -106,6 +106,8 @@ const char *bet_err_str(int32_t err_no)
 		return "No delears found";
 	case ERR_NO_TABLES_FOUND:
 		return "No tables found";
+	case ERR_UPDATEIDENTITY:
+		return "Error in updating the ID";
 	default:
 		return "This error is not handled yet...";
 	}

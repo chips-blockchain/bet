@@ -1702,6 +1702,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 			} else if (strcmp(argv[1], "listunspent") == 0) {
 				chips_read_valid_unspent(argv[3], argjson);
 			} else if (strcmp(argv[1], "updateidentity") == 0) {
+				retval = ERR_UPDATEIDENTITY;
 				jaddnum(*argjson,"error", retval);
 			} else {
 				dlg_error("%s::%d::Error in running the command ::%s\n", __FUNCTION__, __LINE__, command);
@@ -1738,12 +1739,12 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 			} else if(strcmp(argv[1], "updateidentity") == 0) {
 				if (data[strlen(data) - 1] == '\n')
 					data[strlen(data) - 1] = '\0';
-				int err_no =0;
 				if (strstr(data, "error") != NULL) {
-					err_no = 1;
-				}  
-				jaddnum(*argjson,"error", err_no);
-				jaddstr(*argjson,"tx",data);			
+					retval = ERR_UPDATEIDENTITY;
+				} else {
+					jaddstr(*argjson,"tx",data);
+				}
+				jaddnum(*argjson,"error", retval);							
 			} else if (strcmp(argv[1], "getidentity") == 0) {
 				*argjson = cJSON_Parse(data);
 			} else {
