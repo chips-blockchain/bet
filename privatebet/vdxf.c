@@ -769,11 +769,17 @@ void test_loop(char *blockhash)
 				dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_player_info));
 				num_players = jint(t_player_info, "num_players");
 				player_info = cJSON_GetObjectItem(t_player_info,"player_info");				
+				if(player_info == NULL){
+					dlg_error("%s::%d::Players info was not updated properly\n", __FUNCTION__, __LINE__);
+				}
 			}
 			num_players++;
 			char hash[10] = { 0 };
 			strncpy(hash, jstr(cJSON_GetArrayItem(argjson, i), "txid"), 4);
 			sprintf(pa_tx_hash, "%s_%s_%d", jstr(payin_tx_data, "primaryaddress"), hash, num_players);
+			if(player_info)
+				player_info = cJSON_CreateArray();
+			
 			jaddistr(player_info, pa_tx_hash);
 			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(player_info));
 			cJSON_AddNumberToObject(updated_player_info,"num_players",num_players);
