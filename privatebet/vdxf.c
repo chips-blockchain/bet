@@ -528,7 +528,6 @@ static cJSON *get_t_player_info(char *table_id)
 			player_info = cJSON_Parse(t_player_info_str);
 		}
 	}
-	dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(player_info));
 	free(t_player_info_str);
 	return player_info;
 }
@@ -566,7 +565,6 @@ static cJSON *update_t_player_info(char *id, cJSON *t_player_info)
 
 end:
 	bet_dealloc_args(argc, &argv);
-	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
 	return argjson;
 }
 
@@ -675,9 +673,27 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 		for(int32_t i=0; i<cJSON_GetArraySize(player_info); i++) {
 			if(0 == strncmp(jstri(player_info,i),pa,strlen(pa))) {
 				dlg_info("%s::%d ::Primaryaddress is exists on the ID %s::%s\n", __FUNCTION__, __LINE__, jstri(player_info, i),pa);
-				retval =0;
-				goto end;
-				
+
+				if(strtok(jstri(player_info,i),"_")) {
+					strcpy(pa_tx_hash, strtok(NULL, "_"));
+					dlg_info("%s::%d ::%s::%s\n", __FUNCTION__, __LINE__, pa_tx_hash, txid);
+					if (strncmp(pa_tx_hash, txid, strlen(pa_tx_hash)) == 0) {
+						dlg_warn("%s::%d::This tx details are already updated\n", __FUNCTION__,
+							 __LINE__);
+						retval = 2; // Do nothing
+						break;
+					} else {
+						retval = 0; //
+						dlg_error("%s::%d::The primaryaddress is already exists\n",
+							  __FUNCTION__, __LINE__);
+						break;
+					}
+				} else {
+					retval = 0;
+					dlg_error("%s::%d::Probably the format of pa::%s might be wrong\n",
+						  __FUNCTION__, __LINE__, jstri(primaryaddresses, i));
+					break;
+				}
 			}
 		}
 		
@@ -748,7 +764,6 @@ void test_loop(char *blockhash)
 				 jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 			cJSON *payin_tx_data =
 				chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
-			dlg_info("%s::%d::tx_data::%s\n", __FUNCTION__, __LINE__, cJSON_Print(payin_tx_data));
 			retval = do_payin_tx_checks(payin_tx_data, jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 			if (retval == 0) {
 				dlg_info("%s::%d::Checks on player payin_tx got failed\n", __FUNCTION__, __LINE__);
