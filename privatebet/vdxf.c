@@ -660,6 +660,7 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 	}
 	t_player_info = cJSON_CreateObject();
 	t_player_info = get_cmm_key_data(jstr(payin_tx_data, "table_id"), 0, T_PLAYER_INFO_KEY);
+	dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_player_info));
 	if(t_player_info) {
 		dlg_info("%s::%d::Players joined so far::%d\n", __FUNCTION__,__LINE__,jint(t_player_info,"num_players"));
 		if(jint(t_player_info,"num_players")>t->max_players) {
