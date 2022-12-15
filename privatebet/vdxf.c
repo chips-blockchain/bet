@@ -777,9 +777,8 @@ void test_loop(char *blockhash)
 			char hash[10] = { 0 };
 			strncpy(hash, jstr(cJSON_GetArrayItem(argjson, i), "txid"), 4);
 			sprintf(pa_tx_hash, "%s_%s_%d", jstr(payin_tx_data, "primaryaddress"), hash, num_players);
-			if(player_info)
+			if(player_info == NULL)
 				player_info = cJSON_CreateArray();
-			
 			jaddistr(player_info, pa_tx_hash);
 			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(player_info));
 			cJSON_AddNumberToObject(updated_player_info,"num_players",num_players);
