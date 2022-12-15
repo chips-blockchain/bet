@@ -692,7 +692,7 @@ end:
 	return retval;
 }
 
-static cJSON* add_player_t_player_info(cJSON *payin_tx_data)
+static cJSON* add_player_t_player_info(char *txid, cJSON *payin_tx_data)
 {
 	int32_t num_players = 0;
 	char hash[10] = { 0 }, pa_tx_hash[128] = { 0 };
@@ -712,7 +712,7 @@ static cJSON* add_player_t_player_info(cJSON *payin_tx_data)
 		}
 	}
 	num_players++;
-	strncpy(hash, jstr(cJSON_GetArrayItem(argjson, i), "txid"), 4);
+	strncpy(hash, txid, 4);
 	sprintf(pa_tx_hash, "%s_%s_%d", jstr(payin_tx_data, "primaryaddress"), hash, num_players);
 	if (player_info == NULL)
 		player_info = cJSON_CreateArray();
@@ -761,8 +761,8 @@ void test_loop(char *blockhash)
 			} else if(retval == 2) {
 				dlg_warn("%s::%d::The payin_tx is already been processed\n", __FUNCTION__, __LINE__);
 			}
-
-			cJSON *updated_player_info = add_player_t_player_info(payin_tx_data);
+			
+			cJSON *updated_player_info = add_player_t_player_info(jstr(cJSON_GetArrayItem(argjson, i), "txid"), payin_tx_data);
 			#if 0 
 			t_player_info = get_t_player_info(jstr(payin_tx_data, "table_id"));
 			cJSON *updated_player_info = cJSON_CreateObject();
