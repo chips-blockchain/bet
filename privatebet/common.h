@@ -2,6 +2,7 @@
 #define COMMON_H
 
 // clang-format off
+#define __FUNCTION__ __func__
 #define CHANNELD_AWAITING_LOCKIN    2
 #define CHANNELD_NORMAL             3
 
