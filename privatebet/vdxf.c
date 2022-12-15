@@ -411,7 +411,7 @@ bool is_id_exists(char *id, int16_t full_id)
 	int argc = 3, retval = 1;
 	char **argv = NULL;
 	char params[128] = { 0 };
-	cJSON *argjson = NULL, *out = NULL;
+	cJSON *argjson = NULL;
 
 	strncpy(params, id, strlen(id));
 	if (0 == full_id) {
@@ -726,7 +726,7 @@ static cJSON *add_player_t_player_info(char *txid, cJSON *payin_tx_data)
 void test_loop(char *blockhash)
 {
 	dlg_info("%s called!", __FUNCTION__);
-	char verus_addr[1][100] = { CASHIERS_ID }, pa_tx_hash[128] = { 0 };
+	char verus_addr[1][100] = { CASHIERS_ID };
 	int32_t blockcount = 0, retval = 0;
 	cJSON *blockjson = NULL, *t_player_info = NULL, *primaryaddress = NULL, *payin_tx_data = NULL;
 
