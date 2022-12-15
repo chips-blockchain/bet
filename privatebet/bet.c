@@ -730,11 +730,13 @@ static void sg()
 }
 int main(int argc, char **argv)
 { 	
-	//sg();
-	//test_loop("000000d71d08651c567b50c836cf25e85931c37b5a8bb2295074d5270ee4969f");
 	if((argc ==3)&&(strcmp(argv[1], "newblock") == 0)){
 		goto end;
 	}
+
+	//sg();
+	//test_loop("000000d71d08651c567b50c836cf25e85931c37b5a8bb2295074d5270ee4969f");
+	
 	bet_start(argc, argv);
 
 	end:
