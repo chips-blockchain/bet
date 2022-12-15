@@ -510,7 +510,7 @@ end:
 	return t;
 }
 
-static cJSON *get_t_player_info(char *table_id)
+cJSON *get_t_player_info(char *table_id)
 {
 	cJSON *t_player_info = NULL, *player_info = NULL, *cmm = NULL;
 	char *hexstr = NULL, *t_player_info_str = NULL;
@@ -532,7 +532,7 @@ static cJSON *get_t_player_info(char *table_id)
 	return player_info;
 }
 
-static cJSON *update_t_player_info(char *id, cJSON *t_player_info)
+cJSON *update_t_player_info(char *id, cJSON *t_player_info)
 {
 	cJSON *id_info = NULL, *argjson = NULL, *cmm = NULL, *player_info = NULL;
 	int argc;

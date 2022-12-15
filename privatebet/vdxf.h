@@ -88,5 +88,7 @@ bool is_id_exists(char *id, int16_t full_id);
 void verus_sendcurrency_data(cJSON *data);
 cJSON *getaddressutxos(char verus_addresses[][100], int n);
 struct table *decode_table_info(cJSON *dealer_cmm_data);
+cJSON *get_t_player_info(char *table_id);
+cJSON *update_t_player_info(char *id, cJSON *t_player_info);
 int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid);
 void test_loop(char *block_hash);
