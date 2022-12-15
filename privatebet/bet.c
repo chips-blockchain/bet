@@ -698,17 +698,8 @@ static void bet_start(int argc, char **argv)
 					 get_vdxf_id(argv[3]), argv[2]);
 			}
 		} else if (strcmp(get_vdxf_id(argv[3]), T_PLAYER_INFO_KEY) == 0) {
-			cmm = get_cmm_key_data(argv[2], 0, get_vdxf_id(argv[3]));
-			dlg_info("%s::%d::cmm::%s\n", __FUNCTION__, __LINE__, cJSON_Print(cmm));
-			if (cmm) {
-				char *in = jstr(cJSON_GetArrayItem(cmm, 0), STRING_VDXF_ID);
-				dlg_info("%s::%d::in::%s\n", __FUNCTION__, __LINE__, in);
-				cJSON *temp1 = hex_cJSON(in);
-				dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp1));
-			} else {
-				dlg_info("There isn't any data with the key ::%s(%s) on the ID::%s\n", argv[3],
-					 get_vdxf_id(argv[3]), argv[2]);
-			}
+			cmm = get_t_player_info(argv[2]);
+			dlg_info("%s::%d::id::%s::t_player_info::%s\n", __FUNCTION__,__LINE__,argv[2],cJSON_Print(cmm));
 		} else {
 			dlg_info("The key::%s(%s), is not present in the ID::%s\n", argv[3], get_vdxf_id(argv[3]),
 				 argv[2]);
