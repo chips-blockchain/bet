@@ -659,7 +659,7 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 		goto end;
 	}
 	t_player_info = cJSON_CreateObject();
-	t_player_info =	get_t_player_info(payin_tx_data, "table_id"));
+	t_player_info = get_t_player_info(jstr(payin_tx_data, "table_id")));					
 	dlg_info("%s::%d::t_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_player_info));
 	if(t_player_info) {
 		dlg_info("%s::%d::Players joined so far::%d\n", __FUNCTION__,__LINE__,jint(t_player_info,"num_players"));
