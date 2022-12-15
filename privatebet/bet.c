@@ -699,7 +699,8 @@ static void bet_start(int argc, char **argv)
 			}
 		} else if (strcmp(get_vdxf_id(argv[3]), T_PLAYER_INFO_KEY) == 0) {
 			cmm = get_t_player_info(argv[2]);
-			dlg_info("%s::%d::id::%s::t_player_info::%s\n", __FUNCTION__,__LINE__,argv[2],cJSON_Print(cmm));
+			dlg_info("%s::%d::id::%s::t_player_info::%s\n", __FUNCTION__, __LINE__, argv[2],
+				 cJSON_Print(cmm));
 		} else {
 			dlg_info("The key::%s(%s), is not present in the ID::%s\n", argv[3], get_vdxf_id(argv[3]),
 				 argv[2]);
@@ -729,18 +730,18 @@ static void sg()
 #endif
 }
 int main(int argc, char **argv)
-{ 	
-	if((argc ==3)&&(strcmp(argv[1], "newblock") == 0)){
+{
+	if ((argc == 3) && (strcmp(argv[1], "newblock") == 0)) {
 		goto end;
 	}
 
 	//sg();
 	//test_loop("000000d71d08651c567b50c836cf25e85931c37b5a8bb2295074d5270ee4969f");
-	
+
 	bet_start(argc, argv);
 
-	end:
-		return OK;
+end:
+	return OK;
 }
 
 bits256 curve25519_fieldelement(bits256 hash)

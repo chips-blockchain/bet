@@ -1656,7 +1656,8 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 	//dlg_info("\nchips-pbaas command :: %s\n", command);
 	fp = popen(command, "r");
 	if (fp == NULL) {
-		dlg_error("%s::%d::Fail to open the pipe while running the command::%s\n", __FUNCTION__, __LINE__, command);
+		dlg_error("%s::%d::Fail to open the pipe while running the command::%s\n", __FUNCTION__, __LINE__,
+			  command);
 		if (strcmp(argv[0], blockchain_cli) == 0)
 			retval = ERR_CHIPS_COMMAND;
 		if (strcmp(argv[0], "lightning-cli") == 0)
@@ -1703,9 +1704,10 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 				chips_read_valid_unspent(argv[3], argjson);
 			} else if (strcmp(argv[1], "updateidentity") == 0) {
 				retval = ERR_UPDATEIDENTITY;
-				jaddnum(*argjson,"error", retval);
+				jaddnum(*argjson, "error", retval);
 			} else {
-				dlg_error("%s::%d::Error in running the command ::%s\n", __FUNCTION__, __LINE__, command);
+				dlg_error("%s::%d::Error in running the command ::%s\n", __FUNCTION__, __LINE__,
+					  command);
 				retval = ERR_CHIPS_COMMAND;
 			}
 		} else {
@@ -1717,7 +1719,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 					if (data[strlen(data) - 1] == '\n')
 						data[strlen(data) - 1] = '\0';
 					*argjson = cJSON_CreateObject();
-					
+
 					cJSON_AddStringToObject(*argjson, "address", data);
 					cJSON_AddNumberToObject(*argjson, "code", 0);
 				}
@@ -1726,8 +1728,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 				   (strcmp(argv[1], "sendrawtransaction") == 0) ||
 				   (strcmp(argv[1], "getnewaddress") == 0) ||
 				   (strcmp(argv[1], "getrawtransaction") == 0) ||
-				   (strcmp(argv[1], "getblockhash") == 0) || 
-				   (strcmp(argv[1], "sendcurrency") == 0)) {
+				   (strcmp(argv[1], "getblockhash") == 0) || (strcmp(argv[1], "sendcurrency") == 0)) {
 				if (data[strlen(data) - 1] == '\n')
 					data[strlen(data) - 1] = '\0';
 
@@ -1736,15 +1737,15 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 				if (data[strlen(data) - 1] == '\n')
 					data[strlen(data) - 1] = '\0';
 				*argjson = cJSON_Parse(data);
-			} else if(strcmp(argv[1], "updateidentity") == 0) {
+			} else if (strcmp(argv[1], "updateidentity") == 0) {
 				if (data[strlen(data) - 1] == '\n')
 					data[strlen(data) - 1] = '\0';
 				if (strstr(data, "error") != NULL) {
 					retval = ERR_UPDATEIDENTITY;
 				} else {
-					jaddstr(*argjson,"tx",data);
+					jaddstr(*argjson, "tx", data);
 				}
-				jaddnum(*argjson,"error", retval);							
+				jaddnum(*argjson, "error", retval);
 			} else if (strcmp(argv[1], "getidentity") == 0) {
 				*argjson = cJSON_Parse(data);
 			} else {

@@ -307,12 +307,14 @@ void bet_parse_verus_dealer()
 			strncpy(t.table_id, iniparser_getstring(ini, "table:table_id", NULL), sizeof(t.table_id));
 		}
 		cJSON *t1 = update_t_table_info(t.dealer_id, T_TABLE_INFO_KEY, t);
-		if(jint(t1,"error")) {
-			dlg_info("%s::%d::Error in updating the key::%s at the ID::%s\n",__FUNCTION__, __LINE__, T_TABLE_INFO_KEY, t.dealer_id);
+		if (jint(t1, "error")) {
+			dlg_info("%s::%d::Error in updating the key::%s at the ID::%s\n", __FUNCTION__, __LINE__,
+				 T_TABLE_INFO_KEY, t.dealer_id);
 		}
 		cJSON *t2 = update_t_table_info(t.table_id, T_TABLE_INFO_KEY, t);
-		if(jint(t2,"error")) {
-			dlg_info("%s::%d::Error in updating the key::%s at the ID::%s\n",__FUNCTION__, __LINE__, T_TABLE_INFO_KEY, t.table_id);
+		if (jint(t2, "error")) {
+			dlg_info("%s::%d::Error in updating the key::%s at the ID::%s\n", __FUNCTION__, __LINE__,
+				 T_TABLE_INFO_KEY, t.table_id);
 		}
 	}
 }
