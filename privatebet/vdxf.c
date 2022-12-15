@@ -627,7 +627,7 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 	int32_t retval = 1;
 	double amount = 0;
 	char pa_tx_hash[10] = { 0 }, pa[128] = {0};
-	cJSON *t_table_info = NULL, *primaryaddresses = NULL, *t_player_info = NULL, *pa_arr = NULL;
+	cJSON *t_table_info = NULL, *primaryaddresses = NULL, *t_player_info = NULL, *player_info = NULL;
 	struct table *t = NULL;
 
 	if ((!txid) || (!payin_tx_data)) {
@@ -668,12 +668,12 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 			goto end;
 		}
 		
-		pa_arr = cJSON_CreateArray();
-		pa_arr = cJSON_GetObjectItem(pa_arr, "player_info");
+		player_info = cJSON_CreateArray();
+		player_info = cJSON_GetObjectItem(t_player_info, "player_info");
 		strncpy(pa, jstr(payin_tx_data,"primaryaddress"), sizeof(pa));
-		for(int32_t i=0; i<cJSON_GetArraySize(pa_arr); i++) {
-			if(0 == strncmp(jstri(pa_arr,i),pa,strlen(pa))) {
-				dlg_info("%s::%d ::Primaryaddress is exists on the ID %s::%s\n", __FUNCTION__, __LINE__, jstri(pa_arr, i),pa);
+		for(int32_t i=0; i<cJSON_GetArraySize(player_info); i++) {
+			if(0 == strncmp(jstri(player_info,i),pa,strlen(pa))) {
+				dlg_info("%s::%d ::Primaryaddress is exists on the ID %s::%s\n", __FUNCTION__, __LINE__, jstri(player_info, i),pa);
 				retval =0;
 				goto end;
 				
