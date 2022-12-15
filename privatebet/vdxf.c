@@ -692,23 +692,21 @@ end:
 	return retval;
 }
 
-static cJSON* add_player_t_player_info(char *txid, cJSON *payin_tx_data)
+static cJSON *add_player_t_player_info(char *txid, cJSON *payin_tx_data)
 {
 	int32_t num_players = 0;
 	char hash[10] = { 0 }, pa_tx_hash[128] = { 0 };
 	cJSON *t_player_info = NULL, *player_info = NULL, *updated_t_player_info = NULL;
-		
+
 	updated_t_player_info = cJSON_CreateObject();
 	player_info = cJSON_CreateArray();
 	t_player_info = get_t_player_info(jstr(payin_tx_data, "table_id"));
 	if (t_player_info) {
-		dlg_info("%s::%d::t_player_info::%s\n", __func__, __LINE__,
-			 cJSON_Print(t_player_info));
+		dlg_info("%s::%d::t_player_info::%s\n", __func__, __LINE__, cJSON_Print(t_player_info));
 		num_players = jint(t_player_info, "num_players");
 		player_info = cJSON_GetObjectItem(t_player_info, "player_info");
 		if (player_info == NULL) {
-			dlg_error("%s::%d::Players info was not updated properly\n", __FUNCTION__,
-				  __LINE__);
+			dlg_error("%s::%d::Players info was not updated properly\n", __FUNCTION__, __LINE__);
 		}
 	}
 	num_players++;
@@ -720,9 +718,8 @@ static cJSON* add_player_t_player_info(char *txid, cJSON *payin_tx_data)
 	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(player_info));
 	cJSON_AddNumberToObject(updated_t_player_info, "num_players", num_players);
 	cJSON_AddItemToObject(updated_t_player_info, "player_info", player_info);
-	
-	dlg_info("%s::%d::updated_player_info::%s\n", __FUNCTION__, __LINE__,
-		 cJSON_Print(updated_t_player_info));
+
+	dlg_info("%s::%d::updated_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(updated_t_player_info));
 	return updated_t_player_info;
 }
 
@@ -753,19 +750,21 @@ void test_loop(char *blockhash)
 			dlg_info("%s::%d::tx_id::%s\n", __FUNCTION__, __LINE__,
 				 jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 			payin_tx_data = chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
-			if(payin_tx_data == NULL) {
+			if (payin_tx_data == NULL) {
 				goto end;
 			}
 			retval = do_payin_tx_checks(payin_tx_data, jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 			if (retval == 0) {
-				dlg_error("%s::%d::Payin_tx checks are failed, Reversing the tx\n", __FUNCTION__, __LINE__);
+				dlg_error("%s::%d::Payin_tx checks are failed, Reversing the tx\n", __FUNCTION__,
+					  __LINE__);
 				goto end;
-			} else if(retval == 2) {
+			} else if (retval == 2) {
 				dlg_warn("%s::%d::The payin_tx is already been processed\n", __FUNCTION__, __LINE__);
 			}
-			
-			cJSON *updated_player_info = add_player_t_player_info(jstr(cJSON_GetArrayItem(argjson, i), "txid"), payin_tx_data);
-			
+
+			cJSON *updated_player_info =
+				add_player_t_player_info(jstr(cJSON_GetArrayItem(argjson, i), "txid"), payin_tx_data);
+
 			primaryaddress = cJSON_CreateArray();
 			primaryaddress = get_primaryaddresses(jstr(payin_tx_data, "table_id"), 0);
 
