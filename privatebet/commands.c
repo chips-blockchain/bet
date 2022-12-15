@@ -1656,7 +1656,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 	//dlg_info("\nchips-pbaas command :: %s\n", command);
 	fp = popen(command, "r");
 	if (fp == NULL) {
-		dlg_error("%s::%d::Error in running the command ::%s\n", __FUNCTION__, __LINE__, command);
+		dlg_error("%s::%d::Fail to open the pipe while running the command::%s\n", __FUNCTION__, __LINE__, command);
 		if (strcmp(argv[0], blockchain_cli) == 0)
 			retval = ERR_CHIPS_COMMAND;
 		if (strcmp(argv[0], "lightning-cli") == 0)
@@ -1702,6 +1702,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 			} else if (strcmp(argv[1], "listunspent") == 0) {
 				chips_read_valid_unspent(argv[3], argjson);
 			} else {
+				dlg_error("%s::%d::Error in running the command ::%s\n", __FUNCTION__, __LINE__, command);
 				retval = ERR_CHIPS_COMMAND;
 			}
 		} else {
