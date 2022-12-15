@@ -1649,7 +1649,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 		strcat(command, argv[i]);
 		strcat(command, " ");
 	}
-	dlg_info("command :: %s\n", command);
+	//dlg_info("command :: %s\n", command);
 	if (strcmp(argv[0], "lightning-cli") == 0)
 		dlg_info("LN command :: %s\n", command);
 
@@ -1701,6 +1701,8 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 				// Do nothing
 			} else if (strcmp(argv[1], "listunspent") == 0) {
 				chips_read_valid_unspent(argv[3], argjson);
+			} else if (strcmp(argv[1], "updateidentity") == 0) {
+				jaddnum(*argjson,"error", retval);
 			} else {
 				dlg_error("%s::%d::Error in running the command ::%s\n", __FUNCTION__, __LINE__, command);
 				retval = ERR_CHIPS_COMMAND;
@@ -1737,7 +1739,6 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 				if (data[strlen(data) - 1] == '\n')
 					data[strlen(data) - 1] = '\0';
 				int err_no =0;
-				dlg_info("%s::%d::data::%s\n", __FUNCTION__, __LINE__, data);
 				if (strstr(data, "error") != NULL) {
 					err_no = 1;
 				}  
