@@ -758,7 +758,6 @@ void test_loop(char *blockhash)
 				dlg_error("%s::%d::Payin_tx checks are failed, Reversing the tx\n", __FUNCTION__,
 					  __LINE__);
 				double amount = chips_get_balance_on_address_from_tx(VDXF_CASHIERS_ID,jstr(cJSON_GetArrayItem(argjson, i), "txid"));
-				amount = amount - chips_tx_fee;
 				cJSON *tx = chips_transfer_funds(amount, jstr(payin_tx_data, "primaryaddress"));
 				dlg_warn("%s::%d::Tx deposited back to the players primaryaddress::%s\n", __func__, __LINE__, cJSON_Print(tx));
 				goto end;
