@@ -556,8 +556,25 @@ static void bet_start(int argc, char **argv){
 // clang-format on
 #endif
 
+static int32_t handle_verus_player()
+{
+	int32_t retval = OK;
+	
+	playing_nodes_init();
+	bet_parse_verus_player();
+	if((retval = find_table()) != OK)
+		goto end;
+	if((retval = join_table()) != OK)
+		goto end;	
+	get_player_id();
+	end:
+	if(retval)
+		dlg_error("%s::%d::%s\n",__func__,__LINE__,bet_err_str(retval));
+}
+
 static void bet_start(int argc, char **argv)
 {
+	
 	bet_set_unique_id();
 	if (argc < 2) {
 		bet_command_info();
@@ -618,10 +635,7 @@ static void bet_start(int argc, char **argv)
 			bet_command_info();
 		}
 	} else if (strcmp(argv[1], "player") == 0) {
-		playing_nodes_init();
-		bet_parse_verus_player();
-		find_table();
-		join_table();
+		 handle_verus_player();
 		//bet_player_thrd(dealer_ip);
 
 #if 0
@@ -703,6 +717,8 @@ static void bet_start(int argc, char **argv)
 	} else {
 		bet_command_info();
 	}
+	end:
+		dlg_info("");
 }
 
 static void sg()
