@@ -371,26 +371,28 @@ bool is_dealer_exists(char *dealer_id)
 int32_t join_table()
 {
 	int32_t retval = 0;
-	cJSON *data = NULL, *op_id_info = NULL;
+	cJSON *data = NULL, *op_id = NULL, *op_id_info = NULL;
 
 	data = cJSON_CreateObject();
 	cJSON_AddStringToObject(data, "dealer_id", player_config.dealer_id);
 	cJSON_AddStringToObject(data, "table_id", player_config.table_id);
 	cJSON_AddStringToObject(data, "primaryaddress", player_config.primaryaddress);
 
-	op_id_info = verus_sendcurrency_data(data);
-	dlg_info("%s::%d::op_id_info::%s\n", __func__, __LINE__, cJSON_Print(op_id_info));
-	
-	#if 1
-	if(op_id_info) {		
-		cJSON *temp = get_z_getoperationresult(jstr(op_id_info,"op_id"));
-		dlg_info("%s::%d::tx_info::%s\n", __func__, __LINE__, cJSON_Print(temp));
+	op_id = verus_sendcurrency_data(data);
+	dlg_info("%s::%d::op_id_info::%s\n", __func__, __LINE__, cJSON_Print(op_id));
+	sleep(2);
+
+	if(op_id) {		
+		op_id_info = get_z_getoperationresult(jstr(op_id_info,"op_id"));
+		if(op_id_info) {
+			dlg_info("%s::%d::op_id_info::%s\n", __func__, __LINE__, cJSON_Print(jitem(op_id_info,0)));
+		}
+
 		if(check_player_join_status(player_config.table_id,player_config.primaryaddress)){
 			dlg_info("%s::%d::player_join is success\n",__func__, __LINE__);
 			retval = 1;
 		}
 	}
-	#endif
 	return retval;
 }
 
