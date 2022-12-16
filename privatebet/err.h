@@ -88,6 +88,7 @@ All the errors that come across in bet are defined here. The error numbers are a
 #define ERR_NO_DEALERS_FOUND			101
 #define ERR_NO_TABLES_FOUND				102
 #define ERR_UPDATEIDENTITY 				103
+#define ERR_SENDCURRENCY				104
 
 // clang-format on
 const char *bet_err_str(int32_t err_no);
