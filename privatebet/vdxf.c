@@ -368,6 +368,27 @@ bool is_dealer_exists(char *dealer_id)
 	return dealer_exists;
 }
 
+int32_t join_table()
+{
+	int32_t retval = 0;
+	cJSON *data = NULL;
+
+	data = cJSON_CreateObject();
+	cJSON_AddStringToObject(data, "dealer_id", player_config.dealer_id);
+	cJSON_AddStringToObject(data, "table_id", player_config.table_id);
+	cJSON_AddStringToObject(data, "primaryaddress", player_config.primaryaddress);
+
+	cJSON *tx_info = verus_sendcurrency_data(data);
+	if(tx_info) {
+		dlg_info("%s::%d::tx_info::%s\n", __func__, __LINE__, jprint(tx_info,0));
+		if(check_player_join_status(player_config.table_id,player_config.primaryaddress)){
+			dlg_info("%s::%d::player_join is success\n",__func__, __LINE__);
+			retval = 1;
+		}
+	}
+	return retval;
+}
+
 int32_t find_table()
 {
 	cJSON *dealer_ids = NULL;
@@ -429,12 +450,30 @@ bool is_id_exists(char *id, int16_t full_id)
 	return retval;
 }
 
-void verus_sendcurrency_data(cJSON *data)
+int32_t check_player_join_status(char *table_id, char *pa)
+{
+	int32_t block_count = 0, block_wait_time = 5, retval =0;
+
+	block_count = chips_get_block_count() + block_wait_time;
+	do{
+		sleep(5);
+		cJSON *pa_arr = get_primaryaddresses(table_id,0);
+		for(int32_t i=0; i<cJSON_GetArraySize(pa_arr); i++){
+			if(0 == strcmp(jstri(pa_arr,i), pa)){
+				retval = 1;
+				break;
+			}
+		}		
+	}while(chips_get_block_count()<block_count);
+	
+	return retval;
+}
+cJSON* verus_sendcurrency_data(cJSON *data)
 {
 	int32_t hex_data_len, argc, minconf = 1;
 	double fee = 0.0001;
 	char *hex_data = NULL, **argv = NULL, params[4][arg_size] = { 0 };
-	cJSON *currency_detail = NULL, *argjson = NULL;
+	cJSON *currency_detail = NULL, *argjson = NULL, *tx_params = NULL;
 
 	hex_data_len = 2 * strlen(cJSON_Print(data)) + 1;
 	hex_data = calloc(hex_data_len, sizeof(char));
@@ -445,13 +484,11 @@ void verus_sendcurrency_data(cJSON *data)
 	cJSON_AddNumberToObject(currency_detail, "amount", 0.0001);
 	cJSON_AddStringToObject(currency_detail, "address", "cashiers.poker.chips10sec@");
 
-	cJSON *temp = cJSON_CreateArray();
-	cJSON_AddItemToArray(temp, currency_detail);
-
-	dlg_info("%s::%d::%s", __FUNCTION__, __LINE__, cJSON_Print(temp));
+	tx_params = cJSON_CreateArray();
+	cJSON_AddItemToArray(tx_params, currency_detail);
 
 	snprintf(params[0], arg_size, "\'*\'");
-	snprintf(params[1], arg_size, "\'%s\'", cJSON_Print(temp));
+	snprintf(params[1], arg_size, "\'%s\'", cJSON_Print(tx_params));
 	snprintf(params[2], arg_size, "%d %f false", minconf, fee);
 	snprintf(params[3], arg_size, "\'%s\'", hex_data);
 
@@ -461,7 +498,8 @@ void verus_sendcurrency_data(cJSON *data)
 
 	argjson = cJSON_CreateObject();
 	make_command(argc, argv, &argjson);
-	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
+
+	return argjson;
 }
 
 cJSON *getaddressutxos(char verus_addresses[][100], int n)
