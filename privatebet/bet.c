@@ -717,8 +717,6 @@ static void bet_start(int argc, char **argv)
 	} else {
 		bet_command_info();
 	}
-	end:
-		dlg_info("");
 }
 
 static void sg()
