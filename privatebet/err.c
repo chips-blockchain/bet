@@ -108,6 +108,8 @@ const char *bet_err_str(int32_t err_no)
 		return "No tables found";
 	case ERR_UPDATEIDENTITY:
 		return "Error in updating the ID";
+	case ERR_SENDCURRENCY:
+		return "Error in sendcurrency";
 	default:
 		return "This error is not handled yet...";
 	}
