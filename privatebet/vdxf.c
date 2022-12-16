@@ -383,7 +383,7 @@ int32_t join_table()
 	sleep(2);
 
 	if(op_id) {		
-		op_id_info = get_z_getoperationresult(jstr(op_id,"op_id"));
+		op_id_info = get_z_getoperationstatus(jstr(op_id,"op_id"));
 		if(op_id_info) {
 			dlg_info("%s::%d::op_id_info::%s\n", __func__, __LINE__, cJSON_Print(jitem(op_id_info,0)));
 			if(0 != strcmp(jstr(jitem(op_id_info,0),"status"), "success")) {
@@ -484,7 +484,7 @@ int32_t check_player_join_status(char *table_id, char *pa)
 	return retval;
 }
 
-cJSON* get_z_getoperationresult(char *op_id)
+cJSON* get_z_getoperationstatus(char *op_id)
 {
 	int argc = 3;
 	char **argv = NULL, op_param[arg_size] = {0};
@@ -498,7 +498,7 @@ cJSON* get_z_getoperationresult(char *op_id)
 	jaddistr(op_id_arr,op_id);
 	snprintf(op_param, arg_size, "\'%s\'", cJSON_Print(op_id_arr));
 	dlg_info("%s::%d::op_param::%s\n",__func__,__LINE__, op_param);
-	argv = bet_copy_args(argc, verus_chips_cli, "z_getoperationresult", op_param);
+	argv = bet_copy_args(argc, verus_chips_cli, "z_getoperationstatus", op_param);
 	argjson = cJSON_CreateObject();
 	make_command(argc,argv,&argjson);
 
