@@ -471,18 +471,19 @@ int32_t check_player_join_status(char *table_id, char *pa)
 	return retval;
 }
 
-cJSON* get_z_getoperationresult(cJSON *op_id_info)
+cJSON* get_z_getoperationresult(char *op_id)
 {
 	int argc = 3;
 	char **argv = NULL, op_param[arg_size] = {0};
-	cJSON *argjson = NULL;
+	cJSON *argjson = NULL, *op_id_arr = NULL;
 	
 	if(NULL == op_id_info) {
 		return NULL;
 	}
 	bet_alloc_args(argc, &argv);
-
-	snprintf(op_param, arg_size, "\'%s\'", cJSON_Print(op_id_info));
+	op_id_arr = cJSON_CreateArray();
+	jaddistr(op_id_arr,op_id);
+	snprintf(op_param, arg_size, "\'%s\'", cJSON_Print(op_id_arr));
 	argv = bet_copy_args(argc, verus_chips_cli, "z_getoperationresult", op_param);
 	argjson = cJSON_CreateObject();
 	make_command(argc,argv,&argjson);
