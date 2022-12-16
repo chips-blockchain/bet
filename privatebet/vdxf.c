@@ -482,7 +482,7 @@ cJSON* get_z_getoperationresult(cJSON *op_id_info)
 	}
 	bet_alloc_args(argc, &argv);
 
-	snprintf(op_param, arg_size, "\'%s\'", op_id_info);
+	snprintf(op_param, arg_size, "\'%s\'", jprint(op_id_info,0));
 	argv = bet_copy_args(argc, verus_chips_cli, "z_getoperationresult", op_param);
 	argjson = cJSON_CreateObject();
 	make_command(argc,argv,&argjson);
