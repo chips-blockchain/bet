@@ -477,7 +477,7 @@ cJSON* get_z_getoperationresult(char *op_id)
 	char **argv = NULL, op_param[arg_size] = {0};
 	cJSON *argjson = NULL, *op_id_arr = NULL;
 	
-	if(NULL == op_id_info) {
+	if(NULL == op_id) {
 		return NULL;
 	}
 	bet_alloc_args(argc, &argv);
