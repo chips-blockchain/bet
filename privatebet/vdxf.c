@@ -379,8 +379,9 @@ int32_t join_table()
 	cJSON_AddStringToObject(data, "primaryaddress", player_config.primaryaddress);
 
 	op_id_info = verus_sendcurrency_data(data);
+	dlg_info("%s::%d::op_id_info::%s\n", __func__, __LINE__, jprint(op_id_info,0));
 	if(op_id_info) {
-		cJSON *temp = get_z_getoperationresult(jprint(op_id_info,0));
+		cJSON *temp = get_z_getoperationresult(op_id_info);
 		dlg_info("%s::%d::tx_info::%s\n", __func__, __LINE__, jprint(temp,0));
 		if(check_player_join_status(player_config.table_id,player_config.primaryaddress)){
 			dlg_info("%s::%d::player_join is success\n",__func__, __LINE__);
@@ -470,25 +471,23 @@ int32_t check_player_join_status(char *table_id, char *pa)
 	return retval;
 }
 
-cJSON* get_z_getoperationresult(char *op_id)
+cJSON* get_z_getoperationresult(cJSON *op_id_info)
 {
 	int argc = 3;
 	char **argv = NULL, op_param[arg_size] = {0};
-	cJSON *op_id_arr = NULL, *argjson = NULL;
+	cJSON *argjson = NULL;
 	
-	if(NULL == op_id) {
+	if(NULL == op_id_info) {
 		return NULL;
 	}
 	bet_alloc_args(argc, &argv);
 
-	op_id_arr= cJSON_CreateArray();
-	jaddistr(op_id_arr, op_id);
-	snprintf(op_param, "\'%s\'", jprint(op_id_arr,0));
+	snprintf(op_param, arg_size, "\'%s\'", op_id_info);
 	argv = bet_copy_args(argc, verus_chips_cli, "z_getoperationresult", op_param);
 	argjson = cJSON_CreateObject();
 	make_command(argc,argv,&argjson);
+
 	bet_dealloc_args(argc,&argv);
-	
 	return argjson;
 }
 
