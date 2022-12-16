@@ -371,19 +371,19 @@ bool is_dealer_exists(char *dealer_id)
 int32_t get_player_id()
 {
 	int32_t retval = OK;
-	
+
 	cJSON *t_player_info = NULL, *player_info = NULL;
-	
-	t_player_info =	get_t_player_info(player_config.table_id);
+
+	t_player_info = get_t_player_info(player_config.table_id);
 	player_info = cJSON_CreateArray();
 	player_info = jobj(t_player_info, "player_info");
-	for(int32_t i=0; i<cJSON_GetArraySize(player_info); i++){
-		if(strncmp(player_config.primaryaddress, jstri(player_info,i), strlen(player_config.primaryaddress)) == 0){
-			strtok(jstri(player_info,i), "_");
+	for (int32_t i = 0; i < cJSON_GetArraySize(player_info); i++) {
+		if (strncmp(player_config.primaryaddress, jstri(player_info, i),
+			    strlen(player_config.primaryaddress)) == 0) {
+			strtok(jstri(player_info, i), "_");
 			strtok(NULL, "_");
-			dlg_info("%s::%d::player id::%d\n", __func__, __LINE__,atoi(strtok(NULL,"_")));			
+			dlg_info("%s::%d::player id::%d\n", __func__, __LINE__, atoi(strtok(NULL, "_")));
 		}
-		
 	}
 	return retval;
 }
@@ -399,28 +399,27 @@ int32_t join_table()
 	cJSON_AddStringToObject(data, "primaryaddress", player_config.primaryaddress);
 
 	op_id = verus_sendcurrency_data(data);
-	if(op_id) {		
-		op_id_info = get_z_getoperationstatus(jstr(op_id,"op_id"));
-		if(op_id_info) {
-			while(0 == strcmp(jstr(jitem(op_id_info,0),"status"), "executing")) {
-				op_id_info = get_z_getoperationstatus(jstr(op_id,"op_id"));
+	if (op_id) {
+		op_id_info = get_z_getoperationstatus(jstr(op_id, "op_id"));
+		if (op_id_info) {
+			while (0 == strcmp(jstr(jitem(op_id_info, 0), "status"), "executing")) {
+				op_id_info = get_z_getoperationstatus(jstr(op_id, "op_id"));
 				sleep(1);
-			}	
-			if(0 != strcmp(jstr(jitem(op_id_info,0),"status"), "success")) {
+			}
+			if (0 != strcmp(jstr(jitem(op_id_info, 0), "status"), "success")) {
 				retval = ERR_SENDCURRENCY;
-				dlg_error("%s::%d:: sendcurrency operation is not success\n", __func__, __LINE__);				
+				dlg_error("%s::%d:: sendcurrency operation is not success\n", __func__, __LINE__);
 				goto end;
 			}
-			char *txid = jstr(jobj(jitem(op_id_info,0),"result"),"txid");
-			dlg_info("%s::%d::payin_tx::%s\n", __FUNCTION__,__LINE__,txid);
-			if(check_player_join_status(player_config.table_id,player_config.primaryaddress)){
-				dlg_info("%s::%d::player_join is success\n",__func__, __LINE__);				
+			char *txid = jstr(jobj(jitem(op_id_info, 0), "result"), "txid");
+			dlg_info("%s::%d::payin_tx::%s\n", __FUNCTION__, __LINE__, txid);
+			if (check_player_join_status(player_config.table_id, player_config.primaryaddress)) {
+				dlg_info("%s::%d::player_join is success\n", __func__, __LINE__);
 			}
 		}
-
 	}
-	end:
-		return retval;
+end:
+	return retval;
 }
 
 int32_t find_table()
@@ -485,46 +484,45 @@ bool is_id_exists(char *id, int16_t full_id)
 
 int32_t check_player_join_status(char *table_id, char *pa)
 {
-	int32_t block_count = 0, block_wait_time = 3, retval =0;
+	int32_t block_count = 0, block_wait_time = 3, retval = 0;
 
 	block_count = chips_get_block_count() + block_wait_time;
-	do{
+	do {
 		sleep(2);
-		cJSON *pa_arr = get_primaryaddresses(table_id,0);
-		for(int32_t i=0; i<cJSON_GetArraySize(pa_arr); i++){
-			if(0 == strcmp(jstri(pa_arr,i), pa)){
+		cJSON *pa_arr = get_primaryaddresses(table_id, 0);
+		for (int32_t i = 0; i < cJSON_GetArraySize(pa_arr); i++) {
+			if (0 == strcmp(jstri(pa_arr, i), pa)) {
 				retval = 1;
 				break;
 			}
-		}		
-	}while(chips_get_block_count()<block_count);
-	
+		}
+	} while (chips_get_block_count() < block_count);
+
 	return retval;
 }
 
-cJSON* get_z_getoperationstatus(char *op_id)
+cJSON *get_z_getoperationstatus(char *op_id)
 {
 	int argc = 3;
-	char **argv = NULL, op_param[arg_size] = {0};
+	char **argv = NULL, op_param[arg_size] = { 0 };
 	cJSON *argjson = NULL, *op_id_arr = NULL;
-	
-	if(NULL == op_id) {
+
+	if (NULL == op_id) {
 		return NULL;
 	}
 	bet_alloc_args(argc, &argv);
 	op_id_arr = cJSON_CreateArray();
-	jaddistr(op_id_arr,op_id);
+	jaddistr(op_id_arr, op_id);
 	snprintf(op_param, arg_size, "\'%s\'", cJSON_Print(op_id_arr));
 	argv = bet_copy_args(argc, verus_chips_cli, "z_getoperationstatus", op_param);
 	argjson = cJSON_CreateObject();
-	make_command(argc,argv,&argjson);
+	make_command(argc, argv, &argjson);
 
-	bet_dealloc_args(argc,&argv);
+	bet_dealloc_args(argc, &argv);
 	return argjson;
 }
 
-
-cJSON* verus_sendcurrency_data(cJSON *data)
+cJSON *verus_sendcurrency_data(cJSON *data)
 {
 	int32_t hex_data_len, argc, minconf = 1;
 	double fee = 0.0001;
@@ -850,13 +848,15 @@ void test_loop(char *blockhash)
 			if (retval == 0) {
 				dlg_error("%s::%d::Payin_tx checks are failed, Reversing the tx\n", __FUNCTION__,
 					  __LINE__);
-				double amount = chips_get_balance_on_address_from_tx(VDXF_CASHIERS_ID,jstr(cJSON_GetArrayItem(argjson, i), "txid"));
+				double amount = chips_get_balance_on_address_from_tx(
+					VDXF_CASHIERS_ID, jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 				cJSON *tx = chips_transfer_funds(amount, jstr(payin_tx_data, "primaryaddress"));
-				dlg_warn("%s::%d::Tx deposited back to the players primaryaddress::%s\n", __func__, __LINE__, cJSON_Print(tx));
+				dlg_warn("%s::%d::Tx deposited back to the players primaryaddress::%s\n", __func__,
+					 __LINE__, cJSON_Print(tx));
 				goto end;
 			} else if (retval == 2) {
 				dlg_warn("%s::%d::The payin_tx is already been processed\n", __FUNCTION__, __LINE__);
-				goto end;				
+				goto end;
 			}
 
 			cJSON *updated_player_info =
