@@ -83,6 +83,7 @@ cJSON *get_cashiers_info(char *cashier_id);
 cJSON *update_cashiers(char *ip);
 cJSON *get_dealers();
 bool is_dealer_exists(char *dealer_id);
+int32_t get_player_id();
 int32_t join_table();
 int32_t find_table();
 bool is_id_exists(char *id, int16_t full_id);

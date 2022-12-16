@@ -368,6 +368,26 @@ bool is_dealer_exists(char *dealer_id)
 	return dealer_exists;
 }
 
+int32_t get_player_id()
+{
+	int32_t retval = OK;
+	
+	cJSON *t_player_info = NULL, *player_info = NULL;
+	
+	t_player_info =	get_t_player_info(player_config.table_id);
+	player_info = cJSON_CreateArray();
+	player_info = jobj(t_player_info, "player_info");
+	for(int32_t i=0; i<cJSON_GetArraySize(player_info); i++){
+		if(strncmp(player_config.primaryaddress, jstri(player_info,i), strlen(player_config.primaryaddress)) == 0){
+			strtok(jstri(player_info,i), "_");
+			strtok(NULL, "_");
+			dlg_info("%s::%d::player id::%d\n", __func__, __LINE__,atoi(strtok(NULL,"_")));			
+		}
+		
+	}
+	return retval;
+}
+
 int32_t join_table()
 {
 	int32_t retval = OK;
@@ -382,10 +402,8 @@ int32_t join_table()
 	if(op_id) {		
 		op_id_info = get_z_getoperationstatus(jstr(op_id,"op_id"));
 		if(op_id_info) {
-			dlg_info("%s::%d::op_id_info::%s\n", __func__, __LINE__, cJSON_Print(jitem(op_id_info,0)));			
 			while(0 == strcmp(jstr(jitem(op_id_info,0),"status"), "executing")) {
 				op_id_info = get_z_getoperationstatus(jstr(op_id,"op_id"));
-				dlg_info("%s::%d::operation is executing\n",__func__, __LINE__);
 				sleep(1);
 			}	
 			if(0 != strcmp(jstr(jitem(op_id_info,0),"status"), "success")) {
@@ -395,7 +413,6 @@ int32_t join_table()
 			}
 			char *txid = jstr(jobj(jitem(op_id_info,0),"result"),"txid");
 			dlg_info("%s::%d::payin_tx::%s\n", __FUNCTION__,__LINE__,txid);
-			
 			if(check_player_join_status(player_config.table_id,player_config.primaryaddress)){
 				dlg_info("%s::%d::player_join is success\n",__func__, __LINE__);				
 			}
@@ -434,7 +451,6 @@ int32_t find_table()
 		goto end;
 	}
 	memcpy((void *)&player_t, (void *)t, sizeof(player_t));
-
 	dlg_info(
 		"max_players :: %d,  big_blind :: %f, min_stake :: %f, max_stake :: %f, table_id :: %s, dealer_id :: %s\n",
 		player_t.max_players, uint32_s_to_float(player_t.big_blind), uint32_s_to_float(player_t.min_stake),
@@ -499,7 +515,6 @@ cJSON* get_z_getoperationstatus(char *op_id)
 	op_id_arr = cJSON_CreateArray();
 	jaddistr(op_id_arr,op_id);
 	snprintf(op_param, arg_size, "\'%s\'", cJSON_Print(op_id_arr));
-	dlg_info("%s::%d::op_param::%s\n",__func__,__LINE__, op_param);
 	argv = bet_copy_args(argc, verus_chips_cli, "z_getoperationstatus", op_param);
 	argjson = cJSON_CreateObject();
 	make_command(argc,argv,&argjson);
