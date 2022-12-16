@@ -380,7 +380,8 @@ int32_t join_table()
 
 	op_id_info = verus_sendcurrency_data(data);
 	dlg_info("%s::%d::op_id_info::%s\n", __func__, __LINE__, cJSON_Print(op_id_info));
-	if(op_id_info) {
+	#if 0
+	if(op_id_info) {		
 		cJSON *temp = get_z_getoperationresult(op_id_info);
 		dlg_info("%s::%d::tx_info::%s\n", __func__, __LINE__, cJSON_Print(temp));
 		if(check_player_join_status(player_config.table_id,player_config.primaryaddress)){
@@ -388,6 +389,7 @@ int32_t join_table()
 			retval = 1;
 		}
 	}
+	#endif
 	return retval;
 }
 
@@ -523,7 +525,7 @@ cJSON* verus_sendcurrency_data(cJSON *data)
 
 	argjson = cJSON_CreateObject();
 	make_command(argc, argv, &argjson);
-
+	dlg_info("%s::%d::argjson::%s\n", __func__, __LINE__, cJSON_Print(argjson));
 	return argjson;
 }
 
