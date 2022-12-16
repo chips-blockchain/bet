@@ -1746,13 +1746,14 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 					jaddstr(*argjson, "tx", data);
 				}
 				jaddnum(*argjson, "error", retval);
-			} else if ((strcmp(argv[1], "getidentity") == 0) || (strcmp(argv[1], "z_getoperationresult") == 0)) {
+			} else if ((strcmp(argv[1], "getidentity") == 0) ||
+				   (strcmp(argv[1], "z_getoperationresult") == 0)) {
 				*argjson = cJSON_Parse(data);
-			} else if(strcmp(argv[1], "sendcurrency") == 0){
+			} else if (strcmp(argv[1], "sendcurrency") == 0) {
 				if (data[strlen(data) - 1] == '\n')
 					data[strlen(data) - 1] = '\0';
-				cJSON_AddStringToObject(*argjson,"op_id",data);
-			}else {
+				cJSON_AddStringToObject(*argjson, "op_id", data);
+			} else {
 				*argjson = cJSON_Parse(data);
 				cJSON_AddNumberToObject(*argjson, "code", 0);
 			}
