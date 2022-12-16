@@ -386,14 +386,22 @@ int32_t join_table()
 		op_id_info = get_z_getoperationresult(jstr(op_id,"op_id"));
 		if(op_id_info) {
 			dlg_info("%s::%d::op_id_info::%s\n", __func__, __LINE__, cJSON_Print(jitem(op_id_info,0)));
+			if(0 != strcmp(jstr(jitem(op_id_info,0),"status"), "success")) {
+				dlg_error("%s::%d:: sendcurrency operation is not success\n", __func__, __LINE__);
+				goto end;
+			}
+			char *txid = jstr(jobj(jitem(op_id_info,0),"result"),"txid");
+			dlg_info("%s::%d::payin_tx::%s\n", __FUNCTION__,__LINE__,txid);
+			
+			if(check_player_join_status(player_config.table_id,player_config.primaryaddress)){
+				dlg_info("%s::%d::player_join is success\n",__func__, __LINE__);
+				retval = 1;
+			}
 		}
 
-		if(check_player_join_status(player_config.table_id,player_config.primaryaddress)){
-			dlg_info("%s::%d::player_join is success\n",__func__, __LINE__);
-			retval = 1;
-		}
 	}
-	return retval;
+	end:
+		return retval;
 }
 
 int32_t find_table()
