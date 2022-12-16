@@ -485,7 +485,7 @@ bool is_id_exists(char *id, int16_t full_id)
 
 int32_t check_player_join_status(char *table_id, char *pa)
 {
-	int32_t block_count = 0, block_wait_time = 5, retval =0;
+	int32_t block_count = 0, block_wait_time = 3, retval =0;
 
 	block_count = chips_get_block_count() + block_wait_time;
 	do{
