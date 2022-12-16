@@ -383,7 +383,7 @@ int32_t join_table()
 	sleep(2);
 
 	if(op_id) {		
-		op_id_info = get_z_getoperationresult(jstr(op_id_info,"op_id"));
+		op_id_info = get_z_getoperationresult(jstr(op_id,"op_id"));
 		if(op_id_info) {
 			dlg_info("%s::%d::op_id_info::%s\n", __func__, __LINE__, cJSON_Print(jitem(op_id_info,0)));
 		}
