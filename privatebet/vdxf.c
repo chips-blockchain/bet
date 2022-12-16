@@ -370,7 +370,7 @@ bool is_dealer_exists(char *dealer_id)
 
 int32_t join_table()
 {
-	int32_t retval = 0;
+	int32_t retval = OK;
 	cJSON *data = NULL, *op_id = NULL, *op_id_info = NULL;
 
 	data = cJSON_CreateObject();
@@ -379,23 +379,25 @@ int32_t join_table()
 	cJSON_AddStringToObject(data, "primaryaddress", player_config.primaryaddress);
 
 	op_id = verus_sendcurrency_data(data);
-	dlg_info("%s::%d::op_id_info::%s\n", __func__, __LINE__, cJSON_Print(op_id));
-	sleep(2);
-
 	if(op_id) {		
 		op_id_info = get_z_getoperationstatus(jstr(op_id,"op_id"));
 		if(op_id_info) {
-			dlg_info("%s::%d::op_id_info::%s\n", __func__, __LINE__, cJSON_Print(jitem(op_id_info,0)));
+			dlg_info("%s::%d::op_id_info::%s\n", __func__, __LINE__, cJSON_Print(jitem(op_id_info,0)));			
+			while(0 == strcmp(jstr(jitem(op_id_info,0),"status"), "executing")) {
+				op_id_info = get_z_getoperationstatus(jstr(op_id,"op_id"));
+				dlg_info("%s::%d::operation is executing\n",__func__, __LINE__);
+				sleep(1);
+			}	
 			if(0 != strcmp(jstr(jitem(op_id_info,0),"status"), "success")) {
-				dlg_error("%s::%d:: sendcurrency operation is not success\n", __func__, __LINE__);
+				retval = ERR_SENDCURRENCY;
+				dlg_error("%s::%d:: sendcurrency operation is not success\n", __func__, __LINE__);				
 				goto end;
 			}
 			char *txid = jstr(jobj(jitem(op_id_info,0),"result"),"txid");
 			dlg_info("%s::%d::payin_tx::%s\n", __FUNCTION__,__LINE__,txid);
 			
 			if(check_player_join_status(player_config.table_id,player_config.primaryaddress)){
-				dlg_info("%s::%d::player_join is success\n",__func__, __LINE__);
-				retval = 1;
+				dlg_info("%s::%d::player_join is success\n",__func__, __LINE__);				
 			}
 		}
 
