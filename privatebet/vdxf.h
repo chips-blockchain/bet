@@ -87,7 +87,7 @@ int32_t join_table();
 int32_t find_table();
 bool is_id_exists(char *id, int16_t full_id);
 int32_t check_player_join_status(char *table_id, char *pa);
-cJSON* get_z_getoperationresult(cJSON *op_id_info);
+cJSON* get_z_getoperationresult(char *op_id);
 cJSON* verus_sendcurrency_data(cJSON *data);
 cJSON *getaddressutxos(char verus_addresses[][100], int n);
 struct table *decode_table_info(cJSON *dealer_cmm_data);
