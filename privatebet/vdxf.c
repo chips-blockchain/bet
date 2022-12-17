@@ -499,7 +499,8 @@ bool is_id_exists(char *id, int16_t full_id)
 int32_t check_player_join_status(char *table_id, char *pa)
 {
 	int32_t block_count = 0, retval = ERR_PA_NOT_ADDED_TO_TABLE;
-	int32_t block_wait_time = 5;  //This is the wait time in number of blocks upto which player can look for its table joining update
+	int32_t block_wait_time =
+		5; //This is the wait time in number of blocks upto which player can look for its table joining update
 
 	block_count = chips_get_block_count() + block_wait_time;
 	do {
@@ -513,8 +514,8 @@ int32_t check_player_join_status(char *table_id, char *pa)
 		}
 		sleep(2);
 	} while (chips_get_block_count() <= block_count);
-	end:
-		return retval;
+end:
+	return retval;
 }
 
 cJSON *get_z_getoperationstatus(char *op_id)
