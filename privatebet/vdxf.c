@@ -512,13 +512,15 @@ int32_t check_player_join_status(char *table_id, char *pa)
 		for (int32_t i = 0; i < cJSON_GetArraySize(pa_arr); i++) {
 			if (0 == strcmp(jstri(pa_arr, i), pa)) {
 				retval = OK;
-				break;
+				goto end;
 			}
 		}
 		sleep(2);
 	} while (chips_get_block_count() <= block_count);
 	dlg_info("Leaving::%s\n", __func__);
-	return retval;
+
+	end:
+		return retval;
 }
 
 cJSON *get_z_getoperationstatus(char *op_id)
