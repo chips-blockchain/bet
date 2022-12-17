@@ -373,6 +373,8 @@ int32_t get_player_id(int *player_id)
 	int32_t retval = ERR_PLAYER_NOT_EXISTS;
 	cJSON *t_player_info = NULL, *player_info = NULL;
 
+	dlg_info("Entering::%s\n", __func__);
+	
 	t_player_info = get_t_player_info(player_config.table_id);
 	if (t_player_info == NULL) {
 		retval = ERR_T_PLAYER_INFO_NULL;
@@ -395,6 +397,7 @@ int32_t get_player_id(int *player_id)
 			break;
 		}
 	}
+	dlg_info("Leaving::%s\n", __func__);
 end:
 	return retval;
 }
@@ -500,9 +503,12 @@ int32_t check_player_join_status(char *table_id, char *pa)
 	int32_t block_count = 0, retval = ERR_PA_NOT_ADDED_TO_TABLE;
 	int32_t block_wait_time = 5;  //This is the wait time in number of blocks upto which player can look for its table joining update
 
+	dlg_info("Entering::%s\n", __func__);
 	block_count = chips_get_block_count() + block_wait_time;
 	do {
-		cJSON *pa_arr = get_primaryaddresses(table_id, 0);
+		cJSON *pa_arr = cJSON_CreateArray();
+		pa_arr = get_primaryaddresses(table_id, 0);
+		dlg_info("%s::%d::pa_arr::%s\n", __func__, __LINE__, cJSON_Print(pa_arr));
 		for (int32_t i = 0; i < cJSON_GetArraySize(pa_arr); i++) {
 			if (0 == strcmp(jstri(pa_arr, i), pa)) {
 				retval = OK;
@@ -511,7 +517,7 @@ int32_t check_player_join_status(char *table_id, char *pa)
 		}
 		sleep(2);
 	} while (chips_get_block_count() <= block_count);
-
+	dlg_info("Leaving::%s\n", __func__);
 	return retval;
 }
 
