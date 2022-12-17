@@ -456,7 +456,7 @@ static int32_t handle_verus_player()
 		goto end;
 	if ((retval = join_table()) != OK)
 		goto end;
-	if((retval = get_player_id(&player_id)) != OK){
+	if ((retval = get_player_id(&player_id)) != OK) {
 		goto end;
 	}
 end:

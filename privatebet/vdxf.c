@@ -373,15 +373,14 @@ int32_t get_player_id(int *player_id)
 	int32_t retval = ERR_PLAYER_NOT_EXISTS;
 	cJSON *t_player_info = NULL, *player_info = NULL;
 
-
 	t_player_info = get_t_player_info(player_config.table_id);
-	if(t_player_info == NULL){
+	if (t_player_info == NULL) {
 		retval = ERR_T_PLAYER_INFO_NULL;
 		goto end;
 	}
 	player_info = cJSON_CreateArray();
 	player_info = jobj(t_player_info, "player_info");
-	if(player_info == NULL) {
+	if (player_info == NULL) {
 		retval = ERR_T_PLAYER_INFO_CORRUPTED;
 		goto end;
 	}
@@ -396,8 +395,8 @@ int32_t get_player_id(int *player_id)
 			break;
 		}
 	}
-	end:
-		return retval;
+end:
+	return retval;
 }
 
 int32_t join_table()
@@ -425,7 +424,8 @@ int32_t join_table()
 			}
 			char *txid = jstr(jobj(jitem(op_id_info, 0), "result"), "txid");
 			dlg_info("%s::%d::payin_tx::%s\n", __FUNCTION__, __LINE__, txid);
-			if ((retval = check_player_join_status(player_config.table_id, player_config.primaryaddress)) != OK) {
+			if ((retval = check_player_join_status(player_config.table_id, player_config.primaryaddress)) !=
+			    OK) {
 				dlg_info("%s::%d::%s\n", __func__, __LINE__, bet_err_str(retval));
 			}
 		}
@@ -512,7 +512,6 @@ int32_t check_player_join_status(char *table_id, char *pa)
 	} while (chips_get_block_count() < block_count);
 
 	return retval;
-
 }
 
 cJSON *get_z_getoperationstatus(char *op_id)
@@ -771,14 +770,14 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 					strcpy(pa_tx_hash, strtok(NULL, "_"));
 					if (strncmp(pa_tx_hash, txid, strlen(pa_tx_hash)) == 0) {
 						dlg_warn("%s::%d::Duplicate update request\n", __FUNCTION__, __LINE__);
-						retval = OK; 
+						retval = OK;
 						break;
 					} else {
 						retval = ERR_PA_EXISTS;
 						break;
 					}
 				} else {
-					retval = ERR_WRONG_PA_TX_ID_FORMAT; 
+					retval = ERR_WRONG_PA_TX_ID_FORMAT;
 					break;
 				}
 			}
@@ -852,14 +851,15 @@ void test_loop(char *blockhash)
 			}
 			retval = do_payin_tx_checks(payin_tx_data, jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 			if (retval != OK) {
-				dlg_error("%s::%d::Err:: %s, Reversing the tx\n", __FUNCTION__,__LINE__, bet_err_str(retval));
+				dlg_error("%s::%d::Err:: %s, Reversing the tx\n", __FUNCTION__, __LINE__,
+					  bet_err_str(retval));
 				double amount = chips_get_balance_on_address_from_tx(
 					VDXF_CASHIERS_ID, jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 				cJSON *tx = chips_transfer_funds(amount, jstr(payin_tx_data, "primaryaddress"));
 				dlg_warn("%s::%d::Tx deposited back to the players primaryaddress::%s\n", __func__,
 					 __LINE__, cJSON_Print(tx));
 				goto end;
-			} 
+			}
 			cJSON *updated_player_info =
 				add_player_t_player_info(jstr(cJSON_GetArrayItem(argjson, i), "txid"), payin_tx_data);
 
