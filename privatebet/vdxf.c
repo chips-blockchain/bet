@@ -416,6 +416,7 @@ int32_t join_table()
 	op_id = verus_sendcurrency_data(data);
 	if (op_id) {
 		op_id_info = get_z_getoperationstatus(jstr(op_id, "op_id"));
+		dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(op_id_info));
 		if (op_id_info) {
 			while (0 == strcmp(jstr(jitem(op_id_info, 0), "status"), "executing")) {
 				op_id_info = get_z_getoperationstatus(jstr(op_id, "op_id"));
