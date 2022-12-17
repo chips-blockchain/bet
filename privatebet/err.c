@@ -130,6 +130,8 @@ const char *bet_err_str(int32_t err_no)
 		return "Error is parsing the pa_tx_id stored in t_player_info";
 	case ERR_DUP_UPDATE_REQ:
 		return "Duplicate update request";
+	case ERR_PA_NOT_ADDED_TO_TABLE:
+		return "Player primaryaddress is not added to the table";
 	default:
 		return "This error is not handled yet...";
 	}
