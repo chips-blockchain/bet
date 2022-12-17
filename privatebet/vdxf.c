@@ -368,24 +368,38 @@ bool is_dealer_exists(char *dealer_id)
 	return dealer_exists;
 }
 
-int32_t get_player_id()
+int32_t get_player_id(int *player_id)
 {
-	int32_t retval = OK;
+	int32_t retval = ERR_PLAYER_NOT_EXISTS;
 
 	cJSON *t_player_info = NULL, *player_info = NULL;
 
 	t_player_info = get_t_player_info(player_config.table_id);
+	if(t_player_info == NULL){
+		retval = ERR_T_PLAYER_INFO_NULL;
+		dlg_info("%s::%d::No t_player_info found on table id::%s\n", __func__, __LINE__,player_config.table_id);
+		goto end;
+	}
 	player_info = cJSON_CreateArray();
 	player_info = jobj(t_player_info, "player_info");
+	if(player_info == NULL) {
+		retval = ERR_T_PLAYER_INFO_CORRUPTED;
+		dlg_error("%s::%d::%s::%s\n", __func__, __LINE__, bet_err_str(retval), cJSON_Print(t_player_info));
+		goto end;
+	}
 	for (int32_t i = 0; i < cJSON_GetArraySize(player_info); i++) {
 		if (strncmp(player_config.primaryaddress, jstri(player_info, i),
 			    strlen(player_config.primaryaddress)) == 0) {
 			strtok(jstri(player_info, i), "_");
 			strtok(NULL, "_");
-			dlg_info("%s::%d::player id::%d\n", __func__, __LINE__, atoi(strtok(NULL, "_")));
+			*player_id = atoi(strtok(NULL, "_"));
+			dlg_info("%s::%d::player id::%d\n", __func__, __LINE__, *player_id);
+			retval = OK;
+			break;
 		}
 	}
-	return retval;
+	end:
+		return retval;
 }
 
 int32_t join_table()
@@ -599,24 +613,24 @@ end:
 
 cJSON *get_t_player_info(char *table_id)
 {
-	cJSON *t_player_info = NULL, *player_info = NULL, *cmm = NULL;
+	cJSON *cmm_t_player_info = NULL, *t_player_info = NULL, *cmm = NULL;
 	char *hexstr = NULL, *t_player_info_str = NULL;
 
 	cmm = cJSON_CreateObject();
 	cmm = get_cmm(table_id, 0);
 	if (cmm) {
-		t_player_info = cJSON_CreateObject();
-		t_player_info = cJSON_GetObjectItem(cmm, T_PLAYER_INFO_KEY);
-		if (t_player_info) {
-			hexstr = jstr(cJSON_GetArrayItem(t_player_info, 0), STRING_VDXF_ID);
+		cmm_t_player_info = cJSON_CreateObject();
+		cmm_t_player_info = cJSON_GetObjectItem(cmm, T_PLAYER_INFO_KEY);
+		if (cmm_t_player_info) {
+			hexstr = jstr(cJSON_GetArrayItem(cmm_t_player_info, 0), STRING_VDXF_ID);
 			t_player_info_str = calloc(1, strlen(hexstr));
 			hexstr_to_str(hexstr, t_player_info_str);
-			player_info = cJSON_CreateObject();
-			player_info = cJSON_Parse(t_player_info_str);
+			t_player_info = cJSON_CreateObject();
+			t_player_info = cJSON_Parse(t_player_info_str);
 		}
 	}
 	free(t_player_info_str);
-	return player_info;
+	return t_player_info;
 }
 
 cJSON *update_t_player_info(char *id, cJSON *t_player_info)

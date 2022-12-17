@@ -558,7 +558,7 @@ static void bet_start(int argc, char **argv){
 
 static int32_t handle_verus_player()
 {
-	int32_t retval = OK;
+	int32_t retval = OK, player_id = -1;
 
 	playing_nodes_init();
 	bet_parse_verus_player();
@@ -566,7 +566,9 @@ static int32_t handle_verus_player()
 		goto end;
 	if ((retval = join_table()) != OK)
 		goto end;
-	get_player_id();
+	if((retval = get_player_id(&player_id)) != OK){
+		goto end;
+	}
 end:
 	if (retval)
 		dlg_error("%s::%d::%s\n", __func__, __LINE__, bet_err_str(retval));

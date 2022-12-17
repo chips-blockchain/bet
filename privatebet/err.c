@@ -110,6 +110,12 @@ const char *bet_err_str(int32_t err_no)
 		return "Error in updating the ID";
 	case ERR_SENDCURRENCY:
 		return "Error in sendcurrency";
+	case ERR_PLAYER_NOT_EXISTS:
+		return "Error player doesn't exists";
+	case ERR_T_PLAYER_INFO_NULL:
+		return "t_player_info key value is null";
+	case ERR_T_PLAYER_INFO_CORRUPTED:
+		return "t_player_info either not updated correctly or corrupted";
 	default:
 		return "This error is not handled yet...";
 	}
