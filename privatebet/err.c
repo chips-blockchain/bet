@@ -116,6 +116,20 @@ const char *bet_err_str(int32_t err_no)
 		return "t_player_info key value is null";
 	case ERR_T_PLAYER_INFO_CORRUPTED:
 		return "t_player_info either not updated correctly or corrupted";
+	case ERR_T_TABLE_INFO_NULL:
+		return "No table info exists";
+	case ERR_TABLE_DECODING_FAILED:
+		return "Decoding of table info failed";
+	case ERR_PAYIN_TX_INVALID_FUNDS:
+		return "The funds in payin_tx doesn't match the table stake";
+	case ERR_TABLE_IS_FULL:
+		return "Table is full";
+	case ERR_PA_EXISTS:
+		return "Player with primaryaddress alreay joined the table";
+	case ERR_WRONG_PA_TX_ID_FORMAT:
+		return "Error is parsing the pa_tx_id stored in t_player_info";
+	case ERR_DUP_UPDATE_REQ:
+		return "Duplicate update request";
 	default:
 		return "This error is not handled yet...";
 	}

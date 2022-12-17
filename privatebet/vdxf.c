@@ -719,7 +719,7 @@ end:
 
 int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 {
-	int32_t retval = 1;
+	int32_t retval = OK;
 	double amount = 0;
 	char pa_tx_hash[10] = { 0 }, pa[128] = { 0 };
 	cJSON *t_table_info = NULL, *primaryaddresses = NULL, *t_player_info = NULL, *player_info = NULL;
@@ -734,19 +734,17 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 	t_table_info = cJSON_CreateObject();
 	t_table_info = get_cmm_key_data(jstr(payin_tx_data, "table_id"), 0, T_TABLE_INFO_KEY);
 	if (t_table_info == NULL) {
-		dlg_error("%s::%d::The info of table %s of key %s is not avaialble\n", __FUNCTION__, __LINE__,
-			  jstr(payin_tx_data, "table_id"), T_TABLE_INFO_KEY);
-		retval = 0;
+		retval = ERR_T_TABLE_INFO_NULL;
 		goto end;
 	}
 	t = decode_table_info(t_table_info);
 	if (t == NULL) {
-		dlg_error("%s::%d::Decoding of table info into table struct is failed\n", __FUNCTION__, __LINE__);
+		retval = ERR_TABLE_DECODING_FAILED;
 		retval = 0;
 		goto end;
 	}
 	if ((amount < uint32_s_to_float(t->min_stake)) && (amount > uint32_s_to_float(t->max_stake))) {
-		retval = 0;
+		retval = ERR_PAYIN_TX_INVALID_FUNDS;
 		dlg_error(
 			"%s::%d::Checks on funds deposit is failed, funds deposited ::%f should be in the range %f::%f\n",
 			__FUNCTION__, __LINE__, amount, uint32_s_to_float(t->min_stake),
@@ -759,10 +757,9 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 		if (jint(t_player_info, "num_players") >= t->max_players) {
 			dlg_error("%s::%d::Table ::%s is full\n", __FUNCTION__, __LINE__,
 				  jstr(payin_tx_data, "table_id"));
-			retval = 0;
+			retval = ERR_TABLE_IS_FULL;
 			goto end;
 		}
-
 		player_info = cJSON_CreateArray();
 		player_info = cJSON_GetObjectItem(t_player_info, "player_info");
 		strncpy(pa, jstr(payin_tx_data, "primaryaddress"), sizeof(pa));
@@ -771,20 +768,15 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 				if (strtok(jstri(player_info, i), "_")) {
 					strcpy(pa_tx_hash, strtok(NULL, "_"));
 					if (strncmp(pa_tx_hash, txid, strlen(pa_tx_hash)) == 0) {
-						dlg_warn("%s::%d::This tx details are already updated\n", __FUNCTION__,
-							 __LINE__);
-						retval = 2; // Do nothing
+						dlg_warn("%s::%d::Duplicate update request\n", __FUNCTION__, __LINE__);
+						retval = OK; 
 						break;
 					} else {
-						retval = 0; //
-						dlg_error("%s::%d::The primaryaddress is already exists\n",
-							  __FUNCTION__, __LINE__);
+						retval = ERR_PA_EXISTS;
 						break;
 					}
 				} else {
-					retval = 0;
-					dlg_error("%s::%d::Probably the format of pa::%s might be wrong\n",
-						  __FUNCTION__, __LINE__, jstri(primaryaddresses, i));
+					retval = ERR_WRONG_PA_TX_ID_FORMAT; 
 					break;
 				}
 			}
@@ -830,7 +822,7 @@ void test_loop(char *blockhash)
 {
 	dlg_info("%s called!", __FUNCTION__);
 	char verus_addr[1][100] = { CASHIERS_ID };
-	int32_t blockcount = 0, retval = 0;
+	int32_t blockcount = 0, retval = OK;
 	cJSON *blockjson = NULL, *t_player_info = NULL, *primaryaddress = NULL, *payin_tx_data = NULL;
 
 	blockjson = cJSON_CreateObject();
@@ -857,20 +849,15 @@ void test_loop(char *blockhash)
 				goto end;
 			}
 			retval = do_payin_tx_checks(payin_tx_data, jstr(cJSON_GetArrayItem(argjson, i), "txid"));
-			if (retval == 0) {
-				dlg_error("%s::%d::Payin_tx checks are failed, Reversing the tx\n", __FUNCTION__,
-					  __LINE__);
+			if (retval != OK) {
+				dlg_error("%s::%d::Err:: %s, Reversing the tx\n", __FUNCTION__,__LINE__, bet_err_str(retval));
 				double amount = chips_get_balance_on_address_from_tx(
 					VDXF_CASHIERS_ID, jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 				cJSON *tx = chips_transfer_funds(amount, jstr(payin_tx_data, "primaryaddress"));
 				dlg_warn("%s::%d::Tx deposited back to the players primaryaddress::%s\n", __func__,
 					 __LINE__, cJSON_Print(tx));
 				goto end;
-			} else if (retval == 2) {
-				dlg_warn("%s::%d::The payin_tx is already been processed\n", __FUNCTION__, __LINE__);
-				goto end;
-			}
-
+			} 
 			cJSON *updated_player_info =
 				add_player_t_player_info(jstr(cJSON_GetArrayItem(argjson, i), "txid"), payin_tx_data);
 
