@@ -387,6 +387,7 @@ int32_t get_player_id(int *player_id)
 		dlg_error("%s::%d::%s::%s\n", __func__, __LINE__, bet_err_str(retval), cJSON_Print(t_player_info));
 		goto end;
 	}
+	dlg_info("%s::%d::player_info::%s\n", __func__, __LINE__, cJSON_Print(player_info));
 	for (int32_t i = 0; i < cJSON_GetArraySize(player_info); i++) {
 		if (strncmp(player_config.primaryaddress, jstri(player_info, i),
 			    strlen(player_config.primaryaddress)) == 0) {
