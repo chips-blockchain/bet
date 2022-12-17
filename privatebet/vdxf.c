@@ -486,6 +486,16 @@ int32_t check_player_join_status(char *table_id, char *pa)
 {
 	int32_t block_count = 0, block_wait_time = 3, retval = 0;
 
+	
+	cJSON *pa_arr = get_primaryaddresses(table_id, 0);
+	for (int32_t i = 0; i < cJSON_GetArraySize(pa_arr); i++) {
+		if (0 == strcmp(jstri(pa_arr, i), pa)) {
+			retval = 1;
+			break;
+		}
+	}
+
+	#if 0
 	block_count = chips_get_block_count() + block_wait_time;
 	do {
 		sleep(2);
@@ -497,7 +507,7 @@ int32_t check_player_join_status(char *table_id, char *pa)
 			}
 		}
 	} while (chips_get_block_count() < block_count);
-
+	#endif
 	return retval;
 }
 
