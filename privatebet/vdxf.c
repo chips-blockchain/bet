@@ -371,23 +371,20 @@ bool is_dealer_exists(char *dealer_id)
 int32_t get_player_id(int *player_id)
 {
 	int32_t retval = ERR_PLAYER_NOT_EXISTS;
-
 	cJSON *t_player_info = NULL, *player_info = NULL;
+
 
 	t_player_info = get_t_player_info(player_config.table_id);
 	if(t_player_info == NULL){
 		retval = ERR_T_PLAYER_INFO_NULL;
-		dlg_info("%s::%d::No t_player_info found on table id::%s\n", __func__, __LINE__,player_config.table_id);
 		goto end;
 	}
 	player_info = cJSON_CreateArray();
 	player_info = jobj(t_player_info, "player_info");
 	if(player_info == NULL) {
 		retval = ERR_T_PLAYER_INFO_CORRUPTED;
-		dlg_error("%s::%d::%s::%s\n", __func__, __LINE__, bet_err_str(retval), cJSON_Print(t_player_info));
 		goto end;
 	}
-	dlg_info("%s::%d::player_info::%s\n", __func__, __LINE__, cJSON_Print(player_info));
 	for (int32_t i = 0; i < cJSON_GetArraySize(player_info); i++) {
 		if (strncmp(player_config.primaryaddress, jstri(player_info, i),
 			    strlen(player_config.primaryaddress)) == 0) {
@@ -416,7 +413,6 @@ int32_t join_table()
 	op_id = verus_sendcurrency_data(data);
 	if (op_id) {
 		op_id_info = get_z_getoperationstatus(jstr(op_id, "op_id"));
-		dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(op_id_info));
 		if (op_id_info) {
 			while (0 == strcmp(jstr(jitem(op_id_info, 0), "status"), "executing")) {
 				op_id_info = get_z_getoperationstatus(jstr(op_id, "op_id"));
@@ -429,8 +425,8 @@ int32_t join_table()
 			}
 			char *txid = jstr(jobj(jitem(op_id_info, 0), "result"), "txid");
 			dlg_info("%s::%d::payin_tx::%s\n", __FUNCTION__, __LINE__, txid);
-			if (check_player_join_status(player_config.table_id, player_config.primaryaddress)) {
-				dlg_info("%s::%d::player_join is success\n", __func__, __LINE__);
+			if ((retval = check_player_join_status(player_config.table_id, player_config.primaryaddress)) != OK) {
+				dlg_info("%s::%d::%s\n", __func__, __LINE__, bet_err_str(retval));
 			}
 		}
 	}
@@ -501,16 +497,22 @@ bool is_id_exists(char *id, int16_t full_id)
 
 int32_t check_player_join_status(char *table_id, char *pa)
 {
-	int32_t block_count = 0, block_wait_time = 3, retval = 0;
+	int32_t block_count = 0, block_wait_time = 3, retval = ERR_PA_NOT_ADDED_TO_TABLE;
 
-	cJSON *pa_arr = get_primaryaddresses(table_id, 0);
-	for (int32_t i = 0; i < cJSON_GetArraySize(pa_arr); i++) {
-		if (0 == strcmp(jstri(pa_arr, i), pa)) {
-			retval = 1;
-			break;
+	block_count = chips_get_block_count() + block_wait_time;
+	do {
+		sleep(2);
+		cJSON *pa_arr = get_primaryaddresses(table_id, 0);
+		for (int32_t i = 0; i < cJSON_GetArraySize(pa_arr); i++) {
+			if (0 == strcmp(jstri(pa_arr, i), pa)) {
+				retval = OK;
+				break;
+			}
 		}
-	}
+	} while (chips_get_block_count() < block_count);
+
 	return retval;
+
 }
 
 cJSON *get_z_getoperationstatus(char *op_id)
