@@ -501,7 +501,6 @@ int32_t check_player_join_status(char *table_id, char *pa)
 
 	block_count = chips_get_block_count() + block_wait_time;
 	do {
-		sleep(2);
 		cJSON *pa_arr = get_primaryaddresses(table_id, 0);
 		for (int32_t i = 0; i < cJSON_GetArraySize(pa_arr); i++) {
 			if (0 == strcmp(jstri(pa_arr, i), pa)) {
@@ -509,6 +508,7 @@ int32_t check_player_join_status(char *table_id, char *pa)
 				break;
 			}
 		}
+		sleep(2);
 	} while (chips_get_block_count() < block_count);
 
 	return retval;
