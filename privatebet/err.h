@@ -92,6 +92,16 @@ All the errors that come across in bet are defined here. The error numbers are a
 #define ERR_PLAYER_NOT_EXISTS			105
 #define ERR_T_PLAYER_INFO_NULL			106
 #define ERR_T_PLAYER_INFO_CORRUPTED     107
+#define ERR_T_TABLE_INFO_NULL			108
+#define ERR_TABLE_DECODING_FAILED		109
+#define ERR_PAYIN_TX_INVALID_FUNDS		110
+#define ERR_TABLE_IS_FULL				111
+#define ERR_PA_EXISTS					112
+#define ERR_WRONG_PA_TX_ID_FORMAT		113
+#define ERR_DUP_UPDATE_REQ				114
+
+
+
 
 // clang-format on
 const char *bet_err_str(int32_t err_no);
