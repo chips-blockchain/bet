@@ -450,10 +450,7 @@ int32_t find_table()
 		goto end;
 	}
 	memcpy((void *)&player_t, (void *)t, sizeof(player_t));
-	dlg_info(
-		"max_players :: %d,  big_blind :: %f, min_stake :: %f, max_stake :: %f, table_id :: %s, dealer_id :: %s\n",
-		player_t.max_players, uint32_s_to_float(player_t.big_blind), uint32_s_to_float(player_t.min_stake),
-		uint32_s_to_float(player_t.max_stake), player_t.table_id, player_t.dealer_id);
+	dlg_info("%s::%d::Table_info:: max_players :: %d,  big_blind :: %f, min_stake :: %f, max_stake :: %f, table_id :: %s, dealer_id :: %s\n", __func__, __LINE__, player_t.max_players, uint32_s_to_float(player_t.big_blind), uint32_s_to_float(player_t.min_stake), uint32_s_to_float(player_t.max_stake), player_t.table_id, player_t.dealer_id);
 
 end:
 	return retval;
@@ -486,7 +483,6 @@ int32_t check_player_join_status(char *table_id, char *pa)
 {
 	int32_t block_count = 0, block_wait_time = 3, retval = 0;
 
-	
 	cJSON *pa_arr = get_primaryaddresses(table_id, 0);
 	for (int32_t i = 0; i < cJSON_GetArraySize(pa_arr); i++) {
 		if (0 == strcmp(jstri(pa_arr, i), pa)) {
@@ -494,20 +490,6 @@ int32_t check_player_join_status(char *table_id, char *pa)
 			break;
 		}
 	}
-
-	#if 0
-	block_count = chips_get_block_count() + block_wait_time;
-	do {
-		sleep(2);
-		cJSON *pa_arr = get_primaryaddresses(table_id, 0);
-		for (int32_t i = 0; i < cJSON_GetArraySize(pa_arr); i++) {
-			if (0 == strcmp(jstri(pa_arr, i), pa)) {
-				retval = 1;
-				break;
-			}
-		}
-	} while (chips_get_block_count() < block_count);
-	#endif
 	return retval;
 }
 
