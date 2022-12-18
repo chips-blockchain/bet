@@ -177,7 +177,6 @@ cJSON *get_primaryaddresses(char *id, int16_t full_id)
 	if (NULL == id) {
 		return NULL;
 	}
-
 	strncpy(params, id, strlen(id));
 	if (0 == full_id) {
 		strcat(params, ".poker.chips10sec@");
@@ -190,6 +189,7 @@ cJSON *get_primaryaddresses(char *id, int16_t full_id)
 	retval = make_command(argc, argv, &argjson);
 	if (retval != OK) {
 		dlg_error("%s::%d::%s\n", __func__, __LINE__, bet_err_str(retval));
+		goto end;
 	}
 
 	id_obj = cJSON_GetObjectItem(argjson, "identity");
@@ -469,34 +469,11 @@ int32_t find_table()
 	struct table *t = NULL;
 	int32_t retval = OK;
 
-	//TODO: check for dealer, check for table, check for pa, check for funds, check for num_players
+	//TODO: check for pa, check for funds, check for num_players
 	//If the user didn't configured any dealer_id, then take the first dealer id available.
 	if ((retval = get_table()) != OK) {
 		return retval;
 	}
-#if 0
-	if (!is_dealer_exists(player_config.dealer_id)) {
-		dealer_ids = cJSON_CreateArray();
-		dealer_ids = get_dealers();
-		if (dealer_ids == NULL) {
-			dlg_error("%s::%d::No dealers found\n", __FUNCTION__, __LINE__);
-			retval = ERR_NO_DEALERS_FOUND;
-			goto end;
-		}
-		for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ids); i++) {
-			//TODO: Need to check if the dealer tables are empty or not.
-			strncpy(player_config.dealer_id, jstri(dealer_ids, i), sizeof(player_config.dealer_id));
-			dlg_info("%s::%d::Dealer chosen::%s\n", __FUNCTION__, __LINE__, player_config.dealer_id);
-			break;
-		}
-	}
-	t = get_dealers_config_table(player_config.dealer_id, player_config.table_id);
-	if (t == NULL) {
-		retval = ERR_NO_TABLES_FOUND;
-		goto end;
-	}
-	memcpy((void *)&player_t, (void *)t, sizeof(player_t));
-#endif
 	dlg_info(
 		"%s::%d::Table_info:: max_players :: %d,  big_blind :: %f, min_stake :: %f, max_stake :: %f, table_id :: %s, dealer_id :: %s\n",
 		__func__, __LINE__, player_t.max_players, uint32_s_to_float(player_t.big_blind),
@@ -668,6 +645,23 @@ struct table *get_available_t_of_d(char *dealer_id)
 	return NULL;
 }
 
+int32_t check_if_pa_exists(char *table_id)
+{
+	int32_t retval = 0;
+	cJSON *pa_arr = NULL;
+
+	pa_arr = cJSON_CreateArray();
+	pa_arr = get_primaryaddresses(table_id, 0);
+	if(pa_arr) {
+		for(int32_t i=0; i<cJSON_GetArraySize(pa_arr); i++) {
+			if(0 == strcmp(jstri(pa_arr,i), player_config.primaryaddress)) {
+				return !retval;
+			}
+		}
+	}
+	return retval;
+}
+
 int32_t check_if_d_t_available(char *dealer_id, char *table_id)
 {
 	int32_t retval = 0;
@@ -681,7 +675,7 @@ int32_t check_if_d_t_available(char *dealer_id, char *table_id)
 		t = get_t_table_info(dealer_id);
 		if ((t) && (0 == strcmp(t->table_id, table_id))) {
 			t_player_info = get_t_player_info(t->table_id);
-			if ((t_player_info) && (jint(t_player_info, "num_players") < t->max_players)) {
+			if ((t_player_info) && (jint(t_player_info, "num_players") < t->max_players) && (!check_if_pa_exists(t->table_id))) {
 				return !retval;
 			}
 		}
