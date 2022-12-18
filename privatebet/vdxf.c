@@ -73,7 +73,7 @@ cJSON *get_cmm(char *id, int16_t full_id)
 
 	argjson = cJSON_CreateObject();
 	retval = make_command(argc, argv, &argjson);
-	if(retval != OK) {
+	if (retval != OK) {
 		dlg_error("%s::%d::%s\n", __func__, __LINE__, bet_err_str(retval));
 		goto end;
 	}
@@ -189,10 +189,9 @@ cJSON *get_primaryaddresses(char *id, int16_t full_id)
 
 	argjson = cJSON_CreateObject();
 	retval = make_command(argc, argv, &argjson);
-	if(retval != OK) {
+	if (retval != OK) {
 		dlg_error("%s::%d::%s\n", __func__, __LINE__, bet_err_str(retval));
 	}
-	
 
 	id_obj = cJSON_GetObjectItem(argjson, "identity");
 	pa = cJSON_CreateArray();
@@ -207,11 +206,11 @@ cJSON *get_cmm_key_data(char *id, int16_t full_id, char *key)
 {
 	cJSON *cmm = NULL, *cmm_key_data = NULL;
 
-	if((cmm = get_cmm(id, full_id)) == NULL)
+	if ((cmm = get_cmm(id, full_id)) == NULL)
 		return NULL;
 
 	cmm_key_data = cJSON_CreateObject();
-	if((cmm_key_data = cJSON_GetObjectItem(cmm, key)) == NULL)
+	if ((cmm_key_data = cJSON_GetObjectItem(cmm, key)) == NULL)
 		return NULL;
 
 	return cmm_key_data;
@@ -441,7 +440,7 @@ int32_t get_table()
 	struct table *t = NULL;
 	cJSON *dealer_ids = NULL;
 
-	if(check_if_d_t_available(player_config.dealer_id, player_config.table_id)) {
+	if (check_if_d_t_available(player_config.dealer_id, player_config.table_id)) {
 		t = get_t_table_info(player_config.dealer_id);
 		memcpy((void *)&player_t, (void *)t, sizeof(player_t));
 		return retval;
@@ -451,15 +450,15 @@ int32_t get_table()
 		if (dealer_ids == NULL) {
 			return ERR_NO_DEALERS_FOUND;
 		}
-		for(int32_t i=0; i<cJSON_GetArraySize(dealer_ids); i++) {
-		 	t = get_available_t_of_d(jstri(dealer_ids,i));
-			if(t) {
-				strncpy(player_config.dealer_id, jstri(dealer_ids,i), sizeof(player_config.dealer_id));
+		for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ids); i++) {
+			t = get_available_t_of_d(jstri(dealer_ids, i));
+			if (t) {
+				strncpy(player_config.dealer_id, jstri(dealer_ids, i), sizeof(player_config.dealer_id));
 				strncpy(player_config.table_id, t->table_id, sizeof(player_config.table_id));
 				memcpy((void *)&player_t, (void *)t, sizeof(player_t));
 				return retval;
 			}
-		}				
+		}
 	}
 	retval = ERR_NO_TABLES_FOUND;
 	return retval;
@@ -473,10 +472,10 @@ int32_t find_table()
 
 	//TODO: check for dealer, check for table, check for pa, check for funds, check for num_players
 	//If the user didn't configured any dealer_id, then take the first dealer id available.
-	if((retval = get_table()) != OK) {
+	if ((retval = get_table()) != OK) {
 		return retval;
 	}
-	#if 0
+#if 0
 	if (!is_dealer_exists(player_config.dealer_id)) {
 		dealer_ids = cJSON_CreateArray();
 		dealer_ids = get_dealers();
@@ -498,7 +497,7 @@ int32_t find_table()
 		goto end;
 	}
 	memcpy((void *)&player_t, (void *)t, sizeof(player_t));
-	#endif
+#endif
 	dlg_info(
 		"%s::%d::Table_info:: max_players :: %d,  big_blind :: %f, min_stake :: %f, max_stake :: %f, table_id :: %s, dealer_id :: %s\n",
 		__func__, __LINE__, player_t.max_players, uint32_s_to_float(player_t.big_blind),
@@ -652,18 +651,18 @@ end:
 	return t;
 }
 
-struct table* get_available_t_of_d(char *dealer_id) 
+struct table *get_available_t_of_d(char *dealer_id)
 {
 	struct table *t = NULL;
 	cJSON *t_player_info = NULL;
-	
-	if(NULL == dealer_id) {
+
+	if (NULL == dealer_id) {
 		return NULL;
 	}
 	t = get_t_table_info(dealer_id);
-	if(t) {
+	if (t) {
 		t_player_info = get_t_player_info(t->table_id);
-		if((t_player_info) && (jint(t_player_info,"num_players") < t->max_players)) {
+		if ((t_player_info) && (jint(t_player_info, "num_players") < t->max_players)) {
 			return t;
 		}
 	}
@@ -676,31 +675,31 @@ int32_t check_if_d_t_available(char *dealer_id, char *table_id)
 	struct table *t = NULL;
 	cJSON *t_player_info = NULL;
 
-	if((NULL == dealer_id) || (NULL == table_id)) {
+	if ((NULL == dealer_id) || (NULL == table_id)) {
 		return retval;
 	}
-	if(is_dealer_exists(dealer_id)) {
-		t= get_t_table_info(dealer_id);
-		if((t) && (0 == strcmp(t->table_id, table_id))) {
+	if (is_dealer_exists(dealer_id)) {
+		t = get_t_table_info(dealer_id);
+		if ((t) && (0 == strcmp(t->table_id, table_id))) {
 			t_player_info = get_t_player_info(t->table_id);
-			if((t_player_info) && (jint(t_player_info,"num_players") < t->max_players)) {
+			if ((t_player_info) && (jint(t_player_info, "num_players") < t->max_players)) {
 				return !retval;
 			}
 		}
-	}	
+	}
 	return retval;
 }
 
-struct table* get_t_table_info(char *id)
+struct table *get_t_table_info(char *id)
 {
 	cJSON *t_table_info = NULL;
 	struct table *t = NULL;
 
-	t_table_info = get_cmm_key_data(id,0,T_TABLE_INFO_KEY);
-	if(t_table_info){
+	t_table_info = get_cmm_key_data(id, 0, T_TABLE_INFO_KEY);
+	if (t_table_info) {
 		t = decode_table_info(t_table_info);
 	}
-	return t;	
+	return t;
 }
 
 cJSON *get_t_player_info(char *table_id)

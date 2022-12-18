@@ -1751,8 +1751,8 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 			} else if (strcmp(argv[1], "getidentity") == 0) {
 				if (strstr(data, "error") != NULL)
 					retval = ERR_ID_NOT_FOUND;
-				else 
-					*argjson = cJSON_Parse(data);				
+				else
+					*argjson = cJSON_Parse(data);
 			} else if (strcmp(argv[1], "z_getoperationresult") == 0) {
 				*argjson = cJSON_Parse(data);
 			} else if (strcmp(argv[1], "sendcurrency") == 0) {
