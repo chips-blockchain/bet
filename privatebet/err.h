@@ -100,6 +100,7 @@ All the errors that come across in bet are defined here. The error numbers are a
 #define ERR_WRONG_PA_TX_ID_FORMAT		113
 #define ERR_DUP_UPDATE_REQ				114
 #define ERR_PA_NOT_ADDED_TO_TABLE		115
+#define ERR_ID_NOT_FOUND				116
 
 // clang-format on
 const char *bet_err_str(int32_t err_no);

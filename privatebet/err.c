@@ -132,6 +132,8 @@ const char *bet_err_str(int32_t err_no)
 		return "Duplicate update request";
 	case ERR_PA_NOT_ADDED_TO_TABLE:
 		return "Player primaryaddress is not added to the table";
+	case ERR_ID_NOT_FOUND:
+		return "ID not found";
 	default:
 		return "This error is not handled yet...";
 	}
