@@ -639,8 +639,9 @@ struct table *get_available_t_of_d(char *dealer_id)
 	t = get_t_table_info(dealer_id);
 	if (t) {
 		t_player_info = get_t_player_info(t->table_id);
-		if ((t_player_info) && (jint(t_player_info, "num_players") < t->max_players) && (!check_if_pa_exists(t->table_id)) && (check_if_enough_funds_avail(t->table_id))) {
-			return t;	
+		if ((t_player_info) && (jint(t_player_info, "num_players") < t->max_players) &&
+		    (!check_if_pa_exists(t->table_id)) && (check_if_enough_funds_avail(t->table_id))) {
+			return t;
 		}
 	}
 	return NULL;
@@ -691,8 +692,9 @@ bool check_if_d_t_available(char *dealer_id, char *table_id)
 		t = get_t_table_info(dealer_id);
 		if ((t) && (0 == strcmp(t->table_id, table_id))) {
 			t_player_info = get_t_player_info(t->table_id);
-			if ((t_player_info) && (jint(t_player_info, "num_players") < t->max_players) && (!check_if_pa_exists(t->table_id)) && (check_if_enough_funds_avail(t->table_id))) {
-				return true;	
+			if ((t_player_info) && (jint(t_player_info, "num_players") < t->max_players) &&
+			    (!check_if_pa_exists(t->table_id)) && (check_if_enough_funds_avail(t->table_id))) {
+				return true;
 			}
 		}
 	}
