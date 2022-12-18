@@ -55,7 +55,7 @@ end:
 
 cJSON *get_cmm(char *id, int16_t full_id)
 {
-	int argc;
+	int32_t retval, argc;
 	char **argv = NULL;
 	char params[128] = { 0 };
 	cJSON *argjson = NULL, *cmm = NULL;
@@ -73,7 +73,11 @@ cJSON *get_cmm(char *id, int16_t full_id)
 	argv = bet_copy_args(argc, verus_chips_cli, "getidentity", params);
 
 	argjson = cJSON_CreateObject();
-	make_command(argc, argv, &argjson);
+	retval = make_command(argc, argv, &argjson);
+	if(retval != OK) {
+		dlg_error("%s::%d::%s\n", __func__, __LINE__, bet_err_str(retval));
+		goto end;
+	}
 
 	cmm = cJSON_CreateObject();
 	cmm = cJSON_GetObjectItem(cJSON_GetObjectItem(argjson, "identity"), "contentmultimap");
@@ -168,9 +172,8 @@ end:
 
 cJSON *get_primaryaddresses(char *id, int16_t full_id)
 {
-	int argc;
-	char **argv = NULL;
-	char params[128] = { 0 };
+	int32_t argc, retval = OK;
+	char **argv = NULL, params[128] = { 0 };
 	cJSON *argjson = NULL, *pa = NULL, *id_obj = NULL;
 
 	if (NULL == id) {
@@ -186,7 +189,11 @@ cJSON *get_primaryaddresses(char *id, int16_t full_id)
 	argv = bet_copy_args(argc, verus_chips_cli, "getidentity", params);
 
 	argjson = cJSON_CreateObject();
-	make_command(argc, argv, &argjson);
+	retval = make_command(argc, argv, &argjson);
+	if(retval != OK) {
+		dlg_error("%s::%d::%s\n", __func__, __LINE__, bet_err_str(retval));
+	}
+	
 
 	id_obj = cJSON_GetObjectItem(argjson, "identity");
 	pa = cJSON_CreateArray();
@@ -509,9 +516,9 @@ end:
 	return retval;
 }
 
-bool is_id_exists(char *id, int16_t full_id)
+int32_t is_id_exists(char *id, int16_t full_id)
 {
-	int argc = 3, retval = 1;
+	int32_t argc = 3, retval = 1;
 	char **argv = NULL;
 	char params[128] = { 0 };
 	cJSON *argjson = NULL;
@@ -524,11 +531,9 @@ bool is_id_exists(char *id, int16_t full_id)
 	argv = bet_copy_args(argc, verus_chips_cli, "getidentity", params);
 
 	argjson = cJSON_CreateObject();
-	make_command(argc, argv, &argjson);
+	retval = make_command(argc, argv, &argjson);
 
-	if (NULL == cJSON_GetObjectItem(argjson, "identity")) {
-		retval = !retval;
-	}
+	bet_dealloc_args(argc, &argv);
 	return retval;
 }
 
