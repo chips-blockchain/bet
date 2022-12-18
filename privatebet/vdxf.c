@@ -55,9 +55,8 @@ end:
 
 cJSON *get_cmm(char *id, int16_t full_id)
 {
-	int32_t retval, argc;
-	char **argv = NULL;
-	char params[128] = { 0 };
+	int32_t retval = OK, argc;
+	char **argv = NULL, params[128] = { 0 };
 	cJSON *argjson = NULL, *cmm = NULL;
 
 	if (NULL == id) {
@@ -208,17 +207,13 @@ cJSON *get_cmm_key_data(char *id, int16_t full_id, char *key)
 {
 	cJSON *cmm = NULL, *cmm_key_data = NULL;
 
-	cmm = get_cmm(id, full_id);
-
-	if (NULL == cmm) {
-		dlg_info("%s::%d::cmm for id::%s is null", __FUNCTION__, __LINE__, id);
+	if((cmm = get_cmm(id, full_id)) == NULL)
 		return NULL;
-	}
+
 	cmm_key_data = cJSON_CreateObject();
-	cmm_key_data = cJSON_GetObjectItem(cmm, key);
-	if (NULL == cmm_key_data) {
-		dlg_info("%s::%d:: The data of key ::%s for the id::%s is null", __FUNCTION__, __LINE__, key, id);
-	}
+	if((cmm_key_data = cJSON_GetObjectItem(cmm, key)) == NULL)
+		return NULL;
+
 	return cmm_key_data;
 }
 
