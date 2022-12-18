@@ -652,9 +652,9 @@ int32_t check_if_pa_exists(char *table_id)
 
 	pa_arr = cJSON_CreateArray();
 	pa_arr = get_primaryaddresses(table_id, 0);
-	if(pa_arr) {
-		for(int32_t i=0; i<cJSON_GetArraySize(pa_arr); i++) {
-			if(0 == strcmp(jstri(pa_arr,i), player_config.primaryaddress)) {
+	if (pa_arr) {
+		for (int32_t i = 0; i < cJSON_GetArraySize(pa_arr); i++) {
+			if (0 == strcmp(jstri(pa_arr, i), player_config.primaryaddress)) {
 				return !retval;
 			}
 		}
@@ -675,7 +675,8 @@ int32_t check_if_d_t_available(char *dealer_id, char *table_id)
 		t = get_t_table_info(dealer_id);
 		if ((t) && (0 == strcmp(t->table_id, table_id))) {
 			t_player_info = get_t_player_info(t->table_id);
-			if ((t_player_info) && (jint(t_player_info, "num_players") < t->max_players) && (!check_if_pa_exists(t->table_id))) {
+			if ((t_player_info) && (jint(t_player_info, "num_players") < t->max_players) &&
+			    (!check_if_pa_exists(t->table_id))) {
 				return !retval;
 			}
 		}
