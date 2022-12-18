@@ -70,7 +70,7 @@ under chips as sg777.chips@ which basically been used to hold the tokens.
 #define POKER_CHIPS_VDXF_ID "i6gViGxt7YinkJZoubKdbWBrqdRCb1Rkvs"
 
 #define ID_UPDATE_ESTIMATE_NO 50
-#define RESERVE_AMOUNT ID_UPDATE_ESTIMATE_NO*chips_tx_fee
+#define RESERVE_AMOUNT ID_UPDATE_ESTIMATE_NO *chips_tx_fee
 
 char *get_vdxf_id(char *key_name);
 cJSON *update_cmm(char *id, cJSON *cmm);
