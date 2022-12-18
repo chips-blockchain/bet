@@ -69,6 +69,9 @@ under chips as sg777.chips@ which basically been used to hold the tokens.
 #define VDXF_CASHIERS_ID "i4vGd5Aa23prxkPQbkZ7rHAoA7k7jRc5XY"
 #define POKER_CHIPS_VDXF_ID "i6gViGxt7YinkJZoubKdbWBrqdRCb1Rkvs"
 
+#define ID_UPDATE_ESTIMATE_NO 50
+#define RESERVE_AMOUNT ID_UPDATE_ESTIMATE_NO*chips_tx_fee
+
 char *get_vdxf_id(char *key_name);
 cJSON *update_cmm(char *id, cJSON *cmm);
 cJSON *get_cmm(char *id, int16_t full_id);
@@ -95,7 +98,8 @@ cJSON *getaddressutxos(char verus_addresses[][100], int n);
 struct table *decode_table_info(cJSON *dealer_cmm_data);
 struct table *get_available_t_of_d(char *dealer_id);
 int32_t check_if_pa_exists(char *table_id);
-int32_t check_if_d_t_available(char *dealer_id, char *table_id);
+int32_t check_if_enough_funds_avail(char *table_id);
+bool check_if_d_t_available(char *dealer_id, char *table_id);
 struct table *get_t_table_info(char *id);
 cJSON *get_t_player_info(char *table_id);
 cJSON *update_t_player_info(char *id, cJSON *t_player_info);

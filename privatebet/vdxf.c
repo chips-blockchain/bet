@@ -629,6 +629,7 @@ end:
 
 struct table *get_available_t_of_d(char *dealer_id)
 {
+	int32_t retval = OK;
 	struct table *t = NULL;
 	cJSON *t_player_info = NULL;
 
@@ -638,8 +639,15 @@ struct table *get_available_t_of_d(char *dealer_id)
 	t = get_t_table_info(dealer_id);
 	if (t) {
 		t_player_info = get_t_player_info(t->table_id);
-		if ((t_player_info) && (jint(t_player_info, "num_players") < t->max_players)) {
-			return t;
+		if(t_player_info) {
+			if(jint(t_player_info, "num_players") >= t->max_players)
+				retval = ERR_TABLE_IS_FULL;
+			if(check_if_pa_exists(t->table_id))
+				retval = ERR_PA_EXISTS;
+			retval = check_if_enough_funds_avail(t->table_id);
+
+			if(retval == OK)
+				return t;				
 		}
 	}
 	return NULL;
@@ -662,26 +670,47 @@ int32_t check_if_pa_exists(char *table_id)
 	return retval;
 }
 
-int32_t check_if_d_t_available(char *dealer_id, char *table_id)
+int32_t check_if_enough_funds_avail(char *table_id)
 {
-	int32_t retval = 0;
+	int32_t retval = OK;
+	double balance = 0.0, min_stake = 0.0;
+	struct table *t = NULL;
+
+	t = get_t_table_info(table_id);
+	if(t) {
+		min_stake = uint32_s_to_float(t->min_stake);
+		balance = chips_get_balance();
+		if(balance < min_stake + RESERVE_AMOUNT)
+			retval = ERR_NOT_ENOUGH_FUNDS;		
+	}
+	return retval;
+}
+
+bool check_if_d_t_available(char *dealer_id, char *table_id)
+{
+	int32_t err_no = OK;
 	struct table *t = NULL;
 	cJSON *t_player_info = NULL;
 
 	if ((NULL == dealer_id) || (NULL == table_id)) {
-		return retval;
+		return false;
 	}
 	if (is_dealer_exists(dealer_id)) {
 		t = get_t_table_info(dealer_id);
 		if ((t) && (0 == strcmp(t->table_id, table_id))) {
 			t_player_info = get_t_player_info(t->table_id);
-			if ((t_player_info) && (jint(t_player_info, "num_players") < t->max_players) &&
-			    (!check_if_pa_exists(t->table_id))) {
-				return !retval;
+			if(t_player_info) {
+				if(jint(t_player_info, "num_players") >= t->max_players)
+					err_no = ERR_TABLE_IS_FULL;
+				if(check_if_pa_exists(t->table_id))
+					err_no= ERR_PA_EXISTS;
+				err_no = check_if_enough_funds_avail(t->table_id);
+				if(err_no == OK)
+					return true;				
 			}
 		}
 	}
-	return retval;
+	return false;
 }
 
 struct table *get_t_table_info(char *id)
