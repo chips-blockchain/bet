@@ -435,13 +435,48 @@ end:
 	return retval;
 }
 
+int32_t get_table()
+{
+	int32_t retval = OK;
+	struct table *t = NULL;
+	cJSON *dealer_ids = NULL;
+
+	if(check_if_d_t_available(player_config.dealer_id, player_config.table_id)) {
+		t = get_t_table_info(player_config.dealer_id);
+		memcpy((void *)&player_t, (void *)t, sizeof(player_t));
+		return retval;
+	} else {
+		dealer_ids = cJSON_CreateArray();
+		dealer_ids = get_dealers();
+		if (dealer_ids == NULL) {
+			return ERR_NO_DEALERS_FOUND;
+		}
+		for(int32_t i=0; i<cJSON_GetArraySize(dealer_ids); i++) {
+		 	t = get_available_t_of_d(jstri(dealer_ids,i));
+			if(t) {
+				strncpy(player_config.dealer_id, jstri(dealer_ids,i), sizeof(player_config.dealer_id));
+				strncpy(player_config.table_id, t->table_id, sizeof(player_config.table_id));
+				memcpy((void *)&player_t, (void *)t, sizeof(player_t));
+				return retval;
+			}
+		}				
+	}
+	retval = ERR_NO_TABLES_FOUND;
+	return retval;
+}
+
 int32_t find_table()
 {
 	cJSON *dealer_ids = NULL;
 	struct table *t = NULL;
 	int32_t retval = OK;
 
+	//TODO: check for dealer, check for table, check for pa, check for funds, check for num_players
 	//If the user didn't configured any dealer_id, then take the first dealer id available.
+	if((retval = get_table()) != OK) {
+		return retval;
+	}
+	#if 0
 	if (!is_dealer_exists(player_config.dealer_id)) {
 		dealer_ids = cJSON_CreateArray();
 		dealer_ids = get_dealers();
@@ -463,6 +498,7 @@ int32_t find_table()
 		goto end;
 	}
 	memcpy((void *)&player_t, (void *)t, sizeof(player_t));
+	#endif
 	dlg_info(
 		"%s::%d::Table_info:: max_players :: %d,  big_blind :: %f, min_stake :: %f, max_stake :: %f, table_id :: %s, dealer_id :: %s\n",
 		__func__, __LINE__, player_t.max_players, uint32_s_to_float(player_t.big_blind),
@@ -616,6 +652,56 @@ struct table *decode_table_info(cJSON *dealer_cmm_data)
 
 end:
 	return t;
+}
+
+struct table* get_available_t_of_d(char *dealer_id) 
+{
+	struct table *t = NULL;
+	cJSON *t_player_info = NULL;
+	
+	if(NULL == dealer_id) {
+		return NULL;
+	}
+	t = get_t_table_info(dealer_id);
+	if(t) {
+		t_player_info = get_t_player_info(t->table_id);
+		if((t_player_info) && (jint(t_player_info,"num_players") < t->max_players)) {
+			return t;
+		}
+	}
+	return NULL;
+}
+
+int32_t check_if_d_t_available(char *dealer_id, char *table_id)
+{
+	int32_t retval = 0;
+	struct table *t = NULL;
+	cJSON *t_player_info = NULL;
+
+	if((NULL == dealer_id) || (NULL == table_id)) {
+		return retval;
+	}
+	if(is_dealer_exists(dealer_id))
+		t= get_t_table_info(dealer_id);
+		if((t) && (0 == strcmp(t->table_id, table_id))) {
+			t_player_info = get_t_player_info(t->table_id);
+			if((t_player_info) && (jint(t_player_info,"num_players") < t->max_players)) {
+				return !retval;
+			}
+		}
+	return retval;
+}
+
+struct table* get_t_table_info(char *id)
+{
+	cJSON *t_table_info = NULL;
+	struct table *t = NULL;
+
+	t_table_info = get_cmm_key_data(id,0,T_TABLE_INFO_KEY);
+	if(t_table_info){
+		t = decode_table_info(t_table_info);
+	}
+	return t;	
 }
 
 cJSON *get_t_player_info(char *table_id)
