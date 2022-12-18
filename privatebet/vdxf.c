@@ -74,7 +74,6 @@ cJSON *get_cmm(char *id, int16_t full_id)
 	argjson = cJSON_CreateObject();
 	retval = make_command(argc, argv, &argjson);
 	if (retval != OK) {
-		dlg_error("%s::%d::%s\n", __func__, __LINE__, bet_err_str(retval));
 		goto end;
 	}
 

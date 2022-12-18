@@ -105,7 +105,7 @@ const char *bet_err_str(int32_t err_no)
 	case ERR_NO_DEALERS_FOUND:
 		return "No delears found";
 	case ERR_NO_TABLES_FOUND:
-		return "No tables found";
+		return "No tables are available";
 	case ERR_UPDATEIDENTITY:
 		return "Error in updating the ID";
 	case ERR_SENDCURRENCY:
