@@ -1705,6 +1705,8 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 			} else if (strcmp(argv[1], "updateidentity") == 0) {
 				retval = ERR_UPDATEIDENTITY;
 				jaddnum(*argjson, "error", retval);
+			} else if (strcmp(argv[1], "getidentity") == 0) {
+				retval = ERR_ID_NOT_FOUND;
 			} else {
 				dlg_error("%s::%d::Error in running the command ::%s\n", __FUNCTION__, __LINE__,
 					  command);
