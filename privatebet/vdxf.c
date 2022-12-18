@@ -366,8 +366,6 @@ bool is_dealer_exists(char *dealer_id)
 
 	for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ids); i++) {
 		if (0 == strcmp(dealer_id, jstri(dealer_ids, i))) {
-			dlg_info("%s::%d::The preferred dealer id exists::%s\n", __FUNCTION__, __LINE__,
-				 jstri(dealer_ids, i));
 			dealer_exists = true;
 			break;
 		}
@@ -686,7 +684,7 @@ int32_t check_if_d_t_available(char *dealer_id, char *table_id)
 	if((NULL == dealer_id) || (NULL == table_id)) {
 		return retval;
 	}
-	if(is_dealer_exists(dealer_id))
+	if(is_dealer_exists(dealer_id)) {
 		t= get_t_table_info(dealer_id);
 		if((t) && (0 == strcmp(t->table_id, table_id))) {
 			t_player_info = get_t_player_info(t->table_id);
@@ -694,6 +692,7 @@ int32_t check_if_d_t_available(char *dealer_id, char *table_id)
 				return !retval;
 			}
 		}
+	}	
 	return retval;
 }
 
