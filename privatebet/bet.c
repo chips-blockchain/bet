@@ -633,8 +633,13 @@ void test_crypto()
 	p_dup = fmul_donna(d_dup, crecip_donna(d_pub)); 
 	r1_dup = fmul_donna(p_dup, crecip_donna(key.priv));  
 	
-	dlg_info("%s::%d::p::%s\nd::%s\nb::%s\n", __func__, __LINE__, bits256_str(hexstr,p), bits256_str(hexstr,d),bits256_str(hexstr,b));
-	dlg_info("%s::%d::d_dup %s\nr1_dup::%s\n", __func__, __LINE__, bits256_str(hexstr,p_dup), bits256_str(hexstr,r1_dup));
+	dlg_info("%s::%d::p::%s\n", __func__, __LINE__, bits256_str(hexstr,p));
+	dlg_info("%s::%d::d::%s\n", __func__, __LINE__, bits256_str(hexstr,d));
+	dlg_info("%s::%d::b::%s\n", __func__, __LINE__, bits256_str(hexstr,b));
+	
+	dlg_info("%s::%d::p_dup %s\n", __func__, __LINE__, bits256_str(hexstr,p_dup));
+	dlg_info("%s::%d::r1_dup::%s\n", __func__, __LINE__,bits256_str(hexstr,r1_dup));
+
 	dlg_info("%s::%d::card r1 :: %d r1_dup::%d\n", __func__, __LINE__, r1.bytes[30], r1_dup.bytes[30]);
 			
 }
