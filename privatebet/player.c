@@ -1,5 +1,7 @@
+#include "bet.h"
 #include "common.h"
 #include "player.h"
+#include "err.h"
 
 int32_t bet_init_player_deck(int32_t player_id)
 {
@@ -8,7 +10,7 @@ int32_t bet_init_player_deck(int32_t player_id)
 	struct pair256 key;
 	cJSON *init_p = NULL, *cjson_player_cards = NULL;
 	
-	key = deckgen_player(player_info.cardprivkeys, player_info.cardpubkeys, player_info.permis, poker_deck_size);
+	key = deckgen_player(player_info.cardprivkeys, player_info.cardpubkeys, player_info.permis, CARDS777_MAXCARDS);
 	player_info.player_key = key;
 	
 	init_p = cJSON_CreateObject();
@@ -17,7 +19,7 @@ int32_t bet_init_player_deck(int32_t player_id)
 	jaddnum(init_p, "peerid", player_id);
 	jaddbits256(init_p, "pubkey", player_info.player_key.prod);
 	cJSON_AddItemToObject(init_p, "cardinfo", cjson_player_cards = cJSON_CreateArray());
-	for (int i = 0; i < poker_deck_size; i++) {
+	for (int i = 0; i < CARDS777_MAXCARDS; i++) {
 		jaddistr(cjson_player_cards,bits256_str(str, player_info.cardpubkeys[i]));
 	}
 	dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(init_p));	
