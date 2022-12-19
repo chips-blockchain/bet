@@ -630,8 +630,8 @@ void test_crypto()
 	b= fmul_donna(d,r3);
 	
 	d_dup = fmul_donna(b, crecip_donna(r3));
-	p_dup = fmul_donna(d_dup, crecip_donna(d_pub)); 
-	r1_dup = fmul_donna(p_dup, crecip_donna(key.priv));  
+	p_dup = fmul_donna(d_dup, crecip_donna(r2)); 
+	r1_dup = fmul_donna(p_dup, crecip_donna(key.prod));  
 	
 	dlg_info("%s::%d::p::%s\n", __func__, __LINE__, bits256_str(hexstr,p));
 	dlg_info("%s::%d::d::%s\n", __func__, __LINE__, bits256_str(hexstr,d));
