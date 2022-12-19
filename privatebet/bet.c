@@ -33,6 +33,7 @@
 #include "bet_version.h"
 #include "switchs.h"
 #include "vdxf.h"
+#include "player.h"
 
 #include <netinet/in.h>
 #include <stdio.h>

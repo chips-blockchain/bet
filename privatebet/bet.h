@@ -148,6 +148,7 @@ struct deck_player_info {
 	bits256 dcvpubkey, bvvpubkey, deckid;
 	uint32_t numplayers, maxplayers, numcards;
 };
+extern struct deck_player_info player_info;
 
 struct deck_dcv_info {
 	bits256 deckid;
