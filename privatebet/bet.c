@@ -624,7 +624,7 @@ void test_crypto()
 	r2 = rand256(1);
 	r3 = rand256(1);
 
-	p = curve25519(r1,key.prod);
+	p = fmul_donna(r1,key.prod);
 	d = fmul_donna(p,r2);
 	b= fmul_donna(d,r3);
 	
