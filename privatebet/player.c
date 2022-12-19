@@ -25,4 +25,3 @@ int32_t bet_init_player_deck(int32_t player_id)
 	dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(init_p));	
 	return retval;
 }
-
