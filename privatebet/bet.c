@@ -624,7 +624,7 @@ void test_crypto()
 	r3 = rand256(1);
 
 	p = curve25519(r1,key.prod);
-	d = fmul_donna(r2,p);
+	d = fmul_donna(p,r2);
 
 	d_rev = fmul_donna(d, crecip_donna(r2));
 	dlg_info("%s::%d::d::%s\n", __func__, __LINE__, bits256_str(hexstr, d));
