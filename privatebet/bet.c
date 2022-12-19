@@ -456,7 +456,7 @@ static int32_t handle_verus_player()
 		goto end;
 	if ((retval = join_table()) != OK)
 		goto end;
-	if ((retval = get_player_id(&player_id)) != OK) {
+	if ((retval = get_player_id(&player_config.player_id)) != OK) {
 		goto end;
 	}
 end:
@@ -612,12 +612,14 @@ static void bet_start(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-#if 0 //Enable this snippet to make bet take no action on blocknotify	
+
+#if 1 //Enable this snippet to make bet take no action on blocknotify	
 	if ((argc == 3) && (strcmp(argv[1], "newblock") == 0)) {
 		goto end;
 	}
 #endif
-	bet_start(argc, argv);
+	bet_init_player_deck(player_config.player_id);
+	//bet_start(argc, argv);
 
 end:
 	return OK;

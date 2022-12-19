@@ -194,6 +194,7 @@ struct float_num {
 };
 
 struct verus_player_config {
+	int32_t player_id;
 	char dealer_id[16];
 	char table_id[16];
 	char primaryaddress[128];
