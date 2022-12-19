@@ -611,15 +611,38 @@ static void bet_start(int argc, char **argv)
 	}
 }
 
+void test_crypto()
+{
+	struct pair256 key;
+	bits256 r1, r2, r3;
+	bits256 p,d,b, d_rev;
+	char hexstr [65];
+	
+	key.priv = curve25519_keypair(&key.prod);
+	r1 = card_rand256(1,10);
+	r2 = rand256(1);
+	r3 = rand256(1);
+
+	p = curve25519(r1,key.prod);
+	d = fmul_donna(r2,p);
+
+	d_rev = fmul_donna(d, crecip_donna(r2));
+	dlg_info("%s::%d::d::%s\n", __func__, __LINE__, bits256_str(hexstr, d));
+	dlg_info("%s::%d::d::%s\n", __func__, __LINE__, bits256_str(hexstr, d_rev));
+			
+}
+
 int main(int argc, char **argv)
 {
+
+test_crypto();
 
 #if 1 //Enable this snippet to make bet take no action on blocknotify	
 	if ((argc == 3) && (strcmp(argv[1], "newblock") == 0)) {
 		goto end;
 	}
 #endif
-	bet_init_player_deck(player_config.player_id);
+	//bet_init_player_deck(player_config.player_id);
 	//bet_start(argc, argv);
 
 end:
