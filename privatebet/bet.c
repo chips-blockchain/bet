@@ -627,7 +627,7 @@ void test_crypto()
 	d = fmul_donna(p,r2);
 
 	d_rev = fmul_donna(d, crecip_donna(r2));
-	dlg_info("%s::%d::d::%s\n", __func__, __LINE__, bits256_str(hexstr, d));
+	dlg_info("%s::%d::d::%s\n", __func__, __LINE__, bits256_str(hexstr, p));
 	dlg_info("%s::%d::d::%s\n", __func__, __LINE__, bits256_str(hexstr, d_rev));
 			
 }
