@@ -615,7 +615,8 @@ void test_crypto()
 {
 	struct pair256 key;
 	bits256 r1, r2, r3;
-	bits256 p,d,b, d_rev;
+	bits256 p, d, b, r1_dup;
+	bits256 p_dup,d_dup;
 	char hexstr [65];
 	
 	key.priv = curve25519_keypair(&key.prod);
@@ -625,10 +626,12 @@ void test_crypto()
 
 	p = curve25519(r1,key.prod);
 	d = fmul_donna(p,r2);
-
-	d_rev = fmul_donna(d, crecip_donna(r2));
-	dlg_info("%s::%d::d::%s\n", __func__, __LINE__, bits256_str(hexstr, p));
-	dlg_info("%s::%d::d::%s\n", __func__, __LINE__, bits256_str(hexstr, d_rev));
+	b= fmul_donna(d,r3);
+	
+	d_dup = fmul_donna(b, crecip_donna(r3));
+	p_dup = fmul_donna(d_dup, crecip_donna(r2)); 
+	r1_dup = fmul_donna(p_dup, crecip_donna(key.prod));  
+	dlg_info("%s::%d::card::%x\n", __func__, __LINE__, r1_dup.bytes[30]);
 			
 }
 
