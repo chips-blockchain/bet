@@ -650,8 +650,17 @@ void test_crypto()
 	dlg_info("%s::%d::card r1 :: %d r1_dup::%d\n", __func__, __LINE__, r1.bytes[30], r1_dup.bytes[30]);
 }
 
+void test_append_t_key()
+{
+	char *id = "sg777_t"; 
+	cJSON * key_info = NULL;
+
+	key_info = cJSON_CreateString("Hello World");
+	append_t_key(id, BYTEVECTOR_VDXF_ID ,key_info);
+}
 int main(int argc, char **argv)
 {
+	test_append_t_key();
 	//test_crypto();
 	//strcpy(player_config.table_id, "sg777_t");
 	//bet_init_player_deck(1);
