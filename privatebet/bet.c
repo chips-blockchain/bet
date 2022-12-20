@@ -656,7 +656,7 @@ void test_append_t_key()
 	cJSON * key_info = NULL;
 
 	key_info = cJSON_CreateString("Hello World");
-	append_t_key(id, BYTEVECTOR_VDXF_ID ,key_info);
+	append_t_key(id, T_PLAYER1_KEY ,key_info);
 }
 int main(int argc, char **argv)
 {
