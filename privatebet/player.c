@@ -14,7 +14,7 @@ cJSON *append_t_key(char *id, char *key, cJSON *key_info)
 	char all_t_keys[11][128] = { T_TABLE_INFO_KEY, T_PLAYER_INFO_KEY, T_PLAYER1_KEY, T_PLAYER2_KEY,
 					       T_PLAYER3_KEY,    T_PLAYER4_KEY,     T_PLAYER5_KEY, T_PLAYER6_KEY,
 					       T_PLAYER7_KEY,    T_PLAYER8_KEY,     T_PLAYER9_KEY };
-	cJSON *id_info = NULL, *argjson = NULL, *cmm = NULL;
+	cJSON *id_info = NULL, *argjson = NULL, *cmm = NULL, *temp_obj = NULL;
 
 	if ((NULL == id) || (NULL == key) || (NULL == key_info) || (NULL == verus_chips_cli)) {
 		return NULL;
@@ -29,12 +29,8 @@ cJSON *append_t_key(char *id, char *key, cJSON *key_info)
 
 	for (int32_t i = 0; i < no_of_t_keys; i++) {
 		if (strcmp(all_t_keys[i], key) != 0) {
-			cJSON *temp = cJSON_CreateObject();
-			temp = get_cmm_key_data(id, 0, all_t_keys[i]);
-			if (temp) {
-				cJSON_AddItemToObject(cmm, all_t_keys[i], temp);
-				dlg_info("%s::%d::%s\n::cmm::%s\n", __func__, __LINE__, cJSON_Print(temp), cJSON_Print(cmm));
-			}			
+			cJSON_AddItemToObject(cmm, all_t_keys[i], get_cmm_key_data(id, 0, all_t_keys[i]));
+			dlg_info("%s::%d::cmm::%s\n", __func__, __LINE__, cJSON_Print(cmm));
 		}
 	}
 

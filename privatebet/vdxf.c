@@ -212,6 +212,10 @@ cJSON *get_cmm_key_data(char *id, int16_t full_id, char *key)
 {
 	cJSON *cmm = NULL, *cmm_key_data = NULL;
 
+	if((id == NULL) || (key == NULL))
+		return NULL;
+	
+	cmm = cJSON_CreateObject();
 	if ((cmm = get_cmm(id, full_id)) == NULL)
 		return NULL;
 
