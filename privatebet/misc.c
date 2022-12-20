@@ -146,6 +146,9 @@ cJSON *hex_cJSON(char *hex_data)
 	char *data = NULL;
 	cJSON *out = NULL;
 
+	if(hex_data == NULL)
+		return NULL;
+	
 	data = calloc(1, strlen(hex_data));
 	hexstr_to_str(hex_data, data);
 
