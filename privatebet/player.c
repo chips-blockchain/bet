@@ -39,10 +39,8 @@ int32_t bet_init_player_deck(int32_t player_id)
 	jaddi(cmm,player_deck_hex);
 	dlg_info("%s::%dcmm::%s\n", __func__, __LINE__, cJSON_Print(cmm));
 
-	cJSON *temp = get_cmm(player_config.table_id,0);
-
+	cJSON *temp = NULL;
 	jadd(temp,T_PLAYER_KEYS[player_id-1], cmm);
-	
 	cJSON *out = update_cmm(player_config.table_id, temp);
 	dlg_info("%s::%d::%s", __func__, __LINE__, cJSON_Print(out));
 
