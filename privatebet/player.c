@@ -11,6 +11,7 @@ int32_t bet_init_player_deck(int32_t player_id)
 	char str[65], *hexstr = NULL;
 	cJSON *cjson_player_cards = NULL, *player_deck = NULL, *cmm = NULL;
 	uint8_t cards_info[64];
+	struct pair256 temp_key;
 	
 	if ((player_id < 1) && (player_id > 9)) {
 		retval = ERR_INVALID_PLAYER_ID;
@@ -21,10 +22,15 @@ int32_t bet_init_player_deck(int32_t player_id)
 
 	memcpy(cards_info, player_info.player_key.priv.bytes, 32);
 	memcpy(cards_info, player_info.player_key.prod.bytes, 32);
-	dlg_info("%s%s::%zd\n", bits256_str(str,player_info.player_key.priv), bits256_str(str,player_info.player_key.prod), strlen(str));
+	dlg_info("%s::%s\n", bits256_str(str,player_info.player_key.priv), bits256_str(str,player_info.player_key.prod));
 	for(int32_t i=0; i<64; i++) {
 		printf("%x", cards_info[i]);
+		if((i/32) == 0)
+			temp_key.priv.bytes[i] = cards_info[i];
+		else
+			temp_key.pub.bytes[i] = cards_info[i];
 	}
+	dlg_info("%s::%s\n", bits256_str(str,temp_key.priv), bits256_str(str,temp_key.pub));
 	
 	player_deck = cJSON_CreateObject();
 	jaddnum(player_deck, "id", player_id);
