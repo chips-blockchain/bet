@@ -31,9 +31,12 @@ int32_t bet_init_player_deck(int32_t player_id)
 		retval = ERR_PLAYER_DECK_SHUFFLING;
 		goto end;
 	}
-
+	cJSON *player_deck_hex = NULL;
+	player_deck_hex = cJSON_CreateObject();
+	jaddstr(player_deck_hex,STRING_VDXF_ID,hexstr);
+	
 	cmm = cJSON_CreateObject();
-	jaddstr(cmm, T_PLAYER_KEYS[player_id], hexstr);
+	jaddstr(cmm, T_PLAYER_KEYS[player_id-1], player_deck_hex);
 	dlg_info("%s::%d::%s\ncmm::%s", __func__, __LINE__, cJSON_Print(player_deck), cJSON_Print(cmm));
 
 	cJSON *temp = get_cmm(player_config.table_id,0);
