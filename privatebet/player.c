@@ -35,11 +35,12 @@ int32_t bet_init_player_deck(int32_t player_id)
 	player_deck_hex = cJSON_CreateObject();
 	jaddstr(player_deck_hex,STRING_VDXF_ID,hexstr);
 	
-	cmm = cJSON_CreateObject();
-	jaddstr(cmm, T_PLAYER_KEYS[player_id-1], cJSON_Print(player_deck_hex));
-	dlg_info("%s::%d::%s\ncmm::%s", __func__, __LINE__, cJSON_Print(player_deck), cJSON_Print(cmm));
+	cmm = cJSON_CreateArray();
+	jadd(cmm, T_PLAYER_KEYS[player_id-1], player_deck_hex);
+	dlg_info("%s::%d::%s\ncmm::%s", __func__, __LINE__, cJSON_Print(player_deck_hex), cJSON_Print(cmm));
 
 	cJSON *temp = get_cmm(player_config.table_id,0);
+	
 	jaddi(temp,cmm);
 	
 	cJSON *out = update_cmm(player_config.table_id, temp);
