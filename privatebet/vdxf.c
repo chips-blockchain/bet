@@ -223,6 +223,7 @@ cJSON *get_cmm_key_data(char *id, int16_t full_id, char *key)
 	if ((cmm_key_data = cJSON_GetObjectItem(cmm, key)) == NULL)
 		return NULL;
 
+	cmm_key_data->next = NULL;
 	return cmm_key_data;
 }
 
