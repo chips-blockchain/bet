@@ -30,7 +30,7 @@ int32_t bet_init_player_deck(int32_t player_id)
 		else
 			temp_key.prod.bytes[i] = cards_info[i];
 	}
-	dlg_info("%s::%s\n", bits256_str(str,temp_key.priv), bits256_str(str,temp_key.pub));
+	dlg_info("%s::%s\n", bits256_str(str,temp_key.priv), bits256_str(str,temp_key.prod));
 	
 	player_deck = cJSON_CreateObject();
 	jaddnum(player_deck, "id", player_id);
