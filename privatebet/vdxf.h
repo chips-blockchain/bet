@@ -137,7 +137,7 @@ struct table *get_available_t_of_d(char *dealer_id);
 int32_t check_if_pa_exists(char *table_id);
 bool check_if_enough_funds_avail(char *table_id);
 bool check_if_d_t_available(char *dealer_id, char *table_id);
-cJSON* get_t_playerx(char *id, char *key);
+cJSON *get_t_playerx(char *id, char *key);
 struct table *get_t_table_info(char *id);
 cJSON *get_t_player_info(char *table_id);
 cJSON *update_t_player_info(char *id, cJSON *t_player_info);
