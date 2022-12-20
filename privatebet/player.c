@@ -21,9 +21,9 @@ int32_t bet_init_player_deck(int32_t player_id)
 
 	memcpy(cards_info, player_info.player_key.priv.bytes, 32);
 	memcpy(cards_info, player_info.player_key.prod.bytes, 32);
-	dlg_info("%s::%s\n", bits256_str(str,player_info.player_key.priv), bits256_str(str,player_info.player_key.prod));
+	dlg_info("%s%s::%d::%d\n", bits256_str(str,player_info.player_key.priv), bits256_str(str,player_info.player_key.prod),strlen(bits256_str(str,player_info.player_key.prod)),strlen(bits256_str(str,player_info.player_key.prod)));
 	for(int32_t i=0; i<64; i++) {
-		dlg_info("%x", cards_info[i]);
+		printf("%x", cards_info[i]);
 	}
 	
 	player_deck = cJSON_CreateObject();
