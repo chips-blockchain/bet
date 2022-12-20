@@ -37,10 +37,10 @@ cJSON *update_cmm(char *id, cJSON *cmm)
 	}
 
 	// This is temporary wait until we get an API to spend the tx in mempool
-	while(!chips_is_mempool_empty()){
+	while (!chips_is_mempool_empty()) {
 		sleep(1);
 	}
-	
+
 	id_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(id_info, "name", id);
 	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
@@ -699,7 +699,7 @@ bool check_if_d_t_available(char *dealer_id, char *table_id)
 		t = get_t_table_info(dealer_id);
 		if ((t) && (0 == strcmp(t->table_id, table_id))) {
 			t_player_info = get_t_player_info(t->table_id);
-			if(t_player_info == NULL) {
+			if (t_player_info == NULL) {
 				return true; //Table is available but empty.
 			}
 			if ((t_player_info) && (jint(t_player_info, "num_players") < t->max_players) &&
@@ -711,13 +711,13 @@ bool check_if_d_t_available(char *dealer_id, char *table_id)
 	return false;
 }
 
-cJSON* get_t_playerx(char *id, char *key)
+cJSON *get_t_playerx(char *id, char *key)
 {
-	cJSON *cmm = NULL;	
+	cJSON *cmm = NULL;
 
 	cmm = get_cmm_key_data(id, 0, get_vdxf_id(key));
-	if(cmm){
-		return hex_cJSON(jstr(cJSON_GetArrayItem(cmm,0), BYTEVECTOR_VDXF_ID));
+	if (cmm) {
+		return hex_cJSON(jstr(cJSON_GetArrayItem(cmm, 0), BYTEVECTOR_VDXF_ID));
 	}
 	return NULL;
 }
