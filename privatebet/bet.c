@@ -622,7 +622,6 @@ void test_crypto()
 	key.priv = curve25519_keypair(&key.prod);
 	r1 = card_rand256(1,10);
 	r2 = curve25519_keypair(&d_pub);
-	//r2 = rand256(1);
 	r3 = rand256(1);
 
 	p = fmul_donna(r1,key.prod);
