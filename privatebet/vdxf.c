@@ -36,6 +36,11 @@ cJSON *update_cmm(char *id, cJSON *cmm)
 		return NULL;
 	}
 
+	// This is temporary wait until we get an API to spend the tx in mempool
+	while(!chips_is_mempool_empty()){
+		sleep(1);
+	}
+	
 	id_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(id_info, "name", id);
 	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
