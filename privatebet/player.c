@@ -84,11 +84,11 @@ int32_t bet_init_player_deck(int32_t player_id)
 	jaddstr(player_deck_hex, BYTEVECTOR_VDXF_ID, hexstr);
 
 	cmm = cJSON_CreateArray();
-	cJSON *t1 = cJSON_CreateString("Hello World");
-		
-	jaddi(cmm, t1);
-	//jaddi(cmm, player_deck_hex);
-	//dlg_info("%s::%dcmm::%s\n", __func__, __LINE__, cJSON_Print(cmm));
+	//cJSON *t1 = cJSON_CreateString("Hello World");
+	//jaddi(cmm, t1);
+
+	jaddi(cmm, player_deck_hex);
+	dlg_info("%s::%dcmm::%s\n", __func__, __LINE__, cJSON_Print(cmm));
 
 	cJSON *out = append_t_key(player_config.table_id, T_PLAYER_KEYS[player_id - 1], cmm);
 
