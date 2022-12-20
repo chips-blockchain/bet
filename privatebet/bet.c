@@ -605,6 +605,13 @@ static void bet_start(int argc, char **argv)
 			cmm = get_t_player_info(argv[2]);
 			dlg_info("%s::%d::id::%s::t_player_info::%s\n", __FUNCTION__, __LINE__, argv[2],
 				 cJSON_Print(cmm));
+		} else if (strcmp(get_vdxf_id(argv[3]), T_PLAYER1_KEY) == 0) {
+			cmm = get_cmm_key_data(argv[2], 0, get_vdxf_id(argv[3]));
+			if(cmm){				
+				cJSON *init_p = cJSON_GetObjectItem(cJSON_GetArrayItem(cmm,0),BYTEVECTOR_VDXF_ID);
+				dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(init_p));
+					
+			}
 		} else {
 			dlg_info("The key::%s(%s), is not present in the ID::%s\n", argv[3], get_vdxf_id(argv[3]),
 				 argv[2]);
@@ -648,14 +655,14 @@ void test_crypto()
 int main(int argc, char **argv)
 {
 	//test_crypto();
-	strcpy(player_config.table_id, "sg777_t");
-	bet_init_player_deck(1);
+	//strcpy(player_config.table_id, "sg777_t");
+	//bet_init_player_deck(1);
 #if 0 //Enable this snippet to make bet take no action on blocknotify
 	if ((argc == 3) && (strcmp(argv[1], "newblock") == 0)) {
 		goto end;
 	}
 #endif
-	//bet_start(argc, argv);
+	bet_start(argc, argv);
 
 end:
 	return OK;
