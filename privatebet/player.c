@@ -2,6 +2,7 @@
 #include "common.h"
 #include "player.h"
 #include "err.h"
+#include "vdxf.h"
 
 int32_t bet_init_player_deck(int32_t player_id)
 {
@@ -23,11 +24,13 @@ int32_t bet_init_player_deck(int32_t player_id)
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
 		jaddistr(cjson_player_cards, bits256_str(str, player_info.cardpubkeys[i]));
 	}
+
 	cJSON_hex(player_deck, &hexstr);
 	if (hexstr == NULL) {
 		retval = ERR_PLAYER_DECK_SHUFFLING;
 		goto end;
 	}
+
 	cmm = cJSON_CreateObject();
 	jaddstr(cmm, T_PLAYER_KEYS[player_id], hexstr);
 
