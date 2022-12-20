@@ -29,11 +29,13 @@ cJSON *append_t_key(char *id, char *key, cJSON *key_info)
 
 	for (int32_t i = 0; i < no_of_t_keys; i++) {
 		if (strcmp(all_t_keys[i], key) != 0) {
-			cJSON *temp = get_cmm_key_data(id, 0, all_t_keys[i]);
+			cJSON *temp = cJSON_CreateObject();
+			temp = get_cmm_key_data(id, 0, all_t_keys[i]);
 			if (temp) {
 				cJSON_AddItemToObject(cmm, all_t_keys[i], temp);
 				dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(temp));
 			}
+			free_json(temp);
 		}
 	}
 
