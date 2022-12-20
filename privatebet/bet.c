@@ -608,8 +608,8 @@ static void bet_start(int argc, char **argv)
 		} else if (strcmp(get_vdxf_id(argv[3]), T_PLAYER1_KEY) == 0) {
 			cmm = get_cmm_key_data(argv[2], 0, get_vdxf_id(argv[3]));
 			if(cmm){				
-				cJSON *init_p = cJSON_GetObjectItem(cJSON_GetArrayItem(cmm,0),BYTEVECTOR_VDXF_ID);
-				dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(init_p));
+				cJSON *temp = hex_cJSON(jstr(cJSON_GetArrayItem(cmm,0), BYTEVECTOR_VDXF_ID));
+				dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(temp));
 					
 			}
 		} else {
