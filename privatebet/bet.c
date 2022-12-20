@@ -655,7 +655,7 @@ int main(int argc, char **argv)
 	//test_crypto();
 	//strcpy(player_config.table_id, "sg777_t");
 	//bet_init_player_deck(1);
-#if 0 //Enable this snippet to make bet take no action on blocknotify
+#if 1 //Enable this snippet to make bet take no action on blocknotify
 	if ((argc == 3) && (strcmp(argv[1], "newblock") == 0)) {
 		goto end;
 	}
