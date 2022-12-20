@@ -460,7 +460,7 @@ static int32_t handle_verus_player()
 	if ((retval = get_player_id(&player_config.player_id)) != OK) {
 		goto end;
 	}
-	#if 0
+	#if 1
 	if ((retval = bet_init_player_deck(player_config.player_id)) != OK) {
 		goto end;
 	}
