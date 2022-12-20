@@ -30,7 +30,6 @@ cJSON *append_t_key(char *id, char *key, cJSON *key_info)
 	for (int32_t i = 0; i < no_of_t_keys; i++) {
 		if (strcmp(all_t_keys[i], key) != 0) {
 			cJSON_AddItemToObject(cmm, all_t_keys[i], get_cmm_key_data(id, 0, all_t_keys[i]));
-			dlg_info("%s::%d::cmm::%s\n", __func__, __LINE__, cJSON_Print(cmm));
 		}
 	}
 

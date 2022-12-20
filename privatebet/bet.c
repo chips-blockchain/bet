@@ -660,7 +660,7 @@ void test_append_t_key()
 }
 int main(int argc, char **argv)
 {
-	test_append_t_key();
+	//test_append_t_key();
 	//test_crypto();
 	//strcpy(player_config.table_id, "sg777_t");
 	//bet_init_player_deck(1);
