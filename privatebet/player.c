@@ -10,7 +10,7 @@ cJSON *append_t_key(char *id, char *key, cJSON *key_info)
 	int32_t argc;
 	const int32_t no_of_t_keys = 11;
 	char **argv = NULL, params[arg_size] = { 0 };
-	char all_t_keys[no_of_t_keys][128] = { T_TABLE_INFO_KEY, T_PLAYER_INFO_KEY, T_PLAYER1_KEY, T_PLAYER2_KEY,
+	char all_t_keys[11][128] = { T_TABLE_INFO_KEY, T_PLAYER_INFO_KEY, T_PLAYER1_KEY, T_PLAYER2_KEY,
 					       T_PLAYER3_KEY,    T_PLAYER4_KEY,     T_PLAYER5_KEY, T_PLAYER6_KEY,
 					       T_PLAYER7_KEY,    T_PLAYER8_KEY,     T_PLAYER9_KEY };
 	cJSON *id_info = NULL, *argjson = NULL, *cmm = NULL;
