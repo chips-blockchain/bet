@@ -7,10 +7,11 @@
 
 int32_t bet_init_player_deck(int32_t player_id)
 {
-	int32_t retval = OK;
+	int32_t retval = OK, deck_size = CARDS777_MAXCARDS * 32;
 	char str[65], *hexstr = NULL;
 	cJSON *cjson_player_cards = NULL, *player_deck = NULL, *cmm = NULL;
-
+	uint8_t cards_info[64];
+	
 	if ((player_id < 1) && (player_id > 9)) {
 		retval = ERR_INVALID_PLAYER_ID;
 		goto end;
@@ -18,12 +19,20 @@ int32_t bet_init_player_deck(int32_t player_id)
 	player_info.player_key = deckgen_player(player_info.cardprivkeys, player_info.cardpubkeys, player_info.permis,
 						CARDS777_MAXCARDS);
 
+	memcpy(cards_info, player_info.player_key.priv.bytes, 32);
+	memcpy(cards_info, player_info.player_key.prod.bytes, 32);
+	dlg_info("%s::%s\n", bits256_str(str,player_info.player_key.priv), bits256_str(str,player_info.player_key.prod));
+	for(int32_t i=0; i<64; i++) {
+		dlg_info("%x", cards_info[i]);
+	}
+	
 	player_deck = cJSON_CreateObject();
 	jaddnum(player_deck, "id", player_id);
 	jaddbits256(player_deck, "pubkey", player_info.player_key.prod);
 	jadd(player_deck, "cardinfo", cjson_player_cards = cJSON_CreateArray());
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
 		jaddistr(cjson_player_cards, bits256_str(str, player_info.cardpubkeys[i]));
+		//memcpy(cards_info+(i*32), player_info.cardpubkeys[i].bytes, 32);
 	}
 
 	cJSON_hex(player_deck, &hexstr);
