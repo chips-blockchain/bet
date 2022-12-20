@@ -5,6 +5,7 @@
 #include "vdxf.h"
 #include "misc.h"
 #include "commands.h"
+
 cJSON *append_t_key(char *id, char *key, cJSON *key_info)
 {
 	int32_t argc;
