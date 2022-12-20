@@ -37,7 +37,7 @@ cJSON *append_t_key(char *id, char *key, cJSON *key_info)
 	}
 
 	cJSON_AddItemToObject(id_info, "contentmultimap", cmm);
-
+	dlg_info("%s::%d::id_info::%s\n", __func__, __LINE__,cJSON_Print(id_info));
 	argc = 3;
 	bet_alloc_args(argc, &argv);
 	snprintf(params, arg_size, "\'%s\'", cJSON_Print(id_info));
@@ -87,8 +87,11 @@ int32_t bet_init_player_deck(int32_t player_id)
 	jaddstr(player_deck_hex, BYTEVECTOR_VDXF_ID, hexstr);
 
 	cmm = cJSON_CreateArray();
-	jaddi(cmm, player_deck_hex);
-	dlg_info("%s::%dcmm::%s\n", __func__, __LINE__, cJSON_Print(cmm));
+	cJSON *t1 = cJSON_CreateString("Hello World")
+		
+	jaddi(cmm, t1);
+	//jaddi(cmm, player_deck_hex);
+	//dlg_info("%s::%dcmm::%s\n", __func__, __LINE__, cJSON_Print(cmm));
 
 	cJSON *out = append_t_key(player_config.table_id, T_PLAYER_KEYS[player_id - 1], cmm);
 
