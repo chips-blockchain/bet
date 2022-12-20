@@ -225,7 +225,7 @@ struct table {
 };
 extern struct table player_t;
 
-extern char T_PLAYER_KEYS[9][] = {0};
+extern char T_PLAYER_KEYS[9][128];
 
 bits256 xoverz_donna(bits256 a);
 bits256 crecip_donna(bits256 a);
