@@ -651,7 +651,6 @@ int main(int argc, char **argv)
 		goto end;
 	}
 #endif
-	//bet_init_player_deck(player_config.player_id);
 	bet_start(argc, argv);
 
 end:
