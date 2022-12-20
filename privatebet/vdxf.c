@@ -8,6 +8,7 @@ struct table player_t = { 0 };
 char T_PLAYER_KEYS[9][128] = { T_PLAYER1_KEY, T_PLAYER2_KEY, T_PLAYER3_KEY, T_PLAYER4_KEY, T_PLAYER5_KEY,
 			       T_PLAYER6_KEY, T_PLAYER7_KEY, T_PLAYER8_KEY, T_PLAYER9_KEY };
 
+char ALL_TABLE_KEYS[11][128] = {T_TABLE_INFO_KEY, T_PLAYER_INFO_KEY, T_PLAYER1_KEY, T_PLAYER2_KEY, T_PLAYER3_KEY, T_PLAYER4_KEY, T_PLAYER5_KEY, T_PLAYER6_KEY, T_PLAYER7_KEY, T_PLAYER8_KEY, T_PLAYER9_KEY };
 char *get_vdxf_id(char *key_name)
 {
 	int argc = 3;
@@ -709,6 +710,17 @@ bool check_if_d_t_available(char *dealer_id, char *table_id)
 		}
 	}
 	return false;
+}
+
+cJSON* get_t_playerx(char *id, char *key)
+{
+	cJSON *cmm = NULL;	
+
+	cmm = get_cmm_key_data(id, 0, get_vdxf_id(key));
+	if(cmm){
+		return hex_cJSON(jstr(cJSON_GetArrayItem(cmm,0), BYTEVECTOR_VDXF_ID));
+	}
+	return NULL;
 }
 
 struct table *get_t_table_info(char *id)
