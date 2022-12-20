@@ -38,6 +38,44 @@ key is represented as chips.vrsc::poker.cashiers.
 #define T_TABLE_INFO_KEY "iG2v2NKwrswDtkTHoH98ac5JqvSBG1HZnE"
 
 /*
+The players shuffled deck of cards are stored at the keys from player1 to player9 where player with id 1
+store its cards at key player1 and player with id 2 stores cards at key player2 and so on respectively...
+*/
+//chips.vrsc::poker.t_player1 --> iJSMmJfbCVzqJwgeGgBTBqGHXdksNUwX7e
+#define T_PLAYER1_KEY "iJSMmJfbCVzqJwgeGgBTBqGHXdksNUwX7e"
+
+//chips.vrsc::poker.t_player2 --> iKuVVeXXJ6hTrGmU2xH59MXke8Kxciy1Qd
+#define T_PLAYER2_KEY "iKuVVeXXJ6hTrGmU2xH59MXke8Kxciy1Qd"
+
+//chips.vrsc::poker.t_player3 --> iMjDX6Jzr6yMEgWVmLJmvcourYtF4tsVxh
+#define T_PLAYER3_KEY "iMjDX6Jzr6yMEgWVmLJmvcourYtF4tsVxh"
+
+//chips.vrsc::poker.t_player4 --> iPSn44jZKGa5QiZLwst8ZsggfNfbELhRs4
+#define T_PLAYER4_KEY "iPSn44jZKGa5QiZLwst8ZsggfNfbELhRs4"
+
+//chips.vrsc::poker.t_player5 --> i4U43YBhjYpEGVJDTxqtah5oeHKVNzDRjx
+#define T_PLAYER5_KEY "i4U43YBhjYpEGVJDTxqtah5oeHKVNzDRjx"
+
+//chips.vrsc::poker.t_player6 --> i83GEBJQRnZKawAPqx9pbgyDxash93KUQD
+#define T_PLAYER6_KEY "i83GEBJQRnZKawAPqx9pbgyDxash93KUQD"
+
+//chips.vrsc::poker.t_player7 --> iRABcj8Hx1YM1o5FvdGPwCySqE5a2uwBHz
+#define T_PLAYER7_KEY "iRABcj8Hx1YM1o5FvdGPwCySqE5a2uwBHz"
+
+//chips.vrsc::poker.t_player8 --> i4qKC8CbSGkET2cUqz1szST1s4Miq5iVta
+#define T_PLAYER8_KEY "i4qKC8CbSGkET2cUqz1szST1s4Miq5iVta"
+
+//chips.vrsc::poker.t_player9 --> iLnY6pmKqfseLmhnJfN3dmqbRgmnEMPcWT
+#define T_PLAYER9_KEY "iLnY6pmKqfseLmhnJfN3dmqbRgmnEMPcWT"
+
+//chips.vrsc::poker.t_dealer --> iSark2c82W2fpxcqCVYHRoCDL59HB7A4wD
+#define T_DEALER_KEY "iSark2c82W2fpxcqCVYHRoCDL59HB7A4wD"
+
+//chips.vrsc::poker.t_blinder --> iQjqt4EuniokrfVhfVFpj9HskuZ6uTVFSU
+#define T_BLINDER_KEY "iQjqt4EuniokrfVhfVFpj9HskuZ6uTVFSU"
+
+char T_PLAYER_KEYS[9][128] = {T_PLAYER1_KEY, T_PLAYER2_KEY, T_PLAYER3_KEY, T_PLAYER4_KEY, T_PLAYER5_KEY, T_PLAYER6_KEY, T_PLAYER7_KEY, T_PLAYER8_KEY, T_PLAYER9_KEY};
+/*
 Datatypes used
 --------------
 Since we are encapsulating the data and store using binary serialization, so we basically not needing much variety here. 

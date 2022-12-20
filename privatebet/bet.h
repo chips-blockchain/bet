@@ -188,6 +188,18 @@ struct seat_info {
 	int32_t playing;
 };
 
+extern int32_t player_pos[CARDS777_MAXPLAYERS];
+
+extern struct seat_info player_seats_info[CARDS777_MAXPLAYERS];
+extern struct privatebet_info *bet_player;
+extern struct privatebet_vars *player_vars;
+
+extern int32_t heartbeat_on;
+
+extern char blockchain_cli[1024];
+extern char *chips_cli;
+extern char *verus_chips_cli;
+
 struct float_num {
 	uint32_t mantisa : 23;
 	uint32_t exponent : 8;
@@ -212,18 +224,6 @@ struct table {
 	char dealer_id[16];
 };
 extern struct table player_t;
-
-extern int32_t player_pos[CARDS777_MAXPLAYERS];
-
-extern struct seat_info player_seats_info[CARDS777_MAXPLAYERS];
-extern struct privatebet_info *bet_player;
-extern struct privatebet_vars *player_vars;
-
-extern int32_t heartbeat_on;
-
-extern char blockchain_cli[1024];
-extern char *chips_cli;
-extern char *verus_chips_cli;
 
 bits256 xoverz_donna(bits256 a);
 bits256 crecip_donna(bits256 a);
