@@ -328,12 +328,12 @@ void bet_parse_verus_dealer()
 			dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(t2));
 		}
 		cJSON *t3 = append_cmm_from_id_key_data_hex(t.table_id, T_GAME_ID_KEY, bits256_str(hexstr, game_id));
-			if (jint(t3, "error")) {
-				dlg_error("%s::%d::Error in updating the key::%s at the ID::%s\n", __FUNCTION__, __LINE__,
-					 T_GAME_ID_KEY, t.table_id);
-			} else {
-				dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(t3));
-			}
+		if (jint(t3, "error")) {
+			dlg_error("%s::%d::Error in updating the key::%s at the ID::%s\n", __FUNCTION__, __LINE__,
+				  T_GAME_ID_KEY, t.table_id);
+		} else {
+			dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(t3));
+		}
 	}
 }
 
