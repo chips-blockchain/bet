@@ -133,6 +133,9 @@ cJSON *get_cmm(char *id, int16_t full_id)
 	cmm = cJSON_CreateObject();
 	cmm = cJSON_GetObjectItem(cJSON_GetObjectItem(argjson, "identity"), "contentmultimap");
 
+	if(cmm) {
+		cmm->next = NULL;
+	}
 end:
 	bet_dealloc_args(argc, &argv);
 	return cmm;
@@ -795,6 +798,41 @@ cJSON *get_cJSON_from_id_key(char *id, char *key)
 		return hex_cJSON(jstr(cJSON_GetArrayItem(cmm, 0), get_vdxf_id(get_key_data_type(key))));
 	}
 	return NULL;
+}
+
+cJSON *append_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data)
+{
+	char *data_type = NULL, *data_key = NULL;
+	cJSON *data_obj = NULL, *cmm_obj = NULL;
+
+	cmm_obj = cJSON_CreateObject();
+	cmm_obj = get_cmm(id, 0);
+
+	data_type = get_vdxf_id(get_key_data_type(key));
+	if (!data_type) {
+		dlg_error("%s::%d::Data type for the key::%s is not found\n", __func__, __LINE__, key);
+		return NULL;
+	}
+	data_key = get_vdxf_id(key);
+
+	data_obj = cJSON_CreateObject();
+	jaddstr(data_obj, data_type, hex_data);
+
+	cJSON_AddItemToObject(cmm_obj, data_key, data_obj);
+
+	return update_cmm(id, cmm_obj);
+}
+
+cJSON *append_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data)
+{
+	char *hex_data = NULL;
+
+	cJSON_hex(data, &hex_data);
+	if (!hex_data) {
+		dlg_error("%s::%d::Error occured in conversion of cJSON to HEX\n", __func__, __LINE__);
+		return NULL;
+	}
+	return append_cmm_from_id_key_data_hex(id, key, hex_data);
 }
 
 cJSON *update_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data)
