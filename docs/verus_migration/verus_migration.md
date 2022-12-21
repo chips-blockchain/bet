@@ -45,8 +45,17 @@ chips.vrsc::bet.cashiers
 ```
 
 ### Conversion between CHIPS and other PBaaS currencies in Mike words
-If you use liquidity baskets on-chain, you can convert between CHIPS and any currencies that was defined on any chain in the Verus PBaaS network and Ethereum +any ERC20 as well. You can do all of this on the CHIPS chain and all conversion fees will be split 1/2 to LPs and 1/2 to miners/stakers. You can use CHIPS or any other currency you want to support in your game, even a liquidity basket currency. Any currency definition can be exported from one chain to another, converted at the fairest possible rate on-chain with arbitrage hooks for miners and stakers, and used anywhere on the network. New currencies or liquidity basket currencies defined on CHIPS, just like those defined on Verus, can be sent over to Ethereum as well and will automatically be ERC20s on Ethereum. All the conversions will leave 1/2 the fees in the liquidity basket currencies, raising their values relative to reserves, and the other 1/2 will automatically buy CHIPS from the liquidity basket to pay miners and stakers.
-
+```
+    If you use liquidity baskets on-chain, you can convert between CHIPS and any currencies that was defined on any chain 
+    in the Verus PBaaS network and Ethereum +any ERC20 as well. You can do all of this on the CHIPS chain and all conversion 
+    fees will be split 1/2 to LPs and 1/2 to miners/stakers. You can use CHIPS or any other currency you want to support in 
+    your game, even a liquidity basket currency. Any currency definition can be exported from one chain to another, converted 
+    at the fairest possible rate on-chain with arbitrage hooks for miners and stakers, and used anywhere on the network. New 
+    currencies or liquidity basket currencies defined on CHIPS, just like those defined on Verus, can be sent over to Ethereum 
+    as well and will automatically be ERC20s on Ethereum. All the conversions will leave 1/2 the fees in the liquidity basket 
+    currencies, raising their values relative to reserves, and the other 1/2 will automatically buy CHIPS from the liquidity 
+    basket to pay miners and stakers.
+```
 ### Some challenges
 
 Couple of challenges we are exploring at the moment is to handle the heartbeat protocol using the different nodes in the bet setup will know if the node is active or not and this heartbeat protocol communicate over the sockets. So here either by completely using vdxf ID's or by some means using nSPV we need to figure it out.
