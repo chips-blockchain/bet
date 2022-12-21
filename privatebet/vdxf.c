@@ -133,7 +133,7 @@ cJSON *get_cmm(char *id, int16_t full_id)
 	cmm = cJSON_CreateObject();
 	cmm = cJSON_GetObjectItem(cJSON_GetObjectItem(argjson, "identity"), "contentmultimap");
 
-	if(cmm) {
+	if (cmm) {
 		cmm->next = NULL;
 	}
 end:
@@ -800,7 +800,6 @@ char *get_str_from_id_key(char *id, char *key)
 	return NULL;
 }
 
-
 cJSON *get_cJSON_from_id_key(char *id, char *key)
 {
 	cJSON *cmm = NULL;
@@ -818,13 +817,13 @@ cJSON *append_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data)
 	cJSON *data_obj = NULL, *cmm_obj = NULL;
 
 	//sg777: This loop will be removed once the new API is added to spend the tx from mempool
-	while(!chips_is_mempool_empty()) {
+	while (!chips_is_mempool_empty()) {
 		sleep(1);
 	}
 	cmm_obj = cJSON_CreateObject();
 	cmm_obj = get_cmm(id, 0);
 
-	dlg_info("%s::%d::cmm::%s\n",__func__, __LINE__, cJSON_Print(cmm_obj));
+	dlg_info("%s::%d::cmm::%s\n", __func__, __LINE__, cJSON_Print(cmm_obj));
 	data_type = get_vdxf_id(get_key_data_type(key));
 	if (!data_type) {
 		dlg_error("%s::%d::Data type for the key::%s is not found\n", __func__, __LINE__, key);
@@ -834,10 +833,10 @@ cJSON *append_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data)
 
 	data_obj = cJSON_CreateObject();
 	jaddstr(data_obj, data_type, hex_data);
-	dlg_info("%s::%d::cmm::%s\n",__func__, __LINE__, cJSON_Print(data_obj));
-	
+	dlg_info("%s::%d::cmm::%s\n", __func__, __LINE__, cJSON_Print(data_obj));
+
 	cJSON_AddItemToObject(cmm_obj, data_key, data_obj);
-	dlg_info("%s::%d::cmm::%s\n",__func__, __LINE__, cJSON_Print(cmm_obj));
+	dlg_info("%s::%d::cmm::%s\n", __func__, __LINE__, cJSON_Print(cmm_obj));
 
 	return update_cmm(id, cmm_obj);
 }
