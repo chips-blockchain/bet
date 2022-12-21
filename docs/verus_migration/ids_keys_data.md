@@ -41,27 +41,35 @@ Further, at high level we see what are all the keys that define under each ID in
 #### Cashiers ID
 Address --> cashiers.poker.chips@
 The keys that updates the data to this ID are
+```
 1. chips.vrsc::poker.cashiers
+```
 
 #### Dealers ID
 Address --> dealers.poker.chips@
 The keys that updates the data to this ID are
+```
 1. chips.vrsc::poker.dealers
+```
 
 #### Dealer ID
 Address --> <dealer_name>.poker.chips@ //Dealer provides this name at the time of registration and all dealer names end with `_d` to avoid naming conflicts, e.g `sg777_d.poker.chips@`
 The keys that updates the data to this ID are
+```
 1. chips.vrsc::poker.t_player_info
+```
 
 #### Table ID
 Address --> <table_name>.poker.chips@ // Dealers can register upto 5 different table names and all table names ends with `_t` to avoid naming conflicts, e.g `sg777_t.poker.chips@`
 
 The keys that updates the data to this ID are
+```
 1. chips.vrsc::poker.games --> Holds the info of all game id's [game1, game2, ...]
-
+```
 Table is the place where on the fly keys are created.  Each game is represented by a 32 byte random number calling it as gameID and this game ID is used to generate the on the fly keys during the game and these are used to update the table ID with the game info during the game. 
 
 Lets say, for simplicity reasons we have gameID as `game1` then the following keys are generated during the game:
+```
 1. chips.vrsc::poker.t_table_info.game1
 2. chips.vrsc::poker.t_player_info.game1
 3. chips.vrsc::poker.t_player1.game1
@@ -75,10 +83,5 @@ Lets say, for simplicity reasons we have gameID as `game1` then the following ke
 11. chips.vrsc::poker.t_player9.game1
 12. chips.vrsc::poker.t_dealer.game1
 13. chips.vrsc::poker.t_blinder.game1
-
+```
 While playing `game1` all the entities update the game info using these keys to the table ID.
-
-
-
-
-
