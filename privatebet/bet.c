@@ -460,11 +460,11 @@ static int32_t handle_verus_player()
 	if ((retval = get_player_id(&player_config.player_id)) != OK) {
 		goto end;
 	}
-	#if 1
+#if 1
 	if ((retval = bet_init_player_deck(player_config.player_id)) != OK) {
 		goto end;
 	}
-	#endif
+#endif
 end:
 	if (retval)
 		dlg_error("%s::%d::%s\n", __func__, __LINE__, bet_err_str(retval));
@@ -652,11 +652,11 @@ void test_crypto()
 
 void test_append_t_key()
 {
-	char *id = "sg777_t"; 
-	cJSON * key_info = NULL;
+	char *id = "sg777_t";
+	cJSON *key_info = NULL;
 
 	key_info = cJSON_CreateString("Hello World");
-	append_t_key(id, T_PLAYER1_KEY ,key_info);
+	append_t_key(id, T_PLAYER1_KEY, key_info);
 }
 int main(int argc, char **argv)
 {
