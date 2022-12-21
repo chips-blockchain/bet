@@ -818,7 +818,8 @@ cJSON *append_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data)
 
 	data_obj = cJSON_CreateObject();
 	jaddstr(data_obj, data_type, hex_data);
-
+	dlg_info("%s::%d::cmm::%s\n",__func__, __LINE__, cJSON_Print(data_obj));
+	
 	cJSON_AddItemToObject(cmm_obj, data_key, data_obj);
 	dlg_info("%s::%d::cmm::%s\n",__func__, __LINE__, cJSON_Print(cmm_obj));
 
