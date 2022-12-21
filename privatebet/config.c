@@ -16,6 +16,8 @@ char *verus_player_config_file = "./config/verus_player.ini";
 
 struct verus_player_config player_config = { 0 };
 
+bits256 game_id;
+
 cJSON *bet_read_json_file(char *file_name)
 {
 	FILE *fp = NULL;
@@ -311,11 +313,17 @@ void bet_parse_verus_dealer()
 			dlg_info("%s::%d::Error in updating the key::%s at the ID::%s\n", __FUNCTION__, __LINE__,
 				 get_vdxf_id(T_TABLE_INFO_KEY), t.dealer_id);
 		}
+		#if 0
 		cJSON *t2 = update_t_table_info(t.table_id, get_vdxf_id(T_TABLE_INFO_KEY), t);
 		if (jint(t2, "error")) {
 			dlg_info("%s::%d::Error in updating the key::%s at the ID::%s\n", __FUNCTION__, __LINE__,
 				 get_vdxf_id(T_TABLE_INFO_KEY), t.table_id);
 		}
+		#endif
+		char hexstr[65];
+		game_id = rand256(0);
+		dlg_info("%s::%d::%s\n",__func__, __LINE__, bits256_str(hexstr,game_id));
+		update_t_game_ids(t.table_id);
 	}
 }
 
