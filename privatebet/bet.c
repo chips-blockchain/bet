@@ -607,8 +607,11 @@ static void bet_start(int argc, char **argv)
 			cmm = get_t_player_info(argv[2]);
 			dlg_info("%s::%d::id::%s::t_player_info::%s\n", __FUNCTION__, __LINE__, argv[2],
 				 cJSON_Print(cmm));
+		} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_GAME_ID_KEY)) == 0) {
+			cmm = get_cJSON_from_id_key(argv[2],get_full_key(argv[3]));
+			dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(cmm));
 		} else if (strcmp(get_key_vdxf_id(argv[3]), T_PLAYER1_KEY) == 0) {
-			cmm = get_t_playerx(argv[2], argv[3]);
+			cmm = get_cJSON_from_id_key(argv[2], argv[3]);
 			dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(cmm));
 		} else {
 			dlg_info("The key::%s(%s), is not present in the ID::%s\n", argv[3], get_key_vdxf_id(argv[3]),
