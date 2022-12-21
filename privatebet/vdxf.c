@@ -303,7 +303,7 @@ void update_t_game_ids(char *id)
 	cmm = cJSON_CreateObject();
 	cJSON_AddItemToObject(cmm,get_vdxf_id(T_GAME_ID_KEY),t_game_ids);
 	dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(cmm));
-	cJSON *out = update_cmm(id,t_game_ids);
+	cJSON *out = update_cmm(id,cmm);
 	dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(out));	
 
 }
