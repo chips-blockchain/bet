@@ -154,9 +154,7 @@ cJSON *hex_cJSON(char *hex_data)
 
 	out = cJSON_CreateObject();
 	out = cJSON_Parse(data);
-	if (!is_cJSON_Object(out)) {
-		out = NULL;
-	}
+
 	if (data)
 		free(data);
 
