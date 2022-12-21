@@ -11,7 +11,7 @@ cJSON *append_t_key(char *id, char *key, cJSON *key_info)
 	int32_t argc;
 	const int32_t no_of_t_keys = 11;
 	char **argv = NULL, params[arg_size] = { 0 };
-	char all_t_keys[11][128] = { T_TABLE_INFO_KEY, T_PLAYER_INFO_KEY, T_PLAYER1_KEY, T_PLAYER2_KEY,
+	char all_t_keys[11][128] = { get_vdxf_id(T_TABLE_INFO_KEY), get_vdxf_id(T_PLAYER_INFO_KEY), T_PLAYER1_KEY, T_PLAYER2_KEY,
 					       T_PLAYER3_KEY,    T_PLAYER4_KEY,     T_PLAYER5_KEY, T_PLAYER6_KEY,
 					       T_PLAYER7_KEY,    T_PLAYER8_KEY,     T_PLAYER9_KEY };
 	cJSON *id_info = NULL, *argjson = NULL, *cmm = NULL, *temp_obj = NULL;
@@ -22,7 +22,7 @@ cJSON *append_t_key(char *id, char *key, cJSON *key_info)
 
 	id_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(id_info, "name", id);
-	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
+	cJSON_AddStringToObject(id_info, "parent", get_vdxf_id(POKER_CHIPS_VDXF_ID));
 
 	cmm = cJSON_CreateObject();
 	cJSON_AddItemToObject(cmm, key, key_info);
@@ -81,18 +81,14 @@ int32_t bet_init_player_deck(int32_t player_id)
 	}
 	cJSON *player_deck_hex = NULL;
 	player_deck_hex = cJSON_CreateObject();
-	jaddstr(player_deck_hex, BYTEVECTOR_VDXF_ID, hexstr);
+	jaddstr(player_deck_hex, get_vdxf_id(BYTEVECTOR_VDXF_ID), hexstr);
 
 	cmm = cJSON_CreateArray();
-	//cJSON *t1 = cJSON_CreateString("Hello World");
-	//jaddi(cmm, t1);
-
 	jaddi(cmm, player_deck_hex);
 	dlg_info("%s::%dcmm::%s\n", __func__, __LINE__, cJSON_Print(cmm));
 
-	cJSON *out = append_t_key(player_config.table_id, T_PLAYER_KEYS[player_id - 1], cmm);
-
-	dlg_info("%s::%d::%s", __func__, __LINE__, cJSON_Print(out));
+	//cJSON *out = append_t_key(player_config.table_id, T_PLAYER_KEYS[player_id - 1], cmm);
+	//dlg_info("%s::%d::%s", __func__, __LINE__, cJSON_Print(out));
 
 end:
 	return retval;
