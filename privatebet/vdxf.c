@@ -808,6 +808,7 @@ cJSON *append_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data)
 	cmm_obj = cJSON_CreateObject();
 	cmm_obj = get_cmm(id, 0);
 
+	dlg_info("%s::%d::cmm::%s\n",__func__, __LINE__, cJSON_Print(cmm_obj));
 	data_type = get_vdxf_id(get_key_data_type(key));
 	if (!data_type) {
 		dlg_error("%s::%d::Data type for the key::%s is not found\n", __func__, __LINE__, key);
@@ -819,6 +820,7 @@ cJSON *append_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data)
 	jaddstr(data_obj, data_type, hex_data);
 
 	cJSON_AddItemToObject(cmm_obj, data_key, data_obj);
+	dlg_info("%s::%d::cmm::%s\n",__func__, __LINE__, cJSON_Print(cmm_obj));
 
 	return update_cmm(id, cmm_obj);
 }
