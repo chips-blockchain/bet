@@ -37,7 +37,6 @@ key is represented as chips.vrsc::poker.cashiers.
 #define T_DEALER_KEY "chips.vrsc::poker.t_dealer"
 #define T_BLINDER_KEY "chips.vrsc::poker.t_blinder"
 
-
 /*
 Datatypes used
 --------------
@@ -80,7 +79,7 @@ cJSON *update_primaryaddresses(char *id, cJSON *primaryaddress);
 cJSON *get_primaryaddresses(char *id, int16_t full_id);
 cJSON *get_cmm_key_data(char *id, int16_t full_id, char *key);
 cJSON *get_id_key_data(char *id, int16_t full_id, char *key);
-cJSON* update_t_game_ids(char *id);
+cJSON *update_t_game_ids(char *id);
 cJSON *update_t_table_info(char *dealer_id, char *key, struct table t);
 struct table *get_dealers_config_table(char *dealer_id, char *table_id);
 cJSON *get_cashiers_info(char *cashier_id);
@@ -101,9 +100,9 @@ struct table *get_available_t_of_d(char *dealer_id);
 int32_t check_if_pa_exists(char *table_id);
 bool check_if_enough_funds_avail(char *table_id);
 bool check_if_d_t_available(char *dealer_id, char *table_id);
-cJSON* get_cJSON_from_id_key(char *id, char *key);
-cJSON* update_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data);
-cJSON* update_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data);
+cJSON *get_cJSON_from_id_key(char *id, char *key);
+cJSON *update_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data);
+cJSON *update_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data);
 struct table *get_t_table_info(char *id);
 cJSON *get_t_player_info(char *table_id);
 cJSON *update_t_player_info(char *id, cJSON *t_player_info);

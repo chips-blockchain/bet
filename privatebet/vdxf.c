@@ -14,9 +14,9 @@ char *get_vdxf_id(char *key_name)
 	char **argv = NULL;
 	cJSON *argjson = NULL;
 
-	if(!key_name)
+	if (!key_name)
 		return NULL;
-	
+
 	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, verus_chips_cli, "getvdxfid", key_name);
 	argjson = cJSON_CreateObject();
@@ -28,9 +28,9 @@ char *get_vdxf_id(char *key_name)
 
 char *get_key_vdxf_id(char *key_name)
 {
-	if(!key_name)
+	if (!key_name)
 		return NULL;
-	
+
 	return get_vdxf_id(get_full_key(key_name));
 }
 
@@ -38,7 +38,7 @@ char *get_full_key(char *key_name)
 {
 	char *full_key = NULL;
 
-	if(!key_name)
+	if (!key_name)
 		return NULL;
 
 	full_key = calloc(1, 128);
@@ -50,10 +50,10 @@ char *get_full_key(char *key_name)
 
 char *get_key_data_type(char *key_name)
 {
-	if(!key_name)
+	if (!key_name)
 		return NULL;
-	
-	if(strcmp(key_name, T_GAME_ID_KEY) == 0) {
+
+	if (strcmp(key_name, T_GAME_ID_KEY) == 0) {
 		return BYTEVECTOR_VDXF_ID;
 	}
 	return NULL;
@@ -63,9 +63,9 @@ char *get_key_data_vdxf_id(char *key_name, char *data)
 {
 	char full_key[256] = { 0 };
 
-	if((!key_name) || (!data))
+	if ((!key_name) || (!data))
 		return NULL;
-	
+
 	strcpy(full_key, key_name);
 	strncat(full_key, data, strlen(data));
 
@@ -288,24 +288,23 @@ cJSON *get_id_key_data(char *id, int16_t full_id, char *key)
 	return cmm_key_data;
 }
 
-cJSON* update_t_game_ids(char *id)
+cJSON *update_t_game_ids(char *id)
 {
 	char hexstr[65], *game_ids_info_hex = NULL;
 	cJSON *game_ids_info = NULL, *t_game_ids = NULL, *cmm = NULL;
 
 	game_ids_info = cJSON_CreateArray();
-	jaddistr(game_ids_info,bits256_str(hexstr, game_id));
-	cJSON_hex(game_ids_info,&game_ids_info_hex);
+	jaddistr(game_ids_info, bits256_str(hexstr, game_id));
+	cJSON_hex(game_ids_info, &game_ids_info_hex);
 
 	t_game_ids = cJSON_CreateObject();
-	jaddstr(t_game_ids,get_vdxf_id(BYTEVECTOR_VDXF_ID),game_ids_info_hex);
+	jaddstr(t_game_ids, get_vdxf_id(BYTEVECTOR_VDXF_ID), game_ids_info_hex);
 
 	cmm = cJSON_CreateObject();
-	cJSON_AddItemToObject(cmm,get_vdxf_id(T_GAME_ID_KEY),t_game_ids);
-	cJSON *out = update_cmm(id,cmm);
+	cJSON_AddItemToObject(cmm, get_vdxf_id(T_GAME_ID_KEY), t_game_ids);
+	cJSON *out = update_cmm(id, cmm);
 
 	return out;
-
 }
 
 cJSON *update_t_table_info(char *dealer_id, char *key, struct table t)
@@ -787,7 +786,7 @@ bool check_if_d_t_available(char *dealer_id, char *table_id)
 /*
 key --> Full key
 */
-cJSON* get_cJSON_from_id_key(char *id, char *key)
+cJSON *get_cJSON_from_id_key(char *id, char *key)
 {
 	cJSON *cmm = NULL;
 
@@ -798,13 +797,13 @@ cJSON* get_cJSON_from_id_key(char *id, char *key)
 	return NULL;
 }
 
-cJSON* update_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data)
+cJSON *update_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data)
 {
 	char *data_type = NULL, *data_key = NULL;
 	cJSON *data_obj = NULL, *data_key_obj = NULL;
-	
+
 	data_type = get_vdxf_id(get_key_data_type(key));
-	if(!data_type) {
+	if (!data_type) {
 		dlg_error("%s::%d::Data type for the key::%s is not found\n", __func__, __LINE__, key);
 		return NULL;
 	}
@@ -816,22 +815,20 @@ cJSON* update_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data)
 	data_key_obj = cJSON_CreateObject();
 	cJSON_AddItemToObject(data_key_obj, data_key, data_obj);
 
-	return update_cmm(id,data_key_obj);
+	return update_cmm(id, data_key_obj);
 }
 
-cJSON* update_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data)
+cJSON *update_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data)
 {
 	char *hex_data = NULL;
-	
+
 	cJSON_hex(data, &hex_data);
-	if(!hex_data) {
+	if (!hex_data) {
 		dlg_error("%s::%d::Error occured in conversion of cJSON to HEX\n", __func__, __LINE__);
 		return NULL;
 	}
-	return update_cmm_from_id_key_data_hex(id,key,hex_data);
+	return update_cmm_from_id_key_data_hex(id, key, hex_data);
 }
-
-
 
 struct table *get_t_table_info(char *id)
 {
