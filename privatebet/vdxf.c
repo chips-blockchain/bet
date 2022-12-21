@@ -14,6 +14,9 @@ char *get_vdxf_id(char *key_name)
 	char **argv = NULL;
 	cJSON *argjson = NULL;
 
+	if(!key_name)
+		return NULL;
+	
 	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, verus_chips_cli, "getvdxfid", key_name);
 	argjson = cJSON_CreateObject();
@@ -25,18 +28,43 @@ char *get_vdxf_id(char *key_name)
 
 char *get_key_vdxf_id(char *key_name)
 {
+	if(!key_name)
+		return NULL;
+	
+	return get_vdxf_id(get_full_key(key_name));
+}
+
+char *get_full_key(char *key_name)
+{
 	char full_key[128] = { 0 };
 
+	if(!key_name)
+		return NULL;
+	
 	strcpy(full_key, "chips.vrsc::poker.");
 	strncat(full_key, key_name, strlen(key_name));
 
-	return get_vdxf_id(full_key);
+	return full_key;
+}
+
+char *get_key_data_type(char *key_name)
+{
+	if(!key_name)
+		return NULL;
+	
+	if(strcmp(key_name, T_GAME_ID_KEY) == 0) {
+		return BYTEVECTOR_VDXF_ID;
+	}
+	return NULL;
 }
 
 char *get_key_data_vdxf_id(char *key_name, char *data)
 {
 	char full_key[256] = { 0 };
 
+	if((!key_name) || (!data))
+		return NULL;
+	
 	strcpy(full_key, key_name);
 	strncat(full_key, data, strlen(data));
 
@@ -754,13 +782,16 @@ bool check_if_d_t_available(char *dealer_id, char *table_id)
 	return false;
 }
 
-cJSON *get_t_playerx(char *id, char *key)
+/*
+key --> Full key
+*/
+cJSON* get_cJSON_from_id_key(char *id, char *key)
 {
 	cJSON *cmm = NULL;
 
 	cmm = get_cmm_key_data(id, 0, get_vdxf_id(key));
 	if (cmm) {
-		return hex_cJSON(jstr(cJSON_GetArrayItem(cmm, 0), get_vdxf_id(BYTEVECTOR_VDXF_ID)));
+		return hex_cJSON(jstr(cJSON_GetArrayItem(cmm, 0), get_vdxf_id(get_key_data_type(key))));
 	}
 	return NULL;
 }

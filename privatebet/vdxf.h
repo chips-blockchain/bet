@@ -22,7 +22,7 @@ key is represented as chips.vrsc::poker.cashiers.
 #define CASHIERS_KEY "chips.vrsc::poker.cashiers"
 #define DEALERS_KEY "chips.vrsc::poker.dealers"
 
-#define T_GAME_ID_KEY "chips.vrsc::poker.game_ids"
+#define T_GAME_ID_KEY "chips.vrsc::poker.t_game_ids"
 #define T_TABLE_INFO_KEY "chips.vrsc::poker.t_table_info"
 #define T_PLAYER_INFO_KEY "chips.vrsc::poker.t_player_info"
 #define T_PLAYER1_KEY "chips.vrsc::poker.t_player1"
@@ -36,6 +36,7 @@ key is represented as chips.vrsc::poker.cashiers.
 #define T_PLAYER9_KEY "chips.vrsc::poker.t_player9"
 #define T_DEALER_KEY "chips.vrsc::poker.t_dealer"
 #define T_BLINDER_KEY "chips.vrsc::poker.t_blinder"
+
 
 /*
 Datatypes used
@@ -69,6 +70,8 @@ under chips as sg777.chips@ which basically been used to hold the tokens.
 
 char *get_vdxf_id(char *key_name);
 char *get_key_vdxf_id(char *key_name);
+char *get_full_key(char *key_name);
+char *get_key_data_type(char *key_name);
 char *get_key_data_vdxf_id(char *key_name, char *data);
 cJSON *update_cmm(char *id, cJSON *cmm);
 cJSON *get_cmm(char *id, int16_t full_id);
@@ -98,7 +101,7 @@ struct table *get_available_t_of_d(char *dealer_id);
 int32_t check_if_pa_exists(char *table_id);
 bool check_if_enough_funds_avail(char *table_id);
 bool check_if_d_t_available(char *dealer_id, char *table_id);
-cJSON *get_t_playerx(char *id, char *key);
+cJSON* get_cJSON_from_id_key(char *id, char *key);
 struct table *get_t_table_info(char *id);
 cJSON *get_t_player_info(char *table_id);
 cJSON *update_t_player_info(char *id, cJSON *t_player_info);
