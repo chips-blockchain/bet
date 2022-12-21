@@ -805,6 +805,10 @@ cJSON *append_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data)
 	char *data_type = NULL, *data_key = NULL;
 	cJSON *data_obj = NULL, *cmm_obj = NULL;
 
+	//sg777: This loop will be removed once the new API is added to spend the tx from mempool
+	while(!chips_is_mempool_empty()) {
+		sleep(1);
+	}
 	cmm_obj = cJSON_CreateObject();
 	cmm_obj = get_cmm(id, 0);
 
