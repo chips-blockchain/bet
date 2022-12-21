@@ -283,6 +283,7 @@ void bet_parse_blockchain_config_ini_file()
 
 void bet_parse_verus_dealer()
 {
+	char hexstr[65];
 	dictionary *ini = NULL;
 	struct table t;
 
@@ -290,6 +291,7 @@ void bet_parse_verus_dealer()
 	if (ini == NULL) {
 		dlg_error("error in parsing %s", verus_dealer_config);
 	} else {
+		game_id = rand256(0);
 		if (NULL != iniparser_getstring(ini, "verus:dealer_id", NULL)) {
 			strncpy(t.dealer_id, iniparser_getstring(ini, "verus:dealer_id", NULL), sizeof(t.dealer_id));
 		}
@@ -313,17 +315,20 @@ void bet_parse_verus_dealer()
 			dlg_info("%s::%d::Error in updating the key::%s at the ID::%s\n", __FUNCTION__, __LINE__,
 				 get_vdxf_id(T_TABLE_INFO_KEY), t.dealer_id);
 		}
-		#if 0
-		cJSON *t2 = update_t_table_info(t.table_id, get_vdxf_id(T_TABLE_INFO_KEY), t);
+		
+		cJSON *t3 = update_cmm_from_id_key_data_hex(t.table_id,T_GAME_ID_KEY,bits256_str(hexstr,game_id));
+		if (jint(t3, "error")) {
+			dlg_info("%s::%d::Error in updating the key::%s at the ID::%s\n", __FUNCTION__, __LINE__,
+				 T_GAME_ID_KEY, t.table_id);
+		}
+		
+		dlg_info("%s::%d::run time key::%s\n", __func__, __LINE__, get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr,game_id)));
+		cJSON *t2 = update_t_table_info(t.table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr,game_id)), t);
 		if (jint(t2, "error")) {
 			dlg_info("%s::%d::Error in updating the key::%s at the ID::%s\n", __FUNCTION__, __LINE__,
 				 get_vdxf_id(T_TABLE_INFO_KEY), t.table_id);
 		}
-		#endif
-		char hexstr[65];
-		game_id = rand256(0);
-		dlg_info("%s::%d::%s\n",__func__, __LINE__, bits256_str(hexstr,game_id));
-		update_t_game_ids(t.table_id);
+		
 	}
 }
 
