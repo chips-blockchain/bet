@@ -273,7 +273,7 @@ void update_t_game_ids(char *id)
 	jaddstr(t_game_ids,get_vdxf_id(BYTEVECTOR_VDXF_ID),game_ids_info_hex);
 
 	dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(t_game_ids));
-	cJSON *out = update_cmm(id,t_game_ids)
+	cJSON *out = update_cmm(id,t_game_ids);
 	dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(out));	
 
 }
