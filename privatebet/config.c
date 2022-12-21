@@ -315,20 +315,21 @@ void bet_parse_verus_dealer()
 			dlg_info("%s::%d::Error in updating the key::%s at the ID::%s\n", __FUNCTION__, __LINE__,
 				 get_vdxf_id(T_TABLE_INFO_KEY), t.dealer_id);
 		}
-		
-		cJSON *t3 = update_cmm_from_id_key_data_hex(t.table_id,T_GAME_ID_KEY,bits256_str(hexstr,game_id));
+
+		cJSON *t3 = update_cmm_from_id_key_data_hex(t.table_id, T_GAME_ID_KEY, bits256_str(hexstr, game_id));
 		if (jint(t3, "error")) {
 			dlg_info("%s::%d::Error in updating the key::%s at the ID::%s\n", __FUNCTION__, __LINE__,
 				 T_GAME_ID_KEY, t.table_id);
 		}
-		
-		dlg_info("%s::%d::run time key::%s\n", __func__, __LINE__, get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr,game_id)));
-		cJSON *t2 = update_t_table_info(t.table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr,game_id)), t);
+
+		dlg_info("%s::%d::run time key::%s\n", __func__, __LINE__,
+			 get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)));
+		cJSON *t2 = update_t_table_info(
+			t.table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)), t);
 		if (jint(t2, "error")) {
 			dlg_info("%s::%d::Error in updating the key::%s at the ID::%s\n", __FUNCTION__, __LINE__,
 				 get_vdxf_id(T_TABLE_INFO_KEY), t.table_id);
 		}
-		
 	}
 }
 
