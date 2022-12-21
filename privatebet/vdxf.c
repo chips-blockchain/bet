@@ -11,18 +11,38 @@ char T_PLAYER_KEYS[9][128] = { T_PLAYER1_KEY, T_PLAYER2_KEY, T_PLAYER3_KEY, T_PL
 char *get_vdxf_id(char *key_name)
 {
 	int argc = 3;
-	char full_key[128] = { 0 }, **argv = NULL;
+	char **argv = NULL;
 	cJSON *argjson = NULL;
+
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, verus_chips_cli, "getvdxfid", key_name);
+	argjson = cJSON_CreateObject();
+	make_command(argc, argv, &argjson);
+
+	bet_dealloc_args(argc, &argv);
+	return jstr(argjson, "vdxfid");
+}
+
+char *get_key_vdxf_id(char *key_name)
+{
+	char full_key[128] = { 0 };
 
 	strcpy(full_key, "chips.vrsc::poker.");
 	strncat(full_key, key_name, strlen(key_name));
 
-	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, verus_chips_cli, "getvdxfid", full_key);
-	argjson = cJSON_CreateObject();
-	make_command(argc, argv, &argjson);
+	return get_vdxf_id(full_key);
+}
 
-	return jstr(argjson, "vdxfid");
+char *get_key_data_vdxf_id(char *key_name, char *data)
+{
+	
+	char full_key[256] = { 0 };
+
+	strcpy(full_key, key_name);
+	strncat(full_key, data, strlen(data));
+
+	return get_vdxf_id(full_key);
+
 }
 
 cJSON *update_cmm(char *id, cJSON *cmm)
@@ -43,7 +63,7 @@ cJSON *update_cmm(char *id, cJSON *cmm)
 
 	id_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(id_info, "name", id);
-	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
+	cJSON_AddStringToObject(id_info, "parent", get_vdxf_id(POKER_CHIPS_VDXF_ID));
 	cJSON_AddItemToObject(id_info, "contentmultimap", cmm);
 
 	argc = 3;
@@ -128,7 +148,7 @@ cJSON *append_primaryaddresses(char *id, cJSON *primaryaddress)
 
 	id_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(id_info, "name", id);
-	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
+	cJSON_AddStringToObject(id_info, "parent", get_vdxf_id(POKER_CHIPS_VDXF_ID));
 	cJSON_AddItemToObject(id_info, "primaryaddresses", final_pa);
 
 	argc = 3;
@@ -158,7 +178,7 @@ cJSON *update_primaryaddresses(char *id, cJSON *primaryaddress)
 
 	id_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(id_info, "name", id);
-	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
+	cJSON_AddStringToObject(id_info, "parent", get_vdxf_id(POKER_CHIPS_VDXF_ID));
 	cJSON_AddItemToObject(id_info, "primaryaddresses", primaryaddress);
 
 	argc = 3;
@@ -254,7 +274,7 @@ cJSON *update_t_table_info(char *dealer_id, char *key, struct table t)
 	init_hexbytes_noT(hexstr, byte_arr, sizeof(t));
 
 	dealer_cmm = cJSON_CreateObject();
-	cJSON_AddStringToObject(dealer_cmm, STRING_VDXF_ID, hexstr);
+	cJSON_AddStringToObject(dealer_cmm, get_vdxf_id(STRING_VDXF_ID), hexstr);
 
 	dealer_cmm_key = cJSON_CreateObject();
 	cJSON_AddItemToObject(dealer_cmm_key, key, dealer_cmm);
@@ -276,17 +296,17 @@ struct table *get_dealers_config_table(char *dealer_id, char *table_id)
 		goto end;
 
 	dealer_cmm_data = cJSON_CreateObject();
-	dealer_cmm_data = get_cmm_key_data(dealer_id, 0, T_TABLE_INFO_KEY);
+	dealer_cmm_data = get_cmm_key_data(dealer_id, 0, get_vdxf_id(T_TABLE_INFO_KEY));
 	if (dealer_cmm_data == NULL) {
 		dlg_info("%s::%d::The key ::%s is not found in the cmm of id ::%s\n", __FUNCTION__, __LINE__,
-			 T_TABLE_INFO_KEY, dealer_id);
+			 get_vdxf_id(T_TABLE_INFO_KEY), dealer_id);
 		goto end;
 	}
 
 	//TODO:Right now we dealing with single table, when multi table support comes,
 	// we need to make checks whether the table with the specific name exists or not.
 
-	str = jstr(cJSON_GetArrayItem(dealer_cmm_data, 0), STRING_VDXF_ID);
+	str = jstr(cJSON_GetArrayItem(dealer_cmm_data, 0), get_vdxf_id(STRING_VDXF_ID));
 
 	table_data = calloc(1, (strlen(str) + 1) / 2);
 	decode_hex(table_data, (strlen(str) + 1) / 2, str);
@@ -303,7 +323,7 @@ cJSON *get_cashiers_info(char *cashier_id)
 	cJSON *cashier_cmm_data = NULL;
 
 	cashier_cmm_data = cJSON_CreateObject();
-	cashier_cmm_data = get_cmm_key_data(cashier_id, 0, CASHIERS_KEY);
+	cashier_cmm_data = get_cmm_key_data(cashier_id, 0, get_vdxf_id(CASHIERS_KEY));
 
 end:
 	return cashier_cmm_data;
@@ -317,13 +337,13 @@ cJSON *update_cashiers(char *ip)
 	cashier_ips = get_cashiers_info("cashiers");
 
 	ip_obj = cJSON_CreateObject();
-	cJSON_AddStringToObject(ip_obj, STRING_VDXF_ID, ip);
+	cJSON_AddStringToObject(ip_obj, get_vdxf_id(STRING_VDXF_ID), ip);
 
 	if (NULL == cashier_ips)
 		cashier_ips = cJSON_CreateArray();
 	else {
 		for (int i = 0; i < cJSON_GetArraySize(cashier_ips); i++) {
-			if (0 == strcmp(jstr(cJSON_GetArrayItem(cashier_ips, i), STRING_VDXF_ID), ip)) {
+			if (0 == strcmp(jstr(cJSON_GetArrayItem(cashier_ips, i), get_vdxf_id(STRING_VDXF_ID)), ip)) {
 				dlg_info("%s::%d::The latest data of this ID contains this %s\n", __FUNCTION__,
 					 __LINE__, ip);
 				goto end;
@@ -332,7 +352,7 @@ cJSON *update_cashiers(char *ip)
 	}
 
 	cJSON_AddItemToArray(cashier_ips, ip_obj);
-	cJSON_AddItemToObject(cashiers_info, CASHIERS_KEY, cashier_ips);
+	cJSON_AddItemToObject(cashiers_info, get_vdxf_id(CASHIERS_KEY), cashier_ips);
 	out = update_cmm("cashiers", cashiers_info);
 
 end:
@@ -344,12 +364,12 @@ cJSON *get_dealers()
 	cJSON *dealers_cmm = NULL, *dealer_ids = NULL;
 
 	dealers_cmm = cJSON_CreateObject();
-	dealers_cmm = get_cmm_key_data("dealers", 0, DEALERS_KEY);
+	dealers_cmm = get_cmm_key_data("dealers", 0, get_vdxf_id(DEALERS_KEY));
 
 	dealer_ids = cJSON_CreateArray();
 	for (int32_t i = 0; i < cJSON_GetArraySize(dealers_cmm); i++) {
 		cJSON_AddItemToArray(dealer_ids,
-				     cJSON_GetObjectItem(cJSON_GetArrayItem(dealers_cmm, i), STRING_VDXF_ID));
+				     cJSON_GetObjectItem(cJSON_GetArrayItem(dealers_cmm, i), get_vdxf_id(STRING_VDXF_ID)));
 	}
 	return dealer_ids;
 }
@@ -627,7 +647,7 @@ struct table *decode_table_info(cJSON *dealer_cmm_data)
 	uint8_t *table_data = NULL;
 	struct table *t = NULL;
 
-	str = jstr(cJSON_GetArrayItem(dealer_cmm_data, 0), STRING_VDXF_ID);
+	str = jstr(cJSON_GetArrayItem(dealer_cmm_data, 0), get_vdxf_id(STRING_VDXF_ID));
 
 	table_data = calloc(1, (strlen(str) + 1) / 2);
 	decode_hex(table_data, (strlen(str) + 1) / 2, str);
@@ -724,7 +744,7 @@ cJSON *get_t_playerx(char *id, char *key)
 
 	cmm = get_cmm_key_data(id, 0, get_vdxf_id(key));
 	if (cmm) {
-		return hex_cJSON(jstr(cJSON_GetArrayItem(cmm, 0), BYTEVECTOR_VDXF_ID));
+		return hex_cJSON(jstr(cJSON_GetArrayItem(cmm, 0), get_vdxf_id(BYTEVECTOR_VDXF_ID)));
 	}
 	return NULL;
 }
@@ -734,7 +754,7 @@ struct table *get_t_table_info(char *id)
 	cJSON *t_table_info = NULL;
 	struct table *t = NULL;
 
-	t_table_info = get_cmm_key_data(id, 0, T_TABLE_INFO_KEY);
+	t_table_info = get_cmm_key_data(id, 0, get_vdxf_id(T_TABLE_INFO_KEY));
 	if (t_table_info) {
 		t = decode_table_info(t_table_info);
 	}
@@ -750,9 +770,9 @@ cJSON *get_t_player_info(char *table_id)
 	cmm = get_cmm(table_id, 0);
 	if (cmm) {
 		cmm_t_player_info = cJSON_CreateObject();
-		cmm_t_player_info = cJSON_GetObjectItem(cmm, T_PLAYER_INFO_KEY);
+		cmm_t_player_info = cJSON_GetObjectItem(cmm, get_vdxf_id(T_PLAYER_INFO_KEY));
 		if (cmm_t_player_info) {
-			hexstr = jstr(cJSON_GetArrayItem(cmm_t_player_info, 0), STRING_VDXF_ID);
+			hexstr = jstr(cJSON_GetArrayItem(cmm_t_player_info, 0), get_vdxf_id(STRING_VDXF_ID));
 			t_player_info_str = calloc(1, strlen(hexstr));
 			hexstr_to_str(hexstr, t_player_info_str);
 			t_player_info = cJSON_CreateObject();
@@ -776,14 +796,14 @@ cJSON *update_t_player_info(char *id, cJSON *t_player_info)
 
 	id_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(id_info, "name", id);
-	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
+	cJSON_AddStringToObject(id_info, "parent", get_vdxf_id(POKER_CHIPS_VDXF_ID));
 
 	cJSON_hex(t_player_info, &hexstr);
 	player_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(player_info, STRING_VDXF_ID, hexstr);
+	cJSON_AddStringToObject(player_info, get_vdxf_id(STRING_VDXF_ID), hexstr);
 
 	cmm = cJSON_CreateObject();
-	cJSON_AddItemToObject(cmm, T_PLAYER_INFO_KEY, player_info);
+	cJSON_AddItemToObject(cmm, get_vdxf_id(T_PLAYER_INFO_KEY), player_info);
 	cJSON_AddItemToObject(id_info, "contentmultimap", cmm);
 
 	argc = 3;
@@ -812,21 +832,21 @@ static cJSON *update_t_player_info_pa(char *id, cJSON *t_player_info, cJSON *pri
 
 	id_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(id_info, "name", id);
-	cJSON_AddStringToObject(id_info, "parent", POKER_CHIPS_VDXF_ID);
+	cJSON_AddStringToObject(id_info, "parent", get_vdxf_id(POKER_CHIPS_VDXF_ID));
 
 	cJSON_hex(t_player_info, &hexstr);
 	player_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(player_info, STRING_VDXF_ID, hexstr);
+	cJSON_AddStringToObject(player_info, get_vdxf_id(STRING_VDXF_ID), hexstr);
 
 	cmm = cJSON_CreateObject();
-	cJSON_AddItemToObject(cmm, T_PLAYER_INFO_KEY, player_info);
+	cJSON_AddItemToObject(cmm, get_vdxf_id(T_PLAYER_INFO_KEY), player_info);
 
 	/*
 		Reupdating t_table_info
 	*/
-	t_table_info = get_cmm_key_data(id, 0, T_TABLE_INFO_KEY);
+	t_table_info = get_cmm_key_data(id, 0, get_vdxf_id(T_TABLE_INFO_KEY));
 	if (t_table_info) {
-		cJSON_AddItemToObject(cmm, T_TABLE_INFO_KEY, t_table_info);
+		cJSON_AddItemToObject(cmm, get_vdxf_id(T_TABLE_INFO_KEY), t_table_info);
 	}
 
 	cJSON_AddItemToObject(id_info, "contentmultimap", cmm);
@@ -856,11 +876,10 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 	if ((!txid) || (!payin_tx_data)) {
 		retval = 0;
 		goto end;
-	}
-
-	amount = chips_get_balance_on_address_from_tx(VDXF_CASHIERS_ID, txid);
+	}	
+	amount = chips_get_balance_on_address_from_tx(get_vdxf_id(CASHIERS_ID), txid);
 	t_table_info = cJSON_CreateObject();
-	t_table_info = get_cmm_key_data(jstr(payin_tx_data, "table_id"), 0, T_TABLE_INFO_KEY);
+	t_table_info = get_cmm_key_data(jstr(payin_tx_data, "table_id"), 0, get_vdxf_id(T_TABLE_INFO_KEY));
 	if (t_table_info == NULL) {
 		retval = ERR_T_TABLE_INFO_NULL;
 		goto end;
@@ -981,7 +1000,7 @@ void test_loop(char *blockhash)
 				dlg_error("%s::%d::Err:: %s, Reversing the tx\n", __FUNCTION__, __LINE__,
 					  bet_err_str(retval));
 				double amount = chips_get_balance_on_address_from_tx(
-					VDXF_CASHIERS_ID, jstr(cJSON_GetArrayItem(argjson, i), "txid"));
+					get_vdxf_id(CASHIERS_ID), jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 				cJSON *tx = chips_transfer_funds(amount, jstr(payin_tx_data, "primaryaddress"));
 				dlg_warn("%s::%d::Tx deposited back to the players primaryaddress::%s\n", __func__,
 					 __LINE__, cJSON_Print(tx));
