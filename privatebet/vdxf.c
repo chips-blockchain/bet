@@ -36,11 +36,12 @@ char *get_key_vdxf_id(char *key_name)
 
 char *get_full_key(char *key_name)
 {
-	char full_key[128] = { 0 };
+	char *full_key = NULL;
 
 	if(!key_name)
 		return NULL;
-	
+
+	full_key = calloc(1, 128);
 	strcpy(full_key, "chips.vrsc::poker.");
 	strncat(full_key, key_name, strlen(key_name));
 
