@@ -292,7 +292,7 @@ cJSON *get_id_key_data(char *id, int16_t full_id, char *key)
 void update_t_game_ids(char *id)
 {
 	char hexstr[65], *game_ids_info_hex = NULL;
-	cJSON *game_ids_info = NULL, *t_game_ids = NULL;
+	cJSON *game_ids_info = NULL, *t_game_ids = NULL, *cmm = NULL;
 
 	game_ids_info = cJSON_CreateArray();
 	jaddistr(game_ids_info,bits256_str(hexstr, game_id));
@@ -301,7 +301,9 @@ void update_t_game_ids(char *id)
 	t_game_ids = cJSON_CreateObject();
 	jaddstr(t_game_ids,get_vdxf_id(BYTEVECTOR_VDXF_ID),game_ids_info_hex);
 
-	dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(t_game_ids));
+	cmm = cJSON_CreateObject();
+	cJSON_AddItemToObject(cmm,get_vdxf_id(T_GAME_ID_KEY),t_game_ids);
+	dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(cmm));
 	cJSON *out = update_cmm(id,t_game_ids);
 	dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(out));	
 
