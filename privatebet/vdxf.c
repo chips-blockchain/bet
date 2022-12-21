@@ -35,14 +35,12 @@ char *get_key_vdxf_id(char *key_name)
 
 char *get_key_data_vdxf_id(char *key_name, char *data)
 {
-	
 	char full_key[256] = { 0 };
 
 	strcpy(full_key, key_name);
 	strncat(full_key, data, strlen(data));
 
 	return get_vdxf_id(full_key);
-
 }
 
 cJSON *update_cmm(char *id, cJSON *cmm)
@@ -232,9 +230,9 @@ cJSON *get_cmm_key_data(char *id, int16_t full_id, char *key)
 {
 	cJSON *cmm = NULL, *cmm_key_data = NULL;
 
-	if((id == NULL) || (key == NULL))
+	if ((id == NULL) || (key == NULL))
 		return NULL;
-	
+
 	cmm = cJSON_CreateObject();
 	if ((cmm = get_cmm(id, full_id)) == NULL)
 		return NULL;
@@ -368,8 +366,8 @@ cJSON *get_dealers()
 
 	dealer_ids = cJSON_CreateArray();
 	for (int32_t i = 0; i < cJSON_GetArraySize(dealers_cmm); i++) {
-		cJSON_AddItemToArray(dealer_ids,
-				     cJSON_GetObjectItem(cJSON_GetArrayItem(dealers_cmm, i), get_vdxf_id(STRING_VDXF_ID)));
+		cJSON_AddItemToArray(dealer_ids, cJSON_GetObjectItem(cJSON_GetArrayItem(dealers_cmm, i),
+								     get_vdxf_id(STRING_VDXF_ID)));
 	}
 	return dealer_ids;
 }
@@ -876,7 +874,7 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 	if ((!txid) || (!payin_tx_data)) {
 		retval = 0;
 		goto end;
-	}	
+	}
 	amount = chips_get_balance_on_address_from_tx(get_vdxf_id(CASHIERS_ID), txid);
 	t_table_info = cJSON_CreateObject();
 	t_table_info = get_cmm_key_data(jstr(payin_tx_data, "table_id"), 0, get_vdxf_id(T_TABLE_INFO_KEY));
