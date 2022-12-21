@@ -101,6 +101,8 @@ int32_t check_if_pa_exists(char *table_id);
 bool check_if_enough_funds_avail(char *table_id);
 bool check_if_d_t_available(char *dealer_id, char *table_id);
 cJSON *get_cJSON_from_id_key(char *id, char *key);
+cJSON *append_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data);
+cJSON *append_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data);
 cJSON *update_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data);
 cJSON *update_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data);
 struct table *get_t_table_info(char *id);
