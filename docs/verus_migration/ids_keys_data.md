@@ -2,18 +2,18 @@ All about ID's and Keys
 -----------------------
 Keys are ways to store the information under the identities, we encapsulate the info of a structure or JSON object and map them to the keys. For example we have an identifier named `cashiers` under `poker.chips10sec@` which holds all the cashiers info, we also define a `chips.vrsc::poker.cashier_key` where in which all the cashiers info is updated.
 
-We can restrict the ID registration process to few authorized addresses or it can made open, so that anyone can register ID's. I'm pasting some beautiful insights from Mike about why ID registration should be open.
+We can restrict the ID registration process to few authorized addresses or it can made open so that anyone can register ID's. I'm pasting some beautiful insights from Mike about why ID registration should be open.
 ```
-    First one is that I think you should not restrict the ID registration capabilities, as they will be a primary source of economy 
-    and since you do not have block rewards, could make the difference between a functional chain or not. There is no spam because 
-    all resources used on chain are paid for to miners, stakers, LPs in baskets that register decentralized IDs, and those selling 
-    IDs on-chain. All of this is economic value for the on-chain economy that is not spam. It is exactly the opposite. If your chain 
-    is busy with that, everyone should be happy. If it is too busy, make another. Also, people have IDs on different chains that they 
-    should be able to send over and use. IMO, each player should have to have an ID, and if some games need KYC, you will be able to 
-    do that as well on any IDs using the Valu service, which will use VerusID to enable non-DOXed KYC verification. I really recommend 
-    that the general model is to consider IDs just on-chain addresses and let people use them as they will. Enable poker and other games 
-    this way, but have all of the on-chain activity, including currencies, to benefit miners and stakers (CHIPS holders) through the fee 
-    pool as part of normal use.
+    First one is that I think you should not restrict the ID registration capabilities, as they will be a primary source of 
+    economy and since you do not have block rewards, could make the difference between a functional chain or not. There is no 
+    spam because all resources used on chain are paid for to miners, stakers, LPs in baskets that register decentralized IDs, 
+    and those selling IDs on-chain. All of this is economic value for the on-chain economy that is not spam. It is exactly the 
+    opposite. If your chain is busy with that, everyone should be happy. If it is too busy, make another. Also, people have IDs 
+    on different chains that they should be able to send over and use. IMO, each player should have to have an ID, and if some 
+    games need KYC, you will be able to do that as well on any IDs using the Valu service, which will use VerusID to enable 
+    non-DOXed KYC verification. I really recommend that the general model is to consider IDs just on-chain addresses and let 
+    people use them as they will. Enable poker and other games this way, but have all of the on-chain activity, including 
+    currencies, to benefit miners and stakers (CHIPS holders) through the fee pool as part of normal use.
 ```
 
 We define all keys with the prefix `chips.vrsc::` in the entire CHIPS ecosystem, for the game specific keys we add the game name as prefix. For example, for all the keys that we use to play the poker name are defined with the prefix `chips.vrsc::poker.` and likewise for all the keys that we use to bet are defined with the prefix `chips.vrsc::bet.` and so on...
