@@ -794,6 +794,7 @@ cJSON *get_cJSON_from_id_key(char *id, char *key)
 	cJSON *cmm = NULL;
 
 	cmm = get_cmm_key_data(id, 0, get_vdxf_id(key));
+	dlg_info("%s::%d::cmm::%s\n::%s", __func__, __LINE__, cJSON_Print(cmm), get_vdxf_id(get_key_data_type(key)));
 	if (cmm) {
 		return hex_cJSON(jstr(cJSON_GetArrayItem(cmm, 0), get_vdxf_id(get_key_data_type(key))));
 	}
