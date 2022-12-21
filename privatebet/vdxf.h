@@ -19,60 +19,23 @@ Lets say the cashiers are specific to the context of poker, so we defined them w
 key is represented as chips.vrsc::poker.cashiers.
 */
 
-//chips.vrsc::poker.cashiers --> iJ3WZocnjG9ufv7GKUA4LijQno5gTMb7tP
-#define CASHIERS_KEY "iH6n3SW9hpou8LW4nEAzJZXDb4AG4tLnQN"
-//chips.vrsc::poker.dealers --> iSgEvATbNF3ZR6Kyj6nn8zVp3adPQxPnFJ
-#define DEALERS_KEY "iSgEvATbNF3ZR6Kyj6nn8zVp3adPQxPnFJ"
-//chips.vrsc::poker.table --> iD28KEADk5B329adB2CkY5wx1C2TWbSMut
-#define TABLE_KEY "iD28KEADk5B329adB2CkY5wx1C2TWbSMut"
-//chips.vrsc::poker.t_player_info --> i8qHmsn6VGrPm7F6YRy6DV8nWTn3eCWXdJ
-/*
-{
-	no_of_players: 2;
-	player_info :[ "primaryaddress_4bytetxhash_0",
-				   "primaryaddress_4bytetxhash_1"];
-}
-*/
-#define T_PLAYER_INFO_KEY "i8qHmsn6VGrPm7F6YRy6DV8nWTn3eCWXdJ"
-//chips.vrsc::poker.t_table_info --> iG2v2NKwrswDtkTHoH98ac5JqvSBG1HZnE
-#define T_TABLE_INFO_KEY "iG2v2NKwrswDtkTHoH98ac5JqvSBG1HZnE"
+#define CASHIERS_KEY "chips.vrsc::poker.cashiers"
+#define DEALERS_KEY "chips.vrsc::poker.dealers"
 
-/*
-The players shuffled deck of cards are stored at the keys from player1 to player9 where player with id 1
-store its cards at key player1 and player with id 2 stores cards at key player2 and so on respectively...
-*/
-//chips.vrsc::poker.t_player1 --> iJSMmJfbCVzqJwgeGgBTBqGHXdksNUwX7e
-#define T_PLAYER1_KEY "iJSMmJfbCVzqJwgeGgBTBqGHXdksNUwX7e"
 
-//chips.vrsc::poker.t_player2 --> iKuVVeXXJ6hTrGmU2xH59MXke8Kxciy1Qd
-#define T_PLAYER2_KEY "iKuVVeXXJ6hTrGmU2xH59MXke8Kxciy1Qd"
-
-//chips.vrsc::poker.t_player3 --> iMjDX6Jzr6yMEgWVmLJmvcourYtF4tsVxh
-#define T_PLAYER3_KEY "iMjDX6Jzr6yMEgWVmLJmvcourYtF4tsVxh"
-
-//chips.vrsc::poker.t_player4 --> iPSn44jZKGa5QiZLwst8ZsggfNfbELhRs4
-#define T_PLAYER4_KEY "iPSn44jZKGa5QiZLwst8ZsggfNfbELhRs4"
-
-//chips.vrsc::poker.t_player5 --> i4U43YBhjYpEGVJDTxqtah5oeHKVNzDRjx
-#define T_PLAYER5_KEY "i4U43YBhjYpEGVJDTxqtah5oeHKVNzDRjx"
-
-//chips.vrsc::poker.t_player6 --> i83GEBJQRnZKawAPqx9pbgyDxash93KUQD
-#define T_PLAYER6_KEY "i83GEBJQRnZKawAPqx9pbgyDxash93KUQD"
-
-//chips.vrsc::poker.t_player7 --> iRABcj8Hx1YM1o5FvdGPwCySqE5a2uwBHz
-#define T_PLAYER7_KEY "iRABcj8Hx1YM1o5FvdGPwCySqE5a2uwBHz"
-
-//chips.vrsc::poker.t_player8 --> i4qKC8CbSGkET2cUqz1szST1s4Miq5iVta
-#define T_PLAYER8_KEY "i4qKC8CbSGkET2cUqz1szST1s4Miq5iVta"
-
-//chips.vrsc::poker.t_player9 --> iLnY6pmKqfseLmhnJfN3dmqbRgmnEMPcWT
-#define T_PLAYER9_KEY "iLnY6pmKqfseLmhnJfN3dmqbRgmnEMPcWT"
-
-//chips.vrsc::poker.t_dealer --> iSark2c82W2fpxcqCVYHRoCDL59HB7A4wD
-#define T_DEALER_KEY "iSark2c82W2fpxcqCVYHRoCDL59HB7A4wD"
-
-//chips.vrsc::poker.t_blinder --> iQjqt4EuniokrfVhfVFpj9HskuZ6uTVFSU
-#define T_BLINDER_KEY "iQjqt4EuniokrfVhfVFpj9HskuZ6uTVFSU"
+#define T_TABLE_INFO_KEY "chips.vrsc::poker.t_table_info"
+#define T_PLAYER_INFO_KEY "chips.vrsc::poker.t_player_info"
+#define T_PLAYER1_KEY "chips.vrsc::poker.t_player1"
+#define T_PLAYER2_KEY "chips.vrsc::poker.t_player2"
+#define T_PLAYER3_KEY "chips.vrsc::poker.t_player3"
+#define T_PLAYER4_KEY "chips.vrsc::poker.t_player4"
+#define T_PLAYER5_KEY "chips.vrsc::poker.t_player5"
+#define T_PLAYER6_KEY "chips.vrsc::poker.t_player6"
+#define T_PLAYER7_KEY "chips.vrsc::poker.t_player7"
+#define T_PLAYER8_KEY "chips.vrsc::poker.t_player8"
+#define T_PLAYER9_KEY "chips.vrsc::poker.t_player9"
+#define T_DEALER_KEY "chips.vrsc::poker.t_dealer"
+#define T_BLINDER_KEY "chips.vrsc::poker.t_blinder"
 
 /*
 Datatypes used
@@ -81,12 +44,8 @@ Since we are encapsulating the data and store using binary serialization, so we 
 We majorly use bytevector defined as vrsc::data.type.bytevector in verus.
 */
 
-//vrsc::data.type.string -->  	iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c
-#define STRING_VDXF_ID "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c"
-//vrsc::data.type.byte -->  	iBXUHbh4iacbeZnzDRxishvBSrYk2S2k7t
-#define BYTE_VDXF_ID "iBXUHbh4iacbeZnzDRxishvBSrYk2S2k7t"
-//vrsc::data.type.bytevector --> iKMhRLX1JHQihVZx2t2pAWW2uzmK6AzwW3
-#define BYTEVECTOR_VDXF_ID "iKMhRLX1JHQihVZx2t2pAWW2uzmK6AzwW3"
+#define STRING_VDXF_ID "vrsc::data.type.string"
+#define BYTEVECTOR_VDXF_ID "vrsc::data.type.bytevector"
 
 /*
 Identitites
@@ -103,13 +62,15 @@ Any entity in the bet ecosystem can register the identities under chips, like fo
 under chips as sg777.chips@ which basically been used to hold the tokens. 
 */
 #define CASHIERS_ID "cashiers.poker.chips10sec@"
-#define VDXF_CASHIERS_ID "i4vGd5Aa23prxkPQbkZ7rHAoA7k7jRc5XY"
-#define POKER_CHIPS_VDXF_ID "i6gViGxt7YinkJZoubKdbWBrqdRCb1Rkvs"
+#define POKER_CHIPS_VDXF_ID "poker.chips10sec@"
+
 
 #define ID_UPDATE_ESTIMATE_NO 50
 #define RESERVE_AMOUNT ID_UPDATE_ESTIMATE_NO *chips_tx_fee
 
 char *get_vdxf_id(char *key_name);
+char *get_key_vdxf_id(char *key_name);
+char *get_key_data_vdxf_id(char *key_name, char *data);
 cJSON *update_cmm(char *id, cJSON *cmm);
 cJSON *get_cmm(char *id, int16_t full_id);
 cJSON *append_primaryaddresses(char *id, cJSON *primaryaddress);
