@@ -22,6 +22,7 @@ key is represented as chips.vrsc::poker.cashiers.
 #define CASHIERS_KEY "chips.vrsc::poker.cashiers"
 #define DEALERS_KEY "chips.vrsc::poker.dealers"
 
+#define T_GAME_ID_KEY "chips.vrsc::poker.game_ids"
 #define T_TABLE_INFO_KEY "chips.vrsc::poker.t_table_info"
 #define T_PLAYER_INFO_KEY "chips.vrsc::poker.t_player_info"
 #define T_PLAYER1_KEY "chips.vrsc::poker.t_player1"
@@ -76,6 +77,7 @@ cJSON *update_primaryaddresses(char *id, cJSON *primaryaddress);
 cJSON *get_primaryaddresses(char *id, int16_t full_id);
 cJSON *get_cmm_key_data(char *id, int16_t full_id, char *key);
 cJSON *get_id_key_data(char *id, int16_t full_id, char *key);
+void update_t_game_ids(char *id);
 cJSON *update_t_table_info(char *dealer_id, char *key, struct table t);
 struct table *get_dealers_config_table(char *dealer_id, char *table_id);
 cJSON *get_cashiers_info(char *cashier_id);

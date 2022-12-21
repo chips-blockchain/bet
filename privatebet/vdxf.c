@@ -260,6 +260,24 @@ cJSON *get_id_key_data(char *id, int16_t full_id, char *key)
 	return cmm_key_data;
 }
 
+void update_t_game_ids(char *id)
+{
+	char hexstr[65], *game_ids_info_hex = NULL;
+	cJSON *game_ids_info = NULL, *t_game_ids = NULL;
+
+	game_ids_info = cJSON_CreateArray();
+	jaddistr(game_ids_info,bits256_str(hexstr, game_id));
+	cJSON_hex(game_ids_info,&game_ids_info_hex);
+
+	t_game_ids = cJSON_CreateObject();
+	jaddstr(t_game_ids,get_vdxf_id(BYTEVECTOR_VDXF_ID),game_ids_info_hex);
+
+	dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(t_game_ids));
+	cJSON *out = update_cmm(id,t_game_ids)
+	dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(out));	
+
+}
+
 cJSON *update_t_table_info(char *dealer_id, char *key, struct table t)
 {
 	uint8_t *byte_arr = NULL;
