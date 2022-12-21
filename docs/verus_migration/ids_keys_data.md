@@ -39,28 +39,28 @@ Identities are often the addresses that can hold the tokens, ID's always ends wi
 Further, at high level we see what are all the keys that define under each ID in the namespace `poker.chips@`. Almost all the ID's in the poker ecosystem are of multiple signatures in nature, meaning they controlled by one or more primaryaddresses and some require one or more signatures to update them.
 
 #### Cashiers ID
-Address --> cashiers.poker.chips@
+Address --> `cashiers.poker.chips@`
 The keys that updates the data to this ID are
 ```
 1. chips.vrsc::poker.cashiers
 ```
 
 #### Dealers ID
-Address --> dealers.poker.chips@
+Address --> `dealers.poker.chips@`
 The keys that updates the data to this ID are
 ```
 1. chips.vrsc::poker.dealers
 ```
 
 #### Dealer ID
-Address --> <dealer_name>.poker.chips@ //Dealer provides this name at the time of registration and all dealer names end with `_d` to avoid naming conflicts, e.g `sg777_d.poker.chips@`
+Address --> `<dealer_name>.poker.chips@` //Dealer provides this name at the time of registration and all dealer names end with `_d` to avoid naming conflicts, e.g `sg777_d.poker.chips@`
 The keys that updates the data to this ID are
 ```
 1. chips.vrsc::poker.t_player_info
 ```
 
 #### Table ID
-Address --> <table_name>.poker.chips@ // Dealers can register upto 5 different table names and all table names ends with `_t` to avoid naming conflicts, e.g `sg777_t.poker.chips@`
+Address --> `<table_name>.poker.chips@` // Dealers can register upto 5 different table names and all table names ends with `_t` to avoid naming conflicts, e.g `sg777_t.poker.chips@`
 
 The keys that updates the data to this ID are
 ```
