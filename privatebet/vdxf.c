@@ -808,7 +808,7 @@ cJSON* update_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data)
 		dlg_error("%s::%d::Data type for the key::%s is not found\n", __func__, __LINE__, key);
 		return NULL;
 	}
-	data_key = get_vdxf_id(key)
+	data_key = get_vdxf_id(key);
 
 	data_obj = cJSON_CreateObject();
 	jaddstr(data_obj, data_type, hex_data);
