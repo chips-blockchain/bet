@@ -64,24 +64,24 @@ Address --> <table_name>.poker.chips@ // Dealers can register upto 5 different t
 
 The keys that updates the data to this ID are
 ```
-1. chips.vrsc::poker.games --> Holds the info of all game id's [game1, game2, ...]
+1. chips.vrsc::poker.game_ids --> Holds the info of all game id's [game_id1, game_id2, ...]
 ```
 Table is the place where on the fly keys are created.  Each game is represented by a 32 byte random number calling it as gameID and this game ID is used to generate the on the fly keys during the game and these are used to update the table ID with the game info during the game. 
 
-Lets say, for simplicity reasons we have gameID as `game1` then the following keys are generated during the game:
+Lets say, for simplicity reasons we have gameID as `game_id1` then the following keys are generated during the game:
 ```
-1. chips.vrsc::poker.t_table_info.game1
-2. chips.vrsc::poker.t_player_info.game1
-3. chips.vrsc::poker.t_player1.game1
-4. chips.vrsc::poker.t_player2.game1
-5. chips.vrsc::poker.t_player3.game1
-6. chips.vrsc::poker.t_player4.game1
-7. chips.vrsc::poker.t_player5.game1
-8. chips.vrsc::poker.t_player6.game1
-9. chips.vrsc::poker.t_player7.game1
-10. chips.vrsc::poker.t_player8.game1
-11. chips.vrsc::poker.t_player9.game1
-12. chips.vrsc::poker.t_dealer.game1
-13. chips.vrsc::poker.t_blinder.game1
+1. chips.vrsc::poker.t_table_info.game_id1
+2. chips.vrsc::poker.t_player_info.game_id1
+3. chips.vrsc::poker.t_player1.game_id1
+4. chips.vrsc::poker.t_player2.game_id1
+5. chips.vrsc::poker.t_player3.game_id1
+6. chips.vrsc::poker.t_player4.game_id1
+7. chips.vrsc::poker.t_player5.game_id1
+8. chips.vrsc::poker.t_player6.game_id1
+9. chips.vrsc::poker.t_player7.game_id1
+10. chips.vrsc::poker.t_player8.game_id1
+11. chips.vrsc::poker.t_player9.game_id1
+12. chips.vrsc::poker.t_dealer.game_id1
+13. chips.vrsc::poker.t_blinder.game_id1
 ```
-While playing `game1` all the entities update the game info using these keys to the table ID.
+While playing game with ID `game_id1` during which all the entities that participate in the game update the game info using these keys at the corresponding table ID.
