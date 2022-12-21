@@ -1,5 +1,5 @@
-Keys under a given namespace
-----------------------------
+All about ID's and Keys
+-----------------------
 Keys are ways to store the information under the identities, we encapsulate the info of a structure or JSON object and map them to the keys. For example we have an identifier named `cashiers` under `poker.chips10sec@` which holds all the cashiers info, we also define a `chips.vrsc::poker.cashier_key` where in which all the cashiers info is updated.
 
 Our aim is to have as minimum ID's as possible to handle the data for two reasons.
