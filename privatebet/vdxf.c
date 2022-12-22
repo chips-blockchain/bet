@@ -1119,7 +1119,7 @@ end:
 static cJSON *compute_updated_t_player_info(char *txid, cJSON *payin_tx_data)
 {
 	int32_t num_players = 0;
-	char *game_id_str = NULL, pa_tx_hash[128] = { 0 };
+	char *game_id_str = NULL, pa_tx_hash[128] = { 0 }, hash[20] ={0};
 	cJSON *t_player_info = NULL, *player_info = NULL, *updated_t_player_info = NULL;
 
 	game_id_str = get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),get_vdxf_id(T_GAME_ID_KEY));
