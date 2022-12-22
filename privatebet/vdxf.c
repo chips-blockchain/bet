@@ -1060,8 +1060,7 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 	struct table *t = NULL;
 
 	if ((!txid) || (!payin_tx_data)) {
-		retval = 0;
-		goto end;
+		return ERR_NO_PAYIN_DATA;
 	}
 	amount = chips_get_balance_on_address_from_tx(get_vdxf_id(CASHIERS_ID), txid);
 

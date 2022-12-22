@@ -144,6 +144,8 @@ const char *bet_err_str(int32_t err_no)
 		return "Game ID is not found";
 	case ERR_T_PLAYER_INFO_UPDATE:
 		return "Error in updating t_player_info key";
+	case ERR_NO_PAYIN_DATA:
+		return "There exists no payin tx data";
 	default:
 		return "This error is not handled yet...";
 	}
