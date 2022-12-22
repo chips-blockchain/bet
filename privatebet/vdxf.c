@@ -322,7 +322,7 @@ cJSON *update_t_table_info(char *dealer_id, char *key, struct table t)
 	init_hexbytes_noT(hexstr, byte_arr, sizeof(t));
 
 	dealer_cmm = cJSON_CreateObject();
-	cJSON_AddStringToObject(dealer_cmm, get_vdxf_id(STRING_VDXF_ID), hexstr);
+	cJSON_AddStringToObject(dealer_cmm, get_vdxf_id(BYTEVECTOR_VDXF_ID), hexstr);
 
 	dealer_cmm_key = cJSON_CreateObject();
 	cJSON_AddItemToObject(dealer_cmm_key, key, dealer_cmm);
