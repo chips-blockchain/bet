@@ -585,82 +585,13 @@ static void bet_start(int argc, char **argv)
 		if (argc == 4) {
 			do_split_tx_amount(atof(argv[2]), atoi(argv[3]));
 		}
-	} else if ((strcmp(argv[1], "extract_id_info") == 0) && (argc == 4)) {
-		cJSON *cmm = NULL;
-		if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_TABLE_INFO_KEY)) == 0) {
-			cmm = get_cmm_key_data(argv[2], 0, get_key_vdxf_id(argv[3]));
-			if (cmm) {
-				struct table *t = decode_table_info(cmm);
-				if (t) {
-					dlg_info("max_players :: %d", t->max_players);
-					dlg_info("big_blind :: %f", uint32_s_to_float(t->big_blind));
-					dlg_info("min_stake :: %f", uint32_s_to_float(t->min_stake));
-					dlg_info("max_stake :: %f", uint32_s_to_float(t->max_stake));
-					dlg_info("table_id :: %s", t->table_id);
-					dlg_info("dealer_id :: %s", t->dealer_id);
-				}
-			} else {
-				dlg_info("There isn't any data with the key ::%s(%s) on the ID::%s\n", argv[3],
-					 get_key_vdxf_id(argv[3]), argv[2]);
-			}
-		} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_PLAYER_INFO_KEY)) == 0) {
-			cmm = get_t_player_info(argv[2]);
-			dlg_info("%s::%d::id::%s::t_player_info::%s\n", __FUNCTION__, __LINE__, argv[2],
-				 cJSON_Print(cmm));
-		} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_GAME_ID_KEY)) == 0) {
-			char *str = get_str_from_id_key(argv[2], get_full_key(argv[3]));
-			dlg_info("%s::%d::%s\n", __func__, __LINE__, str);
-		} else if (strcmp(get_key_vdxf_id(argv[3]), T_PLAYER1_KEY) == 0) {
-			cmm = get_cJSON_from_id_key(argv[2], argv[3]);
-			dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(cmm));
-		} else {
-			dlg_info("The key::%s(%s), is not present in the ID::%s\n", argv[3], get_key_vdxf_id(argv[3]),
-				 argv[2]);
-		}
+	} else if ((strcmp(argv[1], "print") == 0) && (argc >= 3)) {
+		print_vdxf_info(argc,argv);
 	} else {
 		bet_command_info();
 	}
 }
 
-void test_crypto()
-{
-	struct pair256 key;
-	bits256 r1, r2, r3;
-	bits256 p, d, b, r1_dup, d_pub;
-	bits256 p_dup, d_dup;
-	char hexstr[65];
-
-	key.priv = curve25519_keypair(&key.prod);
-	r1 = card_rand256(1, 10);
-	r2 = curve25519_keypair(&d_pub);
-	r3 = rand256(1);
-
-	p = fmul_donna(r1, key.prod);
-	d = fmul_donna(p, r2);
-	b = fmul_donna(d, r3);
-
-	d_dup = fmul_donna(b, crecip_donna(r3));
-	p_dup = fmul_donna(d_dup, crecip_donna(r2));
-	r1_dup = fmul_donna(p_dup, crecip_donna(key.prod));
-
-	dlg_info("%s::%d::p::%s\n", __func__, __LINE__, bits256_str(hexstr, p));
-	dlg_info("%s::%d::d::%s\n", __func__, __LINE__, bits256_str(hexstr, d));
-	dlg_info("%s::%d::b::%s\n", __func__, __LINE__, bits256_str(hexstr, b));
-
-	dlg_info("%s::%d::p_dup %s\n", __func__, __LINE__, bits256_str(hexstr, p_dup));
-	dlg_info("%s::%d::r1_dup::%s\n", __func__, __LINE__, bits256_str(hexstr, r1_dup));
-
-	dlg_info("%s::%d::card r1 :: %d r1_dup::%d\n", __func__, __LINE__, r1.bytes[30], r1_dup.bytes[30]);
-}
-
-void test_append_t_key()
-{
-	char *id = "sg777_t";
-	cJSON *key_info = NULL;
-
-	key_info = cJSON_CreateString("Hello World");
-	append_t_key(id, T_PLAYER1_KEY, key_info);
-}
 int main(int argc, char **argv)
 {
 	//test_append_t_key();
