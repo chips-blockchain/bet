@@ -822,7 +822,7 @@ char *get_str_from_id_key_vdxfid(char *id, char *key_vdxfid)
 {
 	cJSON *cmm = NULL;
 
-	cmm = get_cmm_key_data(id, 0, get_vdxf_id(key_vdxfid));
+	cmm = get_cmm_key_data(id, 0, key_vdxfid);
 	if (cmm) {
 		return jstr(cJSON_GetArrayItem(cmm, 0), get_vdxf_id(get_key_data_type(key_vdxfid)));
 	}
