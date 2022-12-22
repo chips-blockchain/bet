@@ -28,6 +28,7 @@ void print_table_id(char *id)
 	if (game_id) {
 		dlg_info("%s::%d::game_id::%s\n", __func__, __LINE__, game_id);
 		for (int32_t i = 0; i < no_of_keys; i++) {
+			dlg_info("%s::%d::key::%s\n", get_key_data_vdxf_id(all_t_keys[i], game_id));
 			cJSON *temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(all_t_keys[i], game_id));
 			if (temp) {
 				if (strcmp(all_t_keys[i], T_TABLE_INFO_KEY) == 0)
