@@ -487,6 +487,11 @@ static void bet_start(int argc, char **argv)
 		exit(0);
 	}
 
+	if((argc == 3) && (strcmp(argv[1], "newblock") == 0)) {
+		process_block(argv[2]);
+		goto end;
+	}
+	
 	bet_parse_blockchain_config_ini_file();
 	if (strcmp(argv[1], "cashier") == 0) {
 		if (argc == 3) {
@@ -530,13 +535,6 @@ static void bet_start(int argc, char **argv)
 		   (strcmp(argv[1], "--help") == 0)) {
 		if (argc == 3) {
 			bet_help_command(argv[2]);
-		} else {
-			bet_command_info();
-		}
-	} else if (strcmp(argv[1], "newblock") == 0) {
-		if (argc == 3) {
-			dlg_info("Received new block notification for block with hash: %s...", argv[2]);
-			process_block(argv[2]);
 		} else {
 			bet_command_info();
 		}
@@ -599,6 +597,8 @@ static void bet_start(int argc, char **argv)
 	} else {
 		bet_command_info();
 	}
+	end:
+		dlg_info("%s::%d::Done",__func__,__LINE__);
 }
 
 int main(int argc, char **argv)
