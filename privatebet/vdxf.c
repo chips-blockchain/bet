@@ -521,7 +521,6 @@ int32_t find_table()
 
 	if ((t = check_if_d_t_available(player_config.dealer_id, player_config.table_id)) != NULL) {
 		memcpy((void *)&player_t, (void *)t, sizeof(player_t));
-		print_struct_table(player_t);
 		return retval;
 	} else {
 		dealer_ids = cJSON_CreateArray();

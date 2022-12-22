@@ -459,7 +459,7 @@ static int32_t handle_verus_player()
 		goto end;
 	
 	dlg_info("%s::%d::Table found\n", __func__, __LINE__);
-	print_struct_table(player_t);
+	print_struct_table(&player_t);
 	
 	if ((retval = join_table()) != OK)
 		goto end;
