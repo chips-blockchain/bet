@@ -1067,22 +1067,20 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 
 	game_id_str = get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"), get_vdxf_id(T_GAME_ID_KEY));
 	if (!game_id_str) {
-		retval = ERR_GAME_ID_NOT_FOUND;
-		goto end;
+		return ERR_GAME_ID_NOT_FOUND;
 	}
 	t = decode_table_info_from_str(get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),
 								  get_key_data_vdxf_id(T_TABLE_INFO_KEY, game_id_str)));
 	if (!t) {
-		retval = ERR_TABLE_DECODING_FAILED;
-		goto end;
+		return ERR_TABLE_DECODING_FAILED;
 	}
 	if ((amount < uint32_s_to_float(t->min_stake)) && (amount > uint32_s_to_float(t->max_stake))) {
-		retval = ERR_PAYIN_TX_INVALID_FUNDS;
 		dlg_error(
 			"%s::%d::Checks on funds deposit is failed, funds deposited ::%f should be in the range %f::%f\n",
 			__FUNCTION__, __LINE__, amount, uint32_s_to_float(t->min_stake),
 			uint32_s_to_float(t->max_stake));
-		goto end;
+	
+		return ERR_PAYIN_TX_INVALID_FUNDS;
 	}
 	t_player_info = cJSON_CreateObject();
 	t_player_info = get_cJSON_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),
@@ -1091,8 +1089,7 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 		if (jint(t_player_info, "num_players") >= t->max_players) {
 			dlg_error("%s::%d::Table ::%s is full\n", __FUNCTION__, __LINE__,
 				  jstr(payin_tx_data, "table_id"));
-			retval = ERR_TABLE_IS_FULL;
-			goto end;
+			return ERR_TABLE_IS_FULL;
 		}
 		player_info = cJSON_CreateArray();
 		player_info = cJSON_GetObjectItem(t_player_info, "player_info");
@@ -1106,18 +1103,15 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 						retval = OK;
 						break;
 					} else {
-						retval = ERR_PA_EXISTS;
-						break;
+						return ERR_PA_EXISTS;
 					}
 				} else {
-					retval = ERR_WRONG_PA_TX_ID_FORMAT;
-					break;
+					return ERR_WRONG_PA_TX_ID_FORMAT;
 				}
 			}
 		}
 	}
-
-end:
+	dlg_info("%s::%d::All payin_tx checks are passed\n", __func__, __LINE__);
 	return retval;
 }
 
@@ -1178,6 +1172,7 @@ int32_t process_payin_tx_data(char *txid, cJSON *payin_tx_data)
 	if (!updated_t_player_info)
 		return ERR_T_PLAYER_INFO_UPDATE;
 
+	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(updated_t_player_info));
 	out = update_cmm_from_id_key_data_cJSON(jstr(payin_tx_data, "table_id"),
 						get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str),
 						updated_t_player_info);
