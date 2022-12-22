@@ -56,12 +56,12 @@ end:
 int32_t bet_init_player_deck(int32_t player_id)
 {
 	int32_t retval = OK, t_player_keys_no = 9;
-	char str[129], *hexstr = NULL, player_key[256] = {0};
+	char str[129], *hexstr = NULL, player_key[256] = { 0 };
 	cJSON *cjson_player_cards = NULL, *player_deck = NULL, *cmm = NULL;
-	
-	char t_player_keys[9][128] = { T_PLAYER1_KEY, T_PLAYER2_KEY, T_PLAYER3_KEY, T_PLAYER4_KEY, T_PLAYER5_KEY, T_PLAYER6_KEY, T_PLAYER7_KEY, T_PLAYER8_KEY, T_PLAYER9_KEY };
 
-	
+	char t_player_keys[9][128] = { T_PLAYER1_KEY, T_PLAYER2_KEY, T_PLAYER3_KEY, T_PLAYER4_KEY, T_PLAYER5_KEY,
+				       T_PLAYER6_KEY, T_PLAYER7_KEY, T_PLAYER8_KEY, T_PLAYER9_KEY };
+
 	if ((player_id < 1) && (player_id > 9)) {
 		retval = ERR_INVALID_PLAYER_ID;
 		goto end;
@@ -77,15 +77,15 @@ int32_t bet_init_player_deck(int32_t player_id)
 		jaddistr(cjson_player_cards, bits256_str(str, player_info.cardpubkeys[i]));
 	}
 
-	strcpy(player_key, t_player_keys[player_id-1]);
-	strcat(player_key, get_str_from_id_key_vdxfid(player_config.table_id,T_GAME_ID_KEY));
+	strcpy(player_key, t_player_keys[player_id - 1]);
+	strcat(player_key, get_str_from_id_key_vdxfid(player_config.table_id, T_GAME_ID_KEY));
 
 	dlg_info("%s::%d::player_key::%s\n", __func__, __LINE__, player_key);
-	
-	cJSON *out = append_cmm_from_id_key_data_cJSON(player_config.table_id,player_key,player_deck);
+
+	cJSON *out = append_cmm_from_id_key_data_cJSON(player_config.table_id, player_key, player_deck);
 	dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(out));
 
-	#if 0
+#if 0
 	cJSON_hex(player_deck, &hexstr);
 	if (hexstr == NULL) {
 		retval = ERR_PLAYER_DECK_SHUFFLING;
@@ -101,7 +101,7 @@ int32_t bet_init_player_deck(int32_t player_id)
 
 	//cJSON *out = append_t_key(player_config.table_id, T_PLAYER_KEYS[player_id - 1], cmm);
 	//dlg_info("%s::%d::%s", __func__, __LINE__, cJSON_Print(out));
-	#endif
+#endif
 
 end:
 	return retval;
