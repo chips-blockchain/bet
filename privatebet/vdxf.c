@@ -693,14 +693,14 @@ struct table *decode_table_info(cJSON *dealer_cmm_data)
 	uint8_t *table_data = NULL;
 	struct table *t = NULL;
 
-	if(!dealer_cmm_data)
+	if (!dealer_cmm_data)
 		return NULL;
-	
+
 	str = jstr(cJSON_GetArrayItem(dealer_cmm_data, 0), get_vdxf_id(STRING_VDXF_ID));
 
-	if(!str)
+	if (!str)
 		return NULL;
-	
+
 	table_data = calloc(1, (strlen(str) + 1) / 2);
 	decode_hex(table_data, (strlen(str) + 1) / 2, str);
 
@@ -717,27 +717,27 @@ struct table *get_available_t_of_d(char *dealer_id)
 	struct table *t = NULL;
 	cJSON *t_player_info = NULL;
 	char *game_id_str = NULL;
-	
+
 	if (!dealer_id)
 		return NULL;
 
 	t = decode_table_info_from_str(get_str_from_id_key_vdxfid(dealer_id, get_vdxf_id(T_TABLE_INFO_KEY)));
-	if(!t)
+	if (!t)
 		return NULL;
 
-	
 	game_id_str = get_str_from_id_key_vdxfid(t->table_id, get_vdxf_id(T_GAME_ID_KEY));
-	if(!game_id_str)
+	if (!game_id_str)
 		return NULL;
 
 	t_player_info = get_cJSON_from_id_key_vdxfid(t->table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
-	if(t_player_info) {
+	if (t_player_info) {
 		dlg_info("%s::%d::Table ::%s exists and no one joined yet\n", __func__, __LINE__, t->table_id);
 		return t;
 	}
 	if ((t_player_info) && (jint(t_player_info, "num_players") < t->max_players) &&
 	    (!check_if_pa_exists(t->table_id)) && (check_if_enough_funds_avail(t->table_id))) {
-	    dlg_info("%s::%d::Table ::%s exists, %d players already joined\n", __func__, __LINE__, t->table_id, jint(t_player_info, "num_players"));
+		dlg_info("%s::%d::Table ::%s exists, %d players already joined\n", __func__, __LINE__, t->table_id,
+			 jint(t_player_info, "num_players"));
 		return t;
 	}
 	return NULL;
@@ -789,20 +789,23 @@ struct table *check_if_d_t_available(char *dealer_id, char *table_id)
 	}
 	if (is_dealer_exists(dealer_id)) {
 		t = decode_table_info_from_str(get_str_from_id_key_vdxfid(dealer_id, get_vdxf_id(T_TABLE_INFO_KEY)));
-		if(!t)
+		if (!t)
 			return NULL;
 		if ((0 == strcmp(t->table_id, table_id))) {
 			game_id_str = get_str_from_id_key_vdxfid(t->table_id, get_vdxf_id(T_GAME_ID_KEY));
-			if(!game_id_str)
+			if (!game_id_str)
 				return NULL;
-			t_player_info = get_cJSON_from_id_key_vdxfid(t->table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
+			t_player_info = get_cJSON_from_id_key_vdxfid(
+				t->table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
 			if (!t_player_info) {
-				dlg_info("%s::%d:: Table::%s is available and is all empty\n", __func__, __LINE__,table_id);
+				dlg_info("%s::%d:: Table::%s is available and is all empty\n", __func__, __LINE__,
+					 table_id);
 				return t; //Table is available but empty.
 			}
 			if ((t_player_info) && (jint(t_player_info, "num_players") < t->max_players) &&
 			    (!check_if_pa_exists(t->table_id)) && (check_if_enough_funds_avail(t->table_id))) {
-   				dlg_info("%s::%d:: Table::%s is available and is partially occupied\n", __func__, __LINE__,table_id);
+				dlg_info("%s::%d:: Table::%s is available and is partially occupied\n", __func__,
+					 __LINE__, table_id);
 				return t; //Table is available but some spots are free to join.
 			}
 		}
@@ -1062,12 +1065,13 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 	}
 	amount = chips_get_balance_on_address_from_tx(get_vdxf_id(CASHIERS_ID), txid);
 
-	game_id_str = get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),get_vdxf_id(T_GAME_ID_KEY));
-	if(!game_id_str) {
+	game_id_str = get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"), get_vdxf_id(T_GAME_ID_KEY));
+	if (!game_id_str) {
 		retval = ERR_GAME_ID_NOT_FOUND;
 		goto end;
 	}
-	t = decode_table_info_from_str(get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"), get_key_data_vdxf_id(T_TABLE_INFO_KEY,game_id_str)));
+	t = decode_table_info_from_str(get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),
+								  get_key_data_vdxf_id(T_TABLE_INFO_KEY, game_id_str)));
 	if (!t) {
 		retval = ERR_TABLE_DECODING_FAILED;
 		goto end;
@@ -1081,7 +1085,8 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 		goto end;
 	}
 	t_player_info = cJSON_CreateObject();
-	t_player_info = get_cJSON_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"), get_key_data_vdxf_id(T_PLAYER_INFO_KEY,game_id_str));
+	t_player_info = get_cJSON_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),
+						     get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
 	if (t_player_info) {
 		if (jint(t_player_info, "num_players") >= t->max_players) {
 			dlg_error("%s::%d::Table ::%s is full\n", __FUNCTION__, __LINE__,
@@ -1119,19 +1124,20 @@ end:
 static cJSON *compute_updated_t_player_info(char *txid, cJSON *payin_tx_data)
 {
 	int32_t num_players = 0;
-	char *game_id_str = NULL, pa_tx_hash[128] = { 0 }, hash[20] ={0};
+	char *game_id_str = NULL, pa_tx_hash[128] = { 0 }, hash[20] = { 0 };
 	cJSON *t_player_info = NULL, *player_info = NULL, *updated_t_player_info = NULL;
 
-	game_id_str = get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),get_vdxf_id(T_GAME_ID_KEY));
-	if(!game_id_str)
+	game_id_str = get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"), get_vdxf_id(T_GAME_ID_KEY));
+	if (!game_id_str)
 		return NULL;
-	
-	t_player_info = get_cJSON_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
+
+	t_player_info = get_cJSON_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),
+						     get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
 	player_info = cJSON_CreateArray();
-	if(t_player_info) { 
-		num_players = jint(t_player_info, "num_players");		
-		player_info = cJSON_GetObjectItem(t_player_info, "player_info");	
-		if(!player_info)
+	if (t_player_info) {
+		num_players = jint(t_player_info, "num_players");
+		player_info = cJSON_GetObjectItem(t_player_info, "player_info");
+		if (!player_info)
 			return NULL;
 	}
 	num_players++;
@@ -1145,46 +1151,45 @@ static cJSON *compute_updated_t_player_info(char *txid, cJSON *payin_tx_data)
 	dlg_info("%s::%d::updated_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(updated_t_player_info));
 
 	return updated_t_player_info;
-}	
+}
 
 int32_t process_payin_tx_data(char *txid, cJSON *payin_tx_data)
 {
 	int32_t retval = OK;
 	char *game_id_str = NULL;
 	cJSON *updated_t_player_info = NULL, *pa_arr = NULL, *out = NULL;
-	
+
 	retval = do_payin_tx_checks(txid, payin_tx_data);
 	if (retval != OK) {
 		//Depositing funds back to the player
-		dlg_error("%s::%d::Err:: %s, Reversing the tx\n", __FUNCTION__, __LINE__,
-			  bet_err_str(retval));
-		double amount = chips_get_balance_on_address_from_tx(
-			get_vdxf_id(CASHIERS_ID), txid);
+		dlg_error("%s::%d::Err:: %s, Reversing the tx\n", __FUNCTION__, __LINE__, bet_err_str(retval));
+		double amount = chips_get_balance_on_address_from_tx(get_vdxf_id(CASHIERS_ID), txid);
 		cJSON *tx = chips_transfer_funds(amount, jstr(payin_tx_data, "primaryaddress"));
-		dlg_warn("%s::%d::Tx deposited back to the players primaryaddress::%s\n", __func__,
-			 __LINE__, cJSON_Print(tx));
+		dlg_warn("%s::%d::Tx deposited back to the players primaryaddress::%s\n", __func__, __LINE__,
+			 cJSON_Print(tx));
 		return retval;
 	}
 
-	game_id_str = get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),get_vdxf_id(T_GAME_ID_KEY));
-	if(!game_id_str)
+	game_id_str = get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"), get_vdxf_id(T_GAME_ID_KEY));
+	if (!game_id_str)
 		return ERR_GAME_ID_NOT_FOUND;
-			
+
 	updated_t_player_info = compute_updated_t_player_info(txid, payin_tx_data);
-	if(!updated_t_player_info)
+	if (!updated_t_player_info)
 		return ERR_T_PLAYER_INFO_UPDATE;
 
-	out = update_cmm_from_id_key_data_cJSON(jstr(payin_tx_data, "table_id"),get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str),updated_t_player_info);
+	out = update_cmm_from_id_key_data_cJSON(jstr(payin_tx_data, "table_id"),
+						get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str),
+						updated_t_player_info);
 	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(out));
-	
-		
+
 	pa_arr = cJSON_CreateArray();
 	pa_arr = get_primaryaddresses(jstr(payin_tx_data, "table_id"), 0);
 
 	jaddistr(pa_arr, jstr(payin_tx_data, "primaryaddress"));
 	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(pa_arr));
 
-	out = update_primaryaddresses(jstr(payin_tx_data, "table_id"),pa_arr);
+	out = update_primaryaddresses(jstr(payin_tx_data, "table_id"), pa_arr);
 	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(out));
 
 	return retval;
@@ -1192,10 +1197,10 @@ int32_t process_payin_tx_data(char *txid, cJSON *payin_tx_data)
 
 void process_block(char *blockhash)
 {
-	int32_t blockcount =0, retval = OK;
+	int32_t blockcount = 0, retval = OK;
 	char verus_addr[1][100] = { CASHIERS_ID };
 	cJSON *blockjson = NULL, *payin_tx_data = NULL;
-	
+
 	blockjson = cJSON_CreateObject();
 	blockjson = chips_get_block_from_block_hash(blockhash);
 
@@ -1205,8 +1210,7 @@ void process_block(char *blockhash)
 	blockcount = jint(blockjson, "height");
 	if (blockcount <= 0)
 		goto end;
-	
-	
+
 	dlg_info("%s: received blockhash, found at height = %d", __func__, blockcount);
 	cJSON *argjson = cJSON_CreateObject();
 	argjson = getaddressutxos(verus_addr, 1);
@@ -1215,17 +1219,16 @@ void process_block(char *blockhash)
 		if (jint(cJSON_GetArrayItem(argjson, i), "height") == blockcount) {
 			dlg_info("%s::%d::tx_id::%s\n", __func__, __LINE__,
 				 jstr(cJSON_GetArrayItem(argjson, i), "txid"));
-			payin_tx_data = chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));	
-			if(!payin_tx_data)
+			payin_tx_data = chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
+			if (!payin_tx_data)
 				continue;
 			retval = process_payin_tx_data(jstr(cJSON_GetArrayItem(argjson, i), "txid"), payin_tx_data);
-			if(retval != OK) {
+			if (retval != OK) {
 				dlg_error("%s::%d::err:%s\n", __func__, __LINE__, bet_err_str(retval));
 				retval = OK;
-			}	
-		
+			}
 		}
-	}	
-	end:
-		dlg_info("%s::%d::Done\n", __func__, __LINE__);		
+	}
+end:
+	dlg_info("%s::%d::Done\n", __func__, __LINE__);
 }
