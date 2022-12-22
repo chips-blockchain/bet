@@ -40,4 +40,3 @@ void test_append_t_key()
 	key_info = cJSON_CreateString("Hello World");
 	append_t_key(id, T_PLAYER1_KEY, key_info);
 }
-
