@@ -454,13 +454,13 @@ static int32_t handle_verus_player()
 
 	playing_nodes_init();
 	bet_parse_verus_player();
-	
+
 	if ((retval = find_table()) != OK)
 		goto end;
-	
+
 	dlg_info("%s::%d::Table found\n", __func__, __LINE__);
 	print_struct_table(&player_t);
-	
+
 	if ((retval = join_table()) != OK)
 		goto end;
 	dlg_info("%s::%d::Table Joined\n", __func__, __LINE__);
