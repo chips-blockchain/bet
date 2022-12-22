@@ -7,6 +7,7 @@
 void print_struct_table(struct table *t)
 {
 	if (t) {
+		dlg_info("Table Info\n");
 		dlg_info("max_players :: %d", t->max_players);
 		dlg_info("big_blind :: %f", uint32_s_to_float(t->big_blind));
 		dlg_info("min_stake :: %f", uint32_s_to_float(t->min_stake));

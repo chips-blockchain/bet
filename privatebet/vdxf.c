@@ -513,15 +513,15 @@ end:
 	return retval;
 }
 
-int32_t get_table()
+int32_t find_table()
 {
 	int32_t retval = OK;
 	struct table *t = NULL;
 	cJSON *dealer_ids = NULL;
 
-	if (check_if_d_t_available(player_config.dealer_id, player_config.table_id)) {
-		t = get_t_table_info(player_config.dealer_id);
+	if ((t = check_if_d_t_available(player_config.dealer_id, player_config.table_id)) != NULL) {
 		memcpy((void *)&player_t, (void *)t, sizeof(player_t));
+		print_struct_table(player_t);
 		return retval;
 	} else {
 		dealer_ids = cJSON_CreateArray();
@@ -540,27 +540,6 @@ int32_t get_table()
 		}
 	}
 	retval = ERR_NO_TABLES_FOUND;
-	return retval;
-}
-
-int32_t find_table()
-{
-	cJSON *dealer_ids = NULL;
-	struct table *t = NULL;
-	int32_t retval = OK;
-
-	//TODO: check for pa, check for funds, check for num_players
-	//If the user didn't configured any dealer_id, then take the first dealer id available.
-	if ((retval = get_table()) != OK) {
-		return retval;
-	}
-	dlg_info(
-		"%s::%d::Table_info:: max_players :: %d,  big_blind :: %f, min_stake :: %f, max_stake :: %f, table_id :: %s, dealer_id :: %s\n",
-		__func__, __LINE__, player_t.max_players, uint32_s_to_float(player_t.big_blind),
-		uint32_s_to_float(player_t.min_stake), uint32_s_to_float(player_t.max_stake), player_t.table_id,
-		player_t.dealer_id);
-
-end:
 	return retval;
 }
 
@@ -713,8 +692,14 @@ struct table *decode_table_info(cJSON *dealer_cmm_data)
 	uint8_t *table_data = NULL;
 	struct table *t = NULL;
 
+	if(!dealer_cmm_data)
+		return NULL;
+	
 	str = jstr(cJSON_GetArrayItem(dealer_cmm_data, 0), get_vdxf_id(STRING_VDXF_ID));
 
+	if(!str)
+		return NULL;
+	
 	table_data = calloc(1, (strlen(str) + 1) / 2);
 	decode_hex(table_data, (strlen(str) + 1) / 2, str);
 
@@ -730,17 +715,29 @@ struct table *get_available_t_of_d(char *dealer_id)
 	int32_t retval = OK;
 	struct table *t = NULL;
 	cJSON *t_player_info = NULL;
-
-	if (NULL == dealer_id) {
+	char *game_id_str = NULL;
+	
+	if (!dealer_id)
 		return NULL;
+
+	t = decode_table_info_from_str(get_str_from_id_key_vdxfid(dealer_id, get_vdxf_id(T_TABLE_INFO_KEY)));
+	if(!t)
+		return NULL;
+
+	
+	game_id_str = get_str_from_id_key_vdxfid(t->table_id, get_vdxf_id(T_GAME_ID_KEY));
+	if(!game_id_str)
+		return NULL;
+
+	t_player_info = get_cJSON_from_id_key_vdxfid(t->table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
+	if(t_player_info) {
+		dlg_info("%s::%d::Table ::%s exists and no one joined yet\n", __func__, __LINE__, t->table_id);
+		return t;
 	}
-	t = get_t_table_info(dealer_id);
-	if (t) {
-		t_player_info = get_t_player_info(t->table_id);
-		if ((t_player_info) && (jint(t_player_info, "num_players") < t->max_players) &&
-		    (!check_if_pa_exists(t->table_id)) && (check_if_enough_funds_avail(t->table_id))) {
-			return t;
-		}
+	if ((t_player_info) && (jint(t_player_info, "num_players") < t->max_players) &&
+	    (!check_if_pa_exists(t->table_id)) && (check_if_enough_funds_avail(t->table_id))) {
+	    dlg_info("%s::%d::Table ::%s exists, %d players already joined\n", __func__, __LINE__, t->table_id, jint(t_player_info, "num_players"));
+		return t;
 	}
 	return NULL;
 }
@@ -779,29 +776,37 @@ bool check_if_enough_funds_avail(char *table_id)
 	return false;
 }
 
-bool check_if_d_t_available(char *dealer_id, char *table_id)
+struct table *check_if_d_t_available(char *dealer_id, char *table_id)
 {
 	int32_t err_no = OK;
 	struct table *t = NULL;
 	cJSON *t_player_info = NULL;
+	char *game_id_str = NULL
 
 	if ((NULL == dealer_id) || (NULL == table_id)) {
-		return false;
+		return NULL;
 	}
 	if (is_dealer_exists(dealer_id)) {
-		t = get_t_table_info(dealer_id);
-		if ((t) && (0 == strcmp(t->table_id, table_id))) {
-			t_player_info = get_t_player_info(t->table_id);
-			if (t_player_info == NULL) {
-				return true; //Table is available but empty.
+		t = decode_table_info_from_str(get_str_from_id_key_vdxfid(dealer_id, get_vdxf_id(T_TABLE_INFO_KEY)));
+		if(!t)
+			return NULL;
+		if ((0 == strcmp(t->table_id, table_id))) {
+			game_id_str = get_str_from_id_key_vdxfid(t->table_id, get_vdxf_id(T_GAME_ID_KEY));
+			if(!game_id_str)
+				return NULL;
+			t_player_info = get_cJSON_from_id_key_vdxfid(t->table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
+			if (!t_player_info) {
+				dlg_info("%s::%d:: Table::%s is available and is all empty\n", __func__, __LINE__,table_id);
+				return t; //Table is available but empty.
 			}
 			if ((t_player_info) && (jint(t_player_info, "num_players") < t->max_players) &&
 			    (!check_if_pa_exists(t->table_id)) && (check_if_enough_funds_avail(t->table_id))) {
-				return true; //Table is available but some spots are free to join.
+   				dlg_info("%s::%d:: Table::%s is available and is partially occupied\n", __func__, __LINE__,table_id);
+				return t; //Table is available but some spots are free to join.
 			}
 		}
 	}
-	return false;
+	return NULL;
 }
 
 /*
