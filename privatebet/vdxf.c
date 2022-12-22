@@ -689,6 +689,24 @@ end:
 	return argjson;
 }
 
+struct table *decode_table_info_from_str(char *str)
+{
+	uint8_t *table_data = NULL;
+	struct table *t = NULL;
+
+	if(str == NULL)
+		return NULL;
+	
+	table_data = calloc(1, (strlen(str) + 1) / 2);
+	decode_hex(table_data, (strlen(str) + 1) / 2, str);
+
+	t = calloc(1, sizeof(struct table));
+	t = (struct table *)table_data;
+
+end:
+	return t;
+}
+
 struct table *decode_table_info(cJSON *dealer_cmm_data)
 {
 	char *str = NULL;
@@ -796,6 +814,17 @@ char *get_str_from_id_key(char *id, char *key)
 	cmm = get_cmm_key_data(id, 0, get_vdxf_id(key));
 	if (cmm) {
 		return jstr(cJSON_GetArrayItem(cmm, 0), get_vdxf_id(get_key_data_type(key)));
+	}
+	return NULL;
+}
+
+char *get_str_from_id_key_vdxfid(char *id, char *key_vdxfid)
+{
+	cJSON *cmm = NULL;
+
+	cmm = get_cmm_key_data(id, 0, get_vdxf_id(key_vdxfid));
+	if (cmm) {
+		return jstr(cJSON_GetArrayItem(cmm, 0), get_vdxf_id(get_key_data_type(key_vdxfid)));
 	}
 	return NULL;
 }
