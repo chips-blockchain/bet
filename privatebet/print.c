@@ -2,7 +2,7 @@
 #include "common.h"
 #include "misc.h"
 #include "vdxf.h"
-#include "display.h"
+#include "print.h"
 
 void print_struct_table(struct table *t)
 {
