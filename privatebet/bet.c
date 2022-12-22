@@ -487,11 +487,11 @@ static void bet_start(int argc, char **argv)
 		exit(0);
 	}
 
-	if((argc == 3) && (strcmp(argv[1], "newblock") == 0)) {
+	if ((argc == 3) && (strcmp(argv[1], "newblock") == 0)) {
 		process_block(argv[2]);
 		goto end;
 	}
-	
+
 	bet_parse_blockchain_config_ini_file();
 	if (strcmp(argv[1], "cashier") == 0) {
 		if (argc == 3) {
@@ -597,8 +597,8 @@ static void bet_start(int argc, char **argv)
 	} else {
 		bet_command_info();
 	}
-	end:
-		dlg_info("%s::%d::Done",__func__,__LINE__);
+end:
+	dlg_info("%s::%d::Done", __func__, __LINE__);
 }
 
 int main(int argc, char **argv)

@@ -1078,7 +1078,7 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 			"%s::%d::Checks on funds deposit is failed, funds deposited ::%f should be in the range %f::%f\n",
 			__FUNCTION__, __LINE__, amount, uint32_s_to_float(t->min_stake),
 			uint32_s_to_float(t->max_stake));
-	
+
 		return ERR_PAYIN_TX_INVALID_FUNDS;
 	}
 	t_player_info = cJSON_CreateObject();
