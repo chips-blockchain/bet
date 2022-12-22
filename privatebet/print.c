@@ -29,7 +29,7 @@ void print_table_id(char *id)
 		for(int32_t i=0; i<no_of_keys; i++){
 			cJSON *temp = get_cJSON_from_id_key(id,get_key_data_vdxf_id(all_t_keys[i], game_id));
 			if(temp) {
-				dlg_info("%s::%d::key::%s::value::%s\n", __func__, __LINE__, all_t_keys[i], temp);
+				dlg_info("%s::%d::key::%s::value::%s\n", __func__, __LINE__, all_t_keys[i], cJSON_Print(temp));
 			}
 		}	
 		
