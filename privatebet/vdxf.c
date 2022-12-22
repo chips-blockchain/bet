@@ -781,7 +781,7 @@ struct table *check_if_d_t_available(char *dealer_id, char *table_id)
 	int32_t err_no = OK;
 	struct table *t = NULL;
 	cJSON *t_player_info = NULL;
-	char *game_id_str = NULL
+	char *game_id_str = NULL;
 
 	if ((NULL == dealer_id) || (NULL == table_id)) {
 		return NULL;
