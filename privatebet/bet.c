@@ -456,15 +456,19 @@ static int32_t handle_verus_player()
 	bet_parse_verus_player();
 	if ((retval = find_table()) != OK)
 		goto end;
+	dlg_info("%s::%d::Table found\n", __func__, __LINE__);
 	if ((retval = join_table()) != OK)
 		goto end;
+	dlg_info("%s::%d::Table Joined\n", __func__, __LINE__);
 	if ((retval = get_player_id(&player_config.player_id)) != OK) {
 		goto end;
 	}
+	dlg_info("%s::%d::Player ID ::%d\n", __func__, __LINE__, player_config.player_id);
 #if 1
 	if ((retval = bet_init_player_deck(player_config.player_id)) != OK) {
 		goto end;
 	}
+	dlg_info("%s::%d::Player deck shuffling info updated to table\n", __func__, __LINE__);
 #endif
 end:
 	if (retval)
