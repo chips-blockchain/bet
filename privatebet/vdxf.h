@@ -110,5 +110,5 @@ cJSON *update_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data);
 struct table *get_t_table_info(char *id);
 cJSON *get_t_player_info(char *table_id);
 cJSON *update_t_player_info(char *id, cJSON *t_player_info);
-int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid);
+int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data);
 void process_block(char *block_hash);
