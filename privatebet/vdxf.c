@@ -694,9 +694,9 @@ struct table *decode_table_info_from_str(char *str)
 	uint8_t *table_data = NULL;
 	struct table *t = NULL;
 
-	if(str == NULL)
+	if (str == NULL)
 		return NULL;
-	
+
 	table_data = calloc(1, (strlen(str) + 1) / 2);
 	decode_hex(table_data, (strlen(str) + 1) / 2, str);
 
