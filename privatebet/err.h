@@ -106,6 +106,7 @@ All the errors that come across in bet are defined here. The error numbers are a
 #define ERR_PLAYER_DECK_SHUFFLING		119
 #define ERR_GAME_ID_NOT_FOUND			120
 #define ERR_T_PLAYER_INFO_UPDATE		121
+#define ERR_NO_PAYIN_DATA				122
 
 // clang-format on
 const char *bet_err_str(int32_t err_no);
