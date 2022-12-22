@@ -28,10 +28,8 @@ void print_table_id(char *id)
 	if (game_id) {
 		dlg_info("%s::%d::game_id::%s\n", __func__, __LINE__, game_id);
 		for (int32_t i = 0; i < no_of_keys; i++) {
-			dlg_info("%s::%d::key::%s\n", __func__, __LINE__, get_key_data_vdxf_id(all_t_keys[i], game_id));
 			if (strcmp(all_t_keys[i], T_TABLE_INFO_KEY) == 0) {
 				char *str = get_str_from_id_key_vdxfid(id, get_key_data_vdxf_id(all_t_keys[i], game_id));
-				dlg_info("%s::%d::str::%s\n", __func__, __LINE__, str);	
 				print_struct_table(decode_table_info_from_str(str));
 			}
 			cJSON *temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(all_t_keys[i], game_id));
@@ -48,29 +46,19 @@ void print_table_id(char *id)
 
 void print_vdxf_info(int argc, char **argv)
 {
+	char *str = NULL;
 	cJSON *cmm = NULL;
 
 	if (argc == 3) {
 		print_table_id(argv[2]);
 	} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_TABLE_INFO_KEY)) == 0) {
-		
-		char *str = get_str_from_id_key_vdxfid(argv[2], get_key_vdxf_id(argv[3]));
-		dlg_info("%s::%d::str::%s\n", __func__, __LINE__, str); 
+		str = get_str_from_id_key_vdxfid(argv[2], get_key_vdxf_id(argv[3]));
 		print_struct_table(decode_table_info_from_str(str));
-		#if 0	
-		cmm = get_cmm_key_data(argv[2], 0, get_key_vdxf_id(argv[3]));
-		if (cmm) {
-			print_struct_table(decode_table_info(cmm));
-		} else {
-			dlg_info("There isn't any data with the key ::%s(%s) on the ID::%s\n", argv[3],
-				 get_key_vdxf_id(argv[3]), argv[2]);
-		}
-		#endif
 	} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_PLAYER_INFO_KEY)) == 0) {
 		cmm = get_t_player_info(argv[2]);
 		dlg_info("%s::%d::id::%s::t_player_info::%s\n", __FUNCTION__, __LINE__, argv[2], cJSON_Print(cmm));
 	} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_GAME_ID_KEY)) == 0) {
-		char *str = get_str_from_id_key(argv[2], get_full_key(argv[3]));
+		str = get_str_from_id_key(argv[2], get_full_key(argv[3]));
 		dlg_info("%s::%d::%s\n", __func__, __LINE__, str);
 	} else if (strcmp(get_key_vdxf_id(argv[3]), T_PLAYER1_KEY) == 0) {
 		cmm = get_cJSON_from_id_key(argv[2], argv[3]);
