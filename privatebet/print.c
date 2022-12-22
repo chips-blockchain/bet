@@ -33,7 +33,7 @@ void print_table_id(char *id)
 				if(strcmp(all_t_keys[i], T_TABLE_INFO_KEY) == 0)
 					print_struct_table(decode_table_info(temp));
 				else
-					dlg_info("%s::%d::key::%s::value::%s\n", __func__, __LINE__, all_t_keys[i], temp);
+					dlg_info("%s::%d::key::%s::value::%s\n", __func__, __LINE__, all_t_keys[i], cJSON_Print(temp));
 					
 			}
 		}	
