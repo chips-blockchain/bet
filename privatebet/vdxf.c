@@ -1050,8 +1050,8 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 {
 	int32_t retval = OK;
 	double amount = 0;
-	char pa_tx_hash[10] = { 0 }, pa[128] = { 0 };
-	cJSON *t_table_info = NULL, *primaryaddresses = NULL, *t_player_info = NULL, *player_info = NULL;
+	char pa_tx_hash[10] = { 0 }, pa[128] = { 0 }, *game_id_str = NULL;
+	cJSON *primaryaddresses = NULL, *t_player_info = NULL, *player_info = NULL;
 	struct table *t = NULL;
 
 	if ((!txid) || (!payin_tx_data)) {
@@ -1059,16 +1059,15 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 		goto end;
 	}
 	amount = chips_get_balance_on_address_from_tx(get_vdxf_id(CASHIERS_ID), txid);
-	t_table_info = cJSON_CreateObject();
-	t_table_info = get_cmm_key_data(jstr(payin_tx_data, "table_id"), 0, get_vdxf_id(T_TABLE_INFO_KEY));
-	if (t_table_info == NULL) {
-		retval = ERR_T_TABLE_INFO_NULL;
+
+	game_id_str = get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),get_vdxf_id(T_GAME_ID_KEY));
+	if(!game_id_str) {
+		retval = ERR_GAME_ID_NOT_FOUND;
 		goto end;
 	}
-	t = decode_table_info(t_table_info);
-	if (t == NULL) {
+	t = decode_table_info_from_str(get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"), get_key_data_vdxf_id(T_TABLE_INFO_KEY,game_id_str)));
+	if (!t) {
 		retval = ERR_TABLE_DECODING_FAILED;
-		retval = 0;
 		goto end;
 	}
 	if ((amount < uint32_s_to_float(t->min_stake)) && (amount > uint32_s_to_float(t->max_stake))) {
@@ -1080,7 +1079,7 @@ int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
 		goto end;
 	}
 	t_player_info = cJSON_CreateObject();
-	t_player_info = get_t_player_info(jstr(payin_tx_data, "table_id"));
+	t_player_info = get_cJSON_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"), get_key_data_vdxf_id(T_PLAYER_INFO_KEY,game_id_str));
 	if (t_player_info) {
 		if (jint(t_player_info, "num_players") >= t->max_players) {
 			dlg_error("%s::%d::Table ::%s is full\n", __FUNCTION__, __LINE__,

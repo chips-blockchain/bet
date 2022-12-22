@@ -140,6 +140,8 @@ const char *bet_err_str(int32_t err_no)
 		return "Invalid player id";
 	case ERR_PLAYER_DECK_SHUFFLING:
 		return "Error occured in player deck shuffling";
+	case ERR_GAME_ID_NOT_FOUND:
+		return "Game ID is not found";
 	default:
 		return "This error is not handled yet...";
 	}
