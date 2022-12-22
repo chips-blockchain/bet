@@ -34,6 +34,7 @@
 #include "switchs.h"
 #include "vdxf.h"
 #include "player.h"
+#include "print.h"
 
 #include <netinet/in.h>
 #include <stdio.h>
