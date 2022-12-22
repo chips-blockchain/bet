@@ -111,4 +111,4 @@ struct table *get_t_table_info(char *id);
 cJSON *get_t_player_info(char *table_id);
 cJSON *update_t_player_info(char *id, cJSON *t_player_info);
 int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid);
-void test_loop(char *block_hash);
+void process_block(char *block_hash);

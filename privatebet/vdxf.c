@@ -252,6 +252,8 @@ cJSON *get_primaryaddresses(char *id, int16_t full_id)
 	pa = cJSON_CreateArray();
 	pa = cJSON_GetObjectItem(id_obj, "primaryaddresses");
 
+	pa->next = NULL;
+
 end:
 	bet_dealloc_args(argc, &argv);
 	return pa;
@@ -1046,7 +1048,7 @@ end:
 	return argjson;
 }
 
-int32_t do_payin_tx_checks(cJSON *payin_tx_data, char *txid)
+int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 {
 	int32_t retval = OK;
 	double amount = 0;
@@ -1114,44 +1116,86 @@ end:
 	return retval;
 }
 
-static cJSON *add_player_t_player_info(char *txid, cJSON *payin_tx_data)
+static cJSON *compute_updated_t_player_info(char *txid, cJSON *payin_tx_data)
 {
 	int32_t num_players = 0;
-	char hash[10] = { 0 }, pa_tx_hash[128] = { 0 };
+	char *game_id_str = NULL, pa_tx_hash[128] = { 0 };
 	cJSON *t_player_info = NULL, *player_info = NULL, *updated_t_player_info = NULL;
 
-	updated_t_player_info = cJSON_CreateObject();
+	game_id_str = get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),get_vdxf_id(T_GAME_ID_KEY));
+	if(!game_id_str)
+		return NULL;
+	
+	t_player_info = get_cJSON_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
 	player_info = cJSON_CreateArray();
-	t_player_info = get_t_player_info(jstr(payin_tx_data, "table_id"));
-	if (t_player_info) {
-		dlg_info("%s::%d::t_player_info::%s\n", __func__, __LINE__, cJSON_Print(t_player_info));
-		num_players = jint(t_player_info, "num_players");
-		player_info = cJSON_GetObjectItem(t_player_info, "player_info");
-		if (player_info == NULL) {
-			dlg_error("%s::%d::Players info was not updated properly\n", __FUNCTION__, __LINE__);
-		}
+	if(t_player_info) { 
+		num_players = jint(t_player_info, "num_players");		
+		player_info = cJSON_GetObjectItem(t_player_info, "player_info");	
+		if(!player_info)
+			return NULL;
 	}
 	num_players++;
 	strncpy(hash, txid, 4);
 	sprintf(pa_tx_hash, "%s_%s_%d", jstr(payin_tx_data, "primaryaddress"), hash, num_players);
-	if (player_info == NULL)
-		player_info = cJSON_CreateArray();
 	jaddistr(player_info, pa_tx_hash);
-	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(player_info));
+
+	updated_t_player_info = cJSON_CreateObject();
 	cJSON_AddNumberToObject(updated_t_player_info, "num_players", num_players);
 	cJSON_AddItemToObject(updated_t_player_info, "player_info", player_info);
-
 	dlg_info("%s::%d::updated_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(updated_t_player_info));
+
 	return updated_t_player_info;
+}	
+
+int32_t process_payin_tx_data(char *txid, cJSON *payin_tx_data)
+{
+	int32_t retval = OK;
+	char *game_id_str = NULL;
+	cJSON *updated_t_player_info = NULL, *pa_arr = NULL, *out = NULL;
+	
+	retval = do_payin_tx_checks(txid, payin_tx_data);
+	if (retval != OK) {
+		//Depositing funds back to the player
+		dlg_error("%s::%d::Err:: %s, Reversing the tx\n", __FUNCTION__, __LINE__,
+			  bet_err_str(retval));
+		double amount = chips_get_balance_on_address_from_tx(
+			get_vdxf_id(CASHIERS_ID), txid);
+		cJSON *tx = chips_transfer_funds(amount, jstr(payin_tx_data, "primaryaddress"));
+		dlg_warn("%s::%d::Tx deposited back to the players primaryaddress::%s\n", __func__,
+			 __LINE__, cJSON_Print(tx));
+		return retval;
+	}
+
+	game_id_str = get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),get_vdxf_id(T_GAME_ID_KEY));
+	if(!game_id_str)
+		return ERR_GAME_ID_NOT_FOUND;
+			
+	updated_t_player_info = compute_updated_t_player_info(txid, payin_tx_data);
+	if(!updated_t_player_info)
+		return ERR_T_PLAYER_INFO_UPDATE;
+
+	out = update_cmm_from_id_key_data_cJSON(jstr(payin_tx_data, "table_id"),get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str),updated_t_player_info);
+	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(out));
+	
+		
+	pa_arr = cJSON_CreateArray();
+	pa_arr = get_primaryaddresses(jstr(payin_tx_data, "table_id"), 0);
+
+	jaddistr(pa_arr, jstr(payin_tx_data, "primaryaddress"));
+	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(pa_arr));
+
+	out = update_primaryaddresses(jstr(payin_tx_data, "table_id"),pa_arr);
+	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(out));
+
+	return retval;
 }
 
-void test_loop(char *blockhash)
+void process_block(char *blockhash)
 {
-	dlg_info("%s called!", __FUNCTION__);
+	int32_t blockcount =0, retval = OK;
 	char verus_addr[1][100] = { CASHIERS_ID };
-	int32_t blockcount = 0, retval = OK;
-	cJSON *blockjson = NULL, *t_player_info = NULL, *primaryaddress = NULL, *payin_tx_data = NULL;
-
+	cJSON *blockjson = NULL, *payin_tx_data = NULL;
+	
 	blockjson = cJSON_CreateObject();
 	blockjson = chips_get_block_from_block_hash(blockhash);
 
@@ -1161,49 +1205,27 @@ void test_loop(char *blockhash)
 	blockcount = jint(blockjson, "height");
 	if (blockcount <= 0)
 		goto end;
-
-	dlg_info("%s: received blockhash in test_loop, found at height = %d", __FUNCTION__, blockcount);
+	
+	
+	dlg_info("%s: received blockhash, found at height = %d", __func__, blockcount);
 	cJSON *argjson = cJSON_CreateObject();
 	argjson = getaddressutxos(verus_addr, 1);
 
-	t_player_info = cJSON_CreateObject();
 	for (int32_t i = 0; i < cJSON_GetArraySize(argjson); i++) {
 		if (jint(cJSON_GetArrayItem(argjson, i), "height") == blockcount) {
-			dlg_info("%s::%d::tx_id::%s\n", __FUNCTION__, __LINE__,
+			dlg_info("%s::%d::tx_id::%s\n", __func__, __LINE__,
 				 jstr(cJSON_GetArrayItem(argjson, i), "txid"));
-			payin_tx_data = chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
-			if (payin_tx_data == NULL) {
-				goto end;
-			}
-			retval = do_payin_tx_checks(payin_tx_data, jstr(cJSON_GetArrayItem(argjson, i), "txid"));
-			if (retval != OK) {
-				dlg_error("%s::%d::Err:: %s, Reversing the tx\n", __FUNCTION__, __LINE__,
-					  bet_err_str(retval));
-				double amount = chips_get_balance_on_address_from_tx(
-					get_vdxf_id(CASHIERS_ID), jstr(cJSON_GetArrayItem(argjson, i), "txid"));
-				cJSON *tx = chips_transfer_funds(amount, jstr(payin_tx_data, "primaryaddress"));
-				dlg_warn("%s::%d::Tx deposited back to the players primaryaddress::%s\n", __func__,
-					 __LINE__, cJSON_Print(tx));
-				goto end;
-			}
-			cJSON *updated_player_info =
-				add_player_t_player_info(jstr(cJSON_GetArrayItem(argjson, i), "txid"), payin_tx_data);
-
-			primaryaddress = cJSON_CreateArray();
-			primaryaddress = get_primaryaddresses(jstr(payin_tx_data, "table_id"), 0);
-
-			cJSON *t_pa = cJSON_CreateArray();
-			for (int32_t i = 0; i < cJSON_GetArraySize(primaryaddress); i++) {
-				jaddistr(t_pa, jstri(primaryaddress, i));
-			}
-			jaddistr(t_pa, jstr(payin_tx_data, "primaryaddress"));
-			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(t_pa));
-
-			cJSON *temp1 =
-				update_t_player_info_pa(jstr(payin_tx_data, "table_id"), updated_player_info, t_pa);
-			dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(temp1));
+			payin_tx_data = chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));	
+			if(!payin_tx_data)
+				continue;
+			retval = process_payin_tx_data(jstr(cJSON_GetArrayItem(argjson, i), "txid"), payin_tx_data);
+			if(retval != OK) {
+				dlg_error("%s::%d::err:%s\n", __func__, __LINE__, bet_err_str(retval));
+				retval = OK;
+			}	
+		
 		}
-	}
-end:
-	dlg_info("at end, do nothing atm");
+	}	
+	end:
+		dlg_info("%s::%d::Done\n", __func__, __LINE__);		
 }

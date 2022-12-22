@@ -142,6 +142,8 @@ const char *bet_err_str(int32_t err_no)
 		return "Error occured in player deck shuffling";
 	case ERR_GAME_ID_NOT_FOUND:
 		return "Game ID is not found";
+	case ERR_T_PLAYER_INFO_UPDATE:
+		return "Error in updating t_player_info key";
 	default:
 		return "This error is not handled yet...";
 	}
