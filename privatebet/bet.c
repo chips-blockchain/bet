@@ -587,7 +587,7 @@ static void bet_start(int argc, char **argv)
 			do_split_tx_amount(atof(argv[2]), atoi(argv[3]));
 		}
 	} else if ((strcmp(argv[1], "print") == 0) && (argc >= 3)) {
-		print_vdxf_info(argc,argv);
+		print_vdxf_info(argc, argv);
 	} else {
 		bet_command_info();
 	}
