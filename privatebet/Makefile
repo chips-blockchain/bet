@@ -4,7 +4,7 @@ LIB := libbet
 SRCFILES := cards777.c  client.c  commands.c  gfshare.c  host.c  network.c  oracle.c  payment.c  states.c  table.c poker.c cashier.c storage.c config.c misc.c heartbeat.c help.c err.c vdxf.c player.c blinder.c dealer.c print.c
 OBJFILES := $(patsubst %.c,%.o,$(SRCFILES))
 # CC := gcc-8
-BET_VERSION=$(shell git describe --always --abbrev=7 2>/dev/null || pwd | sed -n 's|.*/c\{0,1\}bet-v\{0,1\}\([0-9a-f.rc\-]*\)$$|\1|gp')
+#BET_VERSION=$(shell git describe --always --abbrev=7 2>/dev/null || pwd | sed -n 's|.*/c\{0,1\}bet-v\{0,1\}\([0-9a-f.rc\-]*\)$$|\1|gp')
 # UPDATE_BET_VERSION=$(shell echo "char BET_VERSION[200]=\"${BET_VERSION}\";" > bet_version.h)
 
 UNAME_S := $(shell uname -s)
@@ -21,7 +21,10 @@ CFLAGS := -g -fPIC -std=c99 $(WARNINGS)
 
 LIGHTNING := lightning
 
-all: $(PROJNAME) build_dir_tree
+all: some_clean $(PROJNAME) build_dir_tree
+
+some_clean:
+	$(RM) bet bet.o
 
 clean:
 	$(RM) $(OBJFILES) 
@@ -51,10 +54,10 @@ ifeq ($(UNAME_S),Darwin)
 endif
 
 $(info $$CC is [${CC}])
-$(info $$BET_VERSION is [${BET_VERSION}])
+#$(info $$BET_VERSION is [${BET_VERSION}])
 
 $(PROJNAME): $(OBJFILES)
-		#	$(shell echo "#define BET_VERSION \"${BET_VERSION}\"" > bet_version.h)
+#$(shell echo "#define BET_VERSION \"${BET_VERSION}\"" > bet_version.h)
 	        $(CC) $(CFLAGS) -o $@ bet.c $^ ../external/iniparser/libiniparser.a ../crypto777/libcrypto777.a -L$(TARGET_DIR) -I$(LIBWEBSOCKETS_HEADERS) -I$(LIBJSMN_HEADERS) -I$(LIBINIPARSER_HEADERS) -L$(LIBWEBSOCKETS_LDFLAGS) $(LDFLAGS) $(CPPFLAGS) -lcurl -ldl -lnng -lpthread -lm -ljsmn -lwebsockets -ldlg -L/usr/local/lib -lm -lgmp -lsqlite3 -L/usr/local/lib -lssl -lcrypto -levent -lpthread -lstdc++
 	cp $(PROJNAME) $(CASHIER)
 %.o: %.c
