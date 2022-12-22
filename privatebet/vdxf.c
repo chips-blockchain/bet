@@ -51,12 +51,12 @@ char *get_full_key(char *key_name)
 char *get_key_data_type(char *key_name)
 {
 	if (!key_name)
-		return NULL;
+		return BYTEVECTOR_VDXF_ID;
 
 	if (strcmp(key_name, T_GAME_ID_KEY) == 0) {
 		return BYTEVECTOR_VDXF_ID;
 	}
-	return NULL;
+	return BYTEVECTOR_VDXF_ID;
 }
 
 char *get_key_data_vdxf_id(char *key_name, char *data)
@@ -807,6 +807,17 @@ cJSON *get_cJSON_from_id_key(char *id, char *key)
 	cmm = get_cmm_key_data(id, 0, get_vdxf_id(key));
 	if (cmm) {
 		return hex_cJSON(jstr(cJSON_GetArrayItem(cmm, 0), get_vdxf_id(get_key_data_type(key))));
+	}
+	return NULL;
+}
+
+cJSON *get_cJSON_from_id_key_vdxfid(char *id, char *key_vdxfid)
+{
+	cJSON *cmm = NULL;
+
+	cmm = get_cmm_key_data(id, 0, key_vdxfid);
+	if (cmm) {
+		return hex_cJSON(jstr(cJSON_GetArrayItem(cmm, 0), get_vdxf_id(get_key_data_type(key_vdxfid))));
 	}
 	return NULL;
 }
