@@ -68,7 +68,6 @@ int32_t bet_init_player_deck(int32_t player_id)
 	}
 	player_info.player_key = deckgen_player(player_info.cardprivkeys, player_info.cardpubkeys, player_info.permis,
 						CARDS777_MAXCARDS);
-
 	player_deck = cJSON_CreateObject();
 	jaddnum(player_deck, "id", player_id);
 	jaddbits256(player_deck, "pubkey", player_info.player_key.prod);

@@ -59,6 +59,13 @@ int32_t bet_permutation(int32_t *permi, int32_t numcards)
 	return 0;
 }
 
+void bet_r_permutation(int32_t *permi, int32_t numcards, int32_t *r_permi)
+{
+	for(int32_t i=0; i<numcards; i++) {
+		r_permi[permi[i]] = i;
+	}
+}
+
 int32_t bet_cipher_create(bits256 privkey, bits256 destpub, uint8_t *cipher, uint8_t *data, int32_t datalen)
 {
 	int32_t msglen;
