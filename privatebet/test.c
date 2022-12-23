@@ -84,6 +84,8 @@ void test_deck_shuffling()
 	
 	struct pair256 blinder_r[deck_size];
 	bits256 blinder_b[deck_size];
+
+	bits256 final_deck[deck_size], unshuffled_deck[deck_size];
 		
 	bet_permutation(p_permi, deck_size);
 	bet_r_permutation(p_permi, deck_size, p_r_permi);
@@ -102,11 +104,6 @@ void test_deck_shuffling()
 	dlg_info("Player permutation");
 	for(int32_t i=0; i<deck_size; i++){
 		printf("%d ", p_permi[i]+1);
-	}
-
-	dlg_info("\nPlayer reverse permutation");
-	for(int32_t i=0; i<deck_size; i++){
-		printf("%d ", p_r_permi[i]+1);
 	}
 
 	shuffle_deck(player_r,deck_size,p_permi);
@@ -162,6 +159,24 @@ void test_deck_shuffling()
 	for(int32_t i=0; i<deck_size; i++){
 		dlg_info("pub::%s", bits256_str(pubstr,blinder_b[i]));
 	}
-			
+
+	//From here on player
+	for(int32_t i=0; i<deck_size; i++){
+		final_deck[i] = blinder_b[i];
+		unshuffled_deck[i] = blinder_b[i];
+	}
+		
+	dlg_info("\nPlayer reverse permutation");
+	for(int32_t i=0; i<deck_size; i++){
+		printf("%d ", p_r_permi[i]+1);
+	}
+
+	shuffle_deck_db(unshuffled_deck,deck_size,p_r_permi);
+	
+	dlg_info("UnShuffled blinded deck Player");
+	for(int32_t i=0; i<deck_size; i++){
+		dlg_info("pub::%s", bits256_str(pubstr,unshuffled_deck[i]));
+	}
+				
 }
 
