@@ -17,3 +17,15 @@ void gen_deck(struct pair256 *r, int32_t n)
 		r[i] = tmp;
 	}	
 }
+
+void shuffle_deck(struct pair256 *r, int32_t n, int32_t *perm)
+{
+	struct pair256 *tmp = NULL;
+	tmp = calloc(n, sizeof(struct pair256));
+	for(int32_t i=0; i<n; i++){
+		tmp[i] = r[perm[i]];
+	}
+	for(int32_t i=0; i<n; i++){
+		r[i] = tmp[i];
+	}
+}
