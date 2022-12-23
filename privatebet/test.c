@@ -200,12 +200,12 @@ void test_deck_shuffling()
 	for(int32_t i=0; i<deck_size; i++){
 		player_r_inv[i] = crecip_donna(player_r[i].priv);
 	}
-
+	dlg_info("Finding card");
 	for(int32_t i=0; i<deck_size; i++){
 		bits256 card = final_deck[0];
 		card = fmul_donna(card, player_r_inv[i]);
 		for(int32_t j=0; j<deck_size; j++){
-			dlg_info("%s::%s\n", bits256_str(pubstr,card), bits256_str(privstr,dealer_r[i].prod));
+			dlg_info("%s::%s", bits256_str(pubstr,card), bits256_str(privstr,dealer_r[i].prod));
 		}
 	}
 	
