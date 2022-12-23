@@ -45,6 +45,6 @@ void shuffle_deck_db(bits256 *r, int32_t n, int32_t *perm)
 void blind_deck(bits256 *r, int32_t n, struct pair256 *blinder)
 {
 	for(int32_t i=0; i<n; i++){
-		r[i] = fmul_donna(r[i],blinder[i].priv)
+		r[i] = fmul_donna(r[i],blinder[i].priv);
 	}
 }
