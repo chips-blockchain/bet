@@ -126,7 +126,7 @@ void test_deck_shuffling()
 	
 	dlg_info("Shuffled deck Dealer");
 	for(int32_t i=0; i<deck_size; i++){
-		dlg_info("pub::%s", bits256_str(pubstr,dealer_b));
+		dlg_info("pub::%s", bits256_str(pubstr,dealer_b[i]));
 	}
 		
 	gen_deck(dealer_r,deck_size);
