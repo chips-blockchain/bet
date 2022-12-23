@@ -147,7 +147,7 @@ void test_deck_shuffling()
 		printf("%d ", b_permi[i]+1);
 	}
 	
-	dlg_info("Shuffled deck Blinder");
+	dlg_info("Shuffled deck at Blinder");
 	for(int32_t i=0; i<deck_size; i++){
 		dlg_info("pub::%s", bits256_str(pubstr,blinder_b[i]));
 	}
@@ -155,7 +155,7 @@ void test_deck_shuffling()
 	gen_deck(blinder_r,deck_size);
 	blind_deck(blinder_b,deck_size,blinder_r);
 
-	dlg_info("Blinded deck Dealer");
+	dlg_info("Blinded deck at Blinder");
 	for(int32_t i=0; i<deck_size; i++){
 		dlg_info("pub::%s", bits256_str(pubstr,blinder_b[i]));
 	}
