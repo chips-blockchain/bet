@@ -7,26 +7,25 @@ void test_permutations()
 	int cards[52];
 
 	printf("\nOriginal Cards\n");
-	for(int i=0; i<CARDS777_MAXCARDS; i++) {
+	for (int i = 0; i < CARDS777_MAXCARDS; i++) {
 		cards[i] = i;
 		printf("%d ", cards[i]);
-	}	
-	
+	}
+
 	bet_permutation(player_info.permis, CARDS777_MAXCARDS);
 
 	printf("\nPermuted Cards\n");
-	for(int i=0; i<CARDS777_MAXCARDS; i++) {
+	for (int i = 0; i < CARDS777_MAXCARDS; i++) {
 		cards[i] = player_info.permis[i];
 		printf("%d ", cards[i]);
-	}	
-	
+	}
+
 	bet_r_permutation(player_info.permis, CARDS777_MAXCARDS, player_info.r_permis);
 	printf("\nReverse Permuted Cards\n");
-	for(int i=0; i<CARDS777_MAXCARDS; i++) {
+	for (int i = 0; i < CARDS777_MAXCARDS; i++) {
 		cards[i] = player_info.permis[player_info.r_permis[i]];
 		printf("%d ", cards[i]);
-	}	
-	
+	}
 }
 
 void test_crypto()
