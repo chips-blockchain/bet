@@ -62,7 +62,7 @@ int32_t bet_permutation(int32_t *permi, int32_t numcards)
 
 void bet_r_permutation(int32_t *permi, int32_t numcards, int32_t *r_permi)
 {
-	for(int32_t i=0; i<numcards; i++) {
+	for (int32_t i = 0; i < numcards; i++) {
 		r_permi[permi[i]] = i;
 	}
 }
