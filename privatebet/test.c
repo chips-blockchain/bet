@@ -1,5 +1,6 @@
 #include "bet.h"
 #include "test.h"
+#include "cards777.h"
 
 void test_permutations()
 {
