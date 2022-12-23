@@ -99,12 +99,12 @@ void test_deck_shuffling()
 	}
 	dlg_info("Player permutation");
 	for(int32_t i=0; i<deck_size; i++){
-		printf("%d ", p_permi[i]);
+		printf("%d ", p_permi[i]+1);
 	}
 
 	dlg_info("\nPlayer reverse permutation");
 	for(int32_t i=0; i<deck_size; i++){
-		printf("%d ", p_r_permi[i]);
+		printf("%d ", p_r_permi[i]+1);
 	}
 
 	shuffle_deck(player_r,deck_size,p_permi);
@@ -121,7 +121,7 @@ void test_deck_shuffling()
 
 	dlg_info("Dealer permutation");
 	for(int32_t i=0; i<deck_size; i++){
-		printf("%d ", d_permi[i]);
+		printf("%d ", d_permi[i]+1);
 	}
 	
 	dlg_info("Shuffled deck Dealer");
