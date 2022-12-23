@@ -79,6 +79,8 @@ void test_deck_shuffling()
 	struct pair256 player_r[deck_size];
 	char pubstr[65], privstr[65];
 
+	bits256 player_r_inv[deck_size];
+		
 	struct pair256 dealer_r[deck_size];
 	bits256 dealer_b[deck_size], dealer_r_inv[deck_size];
 	
@@ -192,7 +194,20 @@ void test_deck_shuffling()
 	for(int32_t i=0; i<deck_size; i++){
 		dlg_info("pub::%s", bits256_str(pubstr,final_deck[i]));
 	}
+	bits256 card = final_deck[0];
+
+	//Computing player_r_inverse
+	for(int32_t i=0; i<deck_size; i++){
+		player_r_inv[i] = crecip_donna(player_r[i].priv);
+	}
+
+	for(int32_t i=0; i<deck_size; i++){
+		bits256 card = final_deck[0];
+		card = fmul_donna(card, player_r_inv[i]);
+		for(int32_t j=0; j<deck_size; j++){
+			dlg_info("%s::%s\n", bits256_str(pubstr,card), bits256_str(privstr,dealer_r[i].prod));
+		}
+	}
 	
-				
 }
 
