@@ -91,9 +91,18 @@ void test_deck_shuffling()
 	gen_deck(player_r,deck_size);
 	dlg_info("Deck");
 	for(int32_t i=0; i<deck_size; i++){
-		dlg_info("priv ::%s pub::%s\n", bits256_str(privstr,player_r[i].priv),bits256_str(pubstr,player_r[i].prod));
+		dlg_info("priv ::%s pub::%s", bits256_str(privstr,player_r[i].priv),bits256_str(pubstr,player_r[i].prod));
+	}
+	dlg_info("Player permutation");
+	for(int32_t i=0; i<deck_size; i++){
+		printf("%d ", p_permi[i]);
 	}
 
+	dlg_info("\nPlayer reverse permutation");
+	for(int32_t i=0; i<deck_size; i++){
+		printf("%d ", p_r_permi[i]);
+	}
+		
 	
 }
 
