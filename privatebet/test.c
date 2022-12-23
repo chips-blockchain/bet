@@ -80,10 +80,10 @@ void test_deck_shuffling()
 	char pubstr[65], privstr[65];
 
 	struct pair256 dealer_r[deck_size];
-	bits256 dealer_b[deck_size];
+	bits256 dealer_b[deck_size], dealer_r_inv[deck_size];
 	
 	struct pair256 blinder_r[deck_size];
-	bits256 blinder_b[deck_size];
+	bits256 blinder_b[deck_size], blinder_r_inv[deck_size];
 
 	bits256 final_deck[deck_size], unshuffled_deck[deck_size];
 		
@@ -177,6 +177,22 @@ void test_deck_shuffling()
 	for(int32_t i=0; i<deck_size; i++){
 		dlg_info("pub::%s", bits256_str(pubstr,unshuffled_deck[i]));
 	}
+
+	//Computing blinder_r_inverse
+	for(int32_t i=0; i<deck_size; i++){
+		blinder_r_inv[i] = crecip_donna(blinder_r[i].priv);
+	}
+
+	//Remove blinders blind
+	for(int32_t i=0; i<deck_size; i++){
+		final_deck[i] = fmul_donna(final_deck[i],blinder_r_inv[i]);
+	}
+
+	dlg_info("Deck after removing blinders blind at Player");
+	for(int32_t i=0; i<deck_size; i++){
+		dlg_info("pub::%s", bits256_str(pubstr,final_deck[i]));
+	}
+	
 				
 }
 
