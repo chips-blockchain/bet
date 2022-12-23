@@ -130,8 +130,13 @@ void test_deck_shuffling()
 	}
 		
 	gen_deck(dealer_r,deck_size);
+	blind_deck(dealer_b,deck_size,dealer_r);
 
-	
+	dlg_info("Blinded deck Dealer");
+	for(int32_t i=0; i<deck_size; i++){
+		dlg_info("pub::%s", bits256_str(pubstr,dealer_b[i]));
+	}
+		
 	
 	
 }
