@@ -1,6 +1,8 @@
 #include "bet.h"
 #include "test.h"
 #include "cards777.h"
+#include "vdxf.h"
+#include "deck.h"
 
 void test_permutations()
 {
@@ -67,3 +69,26 @@ void test_append_t_key()
 	key_info = cJSON_CreateString("Hello World");
 	//append_t_key(id, T_PLAYER1_KEY, key_info);
 }
+
+void test_deck_shuffling()
+{
+	int p_permi[52],p_r_permi[52],d_permi[52],b_permi[52];
+	struct pair256 player_kp;
+	struct pair256 player_r[52]; 
+		
+	bet_permutation(p_permi, 52);
+	bet_r_permutation(p_permi, 52, p_r_permi);
+	bet_permutation(d_permi, 52);
+	bet_permutation(b_permi, 52);
+
+	player_kp = gen_keypair();
+	dlg_info("priv ::%s pub::%s\n", player_kp.priv, player_kp.prod);
+
+	gen_deck(player_r,52);
+	for(int32_t i=0; i<52; i++){
+		dlg_info("priv ::%s pub::%s\n", player_r[i].priv, player_r[i].prod);
+	}
+
+	
+}
+
