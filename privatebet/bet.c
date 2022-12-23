@@ -603,16 +603,13 @@ end:
 
 int main(int argc, char **argv)
 {
-	//test_append_t_key();
-	//test_crypto();
-	//strcpy(player_config.table_id, "sg777_t");
-	//bet_init_player_deck(1);
+	test_permutations();
 #if 1 //Enable this snippet to make bet take no action on blocknotify
 	if ((argc == 3) && (strcmp(argv[1], "newblock") == 0)) {
 		goto end;
 	}
 #endif
-	bet_start(argc, argv);
+	//bet_start(argc, argv);
 
 end:
 	return OK;
