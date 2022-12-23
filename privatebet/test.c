@@ -82,7 +82,9 @@ void test_deck_shuffling()
 	struct pair256 dealer_r[deck_size];
 	bits256 dealer_b[deck_size];
 	
-	
+	struct pair256 blinder_r[deck_size];
+	bits256 blinder_b[deck_size];
+		
 	bet_permutation(p_permi, deck_size);
 	bet_r_permutation(p_permi, deck_size, p_r_permi);
 	bet_permutation(d_permi, deck_size);
@@ -137,7 +139,29 @@ void test_deck_shuffling()
 		dlg_info("pub::%s", bits256_str(pubstr,dealer_b[i]));
 	}
 		
+	//From here on blinder
+	for(int32_t i=0; i<deck_size; i++){
+		blinder_b[i] = dealer_b[i];
+	}
+	shuffle_deck_db(blinder_b,deck_size,b_permi);
+
+	dlg_info("Blinder permutation");
+	for(int32_t i=0; i<deck_size; i++){
+		printf("%d ", b_permi[i]+1);
+	}
 	
-	
+	dlg_info("Shuffled deck Blinder");
+	for(int32_t i=0; i<deck_size; i++){
+		dlg_info("pub::%s", bits256_str(pubstr,blinder_b[i]));
+	}
+
+	gen_deck(blinder_r,deck_size);
+	blind_deck(blinder_b,deck_size,blinder_r);
+
+	dlg_info("Blinded deck Dealer");
+	for(int32_t i=0; i<deck_size; i++){
+		dlg_info("pub::%s", bits256_str(pubstr,blinder_b[i]));
+	}
+			
 }
 
