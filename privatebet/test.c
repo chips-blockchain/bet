@@ -76,8 +76,12 @@ void test_deck_shuffling()
 {
 	int p_permi[deck_size],p_r_permi[deck_size],d_permi[deck_size],b_permi[deck_size];
 	struct pair256 player_kp;
-	struct pair256 player_r[deck_size]; 
+	struct pair256 player_r[deck_size];
 	char pubstr[65], privstr[65];
+
+	struct pair256 dealer_r[deck_size];
+	struct bits256 dealer_b[deck_size];
+	
 	
 	bet_permutation(p_permi, deck_size);
 	bet_r_permutation(p_permi, deck_size, p_r_permi);
@@ -104,11 +108,31 @@ void test_deck_shuffling()
 	}
 
 	shuffle_deck(player_r,deck_size,p_permi);
-	dlg_info("Shuffled deck");
+	dlg_info("Shuffled deck Player");
 	for(int32_t i=0; i<deck_size; i++){
-		dlg_info("priv ::%s pub::%s", bits256_str(privstr,player_r[i].priv),bits256_str(pubstr,player_r[i].prod));
+		dlg_info("pub::%s", bits256_str(pubstr,player_r[i].prod));
 	}
-			
+
+	//From here on dealer
+	for(int32_t i=0; i<deck_size; i++){
+		dealer_b[i] = player_r[i].prod; //rG
+	}
+	shuffle_deck_db(dealer_b,deck_size,d_permi);
+
+	dlg_info("Dealer permutation");
+	for(int32_t i=0; i<deck_size; i++){
+		printf("%d ", d_permi[i]);
+	}
+	
+	dlg_info("Shuffled deck Dealer");
+	for(int32_t i=0; i<deck_size; i++){
+		dlg_info("pub::%s", bits256_str(pubstr,dealer_b));
+	}
+		
+	gen_deck(dealer_r,deck_size);
+
+	
+	
 	
 }
 

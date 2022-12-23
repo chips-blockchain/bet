@@ -29,3 +29,16 @@ void shuffle_deck(struct pair256 *r, int32_t n, int32_t *perm)
 		r[i] = tmp[i];
 	}
 }
+
+void shuffle_deck_db(struct bits256 *r, int32_t n, int32_t *perm)
+{
+	struct bits256 *tmp = NULL;
+	tmp = calloc(n, sizeof(struct bits256));
+	for(int32_t i=0; i<n; i++){
+		tmp[i] = r[perm[i]];
+	}
+	for(int32_t i=0; i<n; i++){
+		r[i] = tmp[i];
+	}
+}
+
