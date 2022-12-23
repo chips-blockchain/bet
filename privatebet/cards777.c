@@ -16,6 +16,7 @@
 #include "bet.h"
 #include "common.h"
 #include "gfshare.h"
+#include "cards777.h"
 
 int32_t bet_permutation(int32_t *permi, int32_t numcards)
 {
