@@ -80,7 +80,7 @@ void test_deck_shuffling()
 	char pubstr[65], privstr[65];
 
 	struct pair256 dealer_r[deck_size];
-	struct bits256 dealer_b[deck_size];
+	bits256 dealer_b[deck_size];
 	
 	
 	bet_permutation(p_permi, deck_size);
