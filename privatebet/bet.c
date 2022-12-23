@@ -35,6 +35,7 @@
 #include "vdxf.h"
 #include "player.h"
 #include "print.h"
+#include "test.h"
 
 #include <netinet/in.h>
 #include <stdio.h>
