@@ -102,7 +102,13 @@ void test_deck_shuffling()
 	for(int32_t i=0; i<deck_size; i++){
 		printf("%d ", p_r_permi[i]);
 	}
-		
+
+	shuffle_deck(player_r,deck_size,p_permi);
+	dlg_info("Shuffled deck");
+	for(int32_t i=0; i<deck_size; i++){
+		dlg_info("priv ::%s pub::%s", bits256_str(privstr,player_r[i].priv),bits256_str(pubstr,player_r[i].prod));
+	}
+			
 	
 }
 
