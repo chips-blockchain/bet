@@ -203,7 +203,7 @@ void test_deck_shuffling()
 	dlg_info("Finding card");
 	for(int32_t i=0; i<deck_size; i++){
 		bits256 card = final_deck[0];
-		card = fmul_donna(card, player_r_inv[i]);
+		card = fmul_donna(player_r_inv[i],card);
 		for(int32_t j=0; j<deck_size; j++){
 			dlg_info("%s::%s", bits256_str(pubstr,card), bits256_str(privstr,dealer_r[i].prod));
 		}
