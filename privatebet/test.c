@@ -75,7 +75,7 @@ void test_deck_shuffling()
 	int p_permi[52],p_r_permi[52],d_permi[52],b_permi[52];
 	struct pair256 player_kp;
 	struct pair256 player_r[52]; 
-	char hexstr[65];
+	char pubstr[65], privstr[65];
 	
 	bet_permutation(p_permi, 52);
 	bet_r_permutation(p_permi, 52, p_r_permi);
@@ -84,11 +84,11 @@ void test_deck_shuffling()
 
 	player_kp = gen_keypair();
 	
-	dlg_info("priv ::%s pub::%s\n", bits256_str(hexstr,player_kp.priv),bits256_str(hexstr,player_kp.prod));
+	dlg_info("priv ::%s pub::%s\n", bits256_str(privstr,player_kp.priv),bits256_str(pubstr,player_kp.prod));
 
 	gen_deck(player_r,52);
 	for(int32_t i=0; i<52; i++){
-		dlg_info("priv ::%s pub::%s\n", bits256_str(hexstr,player_r[i].priv),bits256_str(hexstr,player_r[i].prod));
+		dlg_info("priv ::%s pub::%s\n", bits256_str(privstr,player_r[i].priv),bits256_str(pubstr,player_r[i].prod));
 	}
 
 	
