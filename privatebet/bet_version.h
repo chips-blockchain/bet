@@ -1,1 +1,1 @@
-#define BET_VERSION "v0.1.3-1283-g2111254"
+#define BET_VERSION "v0.1.3-1284-gc583735"
