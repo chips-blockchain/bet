@@ -14,8 +14,8 @@ void test_sg()
 	
 	k1.priv = curve25519_keypair(&k1.prod);
 	k2.priv = curve25519_keypair(&k2.prod);
-	p1 = fmul_donna(k1.priv,k2.prod);
-	p2 = fmul_donna(k2.priv,k1.prod);
+	p1 = curve25519(k1.priv,k2.prod);
+	p2 = curve25519(k2.priv,k1.prod);
 	dlg_info("p1::%s", bits256_str(hexstr,p1));
 	dlg_info("p2::%s", bits256_str(hexstr,p2));
 }
