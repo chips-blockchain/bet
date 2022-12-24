@@ -1,12 +1,19 @@
 Deck Shuffling
 ---------------
 
-The entire security of the game depends upon how the deck is shuffled and how the cards are revealed during the game. Here we discuss the process involved in deck shuffling and how we be using ID's to accomplish this task.
+The entire security of the game depends upon how the deck is shuffled and how the cards are revealed during the game. Here we discuss the process of deck shuffling and how we be using ID's to accomplish this task.
 
 ### Representation of Deck
-We represent each card in the deck as a field element of the curve25519, to represent a point on the curve we need 256 bits so likewise the representation of each card need 256 bits or 32 bytes. The space needed to represent the deck is `52*32` bytes, i.e `1664` bytes.
+The section 3 of the the [curve25519 paper](https://cr.yp.to/ecdh/curve25519-20060209.pdf) provides the hints about how to generate random numbers that are chosen to be the private keys.
+```
+The legitimate users are assumed to generate independent uniform random secret keys. A user can, for example, generate 32 uniform random bytes, clear bits 0, 1, 2 of the first byte, clear bit 7 of the last byte, and set bit 6 of the last byte.
+```
+In our case, each card is a 32 byte random number as per guideline given in the curve25519 paper, and we used last but one byte(i.e 31st byte) to store the index of the card. so a 32 byte random number with its 31st byte set with a number ranging from 1 to 52 represents the card in a deck and 52 of such random numbers constitutes the deck. So to represent a deck we need `52*32` bytes of space, i.e `1664` bytes.
 
 ### The shuffling
+In this section we see how the deck shuffling is happening at a very high level. 
+
+At high level we see how the deck shuffling happens
 In simple terms here is how the deck shuffling happens.
 1. Each player generates a deck of cards, shuffles them, blinds them(so that no other can read the deck except the player who generated it).
 2. Dealer reads each player deck separately and shuffles them, blinds them.
