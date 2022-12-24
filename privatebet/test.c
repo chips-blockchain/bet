@@ -25,7 +25,7 @@ void test_sg()
 	p2 = curve25519(k2.priv,k1.prod);
 	dlg_info("p1::%s", bits256_str(hexstr,p1));
 	dlg_info("p2::%s", bits256_str(hexstr,p2));
-	p1 = curve25519(crecip_donna(k1.priv),p1);
+	p1 = fmul_donna(crecip_donna(k1.priv),p1);
 	dlg_info("p1 = k2.pub::%s", bits256_str(hexstr,p1));
 }
 
