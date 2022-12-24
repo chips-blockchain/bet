@@ -228,7 +228,7 @@ void test_deck_shuffling()
 	//Computing player_r_inverse
 	for(int32_t i=0; i<deck_size; i++){
 		for(int32_t j=0; j<deck_size; j++){
-			if(strcmp(bits256_str(pubstr,card),bits256_str(pubstr,curve25519(player_r[i].priv, dealer_r[j].prod))) == 0) {
+			if(strcmp(bits256_str(pubstr,card),bits256_str(privstr,curve25519(player_r[i].priv, dealer_r[j].prod))) == 0) {
 				dlg_info("card::%x\n", player_r[i].priv.bytes[30]);
 				//dlg_info("some card ::%s\n", bits256_str(pubstr,curve25519(player_r[i].priv, dealer_r[j].prod)));
 			}
