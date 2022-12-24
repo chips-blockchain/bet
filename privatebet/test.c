@@ -10,7 +10,7 @@ void test_sg()
 {
 	char hexstr[65];
 	struct pair256 k1, k2;	
-	bits256 p1, p2;
+	bits256 p1, p2, r;
 	
 	k1.priv = curve25519_keypair(&k1.prod);
 	k2.priv = curve25519_keypair(&k2.prod);
@@ -25,8 +25,12 @@ void test_sg()
 	p2 = curve25519(k2.priv,k1.prod);
 	dlg_info("p1::%s", bits256_str(hexstr,p1));
 	dlg_info("p2::%s", bits256_str(hexstr,p2));
-	p1 = fmul_donna(crecip_donna(k1.priv),p1);
-	dlg_info("p1 = k2.pub::%s", bits256_str(hexstr,p1));
+
+	r= rand256(1);
+	
+	p1 = curve25519(r,p1);
+	fmul_donna(crecip_donna(r),p1)
+	dlg_info("p1 ::%s", bits256_str(hexstr,p1));
 }
 
 void test_permutations()
