@@ -14,10 +14,19 @@ void test_sg()
 	
 	k1.priv = curve25519_keypair(&k1.prod);
 	k2.priv = curve25519_keypair(&k2.prod);
+	
+	dlg_info("k1.priv::%s", bits256_str(hexstr,k1.priv));
+	dlg_info("k1.pub::%s", bits256_str(hexstr,k1.prod));
+
+	dlg_info("k2.priv::%s", bits256_str(hexstr,k2.priv));
+	dlg_info("k2.pub::%s", bits256_str(hexstr,k2.prod));
+
 	p1 = curve25519(k1.priv,k2.prod);
 	p2 = curve25519(k2.priv,k1.prod);
 	dlg_info("p1::%s", bits256_str(hexstr,p1));
 	dlg_info("p2::%s", bits256_str(hexstr,p2));
+	p1 = curve25519(crecip_donna(k1.priv),p1);
+	dlg_info("p1 = k2.pub::%s", bits256_str(hexstr,p1));
 }
 
 void test_permutations()
