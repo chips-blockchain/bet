@@ -42,9 +42,17 @@ void shuffle_deck_db(bits256 *r, int32_t n, int32_t *perm)
 	}
 }
 
-void blind_deck(bits256 *r, int32_t n, struct pair256 *blinder)
+void blind_deck_d(bits256 *r, int32_t n, struct pair256 *blinder)
 {
 	for(int32_t i=0; i<n; i++){
 		r[i] = curve25519(blinder[i].priv,r[i]);
 	}
 }
+
+void blind_deck_b(bits256 *r, int32_t n, struct pair256 *blinder)
+{
+	for(int32_t i=0; i<n; i++){
+		r[i] = fmul_donna(blinder[i].priv,r[i]);
+	}
+}
+

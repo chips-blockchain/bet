@@ -158,7 +158,7 @@ void test_deck_shuffling()
 	}
 		
 	gen_deck(dealer_r,deck_size);
-	blind_deck(dealer_b,deck_size,dealer_r);
+	blind_deck_d(dealer_b,deck_size,dealer_r);
 
 	dlg_info("Blinded deck Dealer");
 	for(int32_t i=0; i<deck_size; i++){
@@ -182,7 +182,7 @@ void test_deck_shuffling()
 	}
 
 	gen_deck(blinder_r,deck_size);
-	blind_deck(blinder_b,deck_size,blinder_r);
+	blind_deck_b(blinder_b,deck_size,blinder_r);
 
 	dlg_info("Blinded deck at Blinder");
 	for(int32_t i=0; i<deck_size; i++){
@@ -223,18 +223,15 @@ void test_deck_shuffling()
 	}
 	bits256 card = final_deck[0];
 
+	dlg_info("some card ::%s\n", bits256_str(pubstr,card));
+	
 	//Computing player_r_inverse
 	for(int32_t i=0; i<deck_size; i++){
-		player_r_inv[i] = crecip_donna(player_r[i].priv);
-	}
-	dlg_info("Finding card");
-	for(int32_t i=0; i<deck_size; i++){
-		bits256 card = final_deck[0];
-		card = fmul_donna(player_r_inv[i],card);
 		for(int32_t j=0; j<deck_size; j++){
-			dlg_info("%s::%s", bits256_str(pubstr,card), bits256_str(privstr,dealer_r[j].prod));
+			dlg_info("some card ::%s\n", bits256_str(pubstr,curve25519(player_r[i].priv, dealer_r[j].prod)));
+			//curve25519(player_r[i].priv, dealer_r[j].prod);
+			
+			}
 		}
-	}
-	
 }
 
