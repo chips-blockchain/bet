@@ -28,8 +28,8 @@ void test_sg()
 
 	r= rand256(1);
 	
-	p1 = curve25519(r,p1);
-	p1 = curve25519(crecip_donna(r),p1);
+	p1 = fmul_donna(r,p1);
+	p1 = fmul_donna(crecip_donna(r),p1);
 	dlg_info("p1 ::%s", bits256_str(hexstr,p1));
 }
 
