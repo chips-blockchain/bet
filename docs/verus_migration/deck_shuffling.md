@@ -6,33 +6,63 @@ The entire security of the game depends upon how the deck is shuffled and how th
 ### Representation of Deck
 The section 3 of the the [curve25519 paper](https://cr.yp.to/ecdh/curve25519-20060209.pdf) provides the hints about how to generate random numbers that are chosen to be the private keys.
 ```
-The legitimate users are assumed to generate independent uniform random secret keys. A user can, for example, generate 32 uniform random bytes, clear bits 0, 1, 2 of the first byte, clear bit 7 of the last byte, and set bit 6 of the last byte.
+The legitimate users are assumed to generate independent uniform random secret keys. A user can, for example, generate 32 uniform 
+random bytes, clear bits 0, 1, 2 of the first byte, clear bit 7 of the last byte, and set bit 6 of the last byte.
 ```
-In our case, each card is a 32 byte random number as per guideline given in the curve25519 paper, and we used last but one byte(i.e 31st byte) to store the index of the card. so a 32 byte random number with its 31st byte set with a number ranging from 1 to 52 represents the card in a deck and 52 of such random numbers constitutes the deck. So to represent a deck we need `52*32` bytes of space, i.e `1664` bytes.
+In our case, each card is a 32 byte random number as per guideline given in the curve25519 paper, and we used prenultimate byte(i.e 31st byte) to store the index of the card and this index can be any number in the range `[1-52]`, these numbers are mapped to the corresponding cards in the deck. Likewise, we need one such random number to represent the each card in the deck, for a deck of 52 cards we need 52 different 32 byte random numbers, spacewise it need `52*32`, i.e `1664` bytes to represent the deck.
 
 ### The shuffling
-In this section we see how the deck shuffling is happening at a very high level. 
+In this section we see how we shuffling the deck at a high level:
+1. Player choses the deck, blinds it and updates at table ID.
+2. Dealer reads the deck, shuffles it, blinds it and encrypts it with cashiers pubkeys and updates at the table ID.
+3. Cashier reads the deck, decrypts it, shuffles it, blinds it and updates back at the table ID. 
 
-At high level we see how the deck shuffling happens
-In simple terms here is how the deck shuffling happens.
-1. Each player generates a deck of cards, shuffles them, blinds them(so that no other can read the deck except the player who generated it).
-2. Dealer reads each player deck separately and shuffles them, blinds them.
-3. Cashiers reads the each of the dealer shuffled blicded desk, shuffles them and blinds them.
+The above process repeats for all the players.
 
-So on a high level we can see that for each player deck is shuffled by player, dealer and blinder. So that way the collusion of any two entities is not possible to reveal the deck.
+Note: If more cashiers inolved in the process of deck shuffling, then each cashier shuffles the deck and blinds it and updates back at the table ID. Atleast one cashier must be involved in the deck shuffling process, more the number of cashiers involved which adds up more trust to the deck shuffling process.
+ 
+### Revealing of the deck
+From the deck shuffling its clear that the all players having the deck with the same shuffled order. As we see the apart from player dealer and blinder also blinded the deck. So in order to reveal the deck the player has to get these blinded values. Here we see in detail about how the player reveals its card.
+
+The values that are public after deck shulling process are below and these values are available at the table ID.
+1. Shuffled deck.
+2. The corresponding points for the blinding values of the dealer on the curve25519.
+3. The merkel hash of the blinding values chosen by the cashier has to be published for each set of random numbers chosen for the players.
+
+Lets get into the details further in revealing the card:
+1. Dealer tells whose player turn it is along with the index in the deck.
+2. Cashier reveals the corresponding blinding value used for that player for that index.
+3. By knowing the blinding value, with the combination of public and private information that player had it can able to reveal the card.
+4. If a card is a board card, then all players reveal that card to each other.
+
+Few things like player shuffling/unshuffling and the use of shamir secret key sharing to reveal the cashiers blinding values are removed as they didn't add up anything to the security as per the ID design we been using.
 
 ### Some numbers
-Here we see what's the size of the data that we going to be updated on to the ID during the deck shuffling process.
+Here we try estimating the approx amout of data that gets updated to ID during the deck shuffling process. 
+```
+As we already seen that to represent a deck we need `52*32`, i.e `1664` bytes.
+deck_size = 1664 bytes
+For Players
+-----------
+Each player has their own deck, so for n players it will be n*deck_size bytes.
 
-Space to represent the deck = `52*32` = `1664` bytes.<br/>
-If there are n players, then total update space on ID  = `n * 1664` bytes.<br/>
-The space needed to store the dealers blinded desk on ID = `n * 1664` bytes. [since dealer blinds all the player desks individually]<br/>
-The space needed to store the blinders blinded desk on ID = `n * 1664` bytes. <br/>
-Blinder reveals its share using shamir secret sharing, the number of shamir shards possible for n players = `n * 1634` bytes.<br/>
+For Dealers
+-----------
+Dealer shuffles, blinds and encrypts each deck, so the size of all encrypted decks by the dealer is equal to n*deck_size bytes, 
+along with that dealer publishes the corresponding points of its blinding values its of size deck_size. 
+so bytes used by dealer = n*deck_size + deck_size = (n+1)*deck_size.
 
-Total space that is needed = `1664 * (4n)` bytes [By combining all the above equations]<br/>
-The maximum number of players that can be accomodated is 9 players, so by substituting n=9 in the above equation, 
-i,e   `1664 *4n` = `1664*4*9` = `59904` bytes. So minimum amount of data that is getting updated on to the ID for deck shuffling is of `59904` bytes.
+For Cashiers
+------------
+Cashiers shuffle, blinds each deck separately, and also publishes the merkelproof of the blinding values they chosen. 
+In total the bytes used by cashier to do that = (n+1)*deck_size bytes.
+
+In Total
+--------
+Total no of bytes needed = n*deck_size (n+1)*deck_size +(n+1)*deck_size = (3n+2)*deck_size bytes.
+
+For a maximum of n=9 players, the min(also max) bytes needed  = (3n+2)*deck_size = (3*9+2) *1664 = 48,256 bytes = 47.124 KB.
+```
 
 ### Handling deck shuffling with vdxf ID's
 Here we see, how we store the deck shuffling data in the contentmultimap of table ID. For each player there is a dedidcated key on the table at which the corresponding player stores its data.
