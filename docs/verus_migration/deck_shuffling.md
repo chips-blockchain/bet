@@ -11,7 +11,7 @@ random bytes, clear bits 0, 1, 2 of the first byte, clear bit 7 of the last byte
 ```
 In our case, each card is a 32 byte random number as per guideline given in the curve25519 paper, and we used prenultimate byte(i.e 31st byte) to store the index of the card and this index can be any number in the range `[1-52]`, these numbers are mapped to the corresponding cards in the deck. Likewise, we need one such random number to represent the each card in the deck, for a deck of 52 cards we need 52 different 32 byte random numbers, spacewise it need `52*32`, i.e `1664` bytes to represent the deck.
 
-### The shuffling
+### Shuffling of the deck
 In this section we see how we shuffling the deck at a high level:
 1. Player choses the deck, blinds it and updates at table ID.
 2. Dealer reads the deck, shuffles it, blinds it and encrypts it with cashiers pubkeys and updates at the table ID.
