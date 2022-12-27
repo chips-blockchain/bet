@@ -311,20 +311,8 @@ void bet_parse_verus_dealer()
 			strncpy(t.table_id, iniparser_getstring(ini, "table:table_id", NULL), sizeof(t.table_id));
 		}
 
-		dlg_info("%s", cJSON_Print(struct_table_to_cJSON(&t)));
 		cJSON *t1 = update_cmm_from_id_key_data_cJSON(t.dealer_id, get_vdxf_id(T_TABLE_INFO_KEY), struct_table_to_cJSON(&t));
 		dlg_info("%s", cJSON_Print(t1));
-
-		#if 0
-		
-		#if 0
-			cJSON *t1 = update_t_table_info(t.dealer_id, get_vdxf_id(T_TABLE_INFO_KEY), t);
-			if (jint(t1, "error")) {
-				dlg_error("Updating t_table_info key of the dealer got failed");
-			} else {
-				dlg_info("t_table_info key of the dealer id is successfully updated");
-			}
-		#endif
 
 		dlg_info("t_table_info key of the table id is::%s\n",
 			 get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)));
@@ -332,24 +320,10 @@ void bet_parse_verus_dealer()
 		cJSON *t2 = append_cmm_from_id_key_data_cJSON(
 			t.table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)),
 			struct_table_to_cJSON(&t));
-#if 0
-		cJSON *t2 = update_t_table_info(
-			t.table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)), t);
-#endif
-		if (jint(t2, "error")) {
-			dlg_error("Updating t_table_info key of the table_id got failed");
-		} else {
-			dlg_info("t_table_info key of the table id is successfully updated");
-		}
-
+		dlg_info("%s", cJSON_Print(t2));
+		
 		cJSON *t3 = append_cmm_from_id_key_data_hex(t.table_id, T_GAME_ID_KEY, bits256_str(hexstr, game_id));
-		if (jint(t3, "error")) {
-			dlg_error("%s::%d::Error in updating the key::%s at the ID::%s\n", __FUNCTION__, __LINE__,
-				  T_GAME_ID_KEY, t.table_id);
-		} else {
-			dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(t3));
-		}
-		#endif
+		dlg_info("%s", cJSON_Print(t3));
 	}
 }
 
