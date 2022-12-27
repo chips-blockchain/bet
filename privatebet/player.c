@@ -40,11 +40,6 @@ cJSON *append_t_key(char *id, char *key, cJSON *key_info)
 	snprintf(params, arg_size, "\'%s\'", cJSON_Print(id_info));
 	argv = bet_copy_args(argc, verus_chips_cli, "updateidentity", params);
 
-	//This is a temporary wait until we have an API to spend the tx's from mempool
-	while (!chips_is_mempool_empty()) {
-		sleep(1);
-	}
-
 	argjson = cJSON_CreateObject();
 	make_command(argc, argv, &argjson);
 
