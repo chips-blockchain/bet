@@ -70,5 +70,5 @@ At the moment we identified multiple keys on the table, whose values gets update
 1. `chips.vrsc::poker.t_table_info` --> Contains the table info, which is updated by the dealer when it starts the table.
 2. `chips.vrsc::poker.t_player_info` --> Contains the info about the players, like its spot on the table, its joining status, etc.. and this key is updated by cashier the momemt it receives the payin_tx using blocknotify.
 3. `chips.vrsc::poker.t_player1` --> Contains the info about the player `1` blinded deck, likewise there exists 9 different keys, one for each player from `chips.vrsc::poker.t_player1` to `chips.vrsc::poker.t_player9`
-4. `chips.vrsc::poker.t_dealer` --> Contains the info about the dealers blinded deck.
-5. `chips.vrsc::poker.t_blinder` --> Contains the info about blinders blinded deck along with the encrypted shamir shards.
+4. `chips.vrsc::poker.t_dealer` --> Contains the info about the encrypted dealers blinded deck along with the points on the curve25519 for the corresponding blinded values.
+5. `chips.vrsc::poker.t_blinder` --> Contains the info about cashiers blinded deck along with the merkelproof of all the blinding values that are used to mask the deck.
