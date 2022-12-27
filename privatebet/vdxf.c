@@ -83,12 +83,6 @@ cJSON *update_cmm(char *id, cJSON *cmm)
 		return NULL;
 	}
 
-	#if 0
-	// This is temporary wait until we get an API to spend the tx in mempool
-	while (!chips_is_mempool_empty()) {
-		sleep(1);
-	}
-	#endif
 	id_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(id_info, "name", id);
 	cJSON_AddStringToObject(id_info, "parent", get_vdxf_id(POKER_CHIPS_VDXF_ID));
@@ -866,12 +860,6 @@ cJSON *append_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data)
 	char *data_type = NULL, *data_key = NULL;
 	cJSON *data_obj = NULL, *cmm_obj = NULL;
 
-	#if 0
-	//sg777: This loop will be removed once the new API is added to spend the tx from mempool
-	while (!chips_is_mempool_empty()) {
-		sleep(1);
-	}
-	#endif
 	cmm_obj = cJSON_CreateObject();
 	cmm_obj = get_cmm(id, 0);
 
