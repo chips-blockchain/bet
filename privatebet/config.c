@@ -314,6 +314,8 @@ void bet_parse_verus_dealer()
 		dlg_info("%s", cJSON_Print(struct_table_to_cJSON(&t)));
 		cJSON *t1 = update_cmm_from_id_key_data_cJSON(t.dealer_id, get_vdxf_id(T_TABLE_INFO_KEY), struct_table_to_cJSON(&t));
 		dlg_info("%s", cJSON_Print(t1));
+
+		#if 0
 		
 		#if 0
 			cJSON *t1 = update_t_table_info(t.dealer_id, get_vdxf_id(T_TABLE_INFO_KEY), t);
@@ -347,6 +349,7 @@ void bet_parse_verus_dealer()
 		} else {
 			dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(t3));
 		}
+		#endif
 	}
 }
 
