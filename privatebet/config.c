@@ -317,14 +317,16 @@ void bet_parse_verus_dealer()
 			dlg_info("t_table_info key of the dealer id is successfully updated");
 		}
 
-		dlg_info("t_table_info key of the table id is::%s\n", get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)));
+		dlg_info("t_table_info key of the table id is::%s\n",
+			 get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)));
 
-
-		cJSON *t2 = append_cmm_from_id_key_data_cJSON(t.table_id,get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)),struct_table_to_cJSON(&t));
-		#if 0
+		cJSON *t2 = append_cmm_from_id_key_data_cJSON(
+			t.table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)),
+			struct_table_to_cJSON(&t));
+#if 0
 		cJSON *t2 = update_t_table_info(
 			t.table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)), t);
-		#endif
+#endif
 		if (jint(t2, "error")) {
 			dlg_error("Updating t_table_info key of the table_id got failed");
 		} else {
