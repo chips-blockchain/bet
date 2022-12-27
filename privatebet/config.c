@@ -311,7 +311,7 @@ void bet_parse_verus_dealer()
 			strncpy(t.table_id, iniparser_getstring(ini, "table:table_id", NULL), sizeof(t.table_id));
 		}
 
-		cJSON *t1 = update_cmm_from_id_key_data_cJSON(t.dealer_id, get_vdxf_id(T_TABLE_INFO_KEY), struct_table_to_cJSON(t));
+		cJSON *t1 = update_cmm_from_id_key_data_cJSON(t.dealer_id, get_vdxf_id(T_TABLE_INFO_KEY), struct_table_to_cJSON(&t));
 		dlg_info("%s", cJSON_Print(t1));
 		
 		#if 0
