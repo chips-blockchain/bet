@@ -238,3 +238,10 @@ void test_deck_shuffling()
 		}
 	}
 }
+
+void test_decode_table_info_from_str(char *str)
+{
+	struct table *t = NULL;
+	t = decode_table_info_from_str(str);
+	print_struct_table(t);
+}
