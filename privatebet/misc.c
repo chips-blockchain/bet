@@ -161,12 +161,12 @@ cJSON *hex_cJSON(char *hex_data)
 	return out;
 }
 
-cJSON* struct_table_to_cJSON(struct table *t)
+cJSON *struct_table_to_cJSON(struct table *t)
 {
 	cJSON *table_info = NULL;
 
 	table_info = cJSON_CreateObject();
-	if(t) {
+	if (t) {
 		cJSON_AddNumberToObject(table_info, "max_players", t->max_players);
 		cJSON_AddNumberToObject(table_info, "big_blind", uint32_s_to_float(t->big_blind));
 		cJSON_AddNumberToObject(table_info, "min_stake", uint32_s_to_float(t->min_stake));

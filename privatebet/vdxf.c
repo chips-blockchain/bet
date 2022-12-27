@@ -1062,8 +1062,9 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 	t = decode_table_info_from_str(get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),
 								  get_key_data_vdxf_id(T_TABLE_INFO_KEY, game_id_str)));
 	if (!t) {
-		dlg_error("Table info in hex string :: %s\n", get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),
-								  get_key_data_vdxf_id(T_TABLE_INFO_KEY, game_id_str)));
+		dlg_error("Table info in hex string :: %s\n",
+			  get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),
+						     get_key_data_vdxf_id(T_TABLE_INFO_KEY, game_id_str)));
 		return ERR_TABLE_DECODING_FAILED;
 	}
 	if ((amount < uint32_s_to_float(t->min_stake)) && (amount > uint32_s_to_float(t->max_stake))) {
