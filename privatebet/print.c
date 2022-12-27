@@ -55,6 +55,7 @@ void print_vdxf_info(int argc, char **argv)
 		print_table_id(argv[2]);
 	} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_TABLE_INFO_KEY)) == 0) {
 		str = get_str_from_id_key_vdxfid(argv[2], get_key_vdxf_id(argv[3]));
+		dlg_info("%s", str);
 		print_struct_table(decode_table_info_from_str(str));
 	} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_PLAYER_INFO_KEY)) == 0) {
 		cmm = get_t_player_info(argv[2]);
