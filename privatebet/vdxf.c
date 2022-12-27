@@ -115,9 +115,9 @@ cJSON *get_cmm(char *id, int16_t full_id)
 	if (0 == full_id) {
 		strcat(params, ".poker.chips10sec@");
 	}
-	argc = 3;
+	argc = 4;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, verus_chips_cli, "getidentity", params);
+	argv = bet_copy_args(argc, verus_chips_cli, "getidentity", params, "-1");
 
 	argjson = cJSON_CreateObject();
 	retval = make_command(argc, argv, &argjson);
@@ -232,9 +232,9 @@ cJSON *get_primaryaddresses(char *id, int16_t full_id)
 	if (0 == full_id) {
 		strcat(params, ".poker.chips10sec@");
 	}
-	argc = 3;
+	argc = 4;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, verus_chips_cli, "getidentity", params);
+	argv = bet_copy_args(argc, verus_chips_cli, "getidentity", params, "-1");
 
 	argjson = cJSON_CreateObject();
 	retval = make_command(argc, argv, &argjson);
