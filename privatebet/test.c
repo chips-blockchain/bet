@@ -3,6 +3,7 @@
 #include "cards777.h"
 #include "vdxf.h"
 #include "deck.h"
+#include "print.h"
 
 int32_t deck_size = 3;
 
