@@ -26,7 +26,7 @@ void test_sg()
 	inv = crecip_donna(k2.priv);
 	o_point = fmul_donna(inv,k2.priv);
 	dlg_info("O::%s", bits256_str(hexstr, o_point));
-	o_point = fmul_donna(o_point,k1.priv);
+	o_point = fmul_donna(k1.priv,o_point);
 	dlg_info("O::%s", bits256_str(hexstr, o_point));
 
 
