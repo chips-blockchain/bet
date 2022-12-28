@@ -312,9 +312,9 @@ void bet_parse_verus_dealer()
 		}
 
 		//Updating the dealer id with t_table_info
-		cJSON *t1 = update_cmm_from_id_key_data_cJSON(t.dealer_id, get_vdxf_id(T_TABLE_INFO_KEY), struct_table_to_cJSON(&t));
+		cJSON *t1 = update_cmm_from_id_key_data_cJSON(t.dealer_id, get_vdxf_id(T_TABLE_INFO_KEY),
+							      struct_table_to_cJSON(&t));
 		dlg_info("%s", cJSON_Print(t1));
-
 
 		//Updating the table id with the game_id and t_table_info
 		cJSON *t2 = append_cmm_from_id_key_data_hex(t.table_id, T_GAME_ID_KEY, bits256_str(hexstr, game_id));
@@ -325,7 +325,7 @@ void bet_parse_verus_dealer()
 		cJSON *t3 = append_cmm_from_id_key_data_cJSON(
 			t.table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)),
 			struct_table_to_cJSON(&t));
-		dlg_info("%s", cJSON_Print(t3));		
+		dlg_info("%s", cJSON_Print(t3));
 	}
 }
 
