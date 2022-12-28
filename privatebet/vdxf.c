@@ -872,6 +872,7 @@ cJSON *append_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data, bool
 	jaddstr(data_obj, data_type, hex_data);
 	//dlg_info("data::%s", cJSON_Print(data_obj));
 
+	cJSON_DeleteItemFromObject(cmm_obj,data_key);
 	cJSON_AddItemToObject(cmm_obj, data_key, data_obj);
 	//dlg_info("cmm_new::%s", cJSON_Print(cmm_obj));
 
