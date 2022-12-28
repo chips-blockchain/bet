@@ -20,41 +20,38 @@ void print_struct_table(struct table *t)
 void print_cashiers_id(char *id)
 {
 	int32_t no_of_keys = 1;
-	char all_c_keys[1][128] = {CASHIERS_KEY};
+	char all_c_keys[1][128] = { CASHIERS_KEY };
 
 	for (int32_t i = 0; i < no_of_keys; i++) {
 		cJSON *temp = get_cJSON_from_id_key_vdxfid(id, get_vdxf_id(all_c_keys[i]));
-		if(temp)
+		if (temp)
 			dlg_info("%s", cJSON_Print(temp));
 	}
 }
-
 
 void print_dealers_id(char *id)
 {
 	int32_t no_of_keys = 1;
-	char all_ds_keys[1][128] = {DEALERS_KEY};
+	char all_ds_keys[1][128] = { DEALERS_KEY };
 
 	for (int32_t i = 0; i < no_of_keys; i++) {
 		cJSON *temp = get_cJSON_from_id_key_vdxfid(id, get_vdxf_id(all_ds_keys[i]));
-		if(temp)
+		if (temp)
 			dlg_info("%s", cJSON_Print(temp));
 	}
 }
-
 
 void print_dealer_id(char *id)
 {
 	int32_t no_of_keys = 1;
-	char all_d_keys[1][128] = {T_TABLE_INFO_KEY};
+	char all_d_keys[1][128] = { T_TABLE_INFO_KEY };
 
 	for (int32_t i = 0; i < no_of_keys; i++) {
 		cJSON *temp = get_cJSON_from_id_key_vdxfid(id, get_vdxf_id(all_d_keys[i]));
-		if(temp)
+		if (temp)
 			dlg_info("%s", cJSON_Print(temp));
 	}
 }
-
 
 void print_table_id(char *id)
 {
@@ -69,23 +66,22 @@ void print_table_id(char *id)
 		dlg_info("game_id::%s", game_id);
 		for (int32_t i = 0; i < no_of_keys; i++) {
 			cJSON *temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(all_t_keys[i], game_id));
-			if(temp)
+			if (temp)
 				dlg_info("%s", cJSON_Print(temp));
-			
 		}
 	}
 }
 
 void print_id_info(int argc, char **argv)
 {
-	if(argc == 4) {
-		if((strcmp(argv[3], "t") == 0) || (strcmp(argv[3], "table") == 0)){
+	if (argc == 4) {
+		if ((strcmp(argv[3], "t") == 0) || (strcmp(argv[3], "table") == 0)) {
 			print_table_id(argv[2]);
-		} else if((strcmp(argv[3], "d") || (strcmp(argv[3], "dealer")) == 0)){
+		} else if ((strcmp(argv[3], "d") || (strcmp(argv[3], "dealer")) == 0)) {
 			print_dealer_id(argv[2]);
-		} else if(strcmp(argv[3], "dealers") == 0){
+		} else if (strcmp(argv[3], "dealers") == 0) {
 			print_dealers_id(argv[2]);
-		} else if(strcmp(argv[3], "cashiers") == 0){
+		} else if (strcmp(argv[3], "cashiers") == 0) {
 			print_dealers_id(argv[2]);
 		} else {
 			dlg_info("Print is not supported for this ID::%s of type::%s", argv[2], argv[3]);
@@ -108,6 +104,6 @@ void print_vdxf_info(int argc, char **argv)
 		str = get_str_from_id_key(argv[2], get_full_key(argv[3]));
 		dlg_info("%s", str);
 	} else {
-		dlg_info("Print operation is not supported for the given ID ::%s and key ::%s",argv[2], argv[3]);
+		dlg_info("Print operation is not supported for the given ID ::%s and key ::%s", argv[2], argv[3]);
 	}
 }
