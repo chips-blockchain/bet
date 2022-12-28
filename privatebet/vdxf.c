@@ -747,9 +747,10 @@ int32_t check_if_pa_exists(char *table_id)
 bool check_if_enough_funds_avail(char *table_id)
 {
 	double balance = 0.0, min_stake = 0.0;
+	char hexstr [65];
 	cJSON *t_table_info = NULL;
 
-	t_table_info = get_cJSON_from_id_key(table_id, T_TABLE_INFO_KEY);
+	t_table_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr,game_id)));
 	if (t_table_info) {
 		min_stake = jdouble(t_table_info, "min_stake");
 		balance = chips_get_balance();
