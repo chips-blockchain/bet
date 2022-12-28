@@ -14,7 +14,7 @@ cJSON* add_dealer(char *dealer_id)
 	jaddistr(dealers, dealer_id);
 
 	cJSON_AddItemToObject(dealers_info,"dealers",dealers);
-	out = update_cmm_from_id_key_data_cJSON("dealers",DEALERS_KEY,dealers_info);
+	out = update_cmm_from_id_key_data_cJSON("dealers",DEALERS_KEY,dealers_info, false);
 
 	dlg_info("%s",cJSON_Print(out));
 	return out;
