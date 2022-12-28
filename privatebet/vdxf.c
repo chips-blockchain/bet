@@ -839,7 +839,7 @@ cJSON *get_cJSON_from_id_key_vdxfid(char *id, char *key_vdxfid)
 	return NULL;
 }
 
-cJSON *append_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data)
+cJSON *append_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data, bool is_key_vdxf_id)
 {
 	char *data_type = NULL, *data_key = NULL;
 	cJSON *data_obj = NULL, *cmm_obj = NULL;
@@ -848,8 +848,13 @@ cJSON *append_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data)
 	cmm_obj = get_cmm(id, 0);
 
 	//dlg_info("cmm_old::%s", cJSON_Print(cmm_obj));
-	data_type = get_vdxf_id(get_key_data_type(key));
-	data_key = get_vdxf_id(key);
+	if(is_key_vdxf_id) {
+		data_type = BYTEVECTOR_VDXF_ID;
+		data_key = key;
+	} else {
+		data_type = get_vdxf_id(get_key_data_type(key));
+		data_key = get_vdxf_id(key);
+	}
 
 	data_obj = cJSON_CreateObject();
 	jaddstr(data_obj, data_type, hex_data);
@@ -861,30 +866,30 @@ cJSON *append_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data)
 	return update_cmm(id, cmm_obj);
 }
 
-cJSON *append_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data)
+cJSON *append_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data, bool is_key_vdxf_id)
 {
 	char *hex_data = NULL;
 
 	cJSON_hex(data, &hex_data);
 	if (!hex_data) {
-		dlg_error("%s::%d::Error occured in conversion of cJSON to HEX\n", __func__, __LINE__);
+		dlg_error("Error occured in conversion of cJSON to HEX\n");
 		return NULL;
 	}
-	return append_cmm_from_id_key_data_hex(id, key, hex_data);
+	return append_cmm_from_id_key_data_hex(id, key, hex_data, is_key_vdxf_id);
 }
 
-cJSON *update_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data)
+cJSON *update_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data, bool is_key_vdxf_id)
 {
 	char *data_type = NULL, *data_key = NULL;
 	cJSON *data_obj = NULL, *data_key_obj = NULL;
 
-	data_type = get_vdxf_id(get_key_data_type(key));
-	if (!data_type) {
-		dlg_error("%s::%d::Data type for the key::%s is not found\n", __func__, __LINE__, key);
-		return NULL;
+	if(is_key_vdxf_id) {
+		data_type = BYTEVECTOR_VDXF_ID;
+		data_key = key;
+	} else {
+		data_type = get_vdxf_id(get_key_data_type(key));
+		data_key = get_vdxf_id(key);
 	}
-	data_key = get_vdxf_id(key);
-
 	data_obj = cJSON_CreateObject();
 	jaddstr(data_obj, data_type, hex_data);
 
@@ -894,7 +899,7 @@ cJSON *update_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data)
 	return update_cmm(id, data_key_obj);
 }
 
-cJSON *update_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data)
+cJSON *update_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data, bool is_key_vdxf_id)
 {
 	char *hex_data = NULL;
 
@@ -903,7 +908,7 @@ cJSON *update_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data)
 		dlg_error("%s::%d::Error occured in conversion of cJSON to HEX\n", __func__, __LINE__);
 		return NULL;
 	}
-	return update_cmm_from_id_key_data_hex(id, key, hex_data);
+	return update_cmm_from_id_key_data_hex(id, key, hex_data, is_key_vdxf_id);
 }
 
 cJSON *get_t_player_info(char *table_id)
@@ -1054,7 +1059,7 @@ int32_t process_payin_tx_data(char *txid, cJSON *payin_tx_data)
 	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(updated_t_player_info));
 	out = append_cmm_from_id_key_data_cJSON(jstr(payin_tx_data, "table_id"),
 						get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str),
-						updated_t_player_info);
+						updated_t_player_info, true);
 
 	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(out));
 
