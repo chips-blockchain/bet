@@ -16,6 +16,16 @@ void test_sg()
 	k1.priv = curve25519_keypair(&k1.prod);
 	k2.priv = curve25519_keypair(&k2.prod);
 
+	bits256 inv = crecip_donna(k1.priv);
+	bits256 o_point = fmul_donna(inv,k1.priv);
+	
+	dlg_info("k1.priv::%s", bits256_str(hexstr, k1.priv));
+	dlg_info("k1.priv_inv::%s", bits256_str(hexstr, inv));
+	dlg_info("O::%s", bits256_str(hexstr, o_point));
+	
+	
+	
+#if 0
 	dlg_info("k1.priv::%s", bits256_str(hexstr, k1.priv));
 	dlg_info("k1.pub::%s", bits256_str(hexstr, k1.prod));
 
@@ -32,6 +42,7 @@ void test_sg()
 	p1 = fmul_donna(r, p1);
 	p1 = fmul_donna(crecip_donna(r), p1);
 	dlg_info("p1 ::%s", bits256_str(hexstr, p1));
+#endif	
 }
 
 void test_permutations()
