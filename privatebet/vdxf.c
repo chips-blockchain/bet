@@ -74,23 +74,23 @@ char *get_key_data_vdxf_id(char *key_name, char *data)
 
 cJSON *update_with_retry(int argc, char **argv)
 {
-	int32_t retries = 3, i =0;
+	int32_t retries = 3, i = 0;
 	cJSON *argjson = NULL;
-	
+
 	do {
 		argjson = cJSON_CreateObject();
 		make_command(argc, argv, &argjson);
-		if(jint(argjson,"error") == 0) {
+		if (jint(argjson, "error") == 0) {
 			break;
-		}	
+		}
 		dlg_warn("Retrying the updateidentity");
 		sleep(1);
 		i++;
-	}while(i<retries);
-	
-	if(jint(argjson,"error")) {
+	} while (i < retries);
+
+	if (jint(argjson, "error")) {
 		dlg_error("Error in doing the updateidentity");
-	}	
+	}
 	return argjson;
 }
 
@@ -115,13 +115,12 @@ cJSON *update_cmm(char *id, cJSON *cmm)
 	snprintf(params, arg_size, "\'%s\'", cJSON_Print(id_info));
 	argv = bet_copy_args(argc, verus_chips_cli, "updateidentity", params);
 
+	argjson = update_with_retry(argc, argv);
 
-	argjson = update_with_retry(argc,argv);
-
-	#if 0
+#if 0
 	argjson = cJSON_CreateObject();
 	make_command(argc, argv, &argjson);
-	#endif
+#endif
 
 end:
 	bet_dealloc_args(argc, &argv);
@@ -185,10 +184,10 @@ cJSON *update_primaryaddresses(char *id, cJSON *primaryaddress)
 	argv = bet_copy_args(argc, verus_chips_cli, "updateidentity", params);
 
 	argjson = update_with_retry(argc, argv);
-	#if 0
+#if 0
 	argjson = cJSON_CreateObject();
 	make_command(argc, argv, &argjson);
-	#endif
+#endif
 
 end:
 	bet_dealloc_args(argc, &argv);
