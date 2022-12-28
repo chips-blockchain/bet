@@ -17,6 +17,19 @@ void print_struct_table(struct table *t)
 	}
 }
 
+void print_dealer_id(char *id)
+{
+	int32_t no_of_keys = 1;
+	char all_d_keys[1][128] = {T_TABLE_INFO_KEY};
+
+	for (int32_t i = 0; i < no_of_keys; i++) {
+		cJSON *temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(all_t_keys[i], game_id));
+		if(temp)
+			dlg_info("%s", cJSON_Print(temp));
+	}
+}
+
+
 void print_table_id(char *id)
 {
 	int32_t no_of_keys = 11;
@@ -37,14 +50,23 @@ void print_table_id(char *id)
 	}
 }
 
+void print_id_info(int argc, char **argv)
+{
+	if(argc == 4) {
+		if(strcmp(argv[3], "t") == 0){
+			print_table_id(argv[2]);
+		} else if(strcmp(argv[3], "d") == 0){
+				print_dealer_id(argv[2]);
+		}
+	}
+}
+
 void print_vdxf_info(int argc, char **argv)
 {
 	char *str = NULL;
 	cJSON *cmm = NULL;
 
-	if (argc == 3) {
-		print_table_id(argv[2]);
-	} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_TABLE_INFO_KEY)) == 0) {
+	if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_TABLE_INFO_KEY)) == 0) {
 		cmm = get_cJSON_from_id_key_vdxfid(argv[2], get_key_vdxf_id(argv[3]));
 		dlg_info("%s", cJSON_Print(cmm));
 	} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_PLAYER_INFO_KEY)) == 0) {

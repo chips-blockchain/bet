@@ -595,6 +595,8 @@ static void bet_start(int argc, char **argv)
 		}
 	} else if ((strcmp(argv[1], "print") == 0) && (argc >= 3)) {
 		print_vdxf_info(argc, argv);
+	} else if ((strcmp(argv[1], "print_id") == 0) && (argc >= 3)) {
+		print_id_info(argc, argv);
 	} else {
 		bet_command_info();
 	}
