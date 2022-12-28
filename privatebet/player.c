@@ -51,7 +51,7 @@ end:
 int32_t bet_init_player_deck(int32_t player_id)
 {
 	int32_t retval = OK, t_player_keys_no = 9;
-	char str[129], hexstr[65] = {0};
+	char str[129], hexstr[65] = { 0 };
 	cJSON *cjson_player_cards = NULL, *player_deck = NULL, *cmm = NULL;
 
 	char t_player_keys[9][128] = { T_PLAYER1_KEY, T_PLAYER2_KEY, T_PLAYER3_KEY, T_PLAYER4_KEY, T_PLAYER5_KEY,
@@ -71,9 +71,11 @@ int32_t bet_init_player_deck(int32_t player_id)
 		jaddistr(cjson_player_cards, bits256_str(str, player_info.cardpubkeys[i]));
 	}
 
-	dlg_info("player_key::%s",get_key_data_vdxf_id(t_player_keys[player_id - 1],bits256_str(hexstr,game_id)));
+	dlg_info("player_key::%s", get_key_data_vdxf_id(t_player_keys[player_id - 1], bits256_str(hexstr, game_id)));
 
-	cJSON *out = append_cmm_from_id_key_data_cJSON(player_config.table_id, get_key_data_vdxf_id(t_player_keys[player_id - 1],bits256_str(hexstr,game_id)), player_deck, true);
+	cJSON *out = append_cmm_from_id_key_data_cJSON(
+		player_config.table_id,
+		get_key_data_vdxf_id(t_player_keys[player_id - 1], bits256_str(hexstr, game_id)), player_deck, true);
 	dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(out));
 
 #if 0

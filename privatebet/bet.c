@@ -478,7 +478,7 @@ static int32_t handle_verus_player()
 #endif
 end:
 	if (retval)
-		dlg_error("%s",bet_err_str(retval));
+		dlg_error("%s", bet_err_str(retval));
 }
 
 static void bet_start(int argc, char **argv)
