@@ -404,24 +404,23 @@ bool is_dealer_exists(char *dealer_id)
 
 int32_t get_player_id(int *player_id)
 {
-	int32_t retval = ERR_PLAYER_NOT_EXISTS;
-	char *game_id_str = NULL;
+	char *game_id_str = NULL, hexstr [65];
 	cJSON *t_player_info = NULL, *player_info = NULL;
 
 	game_id_str = get_str_from_id_key(player_config.table_id, get_vdxf_id(T_GAME_ID_KEY));
 	if(!game_id_str)
 		return ERR_GAME_ID_NOT_FOUND;
 
-	strcpy(game_id, game_id_str);
-
-	t_player_info = get_cJSON_from_id_key_vdxfid(player_config.table_id,get_key_data_vdxf_id(T_PLAYER_INFO_KEY,game_id));
+	game_id = bits256_conv(game_id_str);
+	dlg_info("%s::%s", game_id_str, bits256_str(hexstr,game_id));	
+	t_player_info = get_cJSON_from_id_key_vdxfid(player_config.table_id,get_key_data_vdxf_id(T_PLAYER_INFO_KEY,bits256_str(hexstr,game_id)));
 	if (!t_player_info) 
-		retval = ERR_T_PLAYER_INFO_NULL;
+		return ERR_T_PLAYER_INFO_NULL;
 
 	player_info = cJSON_CreateArray();
 	player_info = jobj(t_player_info, "player_info");
 	if (!player_info)
-		retval = ERR_T_PLAYER_INFO_CORRUPTED;
+		return ERR_T_PLAYER_INFO_CORRUPTED;
 
 	for (int32_t i = 0; i < cJSON_GetArraySize(player_info); i++) {
 		if (strncmp(player_config.primaryaddress, jstri(player_info, i),
@@ -430,13 +429,10 @@ int32_t get_player_id(int *player_id)
 			strtok(NULL, "_");
 			*player_id = atoi(strtok(NULL, "_"));
 			dlg_info("%s::%d::player id::%d\n", __func__, __LINE__, *player_id);
-			retval = OK;
-			break;
+			return OK;
 		}
 	}
-
-end:
-	return retval;
+	return ERR_PLAYER_NOT_EXISTS;
 }
 
 int32_t join_table()
