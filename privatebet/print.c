@@ -17,6 +17,32 @@ void print_struct_table(struct table *t)
 	}
 }
 
+void print_cashiers_id(char *id)
+{
+	int32_t no_of_keys = 1;
+	char all_c_keys[1][128] = {CASHIERS_KEY};
+
+	for (int32_t i = 0; i < no_of_keys; i++) {
+		cJSON *temp = get_cJSON_from_id_key_vdxfid(id, get_vdxf_id(all_c_keys[i]));
+		if(temp)
+			dlg_info("%s", cJSON_Print(temp));
+	}
+}
+
+
+void print_dealers_id(char *id)
+{
+	int32_t no_of_keys = 1;
+	char all_ds_keys[1][128] = {DEALERS_KEY};
+
+	for (int32_t i = 0; i < no_of_keys; i++) {
+		cJSON *temp = get_cJSON_from_id_key_vdxfid(id, get_vdxf_id(all_ds_keys[i]));
+		if(temp)
+			dlg_info("%s", cJSON_Print(temp));
+	}
+}
+
+
 void print_dealer_id(char *id)
 {
 	int32_t no_of_keys = 1;
@@ -53,10 +79,12 @@ void print_table_id(char *id)
 void print_id_info(int argc, char **argv)
 {
 	if(argc == 4) {
-		if(strcmp(argv[3], "t") == 0){
+		if((strcmp(argv[3], "t") == 0) || (strcmp(argv[3], "table") == 0)){
 			print_table_id(argv[2]);
-		} else if(strcmp(argv[3], "d") == 0){
+		} else if((strcmp(argv[3], "d") || if(strcmp(argv[3], "dealer")) == 0){
 			print_dealer_id(argv[2]);
+		} else if(strcmp(argv[3], "dealers") == 0){
+			print_dealers_id(argv[2]);
 		}
 	}
 }
