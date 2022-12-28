@@ -127,6 +127,46 @@ end:
 	return argjson;
 }
 
+cJSON *append_pa_to_cmm(char *id, char *pa)
+{
+	int argc;
+	char **argv = NULL, params[arg_size] = {0};
+	cJSON *id_info = NULL, *argjson = NULL, *pa_arr = NULL, *cmm = NULL;
+
+	if((!id) || (!pa) || (!verus_chips_cli))
+		return NULL;
+
+	id_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(id_info, "name", id);
+	cJSON_AddStringToObject(id_info, "parent", get_vdxf_id(POKER_CHIPS_VDXF_ID));
+
+	
+	cmm = get_cmm(id, 0);
+	cJSON_AddItemToObject(id_info, "contentmultimap", cmm);
+
+	pa_arr = cJSON_CreateArray();
+	pa_arr = get_primaryaddresses(id,0);
+	jaddistr(pa_arr, pa);
+	dlg_info("%s", cJSON_Print(pa_arr));
+	cJSON_AddItemToObject(id_info,"primaryaddresses",pa_arr);
+
+	argc = 3;
+	bet_alloc_args(argc, &argv);
+	snprintf(params, arg_size, "\'%s\'", cJSON_Print(id_info));
+	argv = bet_copy_args(argc, verus_chips_cli, "updateidentity", params);
+
+	argjson = update_with_retry(argc, argv);
+
+#if 0
+	argjson = cJSON_CreateObject();
+	make_command(argc, argv, &argjson);
+#endif
+
+end:
+	bet_dealloc_args(argc, &argv);
+	return argjson;
+}
+
 cJSON *get_cmm(char *id, int16_t full_id)
 {
 	int32_t retval = OK, argc;
@@ -279,29 +319,6 @@ cJSON *update_t_game_ids(char *id)
 	cmm = cJSON_CreateObject();
 	cJSON_AddItemToObject(cmm, get_vdxf_id(T_GAME_ID_KEY), t_game_ids);
 	cJSON *out = update_cmm(id, cmm);
-
-	return out;
-}
-
-cJSON *update_t_table_info(char *dealer_id, char *key, struct table t)
-{
-	uint8_t *byte_arr = NULL;
-	char hexstr[arg_size];
-	cJSON *dealer_cmm = NULL, *dealer_cmm_key = NULL, *out = NULL;
-
-	byte_arr = calloc(1, sizeof(t));
-	struct_to_byte_arr(&t, sizeof(t), byte_arr);
-
-	init_hexbytes_noT(hexstr, byte_arr, sizeof(t));
-
-	dealer_cmm = cJSON_CreateObject();
-	cJSON_AddStringToObject(dealer_cmm, get_vdxf_id(BYTEVECTOR_VDXF_ID), hexstr);
-
-	dealer_cmm_key = cJSON_CreateObject();
-	cJSON_AddItemToObject(dealer_cmm_key, key, dealer_cmm);
-
-	out = cJSON_CreateObject();
-	out = update_cmm(dealer_id, dealer_cmm_key);
 
 	return out;
 }
@@ -1013,7 +1030,7 @@ int32_t process_payin_tx_data(char *txid, cJSON *payin_tx_data)
 {
 	int32_t retval = OK;
 	char *game_id_str = NULL;
-	cJSON *updated_t_player_info = NULL, *pa_arr = NULL, *out = NULL;
+	cJSON *updated_t_player_info = NULL, *out = NULL;
 
 	retval = do_payin_tx_checks(txid, payin_tx_data);
 	if (retval != OK) {
@@ -1035,18 +1052,13 @@ int32_t process_payin_tx_data(char *txid, cJSON *payin_tx_data)
 		return ERR_T_PLAYER_INFO_UPDATE;
 
 	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(updated_t_player_info));
-	out = update_cmm_from_id_key_data_cJSON(jstr(payin_tx_data, "table_id"),
+	out = append_cmm_from_id_key_data_cJSON(jstr(payin_tx_data, "table_id"),
 						get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str),
 						updated_t_player_info);
+
 	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(out));
 
-	pa_arr = cJSON_CreateArray();
-	pa_arr = get_primaryaddresses(jstr(payin_tx_data, "table_id"), 0);
-
-	jaddistr(pa_arr, jstr(payin_tx_data, "primaryaddress"));
-	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(pa_arr));
-
-	out = update_primaryaddresses(jstr(payin_tx_data, "table_id"), pa_arr);
+	out = append_pa_to_cmm(jstr(payin_tx_data, "table_id"),jstr(payin_tx_data, "primaryaddress"));
 	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(out));
 
 	return retval;
