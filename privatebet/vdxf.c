@@ -383,25 +383,21 @@ end:
 bool is_dealer_exists(char *dealer_id)
 {
 	cJSON *dealer_ids = NULL;
-	bool dealer_exists = false;
 
-	if ((dealer_id == NULL) || (strlen(dealer_id) == 0)) {
-		return dealer_exists;
-	}
+	if (!dealer_id) 
+		return false;
 
 	dealer_ids = cJSON_CreateArray();
 	dealer_ids = get_cJSON_from_id_key("dealers", DEALERS_KEY);
-	if (dealer_ids == NULL) {
-		return dealer_exists;
-	}
+	if (!dealer_ids ) 
+		return false;
 
 	for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ids); i++) {
 		if (0 == strcmp(dealer_id, jstri(dealer_ids, i))) {
-			dealer_exists = true;
-			break;
+			return true;
 		}
 	}
-	return dealer_exists;
+	return false;
 }
 
 int32_t get_player_id(int *player_id)
