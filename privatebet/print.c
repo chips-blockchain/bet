@@ -77,10 +77,10 @@ void print_id_info(int argc, char **argv)
 	if (argc == 4) {
 		if ((strcmp(argv[3], "t") == 0) || (strcmp(argv[3], "table") == 0)) {
 			print_table_id(argv[2]);
-		} else if ((strcmp(argv[3], "d") || (strcmp(argv[3], "dealer")) == 0)) {
-			print_dealer_id(argv[2]);
 		} else if (strcmp(argv[3], "dealers") == 0) {
 			print_dealers_id(argv[2]);
+		}  else if ((strcmp(argv[3], "d") || (strcmp(argv[3], "dealer")) == 0)) {
+			print_dealer_id(argv[2]);
 		} else if (strcmp(argv[3], "cashiers") == 0) {
 			print_dealers_id(argv[2]);
 		} else {
