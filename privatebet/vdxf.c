@@ -438,7 +438,7 @@ int32_t get_player_id(int *player_id)
 	player_info = jobj(t_player_info, "player_info");
 	if (!player_info)
 		return ERR_T_PLAYER_INFO_CORRUPTED;
-
+	dlg_info("%s", cJSON_Print(player_info));
 	for (int32_t i = 0; i < cJSON_GetArraySize(player_info); i++) {
 		if (strncmp(player_config.primaryaddress, jstri(player_info, i),
 			    strlen(player_config.primaryaddress)) == 0) {
