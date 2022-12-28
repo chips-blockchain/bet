@@ -93,8 +93,18 @@ cJSON *update_cmm(char *id, cJSON *cmm)
 	snprintf(params, arg_size, "\'%s\'", cJSON_Print(id_info));
 	argv = bet_copy_args(argc, verus_chips_cli, "updateidentity", params);
 
-	argjson = cJSON_CreateObject();
-	make_command(argc, argv, &argjson);
+	int32_t retries = 3, i =0;
+
+	do {
+		argjson = cJSON_CreateObject();
+		make_command(argc, argv, &argjson);
+		if(jint(argjson,"error") == 0) {
+			break;
+		}	
+		dlg_warn("Retrying the updateidentity");
+		sleep(1);
+		i++;
+	}while(i<retries);
 
 end:
 	bet_dealloc_args(argc, &argv);
