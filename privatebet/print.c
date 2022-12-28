@@ -23,7 +23,7 @@ void print_dealer_id(char *id)
 	char all_d_keys[1][128] = {T_TABLE_INFO_KEY};
 
 	for (int32_t i = 0; i < no_of_keys; i++) {
-		cJSON *temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(all_t_keys[i], game_id));
+		cJSON *temp = get_cJSON_from_id_key_vdxfid(id, get_vdxf_id(all_d_keys[i]));
 		if(temp)
 			dlg_info("%s", cJSON_Print(temp));
 	}
@@ -56,7 +56,7 @@ void print_id_info(int argc, char **argv)
 		if(strcmp(argv[3], "t") == 0){
 			print_table_id(argv[2]);
 		} else if(strcmp(argv[3], "d") == 0){
-				print_dealer_id(argv[2]);
+			print_dealer_id(argv[2]);
 		}
 	}
 }
