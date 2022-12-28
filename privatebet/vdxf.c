@@ -72,6 +72,28 @@ char *get_key_data_vdxf_id(char *key_name, char *data)
 	return get_vdxf_id(full_key);
 }
 
+cJSON *update_with_retry(int argc, char **argv)
+{
+	int32_t retries = 3, i =0;
+	cJSON *argjson = NULL;
+	
+	do {
+		argjson = cJSON_CreateObject();
+		make_command(argc, argv, &argjson);
+		if(jint(argjson,"error") == 0) {
+			break;
+		}	
+		dlg_warn("Retrying the updateidentity");
+		sleep(1);
+		i++;
+	}while(i<retries);
+	
+	if(jint(argjson,"error")) {
+		dlg_error("Error in doing the updateidentity");
+	}	
+	return argjson;
+}
+
 cJSON *update_cmm(char *id, cJSON *cmm)
 {
 	cJSON *id_info = NULL, *argjson = NULL;
@@ -93,22 +115,13 @@ cJSON *update_cmm(char *id, cJSON *cmm)
 	snprintf(params, arg_size, "\'%s\'", cJSON_Print(id_info));
 	argv = bet_copy_args(argc, verus_chips_cli, "updateidentity", params);
 
-	int32_t retries = 3, i =0;
 
-	do {
-		argjson = cJSON_CreateObject();
-		make_command(argc, argv, &argjson);
-		if(jint(argjson,"error") == 0) {
-			break;
-		}	
-		dlg_warn("Retrying the updateidentity");
-		sleep(1);
-		i++;
-	}while(i<retries);
-	
-	if(jint(argjson,"error")) {
-		dlg_error("Error in doing the updateidentity");
-	}	
+	argjson = update_with_retry(argc,argv);
+
+	#if 0
+	argjson = cJSON_CreateObject();
+	make_command(argc, argv, &argjson);
+	#endif
 
 end:
 	bet_dealloc_args(argc, &argv);
@@ -150,59 +163,6 @@ end:
 	return cmm;
 }
 
-cJSON *append_primaryaddresses(char *id, cJSON *primaryaddress)
-{
-	cJSON *id_info = NULL, *argjson = NULL, *pa = NULL, *final_pa = NULL;
-	int argc;
-	char **argv = NULL;
-	char params[arg_size] = { 0 };
-
-	if ((NULL == id) || (NULL == primaryaddress) || (NULL == verus_chips_cli)) {
-		return NULL;
-	}
-	pa = get_primaryaddresses(id, 0);
-	final_pa = cJSON_CreateArray();
-	for (int32_t i = 0; i < cJSON_GetArraySize(pa); i++) {
-		jaddistr(final_pa, jstri(pa, i));
-	}
-	int g_flag = 1;
-	for (int32_t i = 0; i < cJSON_GetArraySize(primaryaddress); i++) {
-		int flag = 1;
-		for (int32_t j = 0; j < cJSON_GetArraySize(pa); j++) {
-			if (strcmp(jstri(primaryaddress, i), jstri(pa, j)) == 0) {
-				flag = 0;
-				break;
-			}
-		}
-		if (flag) {
-			g_flag = 0;
-			jaddistr(final_pa, jstri(primaryaddress, i));
-		}
-	}
-	if (g_flag)
-		return NULL;
-
-	dlg_info("%s::%d::final_pa::%s\n", __FUNCTION__, __LINE__, cJSON_Print(final_pa));
-
-	id_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(id_info, "name", id);
-	cJSON_AddStringToObject(id_info, "parent", get_vdxf_id(POKER_CHIPS_VDXF_ID));
-	cJSON_AddItemToObject(id_info, "primaryaddresses", final_pa);
-
-	argc = 3;
-	bet_alloc_args(argc, &argv);
-	snprintf(params, arg_size, "\'%s\'", cJSON_Print(id_info));
-	argv = bet_copy_args(argc, verus_chips_cli, "updateidentity", params);
-
-	argjson = cJSON_CreateObject();
-	make_command(argc, argv, &argjson);
-
-end:
-	bet_dealloc_args(argc, &argv);
-	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(argjson));
-	return argjson;
-}
-
 cJSON *update_primaryaddresses(char *id, cJSON *primaryaddress)
 {
 	cJSON *id_info = NULL, *argjson = NULL;
@@ -224,8 +184,11 @@ cJSON *update_primaryaddresses(char *id, cJSON *primaryaddress)
 	snprintf(params, arg_size, "\'%s\'", cJSON_Print(id_info));
 	argv = bet_copy_args(argc, verus_chips_cli, "updateidentity", params);
 
+	argjson = update_with_retry(argc, argv);
+	#if 0
 	argjson = cJSON_CreateObject();
 	make_command(argc, argv, &argjson);
+	#endif
 
 end:
 	bet_dealloc_args(argc, &argv);
@@ -877,16 +840,16 @@ cJSON *append_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data)
 	cmm_obj = cJSON_CreateObject();
 	cmm_obj = get_cmm(id, 0);
 
-	dlg_info("cmm_old::%s", cJSON_Print(cmm_obj));
+	//dlg_info("cmm_old::%s", cJSON_Print(cmm_obj));
 	data_type = get_vdxf_id(get_key_data_type(key));
 	data_key = get_vdxf_id(key);
 
 	data_obj = cJSON_CreateObject();
 	jaddstr(data_obj, data_type, hex_data);
-	dlg_info("data::%s", cJSON_Print(data_obj));
+	//dlg_info("data::%s", cJSON_Print(data_obj));
 
 	cJSON_AddItemToObject(cmm_obj, data_key, data_obj);
-	dlg_info("cmm_new::%s", cJSON_Print(cmm_obj));
+	//dlg_info("cmm_new::%s", cJSON_Print(cmm_obj));
 
 	return update_cmm(id, cmm_obj);
 }
@@ -968,88 +931,6 @@ cJSON *get_t_player_info(char *table_id)
 	}
 	free(t_player_info_str);
 	return t_player_info;
-}
-
-cJSON *update_t_player_info(char *id, cJSON *t_player_info)
-{
-	cJSON *id_info = NULL, *argjson = NULL, *cmm = NULL, *player_info = NULL;
-	int argc;
-	char **argv = NULL;
-	char params[arg_size] = { 0 }, *hexstr = NULL;
-
-	if ((NULL == id) || (NULL == t_player_info) || (NULL == verus_chips_cli)) {
-		return NULL;
-	}
-
-	id_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(id_info, "name", id);
-	cJSON_AddStringToObject(id_info, "parent", get_vdxf_id(POKER_CHIPS_VDXF_ID));
-
-	cJSON_hex(t_player_info, &hexstr);
-	player_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(player_info, get_vdxf_id(STRING_VDXF_ID), hexstr);
-
-	cmm = cJSON_CreateObject();
-	cJSON_AddItemToObject(cmm, get_vdxf_id(T_PLAYER_INFO_KEY), player_info);
-	cJSON_AddItemToObject(id_info, "contentmultimap", cmm);
-
-	argc = 3;
-	bet_alloc_args(argc, &argv);
-	snprintf(params, arg_size, "\'%s\'", cJSON_Print(id_info));
-	argv = bet_copy_args(argc, verus_chips_cli, "updateidentity", params);
-
-	argjson = cJSON_CreateObject();
-	make_command(argc, argv, &argjson);
-
-end:
-	bet_dealloc_args(argc, &argv);
-	return argjson;
-}
-
-static cJSON *update_t_player_info_pa(char *id, cJSON *t_player_info, cJSON *primaryaddresses)
-{
-	cJSON *id_info = NULL, *argjson = NULL, *cmm = NULL, *player_info = NULL, *t_table_info = NULL;
-	int argc;
-	char **argv = NULL;
-	char params[arg_size] = { 0 }, *hexstr = NULL;
-
-	if ((NULL == id) || (NULL == t_player_info) || (NULL == verus_chips_cli)) {
-		return NULL;
-	}
-
-	id_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(id_info, "name", id);
-	cJSON_AddStringToObject(id_info, "parent", get_vdxf_id(POKER_CHIPS_VDXF_ID));
-
-	cJSON_hex(t_player_info, &hexstr);
-	player_info = cJSON_CreateObject();
-	cJSON_AddStringToObject(player_info, get_vdxf_id(STRING_VDXF_ID), hexstr);
-
-	cmm = cJSON_CreateObject();
-	cJSON_AddItemToObject(cmm, get_vdxf_id(T_PLAYER_INFO_KEY), player_info);
-
-	/*
-		Reupdating t_table_info
-	*/
-	t_table_info = get_cmm_key_data(id, 0, get_vdxf_id(T_TABLE_INFO_KEY));
-	if (t_table_info) {
-		cJSON_AddItemToObject(cmm, get_vdxf_id(T_TABLE_INFO_KEY), t_table_info);
-	}
-
-	cJSON_AddItemToObject(id_info, "contentmultimap", cmm);
-	cJSON_AddItemToObject(id_info, "primaryaddresses", primaryaddresses);
-
-	argc = 3;
-	bet_alloc_args(argc, &argv);
-	snprintf(params, arg_size, "\'%s\'", cJSON_Print(id_info));
-	argv = bet_copy_args(argc, verus_chips_cli, "updateidentity", params);
-
-	argjson = cJSON_CreateObject();
-	make_command(argc, argv, &argjson);
-
-end:
-	bet_dealloc_args(argc, &argv);
-	return argjson;
 }
 
 int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
