@@ -105,6 +105,10 @@ cJSON *update_cmm(char *id, cJSON *cmm)
 		sleep(1);
 		i++;
 	}while(i<retries);
+	
+	if(jint(argjson,"error")) {
+		dlg_error("Error in doing the updateidentity");
+	}	
 
 end:
 	bet_dealloc_args(argc, &argv);
