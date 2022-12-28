@@ -27,21 +27,12 @@ void print_table_id(char *id)
 
 	game_id = get_str_from_id_key(id, get_vdxf_id(T_GAME_ID_KEY));
 	if (game_id) {
-		dlg_info("%s::%d::game_id::%s\n", __func__, __LINE__, game_id);
+		dlg_info("game_id::%s", game_id);
 		for (int32_t i = 0; i < no_of_keys; i++) {
-			if (strcmp(all_t_keys[i], T_TABLE_INFO_KEY) == 0) {
-				char *str =
-					get_str_from_id_key_vdxfid(id, get_key_data_vdxf_id(all_t_keys[i], game_id));
-				print_struct_table(decode_table_info_from_str(str));
-			}
 			cJSON *temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(all_t_keys[i], game_id));
-			if (temp) {
-				if (strcmp(all_t_keys[i], T_TABLE_INFO_KEY) == 0)
-					print_struct_table(decode_table_info(temp));
-				else
-					dlg_info("%s::%d::key::%s::value::%s\n", __func__, __LINE__, all_t_keys[i],
-						 cJSON_Print(temp));
-			}
+			if(temp)
+				dlg_info("%s", cJSON_Print(temp));
+			
 		}
 	}
 }
