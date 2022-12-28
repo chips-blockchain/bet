@@ -317,13 +317,15 @@ void bet_parse_verus_dealer()
 		dlg_info("%s", cJSON_Print(t1));
 
 		//Updating the table id with the game_id and t_table_info
-		cJSON *t2 = append_cmm_from_id_key_data_hex(t.table_id, T_GAME_ID_KEY, bits256_str(hexstr, game_id), false);
+		cJSON *t2 =
+			append_cmm_from_id_key_data_hex(t.table_id, T_GAME_ID_KEY, bits256_str(hexstr, game_id), false);
 		dlg_info("%s", cJSON_Print(t2));
 
 		dlg_info("t_table_info key of the table id is::%s\n",
 			 get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)));
 		cJSON *t3 = append_cmm_from_id_key_data_cJSON(
-			t.table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)), struct_table_to_cJSON(&t), true);
+			t.table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)),
+			struct_table_to_cJSON(&t), true);
 		dlg_info("%s", cJSON_Print(t3));
 	}
 }
