@@ -43,7 +43,6 @@ cJSON *append_t_key(char *id, char *key, cJSON *key_info)
 	argjson = cJSON_CreateObject();
 	make_command(argc, argv, &argjson);
 
-end:
 	bet_dealloc_args(argc, &argv);
 	return argjson;
 }
@@ -57,10 +56,9 @@ int32_t bet_init_player_deck(int32_t player_id)
 	char t_player_keys[9][128] = { T_PLAYER1_KEY, T_PLAYER2_KEY, T_PLAYER3_KEY, T_PLAYER4_KEY, T_PLAYER5_KEY,
 				       T_PLAYER6_KEY, T_PLAYER7_KEY, T_PLAYER8_KEY, T_PLAYER9_KEY };
 
-	if ((player_id < 1) && (player_id > 9)) {
-		retval = ERR_INVALID_PLAYER_ID;
-		goto end;
-	}
+	if ((player_id < 1) && (player_id > 9)) 
+		return ERR_INVALID_PLAYER_ID;
+
 	player_info.player_key = deckgen_player(player_info.cardprivkeys, player_info.cardpubkeys, player_info.permis,
 						CARDS777_MAXCARDS);
 	player_deck = cJSON_CreateObject();
@@ -76,26 +74,7 @@ int32_t bet_init_player_deck(int32_t player_id)
 	cJSON *out = append_cmm_from_id_key_data_cJSON(
 		player_config.table_id,
 		get_key_data_vdxf_id(t_player_keys[player_id - 1], bits256_str(hexstr, game_id)), player_deck, true);
-	dlg_info("%s::%d::%s\n", __func__, __LINE__, cJSON_Print(out));
+	dlg_info("%s", cJSON_Print(out));
 
-#if 0
-	cJSON_hex(player_deck, &hexstr);
-	if (hexstr == NULL) {
-		retval = ERR_PLAYER_DECK_SHUFFLING;
-		goto end;
-	}
-	cJSON *player_deck_hex = NULL;
-	player_deck_hex = cJSON_CreateObject();
-	jaddstr(player_deck_hex, get_vdxf_id(BYTEVECTOR_VDXF_ID), hexstr);
-
-	cmm = cJSON_CreateArray();
-	jaddi(cmm, player_deck_hex);
-	dlg_info("%s::%dcmm::%s\n", __func__, __LINE__, cJSON_Print(cmm));
-
-	//cJSON *out = append_t_key(player_config.table_id, T_PLAYER_KEYS[player_id - 1], cmm);
-	//dlg_info("%s::%d::%s", __func__, __LINE__, cJSON_Print(out));
-#endif
-
-end:
 	return retval;
 }

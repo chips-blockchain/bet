@@ -38,7 +38,7 @@ enum bet_dcv_state {
 #define satoshis_per_unit       1000
 #define normalization_factor    100
 
-#define CARDS777_MAXCARDS       52 // 52    //
+#define CARDS777_MAXCARDS       3 // 52    //
 #define CARDS777_MAXPLAYERS     10 // 9   //
 #define CARDS777_MAXROUNDS      4 // 9   //
 #define CARDS777_MAXCHIPS       1000
