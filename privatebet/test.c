@@ -22,7 +22,7 @@ void test_sg()
 	dlg_info("shared1::%s", bits256_str(hexstr, shared1));
 	dlg_info("shared2::%s", bits256_str(hexstr, shared2));
 
-	bits256 temp1 = curve25519_shared(crecip_donna(k2.priv),shared1); // (b^-1)a(bG)	//aG	
+	bits256 temp1 = curve25519(crecip_donna(k2.priv),shared1); // (b^-1)a(bG)	//aG	
 
 	dlg_info("temp1::%s", bits256_str(hexstr, temp1));
 	dlg_info("k1 pub::%s", bits256_str(hexstr, k1.prod));
