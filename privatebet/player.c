@@ -38,8 +38,7 @@ int32_t player_init_deck()
 
 	cJSON *out = append_cmm_from_id_key_data_cJSON(player_config.table_id,
 						       get_key_data_vdxf_id(t_player_keys[p_deck_info.player_id - 1],
-									    bits256_str(str, p_deck_info.game_id)),
-						       player_deck, true);
+							   bits256_str(str, p_deck_info.game_id)), player_deck, true);
 	dlg_info("%s", cJSON_Print(out));
 
 	return retval;
