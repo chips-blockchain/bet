@@ -16,17 +16,17 @@ void test_sg()
 	k1.priv = curve25519_keypair(&k1.prod);
 	k2.priv = curve25519_keypair(&k2.prod);
 
-	shared1 = curve25519_shared(k1.priv,k2.prod); //a(bG)
-	shared2 = curve25519_shared(k2.priv,k1.prod); //b(aG)
-	
+	shared1 = curve25519_shared(k1.priv, k2.prod); //a(bG)
+	shared2 = curve25519_shared(k2.priv, k1.prod); //b(aG)
+
 	dlg_info("shared1::%s", bits256_str(hexstr, shared1));
 	dlg_info("shared2::%s", bits256_str(hexstr, shared2));
-	
-	bits256 temp1 = fmul_donna(crecip_donna(k2.priv),shared1); // (b^-1)a(bG)	//aG	
+
+	bits256 temp1 = fmul_donna(crecip_donna(k2.priv), shared1); // (b^-1)a(bG)	//aG
 
 	dlg_info("temp1::%s", bits256_str(hexstr, temp1));
 	dlg_info("k1 pub::%s", bits256_str(hexstr, k1.prod));
-		
+
 #if 0
 	dlg_info("k1.priv::%s", bits256_str(hexstr, k1.priv));
 	dlg_info("k1.pub::%s", bits256_str(hexstr, k1.prod));
@@ -44,7 +44,7 @@ void test_sg()
 	p1 = fmul_donna(r, p1);
 	p1 = fmul_donna(crecip_donna(r), p1);
 	dlg_info("p1 ::%s", bits256_str(hexstr, p1));
-#endif	
+#endif
 }
 
 void test_permutations()
