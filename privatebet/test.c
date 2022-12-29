@@ -16,7 +16,7 @@ void test_sg()
 	k1.priv = curve25519_keypair(&k1.prod);
 	k2.priv = curve25519_keypair(&k2.prod);
 
-	shared = curve25519(k1.priv,k2.prod); //a(bG)
+	shared = fmul_donna(k1.priv,k2.prod); //a(bG)
 
 	bits256 k2_priv_inv;
 
