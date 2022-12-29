@@ -143,7 +143,7 @@ struct p_deck_info_struct {
 	int32_t player_id;
 	bits256 game_id;
 	struct pair256 p_kp;
-	struct bits256 player_r[CARDS777_MAXCARDS];
+	struct pair256 player_r[CARDS777_MAXCARDS];
 };
 extern struct p_deck_info_struct p_deck_info;
 
