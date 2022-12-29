@@ -11,6 +11,7 @@ struct p_deck_info_struct p_deck_info;
 
 int32_t player_init_deck()
 {
+	int32_t retval = OK;
 	char str[65];
 	cJSON *cjson_player_cards = NULL, *player_deck = NULL;
 	
@@ -22,14 +23,14 @@ int32_t player_init_deck()
 	
 	p_deck_info.p_kp = gen_keypair();
 
-	gen_deck(p_deck_info.player_r, deck_size);
+	gen_deck(p_deck_info.player_r, CARDS777_MAXCARDS);
 	
 	player_deck = cJSON_CreateObject();
 	jaddnum(player_deck, "id", p_deck_info.player_id);
 	jaddbits256(player_deck, "pubkey", p_deck_info.p_kp.prod);
 	jadd(player_deck, "cardinfo", cjson_player_cards = cJSON_CreateArray());
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
-		jaddistr(cjson_player_cards, bits256_str(str, p_deck_info.player_r[i].prod ); 
+		jaddistr(cjson_player_cards, bits256_str(str, p_deck_info.player_r[i].prod)); 
 	}
 
 	dlg_info("player_key::%s", get_key_data_vdxf_id(t_player_keys[p_deck_info.player_id - 1], bits256_str(str, p_deck_info.game_id)));
@@ -38,5 +39,6 @@ int32_t player_init_deck()
 		player_config.table_id,
 		get_key_data_vdxf_id(t_player_keys[p_deck_info.player_id - 1], bits256_str(str, p_deck_info.game_id)), player_deck, true);
 	dlg_info("%s", cJSON_Print(out));
-	
+
+	return retval;	
 }
