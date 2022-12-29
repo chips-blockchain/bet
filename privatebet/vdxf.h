@@ -37,6 +37,29 @@ key is represented as chips.vrsc::poker.cashiers.
 #define T_DEALER_KEY "chips.vrsc::poker.t_dealer"
 #define T_BLINDER_KEY "chips.vrsc::poker.t_blinder"
 
+
+#define T_D_P1_DECK_KEY "chips.vrsc::poker.t_d_p1_deck"
+#define T_D_P2_DECK_KEY "chips.vrsc::poker.t_d_p2_deck"
+#define T_D_P3_DECK_KEY "chips.vrsc::poker.t_d_p3_deck"
+#define T_D_P4_DECK_KEY "chips.vrsc::poker.t_d_p4_deck"
+#define T_D_P5_DECK_KEY "chips.vrsc::poker.t_d_p5_deck"
+#define T_D_P6_DECK_KEY "chips.vrsc::poker.t_d_p6_deck"
+#define T_D_P7_DECK_KEY "chips.vrsc::poker.t_d_p7_deck"
+#define T_D_P8_DECK_KEY "chips.vrsc::poker.t_d_p8_deck"
+#define T_D_P9_DECK_KEY "chips.vrsc::poker.t_d_p9_deck"
+
+
+#define T_B_P1_DECK_KEY "chips.vrsc::poker.t_b_p1_deck"
+#define T_B_P2_DECK_KEY "chips.vrsc::poker.t_b_p2_deck"
+#define T_B_P3_DECK_KEY "chips.vrsc::poker.t_b_p3_deck"
+#define T_B_P4_DECK_KEY "chips.vrsc::poker.t_b_p4_deck"
+#define T_B_P5_DECK_KEY "chips.vrsc::poker.t_b_p5_deck"
+#define T_B_P6_DECK_KEY "chips.vrsc::poker.t_b_p6_deck"
+#define T_B_P7_DECK_KEY "chips.vrsc::poker.t_b_p7_deck"
+#define T_B_P8_DECK_KEY "chips.vrsc::poker.t_b_p8_deck"
+#define T_B_P9_DECK_KEY "chips.vrsc::poker.t_b_p9_deck"
+
+
 /*
 Datatypes used
 --------------
