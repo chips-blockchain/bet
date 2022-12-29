@@ -28,8 +28,6 @@ void test_sg()
 	o_point = fmul_donna(inv,k2.priv);
 	dlg_info("O::%s", bits256_str(hexstr, o_point));
 
-	bits256s
-	
 	bits256 temp;
 
 	memset(temp.bytes, 0x00, sizeof(temp));
