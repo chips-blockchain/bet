@@ -23,7 +23,7 @@ void test_sg()
 
 	k2_priv_inv = crecip_donna(k2.priv); //b^-1
 
-	bits256 temp = fmul_donna(k2_priv_inv, shared); //aG
+	bits256 temp = curve25519(k2_priv_inv, shared); //aG
 
 	dlg_info("temp::%s", bits256_str(hexstr, temp));
 	dlg_info("k1.prod::%s", bits256_str(hexstr, k1.prod));
