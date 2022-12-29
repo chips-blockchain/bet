@@ -427,7 +427,7 @@ int32_t get_player_id(int *player_id)
 	if (!game_id_str)
 		return ERR_GAME_ID_NOT_FOUND;
 
-	game_id = bits256_conv(game_id_str);
+	p_deck_info.game_id = bits256_conv(game_id_str);
 	dlg_info("%s::%s", game_id_str, bits256_str(hexstr, game_id));
 	t_player_info = get_cJSON_from_id_key_vdxfid(
 		player_config.table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, bits256_str(hexstr, game_id)));

@@ -104,15 +104,6 @@ void test_crypto()
 	dlg_info("%s::%d::card r1 :: %d r1_dup::%d\n", __func__, __LINE__, r1.bytes[30], r1_dup.bytes[30]);
 }
 
-void test_append_t_key()
-{
-	char *id = "sg777_t";
-	cJSON *key_info = NULL;
-
-	key_info = cJSON_CreateString("Hello World");
-	//append_t_key(id, T_PLAYER1_KEY, key_info);
-}
-
 void test_deck_shuffling()
 {
 	int p_permi[deck_size], p_r_permi[deck_size], d_permi[deck_size], b_permi[deck_size];
