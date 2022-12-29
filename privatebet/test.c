@@ -11,35 +11,21 @@ void test_sg()
 {
 	char hexstr[65];
 	struct pair256 k1, k2;
-	bits256 p1, p2, r;
+	bits256 p1, p2, r, shared;
 
 	k1.priv = curve25519_keypair(&k1.prod);
 	k2.priv = curve25519_keypair(&k2.prod);
 
-	bits256 inv = crecip_donna(k1.priv);
-	bits256 o_point = fmul_donna(inv,k1.priv);
-	
-	dlg_info("k1.priv::%s", bits256_str(hexstr, k1.priv));
-	dlg_info("k1.priv_inv::%s", bits256_str(hexstr, inv));
-	dlg_info("O::%s", bits256_str(hexstr, o_point));
+	shared = curve25519(k1.priv,k2.prod); //a(bG)
 
-	inv = crecip_donna(k2.priv);
+	bits256 k2_priv_inv;
 
-	o_point = fmul_donna(inv,k2.priv);
-	dlg_info("O::%s", bits256_str(hexstr, o_point));
+	k2_priv_inv = crecip_donna(k2.priv); //b^-1
 
-	bits256 temp;
+	bits256 temp = curve25519(k2_priv_inv, shared); //aG
 
-	memset(temp.bytes, 0x00, sizeof(temp));
-	temp.bytes[31] = 0x02;
-	
 	dlg_info("temp::%s", bits256_str(hexstr, temp));
-	o_point = curve25519(temp, o_point);
-	//o_point = fmul_donna(k1.priv,o_point);
-	dlg_info("O::%s", bits256_str(hexstr, o_point));
-
-
-	
+	dlg_info("k1.prod::%s", bits256_str(hexstr, k1.prod));
 		
 	
 #if 0
