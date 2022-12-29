@@ -11,7 +11,6 @@ struct p_deck_info_struct p_deck_info;
 int32_t player_init_deck()
 {
 	char str[65];
-	struct pair256 player_r[deck_size];
 	cJSON *cjson_player_cards = NULL, *player_deck = NULL;
 	
 	char t_player_keys[9][128] = { T_PLAYER1_KEY, T_PLAYER2_KEY, T_PLAYER3_KEY, T_PLAYER4_KEY, T_PLAYER5_KEY,
