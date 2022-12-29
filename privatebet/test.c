@@ -31,7 +31,7 @@ void test_sg()
 	bits256 temp;
 
 	memset(temp.bytes, 0x00, sizeof(temp));
-	temp.bytes[0] = 0x02;
+	temp.bytes[31] = 0x02;
 	
 	dlg_info("temp::%s", bits256_str(hexstr, temp));
 	o_point = curve25519(temp, o_point);
