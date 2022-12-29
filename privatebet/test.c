@@ -28,7 +28,8 @@ void test_sg()
 	o_point = fmul_donna(inv,k2.priv);
 	dlg_info("O::%s", bits256_str(hexstr, o_point));
 
-	buts256 temp = bits256_conv("2");
+	bits256 temp = bits256_from_compact(2);
+	dlg_info("temp::%s", bits256_str(hexstr, temp));
 	o_point = curve25519(temp, o_point);
 	//o_point = fmul_donna(k1.priv,o_point);
 	dlg_info("O::%s", bits256_str(hexstr, o_point));
