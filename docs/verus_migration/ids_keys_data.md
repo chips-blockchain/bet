@@ -1,5 +1,4 @@
-All about ID's and Keys
------------------------
+# All about ID's and Keys
 Keys are ways to store the information under the identities, we encapsulate the info of a structure or JSON object and map them to the keys. For example we have an identifier named `cashiers` under `poker.chips10sec@` which holds all the cashiers info, we also define a `chips.vrsc::poker.cashier_key` where in which all the cashiers info is updated.
 
 We can restrict the ID registration process to few authorized addresses or it can made open so that anyone can register ID's. I'm pasting some beautiful insights from Mike about why ID registration should be open.
@@ -26,8 +25,7 @@ In the code for all the predefined keys, we compute their vdxfid's and map them 
 
 Some keys are predefined and some keys we create them on the fly during the game, all the keys that are created during the game are mapped to the predefined existing keys for easy reference and lookup. Some keys can be used across multiple ID's, for example the key `chips.vrsc::poker.t_player_info` is used to update the table info with both the dealer and table ID's.
 
-Key Datatypes
--------------
+## Key Datatypes
 Either its a structure or JSON object, we converting it to hex and using the datatype `vrsc::data.type.bytevector` we mapping it to the key and updating it to the ID, likewise to store string on to the ID we use the data type `vrsc::data.type.string` for the keys. We majorly been using bytevector for most of the keys defined int he CHIPS ecosystem, the definition of these data types in the code are as follows.
 ```
 //vrsc::data.type.string -->  	iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c
@@ -38,8 +36,7 @@ Either its a structure or JSON object, we converting it to hex and using the dat
 #define BYTEVECTOR_VDXF_ID      "iKMhRLX1JHQihVZx2t2pAWW2uzmK6AzwW3"
 ```
 
-Identitites
------------
+## Identitites
 We limit ourself to two levels of nesting under chips. At first level we mostly define identities are of game_types or any such things which are common across all the game types. For each game_type a corresponding identity is registered and we generate a token for it, further these tokens are used to register sub identities. All the transactions that happens in the game play use CHIPS for betting. The tokens we generate on the ID's registered has no significant value and they just be used to register subID's under that ID.
 
 For example in the context of poker game we registered an identity named `poker` under chips as `poker.chips@`, and we generate a token named `poker` which is basically been used to create subID's under the poker ID.
@@ -48,34 +45,61 @@ Identities are often the addresses that can hold the tokens, ID's always ends wi
 
 Further, at high level we see what are all the keys that define under each ID in the namespace `poker.chips@`. Almost all the ID's in the poker ecosystem are of multiple signatures in nature, meaning they controlled by one or more primaryaddresses and some require one or more signatures to update them.
 
-#### Cashiers ID
+### Cashiers ID
 Address --> `cashiers.poker.chips@`
 The keys that updates the data to this ID are
 ```
 1. chips.vrsc::poker.cashiers
 ```
 
-#### Dealers ID
+### Dealers ID
+
 Address --> `dealers.poker.chips@`
 The keys that updates the data to this ID are
 ```
 1. chips.vrsc::poker.dealers
 ```
+#### 1. chips.vrsc::poker.dealers
+This key holds the array of dealers info, i.e it basically a string array that holds all dealer_id names.
+```
+{
+        "dealers":      ["sg777_d"]
+}
+```
 
-#### Dealer ID
+
+### Dealer ID
 Address --> `<dealer_name>.poker.chips@` //Dealer provides this name at the time of registration and all dealer names end with `_d` to avoid naming conflicts, e.g `sg777_d.poker.chips@`
 The keys that updates the data to this ID are
 ```
 1. chips.vrsc::poker.t_player_info
 ```
 
-#### Table ID
+#### 1. chips.vrsc::poker.t_player_info
+Contains the table info, dealer updates this info from the values read from `verus_dealer.ini`
+```
+{
+        "max_players":  2,
+        "big_blind":    0.00100000,
+        "min_stake":    0.20000000,
+        "max_stake":    1,
+        "table_id":     "sg777_t",
+        "dealer_id":    "sg777_d"
+}
+```
+
+### Table ID
 Address --> `<table_name>.poker.chips@` // Dealers can register upto 5 different table names and all table names ends with `_t` to avoid naming conflicts, e.g `sg777_t.poker.chips@`
 
 The keys that updates the data to this ID are
 ```
-1. chips.vrsc::poker.game_ids --> Holds the info of all game id's [game_id1, game_id2, ...]
+1. chips.vrsc::poker.game_ids --> Holds the info of the active game_id that is attached to the table, this is a 32 byte random string.
 ```
+#### 1. chips.vrsc::poker.game_ids
+```
+game_id::47be72cf1267b85c1ad07b38dfaab2b38ab036ec867ec95a08ff440af2bb4dc9
+```
+
 Table is the place where on the fly keys are created.  Each game is represented by a 32 byte random number calling it as gameID and this game ID is used to generate the on the fly keys during the game and these are used to update the table ID with the game info during the game. 
 
 Lets say, for simplicity reasons we have gameID as `game_id1` then the following keys are generated during the game:
@@ -95,3 +119,35 @@ Lets say, for simplicity reasons we have gameID as `game_id1` then the following
 13. chips.vrsc::poker.t_blinder.game_id1
 ```
 While playing game with ID `game_id1` during which all the entities that participate in the game update the game info using these keys at the corresponding table ID.
+
+#### 1. chips.vrsc::poker.t_table_info.game_id1
+Contains the talbe info.
+```
+{
+        "max_players":  2,
+        "big_blind":    0.00100000,
+        "min_stake":    0.20000000,
+        "max_stake":    1,
+        "table_id":     "sg777_t",
+        "dealer_id":    "sg777_d"
+}
+```
+#### 2. chips.vrsc::poker.t_player_info.game_id1
+Contains the info about the players that joined the table
+```
+{
+        "num_players":  2,
+        "player_info":  ["RLqZtcUkqCHWe5t35zjEXLS1ubqKnbUtJW_e1eb_1", "RPP74xK9HRZGAS5Ynn4EbfLrKGyak3fJrJ_9597_2"]
+}
+```
+#### 3. chips.vrsc::poker.t_player1.game_id1
+Contains the info about players shuffled deck
+```
+{
+        "id":   1,
+        "pubkey":       "1ea418903532637eedddc7918fb648332b59e4a2cda42db7493861529e42de66",
+        "cardinfo":     ["afe92a18c5dacc314be0eb16f7f1d83a4eaebaab06874ed78a487e7a4ea03a0d", "b14de6c06ff1fac3f0b698d55718712521c12d2e6c4f633494abf019a8e92f25", "8ce9ca33bdd0cddf0929b5a631a33a82b03a5e3ffb4c22d9744ee3b488297336"]
+}
+```
+
+
