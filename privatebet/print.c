@@ -72,6 +72,18 @@ void print_table_id(char *id)
 	}
 }
 
+void print_table_key_info(int argc, char **argv)
+{
+	char *game_id_str = NULL;
+	cJSON *key_info = NULL;
+
+	if(argc == 4) {
+		game_id_str = get_str_from_id_key(argv[2], get_vdxf_id(T_GAME_ID_KEY)); 
+		key_info = get_cJSON_from_id_key_vdxfid(argv[2], get_key_data_vdxf_id(argv[3],game_id_str));
+		dlg_info("%s", cJSON_Print(key_info));
+	}
+}
+
 void print_id_info(int argc, char **argv)
 {
 	if (argc == 4) {

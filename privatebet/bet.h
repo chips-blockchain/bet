@@ -139,6 +139,14 @@ extern struct enc_share *g_shares;
 
 extern struct enc_share *all_g_shares[CARDS777_MAXPLAYERS];
 
+struct d_deck_info_struct {
+	bits256 game_id;
+	int32_t d_permi[CARDS777_MAXCARDS];
+	struct pair256 dealer_r[CARDS777_MAXCARDS];	
+};
+extern struct d_deck_info_struct d_deck_info;
+
+
 struct p_deck_info_struct {
 	int32_t player_id;
 	bits256 game_id;
