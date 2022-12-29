@@ -11,21 +11,16 @@ void test_sg()
 {
 	char hexstr[65];
 	struct pair256 k1, k2;
-	bits256 p1, p2, r, shared;
+	bits256 p1, p2, r, shared1, shared2;
 
 	k1.priv = curve25519_keypair(&k1.prod);
 	k2.priv = curve25519_keypair(&k2.prod);
 
-	shared = curve25519_shared(k1.priv,k2.prod); //a(bG)
+	shared1 = curve25519_shared(k1.priv,k2.prod); //a(bG)
+	shared2 = curve25519_shared(k2.priv,k1.prod); //b(aG)
 
-	bits256 k2_priv_inv;
-
-	k2_priv_inv = crecip_donna(k2.priv); //b^-1
-
-	bits256 temp = fmul_donna(k2_priv_inv, shared); //aG
-
-	dlg_info("temp::%s", bits256_str(hexstr, temp));
-	dlg_info("k1.prod::%s", bits256_str(hexstr, k1.prod));
+	dlg_info("shared1::%s", bits256_str(hexstr, shared1));
+	dlg_info("shared2::%s", bits256_str(hexstr, shared2));
 		
 	
 #if 0
