@@ -466,16 +466,15 @@ static int32_t handle_verus_player()
 	if ((retval = join_table()) != OK)
 		goto end;
 	dlg_info("Table Joined");
-	if ((retval = get_player_id(&player_config.player_id)) != OK) {
+	if ((retval = get_player_id(&p_deck_info.player_id)) != OK) {
 		goto end;
 	}
-	dlg_info("Player ID ::%d", player_config.player_id);
-#if 1
-	if ((retval = bet_init_player_deck(player_config.player_id)) != OK) {
+	dlg_info("Player ID ::%d", p_deck_info.player_id);
+	if ((retval = player_init_deck()) != OK) {
 		goto end;
 	}
 	dlg_info("Player deck shuffling info updated to table");
-#endif
+
 end:
 	if (retval)
 		dlg_error("%s", bet_err_str(retval));
