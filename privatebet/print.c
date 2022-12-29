@@ -100,7 +100,7 @@ void print_table_key_info(int argc, char **argv)
 
 	if(argc == 4) {
 		game_id_str = get_str_from_id_key(argv[2], get_vdxf_id(T_GAME_ID_KEY)); 
-		key_name = get_table_full_key(argv[3])
+		key_name = get_table_full_key(argv[3]);
 		if(key_name) {
 			dlg_info("%s::%s", game_id_str, get_key_data_vdxf_id(key_name,game_id_str));
 			key_info = get_cJSON_from_id_key_vdxfid(argv[2], get_key_data_vdxf_id(key_name, game_id_str));
