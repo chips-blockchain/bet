@@ -2,6 +2,7 @@
 #include "dealer.h"
 #include "vdxf.h"
 #include "deck.h"
+#include "cards777.h"
 
 struct d_deck_info_struct d_deck_info;
 
