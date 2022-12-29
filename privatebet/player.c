@@ -56,7 +56,7 @@ int32_t bet_init_player_deck(int32_t player_id)
 	char t_player_keys[9][128] = { T_PLAYER1_KEY, T_PLAYER2_KEY, T_PLAYER3_KEY, T_PLAYER4_KEY, T_PLAYER5_KEY,
 				       T_PLAYER6_KEY, T_PLAYER7_KEY, T_PLAYER8_KEY, T_PLAYER9_KEY };
 
-	if ((player_id < 1) && (player_id > 9)) 
+	if ((player_id < 1) && (player_id > 9))
 		return ERR_INVALID_PLAYER_ID;
 
 	player_info.player_key = deckgen_player(player_info.cardprivkeys, player_info.cardpubkeys, player_info.permis,
