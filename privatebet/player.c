@@ -5,6 +5,7 @@
 #include "vdxf.h"
 #include "misc.h"
 #include "commands.h"
+#include "deck.h"
 
 struct p_deck_info_struct p_deck_info;
 
