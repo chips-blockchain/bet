@@ -8,6 +8,7 @@
 static char* get_table_full_key(char *key)
 {
 	int32_t no_of_keys = 11;	
+	char *key_name = NULL;
 	char all_t_keys[11][128] = { T_TABLE_INFO_KEY, T_PLAYER_INFO_KEY, T_PLAYER1_KEY, T_PLAYER2_KEY,
 				     T_PLAYER3_KEY,    T_PLAYER4_KEY,     T_PLAYER5_KEY, T_PLAYER6_KEY,
 				     T_PLAYER7_KEY,    T_PLAYER8_KEY,     T_PLAYER9_KEY };
@@ -17,8 +18,11 @@ static char* get_table_full_key(char *key)
 				     "t_player7",    "t_player8",     "t_player9" };
 	
 	for(int32_t i=0; i<no_of_keys; i++){
-		if(strcmp(key, all_t_key_names[i]) == 0)
-			return all_t_keys[i];
+		if(strcmp(key, all_t_key_names[i]) == 0) {
+			key_name = calloc(1, 128);
+			strcpy(key_name, all_t_keys[i]);
+			return key_name;
+		}	
 	}
 	
 	return NULL;
