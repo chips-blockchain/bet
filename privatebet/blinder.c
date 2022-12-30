@@ -22,7 +22,7 @@ int32_t cashier_sb_deck(char *id, bits256 *d_blinded_deck, int32_t player_id)
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
 		dlg_info("%s", bits256_str(str, d_blinded_deck[i]));
 	}
-	shuffle_deck_db(d_blinded_deck, CARDS777_MAXCARDS, b_deck_info.d_permi);
+	shuffle_deck_db(d_blinded_deck, CARDS777_MAXCARDS, b_deck_info.b_permi);
 	blind_deck_b(d_blinded_deck, CARDS777_MAXCARDS, b_deck_info.cashier_r[player_id]);
 
 	dlg_info("Cashier blinding values for the player ::%d", player_id);
@@ -42,7 +42,7 @@ int32_t cashier_sb_deck(char *id, bits256 *d_blinded_deck, int32_t player_id)
 
 void cashier_init_deck()
 {
-	bet_permutation(b_deck_info.d_permi, CARDS777_MAXCARDS);
+	bet_permutation(b_deck_info.b_permi, CARDS777_MAXCARDS);
 	for(int32_t i=0; i<CARDS777_MAXPLAYERS; i++) {
 		gen_deck(b_deck_info.cashier_r[i], CARDS777_MAXCARDS);
 	}
