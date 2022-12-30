@@ -125,7 +125,7 @@ bool is_dealer_exists(char *dealer_id);
 int32_t get_player_id(int *player_id);
 int32_t join_table();
 int32_t find_table();
-int32_t is_id_exists(char *id, int16_t full_id);
+bool is_id_exists(char *id, int16_t full_id);
 int32_t check_player_join_status(char *table_id, char *pa);
 cJSON *get_z_getoperationstatus(char *op_id);
 cJSON *verus_sendcurrency_data(cJSON *data);

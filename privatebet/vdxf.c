@@ -527,9 +527,9 @@ int32_t find_table()
 	return retval;
 }
 
-int32_t is_id_exists(char *id, int16_t full_id)
+bool is_id_exists(char *id, int16_t full_id)
 {
-	int32_t argc = 3, retval = 1;
+	int32_t argc = 3, retval = OK, id_exists = false;
 	char **argv = NULL;
 	char params[128] = { 0 };
 	cJSON *argjson = NULL;
@@ -543,11 +543,11 @@ int32_t is_id_exists(char *id, int16_t full_id)
 
 	argjson = cJSON_CreateObject();
 	retval = make_command(argc, argv, &argjson);
-	if(retval != OK)
-		retval = 0;
+	if(retval == OK)
+		id_exists = true;
 
 	bet_dealloc_args(argc, &argv);
-	return retval;
+	return id_exists;
 }
 
 int32_t check_player_join_status(char *table_id, char *pa)
