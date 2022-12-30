@@ -42,9 +42,15 @@ int32_t cashier_sb_deck(char *id, bits256 *d_blinded_deck, int32_t player_id)
 
 void cashier_init_deck()
 {
+	char hexstr[65];
+		
 	bet_permutation(b_deck_info.b_permi, CARDS777_MAXCARDS);
 	for(int32_t i=0; i<CARDS777_MAXPLAYERS; i++) {
 		gen_deck(b_deck_info.cashier_r[i], CARDS777_MAXCARDS);
+		dlg_info("Player::%d", (i+1));
+		for(int32_t j=0; j<CARDS777_MAXPLAYERS; j++){
+			dlg_info("%s", bits256_str(hexstr, b_deck_info.cashier_r[i].priv));
+		}
 	}
 }
 
