@@ -26,8 +26,17 @@ cJSON *add_dealer(char *dealer_id)
 
 int32_t dealer_sb_deck(bits256 *player_r, int32_t player_id)
 {
+	char str[65];
+	
+	for(int32_t i=0; i<CARDS777_MAXCARDS; i++) {
+			dlg_info("%s", bits256_str(str,player_r[i]));
+	}
 	shuffle_deck_db(player_r, CARDS777_MAXCARDS, d_deck_info.d_permi);
 	blind_deck_d(player_r, CARDS777_MAXCARDS, d_deck_info.dealer_r);
+	
+	for(int32_t i=0; i<CARDS777_MAXCARDS; i++) {
+			dlg_info("%s", bits256_str(str,player_r[i]));
+	}
 }
 
 void dealer_init_deck()
@@ -37,7 +46,24 @@ void dealer_init_deck()
 		
 }
 
-void test_dealer_sb()
+void test_dealer_sb(char *id)
 {
+	char *game_id_str = NULL;
+	cJSON *t_player1 = NULL, *t_player2 = NULL, *t_p1_cardinfo = NULL;
+	bits256 t_p1_r[CARDS777_MAXCARDS];
+
+	dealer_init_deck();
+	game_id_str = get_str_from_id_key(id,T_GAME_ID_KEY);
+
+	t_player1 = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_PLAYER1_KEY,game_id_str));
+
+	t_p1_cardinfo = cJSON_GetObjectItem(t_player1,"cardinfo");
 	
+	
+	for(int32_t i=0; i< cJSON_GetArraySize(t_p1_cardinfo); i++){
+		t_p1_r[i] = jbits256i(t_p1_cardinfo,i);
+	}
+
+	dealer_sb_deck(t_p1_r, 1);
+
 }
