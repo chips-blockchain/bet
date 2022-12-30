@@ -288,7 +288,7 @@ void bet_parse_verus_dealer()
 	dictionary *ini = NULL;
 	struct table t;
 	cJSON *out = NULL;
-	
+
 	ini = iniparser_load(verus_dealer_config);
 	if (!ini)
 		return ERR_INI_PARSING;
@@ -313,14 +313,14 @@ void bet_parse_verus_dealer()
 	}
 
 	//Updating the dealer id with t_table_info
-	out = update_cmm_from_id_key_data_cJSON(t.dealer_id, get_vdxf_id(T_TABLE_INFO_KEY),
-						      struct_table_to_cJSON(&t), true);
+	out = update_cmm_from_id_key_data_cJSON(t.dealer_id, get_vdxf_id(T_TABLE_INFO_KEY), struct_table_to_cJSON(&t),
+						true);
 	dlg_info("%s", cJSON_Print(out));
 
 	retval = dealer_table_init(t);
 	dlg_error("%s", bet_err_str(retval));
-	
-	#if 0		
+
+#if 0		
 	//Updating the table id with the game_id and t_table_info
 	cJSON *t2 =
 		append_cmm_from_id_key_data_hex(t.table_id, T_GAME_ID_KEY, bits256_str(hexstr, game_id), false);
@@ -332,7 +332,7 @@ void bet_parse_verus_dealer()
 		t.table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)),
 		struct_table_to_cJSON(&t), true);
 	dlg_info("%s", cJSON_Print(t3));
-	#endif	
+#endif
 }
 
 void bet_parse_verus_player()

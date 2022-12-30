@@ -4,7 +4,7 @@
 #include "deck.h"
 #include "cards777.h"
 #include "game.h"
-
+#include "err.h"
 struct d_deck_info_struct d_deck_info;
 
 char all_t_d_p_keys[all_t_d_p_keys_no][128] = { T_D_DECK_KEY,    T_D_P1_DECK_KEY, T_D_P2_DECK_KEY, T_D_P3_DECK_KEY,
@@ -105,36 +105,35 @@ int32_t dealer_table_init(struct table t)
 	char hexstr[65];
 	cJSON *out = NULL;
 
-	if(!is_id_exists(t.table_id, 0))
+	if (!is_id_exists(t.table_id, 0))
 		return ERR_ID_NOT_FOUND;
-	
+
 	game_state = get_game_state(t.table_id);
-	if(game_state == G_ZEROIZED_STATE){
+	if (game_state == G_ZEROIZED_STATE) {
 		game_id = rand256(0);
 		out = append_cmm_from_id_key_data_hex(t.table_id, T_GAME_ID_KEY, bits256_str(hexstr, game_id), false);
-		if(!out)
+		if (!out)
 			return ERR_TABLE_LAUNCH;
 		dlg_info("%s", cJSON_Print(out));
 
 		out = append_game_state(t.table_id, G_TABLE_ACTIVE, NULL);
-		if(!out)
+		if (!out)
 			return ERR_TABLE_LAUNCH;
 		dlg_info("%s", cJSON_Print(out));
 
 		out = append_cmm_from_id_key_data_cJSON(
 			t.table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)),
 			struct_table_to_cJSON(&t), true);
-		if(!out)
+		if (!out)
 			return ERR_TABLE_LAUNCH;
 		dlg_info("%s", cJSON_Print(out));
 
 		out = append_game_state(t.table_id, G_TABLE_STARTED, NULL);
-		if(!out)
+		if (!out)
 			return ERR_TABLE_LAUNCH;
 		dlg_info("%s", cJSON_Print(out));
-	}else {
+	} else {
 		dlg_info("Table is in game, at state ::%d", game_state);
 	}
 	return OK;
 }
-
