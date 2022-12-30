@@ -1,3 +1,6 @@
+#ifndef __VDXF_H__
+#define __VDXF_H__
+
 #include "bet.h"
 #include "common.h"
 
@@ -136,3 +139,4 @@ cJSON *update_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data, bool 
 cJSON *get_t_player_info(char *table_id);
 int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data);
 void process_block(char *block_hash);
+#endif
