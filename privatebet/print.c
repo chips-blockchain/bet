@@ -16,13 +16,22 @@ static char *get_table_full_key(char *key)
 		}
 	}
 
-	for (int32_t i = 0; i < all_d_p_keys_no; i++) {
-		if (strcmp(key, all_d_p_key_names[i]) == 0) {
+	for (int32_t i = 0; i < all_t_d_p_keys_no; i++) {
+		if (strcmp(key, all_t_d_p_key_names[i]) == 0) {
 			key_name = calloc(1, 128);
-			strcpy(key_name, all_d_p_keys[i]);
+			strcpy(key_name, all_t_d_p_keys[i]);
 			return key_name;
 		}
 	}
+
+	
+	for (int32_t i = 0; i < all_t_b_p_keys_no; i++) {
+			if (strcmp(key, all_t_b_p_key_names[i]) == 0) {
+				key_name = calloc(1, 128);
+				strcpy(key_name, all_t_b_p_keys[i]);
+				return key_name;
+			}
+		}
 
 	return NULL;
 }
@@ -88,8 +97,8 @@ void print_table_id(char *id)
 			if (temp)
 				dlg_info("%s", cJSON_Print(temp));
 		}
-		for (int32_t i = 0; i < all_d_p_keys_no; i++) {
-			cJSON *temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(all_d_p_keys[i], game_id));
+		for (int32_t i = 0; i < all_t_d_p_keys_no; i++) {
+			cJSON *temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(all_t_d_p_keys[i], game_id));
 			if (temp)
 				dlg_info("%s", cJSON_Print(temp));
 		}

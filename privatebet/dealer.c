@@ -6,10 +6,10 @@
 
 struct d_deck_info_struct d_deck_info;
 
-char all_d_p_keys[10][128] = { T_D_DECK_KEY,    T_D_P1_DECK_KEY, T_D_P2_DECK_KEY, T_D_P3_DECK_KEY, T_D_P4_DECK_KEY,
+char all_t_d_p_keys[all_t_d_p_keys_no][128] = { T_D_DECK_KEY,    T_D_P1_DECK_KEY, T_D_P2_DECK_KEY, T_D_P3_DECK_KEY, T_D_P4_DECK_KEY,
 			       T_D_P5_DECK_KEY, T_D_P6_DECK_KEY, T_D_P7_DECK_KEY, T_D_P8_DECK_KEY, T_D_P9_DECK_KEY };
 
-char all_d_p_key_names[10][128] = { "t_d_deck",    "t_d_p1_deck", "t_d_p2_deck", "t_d_p3_deck", "t_d_p4_deck",
+char all_t_d_p_key_names[all_t_d_p_keys_no][128] = { "t_d_deck",    "t_d_p1_deck", "t_d_p2_deck", "t_d_p3_deck", "t_d_p4_deck",
 				    "t_d_p5_deck", "t_d_p6_deck", "t_d_p7_deck", "t_d_p8_deck", "t_d_p9_deck" };
 
 cJSON *add_dealer(char *dealer_id)
@@ -51,7 +51,7 @@ int32_t dealer_sb_deck(char *id, bits256 *player_r, int32_t player_id)
 		jaddistr(d_blinded_deck, bits256_str(str, player_r[i]));
 	}
 
-	cJSON *out = append_cmm_from_id_key_data_cJSON(id, get_key_data_vdxf_id(all_d_p_keys[player_id], game_id_str),
+	cJSON *out = append_cmm_from_id_key_data_cJSON(id, get_key_data_vdxf_id(all_t_d_p_keys[player_id], game_id_str),
 						       d_blinded_deck, true);
 
 	dlg_info("%s", cJSON_Print(out));
