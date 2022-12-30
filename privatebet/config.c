@@ -319,7 +319,8 @@ int32_t bet_parse_verus_dealer()
 	dlg_info("%s", cJSON_Print(out));
 
 	retval = dealer_table_init(t);
-	dlg_error("%s", bet_err_str(retval));
+	if(retval)
+		dlg_error("%s", bet_err_str(retval));
 
 #if 0		
 	//Updating the table id with the game_id and t_table_info
