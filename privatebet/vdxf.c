@@ -862,7 +862,7 @@ cJSON *append_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data, bool
 
 	//dlg_info("cmm_old::%s", cJSON_Print(cmm_obj));
 	if (is_key_vdxf_id) {
-		data_type = BYTEVECTOR_VDXF_ID;
+		data_type = get_vdxf_id(BYTEVECTOR_VDXF_ID);
 		data_key = key;
 	} else {
 		data_type = get_vdxf_id(get_key_data_type(key));
