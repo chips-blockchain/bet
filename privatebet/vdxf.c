@@ -506,23 +506,24 @@ int32_t find_table()
 	if ((t_table_info = check_if_d_t_available(player_config.dealer_id, player_config.table_id)) != NULL) {
 		copy_table_to_struct_t(t_table_info);
 		return retval;
-	} else {
-		dealer_ids = cJSON_CreateArray();
-		dealer_ids = get_cJSON_from_id_key("dealers", DEALERS_KEY);
-		if (dealer_ids == NULL) {
-			return ERR_NO_DEALERS_FOUND;
-		}
-		for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ids); i++) {
-			t_table_info = get_available_t_of_d(jstri(dealer_ids, i));
-			if (t_table_info) {
-				strncpy(player_config.dealer_id, jstri(dealer_ids, i), sizeof(player_config.dealer_id));
-				strncpy(player_config.table_id, jstr(t_table_info, "table_id"),
-					sizeof(player_config.table_id));
-				copy_table_to_struct_t(t_table_info);
-				return retval;
-			}
+	}
+	// If no preconfigured tables are found then it picks the first available table
+	dealer_ids = cJSON_CreateArray();
+	dealer_ids = get_cJSON_from_id_key("dealers", DEALERS_KEY);
+	if (!dealer_ids)
+		return ERR_NO_DEALERS_FOUND;
+	
+	for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ids); i++) {
+		t_table_info = get_available_t_of_d(jstri(dealer_ids, i));
+		if(t_table_info) {
+			strncpy(player_config.dealer_id, jstri(dealer_ids, i), sizeof(player_config.dealer_id));
+			strncpy(player_config.table_id, jstr(t_table_info, "table_id"),
+				sizeof(player_config.table_id));
+			copy_table_to_struct_t(t_table_info);
+			return retval;
 		}
 	}
+	
 	retval = ERR_NO_TABLES_FOUND;
 	return retval;
 }
@@ -698,7 +699,7 @@ end:
 
 cJSON *get_available_t_of_d(char *dealer_id)
 {
-	int32_t retval = OK;
+	int32_t retval = OK, game_state;
 	cJSON *t_player_info = NULL, *t_table_info = NULL;
 	char *game_id_str = NULL;
 
@@ -709,7 +710,15 @@ cJSON *get_available_t_of_d(char *dealer_id)
 	if (!t_table_info)
 		return NULL;
 
-	game_id_str = get_str_from_id_key_vdxfid(jstr(t_table_info, "table_id"), get_vdxf_id(T_GAME_ID_KEY));
+	game_state = get_game_state(jstr(t_table_info, "table_id"));
+
+	if((game_state == G_TABLE_STARTED) && (!check_if_pa_exists(jstr(t_table_info, "table_id"))) &&
+	    (check_if_enough_funds_avail(jstr(t_table_info, "table_id")))) {
+	    return t_table_info;
+	}
+
+	#if 0
+	game_id_str = get_str_from_id_key(jstr(t_table_info, "table_id"), T_GAME_ID_KEY);
 	if (!game_id_str)
 		return NULL;
 
@@ -726,6 +735,7 @@ cJSON *get_available_t_of_d(char *dealer_id)
 			 jint(t_player_info, "num_players"));
 		return t_table_info;
 	}
+	#endif
 	return NULL;
 }
 
@@ -770,39 +780,48 @@ bool check_if_enough_funds_avail(char *table_id)
 
 cJSON *check_if_d_t_available(char *dealer_id, char *table_id)
 {
-	int32_t err_no = OK;
-	cJSON *t_player_info = NULL, *t_table_info = NULL;
+	int32_t game_state;
+	cJSON *t_table_info = NULL;
 	char *game_id_str = NULL;
 
-	if ((NULL == dealer_id) || (NULL == table_id)) {
+	if ((!dealer_id) || (!table_id) || (!is_dealer_exists(dealer_id)) || (!is_id_exists(table_id,0))) {
 		return NULL;
 	}
-	if (is_dealer_exists(dealer_id)) {
-		t_table_info = get_cJSON_from_id_key(dealer_id, T_TABLE_INFO_KEY);
-		if (!t_table_info)
-			return NULL;
+	
+	t_table_info = get_cJSON_from_id_key(dealer_id, T_TABLE_INFO_KEY);
+	if (!t_table_info)
+		return NULL;
 
-		if ((0 == strcmp(jstr(t_table_info, "table_id"), table_id))) {
-			game_id_str =
-				get_str_from_id_key_vdxfid(jstr(t_table_info, "table_id"), get_vdxf_id(T_GAME_ID_KEY));
-			if (!game_id_str)
-				return NULL;
-			t_player_info = get_cJSON_from_id_key_vdxfid(
-				jstr(t_table_info, "table_id"), get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
-			if (!t_player_info) {
-				dlg_info("%s::%d:: Table::%s is available and is all empty\n", __func__, __LINE__,
-					 table_id);
-				return t_table_info; //Table is available but empty.
-			}
-			if ((t_player_info) &&
-			    (jint(t_player_info, "num_players") < jint(t_table_info, "max_players")) &&
-			    (!check_if_pa_exists(jstr(t_table_info, "table_id"))) &&
-			    (check_if_enough_funds_avail(jstr(t_table_info, "table_id")))) {
-				dlg_info("%s::%d:: Table::%s is available and is partially occupied\n", __func__,
-					 __LINE__, table_id);
-				return t_table_info; //Table is available but some spots are free to join.
-			}
+	if ((0 == strcmp(jstr(t_table_info, "table_id"), table_id))) {
+		game_state = get_game_state(table_id);
+		if((game_state == G_TABLE_STARTED) && (!check_if_pa_exists(table_id)) && (check_if_enough_funds_avail(table_id))) {
+			//game_id_str =  get_str_from_id_key(table_id, T_GAME_ID_KEY);
+			//t_table_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, game_id_str));	
+			return t_table_info;
 		}
+
+		#if 0
+		
+		game_id_str =
+			get_str_from_id_key_vdxfid(jstr(t_table_info, "table_id"), get_vdxf_id(T_GAME_ID_KEY));
+		if (!game_id_str)
+			return NULL;
+		t_player_info = get_cJSON_from_id_key_vdxfid(
+			jstr(t_table_info, "table_id"), get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
+		if (!t_player_info) {
+			dlg_info("%s::%d:: Table::%s is available and is all empty\n", __func__, __LINE__,
+				 table_id);
+			return t_table_info; //Table is available but empty.
+		}
+		if ((t_player_info) &&
+		    (jint(t_player_info, "num_players") < jint(t_table_info, "max_players")) &&
+		    (!check_if_pa_exists(jstr(t_table_info, "table_id"))) &&
+		    (check_if_enough_funds_avail(jstr(t_table_info, "table_id")))) {
+			dlg_info("%s::%d:: Table::%s is available and is partially occupied\n", __func__,
+				 __LINE__, table_id);
+			return t_table_info; //Table is available but some spots are free to join.
+		}
+		#endif
 	}
 	return NULL;
 }
