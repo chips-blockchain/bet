@@ -749,7 +749,7 @@ int32_t check_if_pa_exists(char *table_id)
 	if (pa_arr) {
 		for (int32_t i = 0; i < cJSON_GetArraySize(pa_arr); i++) {
 			if (0 == strcmp(jstri(pa_arr, i), player_config.primaryaddress)) {
-				dlg_error("PA already exists",);
+				dlg_error("PA already exists");
 				return !retval;
 			}
 		}
