@@ -543,7 +543,9 @@ int32_t is_id_exists(char *id, int16_t full_id)
 
 	argjson = cJSON_CreateObject();
 	retval = make_command(argc, argv, &argjson);
-	dlg_info("%s", cJSON_Print(argjson));
+	if(retval != OK)
+		retval = 0;
+
 	bet_dealloc_args(argc, &argv);
 	return retval;
 }
