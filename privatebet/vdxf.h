@@ -40,7 +40,6 @@ key is represented as chips.vrsc::poker.cashiers.
 #define T_DEALER_KEY "chips.vrsc::poker.t_dealer"
 #define T_BLINDER_KEY "chips.vrsc::poker.t_blinder"
 
-
 #define T_D_DECK_KEY "chips.vrsc::poker.t_d_deck"
 #define T_D_P1_DECK_KEY "chips.vrsc::poker.t_d_p1_deck"
 #define T_D_P2_DECK_KEY "chips.vrsc::poker.t_d_p2_deck"
@@ -62,7 +61,6 @@ key is represented as chips.vrsc::poker.cashiers.
 #define T_B_P7_DECK_KEY "chips.vrsc::poker.t_b_p7_deck"
 #define T_B_P8_DECK_KEY "chips.vrsc::poker.t_b_p8_deck"
 #define T_B_P9_DECK_KEY "chips.vrsc::poker.t_b_p9_deck"
-
 
 /*
 Datatypes used
@@ -101,7 +99,6 @@ extern char all_d_p_key_names[all_d_p_keys_no][128];
 #define all_t_p_keys_no 11
 extern char all_t_p_keys[all_t_p_keys_no][128];
 extern char all_t_p_key_names[all_t_p_keys_no][128];
-
 
 char *get_vdxf_id(char *key_name);
 char *get_key_vdxf_id(char *key_name);

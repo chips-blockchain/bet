@@ -619,7 +619,6 @@ int main(int argc, char **argv)
 #endif
 	bet_start(argc, argv);
 
-
 end:
 	return OK;
 }
