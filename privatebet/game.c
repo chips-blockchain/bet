@@ -4,6 +4,29 @@
 
 struct t_game_info_struct t_game_info;
 
+
+const char *game_state_str(int32_t game_state)
+{
+	switch (game_state) {
+	case G_ZEROIZED_STATE:
+		return "Zeroized state, Table is not initialized yet...";
+	case G_TABLE_ACTIVE:
+		return "Table is active";
+	case G_TABLE_STARTED:
+		return "Table is started";
+	case G_PLAYERS_JOINED:
+		return "Players joined the table";
+	case G_DECK_SHUFFLING_P:
+		return "Deck shuffling by players are done";
+	case G_DECK_SHUFFLING_D:
+		return "Deck shuffling by dealer is done";
+	case G_DECK_SHUFFLING_B:
+		return "Deck shuffling by cashier is done";
+	default:
+		return "Invalid game state...";
+	}
+}
+
 cJSON *append_game_state(char *table_id, int32_t game_state, cJSON *game_info)
 {
 	char *game_id_str = NULL;
