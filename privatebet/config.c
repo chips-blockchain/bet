@@ -319,7 +319,7 @@ int32_t bet_parse_verus_dealer()
 	dlg_info("%s", cJSON_Print(out));
 
 	retval = dealer_table_init(t);
-	if(retval)
+	if (retval)
 		dlg_error("%s", bet_err_str(retval));
 
 #if 0		
