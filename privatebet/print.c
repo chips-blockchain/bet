@@ -102,6 +102,11 @@ void print_table_id(char *id)
 			if (temp)
 				dlg_info("%s", cJSON_Print(temp));
 		}
+		for (int32_t i = 0; i < all_t_b_p_keys_no; i++) {
+			cJSON *temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(all_t_b_p_keys[i], game_id));
+			if (temp)
+				dlg_info("%s", cJSON_Print(temp));
+		}
 	}
 }
 
