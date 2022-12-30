@@ -711,11 +711,32 @@ cJSON *get_available_t_of_d(char *dealer_id)
 
 	game_state = get_game_state(jstr(t_table_info, "table_id"));
 
-	if ((game_state == G_TABLE_STARTED) && (!check_if_pa_exists(jstr(t_table_info, "table_id"))) &&
+	if ((game_state == G_TABLE_STARTED) && (!is_table_full(jstr(t_table_info, "table_id"))) && (!check_if_pa_exists(jstr(t_table_info, "table_id"))) &&
 	    (check_if_enough_funds_avail(jstr(t_table_info, "table_id")))) {
 		return t_table_info;
 	}
 	return NULL;
+}
+
+bool is_table_full(char *table_id)
+{
+	int32_t game_state;
+	char *game_id_str = NULL;
+	cJSON *t_player_info= NULL, *t_table_info =NULL;
+
+	game_state = get_game_state(table_id);
+	if(game_state == G_TABLE_STARTED) {
+		game_id_str = get_str_from_id_key(table_id,T_GAME_ID_KEY);
+
+		t_player_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY,game_id_str));
+		t_table_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY,game_id_str));
+
+		if((!t_player_info) && (!t_table_info) && (jint(t_player_info,"num_players") < jint(t_table_info, "max_players"))) {
+			return false;
+		}
+	}
+	dlg_error("Table is full");
+	return true;
 }
 
 int32_t check_if_pa_exists(char *table_id)
@@ -728,7 +749,7 @@ int32_t check_if_pa_exists(char *table_id)
 	if (pa_arr) {
 		for (int32_t i = 0; i < cJSON_GetArraySize(pa_arr); i++) {
 			if (0 == strcmp(jstri(pa_arr, i), player_config.primaryaddress)) {
-				dlg_error("%s::%d::Primaryaddress already exists\n", __func__, __LINE__);
+				dlg_error("PA already exists",);
 				return !retval;
 			}
 		}
@@ -753,7 +774,7 @@ bool check_if_enough_funds_avail(char *table_id)
 		if (balance > min_stake + RESERVE_AMOUNT)
 			return true;
 	}
-	dlg_error("%s::%d::Insufficient Funds\n", __func__, __LINE__);
+	dlg_error("Insufficient Funds");
 	return false;
 }
 
@@ -772,7 +793,7 @@ cJSON *check_if_d_t_available(char *dealer_id, char *table_id)
 
 	if ((0 == strcmp(jstr(t_table_info, "table_id"), table_id))) {
 		game_state = get_game_state(table_id);
-		if ((game_state == G_TABLE_STARTED) && (!check_if_pa_exists(table_id)) &&
+		if ((game_state == G_TABLE_STARTED) && (!is_table_full(table_id)) && (!check_if_pa_exists(table_id)) &&
 		    (check_if_enough_funds_avail(table_id))) {
 			return t_table_info;
 		}
