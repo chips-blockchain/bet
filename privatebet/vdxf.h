@@ -38,6 +38,7 @@ key is represented as chips.vrsc::poker.cashiers.
 #define T_BLINDER_KEY "chips.vrsc::poker.t_blinder"
 
 
+#define T_D_DECK_KEY "chips.vrsc::poker.t_d_deck"
 #define T_D_P1_DECK_KEY "chips.vrsc::poker.t_d_p1_deck"
 #define T_D_P2_DECK_KEY "chips.vrsc::poker.t_d_p2_deck"
 #define T_D_P3_DECK_KEY "chips.vrsc::poker.t_d_p3_deck"
@@ -48,7 +49,7 @@ key is represented as chips.vrsc::poker.cashiers.
 #define T_D_P8_DECK_KEY "chips.vrsc::poker.t_d_p8_deck"
 #define T_D_P9_DECK_KEY "chips.vrsc::poker.t_d_p9_deck"
 
-
+#define T_B_DECK_KEY "chips.vrsc::poker.t_b_deck"
 #define T_B_P1_DECK_KEY "chips.vrsc::poker.t_b_p1_deck"
 #define T_B_P2_DECK_KEY "chips.vrsc::poker.t_b_p2_deck"
 #define T_B_P3_DECK_KEY "chips.vrsc::poker.t_b_p3_deck"
@@ -89,6 +90,9 @@ under chips as sg777.chips@ which basically been used to hold the tokens.
 
 #define ID_UPDATE_ESTIMATE_NO 50
 #define RESERVE_AMOUNT ID_UPDATE_ESTIMATE_NO *chips_tx_fee
+
+extern char all_d_p_keys[9][128];
+
 
 char *get_vdxf_id(char *key_name);
 char *get_key_vdxf_id(char *key_name);
