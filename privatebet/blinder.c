@@ -27,7 +27,7 @@ int32_t cashier_sb_deck(char *id, bits256 *d_blinded_deck, int32_t player_id)
 
 	dlg_info("Cashier blinding values for the player ::%d", player_id);
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
-		dlg_info("%s", bits256_str(str, b_deck_info.cashier_r[player_id].priv));
+		dlg_info("%s", bits256_str(str, b_deck_info.cashier_r[player_id]->priv));
 	}
 
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
