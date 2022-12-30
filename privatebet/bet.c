@@ -612,8 +612,8 @@ end:
 
 int main(int argc, char **argv)
 {
-	test_cashier_sb("sg777_t");
-
+	//test_cashier_sb("sg777_t");
+	cashier_init_deck();
 #if 1 //Enable this snippet to make bet take no action on blocknotify
 	if ((argc == 3) && (strcmp(argv[1], "newblock") == 0)) {
 		goto end;
