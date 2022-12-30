@@ -146,7 +146,6 @@ struct b_deck_info_struct {
 };
 extern struct b_deck_info_struct b_deck_info;
 
-
 struct d_deck_info_struct {
 	bits256 game_id;
 	int32_t d_permi[CARDS777_MAXCARDS];
