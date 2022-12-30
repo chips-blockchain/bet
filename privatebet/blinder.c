@@ -30,6 +30,7 @@ int32_t cashier_sb_deck(char *id, bits256 *d_blinded_deck, int32_t player_id)
 		dlg_info("%s", bits256_str(str, b_deck_info.cashier_r[player_id][i].priv));
 	}
 
+	b_blinded_deck = cJSON_CreateArray();
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
 		jaddistr(b_blinded_deck, bits256_str(str, d_blinded_deck[i]));
 	}
