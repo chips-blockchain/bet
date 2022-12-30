@@ -283,51 +283,56 @@ void bet_parse_blockchain_config_ini_file()
 
 void bet_parse_verus_dealer()
 {
+	int32_t retval = OK;
 	char hexstr[65];
 	dictionary *ini = NULL;
 	struct table t;
-
+	cJSON *out = NULL;
+	
 	ini = iniparser_load(verus_dealer_config);
-	if (ini == NULL) {
-		dlg_error("error in parsing %s", verus_dealer_config);
-	} else {
-		game_id = rand256(0);
-		if (NULL != iniparser_getstring(ini, "verus:dealer_id", NULL)) {
-			strncpy(t.dealer_id, iniparser_getstring(ini, "verus:dealer_id", NULL), sizeof(t.dealer_id));
-		}
-		if (-1 != iniparser_getint(ini, "table:max_players", -1)) {
-			t.max_players = (uint8_t)iniparser_getint(ini, "table:max_players", -1);
-		}
-		if (0 != iniparser_getdouble(ini, "table:big_blind", 0)) {
-			float_to_uint32_s(&t.big_blind, iniparser_getdouble(ini, "table:big_blind", 0));
-		}
-		if (0 != iniparser_getint(ini, "table:min_stake", 0)) {
-			float_to_uint32_s(&t.min_stake, (iniparser_getint(ini, "table:min_stake", 0) * BB_in_chips));
-		}
-		if (0 != iniparser_getint(ini, "table:max_stake", 0)) {
-			float_to_uint32_s(&t.max_stake, (iniparser_getint(ini, "table:max_stake", 0) * BB_in_chips));
-		}
-		if (NULL != iniparser_getstring(ini, "table:table_id", NULL)) {
-			strncpy(t.table_id, iniparser_getstring(ini, "table:table_id", NULL), sizeof(t.table_id));
-		}
+	if (!ini)
+		return ERR_INI_PARSING;
 
-		//Updating the dealer id with t_table_info
-		cJSON *t1 = update_cmm_from_id_key_data_cJSON(t.dealer_id, get_vdxf_id(T_TABLE_INFO_KEY),
-							      struct_table_to_cJSON(&t), true);
-		dlg_info("%s", cJSON_Print(t1));
-
-		//Updating the table id with the game_id and t_table_info
-		cJSON *t2 =
-			append_cmm_from_id_key_data_hex(t.table_id, T_GAME_ID_KEY, bits256_str(hexstr, game_id), false);
-		dlg_info("%s", cJSON_Print(t2));
-
-		dlg_info("t_table_info key of the table id is::%s\n",
-			 get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)));
-		cJSON *t3 = append_cmm_from_id_key_data_cJSON(
-			t.table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)),
-			struct_table_to_cJSON(&t), true);
-		dlg_info("%s", cJSON_Print(t3));
+	if (NULL != iniparser_getstring(ini, "verus:dealer_id", NULL)) {
+		strncpy(t.dealer_id, iniparser_getstring(ini, "verus:dealer_id", NULL), sizeof(t.dealer_id));
 	}
+	if (-1 != iniparser_getint(ini, "table:max_players", -1)) {
+		t.max_players = (uint8_t)iniparser_getint(ini, "table:max_players", -1);
+	}
+	if (0 != iniparser_getdouble(ini, "table:big_blind", 0)) {
+		float_to_uint32_s(&t.big_blind, iniparser_getdouble(ini, "table:big_blind", 0));
+	}
+	if (0 != iniparser_getint(ini, "table:min_stake", 0)) {
+		float_to_uint32_s(&t.min_stake, (iniparser_getint(ini, "table:min_stake", 0) * BB_in_chips));
+	}
+	if (0 != iniparser_getint(ini, "table:max_stake", 0)) {
+		float_to_uint32_s(&t.max_stake, (iniparser_getint(ini, "table:max_stake", 0) * BB_in_chips));
+	}
+	if (NULL != iniparser_getstring(ini, "table:table_id", NULL)) {
+		strncpy(t.table_id, iniparser_getstring(ini, "table:table_id", NULL), sizeof(t.table_id));
+	}
+
+	//Updating the dealer id with t_table_info
+	out = update_cmm_from_id_key_data_cJSON(t.dealer_id, get_vdxf_id(T_TABLE_INFO_KEY),
+						      struct_table_to_cJSON(&t), true);
+	dlg_info("%s", cJSON_Print(out));
+
+	retval = dealer_table_init(t);
+	dlg_error("%s", bet_err_str(retval));
+	
+	#if 0		
+	//Updating the table id with the game_id and t_table_info
+	cJSON *t2 =
+		append_cmm_from_id_key_data_hex(t.table_id, T_GAME_ID_KEY, bits256_str(hexstr, game_id), false);
+	dlg_info("%s", cJSON_Print(t2));
+
+	dlg_info("t_table_info key of the table id is::%s\n",
+		 get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)));
+	cJSON *t3 = append_cmm_from_id_key_data_cJSON(
+		t.table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)),
+		struct_table_to_cJSON(&t), true);
+	dlg_info("%s", cJSON_Print(t3));
+	#endif	
 }
 
 void bet_parse_verus_player()
