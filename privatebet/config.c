@@ -5,6 +5,7 @@
 #include "err.h"
 #include "commands.h"
 #include "vdxf.h"
+#include "dealer.h"
 
 char *dealer_config_ini_file = "./config/dealer_config.ini";
 char *player_config_ini_file = "./config/player_config.ini";
@@ -281,7 +282,7 @@ void bet_parse_blockchain_config_ini_file()
 	dlg_info("Blockchain client :: %s\n", blockchain_cli);
 }
 
-void bet_parse_verus_dealer()
+int32_t bet_parse_verus_dealer()
 {
 	int32_t retval = OK;
 	char hexstr[65];
@@ -333,6 +334,7 @@ void bet_parse_verus_dealer()
 		struct_table_to_cJSON(&t), true);
 	dlg_info("%s", cJSON_Print(t3));
 #endif
+	return retval;
 }
 
 void bet_parse_verus_player()
