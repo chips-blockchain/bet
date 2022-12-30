@@ -26,7 +26,7 @@ cJSON *append_game_state(char *table_id, int32_t game_state, cJSON *game_info)
 
 int32_t get_game_state(char *table_id)
 {
-	int32_t game_state = -1;
+	int32_t game_state = G_ZEROIZED_STATE;
 	char *game_id_str = NULL;
 	cJSON *t_game_info = NULL;
 
