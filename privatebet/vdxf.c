@@ -513,18 +513,17 @@ int32_t find_table()
 	dealer_ids = get_cJSON_from_id_key("dealers", DEALERS_KEY);
 	if (!dealer_ids)
 		return ERR_NO_DEALERS_FOUND;
-	
+
 	for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ids); i++) {
 		t_table_info = get_available_t_of_d(jstri(dealer_ids, i));
-		if(t_table_info) {
+		if (t_table_info) {
 			strncpy(player_config.dealer_id, jstri(dealer_ids, i), sizeof(player_config.dealer_id));
-			strncpy(player_config.table_id, jstr(t_table_info, "table_id"),
-				sizeof(player_config.table_id));
+			strncpy(player_config.table_id, jstr(t_table_info, "table_id"), sizeof(player_config.table_id));
 			copy_table_to_struct_t(t_table_info);
 			return retval;
 		}
 	}
-	
+
 	retval = ERR_NO_TABLES_FOUND;
 	return retval;
 }
@@ -712,9 +711,9 @@ cJSON *get_available_t_of_d(char *dealer_id)
 
 	game_state = get_game_state(jstr(t_table_info, "table_id"));
 
-	if((game_state == G_TABLE_STARTED) && (!check_if_pa_exists(jstr(t_table_info, "table_id"))) &&
+	if ((game_state == G_TABLE_STARTED) && (!check_if_pa_exists(jstr(t_table_info, "table_id"))) &&
 	    (check_if_enough_funds_avail(jstr(t_table_info, "table_id")))) {
-	    return t_table_info;
+		return t_table_info;
 	}
 	return NULL;
 }
@@ -763,19 +762,20 @@ cJSON *check_if_d_t_available(char *dealer_id, char *table_id)
 	int32_t game_state;
 	cJSON *t_table_info = NULL;
 
-	if ((!dealer_id) || (!table_id) || (!is_dealer_exists(dealer_id)) || (!is_id_exists(table_id,0))) {
+	if ((!dealer_id) || (!table_id) || (!is_dealer_exists(dealer_id)) || (!is_id_exists(table_id, 0))) {
 		return NULL;
 	}
-	
+
 	t_table_info = get_cJSON_from_id_key(dealer_id, T_TABLE_INFO_KEY);
 	if (!t_table_info)
 		return NULL;
 
 	if ((0 == strcmp(jstr(t_table_info, "table_id"), table_id))) {
 		game_state = get_game_state(table_id);
-		if((game_state == G_TABLE_STARTED) && (!check_if_pa_exists(table_id)) && (check_if_enough_funds_avail(table_id))) {
+		if ((game_state == G_TABLE_STARTED) && (!check_if_pa_exists(table_id)) &&
+		    (check_if_enough_funds_avail(table_id))) {
 			return t_table_info;
-		}	
+		}
 	}
 	return NULL;
 }
