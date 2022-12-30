@@ -897,7 +897,7 @@ cJSON *update_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data, bool
 	cJSON *data_obj = NULL, *data_key_obj = NULL;
 
 	if (is_key_vdxf_id) {
-		data_type = BYTEVECTOR_VDXF_ID;
+		data_type = get_vdxf_id(BYTEVECTOR_VDXF_ID);
 		data_key = key;
 	} else {
 		data_type = get_vdxf_id(get_key_data_type(key));
