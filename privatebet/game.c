@@ -4,7 +4,6 @@
 
 struct t_game_info_struct t_game_info;
 
-
 const char *game_state_str(int32_t game_state)
 {
 	switch (game_state) {
