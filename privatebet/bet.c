@@ -37,6 +37,8 @@
 #include "print.h"
 #include "test.h"
 #include "dealer.h"
+#include "blinder.h"
+
 
 #include <netinet/in.h>
 #include <stdio.h>
