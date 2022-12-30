@@ -883,12 +883,14 @@ cJSON *append_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data, bool
 cJSON *append_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data, bool is_key_vdxf_id)
 {
 	char *hex_data = NULL;
-
-	cJSON_hex(data, &hex_data);
-	if (!hex_data) {
-		dlg_error("Error occured in conversion of cJSON to HEX\n");
+	
+	if(!data)
 		return NULL;
-	}
+	
+	cJSON_hex(data, &hex_data);
+	if (!hex_data)
+		return NULL;
+	
 	return append_cmm_from_id_key_data_hex(id, key, hex_data, is_key_vdxf_id);
 }
 
