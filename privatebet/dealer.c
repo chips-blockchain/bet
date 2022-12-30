@@ -135,7 +135,7 @@ int32_t dealer_table_init(struct table t)
 			return ERR_TABLE_LAUNCH;
 		dlg_info("%s", cJSON_Print(out));
 	} else {
-		dlg_info("Table is in game, at state ::%d", game_state);
+		dlg_info("Table is in game, at state ::%s", game_state_str(game_state));
 	}
 	return OK;
 }
