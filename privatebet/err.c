@@ -146,6 +146,8 @@ const char *bet_err_str(int32_t err_no)
 		return "Error in updating t_player_info key";
 	case ERR_NO_PAYIN_DATA:
 		return "There exists no payin tx data";
+	case ERR_TABLE_LAUNCH:
+		return "Error in launching the table";
 	default:
 		return "This error is not handled yet...";
 	}
