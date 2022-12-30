@@ -4,27 +4,26 @@
 #include "vdxf.h"
 #include "print.h"
 
-
-static char* get_table_full_key(char *key)
+static char *get_table_full_key(char *key)
 {
 	char *key_name = NULL;
-	
-	for(int32_t i=0; i<all_t_p_keys_no; i++){
-		if(strcmp(key, all_t_p_key_names[i]) == 0) {
+
+	for (int32_t i = 0; i < all_t_p_keys_no; i++) {
+		if (strcmp(key, all_t_p_key_names[i]) == 0) {
 			key_name = calloc(1, 128);
 			strcpy(key_name, all_t_p_keys[i]);
 			return key_name;
-		}	
+		}
 	}
 
-	for(int32_t i=0; i<all_d_p_keys_no; i++){
-		if(strcmp(key, all_d_p_key_names[i]) == 0) {
+	for (int32_t i = 0; i < all_d_p_keys_no; i++) {
+		if (strcmp(key, all_d_p_key_names[i]) == 0) {
 			key_name = calloc(1, 128);
 			strcpy(key_name, all_d_p_keys[i]);
 			return key_name;
-		}	
+		}
 	}
-	
+
 	return NULL;
 }
 
@@ -97,20 +96,19 @@ void print_table_id(char *id)
 	}
 }
 
-
 void print_table_key_info(int argc, char **argv)
 {
 	char *game_id_str = NULL, *key_name = NULL;
 	cJSON *key_info = NULL;
 
-	if(argc == 4) {
-		game_id_str = get_str_from_id_key(argv[2], get_vdxf_id(T_GAME_ID_KEY)); 
+	if (argc == 4) {
+		game_id_str = get_str_from_id_key(argv[2], get_vdxf_id(T_GAME_ID_KEY));
 		key_name = get_table_full_key(argv[3]);
-		if(key_name) {
-			dlg_info("%s::%s", game_id_str, get_key_data_vdxf_id(key_name,game_id_str));
+		if (key_name) {
+			dlg_info("%s::%s", game_id_str, get_key_data_vdxf_id(key_name, game_id_str));
 			key_info = get_cJSON_from_id_key_vdxfid(argv[2], get_key_data_vdxf_id(key_name, game_id_str));
-			dlg_info("%s", cJSON_Print(key_info));	
-		}		
+			dlg_info("%s", cJSON_Print(key_info));
+		}
 	}
 }
 
