@@ -5,6 +5,8 @@
 #include "cards777.h"
 #include "game.h"
 #include "err.h"
+#include "misc.h"
+
 struct d_deck_info_struct d_deck_info;
 
 char all_t_d_p_keys[all_t_d_p_keys_no][128] = { T_D_DECK_KEY,    T_D_P1_DECK_KEY, T_D_P2_DECK_KEY, T_D_P3_DECK_KEY,

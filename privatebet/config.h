@@ -6,5 +6,5 @@ void bet_parse_cashier_config_ini_file();
 void bet_display_cashier_hosted_gui();
 int32_t bet_parse_bets();
 void bet_parse_blockchain_config_ini_file();
-void bet_parse_verus_dealer();
+int32_t bet_parse_verus_dealer();
 void bet_parse_verus_player();
