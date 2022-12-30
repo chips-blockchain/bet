@@ -65,7 +65,7 @@ void test_cashier_sb(char *id)
 	}
 	cashier_sb_deck(id, t_d_p1_deck, 1);
 
-	t_d_p2_deck_info = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_PLAYER2_KEY, game_id_str));
+	t_d_p2_deck_info = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_D_P2_DECK_KEY, game_id_str));
 	for (int32_t i = 0; i < cJSON_GetArraySize(t_d_p2_deck_info); i++) {
 		t_d_p2_deck[i] = jbits256i(t_d_p2_deck_info, i);
 	}
