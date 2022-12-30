@@ -7,20 +7,20 @@
 
 static char* get_table_full_key(char *key)
 {
-	int32_t no_of_keys = 11;	
 	char *key_name = NULL;
-	char all_t_keys[11][128] = { T_TABLE_INFO_KEY, T_PLAYER_INFO_KEY, T_PLAYER1_KEY, T_PLAYER2_KEY,
-				     T_PLAYER3_KEY,    T_PLAYER4_KEY,     T_PLAYER5_KEY, T_PLAYER6_KEY,
-				     T_PLAYER7_KEY,    T_PLAYER8_KEY,     T_PLAYER9_KEY };
 	
-	char all_t_key_names[11][128] = { "t_table_info", "t_player_info", "t_player1", "t_player2",
-				     "t_player3",    "t_player4",     "t_player5", "t_player6",
-				     "t_player7",    "t_player8",     "t_player9" };
-	
-	for(int32_t i=0; i<no_of_keys; i++){
-		if(strcmp(key, all_t_key_names[i]) == 0) {
+	for(int32_t i=0; i<all_t_p_keys_no; i++){
+		if(strcmp(key, all_t_p_key_names[i]) == 0) {
 			key_name = calloc(1, 128);
-			strcpy(key_name, all_t_keys[i]);
+			strcpy(key_name, all_t_p_keys[i]);
+			return key_name;
+		}	
+	}
+
+	for(int32_t i=0; i<all_d_p_keys_no; i++){
+		if(strcmp(key, all_d_p_key_names[i]) == 0) {
+			key_name = calloc(1, 128);
+			strcpy(key_name, all_d_p_keys[i]);
 			return key_name;
 		}	
 	}
@@ -79,21 +79,17 @@ void print_dealer_id(char *id)
 
 void print_table_id(char *id)
 {
-	int32_t no_of_keys = 11;
 	char *game_id = NULL;
-	char all_t_keys[11][128] = { T_TABLE_INFO_KEY, T_PLAYER_INFO_KEY, T_PLAYER1_KEY, T_PLAYER2_KEY,
-				     T_PLAYER3_KEY,    T_PLAYER4_KEY,     T_PLAYER5_KEY, T_PLAYER6_KEY,
-				     T_PLAYER7_KEY,    T_PLAYER8_KEY,     T_PLAYER9_KEY };
 
 	game_id = get_str_from_id_key(id, get_vdxf_id(T_GAME_ID_KEY));
 	if (game_id) {
 		dlg_info("game_id::%s", game_id);
-		for (int32_t i = 0; i < no_of_keys; i++) {
-			cJSON *temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(all_t_keys[i], game_id));
+		for (int32_t i = 0; i < all_t_p_keys_no; i++) {
+			cJSON *temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(all_t_p_keys[i], game_id));
 			if (temp)
 				dlg_info("%s", cJSON_Print(temp));
 		}
-		for (int32_t i = 0; i < 10; i++) {
+		for (int32_t i = 0; i < all_d_p_keys_no; i++) {
 			cJSON *temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(all_d_p_keys[i], game_id));
 			if (temp)
 				dlg_info("%s", cJSON_Print(temp));
