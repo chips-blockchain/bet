@@ -94,7 +94,7 @@ under chips as sg777.chips@ which basically been used to hold the tokens.
 #define ID_UPDATE_ESTIMATE_NO 50
 #define RESERVE_AMOUNT ID_UPDATE_ESTIMATE_NO *chips_tx_fee
 
-extern char all_d_p_keys[9][128];
+extern char all_d_p_keys[10][128];
 
 
 char *get_vdxf_id(char *key_name);
