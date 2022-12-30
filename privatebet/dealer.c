@@ -49,7 +49,7 @@ int32_t dealer_sb_deck(char *id, bits256 *player_r, int32_t player_id)
 		jaddistr(d_blinded_deck, bits256_str(str, player_r[i]));
 	}
 
-	cJSON *out = update_cmm_from_id_key_data_cJSON(id,get_key_data_vdxf_id(all_d_p_keys[player_id], game_id_str), d_blinded_deck ,true);
+	cJSON *out = append_cmm_from_id_key_data_cJSON(id,get_key_data_vdxf_id(all_d_p_keys[player_id], game_id_str), d_blinded_deck ,true);
 
 	dlg_info("%s", cJSON_Print(out));
 	
@@ -90,6 +90,6 @@ void test_dealer_sb(char *id)
 		jaddistr(t_d_deck_info, bits256_str(str, d_deck_info.dealer_r[i].prod));
 	}
 	
-	cJSON *out = update_cmm_from_id_key_data_cJSON(id, get_key_data_vdxf_id(T_D_DECK_KEY, game_id_str), t_d_deck_info, true);
+	cJSON *out = append_cmm_from_id_key_data_cJSON(id, get_key_data_vdxf_id(T_D_DECK_KEY, game_id_str), t_d_deck_info, true);
 	dlg_info("%s", cJSON_Print(out));
 }
