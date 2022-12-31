@@ -102,6 +102,8 @@ int32_t handle_game_state_cashier(char *table_id)
 			break;
 	case G_DECK_SHUFFLING_D:
 		retval = cashier_shuffle_deck(table_id);
+		if(!retval)
+			append_game_state(table_id, G_DECK_SHUFFLING_B, NULL);
 		break;
 	default:
 		dlg_info("%s", game_state_str(game_state));
