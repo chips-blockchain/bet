@@ -148,6 +148,12 @@ const char *bet_err_str(int32_t err_no)
 		return "There exists no payin tx data";
 	case ERR_TABLE_LAUNCH:
 		return "Error in launching the table";
+	case ERR_GAME_STATE_UPDATE:
+		return "Error in updating the game state";
+	case ERR_DECK_BLINDING_DEALER:
+		return "Error in deck blinding at dealer";
+	case ERR_DECK_BLINDING_CASHIER:
+		return "Error in deck blinding at cashier";
 	default:
 		return "This error is not handled yet...";
 	}
