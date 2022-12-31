@@ -42,11 +42,11 @@ int32_t cashier_sb_deck(char *id, bits256 *d_blinded_deck, int32_t player_id)
 	cJSON *out = append_cmm_from_id_key_data_cJSON(id, get_key_data_vdxf_id(all_t_b_p_keys[player_id], game_id_str),
 						       b_blinded_deck, true);
 
-	if(!out)
+	if (!out)
 		retval = ERR_DECK_BLINDING_CASHIER;
-	
+
 	dlg_info("%s", cJSON_Print(out));
-	
+
 	return retval;
 }
 
@@ -72,16 +72,17 @@ int32_t cashier_shuffle_deck(char *id)
 
 	num_players = jint(t_player_info, "num_players");
 
-	for(int32_t i=0; i<num_players; i++){
-		t_d_p_deck_info = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(all_t_d_p_keys[(i+1)], game_id_str));
+	for (int32_t i = 0; i < num_players; i++) {
+		t_d_p_deck_info =
+			get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(all_t_d_p_keys[(i + 1)], game_id_str));
 		for (int32_t j = 0; j < cJSON_GetArraySize(t_d_p_deck_info); j++) {
 			t_d_p_deck[j] = jbits256i(t_d_p_deck_info, j);
 		}
-		retval = cashier_sb_deck(id, t_d_p_deck, (i+1));
-		if(retval)
-			return retval;			
+		retval = cashier_sb_deck(id, t_d_p_deck, (i + 1));
+		if (retval)
+			return retval;
 	}
-	
+
 	return retval;
 }
 
@@ -92,17 +93,16 @@ int32_t handle_game_state_cashier(char *table_id)
 
 	game_state = get_game_state(table_id);
 	switch (game_state) {
-
 	case G_ZEROIZED_STATE:
 	case G_TABLE_ACTIVE:
 	case G_TABLE_STARTED:
 	case G_PLAYERS_JOINED:
 	case G_DECK_SHUFFLING_P:
 	case G_DECK_SHUFFLING_B:
-			break;
+		break;
 	case G_DECK_SHUFFLING_D:
 		retval = cashier_shuffle_deck(table_id);
-		if(!retval)
+		if (!retval)
 			append_game_state(table_id, G_DECK_SHUFFLING_B, NULL);
 		break;
 	default:
@@ -114,10 +114,10 @@ int32_t handle_game_state_cashier(char *table_id)
 int32_t cashier_game_init(char *table_id)
 {
 	int32_t retval = OK;
-	
-	while(1) {
+
+	while (1) {
 		retval = handle_game_state_cashier(table_id);
-		if(retval) {
+		if (retval) {
 			dlg_error("%s", bet_err_str(retval));
 			break;
 		}
