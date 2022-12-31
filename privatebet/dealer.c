@@ -155,8 +155,8 @@ int32_t dealer_shuffle_deck(char *id)
 	for (int32_t i = 0; i < num_players; i++) {
 		cJSON *t_player = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(all_t_p_keys[i], game_id_str));
 		cJSON *t_p_cardinfo = cJSON_GetObjectItem(t_player, "cardinfo");
-		for (int32_t i = 0; i < cJSON_GetArraySize(t_p_cardinfo); i++) {
-			t_p_r[i] = jbits256i(t_p_cardinfo, i);
+		for (int32_t j = 0; j < cJSON_GetArraySize(t_p_cardinfo); j++) {
+			t_p_r[j] = jbits256i(t_p_cardinfo, j);
 		}
 		retval = dealer_sb_deck(id, t_p_r, (i + 1));
 		if (retval)
