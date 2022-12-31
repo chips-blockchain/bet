@@ -37,6 +37,7 @@ cJSON *add_dealer(char *dealer_id)
 
 int32_t dealer_sb_deck(char *id, bits256 *player_r, int32_t player_id)
 {
+	int32_t retval = OK;
 	char str[65], *game_id_str = NULL;
 	cJSON *d_blinded_deck = NULL;
 
@@ -59,46 +60,17 @@ int32_t dealer_sb_deck(char *id, bits256 *player_r, int32_t player_id)
 	cJSON *out = append_cmm_from_id_key_data_cJSON(id, get_key_data_vdxf_id(all_t_d_p_keys[player_id], game_id_str),
 						       d_blinded_deck, true);
 
+	if(!out)
+		retval = ERR_DECK_BLINDING_DEALER;
 	dlg_info("%s", cJSON_Print(out));
+	
+	return retval;
 }
 
 void dealer_init_deck()
 {
 	bet_permutation(d_deck_info.d_permi, CARDS777_MAXCARDS);
 	gen_deck(d_deck_info.dealer_r, CARDS777_MAXCARDS);
-}
-
-void test_dealer_sb(char *id)
-{
-	char *game_id_str = NULL, str[65];
-	cJSON *t_player1 = NULL, *t_player2 = NULL, *t_p1_cardinfo = NULL, *t_p2_cardinfo = NULL, *t_d_deck_info = NULL;
-	bits256 t_p1_r[CARDS777_MAXCARDS], t_p2_r[CARDS777_MAXCARDS];
-
-	dealer_init_deck();
-	game_id_str = get_str_from_id_key(id, T_GAME_ID_KEY);
-
-	t_player1 = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_PLAYER1_KEY, game_id_str));
-	t_p1_cardinfo = cJSON_GetObjectItem(t_player1, "cardinfo");
-	for (int32_t i = 0; i < cJSON_GetArraySize(t_p1_cardinfo); i++) {
-		t_p1_r[i] = jbits256i(t_p1_cardinfo, i);
-	}
-	dealer_sb_deck(id, t_p1_r, 1);
-
-	t_player2 = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_PLAYER2_KEY, game_id_str));
-	t_p2_cardinfo = cJSON_GetObjectItem(t_player2, "cardinfo");
-	for (int32_t i = 0; i < cJSON_GetArraySize(t_p2_cardinfo); i++) {
-		t_p2_r[i] = jbits256i(t_p2_cardinfo, i);
-	}
-	dealer_sb_deck(id, t_p2_r, 2);
-
-	t_d_deck_info = cJSON_CreateArray();
-	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
-		jaddistr(t_d_deck_info, bits256_str(str, d_deck_info.dealer_r[i].prod));
-	}
-
-	cJSON *out = append_cmm_from_id_key_data_cJSON(id, get_key_data_vdxf_id(T_D_DECK_KEY, game_id_str),
-						       t_d_deck_info, true);
-	dlg_info("%s", cJSON_Print(out));
 }
 
 int32_t dealer_table_init(struct table t)
@@ -120,7 +92,7 @@ int32_t dealer_table_init(struct table t)
 
 		out = append_game_state(t.table_id, G_TABLE_ACTIVE, NULL);
 		if (!out)
-			return ERR_TABLE_LAUNCH;
+			return ERR_GAME_STATE_UPDATE;
 		dlg_info("%s", cJSON_Print(out));
 
 		out = append_cmm_from_id_key_data_cJSON(
@@ -132,10 +104,160 @@ int32_t dealer_table_init(struct table t)
 
 		out = append_game_state(t.table_id, G_TABLE_STARTED, NULL);
 		if (!out)
-			return ERR_TABLE_LAUNCH;
+			return ERR_GAME_STATE_UPDATE;
 		dlg_info("%s", cJSON_Print(out));
 	} else {
 		dlg_info("Table is in game, at state ::%s", game_state_str(game_state));
 	}
 	return OK;
+}
+
+bool is_players_shuffled_deck(char *table_id)
+{
+	int32_t game_state, num_players = 0, count =0;;
+	char *game_id_str = NULL;
+	cJSON *t_player_info = NULL;
+
+	game_state = get_game_state(table_id);
+
+	if(game_state == G_DECK_SHUFFLING_P) {
+		return true;
+	} else if(game_state == G_PLAYERS_JOINED) {
+		game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
+		t_player_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY,game_id_str));
+		num_players = jint(t_player_info, "num_players");
+		for(int32_t i=0; i<num_players; i++){
+			if(get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(all_t_p_keys[i],game_id_str)))
+				count++;
+		}
+		if(count == num_players)
+			return true;
+	}
+	return false;
+}
+
+int32_t dealer_shuffle_deck(char *id)
+{
+	int32_t num_players = 0, retval = OK;
+	char *game_id_str = NULL, str[65];
+	cJSON *t_player = NULL, *t_p_cardinfo = NULL, *t_d_deck_info = NULL;
+	cJSON *t_player_info = NULL;
+	bits256 t_p_r[CARDS777_MAXCARDS];
+
+	dealer_init_deck();
+	game_id_str = get_str_from_id_key(id, T_GAME_ID_KEY);
+
+	t_player_info = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY,game_id_str));
+	num_players = jint(t_player_info, "num_players");
+
+	for(int32_t i=0; i<num_players; i++) {
+		
+		cJSON *t_player = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(all_t_p_keys[i], game_id_str));
+		cJSON *t_p_cardinfo = cJSON_GetObjectItem(t_player, "cardinfo");
+		for (int32_t i = 0; i < cJSON_GetArraySize(t_p_cardinfo); i++) {
+			t_p_r[i] = jbits256i(t_p_cardinfo, i);
+		}
+		retval = dealer_sb_deck(id, t_p_r, (i+1));
+		if(retval)
+			return retval;
+				
+	}
+	
+	#if 0
+	t_player1 = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_PLAYER1_KEY, game_id_str));
+	t_p1_cardinfo = cJSON_GetObjectItem(t_player1, "cardinfo");
+	for (int32_t i = 0; i < cJSON_GetArraySize(t_p1_cardinfo); i++) {
+		t_p1_r[i] = jbits256i(t_p1_cardinfo, i);
+	}
+	dealer_sb_deck(id, t_p1_r, 1);
+
+	t_player2 = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_PLAYER2_KEY, game_id_str));
+	t_p2_cardinfo = cJSON_GetObjectItem(t_player2, "cardinfo");
+	for (int32_t i = 0; i < cJSON_GetArraySize(t_p2_cardinfo); i++) {
+		t_p2_r[i] = jbits256i(t_p2_cardinfo, i);
+	}
+	dealer_sb_deck(id, t_p2_r, 2);
+	#endif
+	
+	t_d_deck_info = cJSON_CreateArray();
+	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
+		jaddistr(t_d_deck_info, bits256_str(str, d_deck_info.dealer_r[i].prod));
+	}
+
+	cJSON *out = append_cmm_from_id_key_data_cJSON(id, get_key_data_vdxf_id(T_D_DECK_KEY, game_id_str),
+						       t_d_deck_info, true);
+	if(!out)
+		retval = ERR_DECK_BLINDING_DEALER;
+	dlg_info("%s", cJSON_Print(out));
+	
+	return retval;
+}
+
+int32_t handle_game_state(char *table_id)
+{
+	int32_t game_state, retval = OK;
+	cJSON *out = NULL;
+
+	game_state = get_game_state();
+	switch(game_state) {
+		case G_ZEROIZED_STATE:
+			bet_parse_verus_dealer();
+			break;
+		case G_TABLE_STARTED:
+			if(is_table_full(table_id)) 
+				append_game_state(table_id, G_PLAYERS_JOINED, NULL);	
+			break;
+		case G_PLAYERS_JOINED:
+			if(is_players_shuffled_deck(table_id)) 
+				append_game_state(table_id, G_DECK_SHUFFLING_P, NULL);	
+			break;
+		case G_DECK_SHUFFLING_P:
+			retval = dealer_shuffle_deck(table_id);
+			break;
+		default:
+			dlg_info("%s", game_state_str(game_state));
+	}
+	return retval;
+}
+
+
+int32_t update_t_info_at_dealer(struct table t)
+{
+	int32_t retval = OK;
+	cJSON *d_table_info = NULL, *out = NULL;
+
+	d_table_info = get_cJSON_from_id_key(t.dealer_id, T_TABLE_INFO_KEY);
+	if(d_table_info == NULL) {
+		out = update_cmm_from_id_key_data_cJSON(t.dealer_id, get_vdxf_id(T_TABLE_INFO_KEY), struct_table_to_cJSON(&t),
+						true);	
+		if(!out)
+			retval = ERR_RESERVED;
+	}
+	return retval;
+}
+
+int32_t dealer_init(struct table t)
+{
+	int32_t retval = OK, game_state;
+	cJSON *out = NULL;
+	
+	//Updating the dealer id with t_table_info
+	retval = update_t_info_at_dealer(t);
+	if(retval)
+		return retval;
+
+	game_state = get_game_state(t.table_id);
+	if(game_state == G_ZEROIZED_STATE) {
+		retval = dealer_table_init(t);
+		if (retval)
+			return retval;
+	}
+
+	while(1) {
+		retval = handle_game_state(t.table_id);
+		if(retval)
+			return retval;
+		sleep(2);
+	}
+	return retval;
 }
