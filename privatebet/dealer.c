@@ -163,22 +163,6 @@ int32_t dealer_shuffle_deck(char *id)
 			return retval;
 	}
 
-#if 0
-	t_player1 = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_PLAYER1_KEY, game_id_str));
-	t_p1_cardinfo = cJSON_GetObjectItem(t_player1, "cardinfo");
-	for (int32_t i = 0; i < cJSON_GetArraySize(t_p1_cardinfo); i++) {
-		t_p1_r[i] = jbits256i(t_p1_cardinfo, i);
-	}
-	dealer_sb_deck(id, t_p1_r, 1);
-
-	t_player2 = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_PLAYER2_KEY, game_id_str));
-	t_p2_cardinfo = cJSON_GetObjectItem(t_player2, "cardinfo");
-	for (int32_t i = 0; i < cJSON_GetArraySize(t_p2_cardinfo); i++) {
-		t_p2_r[i] = jbits256i(t_p2_cardinfo, i);
-	}
-	dealer_sb_deck(id, t_p2_r, 2);
-#endif
-
 	t_d_deck_info = cJSON_CreateArray();
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
 		jaddistr(t_d_deck_info, bits256_str(str, d_deck_info.dealer_r[i].prod));
@@ -210,6 +194,10 @@ int32_t handle_game_state(char *table_id)
 		break;
 	case G_DECK_SHUFFLING_P:
 		retval = dealer_shuffle_deck(table_id);
+		append_game_state(table_id, G_DECK_SHUFFLING_D, NULL);
+		break;
+	case G_DECK_SHUFFLING_D:
+		//Do nothing;
 		break;
 	default:
 		dlg_info("%s", game_state_str(game_state));
