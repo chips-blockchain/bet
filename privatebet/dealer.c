@@ -194,7 +194,7 @@ int32_t handle_game_state(char *table_id)
 		break;
 	case G_DECK_SHUFFLING_P:
 		retval = dealer_shuffle_deck(table_id);
-		if(!retval)
+		if (!retval)
 			append_game_state(table_id, G_DECK_SHUFFLING_D, NULL);
 		break;
 	case G_DECK_SHUFFLING_D:
@@ -202,7 +202,7 @@ int32_t handle_game_state(char *table_id)
 		break;
 	case G_DECK_SHUFFLING_B:
 		dlg_info("Its time for game");
-		break;	
+		break;
 	default:
 		dlg_info("%s", game_state_str(game_state));
 	}
