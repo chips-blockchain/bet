@@ -198,11 +198,8 @@ int32_t handle_game_state(char *table_id)
 	int32_t game_state, retval = OK;
 	cJSON *out = NULL;
 
-	game_state = get_game_state();
+	game_state = get_game_state(table_id);
 	switch(game_state) {
-		case G_ZEROIZED_STATE:
-			bet_parse_verus_dealer();
-			break;
 		case G_TABLE_STARTED:
 			if(is_table_full(table_id)) 
 				append_game_state(table_id, G_PLAYERS_JOINED, NULL);	
