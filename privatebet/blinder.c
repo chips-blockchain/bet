@@ -16,6 +16,7 @@ struct b_deck_info_struct b_deck_info;
 
 int32_t cashier_sb_deck(char *id, bits256 *d_blinded_deck, int32_t player_id)
 {
+	int32_t retval = OK;
 	char str[65], *game_id_str = NULL;
 	cJSON *b_blinded_deck = NULL;
 
@@ -39,7 +40,12 @@ int32_t cashier_sb_deck(char *id, bits256 *d_blinded_deck, int32_t player_id)
 	cJSON *out = append_cmm_from_id_key_data_cJSON(id, get_key_data_vdxf_id(all_t_b_p_keys[player_id], game_id_str),
 						       b_blinded_deck, true);
 
+	if(!out)
+		retval = ERR_DECK_BLINDING_CASHIER;
+	
 	dlg_info("%s", cJSON_Print(out));
+	
+	return retval;
 }
 
 void cashier_init_deck()
@@ -50,24 +56,67 @@ void cashier_init_deck()
 	}
 }
 
-void test_cashier_sb(char *id)
+int32_t cashier_shuffle_deck(char *id)
 {
-	char *game_id_str = NULL, str[65];
-	cJSON *t_d_p1_deck_info = NULL, *t_d_p2_deck_info = NULL;
-	bits256 t_d_p1_deck[CARDS777_MAXCARDS], t_d_p2_deck[CARDS777_MAXCARDS];
+	int32_t num_players = 0, retval = OK;
+	char *game_id_str = NULL;
+	cJSON *t_d_p_deck_info = NULL, *t_player_info = NULL;
+	bits256 t_d_p_deck[CARDS777_MAXCARDS];
 
 	cashier_init_deck();
 	game_id_str = get_str_from_id_key(id, T_GAME_ID_KEY);
 
-	t_d_p1_deck_info = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_D_P1_DECK_KEY, game_id_str));
-	for (int32_t i = 0; i < cJSON_GetArraySize(t_d_p1_deck_info); i++) {
-		t_d_p1_deck[i] = jbits256i(t_d_p1_deck_info, i);
-	}
-	cashier_sb_deck(id, t_d_p1_deck, 1);
+	t_player_info = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
 
-	t_d_p2_deck_info = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_D_P2_DECK_KEY, game_id_str));
-	for (int32_t i = 0; i < cJSON_GetArraySize(t_d_p2_deck_info); i++) {
-		t_d_p2_deck[i] = jbits256i(t_d_p2_deck_info, i);
+	num_players = jint(t_player_info, "num_players");
+
+	for(int32_t i=0; i<num_players; i++){
+		t_d_p_deck_info = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(all_t_d_p_keys[(i+1)], game_id_str));
+		for (int32_t j = 0; j < cJSON_GetArraySize(t_d_p_deck_info); j++) {
+			t_d_p_deck[j] = jbits256i(t_d_p_deck_info, j);
+		}
+		retval = cashier_sb_deck(id, t_d_p_deck, (i+1));
+		if(retval)
+			return retval;			
 	}
-	cashier_sb_deck(id, t_d_p2_deck, 2);
+	
+	return retval;
+}
+
+int32_t handle_game_state_cashier(char *table_id)
+{
+	int32_t game_state, retval = OK;
+	cJSON *out = NULL;
+
+	game_state = get_game_state(table_id);
+	switch (game_state) {
+
+	case G_ZEROIZED_STATE:
+	case G_TABLE_ACTIVE:
+	case G_TABLE_STARTED:
+	case G_PLAYERS_JOINED:
+	case G_DECK_SHUFFLING_P:
+	case G_DECK_SHUFFLING_B:
+			break;
+	case G_DECK_SHUFFLING_D:
+		retval = cashier_shuffle_deck(table_id);
+		break;
+	default:
+		dlg_info("%s", game_state_str(game_state));
+	}
+	return retval;
+}
+
+int32_t cashier_game_init(char *table_id)
+{
+	int32_t retval = OK;
+	
+	while(1) {
+		retval = handle_game_state_cashier(table_id);
+		if(retval) {
+			dlg_error("%s", bet_err_str(retval));
+			break;
+		}
+		sleep(3);
+	}
 }
