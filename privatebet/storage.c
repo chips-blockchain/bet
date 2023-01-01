@@ -2,6 +2,7 @@
 #include "storage.h"
 #include "misc.h"
 #include "err.h"
+#include "vdxf.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -532,7 +533,7 @@ int32_t insert_dealer_deck_info()
 {
 	int32_t retval = OK;
 	char *sql_query = NULL, game_id_str[65], str[65], *dealer_deck_priv = NULL, *perm = NULL;
-	cJSON *d_perm = NULL, d_blindinfo = NULL; 
+	cJSON *d_perm = NULL, *d_blindinfo = NULL; 
 
 
 	perm = cJSON_CreateArray();
@@ -557,7 +558,7 @@ int32_t insert_cashier_deck_info(char *table_id)
 {
 	int32_t retval = OK, num_players;
 	char *sql_query = NULL, *game_id_str = NULL, str[65], *cashier_deck_priv = NULL, *perm = NULL;
-	cJSON *t_player_info = NULL, *b_perm = NULL, b_blindinfo = NULL; 
+	cJSON *t_player_info = NULL, *b_perm = NULL, *b_blindinfo = NULL; 
 
 
 	perm = cJSON_CreateArray();
