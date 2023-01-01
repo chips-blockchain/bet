@@ -442,11 +442,11 @@ int32_t get_player_id(int *player_id)
 		return ERR_T_PLAYER_INFO_CORRUPTED;
 	dlg_info("%s", cJSON_Print(player_info));
 	for (int32_t i = 0; i < cJSON_GetArraySize(player_info); i++) {
-		if(strstr(jstri(player_info, i), player_config.primaryaddress)) {
+		if (strstr(jstri(player_info, i), player_config.primaryaddress)) {
 			strtok(jstri(player_info, i), "_");
 			strtok(NULL, "_");
 			*player_id = atoi(strtok(NULL, "_"));
-			dlg_info("player id::%d",*player_id);
+			dlg_info("player id::%d", *player_id);
 			return OK;
 		}
 	}
@@ -471,18 +471,18 @@ int32_t join_table()
 				op_id_info = get_z_getoperationstatus(jstr(op_id, "op_id"));
 				sleep(1);
 			}
-			if (0 != strcmp(jstr(jitem(op_id_info, 0), "status"), "success")) 
+			if (0 != strcmp(jstr(jitem(op_id_info, 0), "status"), "success"))
 				return ERR_SENDCURRENCY;
-			
+
 			char *txid = jstr(jobj(jitem(op_id_info, 0), "result"), "txid");
 			strcpy(player_config.txid, txid);
 			dlg_info("payin_tx::%s", txid);
 			retval = check_player_join_status(player_config.table_id, player_config.primaryaddress);
-			if(retval)
+			if (retval)
 				return retval;
 			retval = insert_player_deck_info_txid_pa_t_d(txid, player_config.primaryaddress,
 								     player_config.table_id, player_config.dealer_id);
-			if(retval)
+			if (retval)
 				return retval;
 		}
 	}
