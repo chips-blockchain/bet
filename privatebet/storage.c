@@ -158,7 +158,7 @@ int32_t bet_run_query(char *sql_query)
 		}
 		sqlite3_close(db);
 	}
-	
+
 	return retval;
 }
 
@@ -495,7 +495,9 @@ int32_t insert_player_deck_info_txid_pa_t_d(char *tx_id, char *pa, char *table_i
 	char *sql_query = NULL;
 
 	sql_query = calloc(sql_query_size, sizeof(char));
-	sprintf(sql_query, "insert into player_deck_info(tx_id, pa, table_id, dealer_id) values(\'%s\', \'%s\', \'%s\', \'%s\')", tx_id, pa, table_id, dealer_id);
+	sprintf(sql_query,
+		"insert into player_deck_info(tx_id, pa, table_id, dealer_id) values(\'%s\', \'%s\', \'%s\', \'%s\')",
+		tx_id, pa, table_id, dealer_id);
 	retval = bet_run_query(sql_query);
 
 	return retval;
