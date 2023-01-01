@@ -9,14 +9,14 @@
 #include <sys/types.h>
 #include <pwd.h>
 
-#define no_of_tables 10
+#define no_of_tables 13
 
 char *db_name = NULL;
 
 const char *table_names[no_of_tables] = { "dcv_tx_mapping",     "player_tx_mapping", "cashier_tx_mapping",
 					  "c_tx_addr_mapping",  "dcv_game_state",    "player_game_state",
 					  "cashier_game_state", "dealers_info",      "game_info",
-					  "sc_games_info" };
+					  "sc_games_info", "player_deck_info", "dealer_deck_info", "cashier_deck_info" };
 
 const char *schemas[no_of_tables] = {
 	"(tx_id varchar(100) primary key,table_id varchar(100), player_id varchar(100), msig_addr varchar(100), status bool, min_cashiers int)",
@@ -28,7 +28,10 @@ const char *schemas[no_of_tables] = {
 	"(table_id varchar(100) primary key,game_state varchar(1000))",
 	"(dealer_ip varchar(100) primary key)",
 	"(tx_id varchar(100) primary key,table_id varchar(100))",
-	"(tx_id varchar(100) primary key,table_id varchar(100), bh int, tx_type varchar(20))"
+	"(tx_id varchar(100) primary key,table_id varchar(100), bh int, tx_type varchar(20))",
+	"(game_id varchar(100) primary key, tx_id varchar(100), player_id int, player_priv varchar(100), player_deck_priv varchar(4000))",
+	"(game_id varchar(100) primary key, perm varchar(100), dealer_deck_priv varchar(4000))",
+	"(game_id varchar(100), player_id int, perm varchar(100), cashier_deck_priv varchar(4000), CONSTRAINT game_id PRIMARY KEY(game_id, player_id))"
 };
 
 void sqlite3_init_db_name()
@@ -481,3 +484,105 @@ end:
 	sqlite3_close(db);
 	return bh;
 }
+
+int32_t insert_player_deck_info_txid(char *tx_id)
+{
+	int32_t retval = OK;
+	char *sql_query = NULL;
+	
+	sql_query = calloc(sql_query_size , sizeof(char));
+	sprintf(sql_query, "insert into player_deck_info(tx_id) values(\'%s\')", tx_id);
+	retval = bet_run_query(sql_query);
+
+	return retval;
+}
+
+int32_t update_player_deck_info_a_rG(char* tx_id)
+{
+	int32_t retval = OK;
+	char player_priv[65], str[65], *player_deck_priv = NULL, *sql_query = NULL;
+	cJSON *cardinfo = NULL;
+	
+	bits256_str(player_priv, p_deck_info.p_kp.priv);
+
+	cardinfo = cJSON_CreateArray();
+	for(int32_t i=0; i<CARDS777_MAXCARDS; i++) {
+		jaddistr(cardinfo, bits256_str(str, p_deck_info.player_r[i].priv));
+	}
+	cJSON_hex(cardinfo, &player_deck_priv);
+
+	sql_query = calloc(sql_query_size, sizeof(char));
+	sprintf(sql_query, "update player_deck_info set player_priv = \'%s\', deck_priv = \'%s\' where tx_id = \'%s\'", player_priv, player_deck_priv, tx_id);
+	retval = bet_run_query(sql_query);
+	return retval;
+}
+
+int32_t update_player_deck_info_game_id_p_id(char* tx_id)
+{
+	int32_t retval = OK;
+	char *sql_query = NULL, game_id_str[65];
+
+	sql_query = calloc(sql_query_size, sizeof(char));
+	sprintf(sql_query, "update player_deck_info set game_id = \'%s\', player_id = %d where tx_id = \'%s\'", bits256_str(game_id_str,p_deck_info.game_id), p_deck_info.player_id, tx_id);
+	retval = bet_run_query(sql_query);
+	return retval;		
+}
+
+int32_t insert_dealer_deck_info()
+{
+	int32_t retval = OK;
+	char *sql_query = NULL, game_id_str[65], str[65], *dealer_deck_priv = NULL, *perm = NULL;
+	cJSON *d_perm = NULL, d_blindinfo = NULL; 
+
+
+	perm = cJSON_CreateArray();
+	for(int32_t i=0; i<CARDS777_MAXCARDS; i++) {
+		jaddi64bits(d_perm, d_deck_info.d_permi[i]);
+	}	
+	cJSON_hex(d_perm, &perm);
+		
+	d_blindinfo = cJSON_CreateArray();
+	for(int32_t i=0; i<CARDS777_MAXCARDS; i++) {
+		jaddistr(d_blindinfo, bits256_str(str, d_deck_info.dealer_r[i].priv));
+	}
+	cJSON_hex(d_blindinfo,&dealer_deck_priv);
+
+	sql_query = calloc(sql_query_size, sizeof(char));
+	sprintf(sql_query, "insert into dealer_deck_info(game_id, perm, dealer_deck_priv) values(\'%s\', \'%s\', \'%s\')", game_id_str, perm, dealer_deck_priv);
+	retval = bet_run_query(sql_query);
+	return retval;		
+}
+
+int32_t insert_cashier_deck_info(char *table_id)
+{
+	int32_t retval = OK, num_players;
+	char *sql_query = NULL, *game_id_str = NULL, str[65], *cashier_deck_priv = NULL, *perm = NULL;
+	cJSON *t_player_info = NULL, *b_perm = NULL, b_blindinfo = NULL; 
+
+
+	perm = cJSON_CreateArray();
+	for(int32_t i=0; i<CARDS777_MAXCARDS; i++) {
+		jaddi64bits(b_perm, b_deck_info.b_permi[i]);
+	}	
+	cJSON_hex(b_perm, &perm);
+
+	game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
+	t_player_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY,game_id_str));
+	num_players = jint(t_player_info, "num_players");
+		
+	sql_query = calloc(sql_query_size, sizeof(char));
+	for(int32_t i=0; i<num_players; i++) {
+		memset(sql_query, 0x00, sql_query_size);
+		b_blindinfo = cJSON_CreateArray();
+		for(int j=0; j<CARDS777_MAXCARDS; j++){
+			jaddistr(b_blindinfo, bits256_str(str, b_deck_info.cashier_r[i][j].priv));
+			
+		}
+		cJSON_hex(b_blindinfo, &cashier_deck_priv);
+		sprintf(sql_query, "insert into cashier_deck_info(game_id, perm, player_id, cashier_deck_priv) values(\'%s\', \'%s\', %d, \'%s\')", game_id_str, perm, i, cashier_deck_priv);
+		retval = bet_run_query(sql_query);
+	}
+	return retval;		
+}
+
+
