@@ -234,6 +234,7 @@ struct verus_player_config {
 	char table_id[16];
 	char primaryaddress[128];
 	char wallet_addr[64];
+	char txid[128];
 };
 extern struct verus_player_config player_config;
 

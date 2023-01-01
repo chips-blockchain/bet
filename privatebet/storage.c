@@ -503,7 +503,7 @@ int32_t insert_player_deck_info_txid_pa_t_d(char *tx_id, char *pa, char *table_i
 	return retval;
 }
 
-int32_t update_player_deck_info_a_rG(char *pa_tx_id)
+int32_t update_player_deck_info_a_rG(char *tx_id)
 {
 	int32_t retval = OK;
 	char player_priv[65], str[65], *player_deck_priv = NULL, *sql_query = NULL;
@@ -519,19 +519,19 @@ int32_t update_player_deck_info_a_rG(char *pa_tx_id)
 
 	sql_query = calloc(sql_query_size, sizeof(char));
 	sprintf(sql_query, "update player_deck_info set player_priv = \'%s\', deck_priv = \'%s\' where tx_id = \'%s\'",
-		player_priv, player_deck_priv, pa_tx_id);
+		player_priv, player_deck_priv, tx_id);
 	retval = bet_run_query(sql_query);
 	return retval;
 }
 
-int32_t update_player_deck_info_game_id_p_id(char *pa_tx_id)
+int32_t update_player_deck_info_game_id_p_id(char *tx_id)
 {
 	int32_t retval = OK;
 	char *sql_query = NULL, game_id_str[65];
 
 	sql_query = calloc(sql_query_size, sizeof(char));
 	sprintf(sql_query, "update player_deck_info set game_id = \'%s\', player_id = %d where tx_id = \'%s\'",
-		bits256_str(game_id_str, p_deck_info.game_id), p_deck_info.player_id, pa_tx_id);
+		bits256_str(game_id_str, p_deck_info.game_id), p_deck_info.player_id, tx_id);
 	retval = bet_run_query(sql_query);
 	return retval;
 }
