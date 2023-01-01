@@ -536,7 +536,7 @@ int32_t insert_dealer_deck_info()
 	cJSON *d_perm = NULL, *d_blindinfo = NULL; 
 
 
-	perm = cJSON_CreateArray();
+	d_perm = cJSON_CreateArray();
 	for(int32_t i=0; i<CARDS777_MAXCARDS; i++) {
 		jaddi64bits(d_perm, d_deck_info.d_permi[i]);
 	}	
@@ -561,7 +561,7 @@ int32_t insert_cashier_deck_info(char *table_id)
 	cJSON *t_player_info = NULL, *b_perm = NULL, *b_blindinfo = NULL; 
 
 
-	perm = cJSON_CreateArray();
+	b_perm = cJSON_CreateArray();
 	for(int32_t i=0; i<CARDS777_MAXCARDS; i++) {
 		jaddi64bits(b_perm, b_deck_info.b_permi[i]);
 	}	
