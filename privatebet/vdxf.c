@@ -483,6 +483,7 @@ int32_t join_table()
 			    OK) {
 				dlg_info("%s::%d::%s\n", __func__, __LINE__, bet_err_str(retval));
 			}
+			retval = insert_player_deck_info_txid_pa_t_d(txid, player_config.primaryaddress, player_config.table_id, player_config.dealer_id);
 		}
 	}
 end:
@@ -951,74 +952,57 @@ cJSON *get_t_player_info(char *table_id)
 
 int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 {
-	int32_t retval = OK;
+	int32_t retval = OK, game_state;
 	double amount = 0;
-	char pa_tx_hash[10] = { 0 }, pa[128] = { 0 }, *game_id_str = NULL;
-	cJSON *primaryaddresses = NULL, *t_player_info = NULL, *player_info = NULL;
-	struct table *t = NULL;
+	char pa[128] = { 0 }, *game_id_str = NULL;
+	cJSON *t_player_info = NULL, *player_info = NULL, *t_table_info = NULL;
 
-	if ((!txid) || (!payin_tx_data)) {
+	if ((!txid) || (!payin_tx_data))
 		return ERR_NO_PAYIN_DATA;
-	}
+
+	if(!is_id_exists(jstr(payin_tx_data, "table_id"),0))
+		return ERR_ID_NOT_FOUND;
+
+	game_state = get_game_state(jstr(payin_tx_data, "table_id"));
+	if(game_state != G_TABLE_STARTED)
+		return ERR_INVALID_TABLE_STATE;
+	
+	if(is_table_full(jstr(payin_tx_data, "table_id")))
+		return ERR_TABLE_IS_FULL;
+	
 	amount = chips_get_balance_on_address_from_tx(get_vdxf_id(CASHIERS_ID), txid);
 
-	game_id_str = get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"), get_vdxf_id(T_GAME_ID_KEY));
-	if (!game_id_str) {
-		return ERR_GAME_ID_NOT_FOUND;
-	}
-	t = decode_table_info_from_str(get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),
-								  get_key_data_vdxf_id(T_TABLE_INFO_KEY, game_id_str)));
-	if (!t) {
-		dlg_error("Table info in hex string :: %s\n",
-			  get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),
-						     get_key_data_vdxf_id(T_TABLE_INFO_KEY, game_id_str)));
-		return ERR_TABLE_DECODING_FAILED;
-	}
-	if ((amount < uint32_s_to_float(t->min_stake)) && (amount > uint32_s_to_float(t->max_stake))) {
-		dlg_error(
-			"%s::%d::Checks on funds deposit is failed, funds deposited ::%f should be in the range %f::%f\n",
-			__FUNCTION__, __LINE__, amount, uint32_s_to_float(t->min_stake),
-			uint32_s_to_float(t->max_stake));
-
+	game_id_str = get_str_from_id_key(jstr(payin_tx_data, "table_id"), T_GAME_ID_KEY);
+	t_table_info = get_cJSON_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),get_key_data_vdxf_id(T_TABLE_INFO_KEY, game_id_str));
+	if ((amount < jdouble(t_table_info,"min_stake")) && (amount > jdouble(t_table_info,"max_stake"))) {
+		dlg_error("funds deposited ::%f should be in the range %f::%f\n", amount, jdouble(t_table_info,"min_stake"),
+			jdouble(t_table_info,"max_stake"));
 		return ERR_PAYIN_TX_INVALID_FUNDS;
 	}
+
 	t_player_info = cJSON_CreateObject();
 	t_player_info = get_cJSON_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),
 						     get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
-	if (t_player_info) {
-		if (jint(t_player_info, "num_players") >= t->max_players) {
-			dlg_error("%s::%d::Table ::%s is full\n", __FUNCTION__, __LINE__,
-				  jstr(payin_tx_data, "table_id"));
-			return ERR_TABLE_IS_FULL;
-		}
-		player_info = cJSON_CreateArray();
-		player_info = cJSON_GetObjectItem(t_player_info, "player_info");
-		strncpy(pa, jstr(payin_tx_data, "primaryaddress"), sizeof(pa));
-		for (int32_t i = 0; i < cJSON_GetArraySize(player_info); i++) {
-			if (0 == strncmp(jstri(player_info, i), pa, strlen(pa))) {
-				if (strtok(jstri(player_info, i), "_")) {
-					strcpy(pa_tx_hash, strtok(NULL, "_"));
-					if (strncmp(pa_tx_hash, txid, strlen(pa_tx_hash)) == 0) {
-						dlg_warn("%s::%d::Duplicate update request\n", __FUNCTION__, __LINE__);
-						retval = OK;
-						break;
-					} else {
-						return ERR_PA_EXISTS;
-					}
-				} else {
-					return ERR_WRONG_PA_TX_ID_FORMAT;
-				}
-			}
+	if (!t_player_info) 
+		return OK; //Means no one joined yet
+
+	player_info = cJSON_CreateArray();
+	player_info = cJSON_GetObjectItem(t_player_info, "player_info");
+	strncpy(pa, jstr(payin_tx_data, "primaryaddress"), sizeof(pa));
+	for (int32_t i = 0; i < cJSON_GetArraySize(player_info); i++) {
+		if((strstr(jstri(player_info, i),pa)) && (strstr(jstri(player_info, i),txid))) {
+			return ERR_DUP_PAYIN_UPDATE_REQ;
+		} else if(strstr(jstri(player_info, i),pa)) {
+			return ERR_PA_EXISTS;				
 		}
 	}
-	dlg_info("%s::%d::All payin_tx checks are passed\n", __func__, __LINE__);
 	return retval;
 }
 
 static cJSON *compute_updated_t_player_info(char *txid, cJSON *payin_tx_data)
 {
 	int32_t num_players = 0;
-	char *game_id_str = NULL, pa_tx_hash[128] = { 0 }, hash[20] = { 0 };
+	char *game_id_str = NULL, pa_tx_id[256] = { 0 };
 	cJSON *t_player_info = NULL, *player_info = NULL, *updated_t_player_info = NULL;
 
 	game_id_str = get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"), get_vdxf_id(T_GAME_ID_KEY));
@@ -1035,14 +1019,12 @@ static cJSON *compute_updated_t_player_info(char *txid, cJSON *payin_tx_data)
 			return NULL;
 	}
 	num_players++;
-	strncpy(hash, txid, 4);
-	sprintf(pa_tx_hash, "%s_%s_%d", jstr(payin_tx_data, "primaryaddress"), hash, num_players);
-	jaddistr(player_info, pa_tx_hash);
+	sprintf(pa_tx_id, "%s_%s_%d", jstr(payin_tx_data, "primaryaddress"), txid, num_players);
+	jaddistr(player_info, pa_tx_id);
 
 	updated_t_player_info = cJSON_CreateObject();
 	cJSON_AddNumberToObject(updated_t_player_info, "num_players", num_players);
 	cJSON_AddItemToObject(updated_t_player_info, "player_info", player_info);
-	dlg_info("%s::%d::updated_player_info::%s\n", __FUNCTION__, __LINE__, cJSON_Print(updated_t_player_info));
 
 	return updated_t_player_info;
 }
@@ -1054,7 +1036,11 @@ int32_t process_payin_tx_data(char *txid, cJSON *payin_tx_data)
 	cJSON *updated_t_player_info = NULL, *out = NULL;
 
 	retval = do_payin_tx_checks(txid, payin_tx_data);
-	if (retval != OK) {
+	if(retval == ERR_DUP_PAYIN_UPDATE_REQ) {
+		dlg_warn("Duplicate update request");
+		retval = OK;
+		return retval;
+	} else if(retval !=OK) {
 		//Depositing funds back to the player
 		dlg_error("%s::%d::Err:: %s, Reversing the tx\n", __FUNCTION__, __LINE__, bet_err_str(retval));
 		double amount = chips_get_balance_on_address_from_tx(get_vdxf_id(CASHIERS_ID), txid);
@@ -1072,15 +1058,14 @@ int32_t process_payin_tx_data(char *txid, cJSON *payin_tx_data)
 	if (!updated_t_player_info)
 		return ERR_T_PLAYER_INFO_UPDATE;
 
-	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(updated_t_player_info));
+	dlg_info("%s",cJSON_Print(updated_t_player_info));
 	out = append_cmm_from_id_key_data_cJSON(jstr(payin_tx_data, "table_id"),
 						get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str),
 						updated_t_player_info, true);
-
-	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(out));
+	dlg_info("%s",cJSON_Print(out));
 
 	out = append_pa_to_cmm(jstr(payin_tx_data, "table_id"), jstr(payin_tx_data, "primaryaddress"));
-	dlg_info("%s::%d::%s\n", __FUNCTION__, __LINE__, cJSON_Print(out));
+	dlg_info("%s", cJSON_Print(out));
 
 	return retval;
 }
@@ -1101,24 +1086,23 @@ void process_block(char *blockhash)
 	if (blockcount <= 0)
 		goto end;
 
-	dlg_info("%s: received blockhash, found at height = %d", __func__, blockcount);
+	dlg_info("received blockhash, found at height = %d", blockcount);
 	cJSON *argjson = cJSON_CreateObject();
 	argjson = getaddressutxos(verus_addr, 1);
 
 	for (int32_t i = 0; i < cJSON_GetArraySize(argjson); i++) {
 		if (jint(cJSON_GetArrayItem(argjson, i), "height") == blockcount) {
-			dlg_info("%s::%d::tx_id::%s\n", __func__, __LINE__,
-				 jstr(cJSON_GetArrayItem(argjson, i), "txid"));
+			dlg_info("tx_id::%s", jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 			payin_tx_data = chips_extract_tx_data_in_JSON(jstr(cJSON_GetArrayItem(argjson, i), "txid"));
 			if (!payin_tx_data)
 				continue;
 			retval = process_payin_tx_data(jstr(cJSON_GetArrayItem(argjson, i), "txid"), payin_tx_data);
 			if (retval != OK) {
-				dlg_error("%s::%d::err:%s\n", __func__, __LINE__, bet_err_str(retval));
+				dlg_error("%s",bet_err_str(retval));
 				retval = OK;
 			}
 		}
 	}
 end:
-	dlg_info("%s::%d::Done\n", __func__, __LINE__);
+	dlg_info("Done\n");
 }

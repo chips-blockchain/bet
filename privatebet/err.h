@@ -98,7 +98,7 @@ All the errors that come across in bet are defined here. The error numbers are a
 #define ERR_TABLE_IS_FULL				111
 #define ERR_PA_EXISTS					112
 #define ERR_WRONG_PA_TX_ID_FORMAT		113
-#define ERR_DUP_UPDATE_REQ				114
+#define ERR_DUP_PAYIN_UPDATE_REQ		114
 #define ERR_PA_NOT_ADDED_TO_TABLE		115
 #define ERR_ID_NOT_FOUND				116
 #define ERR_NOT_ENOUGH_FUNDS			117
@@ -111,6 +111,7 @@ All the errors that come across in bet are defined here. The error numbers are a
 #define ERR_GAME_STATE_UPDATE			124
 #define ERR_DECK_BLINDING_DEALER		125
 #define ERR_DECK_BLINDING_CASHIER		126
+#define ERR_INVALID_TABLE_STATE			127	
 
 // clang-format on
 const char *bet_err_str(int32_t err_no);
