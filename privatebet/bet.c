@@ -466,7 +466,7 @@ static int32_t handle_verus_player()
 
 	if ((retval = join_table()) != OK)
 		return retval;
-	
+
 	dlg_info("Table Joined");
 	if ((retval = get_player_id(&p_deck_info.player_id)) != OK) {
 		return retval;
@@ -477,7 +477,7 @@ static int32_t handle_verus_player()
 		return retval;
 	}
 	dlg_info("Player deck shuffling info updated to table");
-	
+
 	return retval;
 }
 
