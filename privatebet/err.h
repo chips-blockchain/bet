@@ -111,7 +111,7 @@ All the errors that come across in bet are defined here. The error numbers are a
 #define ERR_GAME_STATE_UPDATE			124
 #define ERR_DECK_BLINDING_DEALER		125
 #define ERR_DECK_BLINDING_CASHIER		126
-#define ERR_INVALID_TABLE_STATE			127	
+#define ERR_INVALID_TABLE_STATE			127
 
 // clang-format on
 const char *bet_err_str(int32_t err_no);

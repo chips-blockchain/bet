@@ -484,7 +484,8 @@ int32_t join_table()
 			    OK) {
 				dlg_info("%s::%d::%s\n", __func__, __LINE__, bet_err_str(retval));
 			}
-			retval = insert_player_deck_info_txid_pa_t_d(txid, player_config.primaryaddress, player_config.table_id, player_config.dealer_id);
+			retval = insert_player_deck_info_txid_pa_t_d(txid, player_config.primaryaddress,
+								     player_config.table_id, player_config.dealer_id);
 		}
 	}
 end:
@@ -961,40 +962,41 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 	if ((!txid) || (!payin_tx_data))
 		return ERR_NO_PAYIN_DATA;
 
-	if(!is_id_exists(jstr(payin_tx_data, "table_id"),0))
+	if (!is_id_exists(jstr(payin_tx_data, "table_id"), 0))
 		return ERR_ID_NOT_FOUND;
 
 	game_state = get_game_state(jstr(payin_tx_data, "table_id"));
-	if(game_state != G_TABLE_STARTED)
+	if (game_state != G_TABLE_STARTED)
 		return ERR_INVALID_TABLE_STATE;
-	
-	if(is_table_full(jstr(payin_tx_data, "table_id")))
+
+	if (is_table_full(jstr(payin_tx_data, "table_id")))
 		return ERR_TABLE_IS_FULL;
-	
+
 	amount = chips_get_balance_on_address_from_tx(get_vdxf_id(CASHIERS_ID), txid);
 
 	game_id_str = get_str_from_id_key(jstr(payin_tx_data, "table_id"), T_GAME_ID_KEY);
-	t_table_info = get_cJSON_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),get_key_data_vdxf_id(T_TABLE_INFO_KEY, game_id_str));
-	if ((amount < jdouble(t_table_info,"min_stake")) && (amount > jdouble(t_table_info,"max_stake"))) {
-		dlg_error("funds deposited ::%f should be in the range %f::%f\n", amount, jdouble(t_table_info,"min_stake"),
-			jdouble(t_table_info,"max_stake"));
+	t_table_info = get_cJSON_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),
+						    get_key_data_vdxf_id(T_TABLE_INFO_KEY, game_id_str));
+	if ((amount < jdouble(t_table_info, "min_stake")) && (amount > jdouble(t_table_info, "max_stake"))) {
+		dlg_error("funds deposited ::%f should be in the range %f::%f\n", amount,
+			  jdouble(t_table_info, "min_stake"), jdouble(t_table_info, "max_stake"));
 		return ERR_PAYIN_TX_INVALID_FUNDS;
 	}
 
 	t_player_info = cJSON_CreateObject();
 	t_player_info = get_cJSON_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"),
 						     get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
-	if (!t_player_info) 
+	if (!t_player_info)
 		return OK; //Means no one joined yet
 
 	player_info = cJSON_CreateArray();
 	player_info = cJSON_GetObjectItem(t_player_info, "player_info");
 	strncpy(pa, jstr(payin_tx_data, "primaryaddress"), sizeof(pa));
 	for (int32_t i = 0; i < cJSON_GetArraySize(player_info); i++) {
-		if((strstr(jstri(player_info, i),pa)) && (strstr(jstri(player_info, i),txid))) {
+		if ((strstr(jstri(player_info, i), pa)) && (strstr(jstri(player_info, i), txid))) {
 			return ERR_DUP_PAYIN_UPDATE_REQ;
-		} else if(strstr(jstri(player_info, i),pa)) {
-			return ERR_PA_EXISTS;				
+		} else if (strstr(jstri(player_info, i), pa)) {
+			return ERR_PA_EXISTS;
 		}
 	}
 	return retval;
@@ -1037,11 +1039,11 @@ int32_t process_payin_tx_data(char *txid, cJSON *payin_tx_data)
 	cJSON *updated_t_player_info = NULL, *out = NULL;
 
 	retval = do_payin_tx_checks(txid, payin_tx_data);
-	if(retval == ERR_DUP_PAYIN_UPDATE_REQ) {
+	if (retval == ERR_DUP_PAYIN_UPDATE_REQ) {
 		dlg_warn("Duplicate update request");
 		retval = OK;
 		return retval;
-	} else if(retval !=OK) {
+	} else if (retval != OK) {
 		//Depositing funds back to the player
 		dlg_error("%s::%d::Err:: %s, Reversing the tx\n", __FUNCTION__, __LINE__, bet_err_str(retval));
 		double amount = chips_get_balance_on_address_from_tx(get_vdxf_id(CASHIERS_ID), txid);
@@ -1059,11 +1061,11 @@ int32_t process_payin_tx_data(char *txid, cJSON *payin_tx_data)
 	if (!updated_t_player_info)
 		return ERR_T_PLAYER_INFO_UPDATE;
 
-	dlg_info("%s",cJSON_Print(updated_t_player_info));
+	dlg_info("%s", cJSON_Print(updated_t_player_info));
 	out = append_cmm_from_id_key_data_cJSON(jstr(payin_tx_data, "table_id"),
 						get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str),
 						updated_t_player_info, true);
-	dlg_info("%s",cJSON_Print(out));
+	dlg_info("%s", cJSON_Print(out));
 
 	out = append_pa_to_cmm(jstr(payin_tx_data, "table_id"), jstr(payin_tx_data, "primaryaddress"));
 	dlg_info("%s", cJSON_Print(out));
@@ -1099,7 +1101,7 @@ void process_block(char *blockhash)
 				continue;
 			retval = process_payin_tx_data(jstr(cJSON_GetArrayItem(argjson, i), "txid"), payin_tx_data);
 			if (retval != OK) {
-				dlg_error("%s",bet_err_str(retval));
+				dlg_error("%s", bet_err_str(retval));
 				retval = OK;
 			}
 		}
