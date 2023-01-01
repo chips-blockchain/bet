@@ -31,7 +31,7 @@ const char *schemas[no_of_tables] = {
 	"(dealer_ip varchar(100) primary key)",
 	"(tx_id varchar(100) primary key,table_id varchar(100))",
 	"(tx_id varchar(100) primary key,table_id varchar(100), bh int, tx_type varchar(20))",
-	"(game_id varchar(100) primary key, tx_id varchar(100), player_id int, player_priv varchar(100), player_deck_priv varchar(4000))",
+	"(game_id varchar(100) primary key, tx_id varchar(100), pa varchar(100), table_id varchar(100), dealer_id varchar(100), player_id int, player_priv varchar(100), player_deck_priv varchar(4000))",
 	"(game_id varchar(100) primary key, perm varchar(100), dealer_deck_priv varchar(4000))",
 	"(game_id varchar(100), player_id int, perm varchar(100), cashier_deck_priv varchar(4000), CONSTRAINT game_id PRIMARY KEY(game_id, player_id))"
 };
@@ -142,7 +142,7 @@ int32_t bet_run_query(char *sql_query)
 {
 	sqlite3 *db;
 	char *err_msg = NULL;
-	int32_t rc = -1;
+	int32_t rc = -1, retval = OK;
 
 	if (sql_query == NULL)
 		return rc;
@@ -154,10 +154,12 @@ int32_t bet_run_query(char *sql_query)
 		if (rc != SQLITE_OK) {
 			dlg_error("error_code :: %d, error msg ::%s, \n query ::%s", rc, sqlite3_errmsg(db), sql_query);
 			sqlite3_free(err_msg);
+			retval = ERR_SQL;
 		}
 		sqlite3_close(db);
 	}
-	return rc;
+	
+	return retval;
 }
 
 void bet_create_schema()
@@ -487,19 +489,19 @@ end:
 	return bh;
 }
 
-int32_t insert_player_deck_info_txid(char *tx_id)
+int32_t insert_player_deck_info_txid_pa_t_d(char *tx_id, char *pa, char *table_id, char *dealer_id)
 {
 	int32_t retval = OK;
 	char *sql_query = NULL;
 
 	sql_query = calloc(sql_query_size, sizeof(char));
-	sprintf(sql_query, "insert into player_deck_info(tx_id) values(\'%s\')", tx_id);
+	sprintf(sql_query, "insert into player_deck_info(tx_id, pa, table_id, dealer_id) values(\'%s\', \'%s\', \'%s\', \'%s\')", tx_id, pa, table_id, dealer_id);
 	retval = bet_run_query(sql_query);
 
 	return retval;
 }
 
-int32_t update_player_deck_info_a_rG(char *tx_id)
+int32_t update_player_deck_info_a_rG(char *pa_tx_id)
 {
 	int32_t retval = OK;
 	char player_priv[65], str[65], *player_deck_priv = NULL, *sql_query = NULL;
@@ -515,19 +517,19 @@ int32_t update_player_deck_info_a_rG(char *tx_id)
 
 	sql_query = calloc(sql_query_size, sizeof(char));
 	sprintf(sql_query, "update player_deck_info set player_priv = \'%s\', deck_priv = \'%s\' where tx_id = \'%s\'",
-		player_priv, player_deck_priv, tx_id);
+		player_priv, player_deck_priv, pa_tx_id);
 	retval = bet_run_query(sql_query);
 	return retval;
 }
 
-int32_t update_player_deck_info_game_id_p_id(char *tx_id)
+int32_t update_player_deck_info_game_id_p_id(char *pa_tx_id)
 {
 	int32_t retval = OK;
 	char *sql_query = NULL, game_id_str[65];
 
 	sql_query = calloc(sql_query_size, sizeof(char));
 	sprintf(sql_query, "update player_deck_info set game_id = \'%s\', player_id = %d where tx_id = \'%s\'",
-		bits256_str(game_id_str, p_deck_info.game_id), p_deck_info.player_id, tx_id);
+		bits256_str(game_id_str, p_deck_info.game_id), p_deck_info.player_id, pa_tx_id);
 	retval = bet_run_query(sql_query);
 	return retval;
 }
