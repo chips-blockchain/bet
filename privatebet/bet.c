@@ -612,8 +612,22 @@ end:
 	dlg_info("%s::%d::Done", __func__, __LINE__);
 }
 
+void test_x()
+{
+	char hexstr[65];
+	bits256 temp, temp1;
+
+	temp = rand256(0);
+	bits256_str(hexstr, temp);
+
+	temp1 = bits256_conv(hexstr);
+
+	dlg_info("%s", bits256_str(hexstr, temp));
+	dlg_info("%s", bits256_str(hexstr, temp1));
+}
 int main(int argc, char **argv)
 {
+	test_x();
 	//test_dealer_sb("sg777_t");
 	//test_cashier_sb("sg777_t");
 
