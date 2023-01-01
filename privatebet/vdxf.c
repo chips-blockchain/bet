@@ -432,8 +432,7 @@ int32_t get_player_id(int *player_id)
 	p_deck_info.game_id = bits256_conv(game_id_str);
 	dlg_info("%s::%s", game_id_str, bits256_str(hexstr, p_deck_info.game_id));
 	t_player_info = get_cJSON_from_id_key_vdxfid(player_config.table_id,
-						     get_key_data_vdxf_id(T_PLAYER_INFO_KEY,
-									  bits256_str(hexstr, p_deck_info.game_id)));
+						     get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
 	if (!t_player_info)
 		return ERR_T_PLAYER_INFO_NULL;
 
@@ -443,12 +442,11 @@ int32_t get_player_id(int *player_id)
 		return ERR_T_PLAYER_INFO_CORRUPTED;
 	dlg_info("%s", cJSON_Print(player_info));
 	for (int32_t i = 0; i < cJSON_GetArraySize(player_info); i++) {
-		if (strncmp(player_config.primaryaddress, jstri(player_info, i),
-			    strlen(player_config.primaryaddress)) == 0) {
+		if(strstr(jstri(player_info, i), player_config.primaryaddress)) {
 			strtok(jstri(player_info, i), "_");
 			strtok(NULL, "_");
 			*player_id = atoi(strtok(NULL, "_"));
-			dlg_info("%s::%d::player id::%d\n", __func__, __LINE__, *player_id);
+			dlg_info("player id::%d",*player_id);
 			return OK;
 		}
 	}
@@ -473,19 +471,19 @@ int32_t join_table()
 				op_id_info = get_z_getoperationstatus(jstr(op_id, "op_id"));
 				sleep(1);
 			}
-			if (0 != strcmp(jstr(jitem(op_id_info, 0), "status"), "success")) {
-				retval = ERR_SENDCURRENCY;
-				dlg_error("%s::%d:: sendcurrency operation is not success\n", __func__, __LINE__);
-				goto end;
-			}
+			if (0 != strcmp(jstr(jitem(op_id_info, 0), "status"), "success")) 
+				return ERR_SENDCURRENCY;
+			
 			char *txid = jstr(jobj(jitem(op_id_info, 0), "result"), "txid");
-			dlg_info("%s::%d::payin_tx::%s\n", __FUNCTION__, __LINE__, txid);
-			if ((retval = check_player_join_status(player_config.table_id, player_config.primaryaddress)) !=
-			    OK) {
-				dlg_info("%s::%d::%s\n", __func__, __LINE__, bet_err_str(retval));
-			}
+			strcpy(player_config.txid, txid);
+			dlg_info("payin_tx::%s", txid);
+			retval = check_player_join_status(player_config.table_id, player_config.primaryaddress);
+			if(retval)
+				return retval;
 			retval = insert_player_deck_info_txid_pa_t_d(txid, player_config.primaryaddress,
 								     player_config.table_id, player_config.dealer_id);
+			if(retval)
+				return retval;
 		}
 	}
 end:
