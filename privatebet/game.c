@@ -23,8 +23,6 @@ const char *game_state_str(int32_t game_state)
 		return "Deck shuffling by cashier is done";
 	case G_REVEAL_CARD_B:
 		return "Waiting for cashier to reveal blinding value";
-	case G_REVEAL_CARD_B_DONE:
-		return "Cashier revealed its blinding value";
 	case G_REVEAL_CARD_P:
 		return "Waiting for player(s) to reveal the card";
 	case G_REVEAL_CARD_P_DONE:

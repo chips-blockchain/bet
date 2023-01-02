@@ -139,7 +139,7 @@ int32_t handle_game_state_cashier(char *table_id)
 	case G_REVEAL_CARD_B:
 		retval = reveal_bv(table_id);
 		if (!retval)
-			append_game_state(table_id, G_REVEAL_CARD_B_DONE, NULL);
+			append_game_state(table_id, G_REVEAL_CARD_P, get_game_state_info(table_id));
 		break;
 	default:
 		dlg_info("%s", game_state_str(game_state));
