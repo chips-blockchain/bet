@@ -22,4 +22,4 @@ extern struct t_game_info_struct t_game_info;
 const char *game_state_str(int32_t game_state);
 cJSON *append_game_state(char *table_id, int32_t game_state, cJSON *game_state_info);
 int32_t get_game_state(char *table_id);
-cJSON* get_game_state_info(char *table_id);
+cJSON *get_game_state_info(char *table_id);

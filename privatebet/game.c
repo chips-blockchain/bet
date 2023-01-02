@@ -64,7 +64,7 @@ int32_t get_game_state(char *table_id)
 	return game_state;
 }
 
-cJSON* get_game_state_info(char *table_id)
+cJSON *get_game_state_info(char *table_id)
 {
 	char *game_id_str = NULL;
 	cJSON *t_game_info = NULL, *game_state_info = NULL;
