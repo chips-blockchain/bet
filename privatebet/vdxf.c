@@ -83,7 +83,9 @@ cJSON *update_with_retry(int argc, char **argv)
 		argjson = cJSON_CreateObject();
 		make_command(argc, argv, &argjson);
 		if (jint(argjson, "error") == 0) {
-			break;
+			wait_for_a_blocktime();
+			if(check_if_tx_exists(jstr(argjson, "tx")))
+				break;
 		}
 		dlg_warn("Retrying the updateidentity");
 		sleep(1);

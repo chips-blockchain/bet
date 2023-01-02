@@ -158,6 +158,8 @@ const char *bet_err_str(int32_t err_no)
 		return "Error Invalid table state";
 	case ERR_BV_UPDATE:
 		return "Error in updating the Blinding Value at Table ID";
+	case ERR_NO_TX_INFO_AVAILABLE:
+		return "No information about TX is available";
 	default:
 		return "This error is not handled yet...";
 	}
