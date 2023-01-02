@@ -109,7 +109,7 @@ int32_t dealer_table_init(struct table t)
 	} else {
 		dlg_info("Table is in game, at state ::%s", game_state_str(game_state));
 	}
-	return OK;
+	return retval;
 }
 
 bool is_players_shuffled_deck(char *table_id)

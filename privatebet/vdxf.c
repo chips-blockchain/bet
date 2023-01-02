@@ -736,12 +736,12 @@ bool is_table_full(char *table_id)
 			get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, game_id_str));
 
 		if ((!t_player_info) && (!t_table_info) &&
-		    (jint(t_player_info, "num_players") < jint(t_table_info, "max_players"))) {
-			return false;
+		    (jint(t_player_info, "num_players") >= jint(t_table_info, "max_players"))) {
+			dlg_error("Table is full");
+			return true;
 		}
 	}
-	dlg_error("Table is full");
-	return true;
+	return false;
 }
 
 int32_t check_if_pa_exists(char *table_id)
