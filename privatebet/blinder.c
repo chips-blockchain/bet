@@ -91,29 +91,29 @@ int32_t reveal_bv(char *table_id)
 	int32_t player_id, card_id, num_players, retval = OK;
 	char *game_id_str = NULL, hexstr[65];
 	cJSON *bv_info = NULL, *game_state_info = NULL, *t_player_info = NULL, *out = NULL;
-	
 
 	game_state_info = get_game_state_info(table_id);
 	player_id = jint(game_state_info, "player_id");
 	card_id = jint(game_state_info, "card_id");
 
 	bv_info = cJSON_CreateArray();
-	if(player_id != -1){
+	if (player_id != -1) {
 		game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
 		t_player_info = get_cJSON_from_id_key_vdxfid(table_id, game_id_str);
 		num_players = jint(t_player_info, "num_players");
-		for(int32_t i=0; i<num_players; i++){
-			jaddistr(bv_info, bits256_str(hexstr, b_deck_info.cashier_r[i][card_id].priv));			
-		}		
+		for (int32_t i = 0; i < num_players; i++) {
+			jaddistr(bv_info, bits256_str(hexstr, b_deck_info.cashier_r[i][card_id].priv));
+		}
 	} else {
-		jaddistr(bv_info, bits256_str(hexstr, b_deck_info.cashier_r[player_id][card_id].priv));		
+		jaddistr(bv_info, bits256_str(hexstr, b_deck_info.cashier_r[player_id][card_id].priv));
 	}
 
-	out = append_cmm_from_id_key_data_cJSON(table_id, get_key_data_vdxf_id(T_B_DECK_BV_KEY, game_id_str),bv_info, true);
-	if(!out){
+	out = append_cmm_from_id_key_data_cJSON(table_id, get_key_data_vdxf_id(T_B_DECK_BV_KEY, game_id_str), bv_info,
+						true);
+	if (!out) {
 		retval = ERR_BV_UPDATE;
 	}
-	return retval;		
+	return retval;
 }
 
 int32_t handle_game_state_cashier(char *table_id)
