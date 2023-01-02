@@ -106,7 +106,7 @@ int32_t reveal_bv(char *table_id)
 			jaddistr(bv_info, bits256_str(hexstr, b_deck_info.cashier_r[i][card_id].priv));			
 		}		
 	} else {
-		jaddistr(bv_info, b_deck_info.cashier_r[player_id][card_id].priv);		
+		jaddistr(bv_info, bits256_str(hexstr, b_deck_info.cashier_r[player_id][card_id].priv));		
 	}
 
 	out = append_cmm_from_id_key_data_cJSON(table_id, get_key_data_vdxf_id(T_B_DECK_BV_KEY, game_id_str),bv_info, true);
