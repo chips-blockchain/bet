@@ -1728,13 +1728,20 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 				goto end;
 			} else if ((strcmp(argv[1], "createrawtransaction") == 0) ||
 				   (strcmp(argv[1], "sendrawtransaction") == 0) ||
-				   (strcmp(argv[1], "getnewaddress") == 0) ||
-				   (strcmp(argv[1], "getrawtransaction") == 0) ||
+				   (strcmp(argv[1], "getnewaddress") == 0) ||				   
 				   (strcmp(argv[1], "getblockhash") == 0)) {
 				if (data[strlen(data) - 1] == '\n')
 					data[strlen(data) - 1] = '\0';
 
 				*argjson = cJSON_CreateString(data);
+			} else if (strcmp(argv[1], "getrawtransaction") == 0) {
+				if (data[strlen(data) - 1] == '\n')
+					data[strlen(data) - 1] = '\0';
+				if (strstr(data, "error") != NULL) {
+					retval = ERR_NO_TX_INFO_AVAILABLE;
+				} else {
+					*argjson = cJSON_CreateString(data);
+				}
 			} else if (strcmp(argv[1], "getrawmempool") == 0) {
 				if (data[strlen(data) - 1] == '\n')
 					data[strlen(data) - 1] = '\0';
@@ -2195,4 +2202,29 @@ int32_t scan_games_info()
 	}
 	dlg_info("Scanning the blockchain completed, local DB updated.");
 	return retval;
+}
+
+void wait_for_a_blocktime()
+{
+	int32_t bh;
+	bh = chips_get_block_count();
+	do{
+	sleep(1);	
+	}while(bh==chips_get_block_count());
+}
+
+bool check_if_tx_exists(char *tx_id)
+{
+	int32_t argc =3, retval = OK;
+	char **argv = NULL;
+	cJSON *argjson = NULL;
+
+	bet_alloc_args(argc,&argv);
+	argv = bet_copy_args(argc, verus_chips_cli, "getrawtransaction", tx_id);
+	argjson = cJSON_CreateObject();
+	retval = make_command(argc,argv,&argjson);
+	if(retval == OK)
+		return true;
+	else
+		return false;	
 }
