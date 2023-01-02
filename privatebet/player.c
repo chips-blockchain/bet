@@ -111,7 +111,7 @@ int32_t handle_game_state_player(char *table_id)
 	dlg_info("%s", game_state_str(game_state));
 	switch (game_state) {
 		case G_REVEAL_CARD_P:
-			reveal_card();		
+			reveal_card(table_id);		
 			break;
 		default:
 			dlg_info("%s", game_state_str(game_state));
