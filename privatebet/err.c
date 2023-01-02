@@ -156,7 +156,7 @@ const char *bet_err_str(int32_t err_no)
 		return "Error in deck blinding at cashier";
 	case ERR_INVALID_TABLE_STATE:
 		return "Error Invalid table state";
-	case ERR_BV_UPDATE
+	case ERR_BV_UPDATE:
 		return "Error in updating the Blinding Value at Table ID";
 	default:
 		return "This error is not handled yet...";
