@@ -124,7 +124,6 @@ int32_t handle_verus_player()
 {
 	int32_t retval = OK, player_id = -1;
 
-	playing_nodes_init();
 	bet_parse_verus_player();
 
 	if ((retval = find_table()) != OK)
