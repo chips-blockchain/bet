@@ -7,32 +7,28 @@
 static char *get_table_full_key(char *key)
 {
 	char *key_name = NULL;
-
+	key_name = calloc(1, 128);
 	for (int32_t i = 0; i < all_t_p_keys_no; i++) {
-		if (strcmp(key, all_t_p_key_names[i]) == 0) {
-			key_name = calloc(1, 128);
+		if (strcmp(key, all_t_p_key_names[i]) == 0) {			
 			strcpy(key_name, all_t_p_keys[i]);
-			return key_name;
 		}
 	}
 
 	for (int32_t i = 0; i < all_t_d_p_keys_no; i++) {
 		if (strcmp(key, all_t_d_p_key_names[i]) == 0) {
-			key_name = calloc(1, 128);
 			strcpy(key_name, all_t_d_p_keys[i]);
-			return key_name;
 		}
 	}
 
 	for (int32_t i = 0; i < all_t_b_p_keys_no; i++) {
 		if (strcmp(key, all_t_b_p_key_names[i]) == 0) {
-			key_name = calloc(1, 128);
 			strcpy(key_name, all_t_b_p_keys[i]);
-			return key_name;
 		}
 	}
-
-	return NULL;
+	if(strcmp(key, "t_b_deck_bv") == 0){
+		strcpy(key_name, T_B_DECK_BV_KEY);
+	}
+	return key_name;
 }
 
 void print_struct_table(struct table *t)
@@ -108,6 +104,10 @@ void print_table_id(char *id)
 			if (temp)
 				dlg_info("%s", cJSON_Print(temp));
 		}
+		cJSON *temp =
+				get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_B_DECK_BV_KEY, game_id));
+		if (temp)
+			dlg_info("%s", cJSON_Print(temp));
 	}
 }
 
