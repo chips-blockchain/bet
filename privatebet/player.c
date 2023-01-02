@@ -7,6 +7,8 @@
 #include "commands.h"
 #include "deck.h"
 #include "game.h"
+#include "config.h"
+#include "print.h"
 
 char all_t_p_keys[all_t_p_keys_no][128] = { T_PLAYER1_KEY, T_PLAYER2_KEY,    T_PLAYER3_KEY,    T_PLAYER4_KEY,
 					    T_PLAYER5_KEY, T_PLAYER6_KEY,    T_PLAYER7_KEY,    T_PLAYER8_KEY,
