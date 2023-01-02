@@ -203,6 +203,14 @@ int32_t handle_game_state(char *table_id)
 		break;
 	case G_DECK_SHUFFLING_B:
 		dlg_info("Its time for game");
+		cJSON *game_state_info = NULL;
+		game_state_info = cJSON_CreateObject();
+		cJSON_AddNumberToObject(game_state_info,"player_id",0);
+		cJSON_AddNumberToObject(game_state_info,"card_id",0);		
+		append_game_state(table_id, G_REVEAL_CARD_B, game_state_info);	
+		break;
+	case G_REVEAL_CARD_B_DONE:
+		dlg_info("At dealer::%s", game_state_str(game_state));
 		break;
 	default:
 		dlg_info("%s", game_state_str(game_state));
