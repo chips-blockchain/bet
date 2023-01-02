@@ -8,7 +8,7 @@ static char *get_table_full_key(char *key)
 {
 	char *key_name = NULL;
 	key_name = calloc(1, 128);
-	
+
 	for (int32_t i = 0; i < all_t_p_keys_no; i++) {
 		if (strcmp(key, all_t_p_key_names[i]) == 0) {
 			strcpy(key_name, all_t_p_keys[i]);
@@ -32,7 +32,7 @@ static char *get_table_full_key(char *key)
 	if (strcmp(key, "t_game_info") == 0) {
 		strcpy(key_name, T_GAME_INFO_KEY);
 	}
-	
+
 	return key_name;
 }
 
