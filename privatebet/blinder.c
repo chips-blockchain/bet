@@ -96,9 +96,10 @@ int32_t reveal_bv(char *table_id)
 	player_id = jint(game_state_info, "player_id");
 	card_id = jint(game_state_info, "card_id");
 
+	game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
+
 	bv_info = cJSON_CreateArray();
 	if (player_id != -1) {
-		game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
 		t_player_info = get_cJSON_from_id_key_vdxfid(table_id, game_id_str);
 		num_players = jint(t_player_info, "num_players");
 		for (int32_t i = 0; i < num_players; i++) {
