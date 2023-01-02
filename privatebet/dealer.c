@@ -183,6 +183,7 @@ int32_t handle_game_state(char *table_id)
 	cJSON *out = NULL;
 
 	game_state = get_game_state(table_id);
+	dlg_info("%s", game_state_str(game_state));
 	switch (game_state) {
 	case G_TABLE_STARTED:
 		if (is_table_full(table_id))

@@ -627,7 +627,6 @@ void test_x()
 }
 int main(int argc, char **argv)
 {
-	test_x();
 	//test_dealer_sb("sg777_t");
 	//test_cashier_sb("sg777_t");
 
