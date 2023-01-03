@@ -62,13 +62,23 @@ void decode_card(bits256 b_blinded_card, bits256 blinded_value, cJSON *dealer_bl
 	blinded_value_inv = crecip_donna(blinded_value);
 	d_blinded_card = fmul_donna(blinded_value_inv, b_blinded_card);
 
+	dlg_info("dealer_blinded_card::%s", bits256_str(str1,d_blinded_card));
+
+	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
+		dlg_info("dealer_pub_info::%s", jbits256i(dealer_blind_info, i));	
+	}	
+	
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
 		for (int32_t j = 0; j < CARDS777_MAXCARDS; j++) {
+			bits256 temp = curve25519(p_deck_info.player_r[i].priv, jbits256i(dealer_blind_info, j));
+			dlg_info("temp::%s", bits256_str(str1, temp));	
+			#if 0
 			if (strcmp(bits256_str(str1, d_blinded_card),
 				   bits256_str(str2, curve25519(p_deck_info.player_r[i].priv,
 								jbits256i(dealer_blind_info, j)))) == 0) {
 				dlg_info("card::%x\n", p_deck_info.player_r[i].priv.bytes[30]);
 			}
+			#endif
 		}
 	}
 	dlg_info("No card found");
