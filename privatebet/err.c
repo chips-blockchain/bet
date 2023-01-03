@@ -160,6 +160,8 @@ const char *bet_err_str(int32_t err_no)
 		return "Error in updating the Blinding Value at Table ID";
 	case ERR_NO_TX_INFO_AVAILABLE:
 		return "No information about TX is available";
+	case ERR_CARD_DECODING_FAILED:
+		return "Error in decoding the card";
 	default:
 		return "This error is not handled yet...";
 	}

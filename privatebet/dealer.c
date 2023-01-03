@@ -8,6 +8,7 @@
 #include "misc.h"
 
 struct d_deck_info_struct d_deck_info;
+struct game_meta_info_struct game_meta_info;
 
 char all_t_d_p_keys[all_t_d_p_keys_no][128] = { T_D_DECK_KEY,    T_D_P1_DECK_KEY, T_D_P2_DECK_KEY, T_D_P3_DECK_KEY,
 						T_D_P4_DECK_KEY, T_D_P5_DECK_KEY, T_D_P6_DECK_KEY, T_D_P7_DECK_KEY,
@@ -176,6 +177,30 @@ int32_t dealer_shuffle_deck(char *id)
 
 	return retval;
 }
+
+#if 0
+int32_t init_game_meta_info(char *table_id)
+{
+	int32_t retval = OK;
+	char *game_id_str = NULL;
+	cJSON *t_player_info = NULL;
+
+	game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
+	t_player_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
+	
+	game_meta_info.num_players = jint(t_player_info, "num_players");
+	game_meta_info.dealer_pos = 0;
+	game_meta_info.turn = (game_meta_info.dealer_pos+1) % game_meta_info.num_players;
+	game_meta_info.card_id = 0;
+
+	for(int32_t i=0; i<game_meta_info.num_players; i++) {
+		for(int32_t j=0; j< hand_size; j++){
+			game_meta_info.card_state[i][j]=no_card_drawn;
+		}
+	}
+	return retval;
+}
+#endif
 
 int32_t handle_game_state(char *table_id)
 {
