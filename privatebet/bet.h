@@ -49,7 +49,7 @@ enum action_type { small_blind = 1, big_blind, check, raise, call, allin, fold }
 
 enum card_type { burn_card = 0, hole_card, flop_card_1, flop_card_2, flop_card_3, turn_card, river_card };
 
-enum poker_card_types { no_card_drawn = 0, hole_card1 =1, hole_card2, flop_card_1, flop_card_2, flop_card_3, turn_card, river_card };
+enum poker_card_types { no_card_drawn = 0, poker_h1, poker_h2, poker_f1, poker_f2, poker_f3, poker_t, poker_r };
 
 enum bet_warnings { seat_already_taken, insufficient_funds, table_is_full };
 
