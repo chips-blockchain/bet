@@ -77,7 +77,7 @@ void decode_card(bits256 b_blinded_card, bits256 blinded_value, cJSON *dealer_bl
 void reveal_card(char *table_id)
 {
 	int32_t retval = OK, player_id, card_id;
-	char *game_id_str = NULL;
+	char *game_id_str = NULL, str[65];
 	cJSON *game_state_info = NULL, *bv_info = NULL, *b_blinded_deck = NULL, *dealer_blind_info = NULL;
 	bits256 b_blinded_card, blinded_value;
 
@@ -88,7 +88,7 @@ void reveal_card(char *table_id)
 	if ((player_id == player_config.player_id) || (player_id == -1)) {
 		game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
 		bv_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_B_DECK_BV_KEY, game_id_str));
-
+		dlg_info("bv_info::%s", cJSON_Print(bv_info));
 		b_blinded_deck = get_cJSON_from_id_key_vdxfid(
 			table_id, get_key_data_vdxf_id(all_t_b_p_keys[player_id + 1], game_id_str));
 		b_blinded_card = jbits256i(b_blinded_deck, card_id);
@@ -97,11 +97,14 @@ void reveal_card(char *table_id)
 		else
 			blinded_value = jbits256i(bv_info, 0);
 
+
+		dlg_info("blinded_value::%s", bits256_str(str, blinded_value));
+		dlg_info("blinded_card::%s", bits256_str(str, b_blinded_card));
 		dealer_blind_info =
 			get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_D_DECK_KEY, game_id_str));
-
+		dlg_info("dealer_blind_info::%s", cJSON_Print(dealer_blind_info));
 		decode_card(b_blinded_card, blinded_value, dealer_blind_info);
-	}
+	} 
 }
 
 int32_t handle_game_state_player(char *table_id)
