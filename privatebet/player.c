@@ -87,6 +87,7 @@ void reveal_card(char *table_id)
 
 	if ((player_id == player_config.player_id) || (player_id == -1)) {
 		game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
+		bv_info = cJSON_CreateArray();
 		bv_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_B_DECK_BV_KEY, game_id_str));
 		dlg_info("bv_info::%s", cJSON_Print(bv_info));
 		b_blinded_deck = get_cJSON_from_id_key_vdxfid(
