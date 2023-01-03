@@ -107,10 +107,9 @@ int32_t reveal_card(char *table_id)
 		card_value = decode_card(b_blinded_card, blinded_value, dealer_blind_info);
 		if(card_value != -1){
 			retval = ERR_CARD_DECODING_FAILED;
-			p_deck_info
 		}
 	} 
-	return card_value;
+	return retval;
 }
 
 int32_t handle_game_state_player(char *table_id)
