@@ -49,6 +49,8 @@ enum action_type { small_blind = 1, big_blind, check, raise, call, allin, fold }
 
 enum card_type { burn_card = 0, hole_card, flop_card_1, flop_card_2, flop_card_3, turn_card, river_card };
 
+enum poker_card_types { no_card_drawn = 0, hole_card1 =1, hole_card2, flop_card_1, flop_card_2, flop_card_3, turn_card, river_card };
+
 enum bet_warnings { seat_already_taken, insufficient_funds, table_is_full };
 
 enum be_status { backend_not_ready = 0, backend_ready };
@@ -161,6 +163,21 @@ struct p_deck_info_struct {
 };
 extern struct p_deck_info_struct p_deck_info;
 
+struct p_game_info_struct {
+	int32_t card_state;
+	int32_t cards[hand_size];
+};
+extern struct p_game_info_struct p_game_info;
+
+struct game_meta_info_struct {
+	int32_t num_players;
+	int32_t dealer_pos;
+	int32_t turn;
+	int32_t card_id;
+	int32_t card_state[CARDS777_MAXPLAYERS][hand_size];	
+};
+extern struct game_meta_info_struct game_meta_info;
+	
 struct deck_player_info {
 	struct pair256 player_key;
 	bits256 cardpubkeys[CARDS777_MAXCARDS], cardprivkeys[CARDS777_MAXCARDS];
