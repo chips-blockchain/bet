@@ -65,7 +65,7 @@ void decode_card(bits256 b_blinded_card, bits256 blinded_value, cJSON *dealer_bl
 	dlg_info("dealer_blinded_card::%s", bits256_str(str1,d_blinded_card));
 
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
-		dlg_info("dealer_pub_info::%s", jbits256i(dealer_blind_info, i));	
+		dlg_info("dealer_pub_info::%s", bits256_str(str1, jbits256i(dealer_blind_info, i)));	
 	}	
 	
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
