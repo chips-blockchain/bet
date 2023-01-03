@@ -105,7 +105,7 @@ int32_t reveal_card(char *table_id)
 			get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_D_DECK_KEY, game_id_str));
 		//dlg_info("dealer_blind_info::%s", cJSON_Print(dealer_blind_info));
 		card_value = decode_card(b_blinded_card, blinded_value, dealer_blind_info);
-		if (card_value != -1) {
+		if (card_value == -1) {
 			retval = ERR_CARD_DECODING_FAILED;
 		}
 	}
