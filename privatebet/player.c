@@ -70,9 +70,9 @@ void decode_card(bits256 b_blinded_card, bits256 blinded_value, cJSON *dealer_bl
 	
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
 		for (int32_t j = 0; j < CARDS777_MAXCARDS; j++) {
-			bits256 temp = curve25519(p_deck_info.player_r[i].priv, jbits256i(dealer_blind_info, j));
-			dlg_info("temp::%s", bits256_str(str1, temp));	
-			#if 0
+			//bits256 temp = curve25519(p_deck_info.player_r[i].priv, jbits256i(dealer_blind_info, j));
+			//dlg_info("temp::%s", bits256_str(str1, temp));	
+			#if 1
 			if (strcmp(bits256_str(str1, d_blinded_card),
 				   bits256_str(str2, curve25519(p_deck_info.player_r[i].priv,
 								jbits256i(dealer_blind_info, j)))) == 0) {
