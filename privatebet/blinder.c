@@ -6,13 +6,13 @@
 #include "err.h"
 #include "game.h"
 
-char all_t_b_p_keys[all_t_b_p_keys_no][128] = { T_B_P1_DECK_KEY, T_B_P2_DECK_KEY, T_B_P3_DECK_KEY,
-						T_B_P4_DECK_KEY, T_B_P5_DECK_KEY, T_B_P6_DECK_KEY, T_B_P7_DECK_KEY,
-						T_B_P8_DECK_KEY, T_B_P9_DECK_KEY, T_B_DECK_KEY };
+char all_t_b_p_keys[all_t_b_p_keys_no][128] = { T_B_P1_DECK_KEY, T_B_P2_DECK_KEY, T_B_P3_DECK_KEY, T_B_P4_DECK_KEY,
+						T_B_P5_DECK_KEY, T_B_P6_DECK_KEY, T_B_P7_DECK_KEY, T_B_P8_DECK_KEY,
+						T_B_P9_DECK_KEY, T_B_DECK_KEY };
 
-char all_t_b_p_key_names[all_t_b_p_keys_no][128] = { "t_b_p1_deck", "t_b_p2_deck", "t_b_p3_deck",
-						     "t_b_p4_deck", "t_b_p5_deck", "t_b_p6_deck", "t_b_p7_deck",
-						     "t_b_p8_deck", "t_b_p9_deck", "t_b_deck"};
+char all_t_b_p_key_names[all_t_b_p_keys_no][128] = { "t_b_p1_deck", "t_b_p2_deck", "t_b_p3_deck", "t_b_p4_deck",
+						     "t_b_p5_deck", "t_b_p6_deck", "t_b_p7_deck", "t_b_p8_deck",
+						     "t_b_p9_deck", "t_b_deck" };
 
 struct b_deck_info_struct b_deck_info;
 
@@ -55,15 +55,14 @@ void cashier_init_deck(char *table_id)
 	int32_t num_players;
 	char *game_id_str = NULL;
 	cJSON *t_player_info = NULL;
-	
+
 	bet_permutation(b_deck_info.b_permi, CARDS777_MAXCARDS);
 
 	game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
-	t_player_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY,game_id_str));
+	t_player_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
 	num_players = jint(t_player_info, "num_players");
 	for (int32_t i = 0; i < num_players; i++) {
 		gen_deck(b_deck_info.cashier_r[i], CARDS777_MAXCARDS);
-		
 	}
 }
 
@@ -107,7 +106,8 @@ int32_t reveal_bv(char *table_id)
 
 	bv_info = cJSON_CreateArray();
 	if (player_id == -1) {
-		t_player_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
+		t_player_info =
+			get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
 		num_players = jint(t_player_info, "num_players");
 		for (int32_t i = 0; i < num_players; i++) {
 			jaddistr(bv_info, bits256_str(hexstr, b_deck_info.cashier_r[i][card_id].priv));

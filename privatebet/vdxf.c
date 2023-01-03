@@ -482,12 +482,12 @@ int32_t join_table()
 			retval = check_player_join_status(player_config.table_id, player_config.primaryaddress);
 			if (retval)
 				return retval;
-			#if 0
+#if 0
 			retval = insert_player_deck_info_txid_pa_t_d(txid, player_config.primaryaddress,
 								     player_config.table_id, player_config.dealer_id);
 			if (retval)
 				return retval;
-			#endif
+#endif
 		}
 	}
 end:
