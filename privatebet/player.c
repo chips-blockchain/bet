@@ -67,7 +67,7 @@ int32_t decode_card(bits256 b_blinded_card, bits256 blinded_value, cJSON *dealer
 			if (strcmp(bits256_str(str1, d_blinded_card),
 				   bits256_str(str2, curve25519(p_deck_info.player_r[i].priv,
 								jbits256i(dealer_blind_info, j)))) == 0) {
-							card_value = p_deck_info.player_r[i].priv.bytes[30];	
+				card_value = p_deck_info.player_r[i].priv.bytes[30];
 				dlg_info("card::%x\n", p_deck_info.player_r[i].priv.bytes[30]);
 			}
 		}
@@ -91,8 +91,8 @@ int32_t reveal_card(char *table_id)
 		bv_info = cJSON_CreateArray();
 		bv_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_B_DECK_BV_KEY, game_id_str));
 		//dlg_info("bv_info::%s", cJSON_Print(bv_info));
-		b_blinded_deck = get_cJSON_from_id_key_vdxfid(
-			table_id, get_key_data_vdxf_id(all_t_b_p_keys[player_id], game_id_str));
+		b_blinded_deck = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(all_t_b_p_keys[player_id],
+											     game_id_str));
 		b_blinded_card = jbits256i(b_blinded_deck, card_id);
 		if (player_id == -1)
 			blinded_value = jbits256i(bv_info, player_id);
@@ -105,10 +105,10 @@ int32_t reveal_card(char *table_id)
 			get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_D_DECK_KEY, game_id_str));
 		//dlg_info("dealer_blind_info::%s", cJSON_Print(dealer_blind_info));
 		card_value = decode_card(b_blinded_card, blinded_value, dealer_blind_info);
-		if(card_value != -1){
+		if (card_value != -1) {
 			retval = ERR_CARD_DECODING_FAILED;
 		}
-	} 
+	}
 	return retval;
 }
 

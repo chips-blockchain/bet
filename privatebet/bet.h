@@ -174,10 +174,10 @@ struct game_meta_info_struct {
 	int32_t dealer_pos;
 	int32_t turn;
 	int32_t card_id;
-	int32_t card_state[CARDS777_MAXPLAYERS][hand_size];	
+	int32_t card_state[CARDS777_MAXPLAYERS][hand_size];
 };
 extern struct game_meta_info_struct game_meta_info;
-	
+
 struct deck_player_info {
 	struct pair256 player_key;
 	bits256 cardpubkeys[CARDS777_MAXCARDS], cardprivkeys[CARDS777_MAXCARDS];
