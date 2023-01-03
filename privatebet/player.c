@@ -101,7 +101,7 @@ void reveal_card(char *table_id)
 		bv_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_B_DECK_BV_KEY, game_id_str));
 		dlg_info("bv_info::%s", cJSON_Print(bv_info));
 		b_blinded_deck = get_cJSON_from_id_key_vdxfid(
-			table_id, get_key_data_vdxf_id(all_t_b_p_keys[player_id + 1], game_id_str));
+			table_id, get_key_data_vdxf_id(all_t_b_p_keys[player_id], game_id_str));
 		b_blinded_card = jbits256i(b_blinded_deck, card_id);
 		if (player_id == -1)
 			blinded_value = jbits256i(bv_info, player_id);
