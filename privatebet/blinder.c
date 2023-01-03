@@ -99,8 +99,8 @@ int32_t reveal_bv(char *table_id)
 	game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
 
 	bv_info = cJSON_CreateArray();
-	if (player_id != -1) {
-		t_player_info = get_cJSON_from_id_key_vdxfid(table_id, game_id_str);
+	if (player_id == -1) {
+		t_player_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
 		num_players = jint(t_player_info, "num_players");
 		for (int32_t i = 0; i < num_players; i++) {
 			jaddistr(bv_info, bits256_str(hexstr, b_deck_info.cashier_r[i][card_id].priv));
