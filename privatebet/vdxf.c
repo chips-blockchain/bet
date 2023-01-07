@@ -852,9 +852,9 @@ cJSON *get_cJSON_from_table_id_key(char *table_id, char *key)
 	cJSON *cmm = NULL;
 
 	game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
-	if(!game_id_str)
+	if (!game_id_str)
 		return NULL;
-	
+
 	cmm = get_cmm_key_data(table_id, 0, get_key_data_vdxf_id(key, game_id_str));
 	if (cmm) {
 		return hex_cJSON(jstr(cJSON_GetArrayItem(cmm, 0), get_vdxf_id(get_key_data_type(key))));
