@@ -451,6 +451,36 @@ static char *bet_pick_dealer()
 	return NULL;
 }
 
+static int32_t handle_verus_player()
+{
+	int32_t retval = OK, player_id = -1;
+
+	playing_nodes_init();
+	bet_parse_verus_player();
+
+	if ((retval = find_table()) != OK)
+		goto end;
+
+	dlg_info("Table found");
+	print_struct_table(&player_t);
+
+	if ((retval = join_table()) != OK)
+		goto end;
+	dlg_info("Table Joined");
+	if ((retval = get_player_id(&p_deck_info.player_id)) != OK) {
+		goto end;
+	}
+	dlg_info("Player ID ::%d", p_deck_info.player_id);
+	if ((retval = player_init_deck()) != OK) {
+		goto end;
+	}
+	dlg_info("Player deck shuffling info updated to table");
+
+end:
+	if (retval)
+		dlg_error("%s", bet_err_str(retval));
+}
+
 static void bet_start(int argc, char **argv)
 {
 	bet_set_unique_id();

@@ -6,6 +6,7 @@
 #include "err.h"
 #include "game.h"
 
+
 char all_t_b_p_keys[all_t_b_p_keys_no][128] = { T_B_P1_DECK_KEY, T_B_P2_DECK_KEY, T_B_P3_DECK_KEY, T_B_P4_DECK_KEY,
 						T_B_P5_DECK_KEY, T_B_P6_DECK_KEY, T_B_P7_DECK_KEY, T_B_P8_DECK_KEY,
 						T_B_P9_DECK_KEY, T_B_DECK_KEY };
