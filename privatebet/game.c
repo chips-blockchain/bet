@@ -21,12 +21,18 @@ const char *game_state_str(int32_t game_state)
 		return "Deck shuffling by dealer is done";
 	case G_DECK_SHUFFLING_B:
 		return "Deck shuffling by cashier is done";
+	case G_REVEAL_CARD_B:
+		return "Waiting for cashier to reveal blinding value";
+	case G_REVEAL_CARD_P:
+		return "Waiting for player(s) to reveal the card";
+	case G_REVEAL_CARD_P_DONE:
+		return "Player(s) got the card";
 	default:
 		return "Invalid game state...";
 	}
 }
 
-cJSON *append_game_state(char *table_id, int32_t game_state, cJSON *game_info)
+cJSON *append_game_state(char *table_id, int32_t game_state, cJSON *game_state_info)
 {
 	char *game_id_str = NULL;
 	cJSON *t_game_info = NULL, *out = NULL;
@@ -38,8 +44,8 @@ cJSON *append_game_state(char *table_id, int32_t game_state, cJSON *game_info)
 	}
 	t_game_info = cJSON_CreateObject();
 	cJSON_AddNumberToObject(t_game_info, "game_state", game_state);
-	if (game_info)
-		cJSON_AddItemToObject(t_game_info, "game_info", game_info);
+	if (game_state_info)
+		cJSON_AddItemToObject(t_game_info, "game_state_info", game_state_info);
 
 	out = append_cmm_from_id_key_data_cJSON(table_id, get_key_data_vdxf_id(T_GAME_INFO_KEY, game_id_str),
 						t_game_info, true);
@@ -62,4 +68,21 @@ int32_t get_game_state(char *table_id)
 
 	game_state = jint(t_game_info, "game_state");
 	return game_state;
+}
+
+cJSON *get_game_state_info(char *table_id)
+{
+	char *game_id_str = NULL;
+	cJSON *t_game_info = NULL, *game_state_info = NULL;
+
+	game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
+	if (!game_id_str)
+		return NULL;
+
+	t_game_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_GAME_INFO_KEY, game_id_str));
+	if (!t_game_info)
+		return NULL;
+
+	game_state_info = jobj(t_game_info, "game_state_info");
+	return game_state_info;
 }
