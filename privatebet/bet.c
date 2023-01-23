@@ -459,11 +459,6 @@ static void bet_start(int argc, char **argv)
 		exit(0);
 	}
 
-	if ((argc == 3) && (strcmp(argv[1], "newblock") == 0)) {
-		process_block(argv[2]);
-		goto end;
-	}
-
 	bet_parse_blockchain_config_ini_file();
 	if (strcmp(argv[1], "cashier") == 0) {
 		cashier_game_init("sg777_t");
@@ -575,6 +570,11 @@ static void bet_start(int argc, char **argv)
 		print_id_info(argc, argv);
 	} else if ((strcmp(argv[1], "add_dealer") == 0) && (argc == 3)) {
 		add_dealer(argv[2]);
+	} else if ((strcmp(argv[1], "new_block") == 0) && (argc == 3)) {
+		if(bet_is_new_block_set()) {
+			dlg_info("Processing new block");
+			process_block(argv[2]);
+		}	
 	} else {
 		bet_command_info();
 	}
@@ -595,19 +595,10 @@ void test_x()
 	dlg_info("%s", bits256_str(hexstr, temp));
 	dlg_info("%s", bits256_str(hexstr, temp1));
 }
+
 int main(int argc, char **argv)
 {
-	//test_dealer_sb("sg777_t");
-	//test_cashier_sb("sg777_t");
-	//reveal_bv("sg777_t");
-#if 1 //Enable this snippet to make bet take no action on blocknotify
-	if ((argc == 3) && (strcmp(argv[1], "newblock") == 0)) {
-		goto end;
-	}
-#endif
 	bet_start(argc, argv);
-
-end:
 	return OK;
 }
 
