@@ -285,10 +285,8 @@ void bet_parse_blockchain_config_ini_file()
 int32_t bet_parse_verus_dealer()
 {
 	int32_t retval = OK;
-	char hexstr[65];
 	dictionary *ini = NULL;
 	struct table t;
-	cJSON *out = NULL;
 
 	ini = iniparser_load(verus_dealer_config);
 	if (!ini)

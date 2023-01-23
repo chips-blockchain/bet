@@ -55,7 +55,7 @@ int32_t player_init_deck()
 
 int32_t decode_card(bits256 b_blinded_card, bits256 blinded_value, cJSON *dealer_blind_info)
 {
-	int32_t retval = OK, card_value = -1;
+	int32_t card_value = -1;
 	char str1[65], str2[65];
 	bits256 blinded_value_inv, d_blinded_card;
 
@@ -78,7 +78,7 @@ int32_t decode_card(bits256 b_blinded_card, bits256 blinded_value, cJSON *dealer
 int32_t reveal_card(char *table_id)
 {
 	int32_t retval = OK, player_id, card_id, card_value = -1;
-	char *game_id_str = NULL, str[65];
+	char *game_id_str = NULL;
 	cJSON *game_state_info = NULL, *bv_info = NULL, *b_blinded_deck = NULL, *dealer_blind_info = NULL;
 	bits256 b_blinded_card, blinded_value;
 
@@ -132,7 +132,7 @@ int32_t handle_game_state_player(char *table_id)
 
 int32_t handle_verus_player()
 {
-	int32_t retval = OK, player_id = -1;
+	int32_t retval = OK;
 
 	bet_parse_verus_player();
 

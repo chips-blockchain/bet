@@ -11,7 +11,8 @@ void test_sg()
 {
 	char hexstr[65];
 	struct pair256 k1, k2;
-	bits256 p1, p2, r, shared1, shared2;
+	bits256 shared1, shared2;
+	//bits256 p1, p2, r;
 
 	k1.priv = curve25519_keypair(&k1.prod);
 	k2.priv = curve25519_keypair(&k2.prod);
@@ -111,10 +112,11 @@ void test_deck_shuffling()
 	struct pair256 player_r[deck_size];
 	char pubstr[65], privstr[65];
 
-	bits256 player_r_inv[deck_size];
+	//bits256 player_r_inv[deck_size];
 
 	struct pair256 dealer_r[deck_size];
-	bits256 dealer_b[deck_size], dealer_r_inv[deck_size];
+	bits256 dealer_b[deck_size];
+	//bits256 dealer_r_inv[deck_size];
 
 	struct pair256 blinder_r[deck_size];
 	bits256 blinder_b[deck_size], blinder_r_inv[deck_size];
