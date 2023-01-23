@@ -1,6 +1,6 @@
 # GAME PLAY
 
-Once the deck shuffling its done, in what order the shuffled deck is revealed and how the game is moved and betting is done is controlled by the game play logic. At high level there exists multiple states and the game progresses as the pariticipating entitites transition from one state to another. This game state info is also plays a crucial role in handling the player disconnections. The combination of game_state info with the local DB can be used by the players to reconnect and to raise the disputes.
+Once the deck shuffling its done, how the shuffled deck gets revealed, how the game moves and betting happens, how the verification of game state and settlement of funds happen is controlled by game play logic. At very high level there exists multiple states and the game progresses as the pariticipating entitites transition from one state to another. All the game state info is updated in the table ID, the game state info is crucial to handle the player disconnections. Any information that is verifiable is stored in the ID's and the information that is confidential to the player is stored in the local DB. The combination of info on local DB along with the info that was stored in the ID's is used for player rejoin and to raise the disputes. 
 
 ## Different Game States
 
