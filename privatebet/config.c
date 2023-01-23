@@ -258,6 +258,22 @@ int32_t bet_parse_bets()
 	return retval;
 }
 
+bool bet_is_new_block_set()
+{
+	dictionary *ini = NULL;
+	bool is_new_block_set = false;
+	
+	ini = iniparser_load(blockchain_config_ini_file);
+	if (ini == NULL) {
+		dlg_error("error in parsing %s", blockchain_config_ini_file);
+	} else {
+		if (-1 != iniparser_getboolean(ini, "blockchain:new_block", -1)) {
+			is_new_block_set= iniparser_getboolean(ini, "blockchain:new_block", -1);
+		}
+	}
+	return is_new_block_set;
+}
+
 void bet_parse_blockchain_config_ini_file()
 {
 	dictionary *ini = NULL;
