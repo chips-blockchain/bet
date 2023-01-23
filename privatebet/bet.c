@@ -570,7 +570,7 @@ static void bet_start(int argc, char **argv)
 		print_id_info(argc, argv);
 	} else if ((strcmp(argv[1], "add_dealer") == 0) && (argc == 3)) {
 		add_dealer(argv[2]);
-	} else if ((strcmp(argv[1], "new_block") == 0) && (argc == 3)) {
+	} else if ((strcmp(argv[1], "newblock") == 0) && (argc == 3)) {
 		if(bet_is_new_block_set()) {
 			dlg_info("Processing new block");
 			process_block(argv[2]);
