@@ -769,7 +769,7 @@ int32_t check_if_pa_exists(char *table_id)
 bool check_if_enough_funds_avail(char *table_id)
 {
 	double balance = 0.0, min_stake = 0.0;
-	char hexstr[65], *game_id_str = NULL;
+	char *game_id_str = NULL;
 	cJSON *t_table_info = NULL;
 
 	game_id_str = get_str_from_id_key(table_id, get_vdxf_id(T_GAME_ID_KEY));
