@@ -143,7 +143,7 @@ int32_t dealer_shuffle_deck(char *id)
 {
 	int32_t num_players = 0, retval = OK;
 	char *game_id_str = NULL, str[65];
-	cJSON *t_player = NULL, *t_p_cardinfo = NULL, *t_d_deck_info = NULL;
+	cJSON *t_d_deck_info = NULL;
 	cJSON *t_player_info = NULL;
 	bits256 t_p_r[CARDS777_MAXCARDS];
 
@@ -205,7 +205,6 @@ int32_t init_game_meta_info(char *table_id)
 int32_t handle_game_state(char *table_id)
 {
 	int32_t game_state, retval = OK;
-	cJSON *out = NULL;
 
 	game_state = get_game_state(table_id);
 	dlg_info("%s", game_state_str(game_state));
@@ -258,7 +257,6 @@ int32_t update_t_info_at_dealer(struct table t)
 int32_t dealer_init(struct table t)
 {
 	int32_t retval = OK, game_state;
-	cJSON *out = NULL;
 
 	//Updating the dealer id with t_table_info
 	retval = update_t_info_at_dealer(t);
