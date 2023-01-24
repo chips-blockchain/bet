@@ -1,3 +1,7 @@
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+
 #include "bet.h"
 #include "config.h"
 #include "common.h"
@@ -262,10 +266,17 @@ bool bet_is_new_block_set()
 {
 	dictionary *ini = NULL;
 	bool is_new_block_set = false;
-	
-	ini = iniparser_load(blockchain_config_ini_file);
+
+	struct passwd *pw = getpwuid(getuid());
+	const char *homedir = pw->pw_dir;
+
+	char *config_file = NULL;
+	config_file = calloc(1, 200);
+	strcpy(config_file, homedir);
+	strcat(config_file, "/bet/privatebet/config/blockchain_config.ini")
+	ini = iniparser_load(config_file);
 	if (ini == NULL) {
-		dlg_error("error in parsing %s", blockchain_config_ini_file);
+		dlg_error("error in parsing %s", config_file);
 	} else {
 		if (-1 != iniparser_getboolean(ini, "blockchain:new_block", -1)) {
 			is_new_block_set= iniparser_getboolean(ini, "blockchain:new_block", -1);
