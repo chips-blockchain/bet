@@ -273,7 +273,7 @@ bool bet_is_new_block_set()
 	char *config_file = NULL;
 	config_file = calloc(1, 200);
 	strcpy(config_file, homedir);
-	strcat(config_file, "/bet/privatebet/config/blockchain_config.ini")
+	strcat(config_file, "/bet/privatebet/config/blockchain_config.ini");
 	ini = iniparser_load(config_file);
 	if (ini == NULL) {
 		dlg_error("error in parsing %s", config_file);
