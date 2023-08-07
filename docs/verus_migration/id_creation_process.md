@@ -4,11 +4,11 @@ All ID's in the bet ecosystem are created by the authorized entitites. Who are t
 
 There are few ID's which are created once and they be used for the lifetime, and there are some other ID's which are created in the context of game and once the game is played they serve no purpose and they only remain as archives. 
 
-Those few standard ID's are created at the time of launch of a specific game type and token. In the context of poker initially the following ID's are created and this list will be updated based on the requirements as we progree into the development.
+Based on the knowledge of the ecosystem we have and on how we going to organize the data in it we define the ID's and mostly create them at the launch of the specific game type and token. In the context of poker initially the following subID's are created under `poker.chips10sec@` and this list will be updated based on the need as we progress into the development.
 1. cashiers
 2. dealers
 
-In the following sections of this document we will in detail about each of these ID's, like how they be created, what these ID's will be holding, who are the actors that manage these ID's, etc...
+In the following sections of this document we discuss in detail about each of these ID's, like how they be created, what these ID's will be holding, who are the actors that manage these ID's, etc...
 
 In the context of development we been using `revoke_2(idaddress: iSCt7uQBePbTSJUSPAuQqv3Qjw1YZmj6FX)` and `recovery_2(idaddress: iGXhgDHN7GBmbPPXcvNoj4Lc99pQEoA8Fj)`, which we created [here](./rec_rev.md) as the revocation and recovery authorities for all the ID's which we create for the development purposes. 
 
