@@ -1,10 +1,12 @@
-Here we discuss the details about how we manage recovery and revocation authorities been used in bet ecosystem and also see some examples of how we creating them. 
+### Revocation and Recovery Authorities
+
+Here we discuss the details about how we manage recovery and revocation authorities that has been used in bet ecosystem and also see some examples of how we creating them. 
 
 So the question comes like do we need to use unique revoke/recovery authorities for every ID we maintain in the bet ecosystem or do we need to maintain one revoke/recovery authority for a group a ID's or do we use a single revoke/recovery authority for the entire bet ecosystem. Since the revoke/recovery authorities are viewed as separate identities so we can have a revoke/recovery authority which is controlled by multiple primary addresses.
 
 We like to have more inputs on this to figure it out what could be the efficient way. 
 
-For now we see a simple example where in which how we can register a revoke/recovery authority and use them in registering the ID. The following commands are executed on the `chips10sec` test.
+For now we see how a revoke/recovery authority is created and use them in registering the other IDs. The following commands are executed on the `chips10sec` test chain.
 
 #### Registering the revoke_2 ID
 ```
