@@ -10,9 +10,9 @@ Based on the knowledge of the ecosystem we have and on how we going to organize 
 
 In the following sections of this document we discuss in detail about each of these ID's, like how they be created, what these ID's will be holding, who are the actors that manage these ID's, etc...
 
-In the context of development we been using `revoke_2(idaddress: iSCt7uQBePbTSJUSPAuQqv3Qjw1YZmj6FX)` and `recovery_2(idaddress: iGXhgDHN7GBmbPPXcvNoj4Lc99pQEoA8Fj)`, which we created [here](./rec_rev.md) as the revocation and recovery authorities for all the ID's which we create for the development purposes. 
+In the context of development we been using `revoke_2(idaddress: iSCt7uQBePbTSJUSPAuQqv3Qjw1YZmj6FX)` and `recovery_2(idaddress: iGXhgDHN7GBmbPPXcvNoj4Lc99pQEoA8Fj)`, which are created [here](./rec_rev.md) and these act as the revocation and recovery authorities for all the ID's which we create for the development purposes. 
 
-For all these ID's to create there needs to be a control address, typically we need to figure it out who can owns that controladdress that initially been used to create the ID's. But this control address may not have much significance in all the ID's after the initial creation because the ID's primaryaddresses are going to be updated with the addresses of the corresponding actors that involve in updating the ID's.
+For all these ID's to create there needs to be a control address, on mainenet launch we need to figure it out who can own this controladdress which is initially used to create the ID's or at the time of creation of ID's if the actors who owns the specific IDs in the bet ecosystem are identified then at the time of creating these IDs itself they will be created with the corresponding actors address as the control address for these IDs. Only the actors who has the corresponding private key of this control/primary address can update these IDs. 
 
 ## Cashiers
 
