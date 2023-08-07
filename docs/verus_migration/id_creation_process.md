@@ -19,7 +19,7 @@ For all these ID's to create there needs to be a control address, on mainenet la
 ### What contains cashiers ID and who updates it
 
 The cashers ID primaryaddresses contains the list of cashier nodes addresses owned by the cashier nodes. The `cashiers.poker.chips10sec@` is the multisig address that holds the funds during the game and handles the settlements and disputes of those funds by validating the game.
-The `minimumsignatures` value is equal to `(n/2)+1`, where `n` is the number of cashier nodes or we can say number of `primaryaddresses`.
+The `minimumsignatures` value is equal to `(n/2)+1`, where `n` is the number of cashier nodes or we can say number of `primaryaddresses`. On Verus the default tx expiration time is 20 blocks, so when spending from multisig IDs/addresses all the required co-signs must happen with in the 20 blocks time, else tx expires. For chips 20 blocks is approx to 200 seconds, atm we think this time window is sufficient for chips to complete msig txs.
 
 When a specific node wants to be a cashier node it has to submit the request using some means(atm, via discord) to the community owners and the community owners can approve or deny that specific node be a cashier or not. The request should contain the address which is owned by the corresponding entity that make the request, and if the request is approved then that particualr address is added to the list of primaryaddresses of cashiers.
 
