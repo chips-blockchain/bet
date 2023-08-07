@@ -26,11 +26,11 @@ In the context of poker the more details about ID creation is mentioned [here](.
 
 ### How we updating the ID's
 
-Going forward to have API's from verus that can list all the information attached to that ID along with its history(i.e `getidentitycontent`, this API is available now). But right now, we have `getidentity` API using which we can only the latest information that is updated to the `contentmultimap`.
+Going forward to have API's from verus that can list all the information attached to that ID along with its history(i.e `getidentitycontent`, this API is available now). But right now, we have `getidentity` API using which we can only fetch the latest information that is updated to the `contentmultimap`.
 
-In the scenaiors where in which if a new key value needs to be updated in an incremental way, for which first the latest key info will be read and to it new data been added then it will be updated using `updateidentity`.
+In the scenaiors where for a given key where the values needs to be updated in an incremental way, one way of doing it using `updateidentity` is first to read the latest value of the corresponding key using `getidentity` and then append the incremental value to it and update that on chain using `updateidentity`, but since `getidentitycontent` has been available now we can update the data in an incremental way without appending it to the previously updated data.
 
-For example, the key `chips.vrsc::bet.cashiers` is used for to store the cashiers info. So whenever a new cashier gets added that info is appended to the existing cahsiers info. Lets say we have cashiers array with two identifiers as below:
+For example, the key `chips.vrsc::bet.cashiers` is used for to store the cashiers info. So whenever a new cashier gets added that info is appended to the existing cahsiers info. Lets say we have cashiers array with two IP's as below:
 ```
 chips.vrsc::bet.cashiers
 {
@@ -59,7 +59,4 @@ chips.vrsc::bet.cashiers
 ```
 ### Some challenges
 
-Couple of challenges we are exploring at the moment is to handle the heartbeat protocol using the different nodes in the bet setup will know if the node is active or not and this heartbeat protocol communicate over the sockets. So here either by completely using vdxf ID's or by some means using nSPV we need to figure it out.
-
-
-
+Couple of challenges we are exploring at the moment is to handle the heartbeat protocol, using sockets the connecting nodes send or response to the `live` message as a part of heartbeat protocol to get to know the stauts of the nodes. Since we completely going away from using sockets so with vdxf ID's we are exploring the options to implementing the heartbeat protocol, since the timer functionality is already been implemented in GUI, we incorporate same with vdxf ID's, i.e by enforcing the time to response (either absolute time or interms of block latency) other nodes can get to know the status of the node that needs to take an action.
