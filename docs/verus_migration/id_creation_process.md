@@ -23,7 +23,7 @@ The `minimumsignatures` value is equal to `(n/2)+1`, where `n` is the number of 
 
 When a specific node wants to be a cashier node it has to submit the request using some means(atm, via discord) to the community owners and the community owners can approve or deny that specific node be a cashier or not. The request should contain the address which is owned by the corresponding entity that make the request, and if the request is approved then that particualr address is added to the list of primaryaddresses of cashiers.
 
-Here is example cashiers ID, which has 4 nodes and minimumsignatures is set to one, so any of the cashier can spend funds associated with this address.
+Here is example cashiers ID, which has 4 nodes and minimumsignatures is set to three`(4/2 + 1)`, so to spend funds from this msig ID, atleast three cashiers needs to co-sign the tx. 
 ```
 # verus -chain=chips10sec getidentity cashiers.poker.chips10sec@
 {
@@ -36,7 +36,7 @@ Here is example cashiers ID, which has 4 nodes and minimumsignatures is set to o
       "RJbFpxWSVer6WkFaHftSsR1TDyW4RXMkCt",
       "RRWRfU6EqgioiCbrxBD8uwsSRyK8Jxw8wh"
     ],
-    "minimumsignatures": 1,
+    "minimumsignatures": 3,
     "name": "cashiers",
     "identityaddress": "i4vGd5Aa23prxkPQbkZ7rHAoA7k7jRc5XY",
     "parent": "i6gViGxt7YinkJZoubKdbWBrqdRCb1Rkvs",
