@@ -26,7 +26,7 @@ In the context of poker the more details about ID creation is mentioned [here](.
 
 ### How we updating the ID's
 
-Going forward to have API's from verus that can list all the information attached to that ID along with its history. But right now, we have `getidentity` API using which we can only the latest information that is updated to the `contentmultimap`.
+Going forward to have API's from verus that can list all the information attached to that ID along with its history(i.e `getidentitycontent`, this API is available now). But right now, we have `getidentity` API using which we can only the latest information that is updated to the `contentmultimap`.
 
 In the scenaiors where in which if a new key value needs to be updated in an incremental way, for which first the latest key info will be read and to it new data been added then it will be updated using `updateidentity`.
 
