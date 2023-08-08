@@ -92,10 +92,10 @@ The identity of the dealers looks as follows:
 }
 ```
 
-Typically dealers hold the information about the list of the dealers available that are registered in the eco system. Right now we only be storing the dealer ID names as a string array, going forward the idea is to store more authorized statistics about the dealer and this info is updated by either the cashiers or by the authorized entities. 
+Typically subID `dealers.poker.chips10sec@` hold the information about the list of registered dealers in the poker eco system. Right now we only be storing the dealer ID names as a string array, going forward the idea is to store more authorized statistics about the dealer like availability of the dealer, number of tables hosted, etc, and this info is updated by either the cashiers or by the authorized entities. 
 
 If someone wants to become a dealer, they should make a request to register as a dealer. Since this registration is one time activity and dealer may get charged a fee for getting registered. 
-All the dealer ID names should end with `_d` for readability and to avoid any potential conflicts with other ID's. The contentmultimap of dealer stores the array of strings and key using which this array of dealers stored is `chips.vrsc::poker.dealers`. The vdxfid for `chips.vrsc::poker.dealers` is shown as below:
+All the dealer ID names should end with `_d` for readability and to avoid any potential conflicts with other ID's. The contentmultimap of dealers stores dealer names as array of strings and this value is mapped to key  `chips.vrsc::poker.dealers`. The vdxfid for `chips.vrsc::poker.dealers` is shown as below:
 ```
  # verus -chain=chips10sec getvdxfid chips.vrsc::poker.dealers
 {
@@ -124,7 +124,7 @@ verus -chain=chips10sec updateidentity '{"name": "dealers", "parent":"i6gViGxt7Y
 }'
 ```
 
-After updating the dealer names the contentmultimap of dealers looks as follows:
+After updating the dealer names in the contentmultimap of dealers looks as follows:
 ```
 # verus -chain=chips10sec getidentity dealers.poker.chips10sec@
 {
@@ -164,15 +164,15 @@ After updating the dealer names the contentmultimap of dealers looks as follows:
 }
 ```
 
-After optimization the data of contentmultimap contains only the bytearray, and the underlying bet has the logic to decode and encode that bytearray.
+After optimization the data of contentmultimap contains only the bytearray, and bet has the underlying logic to decode and encode data into bytearray.
 
-Once the dealer name gets registered with the dealers ID, the corresponding ID for that dealer name will be created and handover control of that ID to that specific dealer and where in which dealer updates information about its status, about the tables its hosting, about the fee it charges, etc... We will update the template of information what dealers store in its ID and this template of dealer information is mapped to the key `chips.vrsc::poker.dealer`.
+If all the preconditions(these are yet to be defined) met for a dealer request to process, then a sub ID under `poker.chips10sec@` is created with the name and control address provided in the dealer request. Only the dealer is privileged to update any content on this ID, dealer maintains the information about its status(like active/non-active, this will be discussed in later sections about handling the status of the dealer), information about the tables its hosting, dealer fee, etc... We will update the template of information what dealers store in its ID and this template of dealer information is mapped to the key `chips.vrsc::poker.dealer`.
 
 ## Dealer
 Upon the registration request from the dealer, the `registration authority(RA)` verifies the information about the dealer and upon acceptance, RA updates the dealer name to the dealers ID and creates the dealer ID with that specific name. 
 Lets say for example a dealer with the name `sg777_d` applies to be a dealer, then RA checks the availability of the name and adds `sg777_d` to dealers and creates the ID `sg777_d` with the `primaryaddress` provided by `sg777_d`.
 
-After the creation of an ID with the name  of dealer with the name `sg777_d` by RA, it looks as follows:
+After the creation of the ID `sg777_d` by RA, it looks as follows:
 ```
 # verus -chain=chips10sec getidentity sg777_d.poker.chips10sec@
 {
@@ -203,7 +203,8 @@ After the creation of an ID with the name  of dealer with the name `sg777_d` by 
   "vout": 0
 }
 ```
-Here in the above example the primaryaddress `RGgmpgoQcnptWEshhuhg3jGkYiotvLnswN` is belongs to the dealer, i.e `sg777_d`, so once after the creation of dealer ID now the dealer can update it with the information specific to it.
+Here in the above example the primaryaddress `RGgmpgoQcnptWEshhuhg3jGkYiotvLnswN` is belongs to the dealer, i.e `sg777_d`, so once after the creation of dealer ID now the dealer can update it with the information specific to it. 
+Once the dealer gets registered it can make a request to register table names, all the table names should end with `_t` and dealer can request to register as many table names as it can and each registration of the table name costs a nominal fee to the dealer. When RA creates the table IDs, it gives the revoke/recovery authority on tables to the dealer.  When players send the join request to the table, dealer process that request and add the players address to the primaryaddress of the table and during the game players updates the table with the game info they undergo.
 
 ### Dealer Contentmultimap Update
 When the bet node starts as a dealer, it reads the information from `verus_dealer.ini` and update this information to the dealer contentmultimap. Basically here in this configuration file the dealer mention its ID and the information about the tables its hosting. Right now we limit our discussion to one dealer hosting one table.
@@ -219,8 +220,7 @@ min_stake            = 20              #The min table stake size is 20BB.
 max_stake            = 100             #The max table stake size is 100BB.
 table_id 	     = sg777_t         #This is the table ID to which all the game info is to be committed. This table info is controlled by the players. 	
 ```
-
-How this information is processing from the configuration file to the ID, for every configuration data there mostly be an underlying structure that holds the information. Here in this the `struct` named `table` holds this information and is defined in the code as below:
+How this information is processing from the configuration file to the ID is, for every configuration data there mostly be an underlying structure that holds the information. Here in this the `struct` named `table` holds this information and is defined in the code as below:
 ```
 struct table {
 	uint8_t max_players;
@@ -230,7 +230,7 @@ struct table {
 	char table_id[16];
 };
 ```
-Note, here there isn't any support to store the float values into the ID's, so we represent the float values using `struct float_num` which basically defined as follows:
+Note, here there hasn't any support to store the float values directly in ID's, so we represent the float values using `struct float_num` which basically defined as follows:
 ```
 struct float_num {
 	uint32_t mantisa : 23;
@@ -238,7 +238,7 @@ struct float_num {
 	uint32_t sign : 1;
 };
 ```
-Once the information is stored from the config file to the underlying structure, then the struct data is converted to hex and is stored into the ID. After storing the above information into the dealer ID `sg777_d` it looks as follows:
+Once the information is stored from the config file to the underlying structure, then the struct data is converted to hex and is stored into the dealer ID. After storing the above information into the dealer ID `sg777_d` it looks as follows:
 ```
 # verus -chain=chips10sec getidentity sg777_d.poker.chips10sec@
 {
