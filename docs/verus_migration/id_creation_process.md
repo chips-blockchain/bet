@@ -166,11 +166,11 @@ After updating the dealer names the contentmultimap of dealers looks as follows:
 
 After optimization the data of contentmultimap contains only the bytearray, and the underlying bet has the logic to decode and encode that bytearray.
 
-Once the dealer name gets registered with the dealers ID, the corresponding ID for that dealer name will be created and handover control of that ID to that specific dealer and where in which dealer updates information about its status, about the tables its hosting, about the fee it charges, etc... We will update the template of information what dealers store in its ID and the this template of dealer information is mapped to the key `chips.vrsc::poker.dealer`.
+Once the dealer name gets registered with the dealers ID, the corresponding ID for that dealer name will be created and handover control of that ID to that specific dealer and where in which dealer updates information about its status, about the tables its hosting, about the fee it charges, etc... We will update the template of information what dealers store in its ID and this template of dealer information is mapped to the key `chips.vrsc::poker.dealer`.
 
 ## Dealer
 Upon the registration request from the dealer, the `registration authority(RA)` verifies the information about the dealer and upon acceptance, RA updates the dealer name to the dealers ID and creates the dealer ID with that specific name. 
-Lets say for example a dealer with the name `sg777_d` applies to be a dealer, then RA adds `sg777_d` to dealers and creates the ID `sg777_d` with the `primaryaddress` provided by `sg777_d`.
+Lets say for example a dealer with the name `sg777_d` applies to be a dealer, then RA checks the availability of the name and adds `sg777_d` to dealers and creates the ID `sg777_d` with the `primaryaddress` provided by `sg777_d`.
 
 After the creation of an ID with the name  of dealer with the name `sg777_d` by RA, it looks as follows:
 ```
