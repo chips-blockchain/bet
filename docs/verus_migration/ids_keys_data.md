@@ -1,7 +1,7 @@
 # All about ID's and Keys
-Keys are ways to store the information under the identities, we encapsulate the info of a structure or JSON object and map them to the keys. For example we have an identifier named `cashiers` under `poker.chips10sec@` which holds all the cashiers info, we also define a `chips.vrsc::poker.cashier_key` where in which all the cashiers info is updated.
 
-We can restrict the ID registration process to few authorized addresses or it can made open so that anyone can register ID's. I'm pasting some beautiful insights from Mike about why ID registration should be open.
+## ID Registration
+Can we can restrict the ID registration process to few authorized addresses or can it can made open so that anyone can register ID's? Here is the insights from Mike(Verus fouder/dev) on why ID registration should be open.
 ```
     First one is that I think you should not restrict the ID registration capabilities, as they will be a primary source of 
     economy and since you do not have block rewards, could make the difference between a functional chain or not. There is no 
@@ -9,11 +9,19 @@ We can restrict the ID registration process to few authorized addresses or it ca
     and those selling IDs on-chain. All of this is economic value for the on-chain economy that is not spam. It is exactly the 
     opposite. If your chain is busy with that, everyone should be happy. If it is too busy, make another. Also, people have IDs 
     on different chains that they should be able to send over and use. IMO, each player should have to have an ID, and if some 
-    games need KYC, you will be able to do that as well on any IDs using the Valu service, which will use VerusID to enable 
+    games need KYC, you will be able to do that as well on any IDs using the Value service, which will use VerusID to enable 
     non-DOXed KYC verification. I really recommend that the general model is to consider IDs just on-chain addresses and let 
     people use them as they will. Enable poker and other games this way, but have all of the on-chain activity, including 
     currencies, to benefit miners and stakers (CHIPS holders) through the fee pool as part of normal use.
 ```
+Earlier in some sections we talked about only few can be cashiers and few can be dealers once they met certain conditions. 
+We can actually seperate this process into two steps:
+1. ID creation
+2. ID Registration
+Anyone can create any numer of ID's, but to register an ID as either dealer or cashier certain conditions to be met, we streamline this process and provide an API for it`(TO DO)`.
+
+## Key - Value pair
+Under IDs information is stored in key-value pairs. We encapsulate the info of a structure or JSON object and map them to the keys. For example we have an identifier named `cashiers` under `poker.chips10sec@` which holds all the cashiers info, we also define a `chips.vrsc::poker.cashier_key` where in which all the cashiers info is updated.
 
 We define all keys with the prefix `chips.vrsc::` in the entire CHIPS ecosystem, for the game specific keys we add the game name as prefix. For example, for all the keys that we use to play the poker name are defined with the prefix `chips.vrsc::poker.` and likewise for all the keys that we use to bet are defined with the prefix `chips.vrsc::bet.` and so on...
 
