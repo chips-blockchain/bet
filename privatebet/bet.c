@@ -453,6 +453,8 @@ static char *bet_pick_dealer()
 
 static void bet_start(int argc, char **argv)
 {
+	int32_t retval = OK;
+	
 	bet_set_unique_id();
 	if (argc < 2) {
 		bet_command_info();
@@ -480,8 +482,9 @@ static void bet_start(int argc, char **argv)
 		}
 #endif
 	} else if ((strcmp(argv[1], "dcv") == 0) || (strcmp(argv[1], "dealer") == 0)) {
+		bet_parse_verus_dealer();
+		#if 0
 		if (argc == 3) {
-#if 0
 			strcpy(dealer_ip, argv[2]);
 			common_init();
 			bet_parse_dealer_config_ini_file();
@@ -490,13 +493,10 @@ static void bet_start(int argc, char **argv)
 			dealer_node_init();
 			find_bvv();
 			bet_dcv_thrd(dealer_ip);
-#endif
-			bet_parse_verus_dealer();
-			//dealer_node_init();
-			//bet_dcv_thrd(dealer_ip);
 		} else {
 			bet_help_dcv_command_usage();
 		}
+		#endif
 	} else if (strcmp(argv[1], "extract_tx_data") == 0) {
 		if (argc == 3) {
 			cJSON *temp = NULL;
@@ -517,9 +517,11 @@ static void bet_start(int argc, char **argv)
 			bet_command_info();
 		}
 	} else if (strcmp(argv[1], "player") == 0) {
-		handle_verus_player();
+		retval = handle_verus_player();
+		if(retval != OK) {
+			dlg_info("%s", bet_err_str(retval));
+		}
 		//bet_player_thrd(dealer_ip);
-
 #if 0
 		char *dealer_ip = NULL;
 		dlg_info("Finding the dealer");
