@@ -1,7 +1,7 @@
 # All about ID's and Keys
-Keys are ways to store the information under the identities, we encapsulate the info of a structure or JSON object and map them to the keys. For example we have an identifier named `cashiers` under `poker.chips10sec@` which holds all the cashiers info, we also define a `chips.vrsc::poker.cashier_key` where in which all the cashiers info is updated.
 
-We can restrict the ID registration process to few authorized addresses or it can made open so that anyone can register ID's. I'm pasting some beautiful insights from Mike about why ID registration should be open.
+## ID Registration
+Can we can restrict the ID registration process to few authorized addresses or can it can made open so that anyone can register ID's? Here is the insights from Mike(Verus fouder/dev) on why ID registration should be open.
 ```
     First one is that I think you should not restrict the ID registration capabilities, as they will be a primary source of 
     economy and since you do not have block rewards, could make the difference between a functional chain or not. There is no 
@@ -9,21 +9,29 @@ We can restrict the ID registration process to few authorized addresses or it ca
     and those selling IDs on-chain. All of this is economic value for the on-chain economy that is not spam. It is exactly the 
     opposite. If your chain is busy with that, everyone should be happy. If it is too busy, make another. Also, people have IDs 
     on different chains that they should be able to send over and use. IMO, each player should have to have an ID, and if some 
-    games need KYC, you will be able to do that as well on any IDs using the Valu service, which will use VerusID to enable 
+    games need KYC, you will be able to do that as well on any IDs using the Value service, which will use VerusID to enable 
     non-DOXed KYC verification. I really recommend that the general model is to consider IDs just on-chain addresses and let 
     people use them as they will. Enable poker and other games this way, but have all of the on-chain activity, including 
     currencies, to benefit miners and stakers (CHIPS holders) through the fee pool as part of normal use.
 ```
+Earlier in some sections we talked about that to be dealer or cashier certain conditions needs to be met. 
+We can actually seperate this process into two steps:
+1. ID creation
+2. ID Registration
+Anyone can create any numer of ID's, but to register an ID as either dealer or cashier certain conditions to be met, we streamline this process and provide an API for it`(TO DO)`.
 
-We define all keys with the prefix `chips.vrsc::` in the entire CHIPS ecosystem, for the game specific keys we add the game name as prefix. For example, for all the keys that we use to play the poker name are defined with the prefix `chips.vrsc::poker.` and likewise for all the keys that we use to bet are defined with the prefix `chips.vrsc::bet.` and so on...
+## Key - Value pair
+Under IDs information is stored in key-value pairs. We encapsulate the info of a structure or JSON object and map them to the keys. For example we have an identifier named `cashiers` under `poker.chips10sec@` in which we define a key named `chips.vrsc::poker.cashiers` and map all the information related to cashiers to this key and store in the cashiers ID. It's important to identity and define key to each type of data that we store in the ID, using these keys we store and retrieve the data from ID, so the type and content of data that is to be mapped to these keys should be predefined.
 
-In the code for all the predefined keys, we compute their vdxfid's and map them for easy lookup. i.e, for key `chips.vrsc::poker.cashiers` the corresponding vdxfid is  `iJ3WZocnjG9ufv7GKUA4LijQno5gTMb7tP` and we in the code we define them as follows.
+We define all keys with the prefix `chips.vrsc::` in the entire CHIPS ecosystem, for the game specific keys we add game type as suffix to `chips.vrsc::` and followed by it we define keys. For example, for all the keys that maps to the data used to play poker are defined with the prefix `chips.vrsc::poker.` and likewise for all the keys that are used to to store the data related to betting are defined with the prefix `chips.vrsc::bet.` and so on...
+
+In the code for all the predefined keys, we compute their vdxfid's and map them for easy lookup. i.e, for key `chips.vrsc::poker.cashiers` the corresponding vdxfid is  `iJ3WZocnjG9ufv7GKUA4LijQno5gTMb7tP` and in the code it defined as follows.
 ```
 //chips.vrsc::poker.cashiers --> iJ3WZocnjG9ufv7GKUA4LijQno5gTMb7tP
 #define CASHIERS_KEY "iH6n3SW9hpou8LW4nEAzJZXDb4AG4tLnQN"
 ```
 
-Some keys are predefined and some keys we create them on the fly during the game, all the keys that are created during the game are mapped to the predefined existing keys for easy reference and lookup. Some keys can be used across multiple ID's, for example the key `chips.vrsc::poker.t_player_info` is used to update the table info with both the dealer and table ID's.
+Some keys are predefined and some keys we create them on fly during the game, all the keys that are created during the game are mapped to the predefined existing keys for easy reference and lookup. Some keys can be used across multiple ID's, for example the key `chips.vrsc::poker.t_player_info` that maps to player info is used across the IDs dealer and table to store the player info. Aim should to be no redundancy, but in some scenarios where different IDs need some common data but these IDs are having different priveleges then in such case we get to some redundancy and get to see same Key across multiple IDs. 
 
 ## Key Datatypes
 Either its a structure or JSON object, we converting it to hex and using the datatype `vrsc::data.type.bytevector` we mapping it to the key and updating it to the ID, likewise to store string on to the ID we use the data type `vrsc::data.type.string` for the keys. We majorly been using bytevector for most of the keys defined int he CHIPS ecosystem, the definition of these data types in the code are as follows.
@@ -37,13 +45,13 @@ Either its a structure or JSON object, we converting it to hex and using the dat
 ```
 
 ## Identitites
-We limit ourself to two levels of nesting under chips. At first level we mostly define identities are of game_types or any such things which are common across all the game types. For each game_type a corresponding identity is registered and we generate a token for it, further these tokens are used to register sub identities. All the transactions that happens in the game play use CHIPS for betting. The tokens we generate on the ID's registered has no significant value and they just be used to register subID's under that ID.
+We limit ourself to two levels of nesting under chips. At first level we mostly define identities that are of game types and player names. As Mike suggested we encourage to have an ID for each player, having an ID for the player helps to be part of private tables in poker or in private betting, also as Mike suggested users can also reserve the IDs for the future purposes and they can trade those identities that inturn increases the activity on the chain. For each game_type a corresponding identity is registered and we generate a token for it, further these tokens are used to register sub identities. All the transactions that happens in the game play use CHIPS for betting. The tokens we generate on the ID's registered has no significant value and they just be used to register subID's under that ID.
 
-For example in the context of poker game we registered an identity named `poker` under chips as `poker.chips@`, and we generate a token named `poker` which is basically been used to create subID's under the poker ID.
+For example in the context of poker game lets say we created an identity named `poker` under chips as `poker.chips@`, and we generate a token named `poker` which is basically used to create subID's under the poker ID.
 
-Identities are often the addresses that can hold the tokens, ID's always ends with @. Any entity in the bet ecosystem can register the ID under chips, like for example  I registered an ID named sg777 under chips as `sg777.chips@` which basically been used to hold the tokens. Likewise `cashiers.poker.chips@` is an address players deposit funds to during the game. Even players are allowed to register the ID's and using which they can participate in the private tables.
+Identities are often the addresses that can hold the tokens, ID's always ends with `@`. Any entity in the bet ecosystem can create the ID under chips, like for example  I created an ID named sg777 under chips as `sg777.chips@` which basically been used to hold the tokens and that is like my wallet address. Likewise `cashiers.poker.chips@` is an address players deposit funds to during the game. Even players are allowed to create the ID's and using which they can participate in the private tables.
 
-Further, at high level we see what are all the keys that define under each ID in the namespace `poker.chips@`. Almost all the ID's in the poker ecosystem are of multiple signatures in nature, meaning they controlled by one or more primaryaddresses and some require one or more signatures to update them.
+Further, at high level we see what are all the keys that define under each ID are in the namespace `poker.chips@`. Almost all the ID's in the poker ecosystem are of multiple signatures in nature, meaning that they controlled by one or more primaryaddresses that inturn means it requires multiple parties to cosign for the tx to be processed.
 
 ### Cashiers ID
 Address --> `cashiers.poker.chips@`
@@ -76,7 +84,7 @@ The keys that updates the data to this ID are
 ```
 
 #### 1. chips.vrsc::poker.t_player_info
-Contains the table info, dealer updates this info from the values read from `verus_dealer.ini`
+The value mapped to this key is the table info, dealer updates this info from the values read from `verus_dealer.ini`
 ```
 {
         "max_players":  2,
@@ -89,7 +97,7 @@ Contains the table info, dealer updates this info from the values read from `ver
 ```
 
 ### Table ID
-Address --> `<table_name>.poker.chips@` // Dealers can register upto 5 different table names and all table names ends with `_t` to avoid naming conflicts, e.g `sg777_t.poker.chips@`
+Address --> `<table_name>.poker.chips@` // Dealers can register upto any number of table names and all table names ends with `_t` to avoid naming conflicts, e.g `sg777_t.poker.chips@`
 
 The keys that updates the data to this ID are
 ```
