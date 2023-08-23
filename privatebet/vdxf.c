@@ -191,6 +191,7 @@ cJSON *get_cmm(char *id, int16_t full_id)
 	argjson = cJSON_CreateObject();
 	retval = make_command(argc, argv, &argjson);
 	if (retval != OK) {
+		dlg_info("%s", bet_err_str(retval));
 		goto end;
 	}
 
@@ -408,8 +409,10 @@ bool is_dealer_exists(char *dealer_id)
 		return false;
 
 	dealers_info = get_cJSON_from_id_key("dealers", DEALERS_KEY);
-	if (!dealers_info)
+	if (!dealers_info) {
+		dlg_info("Unable to fetch the dealers info");
 		return false;
+	}
 
 	dealer_ids = cJSON_CreateArray();
 	dealer_ids = cJSON_GetObjectItem(dealers_info, "dealers");
@@ -509,11 +512,18 @@ int32_t find_table()
 	int32_t retval = OK;
 	cJSON *t_table_info = NULL, *dealer_ids = NULL;
 
+	if (!is_id_exists("dealers", 0)) {
+		return ERR_NO_DEALERS_FOUND;
+	}
+
 	if ((t_table_info = check_if_d_t_available(player_config.dealer_id, player_config.table_id)) != NULL) {
 		copy_table_to_struct_t(t_table_info);
 		return retval;
 	}
 	// If no preconfigured tables are found then it picks the first available table
+	dlg_info(
+		"The given table ::%s of the dealer ::%s is not found, so player picks the table from the available tables of the available dealers in FIFO",
+		player_config.dealer_id, player_config.table_id);
 	dealer_ids = cJSON_CreateArray();
 	dealer_ids = get_cJSON_from_id_key("dealers", DEALERS_KEY);
 	if (!dealer_ids)

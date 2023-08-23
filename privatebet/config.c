@@ -279,7 +279,7 @@ bool bet_is_new_block_set()
 		dlg_error("error in parsing %s", config_file);
 	} else {
 		if (-1 != iniparser_getboolean(ini, "blockchain:new_block", -1)) {
-			is_new_block_set= iniparser_getboolean(ini, "blockchain:new_block", -1);
+			is_new_block_set = iniparser_getboolean(ini, "blockchain:new_block", -1);
 		}
 	}
 	return is_new_block_set;

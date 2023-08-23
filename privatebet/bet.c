@@ -454,7 +454,7 @@ static char *bet_pick_dealer()
 static void bet_start(int argc, char **argv)
 {
 	int32_t retval = OK;
-	
+
 	bet_set_unique_id();
 	if (argc < 2) {
 		bet_command_info();
@@ -462,12 +462,12 @@ static void bet_start(int argc, char **argv)
 	}
 
 	if ((strcmp(argv[1], "newblock") == 0) && (argc == 3)) {
-		if(bet_is_new_block_set()) {
+		if (bet_is_new_block_set()) {
 			dlg_info("Processing new block");
 			process_block(argv[2]);
 			exit(0);
-		}	
-	} 
+		}
+	}
 
 	bet_parse_blockchain_config_ini_file();
 	if (strcmp(argv[1], "cashier") == 0) {
@@ -483,7 +483,7 @@ static void bet_start(int argc, char **argv)
 #endif
 	} else if ((strcmp(argv[1], "dcv") == 0) || (strcmp(argv[1], "dealer") == 0)) {
 		bet_parse_verus_dealer();
-		#if 0
+#if 0
 		if (argc == 3) {
 			strcpy(dealer_ip, argv[2]);
 			common_init();
@@ -496,7 +496,7 @@ static void bet_start(int argc, char **argv)
 		} else {
 			bet_help_dcv_command_usage();
 		}
-		#endif
+#endif
 	} else if (strcmp(argv[1], "extract_tx_data") == 0) {
 		if (argc == 3) {
 			cJSON *temp = NULL;
@@ -518,8 +518,8 @@ static void bet_start(int argc, char **argv)
 		}
 	} else if (strcmp(argv[1], "player") == 0) {
 		retval = handle_verus_player();
-		if(retval != OK) {
-			dlg_info("%s", bet_err_str(retval));
+		if (retval != OK) {
+			dlg_error("%s", bet_err_str(retval));
 		}
 		//bet_player_thrd(dealer_ip);
 #if 0
