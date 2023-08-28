@@ -284,11 +284,11 @@ cJSON *get_cmm_key_data(char *id, int16_t full_id, char *key)
 	cmm = cJSON_CreateObject();
 	if ((cmm = get_cmm(id, full_id)) == NULL)
 		return NULL;
-
+	dlg_info("cmm :: %s\n", cJSON_Print(cmm));
 	cmm_key_data = cJSON_CreateObject();
 	if ((cmm_key_data = cJSON_GetObjectItem(cmm, key)) == NULL)
 		return NULL;
-
+	dlg_info("cmm_key_data :: %s\n", cJSON_Print(cmm_key_data));
 	cmm_key_data->next = NULL;
 	return cmm_key_data;
 }
