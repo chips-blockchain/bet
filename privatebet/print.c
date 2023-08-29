@@ -166,7 +166,7 @@ void print_vdxf_info(int argc, char **argv)
 		} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_GAME_ID_KEY)) == 0) {
 			str = get_str_from_id_key(argv[2], get_full_key(argv[3]));
 			dlg_info("%s", str);
-		} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_DEALER_KEY)) == 0) {
+		} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(DEALERS_KEY)) == 0) {
 			cJSON *temp = get_cJSON_from_id_key_vdxfid(argv[2], get_vdxf_id(argv[3]));
 			if (temp) {
 				dlg_info("%s", cJSON_Print(temp));
