@@ -185,7 +185,7 @@ void bet_help_vdxf_command_usage()
 		"\nExample: \n"
 		"./bet print <id_name> <key_name>\n"
 		"Note: Here id_name can be any ID under the namespace poker.chips10sec@, supported key names are dealers/t_game_ids/t_game_ids/t_player_info\n");
-	
+
 	dlg_info(
 		"\nCommand: \n"
 		"print_id \n"
@@ -197,7 +197,6 @@ void bet_help_vdxf_command_usage()
 		"./bet print_id <id_name> <id_type>\n"
 		"Note: Here id_name can be any ID under the namespace poker.chips10sec@, supported ID types are table/dealer/dealers\n");
 }
-
 
 // clang-format off
 void bet_help_command(char *command)

@@ -415,7 +415,7 @@ bool is_dealer_exists(char *dealer_id)
 	}
 
 	dlg_info("dealers_info ::%s", cJSON_Print(dealers_info));
-	
+
 	dealer_ids = cJSON_CreateArray();
 	dealer_ids = cJSON_GetObjectItem(dealers_info, "dealers");
 
