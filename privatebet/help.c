@@ -26,6 +26,7 @@ void bet_command_info()
 		 "\n==VDXF ID Commands==\n"
 		 "print_id <id_name> <type>\n"
 		 "print <id_name> <key_name>\n"
+		 "add_dealer <dealer_id> \n"
 		 "\nTo get more info about a specific command try ./bet help command \n");
 }
 
@@ -196,6 +197,17 @@ void bet_help_vdxf_command_usage()
 		"\nExample: \n"
 		"./bet print_id <id_name> <id_type>\n"
 		"Note: Here id_name can be any ID under the namespace poker.chips10sec@, supported ID types are table/dealer/dealers\n");
+	
+	dlg_info(
+		"\nCommand: \n"
+		"add_dealer \n"
+		"\nDescription: \n"
+		"Adds the dealer ID to the list of dealers in dealers ID\n"
+		"\nResult: \n"
+		"A dealer ID is added to the dealers \n"
+		"\nExample: \n"
+		"./bet add_dealer <id_name>\n"
+		"Note: Before adding dealer ID or name to dealers make sure ID exists\n");
 }
 
 // clang-format off
