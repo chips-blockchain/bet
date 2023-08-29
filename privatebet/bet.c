@@ -576,7 +576,7 @@ static void bet_start(int argc, char **argv)
 		print_vdxf_info(argc, argv);
 	} else if ((strcmp(argv[1], "print_table_key") == 0) && (argc >= 3)) {
 		print_table_key_info(argc, argv);
-	} else if ((strcmp(argv[1], "print_id") == 0) && (argc >= 3)) {
+	} else if ((strcmp(argv[1], "print_id") == 0) && (argc > 3)) {
 		print_id_info(argc, argv);
 	} else if ((strcmp(argv[1], "add_dealer") == 0) && (argc == 3)) {
 		add_dealer(argv[2]);
