@@ -413,9 +413,6 @@ bool is_dealer_exists(char *dealer_id)
 		dlg_info("Unable to fetch the dealers info");
 		return false;
 	}
-
-	dlg_info("dealers_info ::%s", cJSON_Print(dealers_info));
-
 	dealer_ids = cJSON_CreateArray();
 	dealer_ids = cJSON_GetObjectItem(dealers_info, "dealers");
 
@@ -525,7 +522,7 @@ int32_t find_table()
 	// If no preconfigured tables are found then it picks the first available table
 	dlg_info(
 		"The given table ::%s of the dealer ::%s is not found, so player picks the table from the available tables of the available dealers in FIFO",
-		player_config.table_id, player_config.dealer_id);
+  	player_config.table_id, player_config.dealer_id);
 	dealer_ids = cJSON_CreateArray();
 	dealer_ids = get_cJSON_from_id_key("dealers", DEALERS_KEY);
 	if (!dealer_ids)
