@@ -23,6 +23,9 @@ void bet_command_info()
 		 "extract_tx_data tx_id \n"
 		 "\n==Blockchain scanner for Explorer==\n"
 		 "scan \n"
+		 "\n==VDXF ID Commands==\n"
+		 "print_id <id_name> <type>\n"
+		 "print_id <id_name> <key_name>\n"
 		 "\nTo get more info about a specific command try ./bet help command \n");
 }
 
