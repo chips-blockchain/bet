@@ -22,7 +22,7 @@ cJSON *add_dealer(char *dealer_id)
 {
 	cJSON *dealers_info = NULL, *dealers = NULL, *out = NULL;
 
-	if ((!dealer_id) || is_id_exists(dealer_id, 0)) {
+	if ((!dealer_id) || (!is_id_exists(dealer_id, 0))) {
 		dlg_info("Either dealer ID is NULL or the ID doesn't exists, make sure ID exists before you add to dealers");
 		return NULL;
 	}	
