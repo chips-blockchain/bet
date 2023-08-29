@@ -133,7 +133,9 @@ void print_table_key_info(int argc, char **argv)
 
 void print_id_info(int argc, char **argv)
 {
-	if (argc == 4) {
+	if (!is_id_exists(argv[2], 0)) {
+		dlg_info("ID doesn't exists\n");
+	} else {
 		if ((strcmp(argv[3], "t") == 0) || (strcmp(argv[3], "table") == 0)) {
 			print_table_id(argv[2]);
 		} else if ((strcmp(argv[3], "d") == 0) || (strcmp(argv[3], "dealer") == 0)) {
@@ -152,17 +154,26 @@ void print_vdxf_info(int argc, char **argv)
 {
 	char *str = NULL;
 	cJSON *cmm = NULL;
-
-	if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_TABLE_INFO_KEY)) == 0) {
-		cmm = get_cJSON_from_id_key_vdxfid(argv[2], get_key_vdxf_id(argv[3]));
-		dlg_info("%s", cJSON_Print(cmm));
-	} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_PLAYER_INFO_KEY)) == 0) {
-		cmm = get_cJSON_from_id_key_vdxfid(argv[2], get_key_vdxf_id(argv[3]));
-		dlg_info("%s", cJSON_Print(cmm));
-	} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_GAME_ID_KEY)) == 0) {
-		str = get_str_from_id_key(argv[2], get_full_key(argv[3]));
-		dlg_info("%s", str);
+	if (!is_id_exists(argv[2], 0)) {
+		dlg_info("ID doesn't exists\n");
 	} else {
-		dlg_info("Print operation is not supported for the given ID ::%s and key ::%s", argv[2], argv[3]);
+		if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_TABLE_INFO_KEY)) == 0) {
+			cmm = get_cJSON_from_id_key_vdxfid(argv[2], get_key_vdxf_id(argv[3]));
+			dlg_info("%s", cJSON_Print(cmm));
+		} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_PLAYER_INFO_KEY)) == 0) {
+			cmm = get_cJSON_from_id_key_vdxfid(argv[2], get_key_vdxf_id(argv[3]));
+			dlg_info("%s", cJSON_Print(cmm));
+		} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_GAME_ID_KEY)) == 0) {
+			str = get_str_from_id_key(argv[2], get_full_key(argv[3]));
+			dlg_info("%s", str);
+		} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(DEALERS_KEY)) == 0) {
+			cJSON *temp = get_cJSON_from_id_key_vdxfid(argv[2], get_vdxf_id(DEALERS_KEY));
+			if (temp) {
+				dlg_info("%s", cJSON_Print(temp));
+			}
+		} else {
+			dlg_info("Print operation is not supported for the given ID ::%s and key ::%s", argv[2],
+				 argv[3]);
+		}
 	}
 }
