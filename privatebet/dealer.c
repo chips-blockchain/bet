@@ -262,8 +262,10 @@ int32_t dealer_init(struct table t)
 
 	//Updating the dealer id with t_table_info
 	retval = update_t_info_at_dealer(t);
-	if (retval)
+	if (retval) {
+		dlg_error("Updating the talbe info to the dealer ID::%s is failed", t.dealer_id);
 		return retval;
+	}	
 
 	game_state = get_game_state(t.table_id);
 	if (game_state == G_ZEROIZED_STATE) {
