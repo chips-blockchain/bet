@@ -61,20 +61,32 @@ The keys that updates the data to this ID are
 ```
 
 ### Dealers ID
-
-Address --> `dealers.poker.chips@`
-The keys that updates the data to this ID are
-```
-1. chips.vrsc::poker.dealers
-```
-#### 1. chips.vrsc::poker.dealers
-This key holds the array of dealers info, i.e it basically a string array that holds all dealer_id names.
+The dealers ID under the namespace `poker.chips10sec@` is `dealers.poker.chips@` which contains the list of dealers that are registered. The dealers info is mapped to the key `chips.vrsc::poker.dealers`. Unless specified explicitly all the key types are byte vectors. 
+The dealers info is a JSON object which is converted to hex and is mapped to the `chips.vrsc::poker.dealers` key and stored in the ID. Here is step by step explanation of it.
+1. For example, lets we have the following dealers info
 ```
 {
         "dealers":      ["sg777_d"]
 }
 ```
-
+2. Converting this to hex string `7b0a09226465616c657273223a095b2273673737375f64225d0a7d`
+3. The vdxfID of `chips.vrsc::poker.dealers` is `iSgEvATbNF3ZR6Kyj6nn8zVp3adPQxPnFJ` and vdxfID of byte vector type is `iKMhRLX1JHQihVZx2t2pAWW2uzmK6AzwW3`
+4. The contentmultimap of dealers ID looks as follows:
+ ```
+    "contentmultimap": {
+      "iSgEvATbNF3ZR6Kyj6nn8zVp3adPQxPnFJ": [
+        {
+          "iKMhRLX1JHQihVZx2t2pAWW2uzmK6AzwW3": "7b0a09226465616c657273223a095b2273673737375f64225d0a7d"
+        }
+      ]
+    }
+```
+To avoid these multiple steps, we provided `add_dealer` command, using which the dealer can be added by simply running `./bet add_dealer <dealer_name>`. Since the dealers info on ID is in hex format, we provided parsers to display the info of dealers in a readable format. 
+Following are the parsing commands that displays dealers info of dealers ID:
+```
+1. ./bet print_id dealers dealers
+2. ./bet print dealers dealers
+```
 
 ### Dealer ID
 Address --> `<dealer_name>.poker.chips@` //Dealer provides this name at the time of registration and all dealer names end with `_d` to avoid naming conflicts, e.g `sg777_d.poker.chips@`
