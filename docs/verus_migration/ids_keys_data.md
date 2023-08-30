@@ -62,7 +62,12 @@ The keys that updates the data to this ID are
 
 ### Dealers ID
 The dealers ID under the namespace `poker.chips10sec@` is `dealers.poker.chips@` which contains the list of dealers that are registered. The dealers info is mapped to the key `chips.vrsc::poker.dealers`. Unless specified explicitly all the key types are byte vectors. 
-The dealers info is a JSON object which is converted to hex and is mapped to the `chips.vrsc::poker.dealers` key and stored in the ID. Here is step by step explanation of it.
+The list of keys that stores the information on dealers ID are:
+```
+1. chips.vrsc::poker.dealers
+```
+The dealers info is a JSON object which is converted to hex and is mapped to the `chips.vrsc::poker.dealers` key and stored in the ID. 
+Here is step by step explanation of it.
 1. For example, lets we have the following dealers info
 ```
 {
@@ -89,7 +94,7 @@ Following are the parsing commands that displays dealers info of dealers ID:
 ```
 
 ### Dealer ID
-Address --> `<dealer_name>.poker.chips@` //Dealer provides this name at the time of registration and all dealer names end with `_d` to avoid naming conflicts, e.g `sg777_d.poker.chips@`
+ID --> `<dealer_name>.poker.chips10sec@` //Dealer provides this name at the time of registration and all dealer names end with `_d` to avoid naming conflicts, e.g `sg777_d.poker.chips@`
 The keys that updates the data to this ID are
 ```
 1. chips.vrsc::poker.t_player_info
@@ -109,11 +114,11 @@ The value mapped to this key is the table info, dealer updates this info from th
 ```
 
 ### Table ID
-Address --> `<table_name>.poker.chips@` // Dealers can register upto any number of table names and all table names ends with `_t` to avoid naming conflicts, e.g `sg777_t.poker.chips@`
+ID --> `<table_name>.poker.chips10sec@` // Dealers can register upto any number of table names and all table names ends with `_t` to avoid naming conflicts, e.g `sg777_t.poker.chips@`
 
 The keys that updates the data to this ID are
 ```
-1. chips.vrsc::poker.game_ids --> Holds the info of the active game_id that is attached to the table, this is a 32 byte random string.
+1. chips.vrsc::poker.t_game_ids --> Holds the info of the active game_id that is attached to the table, this is a 32 byte random string.
 ```
 #### 1. chips.vrsc::poker.game_ids
 ```
