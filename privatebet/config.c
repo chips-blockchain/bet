@@ -306,7 +306,7 @@ void bet_parse_blockchain_config_ini_file()
 			}
 		}
 	}
-	dlg_info("Blockchain client :: %s\n", blockchain_cli);
+	dlg_info("Blockchain client configured:: %s\n", blockchain_cli);
 }
 
 int32_t bet_parse_verus_dealer()
