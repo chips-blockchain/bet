@@ -4,32 +4,33 @@
 
 void bet_command_info()
 {
-	dlg_info("\n==Dealer==\n"
-		 "dcv \"ipv4 address of the dealer node\" \n"
-		 "\n==Player==\n"
-		 "player \n"
-		 "\n==Cashier==\n"
-		 "cashierd cashier \"ipv4 address of the cashier node\" \n"
-		 "\n==DRP==\n"
-		 "game info [fail]/[success] \n"
-		 "game solve \n"
-		 "game dispute \" Disputed tx to resolve\" \n"
-		 "\n==Wallet==\n"
-		 "withdraw amount \"chips address\" \n"
-		 "withdraw all \"chips address\" \n"
-		 "spendable \n"
-		 "consolidate \n"
-		 "tx_split m n #Where m is splitted into n parts\n"
-		 "extract_tx_data tx_id \n"
-		 "\n==Blockchain scanner for Explorer==\n"
-		 "scan \n"
-		 "\n==VDXF ID Commands==\n"
-		 "print_id <id_name> <type>\n"
-		 "print <id_name> <key_name>\n"
-		 "add_dealer <dealer_id> \n"
-		 "\nTo get more info about a specific command try ./bet help command \n"
-		 "\n==HELP==\n"
-		 "help <command_name, commands supported: cashier/dealer/player/game/spendable/scan/withdraw/verus/vdxf> \n");
+	dlg_info(
+		"\n==Dealer==\n"
+		"dcv \"ipv4 address of the dealer node\" \n"
+		"\n==Player==\n"
+		"player \n"
+		"\n==Cashier==\n"
+		"cashierd cashier \"ipv4 address of the cashier node\" \n"
+		"\n==DRP==\n"
+		"game info [fail]/[success] \n"
+		"game solve \n"
+		"game dispute \" Disputed tx to resolve\" \n"
+		"\n==Wallet==\n"
+		"withdraw amount \"chips address\" \n"
+		"withdraw all \"chips address\" \n"
+		"spendable \n"
+		"consolidate \n"
+		"tx_split m n #Where m is splitted into n parts\n"
+		"extract_tx_data tx_id \n"
+		"\n==Blockchain scanner for Explorer==\n"
+		"scan \n"
+		"\n==VDXF ID Commands==\n"
+		"print_id <id_name> <type>\n"
+		"print <id_name> <key_name>\n"
+		"add_dealer <dealer_id> \n"
+		"\nTo get more info about a specific command try ./bet help command \n"
+		"\n==HELP==\n"
+		"help <command_name, commands supported: cashier/dealer/player/game/spendable/scan/withdraw/verus/vdxf> \n");
 }
 
 void bet_help_dcv_command_usage()
@@ -199,17 +200,16 @@ void bet_help_vdxf_command_usage()
 		"\nExample: \n"
 		"./bet print_id <id_name> <id_type>\n"
 		"Note: Here id_name can be any ID under the namespace poker.chips10sec@, supported ID types are table/dealer/dealers\n");
-	
-	dlg_info(
-		"\nCommand: \n"
-		"add_dealer \n"
-		"\nDescription: \n"
-		"Adds the dealer ID to the list of dealers in dealers ID\n"
-		"\nResult: \n"
-		"A dealer ID is added to the dealers \n"
-		"\nExample: \n"
-		"./bet add_dealer <id_name>\n"
-		"Note: Before adding dealer ID or name to dealers make sure ID exists\n");
+
+	dlg_info("\nCommand: \n"
+		 "add_dealer \n"
+		 "\nDescription: \n"
+		 "Adds the dealer ID to the list of dealers in dealers ID\n"
+		 "\nResult: \n"
+		 "A dealer ID is added to the dealers \n"
+		 "\nExample: \n"
+		 "./bet add_dealer <id_name>\n"
+		 "Note: Before adding dealer ID or name to dealers make sure ID exists\n");
 }
 
 // clang-format off

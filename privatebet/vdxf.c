@@ -475,7 +475,7 @@ int32_t join_table()
 			}
 			if (0 != strcmp(jstr(jitem(op_id_info, 0), "status"), "success")) {
 				return ERR_SENDCURRENCY;
-			}	
+			}
 
 			char *txid = jstr(jobj(jitem(op_id_info, 0), "result"), "txid");
 			strcpy(player_config.txid, txid);
@@ -521,7 +521,7 @@ int32_t find_table()
 	// If no preconfigured tables are found then it picks the first available table
 	dlg_info(
 		"The given table ::%s of the dealer ::%s is not found, so player picks the table from the available tables of the available dealers in FIFO",
-  	player_config.table_id, player_config.dealer_id);
+		player_config.table_id, player_config.dealer_id);
 	dealer_ids = cJSON_CreateArray();
 	dealer_ids = get_cJSON_from_id_key("dealers", DEALERS_KEY);
 	if (!dealer_ids)
@@ -987,7 +987,7 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 
 	if ((!txid) || (!payin_tx_data))
 		return ERR_NO_PAYIN_DATA;
-	
+
 	dlg_info("Payin TX Data ::%s", cJSON_Print(payin_tx_data));
 	table_id = jstr(payin_tx_data, "table_id");
 
