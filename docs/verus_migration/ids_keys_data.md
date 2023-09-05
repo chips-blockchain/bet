@@ -174,5 +174,13 @@ Contains the info about players shuffled deck
         "cardinfo":     ["afe92a18c5dacc314be0eb16f7f1d83a4eaebaab06874ed78a487e7a4ea03a0d", "b14de6c06ff1fac3f0b698d55718712521c12d2e6c4f633494abf019a8e92f25", "8ce9ca33bdd0cddf0929b5a631a33a82b03a5e3ffb4c22d9744ee3b488297336"]
 }
 ```
-
-
+#### 4. chips.vrsc::poker.t_game_info
+This is an adhoc key, the `game_id_str` is appended to this base key, and a new key is generated during the game play i.e `chips.vrsc::poker.t_game_info.game_id_str` and this key holds all the game related information information.
+This key mainly has the information about the game state and information associated with that game state if any.
+```
+{
+    game_state : game_state_no
+    game_state_info :"Info about the game based on the state that is updated"
+}
+```
+More details about game_state are [here](https://github.com/sg777/bet/blob/verus_test/docs/verus_migration/game_state.md)
