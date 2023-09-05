@@ -109,7 +109,12 @@ void print_table_id(char *id)
 			if (temp)
 				dlg_info("%s", cJSON_Print(temp));
 		}
-		cJSON *temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_B_DECK_BV_KEY, game_id));
+		cJSON *temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_GAME_INFO_KEY, game_id));
+		if (temp)
+			dlg_info("%s", cJSON_Print(temp));
+		
+		temp = NULL;
+		temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_B_DECK_BV_KEY, game_id));
 		if (temp)
 			dlg_info("%s", cJSON_Print(temp));
 	}
@@ -170,6 +175,15 @@ void print_vdxf_info(int argc, char **argv)
 			cJSON *temp = get_cJSON_from_id_key_vdxfid(argv[2], get_vdxf_id(DEALERS_KEY));
 			if (temp) {
 				dlg_info("%s", cJSON_Print(temp));
+			}
+		} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_GAME_INFO_KEY)) == 0) {
+			char *game_id_str = NULL;
+			game_id_str = get_str_from_id_key(argv[2], T_GAME_ID_KEY);
+			if(game_id_str) {
+				dlg_info("game_id_str :: %s", game_id_str);
+				cJSON *temp = get_cJSON_from_id_key_vdxfid(argv[2], get_key_data_vdxf_id(T_GAME_INFO_KEY, game_id_str));
+				if(temp) 
+					dlg_info("%s", cJSON_Print(temp));
 			}
 		} else {
 			dlg_info("Print operation is not supported for the given ID ::%s and key ::%s", argv[2],

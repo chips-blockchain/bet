@@ -106,6 +106,11 @@ extern char all_t_p_key_names[all_t_p_keys_no][128];
 extern char all_t_b_p_keys[all_t_b_p_keys_no][128];
 extern char all_t_b_p_key_names[all_t_b_p_keys_no][128];
 
+#define all_game_keys_no 1
+extern char all_game_keys[all_game_keys_no][128];
+extern char all_game_key_names[all_game_keys_no][128];
+
+
 char *get_vdxf_id(char *key_name);
 char *get_key_vdxf_id(char *key_name);
 char *get_full_key(char *key_name);

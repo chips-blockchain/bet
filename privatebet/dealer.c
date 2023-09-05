@@ -18,6 +18,10 @@ char all_t_d_p_key_names[all_t_d_p_keys_no][128] = { "t_d_deck",    "t_d_p1_deck
 						     "t_d_p4_deck", "t_d_p5_deck", "t_d_p6_deck", "t_d_p7_deck",
 						     "t_d_p8_deck", "t_d_p9_deck" };
 
+char all_game_keys[all_game_keys_no][128] = {T_GAME_INFO_KEY};
+
+char all_game_key_names[all_game_keys_no][128] = {"t_game_info"};
+
 cJSON *add_dealer(char *dealer_id)
 {
 	cJSON *dealers_info = NULL, *dealers = NULL, *out = NULL;
