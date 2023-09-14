@@ -528,7 +528,8 @@ int32_t find_table()
 		copy_table_to_struct_t(t_table_info);
 		return retval;
 	}
-	dlg_info("Unable to join preconfigured table ::%s, checking for any other available tables...", bet_err_str(retval));
+	dlg_info("Unable to join preconfigured table ::%s, checking for any other available tables...",
+		 bet_err_str(retval));
 	dealer_ids = cJSON_CreateArray();
 	dealer_ids = get_cJSON_from_id_key("dealers", DEALERS_KEY);
 	if (!dealer_ids) {
@@ -756,7 +757,7 @@ bool is_table_full(char *table_id)
 			dlg_error("Table is full");
 			return true;
 		}
-	} 
+	}
 	return false;
 }
 
@@ -822,9 +823,9 @@ int32_t check_if_d_t_available(char *dealer_id, char *table_id, cJSON **t_table_
 		game_state = get_game_state(table_id);
 		if (game_state < G_TABLE_STARTED) {
 			return ERR_TABLE_IS_NOT_STARTED;
-		} else if(game_state > G_TABLE_STARTED) {
+		} else if (game_state > G_TABLE_STARTED) {
 			return ERR_TABLE_IS_FULL;
-		}		
+		}
 		/*
 		* Check if the table is full
 		*/
