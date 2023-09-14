@@ -142,7 +142,7 @@ cJSON *get_available_t_of_d(char *dealer_id);
 bool is_table_full(char *table_id);
 int32_t check_if_pa_exists(char *table_id);
 bool check_if_enough_funds_avail(char *table_id);
-cJSON *check_if_d_t_available(char *dealer_id, char *table_id);
+int32_t check_if_d_t_available(char *dealer_id, char *table_id, cJSON **t_table_info);
 char *get_str_from_id_key(char *id, char *key);
 char *get_str_from_id_key_vdxfid(char *id, char *key_vdxfid);
 cJSON *get_cJSON_from_id_key(char *id, char *key);
