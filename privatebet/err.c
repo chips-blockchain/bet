@@ -164,6 +164,14 @@ const char *bet_err_str(int32_t err_no)
 		return "Error in decoding the card";
 	case ERR_TABLE_IS_NOT_STARTED:
 		return "Table is not started";
+	case ERR_PLAYER_CONFIG_ARGS:
+		return "Error in player config args, check if all the necessary args are confiured in verus_player.ini";
+	case ERR_DEALER_CONFIG_ARGS:
+		return "Error in dealer config args, check if all the necessary args are confiured in verus_dealer.ini";
+	case ERR_CASHIER_CONFIG_ARGS:
+		return "Error in cashier config args, check if all the necessary args are confiured in verus_cashier.ini";
+	case ERR_BLOCKCHAIN_CONFIG_ARGS:
+		return "Error in blockchain config args, check if all the necessary args are confiured in blockchain_config.ini";
 	default:
 		return "This error is not handled yet...";
 	}
