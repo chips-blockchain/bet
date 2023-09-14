@@ -162,6 +162,8 @@ const char *bet_err_str(int32_t err_no)
 		return "No information about TX is available";
 	case ERR_CARD_DECODING_FAILED:
 		return "Error in decoding the card";
+	case ERR_TABLE_IS_NOT_STARTED:
+		return "Table is not started";
 	default:
 		return "This error is not handled yet...";
 	}
