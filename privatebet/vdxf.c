@@ -756,7 +756,7 @@ bool is_table_full(char *table_id)
 			dlg_error("Table is full");
 			return true;
 		}
-	}
+	} 
 	return false;
 }
 
@@ -820,9 +820,11 @@ int32_t check_if_d_t_available(char *dealer_id, char *table_id, cJSON **t_table_
 		* Check if the table is started
 		*/
 		game_state = get_game_state(table_id);
-		if (game_state <= G_TABLE_STARTED) {
+		if (game_state < G_TABLE_STARTED) {
 			return ERR_TABLE_IS_NOT_STARTED;
-		}
+		} else if(game_state > G_TABLE_STARTED) {
+			return ERR_TABLE_IS_FULL;
+		}		
 		/*
 		* Check if the table is full
 		*/
