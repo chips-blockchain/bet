@@ -516,15 +516,15 @@ int32_t find_table()
 	/*
 	* Check if the player wallet has suffiecient funds to join the table 
 	*/
-	if(!check_if_enough_funds_avail(player_config.table_id)) {
-			return ERR_CHIPS_INSUFFICIENT_FUNDS;
+	if (!check_if_enough_funds_avail(player_config.table_id)) {
+		return ERR_CHIPS_INSUFFICIENT_FUNDS;
 	}
 	/*
 	* Check if the configured table meets the preconditions for the player to join the table
 	*/
 	t_table_info = cJSON_CreateObject();
 	retval = check_if_d_t_available(player_config.dealer_id, player_config.table_id, &t_table_info);
-	if(retval == OK) {
+	if (retval == OK) {
 		copy_table_to_struct_t(t_table_info);
 		return retval;
 	}
@@ -535,7 +535,7 @@ int32_t find_table()
 	dealer_ids = get_cJSON_from_id_key("dealers", DEALERS_KEY);
 	if (!dealer_ids) {
 		return ERR_NO_DEALERS_FOUND;
-	}	
+	}
 	for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ids); i++) {
 		t_table_info = get_available_t_of_d(jstri(dealer_ids, i));
 		if (t_table_info) {
@@ -545,7 +545,7 @@ int32_t find_table()
 			return OK;
 		}
 	}
-	return ERR_NO_TABLES_FOUND;			
+	return ERR_NO_TABLES_FOUND;
 }
 
 bool is_id_exists(char *id, int16_t full_id)
@@ -805,7 +805,6 @@ int32_t check_if_d_t_available(char *dealer_id, char *table_id, cJSON **t_table_
 	int32_t retval = OK;
 	int32_t game_state;
 
-
 	if ((!dealer_id) || (!table_id) || (!is_dealer_exists(dealer_id)) || (!is_id_exists(table_id, 0))) {
 		return NULL;
 	}
@@ -814,7 +813,7 @@ int32_t check_if_d_t_available(char *dealer_id, char *table_id, cJSON **t_table_
 	* Check if the dealer added the table info to the dealers ID
 	*/
 	*t_table_info = get_cJSON_from_id_key(dealer_id, T_TABLE_INFO_KEY);
-	if(*t_table_info == NULL) {		
+	if (*t_table_info == NULL) {
 		return ERR_T_TABLE_INFO_NULL;
 	}
 
@@ -823,22 +822,22 @@ int32_t check_if_d_t_available(char *dealer_id, char *table_id, cJSON **t_table_
 		* Check if the table is started
 		*/
 		game_state = get_game_state(table_id);
-		if(game_state != G_TABLE_STARTED) {
+		if (game_state != G_TABLE_STARTED) {
 			return ERR_TABLE_IS_NOT_STARTED;
 		}
 		/*
 		* Check if the table is full
 		*/
-		if(is_table_full(table_id)) {
+		if (is_table_full(table_id)) {
 			return ERR_TABLE_IS_FULL;
 		}
 		/*
 		* Check is the Primary Address of the player join request is already been added to the table
 		*/
-		if(check_if_pa_exists(table_id)) {
+		if (check_if_pa_exists(table_id)) {
 			return ERR_PA_EXISTS;
 		}
-	}	
+	}
 	return retval;
 }
 
