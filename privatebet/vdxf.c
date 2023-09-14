@@ -804,7 +804,7 @@ int32_t check_if_d_t_available(char *dealer_id, char *table_id, cJSON **t_table_
 	int32_t game_state;
 
 	if ((!dealer_id) || (!table_id) || (!is_dealer_exists(dealer_id)) || (!is_id_exists(table_id, 0))) {
-		return NULL;
+		return ERR_CONFIG_PLAYER_ARGS;
 	}
 
 	/*
