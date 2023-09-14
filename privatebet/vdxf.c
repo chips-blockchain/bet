@@ -528,9 +528,7 @@ int32_t find_table()
 		copy_table_to_struct_t(t_table_info);
 		return retval;
 	}
-	dlg_info(
-		"The given table ::%s of the dealer ::%s is not found, so player picks the table from the available tables of the available dealers in FIFO",
-		player_config.table_id, player_config.dealer_id);
+	dlg_info("Unable to join preconfigured table ::%s, checking for any other available tables...", bet_err_str(retval));
 	dealer_ids = cJSON_CreateArray();
 	dealer_ids = get_cJSON_from_id_key("dealers", DEALERS_KEY);
 	if (!dealer_ids) {
