@@ -115,6 +115,7 @@ All the errors that come across in bet are defined here. The error numbers are a
 #define ERR_BV_UPDATE					128
 #define ERR_NO_TX_INFO_AVAILABLE		129
 #define ERR_CARD_DECODING_FAILED		130
+#define ERR_TABLE_IS_NOT_STARTED        131
 
 // clang-format on
 const char *bet_err_str(int32_t err_no);
