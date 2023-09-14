@@ -794,8 +794,7 @@ bool check_if_enough_funds_avail(char *table_id)
 		balance = chips_get_balance();
 		if (balance > min_stake + RESERVE_AMOUNT)
 			return true;
-	}
-	dlg_error("Insufficient Funds");
+	}	
 	return false;
 }
 
