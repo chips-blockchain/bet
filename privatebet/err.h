@@ -116,10 +116,10 @@ All the errors that come across in bet are defined here. The error numbers are a
 #define ERR_NO_TX_INFO_AVAILABLE		129
 #define ERR_CARD_DECODING_FAILED		130
 #define ERR_TABLE_IS_NOT_STARTED        131
-#define ERR_PLAYER_CONFIG_ARGS          132
-#define ERR_DEALER_CONFIG_ARGS          133
-#define ERR_CASHIER_CONFIG_ARGS         134
-#define ERR_BLOCKCHAIN_CONFIG_ARGS      135
+#define ERR_CONFIG_PLAYER_ARGS          132
+#define ERR_CONFIG_DEALER_ARGS          133
+#define ERR_CONFIG_CASHIER_ARGS         134
+#define ERR_CONFIG_BLOCKCHAIN_ARGS      135
 
 // clang-format on
 const char *bet_err_str(int32_t err_no);
