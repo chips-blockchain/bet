@@ -585,6 +585,9 @@ static void bet_start(int argc, char **argv)
 		list_dealers();
 	} else if (strcmp(argv[1], "list_tables") == 0) {
 		list_tables();
+	} else if ((strcmp(argv[1], "reset_id") == 0) && (argc == 3)) {
+		if(is_id_exists(argv[2], 0))
+			update_cmm(argv[2], NULL);
 	} else {
 		bet_command_info();
 	}
