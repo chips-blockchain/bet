@@ -483,7 +483,7 @@ static void bet_start(int argc, char **argv)
 		}
 #endif
 	} else if ((strcmp(argv[1], "dcv") == 0) || (strcmp(argv[1], "dealer") == 0)) {
-		bet_parse_verus_dealer();
+		retval = bet_parse_verus_dealer();
 #if 0
 		if (argc == 3) {
 			strcpy(dealer_ip, argv[2]);
@@ -585,7 +585,9 @@ static void bet_start(int argc, char **argv)
 		bet_command_info();
 	}
 end:
-	dlg_info("%s::%d::Done", __func__, __LINE__);
+	if(retval != OK) {
+		dlg_info("%s::%d::Exiting with the error ::%s", __func__, __LINE__, bet_err_str(retval));
+	}
 }
 
 void test_x()
