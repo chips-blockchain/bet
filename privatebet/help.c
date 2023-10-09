@@ -28,6 +28,8 @@ void bet_command_info()
 		"print_id <id_name> <type>\n"
 		"print <id_name> <key_name>\n"
 		"add_dealer <dealer_id> \n"
+		"list_dealers \n"
+		"list_tables \n" 
 		"\nTo get more info about a specific command try ./bet help command \n"
 		"\n==HELP==\n"
 		"help <command_name, commands supported: cashier/dealer/player/game/spendable/scan/withdraw/verus/vdxf> \n");
@@ -210,6 +212,24 @@ void bet_help_vdxf_command_usage()
 		 "\nExample: \n"
 		 "./bet add_dealer <id_name>\n"
 		 "Note: Before adding dealer ID or name to dealers make sure ID exists\n");
+	
+	dlg_info("\nCommand: \n"
+		 "list_dealers \n"
+		 "\nDescription: \n"
+		 "Lists all the dealers that are attached to the dealers key in dealers.poker.chips10sec@ ID\n"
+		 "\nResult: \n"
+		 "List of available dealer names \n"
+		 "\nExample: \n"
+		 "./bet list_dealers\n");
+
+ 	dlg_info("\nCommand: \n"
+		 "list_tables \n"
+		 "\nDescription: \n"
+		 "Lists all the tables that are hosted by all the dealers\n"
+		 "\nResult: \n"
+		 "List of tables info \n"
+		 "\nExample: \n"
+		 "./bet list_tables\n");
 }
 
 // clang-format off
