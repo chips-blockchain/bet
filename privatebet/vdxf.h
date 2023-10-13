@@ -91,6 +91,7 @@ under chips as sg777.chips@ which basically been used to hold the tokens.
 #define CASHIERS_ID "cashiers.poker.chips10sec@"
 #define POKER_CHIPS_VDXF_ID "poker.chips10sec@"
 
+
 #define ID_UPDATE_ESTIMATE_NO 50
 #define RESERVE_AMOUNT ID_UPDATE_ESTIMATE_NO *chips_tx_fee
 

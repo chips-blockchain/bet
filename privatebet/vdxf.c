@@ -1187,8 +1187,10 @@ void list_dealers()
 	cJSON *dealers = NULL;
 
 	dealers = cJSON_CreateObject();
-	dealers = get_cJSON_from_id_key("dealers", "dealers");
-	dlg_info("Available dealers::%s\n", cJSON_Print(dealers));
+	dealers = get_cJSON_from_id_key("dealers", DEALERS_KEY);
+	if(dealers) {
+		dlg_info("Available dealers::%s\n", cJSON_Print(dealers));
+	}	
 	
 }
 
@@ -1197,10 +1199,12 @@ void list_tables()
 	cJSON *dealers = NULL;
 	
 	dealers = cJSON_CreateObject();
-	dealers = get_cJSON_from_id_key("dealers", "dealers");
+	dealers = get_cJSON_from_id_key("dealers", DEALERS_KEY);
 
 	for(int i=0; i< cJSON_GetArraySize(dealers); i++) {
 		cJSON *table_info = get_cJSON_from_id_key(jstri(dealers, i), T_TABLE_INFO_KEY);
-		dlg_info("%s", cJSON_Print(table_info));
+		if(table_info) {
+			dlg_info("%s", cJSON_Print(table_info));
+		}
 	}
 }
