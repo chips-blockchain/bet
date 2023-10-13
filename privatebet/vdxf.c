@@ -105,7 +105,7 @@ cJSON *update_cmm(char *id, cJSON *cmm)
 	char **argv = NULL;
 	char params[arg_size] = { 0 };
 
-	if ((NULL == id) || (NULL == cmm) || (NULL == verus_chips_cli)) {
+	if ((NULL == id) || (NULL == verus_chips_cli)) {
 		return NULL;
 	}
 
@@ -113,6 +113,8 @@ cJSON *update_cmm(char *id, cJSON *cmm)
 	cJSON_AddStringToObject(id_info, "name", id);
 	cJSON_AddStringToObject(id_info, "parent", get_vdxf_id(POKER_CHIPS_VDXF_ID));
 	cJSON_AddItemToObject(id_info, "contentmultimap", cmm);
+
+	dlg_info("id_info::%s::", cJSON_Print(id_info));
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
