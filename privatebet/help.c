@@ -29,7 +29,8 @@ void bet_command_info()
 		"print <id_name> <key_name>\n"
 		"add_dealer <dealer_id> \n"
 		"list_dealers \n"
-		"list_tables \n" 
+		"list_tables \n"
+		"reset_id \n"
 		"\nTo get more info about a specific command try ./bet help command \n"
 		"\n==HELP==\n"
 		"help <command_name, commands supported: cashier/dealer/player/game/spendable/scan/withdraw/verus/vdxf> \n");
@@ -230,6 +231,15 @@ void bet_help_vdxf_command_usage()
 		 "List of tables info \n"
 		 "\nExample: \n"
 		 "./bet list_tables\n");
+
+ 	dlg_info("\nCommand: \n"
+		 "reset_id \n"
+		 "\nDescription: \n"
+		 "Reset the contentmultimap of an ID, meaning set it to NULL\n"
+		 "\nResult: \n"
+		 "Latest CMM of the ID is set to NULL \n"
+		 "\nExample: \n"
+		 "./bet reset_id <id_name>\n");
 }
 
 // clang-format off
