@@ -454,7 +454,7 @@ static char *bet_pick_dealer()
 static void bet_start(int argc, char **argv)
 {
 	int32_t retval = OK;
-	
+
 	bet_set_unique_id();
 	if (argc < 2) {
 		bet_command_info();
@@ -462,12 +462,13 @@ static void bet_start(int argc, char **argv)
 	}
 
 	if ((strcmp(argv[1], "newblock") == 0) && (argc == 3)) {
-		if(bet_is_new_block_set()) {
+		dlg_info("A new block arrived");
+		if (bet_is_new_block_set()) {
 			dlg_info("Processing new block");
 			process_block(argv[2]);
 			exit(0);
-		}	
-	} 
+		}
+	}
 
 	bet_parse_blockchain_config_ini_file();
 	if (strcmp(argv[1], "cashier") == 0) {
@@ -482,8 +483,8 @@ static void bet_start(int argc, char **argv)
 		}
 #endif
 	} else if ((strcmp(argv[1], "dcv") == 0) || (strcmp(argv[1], "dealer") == 0)) {
-		bet_parse_verus_dealer();
-		#if 0
+		retval = bet_parse_verus_dealer();
+#if 0
 		if (argc == 3) {
 			strcpy(dealer_ip, argv[2]);
 			common_init();
@@ -496,7 +497,7 @@ static void bet_start(int argc, char **argv)
 		} else {
 			bet_help_dcv_command_usage();
 		}
-		#endif
+#endif
 	} else if (strcmp(argv[1], "extract_tx_data") == 0) {
 		if (argc == 3) {
 			cJSON *temp = NULL;
@@ -518,8 +519,8 @@ static void bet_start(int argc, char **argv)
 		}
 	} else if (strcmp(argv[1], "player") == 0) {
 		retval = handle_verus_player();
-		if(retval != OK) {
-			dlg_info("%s", bet_err_str(retval));
+		if (retval != OK) {
+			dlg_error("%s", bet_err_str(retval));
 		}
 		//bet_player_thrd(dealer_ip);
 #if 0
@@ -572,19 +573,28 @@ static void bet_start(int argc, char **argv)
 		if (argc == 4) {
 			do_split_tx_amount(atof(argv[2]), atoi(argv[3]));
 		}
-	} else if ((strcmp(argv[1], "print") == 0) && (argc >= 3)) {
+	} else if ((strcmp(argv[1], "print") == 0) && (argc > 3)) {
 		print_vdxf_info(argc, argv);
 	} else if ((strcmp(argv[1], "print_table_key") == 0) && (argc >= 3)) {
 		print_table_key_info(argc, argv);
-	} else if ((strcmp(argv[1], "print_id") == 0) && (argc >= 3)) {
+	} else if ((strcmp(argv[1], "print_id") == 0) && (argc > 3)) {
 		print_id_info(argc, argv);
 	} else if ((strcmp(argv[1], "add_dealer") == 0) && (argc == 3)) {
 		add_dealer(argv[2]);
+	} else if (strcmp(argv[1], "list_dealers") == 0) {
+		list_dealers();
+	} else if (strcmp(argv[1], "list_tables") == 0) {
+		list_tables();
+	} else if ((strcmp(argv[1], "reset_id") == 0) && (argc == 3)) {
+		if(is_id_exists(argv[2], 0))
+			update_cmm(argv[2], NULL);
 	} else {
 		bet_command_info();
 	}
 end:
-	dlg_info("%s::%d::Done", __func__, __LINE__);
+	if(retval != OK) {
+		dlg_info("%s::%d::Exiting with the error ::%s", __func__, __LINE__, bet_err_str(retval));
+	}
 }
 
 void test_x()

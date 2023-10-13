@@ -4,26 +4,36 @@
 
 void bet_command_info()
 {
-	dlg_info("\n==Dealer==\n"
-		 "dcv \"ipv4 address of the dealer node\" \n"
-		 "\n==Player==\n"
-		 "player \n"
-		 "\n==Cashier==\n"
-		 "cashierd cashier \"ipv4 address of the cashier node\" \n"
-		 "\n==DRP==\n"
-		 "game info [fail]/[success] \n"
-		 "game solve \n"
-		 "game dispute \" Disputed tx to resolve\" \n"
-		 "\n==Wallet==\n"
-		 "withdraw amount \"chips address\" \n"
-		 "withdraw all \"chips address\" \n"
-		 "spendable \n"
-		 "consolidate \n"
-		 "tx_split m n #Where m is splitted into n parts\n"
-		 "extract_tx_data tx_id \n"
-		 "\n==Blockchain scanner for Explorer==\n"
-		 "scan \n"
-		 "\nTo get more info about a specific command try ./bet help command \n");
+	dlg_info(
+		"\n==Dealer==\n"
+		"dcv \"ipv4 address of the dealer node\" \n"
+		"\n==Player==\n"
+		"player \n"
+		"\n==Cashier==\n"
+		"cashierd cashier \"ipv4 address of the cashier node\" \n"
+		"\n==DRP==\n"
+		"game info [fail]/[success] \n"
+		"game solve \n"
+		"game dispute \" Disputed tx to resolve\" \n"
+		"\n==Wallet==\n"
+		"withdraw amount \"chips address\" \n"
+		"withdraw all \"chips address\" \n"
+		"spendable \n"
+		"consolidate \n"
+		"tx_split m n #Where m is splitted into n parts\n"
+		"extract_tx_data tx_id \n"
+		"\n==Blockchain scanner for Explorer==\n"
+		"scan \n"
+		"\n==VDXF ID Commands==\n"
+		"print_id <id_name> <type>\n"
+		"print <id_name> <key_name>\n"
+		"add_dealer <dealer_id> \n"
+		"list_dealers \n"
+		"list_tables \n"
+		"reset_id \n"
+		"\nTo get more info about a specific command try ./bet help command \n"
+		"\n==HELP==\n"
+		"help <command_name, commands supported: cashier/dealer/player/game/spendable/scan/withdraw/verus/vdxf> \n");
 }
 
 void bet_help_dcv_command_usage()
@@ -170,6 +180,68 @@ void bet_help_scan_command_usage()
 		"./bet scan \n");
 }
 
+void bet_help_vdxf_command_usage()
+{
+	dlg_info(
+		"\nCommand: \n"
+		"print \n"
+		"\nDescription: \n"
+		"Parses the specific key info from the contentmultimap of the given ID.\n"
+		"\nResult: \n"
+		"Display of parsed key information of an ID \n"
+		"\nExample: \n"
+		"./bet print <id_name> <key_name>\n"
+		"Note: Here id_name can be any ID under the namespace poker.chips10sec@, supported key names are dealers/t_game_ids/t_game_ids/t_player_info\n");
+
+	dlg_info(
+		"\nCommand: \n"
+		"print_id \n"
+		"\nDescription: \n"
+		"Parses the contentmultimap of the given ID. Since each ID's contentmultimap holds data of different type, so we need pass the type of the ID to this command\n"
+		"\nResult: \n"
+		"Display the contentmultimap of the given ID \n"
+		"\nExample: \n"
+		"./bet print_id <id_name> <id_type>\n"
+		"Note: Here id_name can be any ID under the namespace poker.chips10sec@, supported ID types are table/dealer/dealers\n");
+
+	dlg_info("\nCommand: \n"
+		 "add_dealer \n"
+		 "\nDescription: \n"
+		 "Adds the dealer ID to the list of dealers in dealers ID\n"
+		 "\nResult: \n"
+		 "A dealer ID is added to the dealers \n"
+		 "\nExample: \n"
+		 "./bet add_dealer <id_name>\n"
+		 "Note: Before adding dealer ID or name to dealers make sure ID exists\n");
+	
+	dlg_info("\nCommand: \n"
+		 "list_dealers \n"
+		 "\nDescription: \n"
+		 "Lists all the dealers that are attached to the dealers key in dealers.poker.chips10sec@ ID\n"
+		 "\nResult: \n"
+		 "List of available dealer names \n"
+		 "\nExample: \n"
+		 "./bet list_dealers\n");
+
+ 	dlg_info("\nCommand: \n"
+		 "list_tables \n"
+		 "\nDescription: \n"
+		 "Lists all the tables that are hosted by all the dealers\n"
+		 "\nResult: \n"
+		 "List of tables info \n"
+		 "\nExample: \n"
+		 "./bet list_tables\n");
+
+ 	dlg_info("\nCommand: \n"
+		 "reset_id \n"
+		 "\nDescription: \n"
+		 "Reset the contentmultimap of an ID, meaning set it to NULL\n"
+		 "\nResult: \n"
+		 "Latest CMM of the ID is set to NULL \n"
+		 "\nExample: \n"
+		 "./bet reset_id <id_name>\n");
+}
+
 // clang-format off
 void bet_help_command(char *command)
 {
@@ -199,6 +271,10 @@ void bet_help_command(char *command)
 			break;
 		cases("withdraw")
 			bet_help_withdraw_command_usage();
+			break;
+		cases("vdxf")
+		cases("verus")
+			bet_help_vdxf_command_usage();
 			break;
 		defaults
 			dlg_info("The command %s is not yet supported by bet", command);

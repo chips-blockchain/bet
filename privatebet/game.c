@@ -59,8 +59,12 @@ int32_t get_game_state(char *table_id)
 	cJSON *t_game_info = NULL;
 
 	game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
-	if (!game_id_str)
+	if (!game_id_str) {
+		/*
+			Game ID is NULL, it probably mean the table hasn't been started yet, so game state is in zeroized state.
+		*/
 		return game_state;
+	}
 
 	t_game_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_GAME_INFO_KEY, game_id_str));
 	if (!t_game_info)

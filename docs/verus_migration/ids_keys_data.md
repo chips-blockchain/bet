@@ -61,23 +61,40 @@ The keys that updates the data to this ID are
 ```
 
 ### Dealers ID
-
-Address --> `dealers.poker.chips@`
-The keys that updates the data to this ID are
+The dealers ID under the namespace `poker.chips10sec@` is `dealers.poker.chips@` which contains the list of dealers that are registered. The dealers info is mapped to the key `chips.vrsc::poker.dealers`. Unless specified explicitly all the key types are byte vectors. 
+The list of keys that stores the information on dealers ID are:
 ```
 1. chips.vrsc::poker.dealers
 ```
-#### 1. chips.vrsc::poker.dealers
-This key holds the array of dealers info, i.e it basically a string array that holds all dealer_id names.
+The dealers info is a JSON object which is converted to hex and is mapped to the `chips.vrsc::poker.dealers` key and stored in the ID. 
+Here is step by step explanation of it.
+1. For example, lets we have the following dealers info
 ```
 {
         "dealers":      ["sg777_d"]
 }
 ```
-
+2. Converting this to hex string `7b0a09226465616c657273223a095b2273673737375f64225d0a7d`
+3. The vdxfID of `chips.vrsc::poker.dealers` is `iSgEvATbNF3ZR6Kyj6nn8zVp3adPQxPnFJ` and vdxfID of byte vector type is `iKMhRLX1JHQihVZx2t2pAWW2uzmK6AzwW3`
+4. The contentmultimap of dealers ID looks as follows:
+ ```
+    "contentmultimap": {
+      "iSgEvATbNF3ZR6Kyj6nn8zVp3adPQxPnFJ": [
+        {
+          "iKMhRLX1JHQihVZx2t2pAWW2uzmK6AzwW3": "7b0a09226465616c657273223a095b2273673737375f64225d0a7d"
+        }
+      ]
+    }
+```
+To avoid these multiple steps, we provided `add_dealer` command, using which the dealer can be added by simply running `./bet add_dealer <dealer_name>`. Since the dealers info on ID is in hex format, we provided parsers to display the info of dealers in a readable format. 
+Following are the parsing commands that displays dealers info of dealers ID:
+```
+1. ./bet print_id dealers dealers
+2. ./bet print dealers dealers
+```
 
 ### Dealer ID
-Address --> `<dealer_name>.poker.chips@` //Dealer provides this name at the time of registration and all dealer names end with `_d` to avoid naming conflicts, e.g `sg777_d.poker.chips@`
+ID --> `<dealer_name>.poker.chips10sec@` //Dealer provides this name at the time of registration and all dealer names end with `_d` to avoid naming conflicts, e.g `sg777_d.poker.chips@`
 The keys that updates the data to this ID are
 ```
 1. chips.vrsc::poker.t_player_info
@@ -97,11 +114,11 @@ The value mapped to this key is the table info, dealer updates this info from th
 ```
 
 ### Table ID
-Address --> `<table_name>.poker.chips@` // Dealers can register upto any number of table names and all table names ends with `_t` to avoid naming conflicts, e.g `sg777_t.poker.chips@`
+ID --> `<table_name>.poker.chips10sec@` // Dealers can register upto any number of table names and all table names ends with `_t` to avoid naming conflicts, e.g `sg777_t.poker.chips@`
 
 The keys that updates the data to this ID are
 ```
-1. chips.vrsc::poker.game_ids --> Holds the info of the active game_id that is attached to the table, this is a 32 byte random string.
+1. chips.vrsc::poker.t_game_ids --> Holds the info of the active game_id that is attached to the table, this is a 32 byte random string.
 ```
 #### 1. chips.vrsc::poker.game_ids
 ```
@@ -157,5 +174,13 @@ Contains the info about players shuffled deck
         "cardinfo":     ["afe92a18c5dacc314be0eb16f7f1d83a4eaebaab06874ed78a487e7a4ea03a0d", "b14de6c06ff1fac3f0b698d55718712521c12d2e6c4f633494abf019a8e92f25", "8ce9ca33bdd0cddf0929b5a631a33a82b03a5e3ffb4c22d9744ee3b488297336"]
 }
 ```
-
-
+#### 4. chips.vrsc::poker.t_game_info
+This is an adhoc key, the `game_id_str` is appended to this base key, and a new key is generated during the game play i.e `chips.vrsc::poker.t_game_info.game_id_str` and this key holds all the game related information information.
+This key mainly has the information about the game state and information associated with that game state if any.
+```
+{
+    game_state : game_state_no
+    game_state_info :"Info about the game based on the state that is updated"
+}
+```
+More details about game_state are [here](https://github.com/sg777/bet/blob/verus_test/docs/verus_migration/game_state.md)

@@ -91,6 +91,7 @@ under chips as sg777.chips@ which basically been used to hold the tokens.
 #define CASHIERS_ID "cashiers.poker.chips10sec@"
 #define POKER_CHIPS_VDXF_ID "poker.chips10sec@"
 
+
 #define ID_UPDATE_ESTIMATE_NO 50
 #define RESERVE_AMOUNT ID_UPDATE_ESTIMATE_NO *chips_tx_fee
 
@@ -105,6 +106,10 @@ extern char all_t_p_key_names[all_t_p_keys_no][128];
 #define all_t_b_p_keys_no 10
 extern char all_t_b_p_keys[all_t_b_p_keys_no][128];
 extern char all_t_b_p_key_names[all_t_b_p_keys_no][128];
+
+#define all_game_keys_no 1
+extern char all_game_keys[all_game_keys_no][128];
+extern char all_game_key_names[all_game_keys_no][128];
 
 char *get_vdxf_id(char *key_name);
 char *get_key_vdxf_id(char *key_name);
@@ -137,7 +142,7 @@ cJSON *get_available_t_of_d(char *dealer_id);
 bool is_table_full(char *table_id);
 int32_t check_if_pa_exists(char *table_id);
 bool check_if_enough_funds_avail(char *table_id);
-cJSON *check_if_d_t_available(char *dealer_id, char *table_id);
+int32_t check_if_d_t_available(char *dealer_id, char *table_id, cJSON **t_table_info);
 char *get_str_from_id_key(char *id, char *key);
 char *get_str_from_id_key_vdxfid(char *id, char *key_vdxfid);
 cJSON *get_cJSON_from_id_key(char *id, char *key);
@@ -150,4 +155,6 @@ cJSON *update_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data, bool 
 cJSON *get_t_player_info(char *table_id);
 int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data);
 void process_block(char *block_hash);
+void list_dealers();
+void list_tables();
 #endif

@@ -18,12 +18,19 @@ char all_t_d_p_key_names[all_t_d_p_keys_no][128] = { "t_d_deck",    "t_d_p1_deck
 						     "t_d_p4_deck", "t_d_p5_deck", "t_d_p6_deck", "t_d_p7_deck",
 						     "t_d_p8_deck", "t_d_p9_deck" };
 
+char all_game_keys[all_game_keys_no][128] = { T_GAME_INFO_KEY };
+
+char all_game_key_names[all_game_keys_no][128] = { "t_game_info" };
+
 cJSON *add_dealer(char *dealer_id)
 {
 	cJSON *dealers_info = NULL, *dealers = NULL, *out = NULL;
 
-	if (!dealer_id)
+	if ((!dealer_id) || (!is_id_exists(dealer_id, 0))) {
+		dlg_info(
+			"Either dealer ID is NULL or the ID doesn't exists, make sure ID exists before you add to dealers");
 		return NULL;
+	}
 
 	dealers_info = cJSON_CreateObject();
 	dealers = cJSON_CreateArray();
@@ -260,8 +267,10 @@ int32_t dealer_init(struct table t)
 
 	//Updating the dealer id with t_table_info
 	retval = update_t_info_at_dealer(t);
-	if (retval)
+	if (retval) {
+		dlg_error("Updating the talbe info to the dealer ID::%s is failed", t.dealer_id);
 		return retval;
+	}
 
 	game_state = get_game_state(t.table_id);
 	if (game_state == G_ZEROIZED_STATE) {
