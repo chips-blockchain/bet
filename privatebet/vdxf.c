@@ -1196,13 +1196,15 @@ void list_dealers()
 
 void list_tables()
 {
-	cJSON *dealers = NULL;
+	cJSON *dealers = NULL, *dealers_arr = NULL;
 	
 	dealers = cJSON_CreateObject();
 	dealers = get_cJSON_from_id_key("dealers", DEALERS_KEY);
-
-	for(int i=0; i< cJSON_GetArraySize(dealers); i++) {
-		cJSON *table_info = get_cJSON_from_id_key(jstri(dealers, i), T_TABLE_INFO_KEY);
+	
+	dealers_arr = cJSON_GetObjectItem(dealers, "dealers");
+	for(int i=0; i< cJSON_GetArraySize(dealers_arr); i++) {
+		dlg_info("dealer_id::%s", jstri(dealers_arr, i));
+		cJSON *table_info = get_cJSON_from_id_key(jstri(dealers_arr, i), T_TABLE_INFO_KEY);
 		if(table_info) {
 			dlg_info("%s", cJSON_Print(table_info));
 		}
