@@ -455,19 +455,16 @@ static void bet_start(int argc, char **argv)
 {
 	int32_t retval = OK;
 
+	
+	if ((strcmp(argv[1], "newblock") == 0) && (argc == 3)) {
+		process_block(argv[2]);
+		return;
+	}
+	
 	bet_set_unique_id();
 	if (argc < 2) {
 		bet_command_info();
-		exit(0);
-	}
-
-	if ((strcmp(argv[1], "newblock") == 0) && (argc == 3)) {
-		dlg_info("A new block arrived");
-		if (bet_is_new_block_set()) {
-			dlg_info("Processing new block");
-			process_block(argv[2]);
-			exit(0);
-		}
+		return;
 	}
 
 	bet_parse_blockchain_config_ini_file();
