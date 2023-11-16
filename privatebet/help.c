@@ -213,7 +213,7 @@ void bet_help_vdxf_command_usage()
 		 "\nExample: \n"
 		 "./bet add_dealer <id_name>\n"
 		 "Note: Before adding dealer ID or name to dealers make sure ID exists\n");
-	
+
 	dlg_info("\nCommand: \n"
 		 "list_dealers \n"
 		 "\nDescription: \n"
@@ -223,7 +223,7 @@ void bet_help_vdxf_command_usage()
 		 "\nExample: \n"
 		 "./bet list_dealers\n");
 
- 	dlg_info("\nCommand: \n"
+	dlg_info("\nCommand: \n"
 		 "list_tables \n"
 		 "\nDescription: \n"
 		 "Lists all the tables that are hosted by all the dealers\n"
@@ -232,7 +232,7 @@ void bet_help_vdxf_command_usage()
 		 "\nExample: \n"
 		 "./bet list_tables\n");
 
- 	dlg_info("\nCommand: \n"
+	dlg_info("\nCommand: \n"
 		 "reset_id \n"
 		 "\nDescription: \n"
 		 "Reset the contentmultimap of an ID, meaning set it to NULL\n"

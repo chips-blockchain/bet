@@ -797,7 +797,7 @@ bool check_if_enough_funds_avail(char *table_id)
 		balance = chips_get_balance();
 		if (balance > min_stake + RESERVE_AMOUNT)
 			return true;
-	}	
+	}
 	return false;
 }
 
@@ -1154,11 +1154,11 @@ void process_block(char *blockhash)
 	char verus_addr[1][100] = { CASHIERS_ID };
 	cJSON *blockjson = NULL, *payin_tx_data = NULL;
 
-	if(!bet_is_new_block_set()) { 
+	if (!bet_is_new_block_set()) {
 		dlg_info("Flag to process new block info is not set in blockchain_config.ini");
 		return;
-	}	
-	
+	}
+
 	blockjson = cJSON_CreateObject();
 	blockjson = chips_get_block_from_block_hash(blockhash);
 
@@ -1196,24 +1196,23 @@ void list_dealers()
 
 	dealers = cJSON_CreateObject();
 	dealers = get_cJSON_from_id_key("dealers", DEALERS_KEY);
-	if(dealers) {
+	if (dealers) {
 		dlg_info("Available dealers::%s\n", cJSON_Print(dealers));
-	}	
-	
+	}
 }
 
 void list_tables()
 {
 	cJSON *dealers = NULL, *dealers_arr = NULL;
-	
+
 	dealers = cJSON_CreateObject();
 	dealers = get_cJSON_from_id_key("dealers", DEALERS_KEY);
-	
+
 	dealers_arr = cJSON_GetObjectItem(dealers, "dealers");
-	for(int i=0; i< cJSON_GetArraySize(dealers_arr); i++) {
+	for (int i = 0; i < cJSON_GetArraySize(dealers_arr); i++) {
 		dlg_info("dealer_id::%s", jstri(dealers_arr, i));
 		cJSON *table_info = get_cJSON_from_id_key(jstri(dealers_arr, i), T_TABLE_INFO_KEY);
-		if(table_info) {
+		if (table_info) {
 			dlg_info("%s", cJSON_Print(table_info));
 		}
 	}
