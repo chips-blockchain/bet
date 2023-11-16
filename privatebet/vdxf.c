@@ -1153,6 +1153,11 @@ void process_block(char *blockhash)
 	char verus_addr[1][100] = { CASHIERS_ID };
 	cJSON *blockjson = NULL, *payin_tx_data = NULL;
 
+	if(!bet_is_new_block_set()) { 
+		dlg_info("Flag to process new block info is not set in blockchain_config.ini");
+		return;
+	}	
+	
 	blockjson = cJSON_CreateObject();
 	blockjson = chips_get_block_from_block_hash(blockhash);
 
