@@ -5,6 +5,7 @@
 #include "err.h"
 #include "game.h"
 #include "storage.h"
+#include "config.h"
 
 struct table player_t = { 0 };
 char T_PLAYER_KEYS[9][128] = { T_PLAYER1_KEY, T_PLAYER2_KEY, T_PLAYER3_KEY, T_PLAYER4_KEY, T_PLAYER5_KEY,
