@@ -134,6 +134,10 @@ int32_t handle_verus_player()
 {
 	int32_t retval = OK;
 
+	if((retval = check_poker_ready()) != OK) {
+		return retval;
+	}
+	
 	bet_parse_verus_player();
 
 	if ((retval = find_table()) != OK)

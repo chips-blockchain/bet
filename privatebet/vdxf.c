@@ -1239,3 +1239,20 @@ void list_tables()
 		}
 	}
 }
+
+int32_t check_poker_ready()
+{
+	int32_t retval = OK;
+	cJSON *dealers = NULL;
+	
+	if((!is_id_exists(CASHIERS_ID, 1)) || (!is_id_exists(DEALERS_ID, 1))) {
+		return ERR_IDS_NOT_CONFIGURED;
+	}
+
+	dealers = cJSON_CreateObject();
+	dealers = get_cJSON_from_id_key("dealers", DEALERS_KEY);
+	if(!dealers) {
+		return ERR_NO_DEALERS_FOUND;
+	}	
+	return retval;
+}
