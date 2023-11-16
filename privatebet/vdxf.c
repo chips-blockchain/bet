@@ -1162,17 +1162,24 @@ void process_block(char *blockhash)
 	blockjson = cJSON_CreateObject();
 	blockjson = chips_get_block_from_block_hash(blockhash);
 
-	if (blockjson == NULL)
-		goto end;
-
+	if (blockjson == NULL) {
+		dlg_error("Failed to get block info from blockhash");
+		return;
+	}	
 	blockcount = jint(blockjson, "height");
-	if (blockcount <= 0)
-		goto end;
+	if (blockcount <= 0) {
+		dlg_error("Invalid block height, check if the underlying blockchain is syncing right");	
+		return;
+	}	
+	dlg_info("received blockhash of block height = %d", blockcount);
 
-	dlg_info("received blockhash, found at height = %d", blockcount);
+	if(!is_id_exists(CASHIERS_ID, 1)) {
+		dlg_error("Cashiers ID ::%s doesn't exists", CASHIERS_ID);
+		return;
+	}
+	
 	cJSON *argjson = cJSON_CreateObject();
 	argjson = getaddressutxos(verus_addr, 1);
-
 	for (int32_t i = 0; i < cJSON_GetArraySize(argjson); i++) {
 		if (jint(cJSON_GetArrayItem(argjson, i), "height") == blockcount) {
 			dlg_info("tx_id::%s", jstr(cJSON_GetArrayItem(argjson, i), "txid"));
