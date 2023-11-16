@@ -508,31 +508,22 @@ static void copy_table_to_struct_t(cJSON *t_table_info)
 	strcpy(player_t.dealer_id, jstr(t_table_info, "dealer_id"));
 }
 
-int32_t find_table()
+int32_t chose_table()
 {
+	
 	int32_t retval = OK;
 	cJSON *t_table_info = NULL, *dealer_ids = NULL;
-
-	if (!is_id_exists("dealers", 0)) {
-		return ERR_NO_DEALERS_FOUND;
-	}
-	/*
-	* Check if the player wallet has suffiecient funds to join the table 
-	*/
-	if (!check_if_enough_funds_avail(player_config.table_id)) {
-		return ERR_CHIPS_INSUFFICIENT_FUNDS;
-	}
-	/*
-	* Check if the configured table meets the preconditions for the player to join the table
-	*/
+	
 	t_table_info = cJSON_CreateObject();
 	retval = check_if_d_t_available(player_config.dealer_id, player_config.table_id, &t_table_info);
 	if (retval == OK) {
 		copy_table_to_struct_t(t_table_info);
+		dlg_info("Configured Dealer ::%s, Table ::%s are chosen", player_t.dealer_id, player_t.table_id);
 		return retval;
 	}
 	dlg_info("Unable to join preconfigured table ::%s, checking for any other available tables...",
 		 bet_err_str(retval));
+	
 	dealer_ids = cJSON_CreateArray();
 	dealer_ids = get_cJSON_from_id_key("dealers", DEALERS_KEY);
 	if (!dealer_ids) {
@@ -544,10 +535,34 @@ int32_t find_table()
 			strncpy(player_config.dealer_id, jstri(dealer_ids, i), sizeof(player_config.dealer_id));
 			strncpy(player_config.table_id, jstr(t_table_info, "table_id"), sizeof(player_config.table_id));
 			copy_table_to_struct_t(t_table_info);
+			dlg_info("Available Dealer ::%s, Table ::%s are chosen", player_t.dealer_id, player_t.table_id);
 			return OK;
 		}
 	}
 	return ERR_NO_TABLES_FOUND;
+	
+}
+int32_t find_table()
+{
+	int32_t retval = OK;
+	cJSON *t_table_info = NULL, *dealer_ids = NULL;
+
+	if (!is_id_exists("dealers", 0)) {
+		return ERR_NO_DEALERS_FOUND;
+	}
+	/*
+	* Check if the configured table meets the preconditions for the player to join the table
+	*/
+	if((retval = chose_table()) != OK) {
+		return retval;
+	}
+	/*
+	* Check if the player wallet has suffiecient funds to join the table 
+	*/
+	if (!check_if_enough_funds_avail(player_t.table_id)) {
+		return ERR_CHIPS_INSUFFICIENT_FUNDS;
+	}
+	return retval;
 }
 
 bool is_id_exists(char *id, int16_t full_id)
