@@ -5,6 +5,7 @@
 #include "err.h"
 #include "game.h"
 #include "storage.h"
+#include "config.h"
 
 struct table player_t = { 0 };
 char T_PLAYER_KEYS[9][128] = { T_PLAYER1_KEY, T_PLAYER2_KEY, T_PLAYER3_KEY, T_PLAYER4_KEY, T_PLAYER5_KEY,
@@ -507,31 +508,22 @@ static void copy_table_to_struct_t(cJSON *t_table_info)
 	strcpy(player_t.dealer_id, jstr(t_table_info, "dealer_id"));
 }
 
-int32_t find_table()
+int32_t chose_table()
 {
+	
 	int32_t retval = OK;
 	cJSON *t_table_info = NULL, *dealer_ids = NULL;
-
-	if (!is_id_exists("dealers", 0)) {
-		return ERR_NO_DEALERS_FOUND;
-	}
-	/*
-	* Check if the player wallet has suffiecient funds to join the table 
-	*/
-	if (!check_if_enough_funds_avail(player_config.table_id)) {
-		return ERR_CHIPS_INSUFFICIENT_FUNDS;
-	}
-	/*
-	* Check if the configured table meets the preconditions for the player to join the table
-	*/
+	
 	t_table_info = cJSON_CreateObject();
 	retval = check_if_d_t_available(player_config.dealer_id, player_config.table_id, &t_table_info);
 	if (retval == OK) {
 		copy_table_to_struct_t(t_table_info);
+		dlg_info("Configured Dealer ::%s, Table ::%s are chosen", player_t.dealer_id, player_t.table_id);
 		return retval;
 	}
 	dlg_info("Unable to join preconfigured table ::%s, checking for any other available tables...",
 		 bet_err_str(retval));
+	
 	dealer_ids = cJSON_CreateArray();
 	dealer_ids = get_cJSON_from_id_key("dealers", DEALERS_KEY);
 	if (!dealer_ids) {
@@ -543,10 +535,34 @@ int32_t find_table()
 			strncpy(player_config.dealer_id, jstri(dealer_ids, i), sizeof(player_config.dealer_id));
 			strncpy(player_config.table_id, jstr(t_table_info, "table_id"), sizeof(player_config.table_id));
 			copy_table_to_struct_t(t_table_info);
+			dlg_info("Available Dealer ::%s, Table ::%s are chosen", player_t.dealer_id, player_t.table_id);
 			return OK;
 		}
 	}
 	return ERR_NO_TABLES_FOUND;
+	
+}
+int32_t find_table()
+{
+	int32_t retval = OK;
+	cJSON *t_table_info = NULL, *dealer_ids = NULL;
+
+	if (!is_id_exists("dealers", 0)) {
+		return ERR_NO_DEALERS_FOUND;
+	}
+	/*
+	* Check if the configured table meets the preconditions for the player to join the table
+	*/
+	if((retval = chose_table()) != OK) {
+		return retval;
+	}
+	/*
+	* Check if the player wallet has suffiecient funds to join the table 
+	*/
+	if (!check_if_enough_funds_avail(player_t.table_id)) {
+		return ERR_CHIPS_INSUFFICIENT_FUNDS;
+	}
+	return retval;
 }
 
 bool is_id_exists(char *id, int16_t full_id)
@@ -796,7 +812,7 @@ bool check_if_enough_funds_avail(char *table_id)
 		balance = chips_get_balance();
 		if (balance > min_stake + RESERVE_AMOUNT)
 			return true;
-	}	
+	}
 	return false;
 }
 
@@ -1153,20 +1169,32 @@ void process_block(char *blockhash)
 	char verus_addr[1][100] = { CASHIERS_ID };
 	cJSON *blockjson = NULL, *payin_tx_data = NULL;
 
+	if (!bet_is_new_block_set()) {
+		dlg_info("Flag to process new block info is not set in blockchain_config.ini");
+		return;
+	}
+
 	blockjson = cJSON_CreateObject();
 	blockjson = chips_get_block_from_block_hash(blockhash);
 
-	if (blockjson == NULL)
-		goto end;
-
+	if (blockjson == NULL) {
+		dlg_error("Failed to get block info from blockhash");
+		return;
+	}	
 	blockcount = jint(blockjson, "height");
-	if (blockcount <= 0)
-		goto end;
+	if (blockcount <= 0) {
+		dlg_error("Invalid block height, check if the underlying blockchain is syncing right");	
+		return;
+	}	
+	dlg_info("received blockhash of block height = %d", blockcount);
 
-	dlg_info("received blockhash, found at height = %d", blockcount);
+	if(!is_id_exists(CASHIERS_ID, 1)) {
+		dlg_error("Cashiers ID ::%s doesn't exists", CASHIERS_ID);
+		return;
+	}
+	
 	cJSON *argjson = cJSON_CreateObject();
 	argjson = getaddressutxos(verus_addr, 1);
-
 	for (int32_t i = 0; i < cJSON_GetArraySize(argjson); i++) {
 		if (jint(cJSON_GetArrayItem(argjson, i), "height") == blockcount) {
 			dlg_info("tx_id::%s", jstr(cJSON_GetArrayItem(argjson, i), "txid"));
@@ -1190,25 +1218,41 @@ void list_dealers()
 
 	dealers = cJSON_CreateObject();
 	dealers = get_cJSON_from_id_key("dealers", DEALERS_KEY);
-	if(dealers) {
+	if (dealers) {
 		dlg_info("Available dealers::%s\n", cJSON_Print(dealers));
-	}	
-	
+	}
 }
 
 void list_tables()
 {
 	cJSON *dealers = NULL, *dealers_arr = NULL;
-	
+
 	dealers = cJSON_CreateObject();
 	dealers = get_cJSON_from_id_key("dealers", DEALERS_KEY);
-	
+
 	dealers_arr = cJSON_GetObjectItem(dealers, "dealers");
-	for(int i=0; i< cJSON_GetArraySize(dealers_arr); i++) {
+	for (int i = 0; i < cJSON_GetArraySize(dealers_arr); i++) {
 		dlg_info("dealer_id::%s", jstri(dealers_arr, i));
 		cJSON *table_info = get_cJSON_from_id_key(jstri(dealers_arr, i), T_TABLE_INFO_KEY);
-		if(table_info) {
+		if (table_info) {
 			dlg_info("%s", cJSON_Print(table_info));
 		}
 	}
+}
+
+int32_t check_poker_ready()
+{
+	int32_t retval = OK;
+	cJSON *dealers = NULL;
+	
+	if((!is_id_exists(CASHIERS_ID, 1)) || (!is_id_exists(DEALERS_ID, 1))) {
+		return ERR_IDS_NOT_CONFIGURED;
+	}
+
+	dealers = cJSON_CreateObject();
+	dealers = get_cJSON_from_id_key("dealers", DEALERS_KEY);
+	if(!dealers) {
+		return ERR_NO_DEALERS_FOUND;
+	}	
+	return retval;
 }

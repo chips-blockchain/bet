@@ -172,6 +172,8 @@ const char *bet_err_str(int32_t err_no)
 		return "Error in cashier config args, check if all the necessary args are confiured in verus_cashier.ini";
 	case ERR_CONFIG_BLOCKCHAIN_ARGS:
 		return "Error in blockchain config args, check if all the necessary args are confiured in blockchain_config.ini";
+	case ERR_IDS_NOT_CONFIGURED:
+		return "The mandatory IDs needed to play poker are not created on CHAIN";
 	default:
 		return "This error is not handled yet...";
 	}

@@ -455,19 +455,15 @@ static void bet_start(int argc, char **argv)
 {
 	int32_t retval = OK;
 
+	if ((strcmp(argv[1], "newblock") == 0) && (argc == 3)) {
+		process_block(argv[2]);
+		return;
+	}
+
 	bet_set_unique_id();
 	if (argc < 2) {
 		bet_command_info();
-		exit(0);
-	}
-
-	if ((strcmp(argv[1], "newblock") == 0) && (argc == 3)) {
-		dlg_info("A new block arrived");
-		if (bet_is_new_block_set()) {
-			dlg_info("Processing new block");
-			process_block(argv[2]);
-			exit(0);
-		}
+		return;
 	}
 
 	bet_parse_blockchain_config_ini_file();
@@ -586,13 +582,13 @@ static void bet_start(int argc, char **argv)
 	} else if (strcmp(argv[1], "list_tables") == 0) {
 		list_tables();
 	} else if ((strcmp(argv[1], "reset_id") == 0) && (argc == 3)) {
-		if(is_id_exists(argv[2], 0))
+		if (is_id_exists(argv[2], 0))
 			update_cmm(argv[2], NULL);
 	} else {
 		bet_command_info();
 	}
 end:
-	if(retval != OK) {
+	if (retval != OK) {
 		dlg_info("%s::%d::Exiting with the error ::%s", __func__, __LINE__, bet_err_str(retval));
 	}
 }

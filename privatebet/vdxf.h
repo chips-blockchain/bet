@@ -89,8 +89,8 @@ Any entity in the bet ecosystem can register the identities under chips, like fo
 under chips as sg777.chips@ which basically been used to hold the tokens. 
 */
 #define CASHIERS_ID "cashiers.poker.chips10sec@"
+#define DEALERS_ID "dealers.poker.chips10sec@"
 #define POKER_CHIPS_VDXF_ID "poker.chips10sec@"
-
 
 #define ID_UPDATE_ESTIMATE_NO 50
 #define RESERVE_AMOUNT ID_UPDATE_ESTIMATE_NO *chips_tx_fee
@@ -157,4 +157,5 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data);
 void process_block(char *block_hash);
 void list_dealers();
 void list_tables();
+int32_t check_poker_ready();
 #endif
