@@ -455,18 +455,20 @@ static void bet_start(int argc, char **argv)
 {
 	int32_t retval = OK;
 
+	
+	if (argc < 2) {
+		bet_command_info();
+		return;
+	}
+
 	if ((strcmp(argv[1], "newblock") == 0) && (argc == 3)) {
 		process_block(argv[2]);
 		return;
 	}
 
 	bet_set_unique_id();
-	if (argc < 2) {
-		bet_command_info();
-		return;
-	}
-
 	bet_parse_blockchain_config_ini_file();
+	
 	if (strcmp(argv[1], "cashier") == 0) {
 		cashier_game_init("sg777_t");
 #if 0
