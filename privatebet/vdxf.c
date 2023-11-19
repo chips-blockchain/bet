@@ -1212,28 +1212,27 @@ end:
 	dlg_info("Done\n");
 }
 
-void list_dealers()
+cJSON* list_dealers()
 {
 	cJSON *dealers = NULL;
 
 	dealers = cJSON_CreateObject();
 	dealers = get_cJSON_from_id_key("dealers", DEALERS_KEY);
-	if (dealers) {
-		dlg_info("Available dealers::%s\n", cJSON_Print(dealers));
+	if (!dealers) {
+		return NULL;
+	} else {
+		return cJSON_GetObjectItem(dealers, "dealers");
 	}
 }
 
 void list_tables()
 {
-	cJSON *dealers = NULL, *dealers_arr = NULL;
+	cJSON *dealers = NULL;
 
-	dealers = cJSON_CreateObject();
-	dealers = get_cJSON_from_id_key("dealers", DEALERS_KEY);
-
-	dealers_arr = cJSON_GetObjectItem(dealers, "dealers");
-	for (int i = 0; i < cJSON_GetArraySize(dealers_arr); i++) {
-		dlg_info("dealer_id::%s", jstri(dealers_arr, i));
-		cJSON *table_info = get_cJSON_from_id_key(jstri(dealers_arr, i), T_TABLE_INFO_KEY);
+	dealers = list_dealers();
+	for (int i = 0; i < cJSON_GetArraySize(dealers); i++) {
+		dlg_info("dealer_id::%s", jstri(dealers, i));
+		cJSON *table_info = get_cJSON_from_id_key(jstri(dealers, i), T_TABLE_INFO_KEY);
 		if (table_info) {
 			dlg_info("%s", cJSON_Print(table_info));
 		}
@@ -1255,4 +1254,24 @@ int32_t check_poker_ready()
 		return ERR_NO_DEALERS_FOUND;
 	}	
 	return retval;
+}
+
+void add_dealer_to_dealers(char *dealer_id)
+{
+	cJSON *dealers = NULL;
+	int32_t dealer_added = 0;
+	
+	dealers = cJSON_CreateArray();
+	dealers = list_dealers();
+
+	for(int32_t i=0; i<cJSON_GetArraySize(dealers); i++) {
+		if(0 == strcmp(dealer_id, jstri(dealers,i))) {
+			dealer_added = 1;
+			break;
+		}
+	}
+	if(!dealer_added) {
+		cJSON_AddItemToArray(dealers, cJSON_CreateString(dealer_id));
+		update_cmm_from_id_key_data_cJSON( "dealers","dealers",dealers,0);
+	}
 }
