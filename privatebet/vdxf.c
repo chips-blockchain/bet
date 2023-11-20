@@ -409,7 +409,7 @@ bool is_dealer_exists(char *dealer_id)
 	if (!dealer_id)
 		return false;
 
-	dealers_info = get_cJSON_from_id_key("dealers", DEALERS_KEY);
+	dealers_info = get_cJSON_from_id_key(DEALERS_ID, DEALERS_KEY, 1);
 	if (!dealers_info) {
 		dlg_info("Unable to fetch the dealers info");
 		return false;
@@ -525,7 +525,7 @@ int32_t chose_table()
 		 bet_err_str(retval));
 	
 	dealer_ids = cJSON_CreateArray();
-	dealer_ids = get_cJSON_from_id_key("dealers", DEALERS_KEY);
+	dealer_ids = get_cJSON_from_id_key(DEALERS_ID, DEALERS_KEY, 1);
 	if (!dealer_ids) {
 		return ERR_NO_DEALERS_FOUND;
 	}
@@ -742,7 +742,7 @@ cJSON *get_available_t_of_d(char *dealer_id)
 	if (!dealer_id)
 		return NULL;
 
-	t_table_info = get_cJSON_from_id_key(dealer_id, T_TABLE_INFO_KEY);
+	t_table_info = get_cJSON_from_id_key(dealer_id, T_TABLE_INFO_KEY, 0);
 	if (!t_table_info)
 		return NULL;
 
@@ -828,7 +828,7 @@ int32_t check_if_d_t_available(char *dealer_id, char *table_id, cJSON **t_table_
 	/*
 	* Check if the dealer added the table info to the dealers ID
 	*/
-	*t_table_info = get_cJSON_from_id_key(dealer_id, T_TABLE_INFO_KEY);
+	*t_table_info = get_cJSON_from_id_key(dealer_id, T_TABLE_INFO_KEY, 0);
 	if (*t_table_info == NULL) {
 		return ERR_T_TABLE_INFO_NULL;
 	}
@@ -884,11 +884,11 @@ char *get_str_from_id_key_vdxfid(char *id, char *key_vdxfid)
 	return NULL;
 }
 
-cJSON *get_cJSON_from_id_key(char *id, char *key)
+cJSON *get_cJSON_from_id_key(char *id, char *key, int32_t is_full_id)
 {
 	cJSON *cmm = NULL;
 
-	cmm = get_cmm_key_data(id, 0, get_vdxf_id(key));
+	cmm = get_cmm_key_data(id, is_full_id, get_vdxf_id(key));
 	if (cmm) {
 		return hex_cJSON(jstr(cJSON_GetArrayItem(cmm, 0), get_vdxf_id(get_key_data_type(key))));
 	}
@@ -1217,7 +1217,7 @@ cJSON* list_dealers()
 	cJSON *dealers = NULL;
 
 	dealers = cJSON_CreateObject();
-	dealers = get_cJSON_from_id_key("dealers", DEALERS_KEY);
+	dealers = get_cJSON_from_id_key(DEALERS_ID, DEALERS_KEY, 1);
 	return dealers;
 }
 
@@ -1228,7 +1228,7 @@ void list_tables()
 	dealers = list_dealers();
 	for (int i = 0; i < cJSON_GetArraySize(dealers); i++) {
 		dlg_info("dealer_id::%s", jstri(dealers, i));
-		cJSON *table_info = get_cJSON_from_id_key(jstri(dealers, i), T_TABLE_INFO_KEY);
+		cJSON *table_info = get_cJSON_from_id_key(jstri(dealers, i), T_TABLE_INFO_KEY, 0);
 		if (table_info) {
 			dlg_info("%s", cJSON_Print(table_info));
 		}
@@ -1245,7 +1245,7 @@ int32_t check_poker_ready()
 	}
 
 	dealers = cJSON_CreateObject();
-	dealers = get_cJSON_from_id_key("dealers", DEALERS_KEY);
+	dealers = get_cJSON_from_id_key(DEALERS_ID, DEALERS_KEY, 1);
 	if(!dealers) {
 		return ERR_NO_DEALERS_FOUND;
 	}	
