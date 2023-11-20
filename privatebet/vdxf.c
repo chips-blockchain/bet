@@ -1218,11 +1218,7 @@ cJSON* list_dealers()
 
 	dealers = cJSON_CreateObject();
 	dealers = get_cJSON_from_id_key("dealers", DEALERS_KEY);
-	if (!dealers) {
-		return NULL;
-	} else {
-		return cJSON_GetObjectItem(dealers, "dealers");
-	}
+	return dealers;
 }
 
 void list_tables()
@@ -1272,6 +1268,6 @@ void add_dealer_to_dealers(char *dealer_id)
 	}
 	if(!dealer_added) {
 		cJSON_AddItemToArray(dealers, cJSON_CreateString(dealer_id));
-		update_cmm_from_id_key_data_cJSON( "dealers","dealers",dealers,0);
+		update_cmm_from_id_key_data_cJSON( "dealers", DEALERS_KEY, dealers, 0);
 	}
 }
