@@ -158,5 +158,5 @@ void process_block(char *block_hash);
 cJSON* list_dealers();
 void list_tables();
 int32_t check_poker_ready();
-void add_dealer_to_dealers(char *dealer_id);
+int32_t add_dealer_to_dealers(char *dealer_id);
 #endif
