@@ -455,7 +455,6 @@ static void bet_start(int argc, char **argv)
 {
 	int32_t retval = OK;
 
-	
 	if (argc < 2) {
 		bet_command_info();
 		return;
@@ -468,7 +467,7 @@ static void bet_start(int argc, char **argv)
 
 	bet_set_unique_id();
 	bet_parse_blockchain_config_ini_file();
-	
+
 	if (strcmp(argv[1], "cashier") == 0) {
 		cashier_game_init("sg777_t");
 #if 0
@@ -579,7 +578,7 @@ static void bet_start(int argc, char **argv)
 		print_id_info(argc, argv);
 	} else if ((strcmp(argv[1], "add_dealer") == 0) && (argc == 3)) {
 		add_dealer(argv[2]);
-	} else if (strcmp(argv[1], "list_dealers") == 0) {		
+	} else if (strcmp(argv[1], "list_dealers") == 0) {
 		dlg_info("Dealers ::%s", cJSON_Print(list_dealers()));
 	} else if (strcmp(argv[1], "list_tables") == 0) {
 		list_tables();
