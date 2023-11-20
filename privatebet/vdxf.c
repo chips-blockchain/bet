@@ -404,21 +404,15 @@ end:
 
 bool is_dealer_exists(char *dealer_id)
 {
-	cJSON *dealers_info = NULL, *dealer_ids = NULL;
+	cJSON *dealers = NULL;
 
-	if (!dealer_id)
+	if(!is_id_exists(dealer_id, false)) {
 		return false;
+	}	
+	dealers = list_dealers();
 
-	dealers_info = get_cJSON_from_id_key(DEALERS_ID, DEALERS_KEY, 1);
-	if (!dealers_info) {
-		dlg_info("Unable to fetch the dealers info");
-		return false;
-	}
-	dealer_ids = cJSON_CreateArray();
-	dealer_ids = cJSON_GetObjectItem(dealers_info, "dealers");
-
-	for (int32_t i = 0; i < cJSON_GetArraySize(dealer_ids); i++) {
-		if (0 == strcmp(dealer_id, jstri(dealer_ids, i))) {
+	for (int32_t i = 0; i < cJSON_GetArraySize(dealers); i++) {
+		if (0 == strcmp(dealer_id, jstri(dealers, i))) {
 			return true;
 		}
 	}
