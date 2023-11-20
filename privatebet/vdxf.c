@@ -115,8 +115,6 @@ cJSON *update_cmm(char *id, cJSON *cmm)
 	cJSON_AddStringToObject(id_info, "parent", get_vdxf_id(POKER_CHIPS_VDXF_ID));
 	cJSON_AddItemToObject(id_info, "contentmultimap", cmm);
 
-	dlg_info("id_info::%s::", cJSON_Print(id_info));
-
 	argc = 3;
 	bet_alloc_args(argc, &argv);
 	snprintf(params, arg_size, "\'%s\'", cJSON_Print(id_info));
@@ -124,12 +122,6 @@ cJSON *update_cmm(char *id, cJSON *cmm)
 
 	argjson = update_with_retry(argc, argv);
 
-#if 0
-	argjson = cJSON_CreateObject();
-	make_command(argc, argv, &argjson);
-#endif
-
-end:
 	bet_dealloc_args(argc, &argv);
 	return argjson;
 }
