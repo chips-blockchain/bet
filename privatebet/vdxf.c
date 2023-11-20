@@ -1252,12 +1252,11 @@ int32_t check_poker_ready()
 	return retval;
 }
 
-void add_dealer_to_dealers(char *dealer_id)
+int32_t add_dealer_to_dealers(char *dealer_id)
 {
-	cJSON *dealers = NULL;
+	cJSON *dealers = NULL, *out = NULL;
 	int32_t dealer_added = 0;
 	
-	dealers = cJSON_CreateArray();
 	dealers = list_dealers();
 
 	for(int32_t i=0; i<cJSON_GetArraySize(dealers); i++) {
@@ -1267,7 +1266,14 @@ void add_dealer_to_dealers(char *dealer_id)
 		}
 	}
 	if(!dealer_added) {
+		if(dealers) {
+			dealers = cJSON_CreateArray();
+		}	
 		cJSON_AddItemToArray(dealers, cJSON_CreateString(dealer_id));
-		update_cmm_from_id_key_data_cJSON( "dealers", DEALERS_KEY, dealers, 0);
+		out = append_cmm_from_id_key_data_cJSON("dealers", DEALERS_KEY,dealers, false);
+		if(!out) {			
+			return ERR_UPDATEIDENTITY;
+		}
 	}
+	return OK;
 }
