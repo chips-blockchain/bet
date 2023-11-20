@@ -1266,7 +1266,7 @@ int32_t add_dealer_to_dealers(char *dealer_id)
 		}
 	}
 	if(!dealer_added) {
-		if(dealers) {
+		if(!dealers) {
 			dealers = cJSON_CreateArray();
 		}	
 		cJSON_AddItemToArray(dealers, cJSON_CreateString(dealer_id));
