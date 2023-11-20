@@ -145,7 +145,7 @@ bool check_if_enough_funds_avail(char *table_id);
 int32_t check_if_d_t_available(char *dealer_id, char *table_id, cJSON **t_table_info);
 char *get_str_from_id_key(char *id, char *key);
 char *get_str_from_id_key_vdxfid(char *id, char *key_vdxfid);
-cJSON *get_cJSON_from_id_key(char *id, char *key);
+cJSON *get_cJSON_from_id_key(char *id, char *key, int32_t is_full_id);
 cJSON *get_cJSON_from_table_id_key(char *table_id, char *key);
 cJSON *get_cJSON_from_id_key_vdxfid(char *id, char *key_vdxfid);
 cJSON *append_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data, bool is_key_vdxf_id);
