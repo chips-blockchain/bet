@@ -251,7 +251,7 @@ int32_t update_t_info_at_dealer(struct table t)
 	int32_t retval = OK;
 	cJSON *d_table_info = NULL, *out = NULL;
 
-	d_table_info = get_cJSON_from_id_key(t.dealer_id, T_TABLE_INFO_KEY);
+	d_table_info = get_cJSON_from_id_key(t.dealer_id, T_TABLE_INFO_KEY, 0);
 	if (d_table_info == NULL) {
 		out = update_cmm_from_id_key_data_cJSON(t.dealer_id, get_vdxf_id(T_TABLE_INFO_KEY),
 							struct_table_to_cJSON(&t), true);
