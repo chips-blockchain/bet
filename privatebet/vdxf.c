@@ -510,10 +510,9 @@ static void copy_table_to_struct_t(cJSON *t_table_info)
 
 int32_t chose_table()
 {
-	
 	int32_t retval = OK;
 	cJSON *t_table_info = NULL, *dealer_ids = NULL;
-	
+
 	t_table_info = cJSON_CreateObject();
 	retval = check_if_d_t_available(player_config.dealer_id, player_config.table_id, &t_table_info);
 	if (retval == OK) {
@@ -523,7 +522,7 @@ int32_t chose_table()
 	}
 	dlg_info("Unable to join preconfigured table ::%s, checking for any other available tables...",
 		 bet_err_str(retval));
-	
+
 	dealer_ids = cJSON_CreateArray();
 	dealer_ids = get_cJSON_from_id_key(DEALERS_ID, DEALERS_KEY, 1);
 	if (!dealer_ids) {
@@ -540,7 +539,6 @@ int32_t chose_table()
 		}
 	}
 	return ERR_NO_TABLES_FOUND;
-	
 }
 int32_t find_table()
 {
@@ -553,7 +551,7 @@ int32_t find_table()
 	/*
 	* Check if the configured table meets the preconditions for the player to join the table
 	*/
-	if((retval = chose_table()) != OK) {
+	if ((retval = chose_table()) != OK) {
 		return retval;
 	}
 	/*
@@ -1180,19 +1178,19 @@ void process_block(char *blockhash)
 	if (blockjson == NULL) {
 		dlg_error("Failed to get block info from blockhash");
 		return;
-	}	
+	}
 	blockcount = jint(blockjson, "height");
 	if (blockcount <= 0) {
-		dlg_error("Invalid block height, check if the underlying blockchain is syncing right");	
+		dlg_error("Invalid block height, check if the underlying blockchain is syncing right");
 		return;
-	}	
+	}
 	dlg_info("received blockhash of block height = %d", blockcount);
 
-	if(!is_id_exists(CASHIERS_ID, 1)) {
+	if (!is_id_exists(CASHIERS_ID, 1)) {
 		dlg_error("Cashiers ID ::%s doesn't exists", CASHIERS_ID);
 		return;
 	}
-	
+
 	cJSON *argjson = cJSON_CreateObject();
 	argjson = getaddressutxos(verus_addr, 1);
 	for (int32_t i = 0; i < cJSON_GetArraySize(argjson); i++) {
@@ -1212,7 +1210,7 @@ end:
 	dlg_info("Done\n");
 }
 
-cJSON* list_dealers()
+cJSON *list_dealers()
 {
 	cJSON *dealers = NULL;
 
@@ -1239,16 +1237,16 @@ int32_t check_poker_ready()
 {
 	int32_t retval = OK;
 	cJSON *dealers = NULL;
-	
-	if((!is_id_exists(CASHIERS_ID, 1)) || (!is_id_exists(DEALERS_ID, 1))) {
+
+	if ((!is_id_exists(CASHIERS_ID, 1)) || (!is_id_exists(DEALERS_ID, 1))) {
 		return ERR_IDS_NOT_CONFIGURED;
 	}
 
 	dealers = cJSON_CreateObject();
 	dealers = get_cJSON_from_id_key(DEALERS_ID, DEALERS_KEY, 1);
-	if(!dealers) {
+	if (!dealers) {
 		return ERR_NO_DEALERS_FOUND;
-	}	
+	}
 	return retval;
 }
 
@@ -1256,22 +1254,22 @@ int32_t add_dealer_to_dealers(char *dealer_id)
 {
 	cJSON *dealers = NULL, *out = NULL;
 	int32_t dealer_added = 0;
-	
+
 	dealers = list_dealers();
 
-	for(int32_t i=0; i<cJSON_GetArraySize(dealers); i++) {
-		if(0 == strcmp(dealer_id, jstri(dealers,i))) {
+	for (int32_t i = 0; i < cJSON_GetArraySize(dealers); i++) {
+		if (0 == strcmp(dealer_id, jstri(dealers, i))) {
 			dealer_added = 1;
 			break;
 		}
 	}
-	if(!dealer_added) {
-		if(!dealers) {
+	if (!dealer_added) {
+		if (!dealers) {
 			dealers = cJSON_CreateArray();
-		}	
+		}
 		cJSON_AddItemToArray(dealers, cJSON_CreateString(dealer_id));
-		out = append_cmm_from_id_key_data_cJSON("dealers", DEALERS_KEY,dealers, false);
-		if(!out) {			
+		out = append_cmm_from_id_key_data_cJSON("dealers", DEALERS_KEY, dealers, false);
+		if (!out) {
 			return ERR_UPDATEIDENTITY;
 		}
 	}

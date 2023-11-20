@@ -268,7 +268,7 @@ int32_t dealer_init(struct table t)
 	if (is_id_exists(t.dealer_id, 0)) {
 		//If dealer doesn't exist, then add it to dealers.poker.chips10sec@
 		retval = add_dealer_to_dealers(t.dealer_id);
-		if(retval != OK) {
+		if (retval != OK) {
 			dlg_info("%s", bet_err_str(retval));
 			return retval;
 		}
