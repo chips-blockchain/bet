@@ -341,29 +341,30 @@ int32_t bet_parse_verus_dealer()
 	return retval;
 }
 
-void bet_parse_verus_player()
+int32_t bet_parse_verus_player()
 {
+	int32_t retval = OK;
 	dictionary *ini = NULL;
 
 	ini = iniparser_load(verus_player_config_file);
-	if (ini == NULL) {
-		dlg_error("error in parsing %s", verus_player_config_file);
-	} else {
-		if (NULL != iniparser_getstring(ini, "verus:dealer_id", NULL)) {
-			strncpy(player_config.dealer_id, iniparser_getstring(ini, "verus:dealer_id", NULL),
-				sizeof(player_config.dealer_id));
-		}
-		if (NULL != iniparser_getstring(ini, "verus:table_id", NULL)) {
-			strncpy(player_config.table_id, iniparser_getstring(ini, "verus:table_id", NULL),
-				sizeof(player_config.table_id));
-		}
-		if (NULL != iniparser_getstring(ini, "verus:primaryaddress", NULL)) {
-			strncpy(player_config.primaryaddress, iniparser_getstring(ini, "verus:primaryaddress", NULL),
-				sizeof(player_config.primaryaddress));
-		}
-		if (NULL != iniparser_getstring(ini, "verus:wallet_addr", NULL)) {
-			strncpy(player_config.wallet_addr, iniparser_getstring(ini, "verus:wallet_addr", NULL),
-				sizeof(player_config.wallet_addr));
-		}
+	if (!ini)
+		return ERR_INI_PARSING;
+
+	if (NULL != iniparser_getstring(ini, "verus:dealer_id", NULL)) {
+		strncpy(player_config.dealer_id, iniparser_getstring(ini, "verus:dealer_id", NULL),
+			sizeof(player_config.dealer_id));
 	}
+	if (NULL != iniparser_getstring(ini, "verus:table_id", NULL)) {
+		strncpy(player_config.table_id, iniparser_getstring(ini, "verus:table_id", NULL),
+			sizeof(player_config.table_id));
+	}
+	if (NULL != iniparser_getstring(ini, "verus:primaryaddress", NULL)) {
+		strncpy(player_config.primaryaddress, iniparser_getstring(ini, "verus:primaryaddress", NULL),
+			sizeof(player_config.primaryaddress));
+	}
+	if (NULL != iniparser_getstring(ini, "verus:wallet_addr", NULL)) {
+		strncpy(player_config.wallet_addr, iniparser_getstring(ini, "verus:wallet_addr", NULL),
+			sizeof(player_config.wallet_addr));
+	}
+	return retval;
 }
