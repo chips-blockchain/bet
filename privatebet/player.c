@@ -138,18 +138,21 @@ int32_t handle_verus_player()
 		return retval;
 	}
 
-	bet_parse_verus_player();
-
-	if ((retval = find_table()) != OK)
+	if (retval = bet_parse_verus_player() != OK) {
 		return retval;
+	}
 
+	if ((retval = find_table()) != OK) {
+		return retval;
+	}
 	dlg_info("Table found");
 	print_struct_table(&player_t);
 
-	if ((retval = join_table()) != OK)
+	if ((retval = join_table()) != OK) {
 		return retval;
-
+	}
 	dlg_info("Table Joined");
+
 	if ((retval = get_player_id(&p_deck_info.player_id)) != OK) {
 		return retval;
 	}
