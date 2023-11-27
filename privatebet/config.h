@@ -9,4 +9,3 @@ void bet_parse_blockchain_config_ini_file();
 bool bet_is_new_block_set();
 int32_t bet_parse_verus_dealer();
 int32_t bet_parse_verus_player();
-_ver
