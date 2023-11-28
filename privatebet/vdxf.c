@@ -1218,6 +1218,14 @@ void list_tables()
 		cJSON *table_info = get_cJSON_from_id_key(jstri(dealers, i), T_TABLE_INFO_KEY, 0);
 		if (table_info) {
 			dlg_info("%s", cJSON_Print(table_info));
+			if(is_id_exists(jstr(table_info, "table_id"),0)) {
+				char *game_id = NULL;
+				game_id = get_str_from_id_key(jstr(table_info, "table_id"), get_vdxf_id(T_GAME_ID_KEY));
+				if(game_id){
+					cJSON *player_info = get_cJSON_from_id_key_vdxfid(jstr(table_info, "table_id"),get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id));
+					dlg_info("Player Info of Table ::%s is ::%s", jstr(table_info, "table_id"), cJSON_Print(player_info));
+				}
+			}
 		}
 	}
 }
