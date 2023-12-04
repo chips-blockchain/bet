@@ -1010,7 +1010,7 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 {
 	int32_t retval = OK, game_state;
 	double amount = 0;
-	char pa[128] = { 0 }, *game_id_str = NULL, *table_id = NULL;
+	char pa[128] = { 0 }, *game_id_str = NULL, *table_id = NULL, *dealer_id = NULL;
 	cJSON *t_player_info = NULL, *player_info = NULL, *t_table_info = NULL;
 
 	if ((!txid) || (!payin_tx_data))
@@ -1018,43 +1018,42 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 
 	dlg_info("Payin TX Data ::%s", cJSON_Print(payin_tx_data));
 	table_id = jstr(payin_tx_data, "table_id");
-
-	/*
-		Check is the table exists
-	*/
-	if (!is_id_exists(table_id, 0))
+	dealer_id = jstr(payin_tx_data, "dealer_id"); 
+	
+	//Check the table ID and dealer ID mentioned in Payin TX are valid.
+	if (!is_id_exists(table_id, 0) || !is_id_exists(dealer_id, 0)) {
 		return ERR_ID_NOT_FOUND;
-	/*
-		Check if the table is started, table is started by the dealer during dealer init.
-	*/
-	game_state = get_game_state(table_id);
-	if (game_state != G_TABLE_STARTED)
-		return ERR_INVALID_TABLE_STATE;
-	/*
-		Check whether if the table is FULL.
-	*/
-	if (is_table_full(table_id))
-		return ERR_TABLE_IS_FULL;
+	}	
 
-	/*
-		Check the amount of funds that the player deposited at Cashier and see if these funds are with in the range of [min-max] stake.
-	*/
-	amount = chips_get_balance_on_address_from_tx(get_vdxf_id(CASHIERS_ID), txid);
+	//Check if the table is started, table is started by the dealer during dealer init.
+	game_state = get_game_state(table_id);
+	if (game_state != G_TABLE_STARTED) {
+		return ERR_INVALID_TABLE_STATE;
+	}	
+
+	//	Check whether if the table is FULL or not.
+	if (is_table_full(table_id)) {
+		return ERR_TABLE_IS_FULL;
+	}	
+
+	//Load the table info into local variables for further checks
 	game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
 	t_table_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, game_id_str));
+		
+	//Check the amount of funds that the player deposited at Cashier and see if these funds are with in the range of [min-max] stake.
+	amount = chips_get_balance_on_address_from_tx(get_vdxf_id(CASHIERS_ID), txid);
 	if ((amount < jdouble(t_table_info, "min_stake")) && (amount > jdouble(t_table_info, "max_stake"))) {
 		dlg_error("funds deposited ::%f should be in the range %f::%f\n", amount,
 			  jdouble(t_table_info, "min_stake"), jdouble(t_table_info, "max_stake"));
 		return ERR_PAYIN_TX_INVALID_FUNDS;
 	}
 
-	/*
-		Check whether if the player is already joined and make duplicate request, check if the players primary address is already been matching to any of the players joined.
-	*/
+	// Check for a duplicate join request and duplicate PA, PA should be unique so that ensures a player can occupy atmost one position on the table.
 	t_player_info = cJSON_CreateObject();
 	t_player_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
-	if (!t_player_info)
+	if (!t_player_info) {
 		return OK; //Means no one joined yet
+	}	
 
 	player_info = cJSON_CreateArray();
 	player_info = cJSON_GetObjectItem(t_player_info, "player_info");
@@ -1069,6 +1068,9 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 	return retval;
 }
 
+/*
+ The player info is stored in the form of PA_TXID_PLAYERID
+*/
 static cJSON *compute_updated_t_player_info(char *txid, cJSON *payin_tx_data)
 {
 	int32_t num_players = 0;
@@ -1107,31 +1109,32 @@ int32_t process_payin_tx_data(char *txid, cJSON *payin_tx_data)
 
 	retval = do_payin_tx_checks(txid, payin_tx_data);
 	if (retval == ERR_DUP_PAYIN_UPDATE_REQ) {
-		dlg_warn("Duplicate update request");
-		retval = OK;
-		return retval;
+		dlg_warn("%s", bet_err_str(retval));
+		return OK;
 	} else if (retval != OK) {
 		/*
-			Reverse the payin TX for any of the scenarios where player is unable to join the table.
+			Reverse the payin TX for any of the scenarios where player is unable to join the table. Like,
+			1. Table is FULL
+			2. Table ID doesn't exists
+			3. Duplicate PA
 		*/
-		dlg_error("%s::%d::Err:: %s, Reversing the tx\n", __FUNCTION__, __LINE__, bet_err_str(retval));
+		dlg_error("Reversing the Payin TX due to :: %s", bet_err_str(retval));
 		double amount = chips_get_balance_on_address_from_tx(get_vdxf_id(CASHIERS_ID), txid);
 		cJSON *tx = chips_transfer_funds(amount, jstr(payin_tx_data, "primaryaddress"));
-		dlg_info("%s::%d::Tx deposited back to the players primaryaddress::%s\n", __func__, __LINE__,
-			 cJSON_Print(tx));
+		dlg_info("Payback TX::%s", cJSON_Print(tx));
 		return retval;
 	}
 
 	game_id_str = get_str_from_id_key_vdxfid(jstr(payin_tx_data, "table_id"), get_vdxf_id(T_GAME_ID_KEY));
-	if (!game_id_str)
+	if (!game_id_str) {
 		return ERR_GAME_ID_NOT_FOUND;
+	}	
 
-	/*
-		Prepare the cJSON object with the new player details
-	*/
+	// Prepare the cJSON object with the new player details
 	updated_t_player_info = compute_updated_t_player_info(txid, payin_tx_data);
-	if (!updated_t_player_info)
+	if (!updated_t_player_info) {
 		return ERR_T_PLAYER_INFO_UPDATE;
+	}	
 
 	/*
 		Update the t_table_info.<game_id> key of the table id with newly join requested player details.
@@ -1141,9 +1144,8 @@ int32_t process_payin_tx_data(char *txid, cJSON *payin_tx_data)
 						get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str),
 						updated_t_player_info, true);
 	dlg_info("%s", cJSON_Print(out));
-	/*
-		Add the players primary address to the list of the primary addresses of the table id so that player can able to perform the updates to the table ID. 
-	*/
+	
+	//Add the players primary address to the list of the primary addresses of the table id so that player can able to perform the updates to the table ID. 
 	out = append_pa_to_cmm(jstr(payin_tx_data, "table_id"), jstr(payin_tx_data, "primaryaddress"));
 	dlg_info("%s", cJSON_Print(out));
 
@@ -1190,7 +1192,7 @@ void process_block(char *blockhash)
 				continue;
 			retval = process_payin_tx_data(jstr(cJSON_GetArrayItem(argjson, i), "txid"), payin_tx_data);
 			if (retval != OK) {
-				dlg_error("%s", bet_err_str(retval));
+				dlg_error("In processing TX :: %s, Err::%s", jstr(cJSON_GetArrayItem(argjson, i), "txid"), bet_err_str(retval));
 				retval = OK;
 			}
 		}
