@@ -1,7 +1,7 @@
 Integrating chips into verus and use of vdxf ID's for bet
 ----------------------------------------------------------
 
-In the existing setup we communicate over sockets and any game related info we partly storing it in local DB(that helps player to raise disputes), partly on blockchain by making use of data part of tx(for cashiers to verify to make game settlements and to resolve game disputes) and partly in processs(that helps to maintain gamestate during the game). 
+In the existing setup the communication between the nodes/entities happen over sockets. Game info is stored in process memory, local DB and On chain. Process memory contains the game state and cards info which are necessary to play, local DB contains tx info and game state which is used for bookkeeping and to raise the disputes, On chain info is used by the cashiers to allow the players to join the table, settle the funds during the game and to resolve disputes if any. 
 
 The main issue in using sockets for communication is its dependancy on the IP addresses. Not many can afford to have statuc public IP addresses and due to NATing we observed its not a reliable method of communication. Some of the crucial features like player disconnections became very hard as we haven't define data sets well enough for player to rejoin, and any diconnections on publisher side made it very complex. With vdxf ID's since we storing the data on blockchain, it's easy to maintain and retrieve the state of the game and that helps to handle player disconnections and disputes in a very reliable manner. 
 
