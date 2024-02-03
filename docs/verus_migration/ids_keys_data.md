@@ -25,13 +25,28 @@ Under IDs information is stored in key-value pairs. We encapsulate the info of a
 
 We define all keys with the prefix `chips.vrsc::` in the entire CHIPS ecosystem, for the game specific keys we add game type as suffix to `chips.vrsc::` and followed by it we define keys. For example, for all the keys that maps to the data used to play poker are defined with the prefix `chips.vrsc::poker.` and likewise for all the keys that are used to to store the data related to betting are defined with the prefix `chips.vrsc::bet.` and so on...
 
-In the code for all the predefined keys, we compute their vdxfid's and map them for easy lookup. i.e, for key `chips.vrsc::poker.cashiers` the corresponding vdxfid is  `iJ3WZocnjG9ufv7GKUA4LijQno5gTMb7tP` and in the code it defined as follows.
+In the code for all the predefined keys, we compute their vdxfid's and map them for easy lookup. i.e, for key `chips.vrsc::poker.cashiers` the corresponding vdxfid is  
+`iH6n3SW9hpou8LW4nEAzJZXDb4AG4tLnQN` which is obtained using getvdxfid as follows: 
 ```
-//chips.vrsc::poker.cashiers --> iJ3WZocnjG9ufv7GKUA4LijQno5gTMb7tP
+#verus -chain=chips10sec getvdxfid chips.vrsc::poker.cashiers
+{
+  "vdxfid": "iH6n3SW9hpou8LW4nEAzJZXDb4AG4tLnQN",
+  "indexid": "xMvtWEwEZ92ZkWP6duq9Gx3kciBGyf9cB6",
+  "hash160result": "ec2bdc0eab94ab8f0d4a9ca6e29afe4b2ece7495",
+  "qualifiedname": {
+    "namespace": "iJ3WZocnjG9ufv7GKUA4LijQno5gTMb7tP",
+    "name": "chips.vrsc::poker.cashiers"
+  }
+}
+
+```
+We define these `vdxfid` in the code using macro variables. 
+```
+//chips.vrsc::poker.cashiers 
 #define CASHIERS_KEY "iH6n3SW9hpou8LW4nEAzJZXDb4AG4tLnQN"
 ```
 
-Some keys are predefined and some keys we create them on fly during the game, all the keys that are created during the game are mapped to the predefined existing keys for easy reference and lookup. Some keys can be used across multiple ID's, for example the key `chips.vrsc::poker.t_player_info` that maps to player info is used across the IDs dealer and table to store the player info. Aim should to be no redundancy, but in some scenarios where different IDs need some common data but these IDs are having different priveleges then in such case we get to some redundancy and get to see same Key across multiple IDs. 
+Some keys are predefined and some keys we create them on fly during the game, all the keys that are created during the game are mapped to the predefined existing keys for easy reference and lookup. Some keys can be used across multiple ID's, for example the key `chips.vrsc::poker.t_player_info` that maps to player info is used across the IDs dealer and table to store the player info. Aim should be less or no redundancy, but in some scenarios where different IDs need some common data but these IDs are having different priveleges then in such cases we going to have some redundancy in keys across IDs.
 
 ## Key Datatypes
 Either its a structure or JSON object, we converting it to hex and using the datatype `vrsc::data.type.bytevector` we mapping it to the key and updating it to the ID, likewise to store string on to the ID we use the data type `vrsc::data.type.string` for the keys. We majorly been using bytevector for most of the keys defined int he CHIPS ecosystem, the definition of these data types in the code are as follows.
