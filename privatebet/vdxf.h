@@ -159,4 +159,5 @@ cJSON *list_dealers();
 void list_tables();
 int32_t check_poker_ready();
 int32_t add_dealer_to_dealers(char *dealer_id);
+int32_t id_canspendfor(char *id, int32_t full_id);
 #endif
