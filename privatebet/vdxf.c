@@ -1274,3 +1274,34 @@ int32_t add_dealer_to_dealers(char *dealer_id)
 	}
 	return OK;
 }
+
+int32_t id_canspendfor(char *id, int32_t full_id)
+{
+	
+	int32_t argc = 3, retval = OK, id_canspendfor_value = false;
+	char **argv = NULL;
+	char params[128] = { 0 };
+	cJSON *argjson = NULL, *obj = NULL;
+
+	strncpy(params, id, strlen(id));
+	if (0 == full_id) {
+		strcat(params, ".poker.chips10sec@");
+	}
+	bet_alloc_args(argc, &argv);
+	argv = bet_copy_args(argc, verus_chips_cli, "getidentity", params);
+
+	argjson = cJSON_CreateObject();
+	retval = make_command(argc, argv, &argjson);
+
+	if(retval != OK) {
+		return ERR_ID_NOT_FOUND;
+	}
+
+	if(((obj = jobj(argjson, "canspendfor")) != NULL) && (is_cJSON_True(obj))) {
+		id_canspendfor_value = true;
+	}
+	dlg_info("canspendfor :: %d ", id_canspendfor_value);
+	bet_dealloc_args(argc, &argv);
+
+	return id_canspendfor_value;
+}
