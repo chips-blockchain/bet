@@ -142,6 +142,9 @@ int32_t handle_verus_player()
 		return retval;
 	}
 
+	if (!chips_ismine(player_config.primaryaddress)) {
+		return ERR_ADDR_AUTH;
+	}
 	if ((retval = find_table()) != OK) {
 		return retval;
 	}

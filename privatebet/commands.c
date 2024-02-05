@@ -132,9 +132,9 @@ end:
 
 int32_t chips_ismine(char *address)
 {
-	int argc, retval = 0;
+	int argc, ismine = false;
 	char **argv = NULL;
-	cJSON *addressInfo = NULL;
+	cJSON *addressInfo = NULL, *obj = NULL;
 
 	argc = 3;
 	bet_alloc_args(argc, &argv);
@@ -142,11 +142,12 @@ int32_t chips_ismine(char *address)
 	addressInfo = cJSON_CreateObject();
 	make_command(argc, argv, &addressInfo);
 
-	cJSON *temp = cJSON_GetObjectItem(addressInfo, "ismine");
-	if (strcmp(cJSON_Print(temp), "true") == 0)
-		retval = 1;
+	if ((obj = jobj(addressInfo, "ismine")) && is_cJSON_True(obj)) {
+		ismine = true;
+	}
+
 	bet_dealloc_args(argc, &argv);
-	return retval;
+	return ismine;
 }
 
 int32_t chips_iswatchonly(char *address)
