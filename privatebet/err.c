@@ -174,6 +174,8 @@ const char *bet_err_str(int32_t err_no)
 		return "Error in blockchain config args, check if all the necessary args are confiured in blockchain_config.ini";
 	case ERR_IDS_NOT_CONFIGURED:
 		return "The mandatory IDs needed to play poker are not created on CHAIN";
+	case ERR_ID_AUTH:
+		return "Not enough authority to update ID, probably the underlying wallet doesn't have privkeys of the primaryaddresses of ID";
 	default:
 		return "This error is not handled yet...";
 	}
