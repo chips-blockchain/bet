@@ -265,15 +265,21 @@ int32_t dealer_init(struct table t)
 {
 	int32_t retval = OK, game_state;
 
-	if (is_id_exists(t.dealer_id, 0)) {
-		//If dealer doesn't exist, then add it to dealers.poker.chips10sec@
-		retval = add_dealer_to_dealers(t.dealer_id);
-		if (retval != OK) {
-			dlg_info("%s", bet_err_str(retval));
-			return retval;
-		}
+	if (!(is_id_exists(t.dealer_id, 0) && is_id_exists(t.table_id, 0))) {
+		return ERR_ID_NOT_FOUND;
 	}
-	//Updating the dealer id with t_table_info
+	if (!(id_cansignfor(t.dealer_id, 0) && id_cansignfor(t.table_id, 0))) {
+		return ERR_ID_AUTH;
+	}
+
+	//If dealer hasn't added to dealers yet, then add it to dealers.poker.chips10sec@
+	retval = add_dealer_to_dealers(t.dealer_id);
+	if (retval != OK) {
+		dlg_info("%s", bet_err_str(retval));
+		return retval;
+	}
+
+	//Updating table_info read from the config to the dealer ID.
 	retval = update_t_info_at_dealer(t);
 	if (retval) {
 		dlg_error("Updating the talbe info to the dealer ID::%s is failed", t.dealer_id);
