@@ -45,6 +45,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <strings.h>
 
 //#define LIVE_THREAD 0
 
@@ -514,28 +515,11 @@ static void bet_start(int argc, char **argv)
 		} else {
 			bet_command_info();
 		}
-	} else if (strcmp(argv[1], "player") == 0) {
+	} else if ((strcasecmp(argv[1], "player") == 0) || (strcasecmp(argv[1], "p") == 0)) {
 		retval = handle_verus_player();
 		if (retval != OK) {
 			dlg_error("%s", bet_err_str(retval));
 		}
-		//bet_player_thrd(dealer_ip);
-#if 0
-		char *dealer_ip = NULL;
-		dlg_info("Finding the dealer");
-		do {
-			dealer_ip = bet_pick_dealer();
-			if (!dealer_ip) {
-				dlg_warn("None of the dealer tables are empty, retrying after 5s...");
-				sleep(5);
-			}
-		} while (dealer_ip == NULL);
-
-		if (dealer_ip) {
-			dlg_info("The dealer is :: %s", dealer_ip);
-			bet_player_thrd(dealer_ip);
-		}
-#endif
 	} else if (strcmp(argv[1], "scan") == 0) {
 		bet_sqlite3_init();
 		scan_games_info();
