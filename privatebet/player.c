@@ -147,7 +147,7 @@ int32_t handle_verus_player()
 	}
 	if ((retval = find_table()) != OK) {
 		// If retval is ERR_PA_EXISTS, i.e PA exists in table player is allowed to rejoin the table.
-		if(retval == ERR_PA_EXISTS) {
+		if (retval == ERR_PA_EXISTS) {
 			retval = OK;
 			goto rejoin;
 		}
@@ -171,11 +171,11 @@ int32_t handle_verus_player()
 	}
 	dlg_info("Player deck shuffling info updated to table");
 
-	rejoin:
-		while (1) {
-			handle_game_state_player(player_config.table_id);
-			sleep(2);
-		}
+rejoin:
+	while (1) {
+		handle_game_state_player(player_config.table_id);
+		sleep(2);
+	}
 
 	return retval;
 }

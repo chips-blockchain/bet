@@ -509,6 +509,10 @@ int32_t chose_table()
 		dlg_info("Configured Dealer ::%s, Table ::%s are chosen", player_t.dealer_id, player_t.table_id);
 		return retval;
 	}
+
+	if (retval == ERR_PA_EXISTS)
+		return retval;
+
 	dlg_info("Unable to join preconfigured table ::%s, checking for any other available tables...",
 		 bet_err_str(retval));
 
@@ -821,26 +825,22 @@ int32_t check_if_d_t_available(char *dealer_id, char *table_id, cJSON **t_table_
 	}
 
 	if ((0 == strcmp(jstr(*t_table_info, "table_id"), table_id))) {
-		/*
-		* Check if the table is started
-		*/
+		// Check is the Primary Address of the player join request is already been added to the table
+		if (check_if_pa_exists(table_id)) {
+			return ERR_PA_EXISTS;
+		}
+
+		// Check if the table is started
 		game_state = get_game_state(table_id);
 		if (game_state < G_TABLE_STARTED) {
 			return ERR_TABLE_IS_NOT_STARTED;
 		} else if (game_state > G_TABLE_STARTED) {
 			return ERR_TABLE_IS_FULL;
 		}
-		/*
-		* Check if the table is full
-		*/
+
+		// Check if the table is full
 		if (is_table_full(table_id)) {
 			return ERR_TABLE_IS_FULL;
-		}
-		/*
-		* Check is the Primary Address of the player join request is already been added to the table
-		*/
-		if (check_if_pa_exists(table_id)) {
-			return ERR_PA_EXISTS;
 		}
 	}
 	return retval;
