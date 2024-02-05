@@ -176,6 +176,8 @@ const char *bet_err_str(int32_t err_no)
 		return "The mandatory IDs needed to play poker are not created on CHAIN";
 	case ERR_ID_AUTH:
 		return "Not enough authority to update ID, probably the underlying wallet doesn't have privkeys of the primaryaddresses of ID";
+	case ERR_ADDR_AUTH:
+		return "Address is not authorized, the wallet doesn't have private keys to spend or sign the corresponding address";
 	default:
 		return "This error is not handled yet...";
 	}
