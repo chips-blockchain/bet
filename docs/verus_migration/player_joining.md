@@ -1,7 +1,7 @@
 Players Joining
 ---------------
 
-This is an important phase in game setup. In the ID creation document we discussed about how cashiers and dealers are registered by the RA(Registration Authority). Here we see more details about the tables and how player finds and joins the tables. 
+This is an important phase in game setup. In the [ID creation document](./id_creation_process.md) we discussed about how cashiers and dealers are registered by the RA(Registration Authority). Here we see more details about the tables and how player finds and joins the tables. 
 
 ### Table
 ---------
