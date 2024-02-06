@@ -453,37 +453,33 @@ int32_t join_table()
 	cJSON *data = NULL, *op_id = NULL, *op_id_info = NULL;
 
 	data = cJSON_CreateObject();
-	cJSON_AddStringToObject(data, "dealer_id", player_config.dealer_id);
-	cJSON_AddStringToObject(data, "table_id", player_config.table_id);
-	cJSON_AddStringToObject(data, "primaryaddress", player_config.primaryaddress);
+	jaddstr(data, "dealer_id", player_config.dealer_id);
+	jaddstr(data, "table_id", player_config.table_id);
+	jaddstr(data, "primaryaddress", player_config.primaryaddress);
 
 	op_id = verus_sendcurrency_data(data);
-	if (op_id) {
-		op_id_info = get_z_getoperationstatus(jstr(op_id, "op_id"));
-		if (op_id_info) {
-			while (0 == strcmp(jstr(jitem(op_id_info, 0), "status"), "executing")) {
-				sleep(1);
-				op_id_info = get_z_getoperationstatus(jstr(op_id, "op_id"));
-			}
-			if (0 != strcmp(jstr(jitem(op_id_info, 0), "status"), "success")) {
-				return ERR_SENDCURRENCY;
-			}
+	if (op_id == NULL)
+		return ERR_SENDCURRENCY;
 
-			char *txid = jstr(jobj(jitem(op_id_info, 0), "result"), "txid");
-			strcpy(player_config.txid, txid);
-			dlg_info("payin_tx::%s", txid);
-			retval = check_player_join_status(player_config.table_id, player_config.primaryaddress);
-			if (retval)
-				return retval;
-#if 0
-			retval = insert_player_deck_info_txid_pa_t_d(txid, player_config.primaryaddress,
-								     player_config.table_id, player_config.dealer_id);
-			if (retval)
-				return retval;
-#endif
+	op_id_info = get_z_getoperationstatus(jstr(op_id, "op_id"));
+	if (op_id_info) {
+		while (0 == strcmp(jstr(jitem(op_id_info, 0), "status"), "executing")) {
+			sleep(1);
+			op_id_info = get_z_getoperationstatus(jstr(op_id, "op_id"));
+		}
+		if (0 != strcmp(jstr(jitem(op_id_info, 0), "status"), "success")) {
+			return ERR_SENDCURRENCY;
+		}
+
+		char *txid = jstr(jobj(jitem(op_id_info, 0), "result"), "txid");
+		strcpy(player_config.txid, txid);
+		dlg_info("payin_tx::%s", txid);
+		retval = check_player_join_status(player_config.table_id, player_config.primaryaddress);
+		if (retval) {
+			// TODO::This is where TX is success but PA is not added to the table, ideally in these scenarios TX needs to be reversed.
+			return retval;
 		}
 	}
-end:
 	return retval;
 }
 
@@ -590,14 +586,12 @@ int32_t check_player_join_status(char *table_id, char *pa)
 		cJSON *pa_arr = cJSON_CreateArray();
 		pa_arr = get_primaryaddresses(table_id, 0);
 		for (int32_t i = 0; i < cJSON_GetArraySize(pa_arr); i++) {
-			if (0 == strcmp(jstri(pa_arr, i), pa)) {
-				retval = OK;
-				goto end;
-			}
+			if (0 == strcmp(jstri(pa_arr, i), pa))
+				return OK;
 		}
 		sleep(2);
 	} while (chips_get_block_count() <= block_count);
-end:
+
 	return retval;
 }
 
