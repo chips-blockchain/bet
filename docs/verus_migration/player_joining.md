@@ -5,14 +5,10 @@ This is an important phase in game setup. In the [ID creation document](./id_cre
 
 ### Table
 ---------
-The initial thought was dealers will create the tables whenever the dealer want to host the table. We observed some drawbacks with that approach:
-1. The control should be given to the dealer to create the ID's, and we definetely don't any spam of ID's incase if the intentional behavior of any entity changed to malicious.
-2. If a new table ID gets created for game that is played then it won't be possible to use catchy names for the tables. The fixed table names provides lots flexibility either in hosting them for the dealers and for the players in configuring them.
-3. With new table ID's for every game its difficult host the private tables.
-
-So by observing the limitations, first we taken away(not given) the ability to create the ID's to the dealers, instead dealer can make a request to the cashiers about the creation of table ID's at the time dealer registration or later. Dealer can make five such requests to the cashiers, meaning dealer can host five tables at any given time. Ofcouse `5` is not the hard cap we setting on the number of tables and it can be subject to revision based on the feedback we receive. Likewise we will also allow dealer to make a request to revoke and revocer the table ID.
-
-The good thing with the fixed table names is that, players can configure them in their `verus_player.ini` configuration file and can be choosy about the table the player wants to join. 
+Any dealer can host any number of tables, dealer can reuse the same ID repeatedly to host the tables. Some key points to note w.r.t tables are
+1. The control is with the dealer to create any number of ID's and register them as tables to the corresponding dealer ID, though some concerns exist with regard to spam of IDs but we look at this way that more IDs means more economy to the chain and less hastle.
+2. In order to join a specific table, player needs to mention that table name in their `verus_player.ini` config file, so its wise to have some catchy names for the tables and using the same ID repeatedly allows the players not to make any modifications to their config file. 
+3. Using the bet command `./bet list_tables` players can find all the tables available on the chain. 
 
 ### How players find the table
 -------------------------------
