@@ -12,19 +12,83 @@ Any dealer can host any number of tables, dealer can reuse the same ID repeatedl
 
 ### How players find the table
 -------------------------------
-With that intro about tables, here are the steps that player follows to finds out and joins the table:
+There are couple of ways using which players can find the tables registered on the chain which are listed below, the recommended way is using the bet API `list_tables`, i.e by `./bet list_tables` which gives more information about the tables along with its names.
 
-1. Players get to know about the list of avaiable from dealers ID `dealers.poker.chips10sec@`.
-2. After getting the dealers ID's, players fetch the information about the tables that a specific is hosting from the ID `<dealer_name>.poker.chips10sec@`.
-3. After going through each table information, player comes to know about the table details like min stake, big blind, empty or not, etc... If player finds the table suitable then player deposit the funds needed to join the table to the `cashiers.poker.chips10sec@` and also in data part of the transaction the player mentions the following details:
-```
-{
-  table_id:"some_table_id";
-  primaryaddress: "The address which is owned by the player"; #This address can alse be configured in verus_player.ini config file.
-}
-```
-4. Cashier nodes periodically checks if any deposits are made to the address `cashiers.poker.chips10sec@` using `blocknotify`. The moment cashiers detect any deposits made to the cashiers address, they immediately parse the data part of the tx, and add players `primaryaddress` mentioned in the data part of tx to the `table_id` which is also mentioned by the player in the same data part. Once after cashier adds the players primaryaddress to the `primaryaddresses` of the table_id, from that moment the player can be able to update corresponding `table_id`.
+1. Dealer ID contains the information about the tables, using the following commands one can list the available dealers in the system.
+   a. Using the bet API `list_dealers`
+   ```
+	root@sg777-3 ~/bet/privatebet # ./bet list_dealers
+	[bet.c:bet_start:549] Dealers ::["sg777_d"]
+   ```
+   b. By parsing the `dealers.poker.chips10sec@` ID using the bet API(`print_id`). Using verus client API(`getidentity`) also one can see the dealers info but that info is encoded in hex so we recommned using `print_id`.
+   ```
+      	root@sg777-3 ~/bet/privatebet # ./bet print_id dealers dealers
+	[print.c:print_dealers_id:72] ["sg777_d"]
+   ```	
+2. Uisng the bet API `list_tables` all the tables registered on the chain along with the current status of those tables are listed
+   ```
+   root@sg777-3 ~/bet/privatebet # ./bet list_tables
+	[vdxf.c:list_tables:1214] dealer_id::sg777_d
+	[vdxf.c:list_tables:1217] {
+	        "max_players":  2,
+	        "big_blind":    0.00100000,
+	        "min_stake":    0.20000000,
+	        "max_stake":    1,
+	        "table_id":     "sg777_t",
+	        "dealer_id":    "sg777_d"
+	}
+	[vdxf.c:list_tables:1226] Player Info of Table ::sg777_t is ::{
+	        "num_players":  2,
+	        "player_info":  ["RUDCNptNJZrzFErgRXgPcfEcWXdY7Rn7x2_94960563187ebb17f825edde1a12ab262c3f1a0341cf8e7138a94a0bf63432e4_1", "RMVaEaXzMcwCuNVL3rkgt8i8j94DVfFAht_83d6a7c49d2822fb20fd88eac0cc6753e9f97253da06ddc5bd17b5b1b88fb113_2"]
+	}
+	```
 
+3. Using bet API `print_id` one can get the content of the dealer ID and from which we can see the tables hosted by that dealer.
+	   
+	```
+	root@sg777-3 ~/bet/privatebet # ./bet print_id sg777_d dealer
+	[print.c:print_dealer_id:84] {
+	        "max_players":  2,
+	        "big_blind":    0.00100000,
+	        "min_stake":    0.20000000,
+	        "max_stake":    1,
+	        "table_id":     "sg777_t",
+	        "dealer_id":    "sg777_d"
+	}
+	```
+4. Once you get the table, using `print_id` one can see the state of the table(`game_state`) and the public info of the game that is currently being played.
+	```
+	root@sg777-3 ~/bet/privatebet # ./bet print_id sg777_t table
+	[print.c:print_table_id:94] game_id::13a37fd1a16a5d339100dd1f51d90fb354c78939899da366f023ba31ec013731
+	[print.c:print_table_id:98] t_player1 :: {
+	        "id":   1,
+	        "pubkey":       "51a28b8ceb1dfb1076c8b603272cdfa7a23ae8ca3c02f39dfd0ac5b4739ffb4b",
+	        "cardinfo":     ["889ed5713e42785200bf18cdea9c1eb295915470322bdb8eaea974e605117c75", "c4d2ea299a2157f7385155606ce8e02d9f6a899f987bd364c7677dc7421e7452", "d773f7b34c6121b675f91745c5b908b40bcb359dcf1d183cfb388ed5a3120e15"]
+	}
+	[print.c:print_table_id:98] t_player2 :: {
+	        "id":   2,
+	        "pubkey":       "5a5e1611041bef3cab1b89e6338e2d9c3bb7e0fa69db3c4f445a85688357a556",
+	        "cardinfo":     ["0c9d5d83449ffee4858ffc0c9c0672a13366e2a42ba07e1ceea79e08c3413635", "8192068f42cf1874af3c95e1db82c073ac27f94998e52528f11076ba27128155", "8e6682caab4e8552ece3d7b901df2f10210fd82b69cf82607a6b31f2d0714912"]
+	}
+	[print.c:print_table_id:98] t_table_info :: {
+	        "max_players":  2,
+	        "big_blind":    0.00100000,
+	        "min_stake":    0.20000000,
+	        "max_stake":    1,
+	        "table_id":     "sg777_t",
+	        "dealer_id":    "sg777_d"
+	}
+	[print.c:print_table_id:98] t_player_info :: {
+	        "num_players":  2,
+	        "player_info":  ["RUDCNptNJZrzFErgRXgPcfEcWXdY7Rn7x2_94960563187ebb17f825edde1a12ab262c3f1a0341cf8e7138a94a0bf63432e4_1", "RMVaEaXzMcwCuNVL3rkgt8i8j94DVfFAht_83d6a7c49d2822fb20fd88eac0cc6753e9f97253da06ddc5bd17b5b1b88fb113_2"]
+	}
+	[print.c:print_table_id:104] t_d_deck :: ["a80ffb25eefab5279af2f388f24744dc782935ebee6738030fd1ceb278dd2018", "c325de70d42d32dd7dd3685423e2df8c6388ad98453d6df0e4d3da66855a9d7e", "1f380df2c328b51e9143aa7bbb087c244f47b72109693a2f6b7721204ef0e705"]
+	[print.c:print_table_id:104] t_d_p1_deck :: ["903e7f8784abe57808eb2e6c3ee8a6d5b4b305a274f0567c473ba168de2ddc56", "01a30726d99137613f0e277313556a205833420f3d5d56ddc1f9850a08d52972", "49c36f37459d0bbe5ebc69c7d793db80829f3e5fd798e7280febdaf5b7b4e85f"]
+	[print.c:print_table_id:104] t_d_p2_deck :: ["a541ef87e24d7caad877b33d8a8e0b4415752b7b27b2b12502c163ca7127ff10", "87f1146747f5809ad7bae05f7da26c0483fa8533e40dc90d1bf69fd76ad43041", "3996298f6664dfa976592f99af7f4e75cd2216220073bef0f253a8764daad95a"]
+	[print.c:print_table_id:114] chips.vrsc::poker.t_game_info :: {
+	        "game_state":   5
+	}
+	```
 ### What goes into table
 ------------------------
 Off all the ID's we have table is a very complex ID and this is where all the game info goes into. The complete map of contents that goes into the table is not yet fully identified and at this moment I'll write about the initial thought process and we improve further upon it.
