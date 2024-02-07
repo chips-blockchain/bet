@@ -91,9 +91,55 @@ There are couple of ways using which players can find the tables registered on t
 	```
 ### What goes into table
 ------------------------
-Off all the ID's we have table is a very complex ID and this is where all the game info goes into. The complete map of contents that goes into the table is not yet fully identified and at this moment I'll write about the initial thought process and we improve further upon it.
+Off all the ID's we have table ID is the very complex ID and this is where all the game info goes into. The complete map of contents that goes into the table is not yet fully identified and as the development of the game progresses I'll update the details of table ID contentmultimap here. 
 
-All the actors like players, dealers, cashiers/bvv updates the table ID at different stages during the game. The main tasks that get accomplished with the data on table ID are deck shuffling, game play and final settlement. The nature of the data that flows to handle all these tasks is significantly different and data that is used to accomplish one task may not be relevant on other task. For these reasons we need to define some keys that are very specific to accomplish a specific task and some keys which may be relavant across all the tasks. But there is catch here, since there is a single utxo attached to an ID, so only one can spend that ID. If multiple updates to an ID needs to happen in the same block, then while updating the ID we need to check in the mempool if there is any spend tx exists for the given ID, if so then that utxo needs to be spent to make an update to the ID. Since soon we going to have an API that spends the ID from the utxo's of mempool that enables us to make multiple updates to the ID in the same block.
+Since the table ID is the only place where all the game information is held, its natural that all the entities involved in the game must make updates to this ID. So players, dealers, and cashiers/bvv make updates to the table ID during the game on their turn. The crucial actions in the game like deck shuffling, game play and game settlement are done based on the information held by table ID. Every action that takes place during the game requires different kind of data, so due to which we grouped the information under table ID contentmultimap using the following keys:
+```
+- T_GAME_ID_KEY "chips.vrsc::poker.t_game_ids"
+- T_TABLE_INFO_KEY "chips.vrsc::poker.t_table_info"
+ 
+- T_PLAYER_INFO_KEY "chips.vrsc::poker.t_player_info"
+- T_PLAYER1_KEY "chips.vrsc::poker.t_player1"
+- T_PLAYER2_KEY "chips.vrsc::poker.t_player2"
+- T_PLAYER3_KEY "chips.vrsc::poker.t_player3"
+- T_PLAYER4_KEY "chips.vrsc::poker.t_player4"
+- T_PLAYER5_KEY "chips.vrsc::poker.t_player5"
+- T_PLAYER6_KEY "chips.vrsc::poker.t_player6"
+- T_PLAYER7_KEY "chips.vrsc::poker.t_player7"
+- T_PLAYER8_KEY "chips.vrsc::poker.t_player8"
+- T_PLAYER9_KEY "chips.vrsc::poker.t_player9"
+ 
+- T_D_P1_DECK_KEY "chips.vrsc::poker.t_d_p1_deck"
+- T_D_P2_DECK_KEY "chips.vrsc::poker.t_d_p2_deck"
+- T_D_P3_DECK_KEY "chips.vrsc::poker.t_d_p3_deck"
+- T_D_P4_DECK_KEY "chips.vrsc::poker.t_d_p4_deck"
+- T_D_P5_DECK_KEY "chips.vrsc::poker.t_d_p5_deck"
+- T_D_P6_DECK_KEY "chips.vrsc::poker.t_d_p6_deck"
+- T_D_P7_DECK_KEY "chips.vrsc::poker.t_d_p7_deck"
+- T_D_P8_DECK_KEY "chips.vrsc::poker.t_d_p8_deck"
+- T_D_P9_DECK_KEY "chips.vrsc::poker.t_d_p9_deck"
+ 
+- T_B_P1_DECK_KEY "chips.vrsc::poker.t_b_p1_deck"
+- T_B_P2_DECK_KEY "chips.vrsc::poker.t_b_p2_deck"
+- T_B_P3_DECK_KEY "chips.vrsc::poker.t_b_p3_deck"
+- T_B_P4_DECK_KEY "chips.vrsc::poker.t_b_p4_deck"
+- T_B_P5_DECK_KEY "chips.vrsc::poker.t_b_p5_deck"
+- T_B_P6_DECK_KEY "chips.vrsc::poker.t_b_p6_deck"
+- T_B_P7_DECK_KEY "chips.vrsc::poker.t_b_p7_deck"
+- T_B_P8_DECK_KEY "chips.vrsc::poker.t_b_p8_deck"
+- T_B_P9_DECK_KEY "chips.vrsc::poker.t_b_p9_deck"
+ 
+- T_B_DECK_BV_KEY "chips.vrsc::poker.t_b_deck_bv"
+- T_GAME_INFO_KEY "chips.vrsc::poker.t_game_info"
+```
+The point to note here is, since there is a single utxo attached to an ID, so only one can spend that ID. If multiple updates to an ID needs to happen in the same block, then while updating the ID we need to check in the mempool if there is any spend tx exists for the given ID, if so then that utxo needs to be spent to make an update to the ID. With the latest updates that is made to `getidentity` we now can able to view and update the IDs by taking mempool transactions into consideration. By passing `-1` to `getidentity` it will fetch the information from mempool. 
+
+Since `getidentity` only returns the latest updated value of contentmultimap. So in order to retain the previous updates what we doing during the updates is, we read the existing contentmultimap data and then we simply appending the value that needs to be updated to it and in this way using `getidentity` we can view all the information that is updated. But later `getidentitycontent` API was introduced which provides all the updates made to the ID during a specific block interval. With the introduction of this API, the moment the table is started dealer updates the table with block number at which the table is started, so that during the game we take the value of the data from the block number updated in table ID to current block number. Once the game is done, the end block number is updated to the table ID.
+
+
+
+Since soon we going to have an API that spends the ID from the utxo's of mempool that enables us to make multiple updates to the ID in the same block.
+
 
 For incremental updates of the same key, we read the existing info from contentmultimap and we append our data publish whole data again. But those incremental updates are not efficient here and since there is going to be tens of updates among tens of keys and these updates might going to happen in the same block when the support to spend tx from mempool is available. For these reasons we need to have an API's to read a specific key of an ID which is not the latest. There is an API like `getaddresstxids` which list all the tx's associated with a specific ID, need to do some workaround which by parsing all these tx's associated with an ID to get the value of a specifc key of a given ID. 
 
