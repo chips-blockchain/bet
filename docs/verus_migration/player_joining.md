@@ -136,42 +136,6 @@ The point to note here is, since there is a single utxo attached to an ID, so on
 
 Since `getidentity` only returns the latest updated value of contentmultimap. So in order to retain the previous updates what we doing during the updates is, we read the existing contentmultimap data and then we simply appending the value that needs to be updated to it and in this way using `getidentity` we can view all the information that is updated. But later `getidentitycontent` API was introduced which provides all the updates made to the ID during a specific block interval. With the introduction of this API, the moment the table is started dealer updates the table with block number at which the table is started, so that during the game we take the value of the data from the block number updated in table ID to current block number. Once the game is done, the end block number is updated to the table ID.
 
-
-
-Since soon we going to have an API that spends the ID from the utxo's of mempool that enables us to make multiple updates to the ID in the same block.
-
-
-For incremental updates of the same key, we read the existing info from contentmultimap and we append our data publish whole data again. But those incremental updates are not efficient here and since there is going to be tens of updates among tens of keys and these updates might going to happen in the same block when the support to spend tx from mempool is available. For these reasons we need to have an API's to read a specific key of an ID which is not the latest. There is an API like `getaddresstxids` which list all the tx's associated with a specific ID, need to do some workaround which by parsing all these tx's associated with an ID to get the value of a specifc key of a given ID. 
-
-Here is an example about what we are looking to have. Lets say I have the table ID `sg777_t` and to which lets say using four keys im storing the data as shown below, and the keys names used in this example are `player_info`, `cashier_id`, `player_1` and `player_2`. All these keys are updated by different entities either at the same time or at differnt times. So basically if I do getidentity I can only retrive the last updated key value, but what I'm looking is to get the last updated value of all these keys or for any specific key.
-```
-verus -chain=chips10sec updateidentity '{"name": "sg777_t", "parent":"i6gViGxt7YinkJZoubKdbWBrqdRCb1Rkvs", "contentmultimap":{
-      "player_info": [
-        {
-          num_players : 2;
-          "primary_address_1": id_1; #position of a player on the table.
-          "primary_address_2": id_2; #position of a player on the table.
-        }
-      ],
-      "cashier_id": [
-        {
-          "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "sg777_c"
-        }
-      ],
-      "player_1": [
-        {
-          "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "some_data_of_player1"
-        }
-      ],
-      "player_2": [
-        {
-          "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "some_data_of_player2"
-        }
-      ]
-    }
-}' 
-```
-
 ### How Cashiers are updating the players info
 -----------------------------------------------
 When player makes the payin_tx by depositing funds to the cashier address, the cashier does the following thing upon receiving the payin_tx.
