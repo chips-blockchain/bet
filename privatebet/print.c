@@ -26,10 +26,10 @@ static char *get_table_full_key(char *key)
 			strcpy(key_name, all_t_b_p_keys[i]);
 		}
 	}
-	if (strcmp(key, "t_b_deck_bv") == 0) {
+	if (strcmp(key, T_B_DECK_BV_KEY_NAME) == 0) {
 		strcpy(key_name, T_B_DECK_BV_KEY);
 	}
-	if (strcmp(key, "t_game_info") == 0) {
+	if (strcmp(key, T_GAME_INFO_KEY_NAME) == 0) {
 		strcpy(key_name, T_GAME_INFO_KEY);
 	}
 
@@ -111,12 +111,12 @@ void print_table_id(char *id)
 		}
 		cJSON *temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_GAME_INFO_KEY, game_id));
 		if (temp)
-			dlg_info("%s :: %s", T_GAME_INFO_KEY, cJSON_Print(temp));
+			dlg_info("%s :: %s", T_GAME_INFO_KEY_NAME, cJSON_Print(temp));
 
 		temp = NULL;
 		temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_B_DECK_BV_KEY, game_id));
 		if (temp)
-			dlg_info("%s :: %s", T_B_DECK_BV_KEY, cJSON_Print(temp));
+			dlg_info("%s :: %s", T_B_DECK_BV_KEY_NAME, cJSON_Print(temp));
 	}
 }
 
