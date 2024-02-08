@@ -1130,9 +1130,7 @@ int32_t process_payin_tx_data(char *txid, cJSON *payin_tx_data)
 		return ERR_T_PLAYER_INFO_UPDATE;
 	}
 
-	/*
-		Update the t_table_info.<game_id> key of the table id with newly join requested player details.
-	*/
+	//Update the t_player_info.<game_id> key of the table id with newly join requested player details.
 	dlg_info("%s", cJSON_Print(updated_t_player_info));
 	out = append_cmm_from_id_key_data_cJSON(jstr(payin_tx_data, "table_id"),
 						get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str),
