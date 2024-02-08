@@ -138,14 +138,34 @@ Since `getidentity` only returns the latest updated value of contentmultimap. So
 
 ### How Cashiers are updating the players info
 -----------------------------------------------
-When player makes the payin_tx by depositing funds to the cashier address, the cashier does the following thing upon receiving the payin_tx.
-1. Cashier reads the data part of payin_tx, the data part contains dealer_id, table_id and primaryaddress.
-2. Cashier reads the `t_table_info` and `t_player_info` keys from the table_id and checks if there exists any vacant spot left on the table and also checks if the player has deposited required funds to join the table and based on these checks cashier do one of the following:
-  a. If there exists a vacant seat on the table, then the cashier adds the primaryaddress of the player to the `primaryaddresses` of the table and also updates the  `t_player_info` key with the information about the player by assigning a spot(with the pos_num) on the table. Now the cashier on incremental basis assigning the position number to the players, going forward players can choose where to sit on the table. 
-  b. If the table is full or if the player hasn't made enough funds deposited to the cashiers address, then the cashier simply deposit funds back to the primaryaddress of the player. 
- 3. No multiple join requests from the same primaryaddress are accepted, if by any reason player makes multiple join requests to the table only one is accepted. Ofcourse this is not a good enough check to prevent the player using multiple primaryaddress and competing to join the multiple spots on the same table. To avoid single player using multiple primaryadddress to join the table, going forward we will allow the players to register and provide an ID to the players and also provide an option to the dealer to allow only players with specific ID can join the table, that way we elimincate the possibility of same player taking multiple seats.
+Once the player choses the dealer and table in which it would like to join, it makes the payin tx to the cashiers address with the following the details in data part of the transaction.
+	-dealer_id
+ 	- player_id
+  	- primaryaddress(the address to which player owns the keys)
+   
+Cashiers address is same as cashiers ID, this ID is fixed which is `cashiers.poker.chips10sec@`. This cashiers ID is controlled by all the cashiers, at the moment its `1-of-n` multisignature address, going forward we may keep some threshold value on it to make any updates to the cashiers ID. In cashiers node bet is called on blocknotify and on every new block cashier nodes look for the tx's which has any data in it and upon making certain validations on that data, the cashier node updates the corresponding tx data to the respective table IDs.
 
-The next important aspect is how the player be communicated about the outcome of player_join. For which after making the payn_tx, the player continuously polls on the table_id for about five blocks to see if its primaryaddress is added to the primaryaddresses of the table_id and its information is updated in the `t_player_info` key of the `table_id` and if that happens player is joined the table. This can be done even more efficiently but for now I'm bruteforcing the search on table_id in the code.
+On high level here are the sequence steps
+1. Cashier node reads the data part of payin_tx, the data part contains dealer_id, table_id and primaryaddress.
+2. Cashier node do the following prelimenary checks
+   	- Is dealer_id exists
+   	- Is table_id exists
+   	- Is payin_tx amount equal to the table min stake amount
+   	- Is table full
+   	- Is primaryaddress already been added to the table
+   	- Is tx is already been added to the table
+3. Upon validating the above checks, if any of those checks fail then cashier node reverses the payin_tx and deposit funds back to the player else if all checks are passed then the cashier node allow the player to join the table by added doing the following actions
+        - Cashier node reads `t_table_info` key of the corresponding table_id and increments the number of players by one.
+   	- Cashier node adds the player primaryaddress to the primaryaddresses of the table.
+   	- Cashier node reads `t_player_info` key and updates it with players information with the tuple of the form `txid_primaryaddress_playerid`
+  
+### How player knows it joined the table
+-----------------------------------------
+The next important aspect is how the player be communicated about the outcome of `player_join`. For which after making the payn_tx, player does the following:
+- Player checks continuously whether if the players PA has been added to PA's of the table_id or not for about 5 blocks interval from the time payin_tx has been made.
+- If player finds its PA on table_id PA's, then from reads `t_player_info` key of the table_id and fetches its player id for this game.
+-  Upon scanning the table_id for 5 blocks interval if the player didn't see its PA to the table_id PA's then the player realizes that Cashiers didn't allowed the player to join the table.
+-  Incase if the player is failed to join the table, more likely cashiers deposit back the funds in payin_tx to the player, if the player didn't receive funds then the player can raise the dispute. More details about how player can raise dusputes will be discussed in the later sections.
 
 ### How multiple cashiers coordinate in updating the players info
 ------------------------------------------------------------------
@@ -157,5 +177,4 @@ While updating the players info in `t_table_info` key of the `table_id`, cashier
 	primaryaddress_4_byte_tx_hash:1;
 }
 ```
-When cashiers update the `t_player_info` for a given `payin_tx` first they check for the duplicacy of the primaryaddress, if the primaryaddress is already found in the `primaryaddresses` key of the talbe_id, then the cashiers computes the tx hash and compare it with the tx hash appended to the primaryaddress. If tx hash match found, it simply means that the cashier is trying to update the `t_player_info` for the tx whose details are already been updated(by another cashier) and in that case the cashier node simply drop its updation process and does nothing and incase if the tx hash is different then the cashier simply deposit back the funds in that tx to the primaryaddress that the data part of that tx contains.
-
+When cashiers update the `t_player_info` for a given `payin_tx` first they check for the duplicacy of the primaryaddress, if the primaryaddress is already been added to the `primaryaddresses` key of the talbe_id, then the cashiers computes the tx hash and compare it with the tx hash appended to the primaryaddress in the `t_player_info` key of the table_id. If tx hash match found, it simply means that the player details for which the cashier has been trying to update to `t_player_info` has already been updated(by another cashier) and in that case the cashier node simply drop its updation process and does nothing and incase if the tx hash is different then the cashier simply deposit back the funds in that tx to the primaryaddress present in the data part of that same tx.
