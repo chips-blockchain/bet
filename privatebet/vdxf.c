@@ -628,9 +628,9 @@ cJSON *verus_sendcurrency_data(cJSON *data)
 	str_to_hexstr(cJSON_Print(data), hex_data);
 
 	currency_detail = cJSON_CreateObject();
-	cJSON_AddStringToObject(currency_detail, "currency", "chips10sec");
-	cJSON_AddNumberToObject(currency_detail, "amount", 0.0001);
-	cJSON_AddStringToObject(currency_detail, "address", "cashiers.poker.chips10sec@");
+	cJSON_AddStringToObject(currency_detail, "currency", CHIPS);
+	cJSON_AddNumberToObject(currency_detail, "amount", default_chips_tx_fee);
+	cJSON_AddStringToObject(currency_detail, "address", CASHIERS_ID);
 
 	tx_params = cJSON_CreateArray();
 	cJSON_AddItemToArray(tx_params, currency_detail);

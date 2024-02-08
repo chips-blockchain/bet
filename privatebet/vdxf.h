@@ -96,6 +96,13 @@ under chips as sg777.chips@ which basically been used to hold the tokens.
 #define DEALERS_ID "dealers.poker.chips10sec@"
 #define POKER_CHIPS_VDXF_ID "poker.chips10sec@"
 
+/*
+Currencies
+----------
+Bet supports various tokens that launch on Verus and CHIPS is the token which we use to play poker.
+*/
+#define CHIPS "chips10sec"
+
 #define ID_UPDATE_ESTIMATE_NO 50
 #define RESERVE_AMOUNT ID_UPDATE_ESTIMATE_NO *chips_tx_fee
 
