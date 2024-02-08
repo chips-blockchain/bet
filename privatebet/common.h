@@ -59,7 +59,7 @@ enum bet_dcv_state {
 #define dealer_bvv_push_pull_port   7904
 #define gui_ws_port                 9000
 
-#define default_chips_tx_fee        0.0005
+#define default_chips_tx_fee        0.0001
 #define default_bb_in_chips         0.01
 #define default_min_stake_in_bb     20
 #define default_max_stake_in_bb     100
