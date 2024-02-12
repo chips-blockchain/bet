@@ -22,7 +22,9 @@ In bet we are representing the data in JSON format and exchanging it over socket
 
 How we going to create the ID's and managing them is an interesting thing to discuss on. The objective of bet is not just for poker but bet as a platform it has capability to host any card games, betting etc..., so with that in mind we create game specific ID's and any data relate to that game will be grouped under it. Lets say we have chips chain launched on verus, for poker game we register ID as `poker.chips@` and for blackjack we register ID as `blackjack.chips10@` and for betting we register ID as `bet.chips@` and so on.  Under chips the ID `poker.chips` groups all the information under it, and we again create subID's under `poker.chips` to organize the data for example a subID like `dealer.poker.chips` contains the information about the dealers and likewise `cashier.poker.chips` contains the information about cashiers. 
 
-In the context of poker the more details about ID creation is mentioned [here](./id_creation_process.md) and about how we create and use keys without any conflicts is mentioned [here](./ids_keys_data.md).
+In the context of poker, find the following details about ID creation and use of keys to organize the data in IDs as below:
+1. [ID creation](./id_creation_process.md)
+2. [Keys and Data](./ids_keys_data.md).
 
 ### How we updating the ID's
 
