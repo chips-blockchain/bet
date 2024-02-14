@@ -178,3 +178,9 @@ While updating the players info in `t_table_info` key of the `table_id`, cashier
 }
 ```
 When cashiers update the `t_player_info` for a given `payin_tx` first they check for the duplicacy of the primaryaddress, if the primaryaddress is already been added to the `primaryaddresses` key of the talbe_id, then the cashiers computes the tx hash and compare it with the tx hash appended to the primaryaddress in the `t_player_info` key of the table_id. If tx hash match found, it simply means that the player details for which the cashier has been trying to update to `t_player_info` has already been updated(by another cashier) and in that case the cashier node simply drop its updation process and does nothing and incase if the tx hash is different then the cashier simply deposit back the funds in that tx to the primaryaddress present in the data part of that same tx.
+
+### What players can do on disconnection
+------------------------------------------
+On disconnections players are either allowed to rejoin or simply discontinue.  When player gets disconnected and couldn't join the table in a stipulated time then dealer takes appropriate action based on at what stage the game is in. If player wants to rejoin, player can simply rejoin using the command `./bet rejoin player` and more details about it are documented in [player rejoining](./player_rejoining.md
+).
+
