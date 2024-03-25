@@ -14,13 +14,13 @@ Any dealer can host any number of tables, dealer can reuse the same ID repeatedl
 -------------------------------
 There are couple of ways using which players can find the tables registered on the chain which are listed below, the recommended way is using the bet API `list_tables`, i.e by `./bet list_tables` which gives more information about the tables along with its names.
 
-1. Dealer ID contains the information about the tables, using the following commands one can list the available dealers in the system.
-   a. Using the bet API `list_dealers`
+1. Dealer ID contains the information about the tables, using the following commands one can list the available dealers in the system. <br>
+   * Using the bet API `list_dealers`
    ```
 	root@sg777-3 ~/bet/privatebet # ./bet list_dealers
 	[bet.c:bet_start:549] Dealers ::["sg777_d"]
    ```
-   b. By parsing the `dealers.poker.chips10sec@` ID using the bet API(`print_id`). Using verus client API(`getidentity`) also one can see the dealers info but that info is encoded in hex so we recommned using `print_id`.
+   * By parsing the `dealers.poker.chips10sec@` ID using the bet API(`print_id`). Using verus client API(`getidentity`) also one can see the dealers info but that info is encoded in hex so we recommned using `print_id`.
    ```
       	root@sg777-3 ~/bet/privatebet # ./bet print_id dealers dealers
 	[print.c:print_dealers_id:72] ["sg777_d"]
