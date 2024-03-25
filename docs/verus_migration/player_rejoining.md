@@ -11,15 +11,16 @@ It's also possible that the player can raise a dispute request to claim the payi
 
 ### Data Needed for Rejoin
 ---------------------------
-The secret information that is associated with the player is generated during the deck initialization process and which is
+The secret/confidential information that is associated with the player is generated during deck initialization process and which includes
   -  Player keypair
   -  Deck privkeys (Each card represents a keypair, so 52 cards privkeys)
   -  Players shuffling pattern
 
-  The public information that needs to stored/provided locally for the player rejoin is
+  The public information that gets available on the player ID and needed for the player rejoin is 
     -  game_id (This will be fetched from the game_id file, player no need to remember)
     -  dealer_id (This will be fetched from verus_player.ini config)
     -  table_id (This will be fetched from verus_player.ini config)
+Along with player ID the above information can also be fetched from the local config file such as `verus_player.ini`(which contains `dealer_id` and `table_id`) and from the file `game_id`(which contains `game_id`).
 
 All this secret information related to the player is stored under the local directory <b>/.game_info/player</b> on the node in which bet is running which is located under <b>bet/privatebet</b>. All these files in game_info are prepended with game_id, for a typical game the files stored locally by the player are:
   -  game_id (contains the present game id to which the player made payin_tx)
@@ -32,3 +33,5 @@ All this secret information related to the player is stored under the local dire
    -  Players game state
    -  Shuffled and blinded deck
    -  Public info of the table and other player info
+
+With the latest design changes as player updates all the game related info to the player ID, we also provide a provision to store the game related and player related confidential information to the player ID in encrypted form. This players data is encrypted using PIN/password that player configured locally and with this during player rejoin, player just needs to remember the locally configured PIN and with which player can rejoin.
