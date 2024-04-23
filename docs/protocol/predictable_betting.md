@@ -43,7 +43,7 @@ The cumulative bet amount collected on various possible predictions of the bet i
 | false	      | 300(200+100)  	      |
 
 Here in the prorata bets, the winning bet amount is calculated as follows:
-Lets say the commision taken by host is 5% and validator nodes is 5% for simplicity. In that case 97% of the bet amount is distributed to the winners.
+Lets say the commision taken by host is 5% and validator nodes is 5% for simplicity. In that case the remaining 90% of the bet amount is distributed to the winners.
 ```
 winning_bet_amount  = bet_amount+ 90%(all_bets_lost_amount) * (bet_amount/all_bets_win_amount)
 ```
