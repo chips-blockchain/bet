@@ -102,8 +102,8 @@ Here the host can make a counterbet to the existng bets to change the status fro
 The most important thing in the predictable betting is the outcome of the event, and how this outcome of the event is legitimately provided to evaluate the bets. Here we are relying on the validator nodes to feed the outcome of bets and in return the validator nodes gets incentives in answering the bet queries. Its important to note here that the validator nodes are elected by the bet community who are trustworthy in the bet environment and in order to become a validator node one must need to meet certain constraints and guidelines set by the bet community.
 
 To become a validator node one must
-a. Go through the election prcess, where the chips holders vote for a specific validator node applicant.
-b. The validator node must show the proof that they possess 50k CHIPS.
+* Go through the election prcess, where the chips holders vote for a specific validator node applicant.
+* The validator node must show the proof that they possess 50k CHIPS.
 
 Whenever the host posts the bets, those bets are visible to all the validator nodes. The job of the validator nodes is based on the outcome of bet the validator nodes answers the queries and store them in the local in the local DB against the specific bet ID. 
 
