@@ -55,7 +55,7 @@ all_bets_lost_amount = 300
 U1_win_amount = 100 + [90%(300) * (100/800)] = 133.75
 ```
 
-Like wise if we recompute all for all the users the final bet settelement table looks as follows:
+SO the final bet settlement amoutn for all the users based on the outcome A won over B is as follows:
 
 | User        | A wins on B | bet_amount | bet_settlement |
 | ----------- | ----------- | ---------- | -------------- |
