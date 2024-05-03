@@ -396,18 +396,14 @@ end:
 
 bool is_dealer_exists(char *dealer_id)
 {
-	cJSON *dealers = NULL, *dealers_arr = NULL;
+	cJSON *dealers = NULL;
 
 	if (!is_id_exists(dealer_id, false)) {
 		return false;
 	}
 	dealers = list_dealers();
-	if (!dealers) {
-		return false;
-	}
-	dealers_arr = cJSON_GetObjectItem(dealers, "dealers");
-	for (int32_t i = 0; i < cJSON_GetArraySize(dealers_arr); i++) {
-		if (0 == strcmp(dealer_id, jstri(dealers_arr, i))) {
+	for (int32_t i = 0; i < cJSON_GetArraySize(dealers); i++) {
+		if (0 == strcmp(dealer_id, jstri(dealers, i))) {
 			return true;
 		}
 	}
@@ -1200,11 +1196,16 @@ end:
 
 cJSON *list_dealers()
 {
-	cJSON *dealers = NULL;
+	cJSON *dealers = NULL, *dealers_arr = NULL;
 
 	dealers = cJSON_CreateObject();
 	dealers = get_cJSON_from_id_key(DEALERS_ID, DEALERS_KEY, 1);
-	return dealers;
+	
+	if (!dealers) {
+		return false;
+	}
+	dealers_arr = cJSON_GetObjectItem(dealers, "dealers");
+	return dealers_arr;
 }
 
 void list_tables()
