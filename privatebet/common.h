@@ -141,6 +141,7 @@ extern char dcv_hosted_gui_url[128];
 int32_t is_table_private;
 char table_password[128];
 char player_name[128];
+char verus_pid[128]; // This is the verus ID owned by the player to which player updates during the game.
 
 int32_t bet_ln_config; 
 extern int64_t sc_start_block;
