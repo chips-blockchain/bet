@@ -252,6 +252,7 @@ struct verus_player_config {
 	char primaryaddress[128];
 	char wallet_addr[64];
 	char txid[128];
+	char verus_pid[128];
 };
 extern struct verus_player_config player_config;
 

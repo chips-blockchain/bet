@@ -366,5 +366,9 @@ int32_t bet_parse_verus_player()
 		strncpy(player_config.wallet_addr, iniparser_getstring(ini, "verus:wallet_addr", NULL),
 			sizeof(player_config.wallet_addr));
 	}
+	if (NULL != iniparser_getstring(ini, "verus:player_id", NULL)) {
+		strncpy(player_config.verus_pid, iniparser_getstring(ini, "verus:player_id", NULL),
+			sizeof(player_config.verus_pid));
+	}
 	return retval;
 }
