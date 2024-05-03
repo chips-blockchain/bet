@@ -396,15 +396,18 @@ end:
 
 bool is_dealer_exists(char *dealer_id)
 {
-	cJSON *dealers = NULL;
+	cJSON *dealers = NULL, *dealers_arr = NULL;
 
 	if (!is_id_exists(dealer_id, false)) {
 		return false;
 	}
 	dealers = list_dealers();
-
-	for (int32_t i = 0; i < cJSON_GetArraySize(dealers); i++) {
-		if (0 == strcmp(dealer_id, jstri(dealers, i))) {
+	if (!dealers) {
+		return false;
+	}
+	dealers_arr = cJSON_GetObjectItem(dealers, "dealers");
+	for (int32_t i = 0; i < cJSON_GetArraySize(dealers_arr); i++) {
+		if (0 == strcmp(dealer_id, jstri(dealers_arr, i))) {
 			return true;
 		}
 	}
