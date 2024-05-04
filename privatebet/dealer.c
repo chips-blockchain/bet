@@ -268,7 +268,12 @@ int32_t dealer_init(struct table t)
 	if (!(is_id_exists(t.dealer_id, 0) && is_id_exists(t.table_id, 0))) {
 		return ERR_ID_NOT_FOUND;
 	}
-	if (!(id_cansignfor(t.dealer_id, 0) && id_cansignfor(t.table_id, 0))) {
+	if (!id_cansignfor(t.dealer_id, 0)) {
+		dlg_error("The wallet doesn't contain private key to update the ID %s", t.dealer_id);
+		return ERR_ID_AUTH;
+	}
+	if (!id_cansignfor(t.table_id, 0)) {
+		dlg_error("The wallet doesn't contain private key to update the ID %s", t.table_id);
 		return ERR_ID_AUTH;
 	}
 
