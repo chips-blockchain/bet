@@ -123,6 +123,7 @@ All the errors that come across in bet are defined here. The error numbers are a
 #define ERR_IDS_NOT_CONFIGURED			136
 #define ERR_ID_AUTH						137
 #define ERR_ADDR_AUTH					138
+#define ERR_DEALER_UNREGISTERED         139
 
 // clang-format on
 const char *bet_err_str(int32_t err_no);

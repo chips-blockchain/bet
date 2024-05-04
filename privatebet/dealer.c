@@ -272,11 +272,9 @@ int32_t dealer_init(struct table t)
 		return ERR_ID_AUTH;
 	}
 
-	//If dealer hasn't added to dealers yet, then add it to dealers.poker.chips10sec@
-	retval = add_dealer_to_dealers(t.dealer_id);
-	if (retval != OK) {
-		dlg_info("%s", bet_err_str(retval));
-		return retval;
+	if(!is_dealer_exists(t.dealer_id)) {
+		// TODO:: An automated mechanism to register the dealer with dealers.poker.chips10sec need to be worked out
+		return ERR_DEALER_UNREGISTERED;
 	}
 
 	//Updating table_info read from the config to the dealer ID.
