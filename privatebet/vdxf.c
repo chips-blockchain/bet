@@ -1202,7 +1202,7 @@ cJSON *list_dealers()
 	dealers = get_cJSON_from_id_key(DEALERS_ID, DEALERS_KEY, 1);
 	
 	if (!dealers) {
-		return false;
+		return NULL;
 	}
 	dealers_arr = cJSON_GetObjectItem(dealers, "dealers");
 	return dealers_arr;
