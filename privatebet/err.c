@@ -178,6 +178,8 @@ const char *bet_err_str(int32_t err_no)
 		return "Not enough authority to update ID, probably the underlying wallet doesn't have privkeys of the primaryaddresses of ID";
 	case ERR_ADDR_AUTH:
 		return "Address/PrimaryAddress is not authorized, the wallet doesn't have private keys to spend or sign";
+	case ERR_DEALER_UNREGISTERED:
+		return "Dealer hasn't been registered with dealers.poker.chips10sec";
 	default:
 		return "This error is not handled yet...";
 	}
