@@ -54,7 +54,8 @@ char *get_full_key(char *key_name)
 char *get_key_data_type(char *key_name)
 {
 	if(!key_name) {
-		return ERR_NULL_KEY;
+		// TODO:: This needs to be handled properly
+		dlg_error("%s", bet_err_str(ERR_NULL_KEY));
 	}
 	/*
 	* Atm, we define the data types of all keys for IDs as byte vector
