@@ -37,11 +37,13 @@ int32_t add_dealer(char *dealer_id)
 	if(!id_cansignfor(DEALERS_ID, 0)) {
 		return ERR_ID_AUTH;
 	}
-
+	
 	dealers_info = cJSON_CreateObject();
-	dealers = cJSON_CreateArray();
+	dealers = list_dealers();
+	if(!dealers) {
+		dealers = cJSON_CreateArray();
+	}	
 	jaddistr(dealers, dealer_id);
-
 	cJSON_AddItemToObject(dealers_info, "dealers", dealers);
 	out = update_cmm_from_id_key_data_cJSON(DEALERS_ID, DEALERS_KEY, dealers_info, false);
 
