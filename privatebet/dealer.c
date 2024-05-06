@@ -26,10 +26,15 @@ cJSON *add_dealer(char *dealer_id)
 {
 	cJSON *dealers_info = NULL, *dealers = NULL, *out = NULL;
 
-	if ((!dealer_id) || (!is_id_exists(dealer_id, 0))) {
-		dlg_info(
-			"Either dealer ID is NULL or the ID doesn't exists, make sure ID exists before you add to dealers");
-		return NULL;
+
+	if(!dealer_id) {
+		return ERR_NULL_ID;
+	}
+	if(!is_id_exists(dealer_id,0)){
+		return ERR_ID_NOT_FOUND;
+	}
+	if(!id_cansignfor(DEALERS_ID, 0)) {
+		return ERR_ID_AUTH;
 	}
 
 	dealers_info = cJSON_CreateObject();
@@ -37,7 +42,7 @@ cJSON *add_dealer(char *dealer_id)
 	jaddistr(dealers, dealer_id);
 
 	cJSON_AddItemToObject(dealers_info, "dealers", dealers);
-	out = update_cmm_from_id_key_data_cJSON("dealers", DEALERS_KEY, dealers_info, false);
+	out = update_cmm_from_id_key_data_cJSON(DEALERS_ID, DEALERS_KEY, dealers_info, false);
 
 	dlg_info("%s", cJSON_Print(out));
 	return out;
