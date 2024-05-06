@@ -544,7 +544,7 @@ static void bet_start(int argc, char **argv)
 	} else if ((strcmp(argv[1], "print_id") == 0) && (argc > 3)) {
 		print_id_info(argc, argv);
 	} else if ((strcmp(argv[1], "add_dealer") == 0) && (argc == 3)) {
-		add_dealer(argv[2]);
+		retval = add_dealer(argv[2]);
 	} else if (strcmp(argv[1], "list_dealers") == 0) {
 		cJSON *dealers = list_dealers();
 		if(dealers) {
