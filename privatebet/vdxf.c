@@ -53,7 +53,7 @@ char *get_full_key(char *key_name)
 
 char *get_key_data_type(char *key_name)
 {
-	if(!key_name) {
+	if (!key_name) {
 		// TODO:: This needs to be handled properly
 		dlg_error("%s", bet_err_str(ERR_NULL_KEY));
 	}
@@ -1148,7 +1148,7 @@ int32_t process_payin_tx_data(char *txid, cJSON *payin_tx_data)
 void process_block(char *blockhash)
 {
 	int32_t blockcount = 0, retval = OK;
-	char verus_addr[1][100] = { CASHIERS_ID_FQN};
+	char verus_addr[1][100] = { CASHIERS_ID_FQN };
 	cJSON *blockjson = NULL, *payin_tx_data = NULL;
 
 	if (!bet_is_new_block_set()) {
@@ -1201,7 +1201,7 @@ cJSON *list_dealers()
 
 	dealers = cJSON_CreateObject();
 	dealers = get_cJSON_from_id_key(DEALERS_ID_FQN, DEALERS_KEY, 1);
-	
+
 	if (!dealers) {
 		dlg_info("No dealers has been added to dealers.poker.chips10sec@ yet.");
 		return NULL;
