@@ -22,8 +22,9 @@ char all_game_keys[all_game_keys_no][128] = { T_GAME_INFO_KEY };
 
 char all_game_key_names[all_game_keys_no][128] = { "t_game_info" };
 
-cJSON *add_dealer(char *dealer_id)
+int32_t add_dealer(char *dealer_id)
 {
+	int32_t retval = OK;
 	cJSON *dealers_info = NULL, *dealers = NULL, *out = NULL;
 
 
@@ -44,8 +45,12 @@ cJSON *add_dealer(char *dealer_id)
 	cJSON_AddItemToObject(dealers_info, "dealers", dealers);
 	out = update_cmm_from_id_key_data_cJSON(DEALERS_ID, DEALERS_KEY, dealers_info, false);
 
+	if(!out) {
+		return ERR_UPDATEIDENTITY;
+	}
 	dlg_info("%s", cJSON_Print(out));
-	return out;
+
+	return retval;
 }
 
 int32_t dealer_sb_deck(char *id, bits256 *player_r, int32_t player_id)

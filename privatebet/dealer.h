@@ -1,6 +1,6 @@
 #include "bet.h"
 
-cJSON *add_dealer(char *dealer_id);
+int32_t add_dealer(char *dealer_id);
 int32_t dealer_table_init(struct table t);
 bool is_players_shuffled_deck(char *table_id);
 int32_t dealer_shuffle_deck(char *id);
