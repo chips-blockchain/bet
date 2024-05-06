@@ -93,13 +93,13 @@ Any entity in the bet ecosystem can register the identities under chips, like fo
 under chips as sg777.chips@ which basically been used to hold the tokens. 
 */
 
-#define CASHIERS_ID_FQN     "cashiers.poker.chips10sec@"
-#define DEALERS_ID_FQN      "dealers.poker.chips10sec@"
-#define POKER_ID_FQN        "poker.chips10sec@"
+#define CASHIERS_ID_FQN "cashiers.poker.chips10sec@"
+#define DEALERS_ID_FQN "dealers.poker.chips10sec@"
+#define POKER_ID_FQN "poker.chips10sec@"
 
-#define DEALERS_ID          "dealers"
-#define CASHIERS_ID         "cashiers"
-#define POKER_ID            "poker"
+#define DEALERS_ID "dealers"
+#define CASHIERS_ID "cashiers"
+#define POKER_ID "poker"
 
 /*
 Currencies

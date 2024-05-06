@@ -27,27 +27,26 @@ int32_t add_dealer(char *dealer_id)
 	int32_t retval = OK;
 	cJSON *dealers_info = NULL, *dealers = NULL, *out = NULL;
 
-
-	if(!dealer_id) {
+	if (!dealer_id) {
 		return ERR_NULL_ID;
 	}
-	if(!is_id_exists(dealer_id,0)){
+	if (!is_id_exists(dealer_id, 0)) {
 		return ERR_ID_NOT_FOUND;
 	}
-	if(!id_cansignfor(DEALERS_ID, 0)) {
+	if (!id_cansignfor(DEALERS_ID, 0)) {
 		return ERR_ID_AUTH;
 	}
-	
+
 	dealers_info = cJSON_CreateObject();
 	dealers = list_dealers();
-	if(!dealers) {
+	if (!dealers) {
 		dealers = cJSON_CreateArray();
-	}	
+	}
 	jaddistr(dealers, dealer_id);
 	cJSON_AddItemToObject(dealers_info, "dealers", dealers);
 	out = update_cmm_from_id_key_data_cJSON(DEALERS_ID, DEALERS_KEY, dealers_info, false);
 
-	if(!out) {
+	if (!out) {
 		return ERR_UPDATEIDENTITY;
 	}
 	dlg_info("%s", cJSON_Print(out));
@@ -289,7 +288,7 @@ int32_t dealer_init(struct table t)
 		return ERR_ID_AUTH;
 	}
 
-	if(!is_dealer_exists(t.dealer_id)) {
+	if (!is_dealer_exists(t.dealer_id)) {
 		// TODO:: An automated mechanism to register the dealer with dealers.poker.chips10sec need to be worked out
 		return ERR_DEALER_UNREGISTERED;
 	}

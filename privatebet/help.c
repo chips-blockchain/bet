@@ -204,15 +204,16 @@ void bet_help_vdxf_command_usage()
 		"./bet print_id <id_name> <id_type>\n"
 		"Note: Here id_name can be any ID under the namespace poker.chips10sec@, supported ID types are table/dealer/dealers\n");
 
-	dlg_info("\nCommand: \n"
-		 "add_dealer \n"
-		 "\nDescription: \n"
-		 "Registers the dealer ID, for this command to run one need to have authrotity to update the ID dealers.poker.chips10sec@ ID\n"
-		 "\nResult: \n"
-		 "A dealer ID is added to the dealers \n"
-		 "\nExample: \n"
-		 "./bet add_dealer <id_name>\n"
-		 "Note: Before adding dealer ID or name to dealers make sure ID exists\n");
+	dlg_info(
+		"\nCommand: \n"
+		"add_dealer \n"
+		"\nDescription: \n"
+		"Registers the dealer ID, for this command to run one need to have authrotity to update the ID dealers.poker.chips10sec@ ID\n"
+		"\nResult: \n"
+		"A dealer ID is added to the dealers \n"
+		"\nExample: \n"
+		"./bet add_dealer <id_name>\n"
+		"Note: Before adding dealer ID or name to dealers make sure ID exists\n");
 
 	dlg_info("\nCommand: \n"
 		 "list_dealers \n"
@@ -232,14 +233,15 @@ void bet_help_vdxf_command_usage()
 		 "\nExample: \n"
 		 "./bet list_tables\n");
 
-	dlg_info("\nCommand: \n"
-		 "reset_id \n"
-		 "\nDescription: \n"
-		 "Reset the contentmultimap of an ID, meaning set it to NULL, to execute this command the authority to the ID is needed\n"
-		 "\nResult: \n"
-		 "Latest CMM of the ID is set to NULL \n"
-		 "\nExample: \n"
-		 "./bet reset_id <id_name>\n");
+	dlg_info(
+		"\nCommand: \n"
+		"reset_id \n"
+		"\nDescription: \n"
+		"Reset the contentmultimap of an ID, meaning set it to NULL, to execute this command the authority to the ID is needed\n"
+		"\nResult: \n"
+		"Latest CMM of the ID is set to NULL \n"
+		"\nExample: \n"
+		"./bet reset_id <id_name>\n");
 }
 
 // clang-format off

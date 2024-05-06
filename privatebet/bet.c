@@ -547,10 +547,10 @@ static void bet_start(int argc, char **argv)
 		retval = add_dealer(argv[2]);
 	} else if (strcmp(argv[1], "list_dealers") == 0) {
 		cJSON *dealers = list_dealers();
-		if(dealers) {
-			dlg_info("Dealers ::%s", cJSON_Print(dealers));	
+		if (dealers) {
+			dlg_info("Dealers ::%s", cJSON_Print(dealers));
 		}
-		
+
 	} else if (strcmp(argv[1], "list_tables") == 0) {
 		list_tables();
 	} else if ((strcmp(argv[1], "reset_id") == 0) && (argc == 3)) {
