@@ -146,13 +146,8 @@ int32_t handle_verus_player()
 		return ERR_ADDR_AUTH;
 	}
 
-	if (!is_id_exists(player_config.verus_pid, 0)) {
-		dlg_error("The player ID configured in verus_player.ini doesn;t exist");
-		return ERR_ID_NOT_FOUND;
-	}
-
-	if (!id_cansignfor(player_config.verus_pid, 0)) {
-		return ERR_ID_AUTH;
+	if (!id_cansignfor(player_config.verus_pid, 0, &retval)) {
+		return retval;
 	}
 
 	if ((retval = find_table()) != OK) {

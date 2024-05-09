@@ -395,7 +395,7 @@ end:
 	return out;
 }
 
-bool is_dealer_exists(char *dealer_id)
+bool is_dealer_registered(char *dealer_id)
 {
 	cJSON *dealers = NULL;
 
@@ -807,7 +807,7 @@ int32_t check_if_d_t_available(char *dealer_id, char *table_id, cJSON **t_table_
 	int32_t retval = OK;
 	int32_t game_state;
 
-	if ((!dealer_id) || (!table_id) || (!is_dealer_exists(dealer_id)) || (!is_id_exists(table_id, 0))) {
+	if ((!dealer_id) || (!table_id) || (!is_dealer_registered(dealer_id)) || (!is_id_exists(table_id, 0))) {
 		return ERR_CONFIG_PLAYER_ARGS;
 	}
 
@@ -1278,12 +1278,17 @@ int32_t add_dealer_to_dealers(char *dealer_id)
 	return OK;
 }
 
-int32_t id_canspendfor(char *id, int32_t full_id)
+int32_t id_canspendfor(char *id, int32_t full_id, int32_t *err_no)
 {
 	int32_t argc = 3, retval = OK, id_canspendfor_value = false;
 	char **argv = NULL;
 	char params[128] = { 0 };
 	cJSON *argjson = NULL, *obj = NULL;
+
+	if(!is_id_exists(id, full_id)) {
+		*err_no = ERR_ID_NOT_FOUND;
+		return false;
+	}
 
 	strncpy(params, id, strlen(id));
 	if (0 == full_id) {
@@ -1296,7 +1301,8 @@ int32_t id_canspendfor(char *id, int32_t full_id)
 	retval = make_command(argc, argv, &argjson);
 
 	if (retval != OK) {
-		return ERR_ID_NOT_FOUND;
+		*err_no = retval;
+		goto end;
 	}
 
 	if (((obj = jobj(argjson, "canspendfor")) != NULL) && (is_cJSON_True(obj))) {
@@ -1304,16 +1310,22 @@ int32_t id_canspendfor(char *id, int32_t full_id)
 	}
 	bet_dealloc_args(argc, &argv);
 
+	end:
 	return id_canspendfor_value;
 }
 
-int32_t id_cansignfor(char *id, int32_t full_id)
+int32_t id_cansignfor(char *id, int32_t full_id, int32_t *err_no)
 {
 	int32_t argc = 3, retval = OK, id_cansignfor_value = false;
 	char **argv = NULL;
 	char params[128] = { 0 };
 	cJSON *argjson = NULL, *obj = NULL;
 
+	if(!is_id_exists(id, full_id)) {
+		*err_no = ERR_ID_NOT_FOUND;
+		return false;
+	}
+	
 	strncpy(params, id, strlen(id));
 	if (0 == full_id) {
 		strcat(params, ".poker.chips10sec@");
@@ -1325,13 +1337,15 @@ int32_t id_cansignfor(char *id, int32_t full_id)
 	retval = make_command(argc, argv, &argjson);
 
 	if (retval != OK) {
-		return ERR_ID_NOT_FOUND;
+		*err_no = retval;
+		goto end;
 	}
 
 	if (((obj = jobj(argjson, "cansignfor")) != NULL) && (is_cJSON_True(obj))) {
 		id_cansignfor_value = true;
 	}
 	bet_dealloc_args(argc, &argv);
-
+	
+	end:
 	return id_cansignfor_value;
 }
