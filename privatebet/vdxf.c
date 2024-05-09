@@ -1305,9 +1305,11 @@ int32_t id_canspendfor(char *id, int32_t full_id, int32_t *err_no)
 		goto end;
 	}
 
-	if (((obj = jobj(argjson, "canspendfor")) != NULL) && (is_cJSON_True(obj))) {
+	if (((obj = jobj(argjson, "canspendfor")) != NULL) && (is_cJSON_True(obj))) 
 		id_canspendfor_value = true;
-	}
+	else
+		*err_no = ERR_ID_AUTH;
+
 	bet_dealloc_args(argc, &argv);
 
 	end:
@@ -1341,9 +1343,11 @@ int32_t id_cansignfor(char *id, int32_t full_id, int32_t *err_no)
 		goto end;
 	}
 
-	if (((obj = jobj(argjson, "cansignfor")) != NULL) && (is_cJSON_True(obj))) {
+	if (((obj = jobj(argjson, "cansignfor")) != NULL) && (is_cJSON_True(obj)))
 		id_cansignfor_value = true;
-	}
+	else
+		*err_no = ERR_ID_AUTH;
+
 	bet_dealloc_args(argc, &argv);
 	
 	end:

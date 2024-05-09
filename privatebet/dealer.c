@@ -278,7 +278,7 @@ int32_t dealer_init(struct table t)
 {
 	int32_t retval = OK, game_state;
 
-	if((!id_cansignfor(t.dealer_id, 0, &retval)) && (!id_cansignfor(t.table_id, 0, &retval))) {
+	if((!id_cansignfor(t.dealer_id, 0, &retval)) || (!id_cansignfor(t.table_id, 0, &retval))) {
 		return retval;
 	}
 
