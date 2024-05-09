@@ -1285,7 +1285,7 @@ int32_t id_canspendfor(char *id, int32_t full_id, int32_t *err_no)
 	char params[128] = { 0 };
 	cJSON *argjson = NULL, *obj = NULL;
 
-	if(!is_id_exists(id, full_id)) {
+	if (!is_id_exists(id, full_id)) {
 		*err_no = ERR_ID_NOT_FOUND;
 		return false;
 	}
@@ -1305,14 +1305,14 @@ int32_t id_canspendfor(char *id, int32_t full_id, int32_t *err_no)
 		goto end;
 	}
 
-	if (((obj = jobj(argjson, "canspendfor")) != NULL) && (is_cJSON_True(obj))) 
+	if (((obj = jobj(argjson, "canspendfor")) != NULL) && (is_cJSON_True(obj)))
 		id_canspendfor_value = true;
 	else
 		*err_no = ERR_ID_AUTH;
 
 	bet_dealloc_args(argc, &argv);
 
-	end:
+end:
 	return id_canspendfor_value;
 }
 
@@ -1323,11 +1323,11 @@ int32_t id_cansignfor(char *id, int32_t full_id, int32_t *err_no)
 	char params[128] = { 0 };
 	cJSON *argjson = NULL, *obj = NULL;
 
-	if(!is_id_exists(id, full_id)) {
+	if (!is_id_exists(id, full_id)) {
 		*err_no = ERR_ID_NOT_FOUND;
 		return false;
 	}
-	
+
 	strncpy(params, id, strlen(id));
 	if (0 == full_id) {
 		strcat(params, ".poker.chips10sec@");
@@ -1349,8 +1349,8 @@ int32_t id_cansignfor(char *id, int32_t full_id, int32_t *err_no)
 		*err_no = ERR_ID_AUTH;
 
 	bet_dealloc_args(argc, &argv);
-	
-	end:
+
+end:
 	return id_cansignfor_value;
 }
 
@@ -1358,10 +1358,9 @@ bool is_table_registered(char *table_id, char *dealer_id)
 {
 	cJSON *t_table_info = NULL;
 
-	t_table_info = get_cJSON_from_id_key(dealer_id,T_TABLE_INFO_KEY,0);
-	if(t_table_info && (strcmp(table_id, jstr(t_table_info, "table_id")) == 0)){
+	t_table_info = get_cJSON_from_id_key(dealer_id, T_TABLE_INFO_KEY, 0);
+	if (t_table_info && (strcmp(table_id, jstr(t_table_info, "table_id")) == 0)) {
 		return true;
 	}
 	return false;
 }
-
