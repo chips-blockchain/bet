@@ -1359,7 +1359,7 @@ bool is_table_registered(char *table_id, char *dealer_id)
 	cJSON *t_table_info = NULL;
 
 	t_table_info = get_cJSON_from_id_key(dealer_id,T_TABLE_INFO_KEY,0);
-	if((!t_table_info) && (strcmp(table_id, jstr(t_table_info, "table_id")) == 0)){
+	if(t_table_info && (strcmp(table_id, jstr(t_table_info, "table_id")) == 0)){
 		return true;
 	}
 	return false;
