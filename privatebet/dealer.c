@@ -36,8 +36,7 @@ int32_t add_dealer(char *dealer_id)
 
 	if (!id_cansignfor(DEALERS_ID, 0, &retval)) {
 		return retval;
-	}	
-
+	}
 
 	dealers_info = cJSON_CreateObject();
 	dealers = list_dealers();
@@ -278,7 +277,7 @@ int32_t dealer_init(struct table t)
 {
 	int32_t retval = OK, game_state;
 
-	if((!id_cansignfor(t.dealer_id, 0, &retval)) || (!id_cansignfor(t.table_id, 0, &retval))) {
+	if ((!id_cansignfor(t.dealer_id, 0, &retval)) || (!id_cansignfor(t.table_id, 0, &retval))) {
 		return retval;
 	}
 
@@ -287,9 +286,9 @@ int32_t dealer_init(struct table t)
 		return ERR_DEALER_UNREGISTERED;
 	}
 
-	if(is_table_registered(t.table_id,t.dealer_id)) {
+	if (is_table_registered(t.table_id, t.dealer_id)) {
 		dlg_info("Table::%s is already registered with the dealer ::%s", t.table_id, t.dealer_id);
-	} else {		
+	} else {
 		// TODO:: At the moment only one table we are registering with the dealer, if any other table exists it will be replaced with new table info
 		retval = register_table(t);
 		if (retval) {
@@ -297,7 +296,7 @@ int32_t dealer_init(struct table t)
 			return retval;
 		}
 	}
-	
+
 	game_state = get_game_state(t.table_id);
 	if (game_state == G_ZEROIZED_STATE) {
 		retval = dealer_table_init(t);
