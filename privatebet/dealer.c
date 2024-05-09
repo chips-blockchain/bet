@@ -6,6 +6,7 @@
 #include "game.h"
 #include "err.h"
 #include "misc.h"
+#include "commands.h"
 
 struct d_deck_info_struct d_deck_info;
 struct game_meta_info_struct game_meta_info;
@@ -21,6 +22,11 @@ char all_t_d_p_key_names[all_t_d_p_keys_no][128] = { "t_d_deck",    "t_d_p1_deck
 char all_game_keys[all_game_keys_no][128] = { T_GAME_INFO_KEY };
 
 char all_game_key_names[all_game_keys_no][128] = { "t_game_info" };
+
+/* Dealer should hold atleast 1 CHIPS, atm 1 CHIP can last to make 1000 updates to the ID which is 
+*  sufficient to accomodate all gaming updates in poker
+*/
+double dealer_min_funds = 1; 
 
 int32_t add_dealer(char *dealer_id)
 {
@@ -280,7 +286,12 @@ int32_t register_table(struct table t)
 int32_t dealer_init(struct table t)
 {
 	int32_t retval = OK, game_state;
+	double balance = 0;
 
+	balance = chips_get_balance();
+	if(balance < dealer_min_funds) {
+		return ERR_CHIPS_INSUFFICIENT_FUNDS;
+	}
 	if ((!id_cansignfor(t.dealer_id, 0, &retval)) || (!id_cansignfor(t.table_id, 0, &retval))) {
 		return retval;
 	}
