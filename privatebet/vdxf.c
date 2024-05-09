@@ -535,9 +535,6 @@ int32_t find_table()
 	int32_t retval = OK;
 	cJSON *t_table_info = NULL, *dealer_ids = NULL;
 
-	if (!is_id_exists("dealers", 0)) {
-		return ERR_NO_DEALERS_FOUND;
-	}
 	/*
 	* Check if the configured table meets the preconditions for the player to join the table
 	*/

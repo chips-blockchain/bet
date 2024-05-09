@@ -146,10 +146,6 @@ int32_t handle_verus_player()
 		return ERR_ADDR_AUTH;
 	}
 
-	if (!id_cansignfor(player_config.verus_pid, 0, &retval)) {
-		return retval;
-	}
-
 	if ((retval = find_table()) != OK) {
 		// TODO:: If retval is ERR_PA_EXISTS, i.e PA exists in the table and the player can rejoin.
 		return retval;

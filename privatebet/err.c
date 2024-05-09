@@ -184,6 +184,8 @@ const char *bet_err_str(int32_t err_no)
 		return "Data Key of contentmultimap is NULL, key must be a valid name";
 	case ERR_NULL_ID:
 		return "ID name is NULL";
+	case ERR_TABLE_UNREGISTERED:
+		return "Table is unregistered with the Dealer";
 	default:
 		return "This error is not handled yet...";
 	}
