@@ -105,16 +105,19 @@ int32_t dealer_table_init(struct table t)
 	game_state = get_game_state(t.table_id);
 	if (game_state == G_ZEROIZED_STATE) {
 		game_id = rand256(0);
+		dlg_info("Updating %s key...", T_GAME_ID_KEY);
 		out = append_cmm_from_id_key_data_hex(t.table_id, T_GAME_ID_KEY, bits256_str(hexstr, game_id), false);
 		if (!out)
 			return ERR_TABLE_LAUNCH;
 		dlg_info("%s", cJSON_Print(out));
 
+		dlg_info("Updating Game state to %s...", game_state_str(G_TABLE_ACTIVE));
 		out = append_game_state(t.table_id, G_TABLE_ACTIVE, NULL);
 		if (!out)
 			return ERR_GAME_STATE_UPDATE;
 		dlg_info("%s", cJSON_Print(out));
 
+		dlg_info("Updating %s key...", T_TABLE_INFO_KEY);
 		out = append_cmm_from_id_key_data_cJSON(
 			t.table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)),
 			struct_table_to_cJSON(&t), true);
@@ -122,6 +125,7 @@ int32_t dealer_table_init(struct table t)
 			return ERR_TABLE_LAUNCH;
 		dlg_info("%s", cJSON_Print(out));
 
+		dlg_info("Updating Game state to %s...", game_state_str(G_TABLE_STARTED));
 		out = append_game_state(t.table_id, G_TABLE_STARTED, NULL);
 		if (!out)
 			return ERR_GAME_STATE_UPDATE;
