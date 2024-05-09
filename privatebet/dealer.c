@@ -33,9 +33,11 @@ int32_t add_dealer(char *dealer_id)
 	if (!is_id_exists(dealer_id, 0)) {
 		return ERR_ID_NOT_FOUND;
 	}
-	if (!id_cansignfor(DEALERS_ID, 0)) {
-		return ERR_ID_AUTH;
-	}
+
+	if (!id_cansignfor(DEALERS_ID, 0, &retval)) {
+		return retval;
+	}	
+
 
 	dealers_info = cJSON_CreateObject();
 	dealers = list_dealers();
@@ -276,19 +278,11 @@ int32_t dealer_init(struct table t)
 {
 	int32_t retval = OK, game_state;
 
-	if (!(is_id_exists(t.dealer_id, 0) && is_id_exists(t.table_id, 0))) {
-		return ERR_ID_NOT_FOUND;
-	}
-	if (!id_cansignfor(t.dealer_id, 0)) {
-		dlg_error("The wallet doesn't contain private key to update the ID %s", t.dealer_id);
-		return ERR_ID_AUTH;
-	}
-	if (!id_cansignfor(t.table_id, 0)) {
-		dlg_error("The wallet doesn't contain private key to update the ID %s", t.table_id);
-		return ERR_ID_AUTH;
+	if((!id_cansignfor(t.dealer_id, 0, &retval)) && (!id_cansignfor(t.table_id, 0, &retval))) {
+		return retval;
 	}
 
-	if (!is_dealer_exists(t.dealer_id)) {
+	if (!is_dealer_registered(t.dealer_id)) {
 		// TODO:: An automated mechanism to register the dealer with dealers.poker.chips10sec need to be worked out
 		return ERR_DEALER_UNREGISTERED;
 	}

@@ -143,7 +143,7 @@ cJSON *get_id_key_data(char *id, int16_t full_id, char *key);
 cJSON *update_t_game_ids(char *id);
 cJSON *get_cashiers_info(char *cashier_id);
 cJSON *update_cashiers(char *ip);
-bool is_dealer_exists(char *dealer_id);
+bool is_dealer_registered(char *dealer_id);
 int32_t get_player_id(int *player_id);
 int32_t join_table();
 int32_t find_table();
@@ -175,6 +175,6 @@ cJSON *list_dealers();
 void list_tables();
 int32_t check_poker_ready();
 int32_t add_dealer_to_dealers(char *dealer_id);
-int32_t id_canspendfor(char *id, int32_t full_id);
-int32_t id_cansignfor(char *id, int32_t full_id);
+int32_t id_canspendfor(char *id, int32_t full_id, int32_t *err_no);
+int32_t id_cansignfor(char *id, int32_t full_id, int32_t *err_no);
 #endif
