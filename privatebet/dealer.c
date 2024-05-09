@@ -259,7 +259,7 @@ int32_t handle_game_state(char *table_id)
 	return retval;
 }
 
-int32_t update_t_info_at_dealer(struct table t)
+int32_t register_table(struct table t)
 {
 	int32_t retval = OK;
 	cJSON *d_table_info = NULL, *out = NULL;
@@ -287,13 +287,17 @@ int32_t dealer_init(struct table t)
 		return ERR_DEALER_UNREGISTERED;
 	}
 
-	//Updating table_info read from the config to the dealer ID.
-	retval = update_t_info_at_dealer(t);
-	if (retval) {
-		dlg_error("Updating the talbe info to the dealer ID::%s is failed", t.dealer_id);
-		return retval;
+	if(is_table_registered(t.table_id,t.dealer_id)) {
+		dlg_info("Table::%s is already registered with the dealer ::%s", t.table_id, t.dealer_id);
+	} else {		
+		// TODO:: At the moment only one table we are registering with the dealer, if any other table exists it will be replaced with new table info
+		retval = register_table(t);
+		if (retval) {
+			dlg_error("Table::%s, registration at dealer::%s is failed", t.table_id, t.dealer_id);
+			return retval;
+		}
 	}
-
+	
 	game_state = get_game_state(t.table_id);
 	if (game_state == G_ZEROIZED_STATE) {
 		retval = dealer_table_init(t);
