@@ -371,13 +371,14 @@ int32_t bet_parse_verus_player()
 			sizeof(player_config.verus_pid));
 	}
 	//Check if all IDs are valid
-	if((!player_config.dealer_id) || (!player_config.table_id) || (!player_config.verus_pid) || !is_id_exists(player_config.dealer_id,0) || !is_id_exists(player_config.table_id,0)) {
+	if ((!player_config.dealer_id) || (!player_config.table_id) || (!player_config.verus_pid) ||
+	    !is_id_exists(player_config.dealer_id, 0) || !is_id_exists(player_config.table_id, 0)) {
 		return ERR_CONFIG_PLAYER_ARGS;
 	}
 	//Check if the node has player IDs priv keys
-	if(!id_cansignfor(player_config.verus_pid,0,&retval)) {
+	if (!id_cansignfor(player_config.verus_pid, 0, &retval)) {
 		return retval;
 	}
-		
+
 	return retval;
 }

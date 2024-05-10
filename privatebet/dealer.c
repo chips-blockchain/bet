@@ -109,7 +109,9 @@ int32_t dealer_table_init(struct table t)
 		return ERR_ID_NOT_FOUND;
 
 	game_state = get_game_state(t.table_id);
-	if (game_state == G_ZEROIZED_STATE) {
+
+	switch (game_state) {
+	case G_ZEROIZED_STATE:
 		game_id = rand256(0);
 		dlg_info("Updating %s key...", T_GAME_ID_KEY);
 		out = append_cmm_from_id_key_data_hex(t.table_id, T_GAME_ID_KEY, bits256_str(hexstr, game_id), false);
@@ -122,7 +124,8 @@ int32_t dealer_table_init(struct table t)
 		if (!out)
 			return ERR_GAME_STATE_UPDATE;
 		dlg_info("%s", cJSON_Print(out));
-
+		// No break is intentional
+	case G_TABLE_ACTIVE:
 		dlg_info("Updating %s key...", T_TABLE_INFO_KEY);
 		out = append_cmm_from_id_key_data_cJSON(
 			t.table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)),
@@ -136,7 +139,8 @@ int32_t dealer_table_init(struct table t)
 		if (!out)
 			return ERR_GAME_STATE_UPDATE;
 		dlg_info("%s", cJSON_Print(out));
-	} else {
+		break;
+	default:
 		dlg_info("Table is in game, at state ::%s", game_state_str(game_state));
 	}
 	return retval;
@@ -313,11 +317,10 @@ int32_t dealer_init(struct table t)
 		}
 	}
 
-	game_state = get_game_state(t.table_id);
-	if (game_state == G_ZEROIZED_STATE) {
-		retval = dealer_table_init(t);
-		if (retval)
-			return retval;
+	retval = dealer_table_init(t);
+	if (retval != OK) {
+		dlg_info("Table Init is failed");
+		return retval;
 	}
 
 	while (1) {
