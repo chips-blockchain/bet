@@ -536,16 +536,16 @@ int32_t find_table()
 	cJSON *t_table_info = NULL, *dealer_ids = NULL;
 
 	/*
-	* Check if the configured table meets the preconditions for the player to join the table
-	*/
-	if ((retval = chose_table()) != OK) {
-		return retval;
-	}
-	/*
 	* Check if the player wallet has suffiecient funds to join the table 
 	*/
 	if (!check_if_enough_funds_avail(player_t.table_id)) {
 		return ERR_CHIPS_INSUFFICIENT_FUNDS;
+	}
+	/*
+	* Check if the configured table meets the preconditions for the player to join the table
+	*/
+	if ((retval = chose_table()) != OK) {
+		return retval;
 	}
 	return retval;
 }
@@ -1002,7 +1002,7 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 {
 	int32_t retval = OK, game_state;
 	double amount = 0;
-	char pa[128] = { 0 }, *game_id_str = NULL, *table_id = NULL, *dealer_id = NULL;
+	char pa[128] = { 0 }, *game_id_str = NULL, *table_id = NULL, *dealer_id = NULL, *verus_pid = NULL;
 	cJSON *t_player_info = NULL, *player_info = NULL, *t_table_info = NULL;
 
 	if ((!txid) || (!payin_tx_data))
@@ -1011,9 +1011,10 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 	dlg_info("Payin TX Data ::%s", cJSON_Print(payin_tx_data));
 	table_id = jstr(payin_tx_data, "table_id");
 	dealer_id = jstr(payin_tx_data, "dealer_id");
+	verus_pid = jstr(payin_tx_data, "verus_pid");
 
 	//Check the table ID and dealer ID mentioned in Payin TX are valid.
-	if (!is_id_exists(table_id, 0) || !is_id_exists(dealer_id, 0)) {
+	if (!is_id_exists(table_id, 0) || !is_id_exists(dealer_id, 0) || !is_id_exists(verus_pid, 0)) {
 		return ERR_ID_NOT_FOUND;
 	}
 
@@ -1039,7 +1040,8 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 			  jdouble(t_table_info, "min_stake"), jdouble(t_table_info, "max_stake"));
 		return ERR_PAYIN_TX_INVALID_FUNDS;
 	}
-
+	// TODO:: Check for duplicate request based on ID
+	#if 0
 	// Check for a duplicate join request and duplicate PA, PA should be unique so that ensures a player can occupy atmost one position on the table.
 	t_player_info = cJSON_CreateObject();
 	t_player_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
@@ -1057,11 +1059,13 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 			return ERR_PA_EXISTS;
 		}
 	}
+	#endif
 	return retval;
 }
 
 /*
- The player info is stored in the form of PA_TXID_PLAYERID
+* Reads the key T_PLAYER_INFO_KEY
+* Increment num_players and append player data to player_info array.
 */
 static cJSON *compute_updated_t_player_info(char *txid, cJSON *payin_tx_data)
 {
@@ -1079,11 +1083,13 @@ static cJSON *compute_updated_t_player_info(char *txid, cJSON *payin_tx_data)
 	if (t_player_info) {
 		num_players = jint(t_player_info, "num_players");
 		player_info = cJSON_GetObjectItem(t_player_info, "player_info");
-		if (!player_info)
+		if (!player_info) {
+			dlg_error("Error with data on Key :: %s", T_PLAYER_INFO_KEY);
 			return NULL;
+		}	
 	}
 	num_players++;
-	sprintf(pa_tx_id, "%s_%s_%d", jstr(payin_tx_data, "primaryaddress"), txid, num_players);
+	sprintf(pa_tx_id, "%s_%s_%d", jstr(payin_tx_data, "verus_pid"), txid, num_players);
 	jaddistr(player_info, pa_tx_id);
 
 	updated_t_player_info = cJSON_CreateObject();
@@ -1135,9 +1141,11 @@ int32_t process_payin_tx_data(char *txid, cJSON *payin_tx_data)
 						updated_t_player_info, true);
 	dlg_info("%s", cJSON_Print(out));
 
+	#if 0
 	//Add the players primary address to the list of the primary addresses of the table id so that player can able to perform the updates to the table ID.
 	out = append_pa_to_cmm(jstr(payin_tx_data, "table_id"), jstr(payin_tx_data, "primaryaddress"));
 	dlg_info("%s", cJSON_Print(out));
+	#endif
 
 	return retval;
 }
@@ -1172,6 +1180,13 @@ void process_block(char *blockhash)
 		return;
 	}
 
+	/*
+	* List all the utxos attached to the registered cashiers, like cashiers.poker.chips10sec@
+	* Look for the utxos that matches to the current processing block height
+	* Extract the tx data 
+	* Process the tx data to see if this tx is intended and related to poker
+	* If the tx is related to poker, do all checks and add the players info to the table
+	*/
 	cJSON *argjson = cJSON_CreateObject();
 	argjson = getaddressutxos(verus_addr, 1);
 	for (int32_t i = 0; i < cJSON_GetArraySize(argjson); i++) {
