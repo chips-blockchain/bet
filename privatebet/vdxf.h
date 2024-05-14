@@ -187,4 +187,6 @@ int32_t add_dealer_to_dealers(char *dealer_id);
 int32_t id_canspendfor(char *id, int32_t full_id, int32_t *err_no);
 int32_t id_cansignfor(char *id, int32_t full_id, int32_t *err_no);
 bool is_table_registered(char *table_id, char *dealer_id);
+bool is_playerid_added(char *table_id);
+
 #endif

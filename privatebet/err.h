@@ -127,6 +127,7 @@ All the errors that come across in bet are defined here. The error numbers are a
 #define ERR_NULL_KEY                    140
 #define ERR_NULL_ID						141
 #define ERR_TABLE_UNREGISTERED          142
+#define ERR_DUPLICATE_PLAYERID          143
 
 // clang-format on
 const char *bet_err_str(int32_t err_no);
