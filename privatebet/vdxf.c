@@ -577,19 +577,21 @@ bool is_id_exists(char *id, int16_t full_id)
 	return id_exists;
 }
 
-int32_t check_player_join_status(char *table_id, char *pa)
+int32_t check_player_join_status(char *table_id, char *verus_pid)
 {
-	int32_t block_count = 0, retval = ERR_PA_NOT_ADDED_TO_TABLE;
+	int32_t block_count = 0, retval = ERR_PLAYER_NOT_ADDED;
 	int32_t block_wait_time =
 		5; //This is the wait time in number of blocks upto which player can look for its table joining update
 
 	block_count = chips_get_block_count() + block_wait_time;
 	do {
-		cJSON *pa_arr = cJSON_CreateArray();
-		pa_arr = get_primaryaddresses(table_id, 0);
-		for (int32_t i = 0; i < cJSON_GetArraySize(pa_arr); i++) {
-			if (0 == strcmp(jstri(pa_arr, i), pa))
+		cJSON *t_player_info = get_t_player_info(table_id);
+		cJSON *player_info = jobj(t_player_info, "player_info");
+		dlg_info("t_player_info :: %s", cJSON_Print(t_player_info));
+		for (int32_t i = 0; (player_info) && (i < cJSON_GetArraySize(player_info)); i++) {
+			if (strstr(jstri(player_info, i), player_config.verus_pid)) {
 				return OK;
+			}
 		}
 		sleep(2);
 	} while (chips_get_block_count() <= block_count);
@@ -1003,23 +1005,17 @@ cJSON *update_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data, bool 
 
 cJSON *get_t_player_info(char *table_id)
 {
-	cJSON *cmm_t_player_info = NULL, *t_player_info = NULL, *cmm = NULL;
-	char *hexstr = NULL, *t_player_info_str = NULL;
-
-	cmm = cJSON_CreateObject();
-	cmm = get_cmm(table_id, 0);
-	if (cmm) {
-		cmm_t_player_info = cJSON_CreateObject();
-		cmm_t_player_info = cJSON_GetObjectItem(cmm, get_vdxf_id(T_PLAYER_INFO_KEY));
-		if (cmm_t_player_info) {
-			hexstr = jstr(cJSON_GetArrayItem(cmm_t_player_info, 0), get_vdxf_id(STRING_VDXF_ID));
-			t_player_info_str = calloc(1, strlen(hexstr));
-			hexstr_to_str(hexstr, t_player_info_str);
-			t_player_info = cJSON_CreateObject();
-			t_player_info = cJSON_Parse(t_player_info_str);
-		}
+	
+	int32_t game_state;
+	char *game_id_str = NULL;
+	cJSON *t_player_info = NULL;
+	
+	game_state = get_game_state(table_id);
+	if (game_state == G_TABLE_STARTED) {
+		game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
+		t_player_info =
+			get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
 	}
-	free(t_player_info_str);
 	return t_player_info;
 }
 
