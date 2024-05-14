@@ -188,6 +188,8 @@ const char *bet_err_str(int32_t err_no)
 		return "Table is unregistered with the Dealer";
 	case ERR_DUPLICATE_PLAYERID:
 		return "Player ID has already been added to the table";
+	case ERR_PLAYER_NOT_ADDED:
+		return "Player ID hasn't added to the table";
 	default:
 		return "This error is not handled yet...";
 	}
