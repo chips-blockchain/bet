@@ -455,8 +455,7 @@ int32_t join_table()
 	data = cJSON_CreateObject();
 	jaddstr(data, "dealer_id", player_config.dealer_id);
 	jaddstr(data, "table_id", player_config.table_id);
-	jaddstr(data, "primaryaddress", player_config.primaryaddress);
-	jaddstr(data, "player_id", player_config.verus_pid);
+	jaddstr(data, "verus_pid", player_config.verus_pid);
 
 	op_id = verus_sendcurrency_data(data);
 	if (op_id == NULL)
