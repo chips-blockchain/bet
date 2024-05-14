@@ -186,6 +186,8 @@ const char *bet_err_str(int32_t err_no)
 		return "ID name is NULL";
 	case ERR_TABLE_UNREGISTERED:
 		return "Table is unregistered with the Dealer";
+	case ERR_DUPLICATE_PLAYERID:
+		return "Player ID has already been added to the table";
 	default:
 		return "This error is not handled yet...";
 	}
