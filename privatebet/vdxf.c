@@ -224,10 +224,6 @@ cJSON *update_primaryaddresses(char *id, cJSON *primaryaddress)
 	argv = bet_copy_args(argc, verus_chips_cli, "updateidentity", params);
 
 	argjson = update_with_retry(argc, argv);
-#if 0
-	argjson = cJSON_CreateObject();
-	make_command(argc, argv, &argjson);
-#endif
 
 end:
 	bet_dealloc_args(argc, &argv);
@@ -789,7 +785,7 @@ bool is_playerid_added(char *table_id)
 	return false;
 }
 
-int32_t check_if_pa_exists(char *table_id)
+int32_t check_if_pa_exists(char *table_id, char *pa)
 {
 	int32_t retval = OK;
 	cJSON *pa_arr = NULL;
@@ -798,7 +794,7 @@ int32_t check_if_pa_exists(char *table_id)
 	pa_arr = get_primaryaddresses(table_id, 0);
 	if (pa_arr) {
 		for (int32_t i = 0; i < cJSON_GetArraySize(pa_arr); i++) {
-			if (0 == strcmp(jstri(pa_arr, i), player_config.primaryaddress)) {
+			if (0 == strcmp(jstri(pa_arr, i), pa)) {
 				return !retval;
 			}
 		}
@@ -1157,12 +1153,6 @@ int32_t process_payin_tx_data(char *txid, cJSON *payin_tx_data)
 						get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str),
 						updated_t_player_info, true);
 	dlg_info("%s", cJSON_Print(out));
-
-	#if 0
-	//Add the players primary address to the list of the primary addresses of the table id so that player can able to perform the updates to the table ID.
-	out = append_pa_to_cmm(jstr(payin_tx_data, "table_id"), jstr(payin_tx_data, "primaryaddress"));
-	dlg_info("%s", cJSON_Print(out));
-	#endif
 
 	return retval;
 }

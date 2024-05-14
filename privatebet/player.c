@@ -142,11 +142,6 @@ int32_t handle_verus_player()
 		return retval;
 	}
 
-	#if 0
-	if (!chips_ismine(player_config.primaryaddress)) {
-		return ERR_ADDR_AUTH;
-	}
-	#endif
 	if ((retval = find_table()) != OK) {
 		// TODO:: If retval is ERR_PA_EXISTS, i.e PA exists in the table and the player can rejoin.
 		return retval;

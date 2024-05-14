@@ -358,12 +358,6 @@ int32_t bet_parse_verus_player()
 		strncpy(player_config.table_id, iniparser_getstring(ini, "verus:table_id", NULL),
 			sizeof(player_config.table_id));
 	}
-	#if 0
-	if (NULL != iniparser_getstring(ini, "verus:primaryaddress", NULL)) {
-		strncpy(player_config.primaryaddress, iniparser_getstring(ini, "verus:primaryaddress", NULL),
-			sizeof(player_config.primaryaddress));
-	}
-	#endif
 	if (NULL != iniparser_getstring(ini, "verus:wallet_addr", NULL)) {
 		strncpy(player_config.wallet_addr, iniparser_getstring(ini, "verus:wallet_addr", NULL),
 			sizeof(player_config.wallet_addr));
