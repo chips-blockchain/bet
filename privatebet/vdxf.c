@@ -537,17 +537,18 @@ int32_t find_table()
 	cJSON *t_table_info = NULL, *dealer_ids = NULL;
 
 	/*
-	* Check if the player wallet has suffiecient funds to join the table 
-	*/
-	if (!check_if_enough_funds_avail(player_t.table_id)) {
-		return ERR_CHIPS_INSUFFICIENT_FUNDS;
-	}
-	/*
 	* Check if the configured table meets the preconditions for the player to join the table
 	*/
 	if ((retval = chose_table()) != OK) {
 		return retval;
 	}
+	/*
+	* Check if the player wallet has suffiecient funds to join the table chosen
+	*/
+	if (!check_if_enough_funds_avail(player_t.table_id)) {
+		return ERR_CHIPS_INSUFFICIENT_FUNDS;
+	}
+	
 	return retval;
 }
 
