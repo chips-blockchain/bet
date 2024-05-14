@@ -1024,7 +1024,7 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 {
 	int32_t retval = OK, game_state;
 	double amount = 0;
-	char pa[128] = { 0 }, *game_id_str = NULL, *table_id = NULL, *dealer_id = NULL, *verus_pid = NULL;
+	char *game_id_str = NULL, *table_id = NULL, *dealer_id = NULL, *verus_pid = NULL;
 	cJSON *t_player_info = NULL, *player_info = NULL, *t_table_info = NULL;
 
 	if ((!txid) || (!payin_tx_data))
@@ -1062,9 +1062,7 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 			  jdouble(t_table_info, "min_stake"), jdouble(t_table_info, "max_stake"));
 		return ERR_PAYIN_TX_INVALID_FUNDS;
 	}
-	// TODO:: Check for duplicate request based on ID
-	#if 0
-	// Check for a duplicate join request and duplicate PA, PA should be unique so that ensures a player can occupy atmost one position on the table.
+	// Check for a duplicate join request and duplicate verus_pid, verus player ID should be unique so that ensures a player can occupy atmost one position on the table.
 	t_player_info = cJSON_CreateObject();
 	t_player_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
 	if (!t_player_info) {
@@ -1073,15 +1071,13 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 
 	player_info = cJSON_CreateArray();
 	player_info = cJSON_GetObjectItem(t_player_info, "player_info");
-	strncpy(pa, jstr(payin_tx_data, "primaryaddress"), sizeof(pa));
 	for (int32_t i = 0; i < cJSON_GetArraySize(player_info); i++) {
-		if ((strstr(jstri(player_info, i), pa)) && (strstr(jstri(player_info, i), txid))) {
+		if ((strstr(jstri(player_info, i), verus_pid)) && (strstr(jstri(player_info, i), txid))) {
 			return ERR_DUP_PAYIN_UPDATE_REQ;
-		} else if (strstr(jstri(player_info, i), pa)) {
-			return ERR_PA_EXISTS;
+		} else if (strstr(jstri(player_info, i), verus_pid)) {
+			return ERR_DUPLICATE_PLAYERID;
 		}
 	}
-	#endif
 	return retval;
 }
 
