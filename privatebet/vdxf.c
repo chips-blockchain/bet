@@ -474,9 +474,12 @@ int32_t join_table()
 		char *txid = jstr(jobj(jitem(op_id_info, 0), "result"), "txid");
 		strcpy(player_config.txid, txid);
 		dlg_info("payin_tx::%s", txid);
-		retval = check_player_join_status(player_config.table_id, player_config.primaryaddress);
+		retval = check_player_join_status(player_config.table_id, player_config.verus_pid);
 		if (retval) {
-			// TODO::This is where TX is success but PA is not added to the table, ideally in these scenarios TX needs to be reversed.
+			/*
+			 TODO::This is where TX is success verus_pid is not added to the table, in such scenarios if the tx is not reversed, 
+			 then using dispute resolution protocol the player need to get the funds back.
+			*/
 			return retval;
 		}
 	}
