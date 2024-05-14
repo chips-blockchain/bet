@@ -23,11 +23,6 @@ char all_game_keys[all_game_keys_no][128] = { T_GAME_INFO_KEY };
 
 char all_game_key_names[all_game_keys_no][128] = { "t_game_info" };
 
-/* Dealer should hold atleast 1 CHIPS, atm 1 CHIP can last to make 1000 updates to the ID which is 
-*  sufficient to accomodate all gaming updates in poker
-*/
-double dealer_min_funds = 1;
-
 int32_t add_dealer(char *dealer_id)
 {
 	int32_t retval = OK;
@@ -293,8 +288,8 @@ int32_t dealer_init(struct table t)
 	double balance = 0;
 
 	balance = chips_get_balance();
-	if (balance < dealer_min_funds) {
-		dlg_info("Wallet balance ::%f, Minimum funds needed to host a table :: %f", balance, dealer_min_funds);
+	if (balance < RESERVE_AMOUNT) {
+		dlg_info("Wallet balance ::%f, Minimum funds needed to host a table :: %f", balance, RESERVE_AMOUNT);
 		return ERR_CHIPS_INSUFFICIENT_FUNDS;
 	}
 	if ((!id_cansignfor(t.dealer_id, 0, &retval)) || (!id_cansignfor(t.table_id, 0, &retval))) {

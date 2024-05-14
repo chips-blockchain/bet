@@ -27,6 +27,12 @@ key is represented as chips.vrsc::poker.cashiers.
 
 #define T_GAME_ID_KEY "chips.vrsc::poker.t_game_ids"
 #define T_TABLE_INFO_KEY "chips.vrsc::poker.t_table_info"
+/*
+* t_player_info {
+* num_players : 
+* player_info : [veruspid_txid_playerid]
+* }
+*/
 #define T_PLAYER_INFO_KEY "chips.vrsc::poker.t_player_info"
 #define T_PLAYER1_KEY "chips.vrsc::poker.t_player1"
 #define T_PLAYER2_KEY "chips.vrsc::poker.t_player2"
@@ -108,7 +114,10 @@ Bet supports various tokens that launch on Verus and CHIPS is the token which we
 */
 #define CHIPS "chips10sec"
 
-#define ID_UPDATE_ESTIMATE_NO 50
+/* Every node that is part of the poker make updates to the IDs, so to pay tx_fee for the ID updates we keeping this reserve
+*  amount to be 1 CHIP which is sufficient to accomodate all gaming updates in poker.
+*/
+#define ID_UPDATE_ESTIMATE_NO 1000
 #define RESERVE_AMOUNT ID_UPDATE_ESTIMATE_NO *chips_tx_fee
 
 #define all_t_d_p_keys_no 10
