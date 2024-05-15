@@ -44,7 +44,7 @@ int32_t player_init_deck()
 	dlg_info("Updating %s key...", T_GAME_ID_KEY);
 	cJSON *out = append_cmm_from_id_key_data_hex(player_config.verus_pid, T_GAME_ID_KEY, bits256_str(str, p_deck_info.game_id), false);
 
-	dlg_info("player_key::%s", get_key_data_vdxf_id(PLAYER_DECK_KEY, bits256_str(str, p_deck_info.game_id)));
+	dlg_info("Updating %s key...", PLAYER_DECK_KEY);
 	out = append_cmm_from_id_key_data_cJSON(
 		player_config.verus_pid, get_key_data_vdxf_id(PLAYER_DECK_KEY, bits256_str(str, p_deck_info.game_id)),
 		player_deck, true);
