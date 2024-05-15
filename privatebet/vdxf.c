@@ -546,7 +546,7 @@ int32_t find_table()
 	if (!check_if_enough_funds_avail(player_t.table_id)) {
 		return ERR_CHIPS_INSUFFICIENT_FUNDS;
 	}
-	
+
 	return retval;
 }
 
@@ -769,7 +769,7 @@ bool is_playerid_added(char *table_id)
 	int32_t game_state, retval = OK;
 	char *game_id_str = NULL;
 	cJSON *t_player_info = NULL, *player_info = NULL;
-	
+
 	game_state = get_game_state(table_id);
 	if (game_state == G_TABLE_STARTED) {
 		game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
@@ -778,7 +778,7 @@ bool is_playerid_added(char *table_id)
 			get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
 		player_info = jobj(t_player_info, "player_info");
 		for (int32_t i = 0; i < cJSON_GetArraySize(player_info); i++) {
-			if (strstr(jstri(player_info, i), player_config.verus_pid)) 
+			if (strstr(jstri(player_info, i), player_config.verus_pid))
 				return true;
 		}
 	}
@@ -1001,11 +1001,10 @@ cJSON *update_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data, bool 
 
 cJSON *get_t_player_info(char *table_id)
 {
-	
 	int32_t game_state;
 	char *game_id_str = NULL;
 	cJSON *t_player_info = NULL;
-	
+
 	game_state = get_game_state(table_id);
 	if (game_state == G_TABLE_STARTED) {
 		game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
@@ -1099,7 +1098,7 @@ static cJSON *compute_updated_t_player_info(char *txid, cJSON *payin_tx_data)
 		if (!player_info) {
 			dlg_error("Error with data on Key :: %s", T_PLAYER_INFO_KEY);
 			return NULL;
-		}	
+		}
 	}
 	num_players++;
 	sprintf(pa_tx_id, "%s_%s_%d", jstr(payin_tx_data, "verus_pid"), txid, num_players);
