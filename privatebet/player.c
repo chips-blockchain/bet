@@ -42,10 +42,10 @@ int32_t player_init_deck()
 	}
 
 	dlg_info("player_key::%s",
-		 get_key_data_vdxf_id(all_t_p_keys[p_deck_info.player_id - 1], bits256_str(str, p_deck_info.game_id)));
+		 get_key_data_vdxf_id(PLAYER_DECK_KEY, bits256_str(str, p_deck_info.game_id)));
 
-	cJSON *out = append_cmm_from_id_key_data_cJSON(player_config.table_id,
-						       get_key_data_vdxf_id(all_t_p_keys[p_deck_info.player_id - 1],
+	cJSON *out = append_cmm_from_id_key_data_cJSON(player_config.verus_pid,
+						       get_key_data_vdxf_id(PLAYER_DECK_KEY,
 									    bits256_str(str, p_deck_info.game_id)),
 						       player_deck, true);
 	dlg_info("%s", cJSON_Print(out));
