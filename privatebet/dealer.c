@@ -11,7 +11,7 @@
 struct d_deck_info_struct d_deck_info;
 struct game_meta_info_struct game_meta_info;
 
-char all_t_d_p_keys[all_t_d_p_keys_no][128] = { T_D_DECK_KEY,    T_D_P1_DECK_KEY, T_D_P2_DECK_KEY, T_D_P3_DECK_KEY,
+char all_t_d_p_keys[all_t_d_p_keys_no][128] = { T_D_DECK_KEY,	 T_D_P1_DECK_KEY, T_D_P2_DECK_KEY, T_D_P3_DECK_KEY,
 						T_D_P4_DECK_KEY, T_D_P5_DECK_KEY, T_D_P6_DECK_KEY, T_D_P7_DECK_KEY,
 						T_D_P8_DECK_KEY, T_D_P9_DECK_KEY };
 

@@ -14,10 +14,10 @@
 
 char *db_name = NULL;
 
-const char *table_names[no_of_tables] = { "dcv_tx_mapping",     "player_tx_mapping", "cashier_tx_mapping",
-					  "c_tx_addr_mapping",  "dcv_game_state",    "player_game_state",
-					  "cashier_game_state", "dealers_info",      "game_info",
-					  "sc_games_info",      "player_deck_info",  "dealer_deck_info",
+const char *table_names[no_of_tables] = { "dcv_tx_mapping",	"player_tx_mapping", "cashier_tx_mapping",
+					  "c_tx_addr_mapping",	"dcv_game_state",    "player_game_state",
+					  "cashier_game_state", "dealers_info",	     "game_info",
+					  "sc_games_info",	"player_deck_info",  "dealer_deck_info",
 					  "cashier_deck_info" };
 
 const char *schemas[no_of_tables] = {

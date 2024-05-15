@@ -63,8 +63,8 @@ int no_of_rand_str = 0;
 int32_t invoiceID;
 
 char *suit[NSUITS] = { "clubs", "diamonds", "hearts", "spades" };
-char *face[NFACES] = { "two",  "three", "four", "five",  "six",  "seven", "eight",
-		       "nine", "ten",   "jack", "queen", "king", "ace" };
+char *face[NFACES] = { "two",  "three", "four", "five",	 "six",	 "seven", "eight",
+		       "nine", "ten",	"jack", "queen", "king", "ace" };
 
 struct privatebet_info *bet_dcv = NULL;
 struct privatebet_vars *dcv_vars = NULL;
