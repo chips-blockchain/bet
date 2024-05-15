@@ -74,6 +74,13 @@ key is represented as chips.vrsc::poker.cashiers.
 #define T_B_DECK_BV_KEY_NAME "t_b_deck_bv"
 #define T_GAME_INFO_KEY_NAME "t_game_info"
 
+/*
+* player_deck {
+* id: Players ID assigned by dealer, this is fecthed using get_playerid after player join.
+* pubkey: This is players pubkey pG
+* cardinfo:Array of card pubkeys r1G, r2G, ..., r52G
+* }
+*/
 #define PLAYER_DECK_KEY "chips.vrsc::poker.player_deck"
 
 /*
