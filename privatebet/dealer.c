@@ -6,11 +6,12 @@
 #include "game.h"
 #include "err.h"
 #include "misc.h"
+#include "commands.h"
 
 struct d_deck_info_struct d_deck_info;
 struct game_meta_info_struct game_meta_info;
 
-char all_t_d_p_keys[all_t_d_p_keys_no][128] = { T_D_DECK_KEY,    T_D_P1_DECK_KEY, T_D_P2_DECK_KEY, T_D_P3_DECK_KEY,
+char all_t_d_p_keys[all_t_d_p_keys_no][128] = { T_D_DECK_KEY,	 T_D_P1_DECK_KEY, T_D_P2_DECK_KEY, T_D_P3_DECK_KEY,
 						T_D_P4_DECK_KEY, T_D_P5_DECK_KEY, T_D_P6_DECK_KEY, T_D_P7_DECK_KEY,
 						T_D_P8_DECK_KEY, T_D_P9_DECK_KEY };
 
@@ -22,25 +23,37 @@ char all_game_keys[all_game_keys_no][128] = { T_GAME_INFO_KEY };
 
 char all_game_key_names[all_game_keys_no][128] = { "t_game_info" };
 
-cJSON *add_dealer(char *dealer_id)
+int32_t add_dealer(char *dealer_id)
 {
+	int32_t retval = OK;
 	cJSON *dealers_info = NULL, *dealers = NULL, *out = NULL;
 
-	if ((!dealer_id) || (!is_id_exists(dealer_id, 0))) {
-		dlg_info(
-			"Either dealer ID is NULL or the ID doesn't exists, make sure ID exists before you add to dealers");
-		return NULL;
+	if (!dealer_id) {
+		return ERR_NULL_ID;
+	}
+	if (!is_id_exists(dealer_id, 0)) {
+		return ERR_ID_NOT_FOUND;
+	}
+
+	if (!id_cansignfor(DEALERS_ID, 0, &retval)) {
+		return retval;
 	}
 
 	dealers_info = cJSON_CreateObject();
-	dealers = cJSON_CreateArray();
+	dealers = list_dealers();
+	if (!dealers) {
+		dealers = cJSON_CreateArray();
+	}
 	jaddistr(dealers, dealer_id);
-
 	cJSON_AddItemToObject(dealers_info, "dealers", dealers);
-	out = update_cmm_from_id_key_data_cJSON("dealers", DEALERS_KEY, dealers_info, false);
+	out = update_cmm_from_id_key_data_cJSON(DEALERS_ID, DEALERS_KEY, dealers_info, false);
 
+	if (!out) {
+		return ERR_UPDATEIDENTITY;
+	}
 	dlg_info("%s", cJSON_Print(out));
-	return out;
+
+	return retval;
 }
 
 int32_t dealer_sb_deck(char *id, bits256 *player_r, int32_t player_id)
@@ -91,18 +104,24 @@ int32_t dealer_table_init(struct table t)
 		return ERR_ID_NOT_FOUND;
 
 	game_state = get_game_state(t.table_id);
-	if (game_state == G_ZEROIZED_STATE) {
+
+	switch (game_state) {
+	case G_ZEROIZED_STATE:
 		game_id = rand256(0);
+		dlg_info("Updating %s key...", T_GAME_ID_KEY);
 		out = append_cmm_from_id_key_data_hex(t.table_id, T_GAME_ID_KEY, bits256_str(hexstr, game_id), false);
 		if (!out)
 			return ERR_TABLE_LAUNCH;
 		dlg_info("%s", cJSON_Print(out));
 
+		dlg_info("Updating Game state to %s...", game_state_str(G_TABLE_ACTIVE));
 		out = append_game_state(t.table_id, G_TABLE_ACTIVE, NULL);
 		if (!out)
 			return ERR_GAME_STATE_UPDATE;
 		dlg_info("%s", cJSON_Print(out));
-
+		// No break is intentional
+	case G_TABLE_ACTIVE:
+		dlg_info("Updating %s key...", T_TABLE_INFO_KEY);
 		out = append_cmm_from_id_key_data_cJSON(
 			t.table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, bits256_str(hexstr, game_id)),
 			struct_table_to_cJSON(&t), true);
@@ -110,11 +129,13 @@ int32_t dealer_table_init(struct table t)
 			return ERR_TABLE_LAUNCH;
 		dlg_info("%s", cJSON_Print(out));
 
+		dlg_info("Updating Game state to %s...", game_state_str(G_TABLE_STARTED));
 		out = append_game_state(t.table_id, G_TABLE_STARTED, NULL);
 		if (!out)
 			return ERR_GAME_STATE_UPDATE;
 		dlg_info("%s", cJSON_Print(out));
-	} else {
+		break;
+	default:
 		dlg_info("Table is in game, at state ::%s", game_state_str(game_state));
 	}
 	return retval;
@@ -246,7 +267,7 @@ int32_t handle_game_state(char *table_id)
 	return retval;
 }
 
-int32_t update_t_info_at_dealer(struct table t)
+int32_t register_table(struct table t)
 {
 	int32_t retval = OK;
 	cJSON *d_table_info = NULL, *out = NULL;
@@ -264,33 +285,37 @@ int32_t update_t_info_at_dealer(struct table t)
 int32_t dealer_init(struct table t)
 {
 	int32_t retval = OK, game_state;
+	double balance = 0;
 
-	if (!(is_id_exists(t.dealer_id, 0) && is_id_exists(t.table_id, 0))) {
-		return ERR_ID_NOT_FOUND;
+	balance = chips_get_balance();
+	if (balance < RESERVE_AMOUNT) {
+		dlg_info("Wallet balance ::%f, Minimum funds needed to host a table :: %f", balance, RESERVE_AMOUNT);
+		return ERR_CHIPS_INSUFFICIENT_FUNDS;
 	}
-	if (!(id_cansignfor(t.dealer_id, 0) && id_cansignfor(t.table_id, 0))) {
-		return ERR_ID_AUTH;
-	}
-
-	//If dealer hasn't added to dealers yet, then add it to dealers.poker.chips10sec@
-	retval = add_dealer_to_dealers(t.dealer_id);
-	if (retval != OK) {
-		dlg_info("%s", bet_err_str(retval));
+	if ((!id_cansignfor(t.dealer_id, 0, &retval)) || (!id_cansignfor(t.table_id, 0, &retval))) {
 		return retval;
 	}
 
-	//Updating table_info read from the config to the dealer ID.
-	retval = update_t_info_at_dealer(t);
-	if (retval) {
-		dlg_error("Updating the talbe info to the dealer ID::%s is failed", t.dealer_id);
-		return retval;
+	if (!is_dealer_registered(t.dealer_id)) {
+		// TODO:: An automated mechanism to register the dealer with dealers.poker.chips10sec need to be worked out
+		return ERR_DEALER_UNREGISTERED;
 	}
 
-	game_state = get_game_state(t.table_id);
-	if (game_state == G_ZEROIZED_STATE) {
-		retval = dealer_table_init(t);
-		if (retval)
+	if (is_table_registered(t.table_id, t.dealer_id)) {
+		dlg_info("Table::%s is already registered with the dealer ::%s", t.table_id, t.dealer_id);
+	} else {
+		// TODO:: At the moment only one table we are registering with the dealer, if any other table exists it will be replaced with new table info
+		retval = register_table(t);
+		if (retval) {
+			dlg_error("Table::%s, registration at dealer::%s is failed", t.table_id, t.dealer_id);
 			return retval;
+		}
+	}
+
+	retval = dealer_table_init(t);
+	if (retval != OK) {
+		dlg_info("Table Init is failed");
+		return retval;
 	}
 
 	while (1) {

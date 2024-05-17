@@ -358,13 +358,23 @@ int32_t bet_parse_verus_player()
 		strncpy(player_config.table_id, iniparser_getstring(ini, "verus:table_id", NULL),
 			sizeof(player_config.table_id));
 	}
-	if (NULL != iniparser_getstring(ini, "verus:primaryaddress", NULL)) {
-		strncpy(player_config.primaryaddress, iniparser_getstring(ini, "verus:primaryaddress", NULL),
-			sizeof(player_config.primaryaddress));
-	}
 	if (NULL != iniparser_getstring(ini, "verus:wallet_addr", NULL)) {
 		strncpy(player_config.wallet_addr, iniparser_getstring(ini, "verus:wallet_addr", NULL),
 			sizeof(player_config.wallet_addr));
 	}
+	if (NULL != iniparser_getstring(ini, "verus:player_id", NULL)) {
+		strncpy(player_config.verus_pid, iniparser_getstring(ini, "verus:player_id", NULL),
+			sizeof(player_config.verus_pid));
+	}
+	//Check if all IDs are valid
+	if ((!player_config.dealer_id) || (!player_config.table_id) || (!player_config.verus_pid) ||
+	    !is_id_exists(player_config.dealer_id, 0) || !is_id_exists(player_config.table_id, 0)) {
+		return ERR_CONFIG_PLAYER_ARGS;
+	}
+	//Check if the node has player IDs priv keys
+	if (!id_cansignfor(player_config.verus_pid, 0, &retval)) {
+		return retval;
+	}
+
 	return retval;
 }

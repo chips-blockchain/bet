@@ -120,6 +120,19 @@ void print_table_id(char *id)
 	}
 }
 
+void print_player_id(char *id)
+{
+	char *game_id = NULL;
+
+	game_id = get_str_from_id_key(id, get_vdxf_id(T_GAME_ID_KEY));
+	if (game_id) {
+		cJSON *player_deck = NULL;
+		player_deck = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(PLAYER_DECK_KEY, game_id));
+		if(player_deck)
+			dlg_info("%s :: %s", PLAYER_DECK_KEY, cJSON_Print(player_deck));
+	}	
+}
+
 void print_table_key_info(int argc, char **argv)
 {
 	char *game_id_str = NULL, *key_name = NULL;
@@ -145,6 +158,8 @@ void print_id_info(int argc, char **argv)
 			print_table_id(argv[2]);
 		} else if ((strcmp(argv[3], "d") == 0) || (strcmp(argv[3], "dealer") == 0)) {
 			print_dealer_id(argv[2]);
+		} else if ((strcmp(argv[3], "p") == 0) || (strcmp(argv[3], "player") == 0)) {
+			print_player_id(argv[2]);
 		} else if (strcmp(argv[3], "dealers") == 0) {
 			print_dealers_id(argv[2]);
 		} else if (strcmp(argv[3], "cashiers") == 0) {

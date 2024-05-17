@@ -43,7 +43,7 @@ The cumulative bet amount collected on various possible predictions of the bet i
 | false	      | 300(200+100)  	      |
 
 Here in the prorata bets, the winning bet amount is calculated as follows:
-Lets say the commision taken by host is 5% and validator nodes is 5% for simplicity. In that case 97% of the bet amount is distributed to the winners.
+Lets say the commision taken by host is 5% and validator nodes is 5% for simplicity. In that case the remaining 90% of the bet amount is distributed to the winners.
 ```
 winning_bet_amount  = bet_amount+ 90%(all_bets_lost_amount) * (bet_amount/all_bets_win_amount)
 ```
@@ -55,7 +55,7 @@ all_bets_lost_amount = 300
 U1_win_amount = 100 + [90%(300) * (100/800)] = 133.75
 ```
 
-Like wise if we recompute all for all the users the final bet settelement table looks as follows:
+SO the final bet settlement amoutn for all the users based on the outcome A won over B is as follows:
 
 | User        | A wins on B | bet_amount | bet_settlement |
 | ----------- | ----------- | ---------- | -------------- |
@@ -102,19 +102,19 @@ Here the host can make a counterbet to the existng bets to change the status fro
 The most important thing in the predictable betting is the outcome of the event, and how this outcome of the event is legitimately provided to evaluate the bets. Here we are relying on the validator nodes to feed the outcome of bets and in return the validator nodes gets incentives in answering the bet queries. Its important to note here that the validator nodes are elected by the bet community who are trustworthy in the bet environment and in order to become a validator node one must need to meet certain constraints and guidelines set by the bet community.
 
 To become a validator node one must
-a. Go through the election prcess, where the chips holders vote for a specific validator node applicant.
-b. The validator node must show the proof that they possess 50k CHIPS.
+* Go through the election prcess, where the chips holders vote for a specific validator node applicant.
+* The validator node must show the proof that they possess 50k CHIPS.
 
-Whenever the host posts the bets, those bets are visible to all the validator nodes. The job of the validator nodes is based on the outcome of bet the validator nodes answers the queries and store them in the local in the local DB against the specific bet ID. 
+Whenever the host posts the bets, those bets are visible to all the validator nodes. The job of the validator nodes is based on the outcome of bet the validator nodes answers the queries and store them in the local DB against the specific bet ID. 
 
 Once the outcome of the event is revealed in the real world, the host sends requests to the validator nodes to get the outcome of the bet and evaluate the bet accordingly to settle the betting amounts. If the host fail to process the bet with in the time window specified, the users can raise dispute requests with the validator nodes where in which the validator nodes will process the outcome of the bet and settle the funds. The validator nodes gets incentivised for being honest in answering the bet queries and for being available in responding to the host nodes.
 
-The incentives to the validator nodes are based on the queries it answers. The more queries it answers the more incentives it gets. We discuss in detail about how the system is resilient against the dishonest validator and host nodes, and how the dishonest will be moved out of the network and costs incurred for being dishonest in later sections.
+The incentives to the validator nodes are based on the queries it answers. The more queries it answers the more incentives it gets. We discuss in detail about how the system is resilient against the dishonest validator and host nodes, and how the dishonest host/validator will be moved out of the network and costs incurred for being dishonest in later sections.
 
 ## Lets talk about API's
 
 ### Listing the bets by host
-Host nodes are the ones who are responsible in creating the prediction markets by posting the bets. In `bets.ini` host lists the bets and publish them to the players when the player node connect to the corresponding host. The sample congiguration data in the `bets.ini` looks as follows:
+Host nodes are the ones who are responsible in creating the prediction markets by posting the bets. In `bets.ini` host lists the bets and publish them to the players when the player node connect to the corresponding host. The sample configuration data in the `bets.ini` looks as follows:
 ```
 [bets]
 [bets:0]
@@ -157,7 +157,7 @@ After connecting to backend from GUI, the GUI receives bet method from the backe
 		"confirmed_bets":[],
 }
 ```
-From the GUI the player picks one or multiple bets and send the info to the BE, lets say the player selects the bet "A wins on B" in that case the info the GUI send to BE is in the fowm as shown below:
+From the GUI the player picks one or multiple bets and send the info to the BE, lets say the player selects the bet "A wins on B" in that case the info the GUI send to BE is in the form as shown below:
 ```
 {
 	"method":	"bets_selected",	
@@ -199,4 +199,8 @@ Once the player BE receives the bets chosen by the player, it makes the tx to th
 		"confirmed_bets":[],
 }
 ```
-say if any other player matches the bet player by the player, then the bet info is moved from placed_bets to confirmed_bets.
+say if any other player matches the bet placed by the player, then the bet info is moved from placed_bets to confirmed_bets.
+
+## Using Verus IDs
+The above discussion of the bet uses the data part of the tx to hold the bets and its related info, using verus IDs handling bets will be much efficient. In later steps we develop betting protocols using verus IDs.
+

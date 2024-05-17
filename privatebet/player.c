@@ -40,14 +40,14 @@ int32_t player_init_deck()
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
 		jaddistr(cjson_player_cards, bits256_str(str, p_deck_info.player_r[i].prod));
 	}
+	
+	dlg_info("Updating %s key...", T_GAME_ID_KEY);
+	cJSON *out = append_cmm_from_id_key_data_hex(player_config.verus_pid, T_GAME_ID_KEY, bits256_str(str, p_deck_info.game_id), false);
 
-	dlg_info("player_key::%s",
-		 get_key_data_vdxf_id(all_t_p_keys[p_deck_info.player_id - 1], bits256_str(str, p_deck_info.game_id)));
-
-	cJSON *out = append_cmm_from_id_key_data_cJSON(player_config.table_id,
-						       get_key_data_vdxf_id(all_t_p_keys[p_deck_info.player_id - 1],
-									    bits256_str(str, p_deck_info.game_id)),
-						       player_deck, true);
+	dlg_info("Updating %s key...", PLAYER_DECK_KEY);
+	out = append_cmm_from_id_key_data_cJSON(
+		player_config.verus_pid, get_key_data_vdxf_id(PLAYER_DECK_KEY, bits256_str(str, p_deck_info.game_id)),
+		player_deck, true);
 	dlg_info("%s", cJSON_Print(out));
 
 	return retval;
@@ -142,9 +142,6 @@ int32_t handle_verus_player()
 		return retval;
 	}
 
-	if (!chips_ismine(player_config.primaryaddress)) {
-		return ERR_ADDR_AUTH;
-	}
 	if ((retval = find_table()) != OK) {
 		// TODO:: If retval is ERR_PA_EXISTS, i.e PA exists in the table and the player can rejoin.
 		return retval;

@@ -544,13 +544,17 @@ static void bet_start(int argc, char **argv)
 	} else if ((strcmp(argv[1], "print_id") == 0) && (argc > 3)) {
 		print_id_info(argc, argv);
 	} else if ((strcmp(argv[1], "add_dealer") == 0) && (argc == 3)) {
-		add_dealer(argv[2]);
+		retval = add_dealer(argv[2]);
 	} else if (strcmp(argv[1], "list_dealers") == 0) {
-		dlg_info("Dealers ::%s", cJSON_Print(list_dealers()));
+		cJSON *dealers = list_dealers();
+		if (dealers) {
+			dlg_info("Dealers ::%s", cJSON_Print(dealers));
+		}
+
 	} else if (strcmp(argv[1], "list_tables") == 0) {
 		list_tables();
 	} else if ((strcmp(argv[1], "reset_id") == 0) && (argc == 3)) {
-		if (is_id_exists(argv[2], 0))
+		if (id_cansignfor(argv[2], 0, &retval))
 			update_cmm(argv[2], NULL);
 	} else {
 		bet_command_info();

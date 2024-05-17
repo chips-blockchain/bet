@@ -27,6 +27,12 @@ key is represented as chips.vrsc::poker.cashiers.
 
 #define T_GAME_ID_KEY "chips.vrsc::poker.t_game_ids"
 #define T_TABLE_INFO_KEY "chips.vrsc::poker.t_table_info"
+/*
+* t_player_info {
+* num_players : 
+* player_info : [veruspid_txid_playerid]
+* }
+*/
 #define T_PLAYER_INFO_KEY "chips.vrsc::poker.t_player_info"
 #define T_PLAYER1_KEY "chips.vrsc::poker.t_player1"
 #define T_PLAYER2_KEY "chips.vrsc::poker.t_player2"
@@ -69,6 +75,15 @@ key is represented as chips.vrsc::poker.cashiers.
 #define T_GAME_INFO_KEY_NAME "t_game_info"
 
 /*
+* player_deck {
+* id: Players ID assigned by dealer, this is fecthed using get_playerid after player join.
+* pubkey: This is players pubkey pG
+* cardinfo:Array of card pubkeys r1G, r2G, ..., r52G
+* }
+*/
+#define PLAYER_DECK_KEY "chips.vrsc::poker.player_deck"
+
+/*
 Datatypes used
 --------------
 Since we are encapsulating the data and store using binary serialization, so we basically not needing much variety here. 
@@ -92,9 +107,14 @@ Identifiers are often the addresses that can hold the tokens, so for that reason
 Any entity in the bet ecosystem can register the identities under chips, like for example i registered an identiy named sg777 
 under chips as sg777.chips@ which basically been used to hold the tokens. 
 */
-#define CASHIERS_ID "cashiers.poker.chips10sec@"
-#define DEALERS_ID "dealers.poker.chips10sec@"
-#define POKER_CHIPS_VDXF_ID "poker.chips10sec@"
+
+#define CASHIERS_ID_FQN "cashiers.poker.chips10sec@"
+#define DEALERS_ID_FQN "dealers.poker.chips10sec@"
+#define POKER_ID_FQN "poker.chips10sec@"
+
+#define DEALERS_ID "dealers"
+#define CASHIERS_ID "cashiers"
+#define POKER_ID "poker"
 
 /*
 Currencies
@@ -103,7 +123,10 @@ Bet supports various tokens that launch on Verus and CHIPS is the token which we
 */
 #define CHIPS "chips10sec"
 
-#define ID_UPDATE_ESTIMATE_NO 50
+/* Every node that is part of the poker make updates to the IDs, so to pay tx_fee for the ID updates we keeping this reserve
+*  amount to be 1 CHIP which is sufficient to accomodate all gaming updates in poker.
+*/
+#define ID_UPDATE_ESTIMATE_NO 1000
 #define RESERVE_AMOUNT ID_UPDATE_ESTIMATE_NO *chips_tx_fee
 
 #define all_t_d_p_keys_no 10
@@ -138,7 +161,7 @@ cJSON *get_id_key_data(char *id, int16_t full_id, char *key);
 cJSON *update_t_game_ids(char *id);
 cJSON *get_cashiers_info(char *cashier_id);
 cJSON *update_cashiers(char *ip);
-bool is_dealer_exists(char *dealer_id);
+bool is_dealer_registered(char *dealer_id);
 int32_t get_player_id(int *player_id);
 int32_t join_table();
 int32_t find_table();
@@ -151,7 +174,7 @@ struct table *decode_table_info_from_str(char *str);
 struct table *decode_table_info(cJSON *dealer_cmm_data);
 cJSON *get_available_t_of_d(char *dealer_id);
 bool is_table_full(char *table_id);
-int32_t check_if_pa_exists(char *table_id);
+int32_t check_if_pa_exists(char *table_id, char *pa);
 bool check_if_enough_funds_avail(char *table_id);
 int32_t check_if_d_t_available(char *dealer_id, char *table_id, cJSON **t_table_info);
 char *get_str_from_id_key(char *id, char *key);
@@ -170,6 +193,9 @@ cJSON *list_dealers();
 void list_tables();
 int32_t check_poker_ready();
 int32_t add_dealer_to_dealers(char *dealer_id);
-int32_t id_canspendfor(char *id, int32_t full_id);
-int32_t id_cansignfor(char *id, int32_t full_id);
+int32_t id_canspendfor(char *id, int32_t full_id, int32_t *err_no);
+int32_t id_cansignfor(char *id, int32_t full_id, int32_t *err_no);
+bool is_table_registered(char *table_id, char *dealer_id);
+bool is_playerid_added(char *table_id);
+
 #endif

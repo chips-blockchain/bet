@@ -53,12 +53,13 @@ char *get_full_key(char *key_name)
 
 char *get_key_data_type(char *key_name)
 {
-	if (!key_name)
-		return BYTEVECTOR_VDXF_ID;
-
-	if (strcmp(key_name, T_GAME_ID_KEY) == 0) {
-		return BYTEVECTOR_VDXF_ID;
+	if (!key_name) {
+		// TODO:: This needs to be handled properly
+		dlg_error("%s", bet_err_str(ERR_NULL_KEY));
 	}
+	/*
+	* Atm, we define the data types of all keys for IDs as byte vector
+	*/
 	return BYTEVECTOR_VDXF_ID;
 }
 
@@ -112,7 +113,7 @@ cJSON *update_cmm(char *id, cJSON *cmm)
 
 	id_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(id_info, "name", id);
-	cJSON_AddStringToObject(id_info, "parent", get_vdxf_id(POKER_CHIPS_VDXF_ID));
+	cJSON_AddStringToObject(id_info, "parent", get_vdxf_id(POKER_ID_FQN));
 	cJSON_AddItemToObject(id_info, "contentmultimap", cmm);
 
 	argc = 3;
@@ -137,7 +138,7 @@ cJSON *append_pa_to_cmm(char *id, char *pa)
 
 	id_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(id_info, "name", id);
-	cJSON_AddStringToObject(id_info, "parent", get_vdxf_id(POKER_CHIPS_VDXF_ID));
+	cJSON_AddStringToObject(id_info, "parent", get_vdxf_id(POKER_ID_FQN));
 
 	cmm = get_cmm(id, 0);
 	cJSON_AddItemToObject(id_info, "contentmultimap", cmm);
@@ -214,7 +215,7 @@ cJSON *update_primaryaddresses(char *id, cJSON *primaryaddress)
 
 	id_info = cJSON_CreateObject();
 	cJSON_AddStringToObject(id_info, "name", id);
-	cJSON_AddStringToObject(id_info, "parent", get_vdxf_id(POKER_CHIPS_VDXF_ID));
+	cJSON_AddStringToObject(id_info, "parent", get_vdxf_id(POKER_ID_FQN));
 	cJSON_AddItemToObject(id_info, "primaryaddresses", primaryaddress);
 
 	argc = 3;
@@ -223,10 +224,6 @@ cJSON *update_primaryaddresses(char *id, cJSON *primaryaddress)
 	argv = bet_copy_args(argc, verus_chips_cli, "updateidentity", params);
 
 	argjson = update_with_retry(argc, argv);
-#if 0
-	argjson = cJSON_CreateObject();
-	make_command(argc, argv, &argjson);
-#endif
 
 end:
 	bet_dealloc_args(argc, &argv);
@@ -394,7 +391,7 @@ end:
 	return out;
 }
 
-bool is_dealer_exists(char *dealer_id)
+bool is_dealer_registered(char *dealer_id)
 {
 	cJSON *dealers = NULL;
 
@@ -402,7 +399,6 @@ bool is_dealer_exists(char *dealer_id)
 		return false;
 	}
 	dealers = list_dealers();
-
 	for (int32_t i = 0; i < cJSON_GetArraySize(dealers); i++) {
 		if (0 == strcmp(dealer_id, jstri(dealers, i))) {
 			return true;
@@ -436,7 +432,7 @@ int32_t get_player_id(int *player_id)
 	dlg_info("%s", cJSON_Print(player_info));
 
 	for (int32_t i = 0; i < cJSON_GetArraySize(player_info); i++) {
-		if (strstr(jstri(player_info, i), player_config.primaryaddress)) {
+		if (strstr(jstri(player_info, i), player_config.verus_pid)) {
 			strtok(jstri(player_info, i), "_");
 			strtok(NULL, "_");
 			*player_id = atoi(strtok(NULL, "_"));
@@ -455,7 +451,7 @@ int32_t join_table()
 	data = cJSON_CreateObject();
 	jaddstr(data, "dealer_id", player_config.dealer_id);
 	jaddstr(data, "table_id", player_config.table_id);
-	jaddstr(data, "primaryaddress", player_config.primaryaddress);
+	jaddstr(data, "verus_pid", player_config.verus_pid);
 
 	op_id = verus_sendcurrency_data(data);
 	if (op_id == NULL)
@@ -474,9 +470,12 @@ int32_t join_table()
 		char *txid = jstr(jobj(jitem(op_id_info, 0), "result"), "txid");
 		strcpy(player_config.txid, txid);
 		dlg_info("payin_tx::%s", txid);
-		retval = check_player_join_status(player_config.table_id, player_config.primaryaddress);
+		retval = check_player_join_status(player_config.table_id, player_config.verus_pid);
 		if (retval) {
-			// TODO::This is where TX is success but PA is not added to the table, ideally in these scenarios TX needs to be reversed.
+			/*
+			 TODO::This is where TX is success verus_pid is not added to the table, in such scenarios if the tx is not reversed, 
+			 then using dispute resolution protocol the player need to get the funds back.
+			*/
 			return retval;
 		}
 	}
@@ -506,14 +505,14 @@ int32_t chose_table()
 		return retval;
 	}
 
-	if (retval == ERR_PA_EXISTS)
+	if (retval == ERR_DUPLICATE_PLAYERID)
 		return retval;
 
 	dlg_info("Unable to join preconfigured table ::%s, checking for any other available tables...",
 		 bet_err_str(retval));
 
 	dealer_ids = cJSON_CreateArray();
-	dealer_ids = get_cJSON_from_id_key(DEALERS_ID, DEALERS_KEY, 1);
+	dealer_ids = get_cJSON_from_id_key(DEALERS_ID_FQN, DEALERS_KEY, 1);
 	if (!dealer_ids) {
 		return ERR_NO_DEALERS_FOUND;
 	}
@@ -529,14 +528,12 @@ int32_t chose_table()
 	}
 	return ERR_NO_TABLES_FOUND;
 }
+
 int32_t find_table()
 {
 	int32_t retval = OK;
 	cJSON *t_table_info = NULL, *dealer_ids = NULL;
 
-	if (!is_id_exists("dealers", 0)) {
-		return ERR_NO_DEALERS_FOUND;
-	}
 	/*
 	* Check if the configured table meets the preconditions for the player to join the table
 	*/
@@ -544,11 +541,12 @@ int32_t find_table()
 		return retval;
 	}
 	/*
-	* Check if the player wallet has suffiecient funds to join the table 
+	* Check if the player wallet has suffiecient funds to join the table chosen
 	*/
 	if (!check_if_enough_funds_avail(player_t.table_id)) {
 		return ERR_CHIPS_INSUFFICIENT_FUNDS;
 	}
+
 	return retval;
 }
 
@@ -575,19 +573,21 @@ bool is_id_exists(char *id, int16_t full_id)
 	return id_exists;
 }
 
-int32_t check_player_join_status(char *table_id, char *pa)
+int32_t check_player_join_status(char *table_id, char *verus_pid)
 {
-	int32_t block_count = 0, retval = ERR_PA_NOT_ADDED_TO_TABLE;
+	int32_t block_count = 0, retval = ERR_PLAYER_NOT_ADDED;
 	int32_t block_wait_time =
 		5; //This is the wait time in number of blocks upto which player can look for its table joining update
 
 	block_count = chips_get_block_count() + block_wait_time;
 	do {
-		cJSON *pa_arr = cJSON_CreateArray();
-		pa_arr = get_primaryaddresses(table_id, 0);
-		for (int32_t i = 0; i < cJSON_GetArraySize(pa_arr); i++) {
-			if (0 == strcmp(jstri(pa_arr, i), pa))
+		cJSON *t_player_info = get_t_player_info(table_id);
+		cJSON *player_info = jobj(t_player_info, "player_info");
+		dlg_info("t_player_info :: %s", cJSON_Print(t_player_info));
+		for (int32_t i = 0; (player_info) && (i < cJSON_GetArraySize(player_info)); i++) {
+			if (strstr(jstri(player_info, i), player_config.verus_pid)) {
 				return OK;
+			}
 		}
 		sleep(2);
 	} while (chips_get_block_count() <= block_count);
@@ -630,7 +630,7 @@ cJSON *verus_sendcurrency_data(cJSON *data)
 	currency_detail = cJSON_CreateObject();
 	cJSON_AddStringToObject(currency_detail, "currency", CHIPS);
 	cJSON_AddNumberToObject(currency_detail, "amount", default_chips_tx_fee);
-	cJSON_AddStringToObject(currency_detail, "address", CASHIERS_ID);
+	cJSON_AddStringToObject(currency_detail, "address", CASHIERS_ID_FQN);
 
 	tx_params = cJSON_CreateArray();
 	cJSON_AddItemToArray(tx_params, currency_detail);
@@ -734,7 +734,7 @@ cJSON *get_available_t_of_d(char *dealer_id)
 	game_state = get_game_state(jstr(t_table_info, "table_id"));
 
 	if ((game_state == G_TABLE_STARTED) && (!is_table_full(jstr(t_table_info, "table_id"))) &&
-	    (!check_if_pa_exists(jstr(t_table_info, "table_id")))) {
+	    (!is_playerid_added(jstr(t_table_info, "table_id")))) {
 		return t_table_info;
 	}
 	return NULL;
@@ -764,7 +764,28 @@ bool is_table_full(char *table_id)
 	return false;
 }
 
-int32_t check_if_pa_exists(char *table_id)
+bool is_playerid_added(char *table_id)
+{
+	int32_t game_state, retval = OK;
+	char *game_id_str = NULL;
+	cJSON *t_player_info = NULL, *player_info = NULL;
+
+	game_state = get_game_state(table_id);
+	if (game_state == G_TABLE_STARTED) {
+		game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
+
+		t_player_info =
+			get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
+		player_info = jobj(t_player_info, "player_info");
+		for (int32_t i = 0; i < cJSON_GetArraySize(player_info); i++) {
+			if (strstr(jstri(player_info, i), player_config.verus_pid))
+				return true;
+		}
+	}
+	return false;
+}
+
+int32_t check_if_pa_exists(char *table_id, char *pa)
 {
 	int32_t retval = OK;
 	cJSON *pa_arr = NULL;
@@ -773,7 +794,7 @@ int32_t check_if_pa_exists(char *table_id)
 	pa_arr = get_primaryaddresses(table_id, 0);
 	if (pa_arr) {
 		for (int32_t i = 0; i < cJSON_GetArraySize(pa_arr); i++) {
-			if (0 == strcmp(jstri(pa_arr, i), player_config.primaryaddress)) {
+			if (0 == strcmp(jstri(pa_arr, i), pa)) {
 				return !retval;
 			}
 		}
@@ -806,7 +827,7 @@ int32_t check_if_d_t_available(char *dealer_id, char *table_id, cJSON **t_table_
 	int32_t retval = OK;
 	int32_t game_state;
 
-	if ((!dealer_id) || (!table_id) || (!is_dealer_exists(dealer_id)) || (!is_id_exists(table_id, 0))) {
+	if ((!dealer_id) || (!table_id) || (!is_dealer_registered(dealer_id)) || (!is_id_exists(table_id, 0))) {
 		return ERR_CONFIG_PLAYER_ARGS;
 	}
 
@@ -819,9 +840,9 @@ int32_t check_if_d_t_available(char *dealer_id, char *table_id, cJSON **t_table_
 	}
 
 	if ((0 == strcmp(jstr(*t_table_info, "table_id"), table_id))) {
-		// Check is the Primary Address of the player join request is already been added to the table
-		if (check_if_pa_exists(table_id)) {
-			return ERR_PA_EXISTS;
+		// Check is the verus id of the player in the join request is already been added to the table
+		if (is_playerid_added(table_id)) {
+			return ERR_DUPLICATE_PLAYERID;
 		}
 
 		// Check if the table is started
@@ -980,23 +1001,16 @@ cJSON *update_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data, bool 
 
 cJSON *get_t_player_info(char *table_id)
 {
-	cJSON *cmm_t_player_info = NULL, *t_player_info = NULL, *cmm = NULL;
-	char *hexstr = NULL, *t_player_info_str = NULL;
+	int32_t game_state;
+	char *game_id_str = NULL;
+	cJSON *t_player_info = NULL;
 
-	cmm = cJSON_CreateObject();
-	cmm = get_cmm(table_id, 0);
-	if (cmm) {
-		cmm_t_player_info = cJSON_CreateObject();
-		cmm_t_player_info = cJSON_GetObjectItem(cmm, get_vdxf_id(T_PLAYER_INFO_KEY));
-		if (cmm_t_player_info) {
-			hexstr = jstr(cJSON_GetArrayItem(cmm_t_player_info, 0), get_vdxf_id(STRING_VDXF_ID));
-			t_player_info_str = calloc(1, strlen(hexstr));
-			hexstr_to_str(hexstr, t_player_info_str);
-			t_player_info = cJSON_CreateObject();
-			t_player_info = cJSON_Parse(t_player_info_str);
-		}
+	game_state = get_game_state(table_id);
+	if (game_state == G_TABLE_STARTED) {
+		game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
+		t_player_info =
+			get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
 	}
-	free(t_player_info_str);
 	return t_player_info;
 }
 
@@ -1004,7 +1018,7 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 {
 	int32_t retval = OK, game_state;
 	double amount = 0;
-	char pa[128] = { 0 }, *game_id_str = NULL, *table_id = NULL, *dealer_id = NULL;
+	char *game_id_str = NULL, *table_id = NULL, *dealer_id = NULL, *verus_pid = NULL;
 	cJSON *t_player_info = NULL, *player_info = NULL, *t_table_info = NULL;
 
 	if ((!txid) || (!payin_tx_data))
@@ -1013,9 +1027,10 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 	dlg_info("Payin TX Data ::%s", cJSON_Print(payin_tx_data));
 	table_id = jstr(payin_tx_data, "table_id");
 	dealer_id = jstr(payin_tx_data, "dealer_id");
+	verus_pid = jstr(payin_tx_data, "verus_pid");
 
 	//Check the table ID and dealer ID mentioned in Payin TX are valid.
-	if (!is_id_exists(table_id, 0) || !is_id_exists(dealer_id, 0)) {
+	if (!is_id_exists(table_id, 0) || !is_id_exists(dealer_id, 0) || !is_id_exists(verus_pid, 0)) {
 		return ERR_ID_NOT_FOUND;
 	}
 
@@ -1035,14 +1050,13 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 	t_table_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, game_id_str));
 
 	//Check the amount of funds that the player deposited at Cashier and see if these funds are with in the range of [min-max] stake.
-	amount = chips_get_balance_on_address_from_tx(get_vdxf_id(CASHIERS_ID), txid);
+	amount = chips_get_balance_on_address_from_tx(get_vdxf_id(CASHIERS_ID_FQN), txid);
 	if ((amount < jdouble(t_table_info, "min_stake")) && (amount > jdouble(t_table_info, "max_stake"))) {
 		dlg_error("funds deposited ::%f should be in the range %f::%f\n", amount,
 			  jdouble(t_table_info, "min_stake"), jdouble(t_table_info, "max_stake"));
 		return ERR_PAYIN_TX_INVALID_FUNDS;
 	}
-
-	// Check for a duplicate join request and duplicate PA, PA should be unique so that ensures a player can occupy atmost one position on the table.
+	// Check for a duplicate join request and duplicate verus_pid, verus player ID should be unique so that ensures a player can occupy atmost one position on the table.
 	t_player_info = cJSON_CreateObject();
 	t_player_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
 	if (!t_player_info) {
@@ -1051,19 +1065,19 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data)
 
 	player_info = cJSON_CreateArray();
 	player_info = cJSON_GetObjectItem(t_player_info, "player_info");
-	strncpy(pa, jstr(payin_tx_data, "primaryaddress"), sizeof(pa));
 	for (int32_t i = 0; i < cJSON_GetArraySize(player_info); i++) {
-		if ((strstr(jstri(player_info, i), pa)) && (strstr(jstri(player_info, i), txid))) {
+		if ((strstr(jstri(player_info, i), verus_pid)) && (strstr(jstri(player_info, i), txid))) {
 			return ERR_DUP_PAYIN_UPDATE_REQ;
-		} else if (strstr(jstri(player_info, i), pa)) {
-			return ERR_PA_EXISTS;
+		} else if (strstr(jstri(player_info, i), verus_pid)) {
+			return ERR_DUPLICATE_PLAYERID;
 		}
 	}
 	return retval;
 }
 
 /*
- The player info is stored in the form of PA_TXID_PLAYERID
+* Reads the key T_PLAYER_INFO_KEY
+* Increment num_players and append player data to player_info array.
 */
 static cJSON *compute_updated_t_player_info(char *txid, cJSON *payin_tx_data)
 {
@@ -1081,11 +1095,13 @@ static cJSON *compute_updated_t_player_info(char *txid, cJSON *payin_tx_data)
 	if (t_player_info) {
 		num_players = jint(t_player_info, "num_players");
 		player_info = cJSON_GetObjectItem(t_player_info, "player_info");
-		if (!player_info)
+		if (!player_info) {
+			dlg_error("Error with data on Key :: %s", T_PLAYER_INFO_KEY);
 			return NULL;
+		}
 	}
 	num_players++;
-	sprintf(pa_tx_id, "%s_%s_%d", jstr(payin_tx_data, "primaryaddress"), txid, num_players);
+	sprintf(pa_tx_id, "%s_%s_%d", jstr(payin_tx_data, "verus_pid"), txid, num_players);
 	jaddistr(player_info, pa_tx_id);
 
 	updated_t_player_info = cJSON_CreateObject();
@@ -1113,8 +1129,8 @@ int32_t process_payin_tx_data(char *txid, cJSON *payin_tx_data)
 			3. Duplicate PA
 		*/
 		dlg_error("Reversing the Payin TX due to :: %s", bet_err_str(retval));
-		double amount = chips_get_balance_on_address_from_tx(get_vdxf_id(CASHIERS_ID), txid);
-		cJSON *tx = chips_transfer_funds(amount, jstr(payin_tx_data, "primaryaddress"));
+		double amount = chips_get_balance_on_address_from_tx(get_vdxf_id(CASHIERS_ID_FQN), txid);
+		cJSON *tx = chips_transfer_funds(amount, jstr(payin_tx_data, "verus_pid"));
 		dlg_info("Payback TX::%s", cJSON_Print(tx));
 		return retval;
 	}
@@ -1137,17 +1153,13 @@ int32_t process_payin_tx_data(char *txid, cJSON *payin_tx_data)
 						updated_t_player_info, true);
 	dlg_info("%s", cJSON_Print(out));
 
-	//Add the players primary address to the list of the primary addresses of the table id so that player can able to perform the updates to the table ID.
-	out = append_pa_to_cmm(jstr(payin_tx_data, "table_id"), jstr(payin_tx_data, "primaryaddress"));
-	dlg_info("%s", cJSON_Print(out));
-
 	return retval;
 }
 
 void process_block(char *blockhash)
 {
 	int32_t blockcount = 0, retval = OK;
-	char verus_addr[1][100] = { CASHIERS_ID };
+	char verus_addr[1][100] = { CASHIERS_ID_FQN };
 	cJSON *blockjson = NULL, *payin_tx_data = NULL;
 
 	if (!bet_is_new_block_set()) {
@@ -1169,11 +1181,18 @@ void process_block(char *blockhash)
 	}
 	dlg_info("received blockhash of block height = %d", blockcount);
 
-	if (!is_id_exists(CASHIERS_ID, 1)) {
-		dlg_error("Cashiers ID ::%s doesn't exists", CASHIERS_ID);
+	if (!is_id_exists(CASHIERS_ID_FQN, 1)) {
+		dlg_error("Cashiers ID ::%s doesn't exists", CASHIERS_ID_FQN);
 		return;
 	}
 
+	/*
+	* List all the utxos attached to the registered cashiers, like cashiers.poker.chips10sec@
+	* Look for the utxos that matches to the current processing block height
+	* Extract the tx data 
+	* Process the tx data to see if this tx is intended and related to poker
+	* If the tx is related to poker, do all checks and add the players info to the table
+	*/
 	cJSON *argjson = cJSON_CreateObject();
 	argjson = getaddressutxos(verus_addr, 1);
 	for (int32_t i = 0; i < cJSON_GetArraySize(argjson); i++) {
@@ -1196,11 +1215,17 @@ end:
 
 cJSON *list_dealers()
 {
-	cJSON *dealers = NULL;
+	cJSON *dealers = NULL, *dealers_arr = NULL;
 
 	dealers = cJSON_CreateObject();
-	dealers = get_cJSON_from_id_key(DEALERS_ID, DEALERS_KEY, 1);
-	return dealers;
+	dealers = get_cJSON_from_id_key(DEALERS_ID_FQN, DEALERS_KEY, 1);
+
+	if (!dealers) {
+		dlg_info("No dealers has been added to dealers.poker.chips10sec@ yet.");
+		return NULL;
+	}
+	dealers_arr = cJSON_GetObjectItem(dealers, "dealers");
+	return dealers_arr;
 }
 
 void list_tables()
@@ -1233,12 +1258,12 @@ int32_t check_poker_ready()
 	int32_t retval = OK;
 	cJSON *dealers = NULL;
 
-	if ((!is_id_exists(CASHIERS_ID, 1)) || (!is_id_exists(DEALERS_ID, 1))) {
+	if ((!is_id_exists(CASHIERS_ID_FQN, 1)) || (!is_id_exists(DEALERS_ID_FQN, 1))) {
 		return ERR_IDS_NOT_CONFIGURED;
 	}
 
 	dealers = cJSON_CreateObject();
-	dealers = get_cJSON_from_id_key(DEALERS_ID, DEALERS_KEY, 1);
+	dealers = get_cJSON_from_id_key(DEALERS_ID_FQN, DEALERS_KEY, 1);
 	if (!dealers) {
 		return ERR_NO_DEALERS_FOUND;
 	}
@@ -1271,13 +1296,18 @@ int32_t add_dealer_to_dealers(char *dealer_id)
 	return OK;
 }
 
-int32_t id_canspendfor(char *id, int32_t full_id)
+int32_t id_canspendfor(char *id, int32_t full_id, int32_t *err_no)
 {
 	int32_t argc = 3, retval = OK, id_canspendfor_value = false;
 	char **argv = NULL;
 	char params[128] = { 0 };
 	cJSON *argjson = NULL, *obj = NULL;
 
+	if (!is_id_exists(id, full_id)) {
+		*err_no = ERR_ID_NOT_FOUND;
+		return false;
+	}
+
 	strncpy(params, id, strlen(id));
 	if (0 == full_id) {
 		strcat(params, ".poker.chips10sec@");
@@ -1289,24 +1319,33 @@ int32_t id_canspendfor(char *id, int32_t full_id)
 	retval = make_command(argc, argv, &argjson);
 
 	if (retval != OK) {
-		return ERR_ID_NOT_FOUND;
+		*err_no = retval;
+		goto end;
 	}
 
-	if (((obj = jobj(argjson, "canspendfor")) != NULL) && (is_cJSON_True(obj))) {
+	if (((obj = jobj(argjson, "canspendfor")) != NULL) && (is_cJSON_True(obj)))
 		id_canspendfor_value = true;
-	}
+	else
+		*err_no = ERR_ID_AUTH;
+
 	bet_dealloc_args(argc, &argv);
 
+end:
 	return id_canspendfor_value;
 }
 
-int32_t id_cansignfor(char *id, int32_t full_id)
+int32_t id_cansignfor(char *id, int32_t full_id, int32_t *err_no)
 {
 	int32_t argc = 3, retval = OK, id_cansignfor_value = false;
 	char **argv = NULL;
 	char params[128] = { 0 };
 	cJSON *argjson = NULL, *obj = NULL;
 
+	if (!is_id_exists(id, full_id)) {
+		*err_no = ERR_ID_NOT_FOUND;
+		return false;
+	}
+
 	strncpy(params, id, strlen(id));
 	if (0 == full_id) {
 		strcat(params, ".poker.chips10sec@");
@@ -1318,13 +1357,28 @@ int32_t id_cansignfor(char *id, int32_t full_id)
 	retval = make_command(argc, argv, &argjson);
 
 	if (retval != OK) {
-		return ERR_ID_NOT_FOUND;
+		*err_no = retval;
+		goto end;
 	}
 
-	if (((obj = jobj(argjson, "cansignfor")) != NULL) && (is_cJSON_True(obj))) {
+	if (((obj = jobj(argjson, "cansignfor")) != NULL) && (is_cJSON_True(obj)))
 		id_cansignfor_value = true;
-	}
+	else
+		*err_no = ERR_ID_AUTH;
+
 	bet_dealloc_args(argc, &argv);
 
+end:
 	return id_cansignfor_value;
+}
+
+bool is_table_registered(char *table_id, char *dealer_id)
+{
+	cJSON *t_table_info = NULL;
+
+	t_table_info = get_cJSON_from_id_key(dealer_id, T_TABLE_INFO_KEY, 0);
+	if (t_table_info && (strcmp(table_id, jstr(t_table_info, "table_id")) == 0)) {
+		return true;
+	}
+	return false;
 }
