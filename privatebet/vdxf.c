@@ -744,7 +744,7 @@ bool is_table_full(char *table_id)
 {
 	int32_t game_state;
 	char *game_id_str = NULL;
-	cJSON *t_player_info = NULL, *t_table_info = NULL;
+	cJSON *t_player_info = NULL, *t_table_info = NULL, *player_info = NULL;
 
 	game_state = get_game_state(table_id);
 	if (game_state == G_TABLE_STARTED) {
@@ -757,6 +757,17 @@ bool is_table_full(char *table_id)
 
 		if ((t_player_info) && (t_table_info) &&
 		    (jint(t_player_info, "num_players") >= jint(t_table_info, "max_players"))) {
+		    no_players = jint(t_player_info, "num_players");
+			
+			player_info = jobj(t_player_info, "player_info");
+			dlg_info("%s", cJSON_Print(player_info));
+			for (int32_t i = 0; i < cJSON_GetArraySize(player_info); i++) {
+				strtok(jstri(player_info, i), "_");
+				strtok(NULL, "_");
+				char *temp = atoi(strtok(NULL, "_"));
+				strcpy(player_ids[i], temp);
+				dlg_info("player id::%d", player_ids[i]);
+			}			
 			dlg_error("Table is full");
 			return true;
 		}
