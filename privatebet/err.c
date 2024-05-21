@@ -191,6 +191,7 @@ const char *bet_err_str(int32_t err_no)
 	case ERR_PLAYER_NOT_ADDED:
 		return "Player ID hasn't added to the table";
 	default:
+		dlg_error("err_no::%d", err_no);
 		return "This error is not handled yet...";
 	}
 }
