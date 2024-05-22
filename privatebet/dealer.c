@@ -144,6 +144,7 @@ int32_t dealer_table_init(struct table t)
 	return retval;
 }
 
+
 bool is_players_shuffled_deck(char *table_id)
 {
 	int32_t game_state, num_players = 0, count = 0;
@@ -161,7 +162,7 @@ bool is_players_shuffled_deck(char *table_id)
 			get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
 		num_players = jint(t_player_info, "num_players");
 		for (int32_t i = 0; i < num_players; i++) {
-			if (get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(all_t_p_keys[i], game_id_str)))
+			if(G_DECK_SHUFFLING_P == get_game_state(player_ids[i]))
 				count++;
 		}
 		if (count == num_players)
@@ -249,9 +250,11 @@ int32_t handle_game_state(char *table_id)
 			append_game_state(table_id, G_DECK_SHUFFLING_P, NULL);
 		break;
 	case G_DECK_SHUFFLING_P:
+		#if 0
 		retval = dealer_shuffle_deck(table_id);
 		if (!retval)
 			append_game_state(table_id, G_DECK_SHUFFLING_D, NULL);
+		#endif
 		break;
 	case G_DECK_SHUFFLING_D:
 		//Do nothing;
