@@ -747,7 +747,7 @@ bool is_table_full(char *table_id)
 	cJSON *t_player_info = NULL, *t_table_info = NULL, *player_info = NULL;
 
 	game_state = get_game_state(table_id);
-	if (game_state == G_TABLE_STARTED) {
+	if (game_state >= G_TABLE_STARTED) {
 		game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
 
 		t_player_info =
@@ -760,11 +760,9 @@ bool is_table_full(char *table_id)
 			if (bet_node_type == dealer) {
 				no_players = jint(t_player_info, "num_players");
 				player_info = jobj(t_player_info, "player_info");
-				dlg_info("%s", cJSON_Print(player_info));
+				//The player record is in the form of playerverusid_txid_pid, using strtok the first token we get is verus player ID.
 				for (int32_t i = 0; i < cJSON_GetArraySize(player_info); i++) {
-					strtok(jstri(player_info, i), "_");
-					strtok(NULL, "_");
-					strcpy(player_ids[i], strtok(NULL, "_"));
+					strcpy(player_ids[i], strtok(jstri(player_info, i), "_"));
 					dlg_info("player id::%s", player_ids[i]);
 				}
 			}
