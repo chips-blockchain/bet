@@ -128,9 +128,9 @@ void print_player_id(char *id)
 	if (game_id) {
 		cJSON *player_deck = NULL;
 		player_deck = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(PLAYER_DECK_KEY, game_id));
-		if(player_deck)
+		if (player_deck)
 			dlg_info("%s :: %s", PLAYER_DECK_KEY, cJSON_Print(player_deck));
-	}	
+	}
 }
 
 void print_table_key_info(int argc, char **argv)

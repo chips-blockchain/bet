@@ -40,9 +40,10 @@ int32_t player_init_deck()
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
 		jaddistr(cjson_player_cards, bits256_str(str, p_deck_info.player_r[i].prod));
 	}
-	
+
 	dlg_info("Updating %s key...", T_GAME_ID_KEY);
-	cJSON *out = append_cmm_from_id_key_data_hex(player_config.verus_pid, T_GAME_ID_KEY, bits256_str(str, p_deck_info.game_id), false);
+	cJSON *out = append_cmm_from_id_key_data_hex(player_config.verus_pid, T_GAME_ID_KEY,
+						     bits256_str(str, p_deck_info.game_id), false);
 
 	dlg_info("Updating %s key...", PLAYER_DECK_KEY);
 	out = append_cmm_from_id_key_data_cJSON(

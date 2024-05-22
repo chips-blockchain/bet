@@ -44,7 +44,7 @@
 #include "../external/nng/include/nng/compat/nanomsg/tcp.h"
 
 #include "common.h"
-
+#include "vdxf.h"
 enum action_type { small_blind = 1, big_blind, check, raise, call, allin, fold };
 
 enum card_type { burn_card = 0, hole_card, flop_card_1, flop_card_2, flop_card_3, turn_card, river_card };
@@ -57,17 +57,12 @@ enum be_status { backend_not_ready = 0, backend_ready };
 
 enum gui_status { gui_not_ready = 0, gui_ready };
 
-enum bet_node {
-	player = 0,
-	dealer,
-	cashier	
-};
+enum bet_node { player = 0, dealer, cashier };
 
 extern int32_t bet_node_type;
 
 int32_t no_players;
 char player_ids[CARDS777_MAXPLAYERS][MAX_ID_LEN];
-
 
 struct BET_shardsinfo {
 	UT_hash_handle hh;
