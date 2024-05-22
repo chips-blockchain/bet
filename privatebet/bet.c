@@ -470,6 +470,7 @@ static void bet_start(int argc, char **argv)
 	bet_parse_blockchain_config_ini_file();
 
 	if (strcmp(argv[1], "cashier") == 0) {
+		bet_node_type = cashier;
 		cashier_game_init("sg777_t");
 #if 0
 		if (argc == 3) {
@@ -481,6 +482,7 @@ static void bet_start(int argc, char **argv)
 		}
 #endif
 	} else if ((strcmp(argv[1], "dcv") == 0) || (strcmp(argv[1], "dealer") == 0)) {
+		bet_node_type = dealer;
 		retval = bet_parse_verus_dealer();
 	} else if (strcmp(argv[1], "extract_tx_data") == 0) {
 		if (argc == 3) {
@@ -502,6 +504,7 @@ static void bet_start(int argc, char **argv)
 			bet_command_info();
 		}
 	} else if ((strcasecmp(argv[1], "player") == 0) || (strcasecmp(argv[1], "p") == 0)) {
+		bet_node_type = player;
 		retval = handle_verus_player();
 	} else if (strcmp(argv[1], "scan") == 0) {
 		bet_sqlite3_init();
