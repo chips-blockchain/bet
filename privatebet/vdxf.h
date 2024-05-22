@@ -69,6 +69,12 @@ key is represented as chips.vrsc::poker.cashiers.
 #define T_B_P9_DECK_KEY "chips.vrsc::poker.t_b_p9_deck"
 
 #define T_B_DECK_BV_KEY "chips.vrsc::poker.t_b_deck_bv"
+/*
+* t_game_info {
+* t_game_ids : 256 bit unique string in hex
+* game_info : Holds the info of the gaming state
+* }
+*/
 #define T_GAME_INFO_KEY "chips.vrsc::poker.t_game_info"
 
 #define T_B_DECK_BV_KEY_NAME "t_b_deck_bv"
