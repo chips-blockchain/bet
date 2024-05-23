@@ -51,7 +51,7 @@ int32_t player_init_deck()
 		player_deck, true);
 	dlg_info("%s", cJSON_Print(out));
 
-	dlg_info("Updating game state...");	
+	dlg_info("Updating game state...");
 	out = append_game_state(player_config.verus_pid, G_DECK_SHUFFLING_P, NULL);
 	if (!out)
 		return ERR_GAME_STATE_UPDATE;

@@ -66,12 +66,15 @@ int32_t dealer_sb_deck(char *id, bits256 *player_r, int32_t player_id)
 	cJSON *d_blinded_deck = NULL;
 
 	game_id_str = get_str_from_id_key(id, T_GAME_ID_KEY);
+
+	dlg_info("Player::%d deck...", player_id);
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
 		dlg_info("%s", bits256_str(str, player_r[i]));
 	}
 	shuffle_deck_db(player_r, CARDS777_MAXCARDS, d_deck_info.d_permi);
 	blind_deck_d(player_r, CARDS777_MAXCARDS, d_deck_info.dealer_r);
 
+	dlg_info("Player::%d deck blinded with dealer secret key...", player_id);
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
 		dlg_info("%s", bits256_str(str, player_r[i]));
 	}
@@ -80,7 +83,7 @@ int32_t dealer_sb_deck(char *id, bits256 *player_r, int32_t player_id)
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
 		jaddistr(d_blinded_deck, bits256_str(str, player_r[i]));
 	}
-
+	dlg_info("Updating Player ::%d blinded deck at the key ::%s by dealer..", player_id, all_t_d_p_keys[player_id]);
 	cJSON *out = append_cmm_from_id_key_data_cJSON(id, get_key_data_vdxf_id(all_t_d_p_keys[player_id], game_id_str),
 						       d_blinded_deck, true);
 
@@ -144,7 +147,6 @@ int32_t dealer_table_init(struct table t)
 	return retval;
 }
 
-
 bool is_players_shuffled_deck(char *table_id)
 {
 	int32_t game_state, num_players = 0, count = 0;
@@ -162,7 +164,7 @@ bool is_players_shuffled_deck(char *table_id)
 			get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
 		num_players = jint(t_player_info, "num_players");
 		for (int32_t i = 0; i < num_players; i++) {
-			if(G_DECK_SHUFFLING_P == get_game_state(player_ids[i]))
+			if (G_DECK_SHUFFLING_P == get_game_state(player_ids[i]))
 				count++;
 		}
 		if (count == num_players)
@@ -186,10 +188,11 @@ int32_t dealer_shuffle_deck(char *id)
 	num_players = jint(t_player_info, "num_players");
 
 	for (int32_t i = 0; i < num_players; i++) {
-		cJSON *t_player = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(all_t_p_keys[i], game_id_str));
-		cJSON *t_p_cardinfo = cJSON_GetObjectItem(t_player, "cardinfo");
-		for (int32_t j = 0; j < cJSON_GetArraySize(t_p_cardinfo); j++) {
-			t_p_r[j] = jbits256i(t_p_cardinfo, j);
+		cJSON *player_deck =
+			get_cJSON_from_id_key_vdxfid(player_ids[i], get_key_data_vdxf_id(PLAYER_DECK_KEY, game_id_str));
+		cJSON *cardinfo = cJSON_GetObjectItem(player_deck, "cardinfo");
+		for (int32_t j = 0; j < cJSON_GetArraySize(cardinfo); j++) {
+			t_p_r[j] = jbits256i(cardinfo, j);
 		}
 		retval = dealer_sb_deck(id, t_p_r, (i + 1));
 		if (retval)
@@ -200,7 +203,7 @@ int32_t dealer_shuffle_deck(char *id)
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
 		jaddistr(t_d_deck_info, bits256_str(str, d_deck_info.dealer_r[i].prod));
 	}
-
+	dlg_info("Updating the key :: %s, which contains public points of dealer blinded values..", T_D_DECK_KEY);
 	cJSON *out = append_cmm_from_id_key_data_cJSON(id, get_key_data_vdxf_id(T_D_DECK_KEY, game_id_str),
 						       t_d_deck_info, true);
 	if (!out)
@@ -250,11 +253,9 @@ int32_t handle_game_state(char *table_id)
 			append_game_state(table_id, G_DECK_SHUFFLING_P, NULL);
 		break;
 	case G_DECK_SHUFFLING_P:
-		#if 0
 		retval = dealer_shuffle_deck(table_id);
 		if (!retval)
 			append_game_state(table_id, G_DECK_SHUFFLING_D, NULL);
-		#endif
 		break;
 	case G_DECK_SHUFFLING_D:
 		//Do nothing;
