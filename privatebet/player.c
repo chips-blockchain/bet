@@ -10,14 +10,6 @@
 #include "config.h"
 #include "print.h"
 
-char all_t_p_keys[all_t_p_keys_no][128] = { T_PLAYER1_KEY, T_PLAYER2_KEY,    T_PLAYER3_KEY,    T_PLAYER4_KEY,
-					    T_PLAYER5_KEY, T_PLAYER6_KEY,    T_PLAYER7_KEY,    T_PLAYER8_KEY,
-					    T_PLAYER9_KEY, T_TABLE_INFO_KEY, T_PLAYER_INFO_KEY };
-
-char all_t_p_key_names[all_t_p_keys_no][128] = { "t_player1", "t_player2",    "t_player3",    "t_player4",
-						 "t_player5", "t_player6",    "t_player7",    "t_player8",
-						 "t_player9", "t_table_info", "t_player_info" };
-
 struct p_deck_info_struct p_deck_info;
 
 int32_t player_init_deck()

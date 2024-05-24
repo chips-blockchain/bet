@@ -272,8 +272,6 @@ struct table {
 };
 extern struct table player_t;
 
-extern char T_PLAYER_KEYS[9][128];
-
 extern bits256 game_id;
 
 bits256 xoverz_donna(bits256 a);
