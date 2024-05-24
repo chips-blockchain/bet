@@ -77,9 +77,6 @@ key is represented as chips.vrsc::poker.cashiers.
 */
 #define T_GAME_INFO_KEY "chips.vrsc::poker.t_game_info"
 
-#define T_B_DECK_BV_KEY_NAME "t_b_deck_bv"
-#define T_GAME_INFO_KEY_NAME "t_game_info"
-
 /*
 * player_deck {
 * id: Players ID assigned by dealer, this is fecthed using get_playerid after player join.
@@ -138,10 +135,6 @@ Bet supports various tokens that launch on Verus and CHIPS is the token which we
 #define all_t_d_p_keys_no 10
 extern char all_t_d_p_keys[all_t_d_p_keys_no][128];
 extern char all_t_d_p_key_names[all_t_d_p_keys_no][128];
-
-#define all_t_p_keys_no 11
-extern char all_t_p_keys[all_t_p_keys_no][128];
-extern char all_t_p_key_names[all_t_p_keys_no][128];
 
 #define all_t_b_p_keys_no 10
 extern char all_t_b_p_keys[all_t_b_p_keys_no][128];

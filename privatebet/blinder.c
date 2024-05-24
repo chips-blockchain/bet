@@ -130,6 +130,7 @@ int32_t handle_game_state_cashier(char *table_id)
 	int32_t game_state, retval = OK;
 
 	game_state = get_game_state(table_id);
+	dlg_info("Game state :: %s", game_state_str(game_state));
 	switch (game_state) {
 	case G_ZEROIZED_STATE:
 	case G_TABLE_ACTIVE:
