@@ -77,7 +77,7 @@ int32_t decode_card(bits256 b_blinded_card, bits256 blinded_value, cJSON *dealer
 int32_t reveal_card(char *table_id)
 {
 	int32_t retval = OK, player_id, card_id, card_value = -1;
-	char *game_id_str = NULL;
+	char *game_id_str = NULL, str[65];
 	cJSON *game_state_info = NULL, *bv_info = NULL, *b_blinded_deck = NULL, *dealer_blind_info = NULL;
 	bits256 b_blinded_card, blinded_value;
 
@@ -98,11 +98,11 @@ int32_t reveal_card(char *table_id)
 		else
 			blinded_value = jbits256i(bv_info, 0);
 
-		//dlg_info("blinded_value::%s", bits256_str(str, blinded_value));
-		//dlg_info("blinded_card::%s", bits256_str(str, b_blinded_card));
+		dlg_info("blinded_value::%s", bits256_str(str, blinded_value));
+		dlg_info("blinded_card::%s", bits256_str(str, b_blinded_card));
 		dealer_blind_info =
 			get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_D_DECK_KEY, game_id_str));
-		//dlg_info("dealer_blind_info::%s", cJSON_Print(dealer_blind_info));
+		dlg_info("dealer_blind_info::%s", cJSON_Print(dealer_blind_info));
 		card_value = decode_card(b_blinded_card, blinded_value, dealer_blind_info);
 		if (card_value == -1) {
 			retval = ERR_CARD_DECODING_FAILED;
@@ -121,7 +121,7 @@ int32_t handle_game_state_player(char *table_id)
 	case G_REVEAL_CARD_P:
 		retval = reveal_card(table_id);
 		if (!retval)
-			append_game_state(table_id, G_REVEAL_CARD_P_DONE, NULL);
+			append_game_state(player_config.verus_pid, G_REVEAL_CARD_P_DONE, NULL);
 		break;
 	default:
 		dlg_info("%s", game_state_str(game_state));
