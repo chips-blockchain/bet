@@ -70,6 +70,15 @@ key is represented as chips.vrsc::poker.cashiers.
 
 #define T_B_DECK_BV_KEY "chips.vrsc::poker.t_b_deck_bv"
 /*
+* card_bv {
+* player_id : If player id is -1, then blinding values of all the players for that card to be revealed.
+* card_id
+* bv or bv[] : blinding value(s)
+* }
+*/
+#define T_CARD_BV_KEY "chips.vrsc::poker.card_bv"
+
+/*
 * t_game_info {
 * t_game_ids : 256 bit unique string in hex
 * game_info : Holds the info of the gaming state

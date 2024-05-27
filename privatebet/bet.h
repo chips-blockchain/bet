@@ -61,7 +61,7 @@ enum bet_node { player = 0, dealer, cashier };
 
 extern int32_t bet_node_type;
 
-int32_t no_players;
+int32_t num_of_players;
 char player_ids[CARDS777_MAXPLAYERS][MAX_ID_LEN];
 
 struct BET_shardsinfo {
@@ -273,6 +273,9 @@ struct table {
 extern struct table player_t;
 
 extern bits256 game_id;
+
+extern int32_t hole_cards_drawn, community_cards_drawn, flop_cards_drawn, turn_card_drawn, river_card_drawn;
+extern int32_t card_matrix[CARDS777_MAXPLAYERS][hand_size];
 
 bits256 xoverz_donna(bits256 a);
 bits256 crecip_donna(bits256 a);
