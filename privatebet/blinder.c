@@ -122,12 +122,6 @@ int32_t reveal_bv(char *table_id)
 	jadd(card_bv, "bv", bv_info);
 
 	dlg_info("bv_info::%s", cJSON_Print(card_bv));
-#if 0
-	dlg_info("vdxf id :: %s", get_key_data_vdxf_id(T_B_DECK_BV_KEY, game_id_str));
-	out = append_cmm_from_id_key_data_cJSON(table_id, get_key_data_vdxf_id(T_B_DECK_BV_KEY, game_id_str), bv_info,
-						true);
-#endif
-	dlg_info("vdxf id :: %s", get_key_data_vdxf_id(T_CARD_BV_KEY, game_id_str));
 	out = append_cmm_from_id_key_data_cJSON(table_id, get_key_data_vdxf_id(T_CARD_BV_KEY, game_id_str), card_bv,
 						true);
 
