@@ -127,11 +127,7 @@ static int32_t handle_player_reveal_card(char *table_id)
 		// Not this players turn
 		return retval;
 	}
-	if (!player_game_state_info) {
-		//Players game state info is not updated it mostly mean this could be players first card
-		return retval;
-	}
-	if (jint(game_state_info, "card_id") > jint(player_game_state_info, "card_id")) {
+	if ((!player_game_state_info) || (jint(game_state_info, "card_id") > jint(player_game_state_info, "card_id"))) {
 		retval = reveal_card(table_id);
 		if (retval == OK) {
 			cJSON *out = append_game_state(player_config.verus_pid, G_REVEAL_CARD_P_DONE, game_state_info);
