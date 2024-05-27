@@ -142,6 +142,7 @@ int32_t is_card_drawn(char *table_id)
 
 	game_state_info = get_game_state_info(table_id);
 
+	dlg_info("Players verus ID::%s", player_ids[jint(game_state_info, "player_id")]);
 	// wait for 60 seconds for the player reaction
 	while (timeout < 60) {
 		timeout++;
