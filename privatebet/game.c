@@ -29,6 +29,8 @@ const char *game_state_str(int32_t game_state)
 		return "Waiting for player(s) to reveal the card";
 	case G_REVEAL_CARD_P_DONE:
 		return "Player(s) got the card";
+	case G_REVEAL_CARD:
+		return "Drawing the card from deck";
 	default:
 		return "Invalid game state...";
 	}
