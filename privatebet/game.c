@@ -137,15 +137,13 @@ int32_t init_game_meta_info(char *table_id)
 
 int32_t is_card_drawn(char *table_id)
 {
-	int32_t retval = OK, timeout = 0;
+	int32_t retval = OK;
 	cJSON *game_state_info = NULL, *player_game_state_info = NULL;
 
 	game_state_info = get_game_state_info(table_id);
 
 	dlg_info("Players verus ID::%s", player_ids[jint(game_state_info, "player_id")]);
-	// wait for 60 seconds for the player reaction
-	while (timeout < 60) {
-		timeout++;
+	while (1) {
 		player_game_state_info = get_game_state_info(player_ids[jint(game_state_info, "player_id")]);
 		if (!player_game_state_info) {
 			sleep(2);

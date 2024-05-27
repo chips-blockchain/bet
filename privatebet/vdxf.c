@@ -1107,9 +1107,9 @@ static cJSON *compute_updated_t_player_info(char *txid, cJSON *payin_tx_data)
 			return NULL;
 		}
 	}
-	num_players++;
 	sprintf(pa_tx_id, "%s_%s_%d", jstr(payin_tx_data, "verus_pid"), txid, num_players);
 	jaddistr(player_info, pa_tx_id);
+	num_players++;
 
 	updated_t_player_info = cJSON_CreateObject();
 	cJSON_AddNumberToObject(updated_t_player_info, "num_players", num_players);
