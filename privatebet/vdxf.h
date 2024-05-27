@@ -68,7 +68,6 @@ key is represented as chips.vrsc::poker.cashiers.
 #define T_B_P8_DECK_KEY "chips.vrsc::poker.t_b_p8_deck"
 #define T_B_P9_DECK_KEY "chips.vrsc::poker.t_b_p9_deck"
 
-#define T_B_DECK_BV_KEY "chips.vrsc::poker.t_b_deck_bv"
 /*
 * card_bv {
 * player_id : If player id is -1, then blinding values of all the players for that card to be revealed.

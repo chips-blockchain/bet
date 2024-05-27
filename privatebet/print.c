@@ -35,9 +35,9 @@ void print_cashiers_id(char *id)
 			dlg_info("%s :: %s", T_GAME_INFO_KEY, cJSON_Print(temp));
 
 		temp = NULL;
-		temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_B_DECK_BV_KEY, game_id));
+		temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_CARD_BV_KEY, game_id));
 		if (temp)
-			dlg_info("%s :: %s", T_B_DECK_BV_KEY, cJSON_Print(temp));
+			dlg_info("%s :: %s", T_CARD_BV_KEY, cJSON_Print(temp));
 	}
 }
 
@@ -94,9 +94,9 @@ void print_table_id(char *id)
 			dlg_info("%s :: %s", T_GAME_INFO_KEY, cJSON_Print(temp));
 
 		temp = NULL;
-		temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_B_DECK_BV_KEY, game_id));
+		temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_CARD_BV_KEY, game_id));
 		if (temp)
-			dlg_info("%s :: %s", T_B_DECK_BV_KEY, cJSON_Print(temp));
+			dlg_info("%s :: %s", T_CARD_BV_KEY, cJSON_Print(temp));
 	}
 }
 
