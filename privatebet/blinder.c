@@ -96,7 +96,7 @@ int32_t reveal_bv(char *table_id)
 {
 	int32_t player_id, card_id, num_players, retval = OK;
 	char *game_id_str = NULL, hexstr[65];
-	cJSON *bv_info = NULL, *game_state_info = NULL, *t_player_info = NULL, *out = NULL;
+	cJSON *bv_info = NULL, *game_state_info = NULL, *t_player_info = NULL, *out = NULL, *card_bv = NULL;
 
 	game_state_info = get_game_state_info(table_id);
 	player_id = jint(game_state_info, "player_id");
@@ -115,13 +115,45 @@ int32_t reveal_bv(char *table_id)
 	} else {
 		jaddistr(bv_info, bits256_str(hexstr, b_deck_info.cashier_r[player_id][card_id].priv));
 	}
-	dlg_info("bv_info::%s", cJSON_Print(bv_info));
+
+	card_bv = cJSON_CreateObject();
+	jaddnum(card_bv, "player_id", player_id);
+	jaddnum(card_bv, "card_id", card_id);
+	jadd(card_bv, "bv", bv_info);
+
+	dlg_info("bv_info::%s", cJSON_Print(card_bv));
+#if 0
 	dlg_info("vdxf id :: %s", get_key_data_vdxf_id(T_B_DECK_BV_KEY, game_id_str));
 	out = append_cmm_from_id_key_data_cJSON(table_id, get_key_data_vdxf_id(T_B_DECK_BV_KEY, game_id_str), bv_info,
 						true);
+#endif
+	dlg_info("vdxf id :: %s", get_key_data_vdxf_id(T_CARD_BV_KEY, game_id_str));
+	out = append_cmm_from_id_key_data_cJSON(table_id, get_key_data_vdxf_id(T_CARD_BV_KEY, game_id_str), card_bv,
+						true);
+
 	if (!out) {
 		retval = ERR_BV_UPDATE;
 	}
+	return retval;
+}
+
+static int32_t handle_bv_reveal_card(char *table_id)
+{
+	int32_t retval = OK;
+	char *game_id_str = NULL;
+	cJSON *card_bv = NULL, *game_state_info = NULL;
+
+	game_state_info = get_game_state_info(table_id);
+	game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
+	card_bv = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_CARD_BV_KEY, game_id_str));
+
+	if (card_bv && ((jint(game_state_info, "player_id") == jint(card_bv, "player_id")) &&
+			(jint(game_state_info, "card_id") == jint(card_bv, "card_id")))) {
+		dlg_info("Cashier revealed its Blinding Value for the player_id::%d, card_id::%d...",
+			 jint(card_bv, "player_id"), jint(card_bv, "card_id"));
+		return retval;
+	}
+	retval = reveal_bv(table_id);
 	return retval;
 }
 
@@ -148,6 +180,9 @@ int32_t handle_game_state_cashier(char *table_id)
 		retval = reveal_bv(table_id);
 		if (!retval)
 			append_game_state(table_id, G_REVEAL_CARD_P, get_game_state_info(table_id));
+		break;
+	case G_REVEAL_CARD:
+		retval = handle_bv_reveal_card(table_id);
 		break;
 	default:
 		dlg_info("%s", game_state_str(game_state));

@@ -7,9 +7,10 @@
 #define G_DECK_SHUFFLING_P 4
 #define G_DECK_SHUFFLING_D 5
 #define G_DECK_SHUFFLING_B 6
-#define G_REVEAL_CARD_B 7
-#define G_REVEAL_CARD_P 8
-#define G_REVEAL_CARD_P_DONE 9
+#define G_REVEAL_CARD 7
+#define G_REVEAL_CARD_B 8
+#define G_REVEAL_CARD_P 9
+#define G_REVEAL_CARD_P_DONE 10
 
 struct t_game_info_struct {
 	int32_t game_state;
@@ -22,3 +23,5 @@ const char *game_state_str(int32_t game_state);
 cJSON *append_game_state(char *table_id, int32_t game_state, cJSON *game_state_info);
 int32_t get_game_state(char *table_id);
 cJSON *get_game_state_info(char *table_id);
+int32_t init_game_state(char *table_id);
+int32_t is_card_drawn(char *table_id);

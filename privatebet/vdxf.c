@@ -756,7 +756,7 @@ bool is_table_full(char *table_id)
 		if ((t_player_info) && (t_table_info) &&
 		    (jint(t_player_info, "num_players") >= jint(t_table_info, "max_players"))) {
 			if (bet_node_type == dealer) {
-				no_players = jint(t_player_info, "num_players");
+				num_of_players = jint(t_player_info, "num_players");
 				player_info = jobj(t_player_info, "player_info");
 				//The player record is in the form of playerverusid_txid_pid, using strtok the first token we get is verus player ID.
 				for (int32_t i = 0; i < cJSON_GetArraySize(player_info); i++) {

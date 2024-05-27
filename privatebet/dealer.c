@@ -23,7 +23,7 @@ char all_game_keys[all_game_keys_no][128] = { T_GAME_INFO_KEY };
 
 char all_game_key_names[all_game_keys_no][128] = { "t_game_info" };
 
-int32_t no_players;
+int32_t num_of_players;
 char player_ids[CARDS777_MAXPLAYERS][MAX_ID_LEN];
 
 int32_t add_dealer(char *dealer_id)
@@ -213,33 +213,10 @@ int32_t dealer_shuffle_deck(char *id)
 	return retval;
 }
 
-#if 0
-int32_t init_game_meta_info(char *table_id)
-{
-	int32_t retval = OK;
-	char *game_id_str = NULL;
-	cJSON *t_player_info = NULL;
-
-	game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
-	t_player_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
-	
-	game_meta_info.num_players = jint(t_player_info, "num_players");
-	game_meta_info.dealer_pos = 0;
-	game_meta_info.turn = (game_meta_info.dealer_pos+1) % game_meta_info.num_players;
-	game_meta_info.card_id = 0;
-
-	for(int32_t i=0; i<game_meta_info.num_players; i++) {
-		for(int32_t j=0; j< hand_size; j++){
-			game_meta_info.card_state[i][j]=no_card_drawn;
-		}
-	}
-	return retval;
-}
-#endif
-
 int32_t handle_game_state(char *table_id)
 {
 	int32_t game_state, retval = OK;
+	cJSON *game_state_info = NULL;
 
 	game_state = get_game_state(table_id);
 	dlg_info("%s", game_state_str(game_state));
@@ -262,11 +239,18 @@ int32_t handle_game_state(char *table_id)
 		break;
 	case G_DECK_SHUFFLING_B:
 		dlg_info("Its time for game");
-		cJSON *game_state_info = NULL;
+		retval = init_game_state(table_id);
+#if 0
 		game_state_info = cJSON_CreateObject();
 		cJSON_AddNumberToObject(game_state_info, "player_id", 0);
 		cJSON_AddNumberToObject(game_state_info, "card_id", 0);
-		append_game_state(table_id, G_REVEAL_CARD_B, game_state_info);
+		append_game_state(table_id, G_REVEAL_CARD, game_state_info);
+#endif
+		break;
+	case G_REVEAL_CARD:
+		if (is_card_drawn(table_id) == OK) {
+			dlg_info("Card is drawn");
+		}
 		break;
 	default:
 		dlg_info("%s", game_state_str(game_state));

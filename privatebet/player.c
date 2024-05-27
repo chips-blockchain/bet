@@ -111,6 +111,36 @@ int32_t reveal_card(char *table_id)
 	return retval;
 }
 
+static int32_t handle_player_reveal_card(char *table_id)
+{
+	int32_t retval = OK, player_id;
+	cJSON *game_state_info = NULL, *player_game_state_info = NULL;
+
+	player_game_state_info = get_game_state_info(player_config.verus_pid);
+	game_state_info = get_game_state_info(table_id);
+
+	if (!game_state_info) {
+		// TODO:: This error needs to be handled.
+		return retval;
+	}
+	if (jint(game_state_info, "player_id") != p_deck_info.player_id) {
+		// Not this players turn
+		return retval;
+	}
+	if (!player_game_state_info) {
+		//Players game state info is not updated it mostly mean this could be players first card
+		return retval;
+	}
+	if (jint(game_state_info, "card_id") > jint(player_game_state_info, "card_id")) {
+		retval = reveal_card(table_id);
+		if (retval == OK) {
+			cJSON *out = append_game_state(player_config.verus_pid, G_REVEAL_CARD_P_DONE, game_state_info);
+			dlg_info("Updating players revealed card info :: %s", cJSON_Print(game_state_info));
+		}
+	}
+	return retval;
+}
+
 int32_t handle_game_state_player(char *table_id)
 {
 	int32_t game_state, retval = OK;
@@ -122,6 +152,9 @@ int32_t handle_game_state_player(char *table_id)
 		retval = reveal_card(table_id);
 		if (!retval)
 			append_game_state(player_config.verus_pid, G_REVEAL_CARD_P_DONE, NULL);
+		break;
+	case G_REVEAL_CARD:
+		retval = handle_player_reveal_card(table_id);
 		break;
 	default:
 		dlg_info("%s", game_state_str(game_state));
@@ -152,7 +185,6 @@ int32_t handle_verus_player()
 		return retval;
 	}
 	dlg_info("Table Joined");
-
 	if ((retval = get_player_id(&p_deck_info.player_id)) != OK) {
 		return retval;
 	}
