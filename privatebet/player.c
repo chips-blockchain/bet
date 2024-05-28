@@ -78,7 +78,7 @@ int32_t reveal_card(char *table_id)
 {
 	int32_t retval = OK, player_id, card_id, card_value = -1;
 	char *game_id_str = NULL, str[65];
-	cJSON *game_state_info = NULL, *bv_info = NULL, *b_blinded_deck = NULL, *dealer_blind_info = NULL;
+	cJSON *game_state_info = NULL, *bv_info = NULL, *b_blinded_deck = NULL, *dealer_blind_info = NULL, *bv = NULL;
 	bits256 b_blinded_card, blinded_value;
 
 	game_state_info = get_game_state_info(table_id);
@@ -87,16 +87,15 @@ int32_t reveal_card(char *table_id)
 
 	if ((player_id == player_config.player_id) || (player_id == -1)) {
 		game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
-		bv_info = cJSON_CreateArray();
 		bv_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_CARD_BV_KEY, game_id_str));
-		//dlg_info("bv_info::%s", cJSON_Print(bv_info));
+		bv = jobj(bv_info, "bv");
 		b_blinded_deck = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(all_t_b_p_keys[player_id],
 											     game_id_str));
 		b_blinded_card = jbits256i(b_blinded_deck, card_id);
 		if (player_id == -1)
-			blinded_value = jbits256i(bv_info, player_id);
+			blinded_value = jbits256i(bv, player_id);
 		else
-			blinded_value = jbits256i(bv_info, 0);
+			blinded_value = jbits256i(bv, 0);
 
 		dlg_info("blinded_value::%s", bits256_str(str, blinded_value));
 		dlg_info("blinded_card::%s", bits256_str(str, b_blinded_card));
