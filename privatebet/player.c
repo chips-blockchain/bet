@@ -87,8 +87,25 @@ int32_t reveal_card(char *table_id)
 
 	if ((player_id == player_config.player_id) || (player_id == -1)) {
 		game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
-		bv_info = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_CARD_BV_KEY, game_id_str));
-		bv = jobj(bv_info, "bv");
+
+		while (1) {
+			bv_info = get_cJSON_from_id_key_vdxfid(table_id,
+							       get_key_data_vdxf_id(T_CARD_BV_KEY, game_id_str));
+			if (!bv_info) {
+				dlg_info("BV INFO hasn't revealed its secret yet");
+				wait_for_a_blocktime();
+				continue;
+			}
+			dlg_info("%s", cJSON_Print(bv_info));
+
+			bv = jobj(bv_info, "bv");
+			if (!bv) {
+				// TODO:: This needs to be handled
+				dlg_error("BV is missing");
+			}
+			dlg_info("%s", cJSON_Print(bv));
+			break;
+		}
 		b_blinded_deck = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(all_t_b_p_keys[player_id],
 											     game_id_str));
 		b_blinded_card = jbits256i(b_blinded_deck, card_id);
