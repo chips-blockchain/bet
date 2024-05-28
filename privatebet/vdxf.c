@@ -550,7 +550,7 @@ int32_t find_table()
 
 bool is_id_exists(char *id, int16_t full_id)
 {
-	int32_t argc = 3, retval = OK, id_exists = false;
+	int32_t argc, retval = OK, id_exists = false;
 	char **argv = NULL;
 	char params[128] = { 0 };
 	cJSON *argjson = NULL;
@@ -559,8 +559,9 @@ bool is_id_exists(char *id, int16_t full_id)
 	if (0 == full_id) {
 		strcat(params, ".poker.chips10sec@");
 	}
+	argc = 4;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, verus_chips_cli, "getidentity", params);
+	argv = bet_copy_args(argc, verus_chips_cli, "getidentity", params, "-1");
 
 	argjson = cJSON_CreateObject();
 	retval = make_command(argc, argv, &argjson);
@@ -1305,7 +1306,7 @@ int32_t add_dealer_to_dealers(char *dealer_id)
 
 int32_t id_canspendfor(char *id, int32_t full_id, int32_t *err_no)
 {
-	int32_t argc = 3, retval = OK, id_canspendfor_value = false;
+	int32_t argc, retval = OK, id_canspendfor_value = false;
 	char **argv = NULL;
 	char params[128] = { 0 };
 	cJSON *argjson = NULL, *obj = NULL;
@@ -1319,8 +1320,9 @@ int32_t id_canspendfor(char *id, int32_t full_id, int32_t *err_no)
 	if (0 == full_id) {
 		strcat(params, ".poker.chips10sec@");
 	}
+	argc = 4;
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, verus_chips_cli, "getidentity", params);
+	argv = bet_copy_args(argc, verus_chips_cli, "getidentity", params, "-1");
 
 	argjson = cJSON_CreateObject();
 	retval = make_command(argc, argv, &argjson);
@@ -1343,7 +1345,7 @@ end:
 
 int32_t id_cansignfor(char *id, int32_t full_id, int32_t *err_no)
 {
-	int32_t argc = 3, retval = OK, id_cansignfor_value = false;
+	int32_t argc = 4, retval = OK, id_cansignfor_value = false;
 	char **argv = NULL;
 	char params[128] = { 0 };
 	cJSON *argjson = NULL, *obj = NULL;
@@ -1358,7 +1360,7 @@ int32_t id_cansignfor(char *id, int32_t full_id, int32_t *err_no)
 		strcat(params, ".poker.chips10sec@");
 	}
 	bet_alloc_args(argc, &argv);
-	argv = bet_copy_args(argc, verus_chips_cli, "getidentity", params);
+	argv = bet_copy_args(argc, verus_chips_cli, "getidentity", params, "-1");
 
 	argjson = cJSON_CreateObject();
 	retval = make_command(argc, argv, &argjson);
