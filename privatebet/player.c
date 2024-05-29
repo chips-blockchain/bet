@@ -120,6 +120,7 @@ int32_t reveal_card(char *table_id)
 			get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_D_DECK_KEY, game_id_str));
 		dlg_info("dealer_blind_info::%s", cJSON_Print(dealer_blind_info));
 		card_value = decode_card(b_blinded_card, blinded_value, dealer_blind_info);
+		dlg_info("card_value ::%d", card_value);
 		if (card_value == -1) {
 			retval = ERR_CARD_DECODING_FAILED;
 		}
@@ -158,7 +159,6 @@ int32_t handle_game_state_player(char *table_id)
 	int32_t game_state, retval = OK;
 
 	game_state = get_game_state(table_id);
-	dlg_info("%s", game_state_str(game_state));
 	switch (game_state) {
 	case G_REVEAL_CARD_P:
 		retval = reveal_card(table_id);
@@ -207,7 +207,13 @@ int32_t handle_verus_player()
 	}
 	dlg_info("Player deck shuffling info updated to table");
 
+	int32_t prev_state = -1, game_state = get_game_state(player_config.table_id);
+	
 	while (1) {
+		if(prev_state != game_state) {
+			prev_state = game_state;
+			dlg_info("%s", game_state_str(game_state));
+		}
 		handle_game_state_player(player_config.table_id);
 		sleep(2);
 	}
