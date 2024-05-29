@@ -169,16 +169,9 @@ int32_t handle_game_state_cashier(char *table_id)
 		if (!retval)
 			append_game_state(table_id, G_DECK_SHUFFLING_B, NULL);
 		break;
-	case G_REVEAL_CARD_B:
-		retval = reveal_bv(table_id);
-		if (!retval)
-			append_game_state(table_id, G_REVEAL_CARD_P, get_game_state_info(table_id));
-		break;
 	case G_REVEAL_CARD:
 		retval = handle_bv_reveal_card(table_id);
 		break;
-	default:
-		dlg_info("%s", game_state_str(game_state));
 	}
 	return retval;
 }
@@ -188,9 +181,9 @@ int32_t cashier_game_init(char *table_id)
 	int32_t retval = OK, prev_state = -1;
 
 	while (1) {
-		if(prev_state != get_game_state(table_id)) {
+		if (prev_state != get_game_state(table_id)) {
 			prev_state = get_game_state(table_id);
- 			dlg_info("Game state :: %s", game_state_str(prev_state));
+			dlg_info("Game state :: %s", game_state_str(prev_state));
 		}
 		retval = handle_game_state_cashier(table_id);
 		if (retval) {

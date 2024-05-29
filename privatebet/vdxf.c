@@ -579,12 +579,13 @@ int32_t check_player_join_status(char *table_id, char *verus_pid)
 		5; //This is the wait time in number of blocks upto which player can look for its table joining update
 
 	block_count = chips_get_block_count() + block_wait_time;
+	dlg_info("Checking player joining status, default wait time is 5 blocks");
 	do {
 		cJSON *t_player_info = get_t_player_info(table_id);
 		cJSON *player_info = jobj(t_player_info, "player_info");
-		dlg_info("t_player_info :: %s", cJSON_Print(t_player_info));
 		for (int32_t i = 0; (player_info) && (i < cJSON_GetArraySize(player_info)); i++) {
 			if (strstr(jstri(player_info, i), player_config.verus_pid)) {
+				dlg_info("t_player_info :: %s", cJSON_Print(t_player_info));
 				return OK;
 			}
 		}
