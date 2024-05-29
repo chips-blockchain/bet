@@ -8,9 +8,7 @@
 #define G_DECK_SHUFFLING_D 5
 #define G_DECK_SHUFFLING_B 6
 #define G_REVEAL_CARD 7
-#define G_REVEAL_CARD_B 8
-#define G_REVEAL_CARD_P 9
-#define G_REVEAL_CARD_P_DONE 10
+#define G_REVEAL_CARD_P_DONE 8
 
 struct t_game_info_struct {
 	int32_t game_state;
