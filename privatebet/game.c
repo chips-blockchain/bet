@@ -111,6 +111,7 @@ void init_struct_vars()
 			dcv_vars->betamount[i][j] = 0;
 		}
 	}
+	no_of_cards = 0;
 }
 
 int32_t init_game_meta_info(char *table_id)
@@ -251,5 +252,106 @@ int32_t init_game_state(char *table_id)
 
 	init_struct_vars();
 	retval = deal_next_card(table_id);
+	return retval;
+}
+
+int32_t verus_receive_card(char *table_id, struct privatebet_vars *vars)
+{
+	int retval = OK, playerid, cardid, card_type, flag = 1;
+	cJSON *game_state_info = NULL;
+
+	game_state_info = get_game_state_info(table_id);
+
+	playerid = jint(game_state_info, "player_id");
+	cardid = jint(game_state_info, "card_id");
+	card_type = jint(game_state_info, "card_type");
+
+	no_of_cards++;
+
+	dlg_info("no_of_cards drawn :: %d", no_of_cards);
+
+	if (card_type == hole_card) {
+		card_matrix[(cardid % num_of_players)][(cardid / num_of_players)] = 1;
+		//card_values[(cardid % bet->maxplayers)][(cardid / bet->maxplayers)] = jint(player_card_info, "decoded_card");
+	} else if (card_type == flop_card_1) {
+		card_matrix[playerid][no_of_hole_cards] = 1;
+		//card_values[playerid][no_of_hole_cards] = jint(player_card_info, "decoded_card");
+	} else if (card_type == flop_card_2) {
+		card_matrix[playerid][no_of_hole_cards + 1] = 1;
+		//card_values[playerid][no_of_hole_cards + 1] = jint(player_card_info, "decoded_card");
+	} else if (card_type == flop_card_3) {
+		card_matrix[playerid][no_of_hole_cards + 2] = 1;
+		//card_values[playerid][no_of_hole_cards + 2] = jint(player_card_info, "decoded_card");
+	} else if (card_type == turn_card) {
+		card_matrix[playerid][no_of_hole_cards + no_of_flop_cards] = 1;
+		//card_values[playerid][no_of_hole_cards + no_of_flop_cards] = jint(player_card_info, "decoded_card");
+	} else if (card_type == river_card) {
+		card_matrix[playerid][no_of_hole_cards + no_of_flop_cards + no_of_turn_card] = 1;
+		//card_values[playerid][no_of_hole_cards + no_of_flop_cards + no_of_turn_card] = jint(player_card_info, "decoded_card");
+	}
+
+	if (hole_cards_drawn == 0) {
+		flag = 1;
+		for (int i = 0; ((i < no_of_hole_cards) && (flag)); i++) {
+			for (int j = 0; ((j < num_of_players) && (flag)); j++) {
+				if (card_matrix[j][i] == 0) {
+					flag = 0;
+				}
+			}
+		}
+		if (flag)
+			hole_cards_drawn = 1;
+
+	} else if (flop_cards_drawn == 0) {
+		flag = 1;
+		for (int i = no_of_hole_cards; ((i < no_of_hole_cards + no_of_flop_cards) && (flag)); i++) {
+			for (int j = 0; ((j < num_of_players) && (flag)); j++) {
+				if (card_matrix[j][i] == 0) {
+					flag = 0;
+				}
+			}
+		}
+		if (flag)
+			flop_cards_drawn = 1;
+
+	} else if (turn_card_drawn == 0) {
+		flag = 1;
+		for (int i = no_of_hole_cards + no_of_flop_cards;
+		     ((i < no_of_hole_cards + no_of_flop_cards + no_of_turn_card) && (flag)); i++) {
+			for (int j = 0; ((j < num_of_players) && (flag)); j++) {
+				if (card_matrix[j][i] == 0) {
+					flag = 0;
+				}
+			}
+		}
+		if (flag)
+			turn_card_drawn = 1;
+
+	} else if (river_card_drawn == 0) {
+		flag = 1;
+		for (int i = no_of_hole_cards + no_of_flop_cards + no_of_turn_card;
+		     ((i < no_of_hole_cards + no_of_flop_cards + no_of_turn_card + no_of_river_card) && (flag)); i++) {
+			for (int j = 0; ((j < num_of_players) && (flag)); j++) {
+				if (card_matrix[j][i] == 0) {
+					flag = 0;
+				}
+			}
+		}
+		if (flag)
+			river_card_drawn = 1;
+	}
+
+	if (flag) {
+		if (vars->round == 0) {
+			dlg_info("Initiate betting with small blind");
+			//retval = bet_dcv_small_blind(NULL, vars);
+		} else {
+			//retval = bet_dcv_round_betting(NULL, vars);
+		}
+	} else {
+		retval = deal_next_card(table_id);
+		//retval = bet_dcv_turn(player_card_info, vars);
+	}
+
 	return retval;
 }

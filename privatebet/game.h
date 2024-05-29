@@ -25,3 +25,4 @@ int32_t get_game_state(char *table_id);
 cJSON *get_game_state_info(char *table_id);
 int32_t init_game_state(char *table_id);
 int32_t is_card_drawn(char *table_id);
+int32_t verus_receive_card(char *table_id, struct privatebet_vars *vars);
