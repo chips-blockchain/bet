@@ -233,18 +233,9 @@ int32_t handle_game_state(char *table_id)
 		if (!retval)
 			append_game_state(table_id, G_DECK_SHUFFLING_D, NULL);
 		break;
-	case G_DECK_SHUFFLING_D:
-		//Do nothing;
-		break;
 	case G_DECK_SHUFFLING_B:
 		dlg_info("Its time for game");
 		retval = init_game_state(table_id);
-#if 0
-		game_state_info = cJSON_CreateObject();
-		cJSON_AddNumberToObject(game_state_info, "player_id", 0);
-		cJSON_AddNumberToObject(game_state_info, "card_id", 0);
-		append_game_state(table_id, G_REVEAL_CARD, game_state_info);
-#endif
 		break;
 	case G_REVEAL_CARD:
 		if (is_card_drawn(table_id) == OK) {
@@ -252,8 +243,6 @@ int32_t handle_game_state(char *table_id)
 			verus_receive_card(table_id, dcv_vars);
 		}
 		break;
-	default:
-		dlg_info("%s", game_state_str(game_state));
 	}
 	return retval;
 }
@@ -311,9 +300,9 @@ int32_t dealer_init(struct table t)
 
 	int32_t prev_state = -1;
 	while (1) {
-		if(prev_state != get_game_state(t.table_id)) {
+		if (prev_state != get_game_state(t.table_id)) {
 			prev_state = get_game_state(t.table_id);
- 			dlg_info("Game state :: %s", game_state_str(prev_state));
+			dlg_info("Game state :: %s", game_state_str(prev_state));
 		}
 		retval = handle_game_state(t.table_id);
 		if (retval)

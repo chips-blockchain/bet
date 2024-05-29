@@ -61,6 +61,8 @@ int32_t decode_card(bits256 b_blinded_card, bits256 blinded_value, cJSON *dealer
 	blinded_value_inv = crecip_donna(blinded_value);
 	d_blinded_card = fmul_donna(blinded_value_inv, b_blinded_card);
 
+	dlg_info("Dealer blinded card :: %s", bits256_str(str1, d_blinded_card));
+	
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
 		for (int32_t j = 0; j < CARDS777_MAXCARDS; j++) {
 			if (strcmp(bits256_str(str1, d_blinded_card),
@@ -106,6 +108,7 @@ int32_t reveal_card(char *table_id)
 			dlg_info("%s", cJSON_Print(bv));
 			break;
 		}
+
 		b_blinded_deck = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(all_t_b_p_keys[player_id],
 											     game_id_str));
 		b_blinded_card = jbits256i(b_blinded_deck, card_id);
@@ -160,16 +163,9 @@ int32_t handle_game_state_player(char *table_id)
 
 	game_state = get_game_state(table_id);
 	switch (game_state) {
-	case G_REVEAL_CARD_P:
-		retval = reveal_card(table_id);
-		if (!retval)
-			append_game_state(player_config.verus_pid, G_REVEAL_CARD_P_DONE, NULL);
-		break;
 	case G_REVEAL_CARD:
 		retval = handle_player_reveal_card(table_id);
 		break;
-	default:
-		dlg_info("%s", game_state_str(game_state));
 	}
 	return retval;
 }
@@ -208,9 +204,9 @@ int32_t handle_verus_player()
 	dlg_info("Player deck shuffling info updated to table");
 
 	int32_t prev_state = -1, game_state = get_game_state(player_config.table_id);
-	
+
 	while (1) {
-		if(prev_state != game_state) {
+		if (prev_state != game_state) {
 			prev_state = game_state;
 			dlg_info("%s", game_state_str(game_state));
 		}
