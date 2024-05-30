@@ -137,8 +137,8 @@ int32_t is_card_drawn(char *table_id)
 	int32_t retval = OK;
 	cJSON *game_state_info = NULL, *player_game_state_info = NULL;
 
+	// TODO:: Need to add block wait time and based on whcih dealer can take action on player
 	game_state_info = get_game_state_info(table_id);
-
 	dlg_info("Players verus ID::%s", player_ids[jint(game_state_info, "player_id")]);
 	while (1) {
 		player_game_state_info = get_game_state_info(player_ids[jint(game_state_info, "player_id")]);
@@ -152,6 +152,7 @@ int32_t is_card_drawn(char *table_id)
 			break;
 		}
 	}
+	return retval;
 }
 
 static int32_t update_next_card(char *table_id, int32_t player_id, int32_t card_id, int32_t card_type)
