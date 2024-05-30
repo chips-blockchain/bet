@@ -28,14 +28,6 @@ int32_t cashier_sb_deck(char *id, bits256 *d_blinded_deck, int32_t player_id)
 	}
 	shuffle_deck_db(d_blinded_deck, CARDS777_MAXCARDS, b_deck_info.b_permi);
 	blind_deck_b(d_blinded_deck, CARDS777_MAXCARDS, b_deck_info.cashier_r[player_id]);
-	//shuffle the cashier blinding values so that at the time of revealing the card the cashier can unveal the secrets as per the permuted order.
-	shuffle_deck(b_deck_info.cashier_r[player_id], CARDS777_MAXCARDS, b_deck_info.b_permi);
-
-	
-	dlg_info("Cashier blinding values for the player ::%d", player_id);
-	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
-		dlg_info("%s", bits256_str(str, b_deck_info.cashier_r[player_id][i].priv));
-	}
 
 	b_blinded_deck = cJSON_CreateArray();
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
