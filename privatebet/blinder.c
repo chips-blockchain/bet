@@ -159,6 +159,7 @@ int32_t handle_game_state_cashier(char *table_id)
 	int32_t game_state, retval = OK;
 
 	game_state = get_game_state(table_id);
+	dlg_info("%s", game_state_str(game_state));
 	switch (game_state) {
 	case G_ZEROIZED_STATE:
 	case G_TABLE_ACTIVE:
@@ -181,18 +182,12 @@ int32_t handle_game_state_cashier(char *table_id)
 
 int32_t cashier_game_init(char *table_id)
 {
-	int32_t retval = OK, prev_state = -1;
+	int32_t retval = OK;
 
 	while (1) {
-		if (prev_state != get_game_state(table_id)) {
-			prev_state = get_game_state(table_id);
-			dlg_info("Game state :: %s", game_state_str(prev_state));
-		}
 		retval = handle_game_state_cashier(table_id);
-		if (retval) {
-			dlg_error("%s", bet_err_str(retval));
-			break;
-		}
-		sleep(3);
+		if (retval)
+			return retval;
+		sleep(2);
 	}
 }
