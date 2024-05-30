@@ -107,7 +107,8 @@ int32_t reveal_card(char *table_id)
 				dlg_error("BV is missing");
 			}
 			dlg_info("%s", cJSON_Print(bv));
-			break;
+			if((jint(bv_info, "card_id") == card_id) && (jint(bv_info, "player_id") == player_id))
+				break;
 		}
 
 		b_blinded_deck = get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(all_t_b_p_keys[player_id],
