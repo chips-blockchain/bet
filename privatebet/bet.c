@@ -558,8 +558,10 @@ static void bet_start(int argc, char **argv)
 	} else if (strcmp(argv[1], "list_tables") == 0) {
 		list_tables();
 	} else if ((strcmp(argv[1], "reset_id") == 0) && (argc == 3)) {
-		if (id_cansignfor(argv[2], 0, &retval))
-			update_cmm(argv[2], NULL);
+		if (id_cansignfor(argv[2], 0, &retval)) {
+			cJSON *out = update_cmm(argv[2], NULL);
+			dlg_info("%s", cJSON_Print(out));
+		}	
 	} else {
 		bet_command_info();
 	}
