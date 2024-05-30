@@ -216,6 +216,7 @@ int32_t handle_game_state(char *table_id)
 	cJSON *game_state_info = NULL;
 
 	game_state = get_game_state(table_id);
+	dlg_info("%s", game_state_str(game_state));
 	switch (game_state) {
 	case G_TABLE_STARTED:
 		if (is_table_full(table_id))
@@ -295,12 +296,7 @@ int32_t dealer_init(struct table t)
 		return retval;
 	}
 
-	int32_t prev_state = -1;
 	while (1) {
-		if (prev_state != get_game_state(t.table_id)) {
-			prev_state = get_game_state(t.table_id);
-			dlg_info("Game state :: %s", game_state_str(prev_state));
-		}
 		retval = handle_game_state(t.table_id);
 		if (retval)
 			return retval;

@@ -163,6 +163,7 @@ int32_t handle_game_state_player(char *table_id)
 	int32_t game_state, retval = OK;
 
 	game_state = get_game_state(table_id);
+	dlg_info("%s",game_state_str(game_state));
 	switch (game_state) {
 	case G_REVEAL_CARD:
 		retval = handle_player_reveal_card(table_id);
@@ -204,14 +205,11 @@ int32_t handle_verus_player()
 	}
 	dlg_info("Player deck shuffling info updated to table");
 
-	int32_t prev_state = -1, game_state = get_game_state(player_config.table_id);
 
 	while (1) {
-		if (prev_state != game_state) {
-			prev_state = game_state;
-			dlg_info("%s", game_state_str(game_state));
-		}
-		handle_game_state_player(player_config.table_id);
+		retval = handle_game_state_player(player_config.table_id);
+		if(retval)
+			return retval;
 		sleep(2);
 	}
 
