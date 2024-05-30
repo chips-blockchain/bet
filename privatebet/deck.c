@@ -52,12 +52,12 @@ void blind_deck_d(bits256 *r, int32_t n, struct pair256 *blinder)
 void blind_deck_b(bits256 *r, int32_t n, struct pair256 *blinder)
 {
 	char hexstr[65];
-	
+
 	dlg_info("Cashier blinding the deck");
 	for (int32_t i = 0; i < n; i++) {
-		dlg_info("Dealer card::%s", bits256_str(hexstr,r[i]));
-		dlg_info("BV::%s", bits256_str(hexstr,blinder[i].priv));
+		dlg_info("Dealer card::%s", bits256_str(hexstr, r[i]));
+		dlg_info("BV::%s", bits256_str(hexstr, blinder[i].priv));
 		r[i] = fmul_donna(blinder[i].priv, r[i]);
-		dlg_info("Blinded card::%s", bits256_str(hexstr,r[i]));
+		dlg_info("Blinded card::%s", bits256_str(hexstr, r[i]));
 	}
 }
