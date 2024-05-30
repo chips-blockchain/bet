@@ -175,19 +175,16 @@ bool is_players_shuffled_deck(char *table_id)
 
 int32_t dealer_shuffle_deck(char *id)
 {
-	int32_t num_players = 0, retval = OK;
+	int32_t retval = OK;
 	char *game_id_str = NULL, str[65];
 	cJSON *t_d_deck_info = NULL;
-	cJSON *t_player_info = NULL;
 	bits256 t_p_r[CARDS777_MAXCARDS];
 
 	dealer_init_deck();
 	game_id_str = get_str_from_id_key(id, T_GAME_ID_KEY);
 
-	t_player_info = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
-	num_players = jint(t_player_info, "num_players");
 
-	for (int32_t i = 0; i < num_players; i++) {
+	for (int32_t i = 0; i < num_of_players; i++) {
 		cJSON *player_deck =
 			get_cJSON_from_id_key_vdxfid(player_ids[i], get_key_data_vdxf_id(PLAYER_DECK_KEY, game_id_str));
 		cJSON *cardinfo = cJSON_GetObjectItem(player_deck, "cardinfo");

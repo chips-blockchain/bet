@@ -18,7 +18,8 @@ int32_t player_init_deck()
 	char str[65];
 	cJSON *cjson_player_cards = NULL, *player_deck = NULL;
 
-	if ((p_deck_info.player_id < 1) && (p_deck_info.player_id > 9))
+	// Player ID numbering range from [0...8]
+	if ((p_deck_info.player_id < 0) || (p_deck_info.player_id > 8))
 		return ERR_INVALID_PLAYER_ID;
 
 	p_deck_info.p_kp = gen_keypair();
