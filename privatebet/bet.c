@@ -471,17 +471,9 @@ static void bet_start(int argc, char **argv)
 	bet_parse_blockchain_config_ini_file();
 
 	if ((strcmp(argv[1], "cashier") == 0) || (strcmp(argv[1], "c") == 0)) {
-		bet_node_type = cashier;
-		cashier_game_init("sg777_t");
-#if 0
-		if (argc == 3) {
-			strcpy(cashier_ip, argv[2]);
-			cashier_init();
-			bet_cashier_server_thrd(cashier_ip);
-		} else {
-			bet_help_cashier_command_usage();
-		}
-#endif
+		dlg_info("Starting cashier node");
+		//bet_node_type = cashier;
+		//cashier_game_init("sg777_t");
 	} else if ((strcmp(argv[1], "dcv") == 0) || (strcmp(argv[1], "dealer") == 0) || (strcmp(argv[1], "d") == 0)) {
 		bet_node_type = dealer;
 		retval = bet_parse_verus_dealer();
