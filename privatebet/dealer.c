@@ -238,7 +238,7 @@ int32_t handle_game_state(char *table_id)
 	case G_REVEAL_CARD:
 		if (is_card_drawn(table_id) == OK) {
 			dlg_info("Card is drawn");
-			verus_receive_card(table_id, dcv_vars);
+			retval = verus_receive_card(table_id, dcv_vars);
 		}
 		break;
 	}
