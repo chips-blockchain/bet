@@ -88,7 +88,7 @@ int32_t reveal_card(char *table_id)
 	player_id = jint(game_state_info, "player_id");
 	card_id = jint(game_state_info, "card_id");
 
-	if ((player_id == player_config.player_id) || (player_id == -1)) {
+	if ((player_id == p_deck_info.player_id) || (player_id == -1)) {
 		game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
 
 		while (1) {
@@ -146,6 +146,7 @@ static int32_t handle_player_reveal_card(char *table_id)
 	}
 	if (jint(game_state_info, "player_id") != p_deck_info.player_id) {
 		// Not this players turn
+		dlg_info("Not this players turn...");
 		return retval;
 	}
 	if ((!player_game_state_info) || (jint(game_state_info, "card_id") > jint(player_game_state_info, "card_id"))) {
