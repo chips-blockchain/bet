@@ -31,9 +31,10 @@ int32_t cashier_sb_deck(char *id, bits256 *d_blinded_deck, int32_t player_id)
 
 	b_blinded_deck = cJSON_CreateArray();
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
-		jaddistr(b_blinded_deck, bits256_str(str, d_blinded_deck[i]));
+		dlg_info("%d::%s", i, bits256_str(str, d_blinded_deck[i]));
+		jaddibits256(b_blinded_deck, d_blinded_deck[i]);
 	}
-
+	dlg_info("b_blinded_deck::%s", cJSON_Print(b_blinded_deck));
 	cJSON *out = append_cmm_from_id_key_data_cJSON(id, get_key_data_vdxf_id(all_t_b_p_keys[player_id], game_id_str),
 						       b_blinded_deck, true);
 
