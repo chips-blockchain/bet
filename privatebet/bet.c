@@ -553,7 +553,7 @@ static void bet_start(int argc, char **argv)
 		if (id_cansignfor(argv[2], 0, &retval)) {
 			cJSON *out = update_cmm(argv[2], NULL);
 			dlg_info("%s", cJSON_Print(out));
-		}	
+		}
 	} else {
 		bet_command_info();
 	}
