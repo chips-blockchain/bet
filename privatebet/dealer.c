@@ -183,7 +183,6 @@ int32_t dealer_shuffle_deck(char *id)
 	dealer_init_deck();
 	game_id_str = get_str_from_id_key(id, T_GAME_ID_KEY);
 
-
 	for (int32_t i = 0; i < num_of_players; i++) {
 		cJSON *player_deck =
 			get_cJSON_from_id_key_vdxfid(player_ids[i], get_key_data_vdxf_id(PLAYER_DECK_KEY, game_id_str));

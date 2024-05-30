@@ -342,7 +342,7 @@ int32_t verus_receive_card(char *table_id, struct privatebet_vars *vars)
 
 	if (flag) {
 		if (vars->round == 0) {
-			dlg_info("Initiate betting with small blind");			
+			dlg_info("Initiate betting with small blind");
 			//retval = bet_dcv_small_blind(NULL, vars);
 			retval = verus_small_blind(table_id, vars);
 		} else {
@@ -374,6 +374,6 @@ int32_t verus_small_blind(char *table_id, struct privatebet_vars *vars)
 
 	out = append_game_state(table_id, G_ROUND_BETTING, smallBlindInfo);
 	dlg_info("%s", cJSON_Print(out));
-	
+
 	return retval;
 }

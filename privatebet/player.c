@@ -63,7 +63,7 @@ int32_t decode_card(bits256 b_blinded_card, bits256 blinded_value, cJSON *dealer
 	d_blinded_card = fmul_donna(blinded_value_inv, b_blinded_card);
 
 	dlg_info("Dealer blinded card :: %s", bits256_str(str1, d_blinded_card));
-	
+
 	for (int32_t i = 0; i < CARDS777_MAXCARDS; i++) {
 		for (int32_t j = 0; j < CARDS777_MAXCARDS; j++) {
 			if (strcmp(bits256_str(str1, d_blinded_card),
@@ -107,7 +107,7 @@ int32_t reveal_card(char *table_id)
 				dlg_error("BV is missing");
 			}
 			dlg_info("%s", cJSON_Print(bv));
-			if((jint(bv_info, "card_id") == card_id) && (jint(bv_info, "player_id") == player_id))
+			if ((jint(bv_info, "card_id") == card_id) && (jint(bv_info, "player_id") == player_id))
 				break;
 		}
 
@@ -165,7 +165,7 @@ int32_t handle_game_state_player(char *table_id)
 	int32_t game_state, retval = OK;
 
 	game_state = get_game_state(table_id);
-	dlg_info("%s",game_state_str(game_state));
+	dlg_info("%s", game_state_str(game_state));
 	switch (game_state) {
 	case G_REVEAL_CARD:
 		retval = handle_player_reveal_card(table_id);
@@ -207,10 +207,9 @@ int32_t handle_verus_player()
 	}
 	dlg_info("Player deck shuffling info updated to table");
 
-
 	while (1) {
 		retval = handle_game_state_player(player_config.table_id);
-		if(retval)
+		if (retval)
 			return retval;
 		sleep(2);
 	}
