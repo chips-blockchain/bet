@@ -27,6 +27,8 @@ const char *game_state_str(int32_t game_state)
 		return "Player(s) got the card";
 	case G_REVEAL_CARD:
 		return "Drawing the card from deck";
+	case G_ROUND_BETTING:
+		return "Round betting is happening...";
 	default:
 		return "Invalid game state...";
 	}
@@ -340,8 +342,9 @@ int32_t verus_receive_card(char *table_id, struct privatebet_vars *vars)
 
 	if (flag) {
 		if (vars->round == 0) {
-			dlg_info("Initiate betting with small blind");
+			dlg_info("Initiate betting with small blind");			
 			//retval = bet_dcv_small_blind(NULL, vars);
+			retval = verus_small_blind(table_id, vars);
 		} else {
 			//retval = bet_dcv_round_betting(NULL, vars);
 		}
@@ -350,5 +353,27 @@ int32_t verus_receive_card(char *table_id, struct privatebet_vars *vars)
 		//retval = bet_dcv_turn(player_card_info, vars);
 	}
 
+	return retval;
+}
+
+int32_t verus_small_blind(char *table_id, struct privatebet_vars *vars)
+{
+	int32_t retval = OK;
+	cJSON *smallBlindInfo = NULL, *out = NULL;
+
+	vars->last_turn = vars->dealer;
+	vars->turni = (vars->dealer) % num_of_players; // vars->dealer+1 is removed since
+	// dealer is the one who does small_blind
+
+	smallBlindInfo = cJSON_CreateObject();
+	cJSON_AddStringToObject(smallBlindInfo, "method", "betting");
+	cJSON_AddStringToObject(smallBlindInfo, "action", "small_blind");
+	cJSON_AddNumberToObject(smallBlindInfo, "playerid", vars->turni);
+	cJSON_AddNumberToObject(smallBlindInfo, "round", vars->round);
+	cJSON_AddNumberToObject(smallBlindInfo, "pot", vars->pot);
+
+	out = append_game_state(table_id, G_ROUND_BETTING, smallBlindInfo);
+	dlg_info("%s", cJSON_Print(out));
+	
 	return retval;
 }
