@@ -470,11 +470,19 @@ static void bet_start(int argc, char **argv)
 	bet_set_unique_id();
 	bet_parse_blockchain_config_ini_file();
 
-	if ((strcmp(argv[1], "cashier") == 0) || (strcmp(argv[1], "c") == 0)) {
+	if ((strcmp(argv[1], "add_dealer") == 0) && (argc == 3)) {
+		retval = add_dealer(argv[2]);
+	} else if ((strcmp(argv[1], "c") == 0) || (strcmp(argv[1], "cashier") == 0)) {
 		dlg_info("Starting cashier node");
 		bet_node_type = cashier;
 		cashier_game_init("sg777_t");
-	} else if ((strcmp(argv[1], "dcv") == 0) || (strcmp(argv[1], "dealer") == 0) || (strcmp(argv[1], "d") == 0)) {
+	} else if (strcmp(argv[1], "consolidate") == 0) {
+		cJSON *tx = NULL;
+		double amount = chips_get_balance() - chips_tx_fee;
+		tx = chips_transfer_funds(amount, chips_get_new_address());
+		if (tx)
+			dlg_info("Consolidated tx::%s", cJSON_Print(tx));
+	} else if ((strcmp(argv[1], "d") == 0) || (strcmp(argv[1], "dcv") == 0) || (strcmp(argv[1], "dealer") == 0)) {
 		bet_node_type = dealer;
 		retval = bet_parse_verus_dealer();
 	} else if (strcmp(argv[1], "extract_tx_data") == 0) {
@@ -496,15 +504,37 @@ static void bet_start(int argc, char **argv)
 		} else {
 			bet_command_info();
 		}
-	} else if ((strcasecmp(argv[1], "player") == 0) || (strcasecmp(argv[1], "p") == 0)) {
+	} else if (strcmp(argv[1], "list_dealers") == 0) {
+		cJSON *dealers = list_dealers();
+		if (dealers) {
+			dlg_info("Dealers ::%s", cJSON_Print(dealers));
+		}
+	} else if (strcmp(argv[1], "list_tables") == 0) {
+		list_tables();
+	} else if ((strcmp(argv[1], "p") == 0) || (strcmp(argv[1], "player") == 0)) {
 		bet_node_type = player;
 		retval = handle_verus_player();
+	} else if ((strcmp(argv[1], "print") == 0) && (argc > 3)) {
+		print_vdxf_info(argc, argv);
+	} else if ((strcmp(argv[1], "print_id") == 0) && (argc > 3)) {
+		print_id_info(argc, argv);
+	} else if ((strcmp(argv[1], "print_table_key") == 0) && (argc >= 3)) {
+		print_table_key_info(argc, argv);
+	} else if ((strcmp(argv[1], "reset_id") == 0) && (argc == 3)) {
+		if (id_cansignfor(argv[2], 0, &retval)) {
+			cJSON *out = update_cmm(argv[2], NULL);
+			dlg_info("%s", cJSON_Print(out));
+		}
 	} else if (strcmp(argv[1], "scan") == 0) {
 		bet_sqlite3_init();
 		scan_games_info();
 	} else if (strcmp(argv[1], "spendable") == 0) {
 		cJSON *spendable_tx = chips_spendable_tx();
 		dlg_info("CHIPS Spendable tx's :: %s\n", cJSON_Print(spendable_tx));
+	} else if (strcmp(argv[1], "tx_split") == 0) {
+		if (argc == 4) {
+			do_split_tx_amount(atof(argv[2]), atoi(argv[3]));
+		}
 	} else if ((strcmp(argv[1], "v") == 0) || (strcmp(argv[1], "-v") == 0) || (strcmp(argv[1], "version") == 0) ||
 		   (strcmp(argv[1], "--version") == 0)) {
 		printf("%s\n", BET_VERSION);
@@ -523,40 +553,10 @@ static void bet_start(int argc, char **argv)
 		} else {
 			bet_help_withdraw_command_usage();
 		}
-	} else if (strcmp(argv[1], "consolidate") == 0) {
-		cJSON *tx = NULL;
-		double amount = chips_get_balance() - chips_tx_fee;
-		tx = chips_transfer_funds(amount, chips_get_new_address());
-		if (tx)
-			dlg_info("Consolidated tx::%s", cJSON_Print(tx));
-	} else if (strcmp(argv[1], "tx_split") == 0) {
-		if (argc == 4) {
-			do_split_tx_amount(atof(argv[2]), atoi(argv[3]));
-		}
-	} else if ((strcmp(argv[1], "print") == 0) && (argc > 3)) {
-		print_vdxf_info(argc, argv);
-	} else if ((strcmp(argv[1], "print_table_key") == 0) && (argc >= 3)) {
-		print_table_key_info(argc, argv);
-	} else if ((strcmp(argv[1], "print_id") == 0) && (argc > 3)) {
-		print_id_info(argc, argv);
-	} else if ((strcmp(argv[1], "add_dealer") == 0) && (argc == 3)) {
-		retval = add_dealer(argv[2]);
-	} else if (strcmp(argv[1], "list_dealers") == 0) {
-		cJSON *dealers = list_dealers();
-		if (dealers) {
-			dlg_info("Dealers ::%s", cJSON_Print(dealers));
-		}
-
-	} else if (strcmp(argv[1], "list_tables") == 0) {
-		list_tables();
-	} else if ((strcmp(argv[1], "reset_id") == 0) && (argc == 3)) {
-		if (id_cansignfor(argv[2], 0, &retval)) {
-			cJSON *out = update_cmm(argv[2], NULL);
-			dlg_info("%s", cJSON_Print(out));
-		}
 	} else {
 		bet_command_info();
 	}
+
 end:
 	if (retval != OK) {
 		dlg_info("Error ::%s", bet_err_str(retval));
@@ -580,7 +580,7 @@ void test_x()
 int main(int argc, char **argv)
 {
 	bet_start(argc, argv);
-	return OK;
+	return 0;
 }
 
 bits256 curve25519_fieldelement(bits256 hash)
