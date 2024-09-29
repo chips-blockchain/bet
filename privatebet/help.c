@@ -248,42 +248,77 @@ void bet_help_vdxf_command_usage()
 		"./bet reset_id <id_name>\n");
 }
 
+void bet_help_print_command_usage(void)
+{
+	dlg_info(
+		"\nCommand: \n"
+		"print \n"
+		"\nDescription: \n"
+		"Print information about a specific ID and key\n"
+		"\nUsage: \n"
+		"./bet print <id> <key>\n"
+		"\nArguments: \n"
+		"<id>: The ID to query\n"
+		"<key>: The key to retrieve information for\n"
+		"\nExample: \n"
+		"./bet print myid table_info\n"
+		"\nNote: \n"
+		"This command supports printing information for various keys such as table_info, player_info, dealers, game_id, and game_info.\n"
+		"The output format depends on the key type.\n");
+}
+
+void bet_help_print_id_command_usage()
+{
+	dlg_info("\nCommand: \n"
+		 "print_id \n"
+		 "\nDescription: \n"
+		 "Print information about a specific ID and its type\n"
+		 "\nUsage: \n"
+		 "./bet print_id <id_name> <type>\n"
+		 "\nArguments: \n"
+		 "<id_name>: The name of the ID to query\n"
+		 "<type>: The type of ID information to retrieve (e.g., 'dealers', 'table', 'dealer', etc.)\n"
+		 "\nExample: \n"
+		 "./bet print_id myid table\n");
+}
+
 // clang-format off
 void bet_help_command(char *command)
 {
-	switchs(command) {
-		cases("cashier")
-		cases("cashierd")
-			bet_help_cashier_command_usage();
-			break;
-		cases("dcv")
-		cases("dealer")
-			bet_help_dcv_command_usage();
-			break;
-		cases("extract_tx_data")
-			bet_help_extract_tx_data_command_usage();
-			break;
-		cases("game")
-			bet_help_game_command_usage();
-			break;
-		cases("player")
-			bet_help_player_command_usage();
-			break;
-		cases("spendable")
-			bet_help_spendable_command_usage();
-			break;
-		cases("scan")
-			bet_help_scan_command_usage();
-			break;
-		cases("withdraw")
-			bet_help_withdraw_command_usage();
-			break;
-		cases("vdxf")
-		cases("verus")
-			bet_help_vdxf_command_usage();
-			break;
-		defaults
-			dlg_info("The command %s is not yet supported by bet", command);
-	}switchs_end;
+    if (!command) {
+        dlg_error("Invalid command: NULL");
+        return;
+    }
+
+    typedef struct {
+        const char *cmd;
+        void (*help_func)(void);
+    } CommandHelp;
+
+    const CommandHelp command_helps[] = {
+        {"cashier", bet_help_cashier_command_usage},
+        {"cashierd", bet_help_cashier_command_usage},
+        {"dcv", bet_help_dcv_command_usage},
+        {"dealer", bet_help_dcv_command_usage},
+        {"extract_tx_data", bet_help_extract_tx_data_command_usage},
+        {"game", bet_help_game_command_usage},
+        {"player", bet_help_player_command_usage},
+        {"spendable", bet_help_spendable_command_usage},
+        {"scan", bet_help_scan_command_usage},
+        {"withdraw", bet_help_withdraw_command_usage},
+        {"vdxf", bet_help_vdxf_command_usage},
+        {"verus", bet_help_vdxf_command_usage},
+        {"print", bet_help_print_command_usage},
+		{"print_id", bet_help_print_id_command_usage},
+        {NULL, NULL}  // Sentinel to mark the end of the array
+    };
+
+    for (const CommandHelp *ch = command_helps; ch->cmd != NULL; ch++) {
+        if (strcmp(command, ch->cmd) == 0) {
+            ch->help_func();
+            return;
+        }
+    }
+
+    dlg_info("The command %s is not yet supported by bet", command);
 }
-// clang-format on
