@@ -6,4 +6,6 @@ void bet_help_game_command_usage();
 void bet_help_withdraw_command_usage();
 void bet_help_spendable_command_usage();
 void bet_help_extract_tx_data_command_usage();
+void bet_help_print_command_usage();
+void bet_help_print_id_command_usage();
 void bet_help_command(char *command);
