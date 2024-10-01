@@ -1,5 +1,188 @@
 # All about ID's and Keys
+## ID Registration
 
+The ID registration process can either be restricted to a few authorized addresses or made open for anyone to register IDs. Mike, the founder/developer of Verus, suggests keeping the registration open to foster economic activity on the chain. Here is his insight:
+
+```
+  I think you should not restrict the ID registration capabilities, as they will be a primary source of economy. Since you do not have block rewards, this could make the difference between a functional chain or not. There is no spam because all resources used on-chain are paid for to miners, stakers, LPs in baskets that register decentralized IDs, and those selling IDs on-chain. All of this is economic value for the on-chain economy that is not spam. It is exactly the opposite. If your chain is busy with that, everyone should be happy. If it is too busy, make another. Also, people have IDs on different chains that they should be able to send over and use. Each player should have an ID, and if some games need KYC, you will be able to do that as well on any IDs using the Value service, which will use VerusID to enable non-DOXed KYC verification. I recommend considering IDs just on-chain addresses and letting people use them as they will. Enable poker and other games this way, but have all of the on-chain activity, including currencies, benefit miners and stakers (CHIPS holders) through the fee pool as part of normal use.
+```
+
+The process can be divided into two steps:
+1. ID Creation
+2. ID Registration
+
+Anyone can create any number of IDs, but to register an ID as either a dealer or cashier, certain conditions must be met. We streamline this process and provide an API for it.
+
+## Key-Value Pair
+
+Information under IDs is stored in key-value pairs. We encapsulate the structure or JSON object info and map them to keys. For example, the identifier `cashiers` under `poker.chips10sec@` defines a key named `chips.vrsc::poker.cashiers` to store all information related to cashiers. 
+
+Keys are defined with the prefix `chips.vrsc::` in the entire CHIPS ecosystem. For game-specific keys, we add the game type as a suffix, e.g., `chips.vrsc::poker.` for poker-related data and `chips.vrsc::bet.` for betting-related data.
+
+In the code, predefined keys are mapped to their `vdxfid` for easy lookup. For example:
+```
+#verus -chain=chips10sec getvdxfid chips.vrsc::poker.cashiers
+{
+  "vdxfid": "iH6n3SW9hpou8LW4nEAzJZXDb4AG4tLnQN",
+  "indexid": "xMvtWEwEZ92ZkWP6duq9Gx3kciBGyf9cB6",
+  "hash160result": "ec2bdc0eab94ab8f0d4a9ca6e29afe4b2ece7495",
+  "qualifiedname": {
+  "namespace": "iJ3WZocnjG9ufv7GKUA4LijQno5gTMb7tP",
+  "name": "chips.vrsc::poker.cashiers"
+  }
+}
+```
+These `vdxfid` are defined in the code using macro variables:
+```
+//chips.vrsc::poker.cashiers 
+#define CASHIERS_KEY "iH6n3SW9hpou8LW4nEAzJZXDb4AG4tLnQN"
+```
+
+Some keys are predefined, while others are created on the fly during the game. Keys created during the game are mapped to predefined keys for easy reference and lookup. Some keys can be used across multiple IDs, e.g., `chips.vrsc::poker.t_player_info` is used across dealer and table IDs to store player info.
+
+## Key Datatypes
+
+Data is converted to hex and mapped to keys using specific datatypes. For example, `vrsc::data.type.bytevector` is used for most keys in the CHIPS ecosystem. The definitions in the code are as follows:
+```
+//vrsc::data.type.string -->  	iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c
+#define STRING_VDXF_ID		 	"iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c"
+//vrsc::data.type.byte -->  	iBXUHbh4iacbeZnzDRxishvBSrYk2S2k7t
+#define BYTE_VDXF_ID 	   		"iBXUHbh4iacbeZnzDRxishvBSrYk2S2k7t"
+//vrsc::data.type.bytevector --> iKMhRLX1JHQihVZx2t2pAWW2uzmK6AzwW3
+#define BYTEVECTOR_VDXF_ID      "iKMhRLX1JHQihVZx2t2pAWW2uzmK6AzwW3"
+```
+
+## Identities
+
+We limit to two levels of nesting under chips. At the first level, we define identities of game types and player names. Each player is encouraged to have an ID, which helps in participating in private tables or betting. Users can also reserve IDs for future use and trade them, increasing chain activity. 
+
+For each game type, a corresponding identity is registered, and a token is generated for it. These tokens are used to register sub-identities. All transactions in the gameplay use CHIPS for betting. Tokens generated on registered IDs have no significant value and are used to register subIDs.
+
+For example, an identity named `poker` under chips is `poker.chips@`, and a token named `poker` is generated to create subIDs under the poker ID.
+
+Identities are addresses that can hold tokens and always end with `@`. Any entity in the bet ecosystem can create an ID under chips, e.g., `sg777.chips@` is used to hold tokens and acts as a wallet address. Similarly, `cashiers.poker.chips@` is an address where players deposit funds during the game. Players can also create IDs to participate in private tables.
+
+### Cashiers ID
+
+Address: `cashiers.poker.chips@`
+
+Keys:
+```
+1. chips.vrsc::poker.cashiers
+```
+
+### Dealers ID
+
+Address: `dealers.poker.chips@`
+
+Keys:
+```
+1. chips.vrsc::poker.dealers
+```
+
+Dealers info is a JSON object converted to hex and mapped to `chips.vrsc::poker.dealers` key. 
+
+Example:
+```
+{
+  "dealers": ["sg777_d"]
+}
+```
+Hex string: `7b0a09226465616c657273223a095b2273673737375f64225d0a7d`
+
+To simplify, use the `add_dealer` command:
+```
+./bet add_dealer <dealer_name>
+```
+Parsing commands to display dealer info:
+```
+1. ./bet print_id dealers dealers
+2. ./bet print dealers dealers
+```
+
+### Dealer ID
+
+ID: `<dealer_name>.poker.chips10sec@`
+
+Keys:
+```
+1. chips.vrsc::poker.t_player_info
+```
+
+Example:
+```
+{
+  "max_players": 2,
+  "big_blind": 0.001,
+  "min_stake": 0.2,
+  "max_stake": 1,
+  "table_id": "sg777_t",
+  "dealer_id": "sg777_d"
+}
+```
+
+### Table ID
+
+ID: `<table_name>.poker.chips10sec@`
+
+Keys:
+```
+1. chips.vrsc::poker.t_game_ids
+```
+
+Example:
+```
+game_id::47be72cf1267b85c1ad07b38dfaab2b38ab036ec867ec95a08ff440af2bb4dc9
+```
+
+During gameplay, keys are generated on the fly, e.g., `chips.vrsc::poker.t_table_info.game_id1`. These keys update the table ID with game info.
+
+Example keys:
+```
+1. chips.vrsc::poker.t_table_info.game_id1
+2. chips.vrsc::poker.t_player_info.game_id1
+3. chips.vrsc::poker.t_player1.game_id1
+...
+```
+
+Example table info:
+```
+{
+  "max_players": 2,
+  "big_blind": 0.001,
+  "min_stake": 0.2,
+  "max_stake": 1,
+  "table_id": "sg777_t",
+  "dealer_id": "sg777_d"
+}
+```
+
+Example player info:
+```
+{
+  "num_players": 2,
+  "player_info": ["RLqZtcUkqCHWe5t35zjEXLS1ubqKnbUtJW_e1eb_1", "RPP74xK9HRZGAS5Ynn4EbfLrKGyak3fJrJ_9597_2"]
+}
+```
+
+Example player shuffled deck:
+```
+{
+  "id": 1,
+  "pubkey": "1ea418903532637eedddc7918fb648332b59e4a2cda42db7493861529e42de66",
+  "cardinfo": ["afe92a18c5dacc314be0eb16f7f1d83a4eaebaab06874ed78a487e7a4ea03a0d", "b14de6c06ff1fac3f0b698d55718712521c12d2e6c4f633494abf019a8e92f25", "8ce9ca33bdd0cddf0929b5a631a33a82b03a5e3ffb4c22d9744ee3b488297336"]
+}
+```
+
+Example game info:
+```
+{
+  game_state: game_state_no,
+  game_state_info: "Info about the game based on the state that is updated"
+}
+```
+
+More details about game_state are [here](https://github.com/sg777/bet/blob/verus_test/docs/verus_migration/game_state.md)
 ## ID Registration
 Can we can restrict the ID registration process to few authorized addresses or can it can made open so that anyone can register ID's? Here is the insights from Mike(Verus fouder/dev) on why ID registration should be open.
 ```

@@ -1,39 +1,40 @@
-## Player Rejoining
--------------------
-Bet stores the game related confidential information either in local DB or in local files on the node in which bet is running. If not all, most of the game related public information and the players information is stored across the verus IDs(specifically in player/table/dealer/cashier IDs). When the player gets disconnected, bet allows the player to rejoin and if the player fails to rejoin within the agreed time interval(atm, its 20s) then bet allows the dealer to make a decision based on the defined rules in order for the game to move on.
+# Player Rejoining in Verus Migration
 
-The action taken by the dealer is depends on the [game state](./game_state.md), and at any game state player can rejoin upon the disconnection and the window of time interval to rejoin remains same at all game states. If by any reason player fails to rejoin dealer can take following action:
-  -  if the players disconnection happens before the deck shuffling then dealer raise a request to reverse the payin_tx and removes the corresponding players join info from the corresponding table ID and dealer IDs of the dealer.
-  -  if the players disconnection happens during the deck shuffling then dealer raises a request to reverse the payin_tx(dealer may chose to impose a penanlty of 5% on payin_tx or some fixed amount based on whichever is lower. The reason for penanlty is because as a part of deck shuffling players has already been spent many block fees for deck shuffling) and removes the corresponding players info from the table and dealer IDs and reset the game state to player joining state and will wait for other player to pitch in and fill the position.
-  -  If the players disconnection happens during the game, then the dealer considers players move as <b>fold</b> and proceeds with the game.
+Bet stores game-related confidential information either in a local database or local files on the node where Bet is running. Most game-related public information and player information are stored across Verus IDs (specifically in player, table, dealer, and cashier IDs). When a player gets disconnected, Bet allows the player to rejoin. If the player fails to rejoin within the agreed time interval (currently 20 seconds), the dealer can make a decision based on predefined rules to keep the game moving.
 
-Player disconnections at any game state and failure to rejoin will result in quashing previous updates made to the IDs and many cases players and dealers has to undergo the redoing process, due to which there always be going to be some penalty to the player and dealer disconnections and this penalty is mostly in block fees. 
+The dealer's action depends on the [game state](./game_state.md). At any game state, a player can rejoin upon disconnection, and the rejoin window remains the same. If a player fails to rejoin, the dealer can take the following actions:
+- If the disconnection occurs before deck shuffling, the dealer requests to reverse the payin_tx and removes the player's join info from the corresponding table and dealer IDs.
+- If the disconnection occurs during deck shuffling, the dealer requests to reverse the payin_tx (a penalty of 5% or a fixed amount, whichever is lower, may be imposed due to block fees incurred during shuffling). The dealer then removes the player's info from the table and dealer IDs, resets the game state to player joining, and waits for another player to fill the position.
+- If the disconnection occurs during the game, the dealer considers the player's move as a **fold** and proceeds with the game.
 
-It's also possible that the player can raise a dispute request to claim the payin_tx while being in the game, to prevent any misuse of the dispute handling cashiers will always check if that payin_tx is attached to any game ID in any of the active tables exist atm, if the payin_tx is attached to the active game ID then cashier nodes will wait until the game gets finished to handle the dispute request from the player.
+Player disconnections at any game state and failure to rejoin will result in quashing previous updates made to the IDs. In many cases, players and dealers must redo processes, incurring penalties, mostly in block fees.
 
-### Data Needed for Rejoin
----------------------------
-The secret/confidential information that is associated with the player is generated during deck initialization process and which includes
-  -  Player keypair
-  -  Deck privkeys (Each card represents a keypair, so 52 cards privkeys)
-  -  Players shuffling pattern
+Players can raise a dispute request to claim the payin_tx while in the game. To prevent misuse, cashiers will check if the payin_tx is attached to any game ID in active tables. If attached, cashier nodes will wait until the game finishes to handle the dispute request.
 
-  The public information that gets available on the player ID and needed for the player rejoin is 
-    -  game_id (This will be fetched from the game_id file, player no need to remember)
-    -  dealer_id (This will be fetched from verus_player.ini config)
-    -  table_id (This will be fetched from verus_player.ini config)
-Along with player ID the above information can also be fetched from the local config file such as `verus_player.ini`(which contains `dealer_id` and `table_id`) and from the file `game_id`(which contains `game_id`).
+## Data Needed for Rejoin
 
-All this secret information related to the player is stored under the local directory <b>/.game_info/player</b> on the node in which bet is running which is located under <b>bet/privatebet</b>. All these files in game_info are prepended with game_id, for a typical game the files stored locally by the player are:
-  -  game_id (contains the present game id to which the player made payin_tx)
-  -  game_id_str.player_key
-  -  game_id_str.deck_keys
-  -  game_id_str.deck_shuffle_pattern
+The secret/confidential information associated with the player is generated during the deck initialization process and includes:
+- Player keypair
+- Deck private keys (each card represents a keypair, so 52 card private keys)
+- Player's shuffling pattern
 
- The information from the verus IDs the player fetches during the rejoin is
-   -  Players payin_tx
-   -  Players game state
-   -  Shuffled and blinded deck
-   -  Public info of the table and other players info
+The public information available on the player ID and needed for rejoining includes:
+- game_id (fetched from the game_id file)
+- dealer_id (fetched from verus_player.ini config)
+- table_id (fetched from verus_player.ini config)
 
-With the latest design changes as player updates all the game related info to the player ID, we also provide a provision to store the game related and player related confidential information to the player ID in encrypted form. This players data is encrypted using PIN/password that player configured locally and with this during player rejoin, player just needs to remember the locally configured PIN and with which player can rejoin.
+This information can be fetched from the local config file `verus_player.ini` and the `game_id` file.
+
+All secret information related to the player is stored under the local directory `/.game_info/player` on the node where Bet is running, located under `bet/privatebet`. Files in `game_info` are prepended with game_id. For a typical game, the files stored locally by the player are:
+- game_id (contains the current game id for the payin_tx)
+- game_id_str.player_key
+- game_id_str.deck_keys
+- game_id_str.deck_shuffle_pattern
+
+Information fetched from Verus IDs during rejoin includes:
+- Player's payin_tx
+- Player's game state
+- Shuffled and blinded deck
+- Public info of the table and other players
+
+With the latest design changes, as players update all game-related info to the player ID, there is a provision to store game-related and player-related confidential information in encrypted form on the player ID. This data is encrypted using a PIN/password configured locally by the player. During rejoin, the player only needs to remember the locally configured PIN to rejoin.
