@@ -61,11 +61,9 @@ To add a new IP to the cashier list, follow these steps:
     ```
 
 This updated list now includes the new IP address.
-
 ### Conversion Between CHIPS and Other Currencies
-
 ```markdown
-If you use liquidity baskets on-chain, you can convert between CHIPS and any currencies that was defined on any chain in the Verus PBaaS network and Ethereum +any ERC20 as well. You can do all of this on the CHIPS chain and all conversion fees will be split 1/2 to LPs and 1/2 to miners/stakers. You can use CHIPS or any other currency you want to support in your game, even a liquidity basket currency. Any currency definition can be exported from one chain to another, converted at the fairest possible rate on-chain with arbitrage hooks for miners and stakers, and used anywhere on the network. New currencies or liquidity basket currencies defined on CHIPS, just like those defined on Verus, can be sent over to Ethereum as well and will automatically be ERC20s on Ethereum. All the conversions will leave 1/2 the fees in the liquidity basket currencies, raising their values relative to reserves, and the other 1/2 will automatically buy CHIPS from the liquidity basket to pay miners and stakers.
+If you use liquidity baskets on-chain, you can convert between CHIPS and any currencies that were defined on any chain in the Verus PBaaS network and Ethereum + any ERC20 as well. You can do all of this on the CHIPS chain and all conversion fees will be split 1/2 to LPs and 1/2 to miners/stakers. You can use CHIPS or any other currency you want to support in your game, even a liquidity basket currency. Any currency definition can be exported from one chain to another, converted at the fairest possible rate on-chain with arbitrage hooks for miners and stakers, and used anywhere on the network. New currencies or liquidity basket currencies defined on CHIPS, just like those defined on Verus, can be sent over to Ethereum as well and will automatically be ERC20s on Ethereum. All the conversions will leave 1/2 the fees in the liquidity basket currencies, raising their values relative to reserves, and the other 1/2 will automatically buy CHIPS from the liquidity basket to pay miners and stakers.
 ```
 
 ### Challenges
