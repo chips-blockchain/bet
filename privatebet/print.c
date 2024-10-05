@@ -3,6 +3,7 @@
 #include "misc.h"
 #include "vdxf.h"
 #include "print.h"
+#include "game.h"
 
 void print_struct_table(struct table *t)
 {
@@ -188,11 +189,12 @@ void print_vdxf_info(int argc, char **argv)
 	} else if (strcmp(vdxf_id, get_vdxf_id(T_GAME_INFO_KEY)) == 0) {
 		char *game_id_str = get_str_from_id_key(id, T_GAME_ID_KEY);
 		if (game_id_str) {
-			dlg_info("game_id_str :: %s", game_id_str);
+			dlg_info("Game ID: %s", game_id_str);
 			json_data =
 				get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_GAME_INFO_KEY, game_id_str));
 			if (json_data) {
-				dlg_info("%s", cJSON_Print(json_data));
+				int game_state = jint(json_data, "game_state");
+				dlg_info("Game State: %s", game_state_str(game_state));
 				cJSON_Delete(json_data);
 			}
 			free(game_id_str);
