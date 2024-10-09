@@ -281,6 +281,25 @@ void bet_help_print_id_command_usage()
 		 "\nExample: \n"
 		 "./bet print_id myid table\n");
 }
+void bet_help_reset_id_command_usage(void)
+{
+	dlg_info(
+		"\nCommand: \n"
+		"reset_id \n"
+		"\nDescription: \n"
+		"Reset the contentmultimap (CMM) of an ID to NULL. This command requires authority over the ID to execute.\n"
+		"\nUsage: \n"
+		"./bet reset_id <id_name>\n"
+		"\nArguments: \n"
+		"<id_name>: The name of the ID whose CMM you want to reset\n"
+		"\nResult: \n"
+		"The latest CMM of the specified ID is set to NULL\n"
+		"\nExample: \n"
+		"./bet reset_id myid\n"
+		"\nNote: \n"
+		"This command should be used with caution as it resets all the information associated with the ID.\n"
+		"Ensure you have the necessary permissions before executing this command.\n");
+}
 
 // clang-format off
 void bet_help_command(char *command)
@@ -310,6 +329,7 @@ void bet_help_command(char *command)
         {"verus", bet_help_vdxf_command_usage},
         {"print", bet_help_print_command_usage},
 		{"print_id", bet_help_print_id_command_usage},
+        {"reset_id", bet_help_reset_id_command_usage},
         {NULL, NULL}  // Sentinel to mark the end of the array
     };
 
