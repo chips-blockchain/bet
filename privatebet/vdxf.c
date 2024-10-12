@@ -740,37 +740,78 @@ cJSON *get_available_t_of_d(char *dealer_id)
 	return NULL;
 }
 
-bool is_table_full(char *table_id)
+static void update_player_ids(cJSON *t_player_info)
 {
-	int32_t game_state;
-	char *game_id_str = NULL;
-	cJSON *t_player_info = NULL, *t_table_info = NULL, *player_info = NULL;
+	cJSON *player_info = jobj(t_player_info, "player_info");
+	if (player_info == NULL) {
+		dlg_error("Failed to retrieve player info");
+		return;
+	}
 
-	game_state = get_game_state(table_id);
-	if (game_state >= G_TABLE_STARTED) {
-		game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
-
-		t_player_info =
-			get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
-		t_table_info =
-			get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, game_id_str));
-
-		if ((t_player_info) && (t_table_info) &&
-		    (jint(t_player_info, "num_players") >= jint(t_table_info, "max_players"))) {
-			if (bet_node_type == dealer) {
-				num_of_players = jint(t_player_info, "num_players");
-				player_info = jobj(t_player_info, "player_info");
-				//The player record is in the form of playerverusid_txid_pid, using strtok the first token we get is verus player ID.
-				for (int32_t i = 0; i < cJSON_GetArraySize(player_info); i++) {
-					strcpy(player_ids[i], strtok(jstri(player_info, i), "_"));
-					dlg_info("player id::%s", player_ids[i]);
-				}
+	num_of_players = cJSON_GetArraySize(player_info);
+	for (int32_t i = 0; i < num_of_players; i++) {
+		char *player_record = jstri(player_info, i);
+		if (player_record) {
+			// The player record is in the form of playerverusid_txid_pid, using strtok the first token we get is verus player ID.
+			char *player_id = strtok(player_record, "_");
+			if (player_id) {
+				strncpy(player_ids[i], player_id, sizeof(player_ids[i]) - 1);
+				player_ids[i][sizeof(player_ids[i]) - 1] = '\0'; // Ensure null-termination
+				dlg_info("Player %d ID: %s", i + 1, player_ids[i]);
 			}
-			dlg_error("Table is full");
-			return true;
 		}
 	}
-	return false;
+}
+
+bool is_table_full(char *table_id)
+{
+	if (table_id == NULL) {
+		dlg_error("Invalid table ID provided");
+		return false;
+	}
+
+	int32_t game_state = get_game_state(table_id);
+	if (game_state < G_TABLE_STARTED) {
+		return false;
+	}
+
+	char *game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
+	if (game_id_str == NULL) {
+		dlg_error("Failed to retrieve game ID for table %s", table_id);
+		return false;
+	}
+
+	cJSON *t_player_info =
+		get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
+	cJSON *t_table_info =
+		get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, game_id_str));
+
+	if (t_player_info == NULL || t_table_info == NULL) {
+		dlg_error("Failed to retrieve player or table info for table %s", table_id);
+		free(game_id_str);
+		cJSON_Delete(t_player_info);
+		cJSON_Delete(t_table_info);
+		return false;
+	}
+
+	int num_players = jint(t_player_info, "num_players");
+	int max_players = jint(t_table_info, "max_players");
+
+	bool is_full = (num_players >= max_players);
+
+	if (is_full && bet_node_type == dealer) {
+		update_player_ids(t_player_info);
+	}
+
+	if (is_full) {
+		dlg_info("Table %s is full (%d/%d players)", table_id, num_players, max_players);
+	}
+
+	free(game_id_str);
+	cJSON_Delete(t_player_info);
+	cJSON_Delete(t_table_info);
+
+	return is_full;
 }
 
 bool is_playerid_added(char *table_id)
