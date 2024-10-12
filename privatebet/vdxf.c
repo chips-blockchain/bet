@@ -787,7 +787,6 @@ bool is_table_full(char *table_id)
 		get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, game_id_str));
 
 	if (t_player_info == NULL || t_table_info == NULL) {
-		dlg_error("Failed to retrieve player or table info for table %s", table_id);
 		free(game_id_str);
 		cJSON_Delete(t_player_info);
 		cJSON_Delete(t_table_info);
