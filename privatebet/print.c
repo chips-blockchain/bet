@@ -91,8 +91,10 @@ void print_table_id(char *id)
 				dlg_info("%s :: %s", all_t_b_p_key_names[i], cJSON_Print(temp));
 		}
 		temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_GAME_INFO_KEY, game_id));
-		if (temp)
-			dlg_info("%s :: %s", T_GAME_INFO_KEY, cJSON_Print(temp));
+		if (temp) {
+			int game_state = jint(temp, "game_state");
+			dlg_info("Game State: %s", game_state_str(game_state));
+		}
 
 		temp = NULL;
 		temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_CARD_BV_KEY, game_id));
