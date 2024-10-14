@@ -23,6 +23,22 @@ key is represented as chips.vrsc::poker.cashiers.
 */
 
 #define CASHIERS_KEY "chips.vrsc::poker.cashiers"
+/*
+* The DEALERS_KEY holds information about registered dealers in the poker system.
+* It stores an array of dealer identities (IDs) that are authorized to run poker tables.
+* 
+* The structure of the data stored under this key is:
+* {
+*   "dealers": [
+*     "dealer_id_1",
+*     "dealer_id_2",
+*     ...
+*   ]
+* }
+* 
+* Where each "dealer_id_x" is a unique identifier (likely a VerusID) for a registered dealer.
+* This allows the system to maintain a list of approved dealers that can host poker games.
+*/
 #define DEALERS_KEY "chips.vrsc::poker.dealers"
 
 #define T_GAME_ID_KEY "chips.vrsc::poker.t_game_ids"
@@ -34,17 +50,6 @@ key is represented as chips.vrsc::poker.cashiers.
 * }
 */
 #define T_PLAYER_INFO_KEY "chips.vrsc::poker.t_player_info"
-#define T_PLAYER1_KEY "chips.vrsc::poker.t_player1"
-#define T_PLAYER2_KEY "chips.vrsc::poker.t_player2"
-#define T_PLAYER3_KEY "chips.vrsc::poker.t_player3"
-#define T_PLAYER4_KEY "chips.vrsc::poker.t_player4"
-#define T_PLAYER5_KEY "chips.vrsc::poker.t_player5"
-#define T_PLAYER6_KEY "chips.vrsc::poker.t_player6"
-#define T_PLAYER7_KEY "chips.vrsc::poker.t_player7"
-#define T_PLAYER8_KEY "chips.vrsc::poker.t_player8"
-#define T_PLAYER9_KEY "chips.vrsc::poker.t_player9"
-#define T_DEALER_KEY "chips.vrsc::poker.t_dealer"
-#define T_BLINDER_KEY "chips.vrsc::poker.t_blinder"
 
 #define T_D_DECK_KEY "chips.vrsc::poker.t_d_deck"
 #define T_D_P1_DECK_KEY "chips.vrsc::poker.t_d_p1_deck"
