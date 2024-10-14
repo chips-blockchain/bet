@@ -52,12 +52,12 @@ char *get_full_key(char *key_name)
 char *get_key_data_type(char *key_name)
 {
 	if (!key_name) {
-		// TODO:: This needs to be handled properly
-		dlg_error("%s", bet_err_str(ERR_NULL_KEY));
+		dlg_error("%s: Null key name provided", __func__);
+		return NULL;
 	}
-	/*
-	* Atm, we define the data types of all keys for IDs as byte vector
-	*/
+
+	// TODO: Implement a more sophisticated key type determination system
+	// For now, all keys are treated as byte vectors
 	return BYTEVECTOR_VDXF_ID;
 }
 
@@ -1017,35 +1017,68 @@ cJSON *append_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data, bool 
 
 cJSON *update_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data, bool is_key_vdxf_id)
 {
-	char *data_type = NULL, *data_key = NULL;
-	cJSON *data_obj = NULL, *data_key_obj = NULL;
-
-	if (is_key_vdxf_id) {
-		data_type = get_vdxf_id(BYTEVECTOR_VDXF_ID);
-		data_key = key;
-	} else {
-		data_type = get_vdxf_id(get_key_data_type(key));
-		data_key = get_vdxf_id(key);
+	if (!id || !key || !hex_data) {
+		dlg_error("%s: Invalid input parameters", __func__);
+		return NULL;
 	}
-	data_obj = cJSON_CreateObject();
-	jaddstr(data_obj, data_type, hex_data);
 
-	data_key_obj = cJSON_CreateObject();
+	char *data_type = get_vdxf_id(BYTEVECTOR_VDXF_ID);
+	char *data_key = is_key_vdxf_id ? key : get_vdxf_id(key);
+
+	if (!data_type || !data_key) {
+		dlg_error("%s: Failed to determine data type or key", __func__);
+		return NULL;
+	}
+
+	cJSON *data_obj = cJSON_CreateObject();
+	if (!data_obj) {
+		dlg_error("%s: Failed to create data JSON object", __func__);
+		return NULL;
+	}
+
+	cJSON_AddStringToObject(data_obj, data_type, hex_data);
+
+	cJSON *data_key_obj = cJSON_CreateObject();
+	if (!data_key_obj) {
+		dlg_error("%s: Failed to create key JSON object", __func__);
+		cJSON_Delete(data_obj);
+		return NULL;
+	}
+
 	cJSON_AddItemToObject(data_key_obj, data_key, data_obj);
 
-	return update_cmm(id, data_key_obj);
+	cJSON *result = update_cmm(id, data_key_obj);
+	if (!result) {
+		dlg_error("%s: Failed to update CMM", __func__);
+		cJSON_Delete(data_key_obj);
+	}
+
+	return result;
 }
 
 cJSON *update_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data, bool is_key_vdxf_id)
 {
+	if (!id || !key || !data) {
+		dlg_error("%s: Invalid input parameters", __func__);
+		return NULL;
+	}
+
 	char *hex_data = NULL;
+	cJSON *result = NULL;
 
 	cJSON_hex(data, &hex_data);
 	if (!hex_data) {
-		dlg_error("%s::%d::Error occured in conversion of cJSON to HEX\n", __func__, __LINE__);
+		dlg_error("%s: Failed to convert cJSON to HEX", __func__);
 		return NULL;
 	}
-	return update_cmm_from_id_key_data_hex(id, key, hex_data, is_key_vdxf_id);
+
+	result = update_cmm_from_id_key_data_hex(id, key, hex_data, is_key_vdxf_id);
+	if (!result) {
+		dlg_error("%s: Failed to update CMM with hex data", __func__);
+	}
+
+	free(hex_data);
+	return result;
 }
 
 cJSON *get_t_player_info(char *table_id)
