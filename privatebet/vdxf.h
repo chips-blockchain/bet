@@ -205,7 +205,7 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data);
 void process_block(char *block_hash);
 cJSON *list_dealers();
 void list_tables();
-int32_t check_poker_ready();
+int32_t verify_poker_setup();
 int32_t add_dealer_to_dealers(char *dealer_id);
 int32_t id_canspendfor(char *id, int32_t full_id, int32_t *err_no);
 int32_t id_cansignfor(char *id, int32_t full_id, int32_t *err_no);

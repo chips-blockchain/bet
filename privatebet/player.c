@@ -179,7 +179,7 @@ int32_t handle_verus_player()
 	int32_t retval = OK;
 
 	// Check if poker is ready
-	if ((retval = check_poker_ready()) != OK) {
+	if ((retval = verify_poker_setup()) != OK) {
 		dlg_error("Poker not ready: %s", bet_err_str(retval));
 		return retval;
 	}
