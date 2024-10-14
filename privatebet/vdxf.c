@@ -1335,21 +1335,34 @@ void list_tables()
 	}
 }
 
-int32_t check_poker_ready()
+int32_t verify_poker_setup()
 {
-	int32_t retval = OK;
-	cJSON *dealers = NULL;
-
-	if ((!is_id_exists(CASHIERS_ID_FQN, 1)) || (!is_id_exists(DEALERS_ID_FQN, 1))) {
-		return ERR_IDS_NOT_CONFIGURED;
+	if (!is_id_exists(CASHIERS_ID_FQN, 1)) {
+		dlg_error("Cashiers ID %s does not exist", CASHIERS_ID_FQN);
+		return ERR_CASHIERS_ID_NOT_FOUND;
 	}
 
-	dealers = cJSON_CreateObject();
-	dealers = get_cJSON_from_id_key(DEALERS_ID_FQN, DEALERS_KEY, 1);
+	if (!is_id_exists(DEALERS_ID_FQN, 1)) {
+		dlg_error("Dealers ID %s does not exist", DEALERS_ID_FQN);
+		return ERR_DEALERS_ID_NOT_FOUND;
+	}
+
+	cJSON *dealers = get_cJSON_from_id_key(DEALERS_ID_FQN, DEALERS_KEY, 1);
 	if (!dealers) {
+		dlg_error("No dealers found in %s", DEALERS_ID_FQN);
 		return ERR_NO_DEALERS_FOUND;
 	}
-	return retval;
+
+	if (cJSON_GetArraySize(dealers) == 0) {
+		dlg_error("Dealers list is empty");
+		cJSON_Delete(dealers);
+		return ERR_NO_DEALERS_REGISTERED;
+	}
+
+	dlg_info("Poker system is ready. Found %d registered dealer(s)", cJSON_GetArraySize(dealers));
+	cJSON_Delete(dealers);
+
+	return OK;
 }
 
 int32_t add_dealer_to_dealers(char *dealer_id)
