@@ -176,7 +176,7 @@ cJSON *get_cmm(char *id, int16_t full_id)
 
 	strncpy(params, id, strlen(id));
 	if (0 == full_id) {
-		strcat(params, ".poker.chips10sec@");
+		sprintf(params + strlen(params), ".%s", POKER_ID_FQN);
 	}
 	argc = 4;
 	bet_alloc_args(argc, &argv);
@@ -240,7 +240,7 @@ cJSON *get_primaryaddresses(char *id, int16_t full_id)
 	}
 	strncpy(params, id, strlen(id));
 	if (0 == full_id) {
-		strcat(params, ".poker.chips10sec@");
+		sprintf(params + strlen(params), ".%s", POKER_ID_FQN);
 	}
 	argc = 4;
 	bet_alloc_args(argc, &argv);
@@ -557,7 +557,7 @@ bool is_id_exists(char *id, int16_t full_id)
 
 	strncpy(params, id, strlen(id));
 	if (0 == full_id) {
-		strcat(params, ".poker.chips10sec@");
+		sprintf(params + strlen(params), ".%s", POKER_ID_FQN);
 	}
 	argc = 4;
 	bet_alloc_args(argc, &argv);
@@ -1405,7 +1405,7 @@ int32_t id_canspendfor(char *id, int32_t full_id, int32_t *err_no)
 
 	strncpy(params, id, strlen(id));
 	if (0 == full_id) {
-		strcat(params, ".poker.chips10sec@");
+		sprintf(params + strlen(params), ".%s", POKER_ID_FQN);
 	}
 	argc = 4;
 	bet_alloc_args(argc, &argv);
@@ -1444,7 +1444,7 @@ int32_t id_cansignfor(char *id, int32_t full_id, int32_t *err_no)
 
 	strncpy(params, id, strlen(id));
 	if (0 == full_id) {
-		strcat(params, ".poker.chips10sec@");
+		sprintf(params + strlen(params), ".%s", POKER_ID_FQN);
 	}
 	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, verus_chips_cli, "getidentity", params, "-1");
