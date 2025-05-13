@@ -163,15 +163,15 @@ void print_vdxf_info(int argc, char **argv)
 		return;
 	}
 
-	const char *id = argv[2];
-	const char *key = argv[3];
+	char *id = argv[2];
+	char *key = argv[3];
 
 	if (!is_id_exists(id, 0)) {
 		dlg_info("ID doesn't exist");
 		return;
 	}
 
-	const char *vdxf_id = get_key_vdxf_id(key);
+	char *vdxf_id = get_key_vdxf_id(key);
 	cJSON *json_data = NULL;
 	char *str_data = NULL;
 
