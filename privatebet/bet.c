@@ -558,6 +558,12 @@ static void bet_start(int argc, char **argv)
 		} else {
 			bet_help_withdraw_command_usage();
 		}
+	} else if (strcmp(argv[1], "raise_registration_dispute") == 0) {
+		if (argc != 4) {
+			dlg_error("Usage: %s raise_registration_dispute <dealer_id> <action>", argv[0]);
+			return;
+		}
+		raise_dealer_registration_dispute(argv[2], argv[3]);
 	} else {
 		bet_command_info();
 	}
