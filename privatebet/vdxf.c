@@ -436,7 +436,7 @@ int32_t join_table()
 	jaddstr(data, "table_id", player_config.table_id);
 	jaddstr(data, "verus_pid", player_config.verus_pid);
 
-	op_id = verus_sendcurrency_data(default_chips_tx_fee, data);
+	op_id = verus_sendcurrency_data(CASHIERS_ID_FQN, default_chips_tx_fee, data);
 	if (op_id == NULL)
 		return ERR_SENDCURRENCY;
 
@@ -601,7 +601,7 @@ cJSON *get_z_getoperationstatus(char *op_id)
 	return argjson;
 }
 
-cJSON *verus_sendcurrency_data(double amount, cJSON *data)
+cJSON *verus_sendcurrency_data(char *id, double amount, cJSON *data)
 {
 	int32_t hex_data_len, argc, minconf = 1;
 	double fee = 0.0001;
@@ -615,6 +615,11 @@ cJSON *verus_sendcurrency_data(double amount, cJSON *data)
 
 	if (amount == 0) {
 		amount = default_chips_tx_fee;
+	}
+
+	if ((!id) || (!is_id_exists(id, 0))) {
+		dlg_error("Invalid ID provided");
+		return NULL;
 	}
 
 	currency_detail = cJSON_CreateObject();
