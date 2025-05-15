@@ -616,8 +616,8 @@ cJSON *verus_sendcurrency_data(char *id, double amount, cJSON *data)
 	if (amount == 0) {
 		amount = default_chips_tx_fee;
 	}
-
-	if ((!id) || (!is_id_exists(id, 0))) {
+	//Full ID needs to be provided for the sendcurrency command
+	if ((!id) || (!is_id_exists(id, 1))) {
 		dlg_error("Invalid ID provided");
 		return NULL;
 	}

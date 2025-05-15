@@ -4,7 +4,7 @@
 #include "bet.h"
 
 // Constants for dealer registration
-#define DEALER_REGISTRATION_FEE 10.0 // 10 CHIPS registration fee
+#define DEALER_REGISTRATION_FEE 1.0 // 1 CHIPS registration fee
 #define DEALER_DEREGISTRATION_COMMISSION 0.05 // 5% commission on deregistration
 
 // Function declarations
