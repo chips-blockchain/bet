@@ -1,43 +1,146 @@
+#include <stdlib.h>
+#include <string.h>
+
 #include "bet.h"
 #include "help.h"
 #include "switchs.h"
 
+// Implementation of strdup if not available
+#ifndef strdup
+char *strdup(const char *s)
+{
+	if (!s)
+		return NULL;
+	size_t len = strlen(s) + 1;
+	char *new = malloc(len);
+	if (!new)
+		return NULL;
+	return memcpy(new, s, len);
+}
+#endif
+
 void bet_command_info()
 {
-	const char *help_text = "\nAvailable Commands:\n"
-				"\n==Dealer==\n"
-				"dcv <ipv4_address>     Start the dealer node\n"
-				"\n==Player==\n"
-				"player                 Start the player node\n"
-				"\n==Cashier==\n"
-				"cashierd cashier <ipv4_address>  Start the cashier node\n"
-				"\n==DRP (Dispute Resolution Protocol)==\n"
-				"game info <fail|success>         Display game information\n"
-				"game solve                       Resolve all disputes\n"
-				"game dispute <tx_id>             Resolve specific dispute\n"
-				"\n==Wallet==\n"
-				"withdraw <amount> <chips_address>  Withdraw specific amount\n"
-				"withdraw all <chips_address>       Withdraw all funds\n"
-				"spendable                          List spendable transactions\n"
-				"consolidate                        Consolidate funds\n"
-				"tx_split <m> <n>                   Split transaction (m into n parts)\n"
-				"extract_tx_data <tx_id>            Extract transaction data\n"
-				"\n==Blockchain Scanner==\n"
-				"scan                               Scan blockchain for game info\n"
-				"\n==VDXF ID Commands==\n"
-				"print_id <id_name> <type>          Print ID information\n"
-				"print <id_name> <key_name>         Print specific key information\n"
-				"add_dealer <dealer_id>             Add a dealer\n"
-				"list_dealers                       List all dealers\n"
-				"list_tables                        List all tables\n"
-				"reset_id                           Reset ID information\n"
-				"\n==Help==\n"
-				"help <command>         Get detailed help for a command\n"
-				"                       Supported commands: cashier, dealer, player, game,\n"
-				"                       spendable, scan, withdraw, verus, vdxf\n"
-				"\nFor more information about a specific command, use: ./bet help <command>\n";
+	// Define command sections with their descriptions
+	typedef struct {
+		const char *section;
+		const char *commands[10]; // Array of command strings
+		int cmd_count; // Number of commands in this section
+	} CommandSection;
 
+	// Define all command sections
+	CommandSection sections[] = {
+		{ "==Dealer==",
+		  {
+			  "dcv <ipv4_address>     Start the dealer node",
+		  },
+		  1 },
+		{ "==Player==",
+		  {
+			  "player                 Start the player node",
+		  },
+		  1 },
+		{ "==Cashier==",
+		  {
+			  "cashierd cashier <ipv4_address>  Start the cashier node",
+		  },
+		  1 },
+		{ "==Dealer Registration==",
+		  {
+			  "register_dealer <dealer_id>      Register a new dealer",
+			  "deregister_dealer <dealer_id>    Deregister an existing dealer",
+			  "raise_registration_dispute <dealer_id> <action>  Raise a dealer registration dispute",
+		  },
+		  3 },
+		{ "==DRP (Dispute Resolution Protocol)==",
+		  {
+			  "game info <fail|success>         Display game information",
+			  "game solve                       Resolve all disputes",
+			  "game dispute <tx_id>             Resolve specific dispute",
+		  },
+		  3 },
+		{ "==Wallet==",
+		  {
+			  "withdraw <amount> <chips_address>  Withdraw specific amount",
+			  "withdraw all <chips_address>       Withdraw all funds",
+			  "spendable                          List spendable transactions",
+			  "consolidate                        Consolidate funds",
+			  "tx_split <m> <n>                   Split transaction (m into n parts)",
+			  "extract_tx_data <tx_id>            Extract transaction data",
+		  },
+		  6 },
+		{ "==Blockchain Scanner==",
+		  {
+			  "scan                               Scan blockchain for game info",
+		  },
+		  1 },
+		{ "==VDXF ID Commands==",
+		  {
+			  "print_id <id_name> <type>          Print ID information",
+			  "print <id_name> <key_name>         Print specific key information",
+			  "add_dealer <dealer_id>             Add a dealer",
+			  "list_dealers                       List all dealers",
+			  "list_tables                        List all tables",
+			  "reset_id                           Reset ID information",
+		  },
+		  6 },
+		{ "==Help==",
+		  {
+			  "help <command>         Get detailed help for a command",
+			  "                       Supported commands: cashier, dealer, player, game,",
+			  "                       spendable, scan, withdraw, verus, vdxf",
+		  },
+		  3 }
+	};
+
+	// Build the help text
+	char *help_text = strdup("\nAvailable Commands:\n");
+	if (!help_text) {
+		dlg_error("Memory allocation failed");
+		return;
+	}
+
+	// Add each section and its commands
+	for (size_t i = 0; i < sizeof(sections) / sizeof(sections[0]); i++) {
+		// Add section header
+		char *temp = malloc(strlen(help_text) + strlen(sections[i].section) + 3);
+		if (!temp) {
+			free(help_text);
+			dlg_error("Memory allocation failed");
+			return;
+		}
+		sprintf(temp, "%s\n%s\n", help_text, sections[i].section);
+		free(help_text);
+		help_text = temp;
+
+		// Add commands
+		for (int j = 0; j < sections[i].cmd_count; j++) {
+			temp = malloc(strlen(help_text) + strlen(sections[i].commands[j]) + 3);
+			if (!temp) {
+				free(help_text);
+				dlg_error("Memory allocation failed");
+				return;
+			}
+			sprintf(temp, "%s%s\n", help_text, sections[i].commands[j]);
+			free(help_text);
+			help_text = temp;
+		}
+	}
+
+	// Add final help message
+	char *temp = malloc(strlen(help_text) + 100);
+	if (!temp) {
+		free(help_text);
+		dlg_error("Memory allocation failed");
+		return;
+	}
+	sprintf(temp, "%s\nFor more information about a specific command, use: ./bet help <command>\n", help_text);
+	free(help_text);
+	help_text = temp;
+
+	// Display the help text
 	dlg_info("%s", help_text);
+	free(help_text);
 }
 
 void bet_help_dcv_command_usage()
@@ -301,6 +404,64 @@ void bet_help_reset_id_command_usage(void)
 		"Ensure you have the necessary permissions before executing this command.\n");
 }
 
+void bet_help_raise_registration_dispute_command_usage()
+{
+	cJSON *command_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(command_info, "dealer_id", "ID of the dealer raising the dispute");
+	cJSON_AddStringToObject(command_info, "action", "Action to take: 'refund' or 'add_dealer'");
+
+	dlg_info("\nCommand: \n"
+		 "raise_dispute\n"
+		 "\nDescription: \n"
+		 "Raises a dispute for a dealer registration transaction\n"
+		 "\nArguments: \n"
+		 "Inputs: \n"
+		 "%s"
+		 "\nResult: \n"
+		 "Creates a dispute transaction that will be processed by the block processor\n"
+		 "\nExample: \n"
+		 "./bet raise_registration_dispute \"dealer_id\" \"refund\"",
+		 cJSON_Print(command_info));
+}
+
+void bet_help_register_dealer_command_usage()
+{
+	cJSON *command_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(command_info, "dealer_id", "ID of the dealer to register");
+
+	dlg_info("\nCommand: \n"
+		 "register_dealer\n"
+		 "\nDescription: \n"
+		 "Registers a dealer by creating a registration transaction and storing it in the dealer's ID\n"
+		 "\nArguments: \n"
+		 "Inputs: \n"
+		 "%s"
+		 "\nResult: \n"
+		 "Creates a registration transaction and stores it in the dealer's ID for future reference\n"
+		 "\nExample: \n"
+		 "./bet register_dealer \"dealer_id\"",
+		 cJSON_Print(command_info));
+}
+
+void bet_help_deregister_dealer_command_usage()
+{
+	cJSON *command_info = cJSON_CreateObject();
+	cJSON_AddStringToObject(command_info, "dealer_id", "ID of the dealer to deregister");
+
+	dlg_info("\nCommand: \n"
+		 "deregister_dealer\n"
+		 "\nDescription: \n"
+		 "Deregisters a dealer by creating a deregistration transaction and storing it in the dealer's ID\n"
+		 "\nArguments: \n"
+		 "Inputs: \n"
+		 "%s"
+		 "\nResult: \n"
+		 "Creates a deregistration transaction and stores it in the dealer's ID for future reference\n"
+		 "\nExample: \n"
+		 "./bet deregister_dealer \"dealer_id\"",
+		 cJSON_Print(command_info));
+}
+
 // clang-format off
 void bet_help_command(char *command)
 {
@@ -330,6 +491,9 @@ void bet_help_command(char *command)
         {"print", bet_help_print_command_usage},
 		{"print_id", bet_help_print_id_command_usage},
         {"reset_id", bet_help_reset_id_command_usage},
+        {"raise_registration_dispute", bet_help_raise_registration_dispute_command_usage},
+        {"register_dealer", bet_help_register_dealer_command_usage},
+        {"deregister_dealer", bet_help_deregister_dealer_command_usage},
         {NULL, NULL}  // Sentinel to mark the end of the array
     };
 

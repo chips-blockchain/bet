@@ -6,6 +6,7 @@
 #include "game.h"
 #include "storage.h"
 #include "config.h"
+#include "dealer_registration.h"
 
 struct table player_t = { 0 };
 
@@ -389,22 +390,6 @@ end:
 	return out;
 }
 
-bool is_dealer_registered(char *dealer_id)
-{
-	cJSON *dealers = NULL;
-
-	if (!is_id_exists(dealer_id, false)) {
-		return false;
-	}
-	dealers = list_dealers();
-	for (int32_t i = 0; i < cJSON_GetArraySize(dealers); i++) {
-		if (0 == strcmp(dealer_id, jstri(dealers, i))) {
-			return true;
-		}
-	}
-	return false;
-}
-
 int32_t get_player_id(int *player_id)
 {
 	char *game_id_str = NULL, hexstr[65];
@@ -451,7 +436,7 @@ int32_t join_table()
 	jaddstr(data, "table_id", player_config.table_id);
 	jaddstr(data, "verus_pid", player_config.verus_pid);
 
-	op_id = verus_sendcurrency_data(data);
+	op_id = verus_sendcurrency_data(default_chips_tx_fee, data);
 	if (op_id == NULL)
 		return ERR_SENDCURRENCY;
 
@@ -616,20 +601,25 @@ cJSON *get_z_getoperationstatus(char *op_id)
 	return argjson;
 }
 
-cJSON *verus_sendcurrency_data(cJSON *data)
+cJSON *verus_sendcurrency_data(double amount, cJSON *data)
 {
 	int32_t hex_data_len, argc, minconf = 1;
 	double fee = 0.0001;
 	char *hex_data = NULL, **argv = NULL, params[4][arg_size] = { 0 };
 	cJSON *currency_detail = NULL, *argjson = NULL, *tx_params = NULL;
 
-	hex_data_len = 2 * strlen(cJSON_Print(data)) + 1;
-	hex_data = calloc(hex_data_len, sizeof(char));
-	str_to_hexstr(cJSON_Print(data), hex_data);
+	if (amount < 0) {
+		dlg_error("Amount cannot be negative");
+		return NULL;
+	}
+
+	if (amount == 0) {
+		amount = default_chips_tx_fee;
+	}
 
 	currency_detail = cJSON_CreateObject();
 	cJSON_AddStringToObject(currency_detail, "currency", CHIPS);
-	cJSON_AddNumberToObject(currency_detail, "amount", default_chips_tx_fee);
+	cJSON_AddNumberToObject(currency_detail, "amount", amount);
 	cJSON_AddStringToObject(currency_detail, "address", CASHIERS_ID_FQN);
 
 	tx_params = cJSON_CreateArray();
@@ -638,7 +628,15 @@ cJSON *verus_sendcurrency_data(cJSON *data)
 	snprintf(params[0], arg_size, "\'*\'");
 	snprintf(params[1], arg_size, "\'%s\'", cJSON_Print(tx_params));
 	snprintf(params[2], arg_size, "%d %f false", minconf, fee);
-	snprintf(params[3], arg_size, "\'%s\'", hex_data);
+
+	if (data != NULL) {
+		hex_data_len = 2 * strlen(cJSON_Print(data)) + 1;
+		hex_data = calloc(hex_data_len, sizeof(char));
+		str_to_hexstr(cJSON_Print(data), hex_data);
+		snprintf(params[3], arg_size, "\'%s\'", hex_data);
+	} else {
+		snprintf(params[3], arg_size, "\'\'"); // Empty data parameter
+	}
 
 	argc = 6;
 	bet_alloc_args(argc, &argv);
@@ -646,6 +644,10 @@ cJSON *verus_sendcurrency_data(cJSON *data)
 
 	argjson = cJSON_CreateObject();
 	make_command(argc, argv, &argjson);
+
+	if (hex_data != NULL) {
+		free(hex_data);
+	}
 	return argjson;
 }
 
@@ -1295,6 +1297,18 @@ end:
 	dlg_info("Done\n");
 }
 
+/*
+* The list_dealers() function fetches data from the DEALERS_KEY in DEALERS_ID_FQN identity
+* The data is stored in the following JSON format:
+* {
+*   "dealers": [
+*     "dealer_id1@", 
+*     "dealer_id2@",
+*     ...
+*   ]
+* }
+* Returns: cJSON array containing dealer IDs, or NULL if no dealers found
+*/
 cJSON *list_dealers()
 {
 	cJSON *dealers = NULL, *dealers_arr = NULL;
