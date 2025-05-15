@@ -134,8 +134,6 @@ const char *bet_err_str(int32_t err_no)
 		return "Player primaryaddress is not added to the table";
 	case ERR_ID_NOT_FOUND:
 		return "ID not found";
-	case ERR_NOT_ENOUGH_FUNDS:
-		return "Insufficient funds";
 	case ERR_INVALID_PLAYER_ID:
 		return "Invalid player id";
 	case ERR_PLAYER_DECK_SHUFFLING:
