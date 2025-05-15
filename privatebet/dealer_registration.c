@@ -114,7 +114,7 @@ int32_t register_dealer(char *dealer_id)
 	cJSON_AddStringToObject(tx_data, "destination", DEALERS_ID);
 
 	// Transfer registration fee with dealer_id in tx data
-	op_id = verus_sendcurrency_data(DEALER_REGISTRATION_FEE, tx_data);
+	op_id = verus_sendcurrency_data(DEALERS_ID_FQN, DEALER_REGISTRATION_FEE, tx_data);
 	if (!op_id) {
 		dlg_error("Failed to transfer registration fee");
 		return ERR_SENDCURRENCY;
@@ -178,7 +178,7 @@ int32_t deregister_dealer(char *dealer_id)
 	cJSON_AddStringToObject(tx_data, "destination", dealer_id);
 
 	// Transfer refund amount back to dealer
-	op_id = verus_sendcurrency_data(refund_amount, tx_data);
+	op_id = verus_sendcurrency_data(dealer_id, refund_amount, tx_data);
 	if (!op_id) {
 		dlg_error("Failed to transfer refund amount");
 		return ERR_SENDCURRENCY;
@@ -273,7 +273,7 @@ int32_t raise_dealer_registration_dispute(char *dealer_id, char *dispute_action)
 	cJSON_AddItemToObject(tx_data, "tx_data", cJSON_DetachItemFromObject(registration_info, "tx_data"));
 
 	// Send dispute transaction to dealers ID
-	op_id = verus_sendcurrency_data(0, tx_data);
+	op_id = verus_sendcurrency_data(DEALERS_ID_FQN, 0, tx_data);
 	if (!op_id) {
 		dlg_error("Failed to send dispute transaction");
 		return ERR_SENDCURRENCY;
@@ -325,7 +325,7 @@ static int32_t process_dealer_registration_dispute(cJSON *tx_data)
 		cJSON_AddStringToObject(refund_data, "destination", dealer_id);
 
 		// Send refund
-		cJSON *refund_tx = verus_sendcurrency_data(amount, refund_data);
+		cJSON *refund_tx = verus_sendcurrency_data(dealer_id, amount, refund_data);
 		if (!refund_tx) {
 			dlg_error("Failed to process refund for dealer %s", dealer_id);
 			return ERR_SENDCURRENCY;
@@ -417,7 +417,7 @@ void process_dealer_registration_block(char *blockhash)
 					cJSON_AddStringToObject(refund_data, "destination", dealer_id);
 
 					// Send refund using send_currency_data
-					cJSON *refund_tx = verus_sendcurrency_data(amount, refund_data);
+					cJSON *refund_tx = verus_sendcurrency_data(dealer_id, amount, refund_data);
 					if (!refund_tx) {
 						dlg_error("Failed to refund invalid registration fee to %s", dealer_id);
 					} else {
@@ -442,7 +442,7 @@ void process_dealer_registration_block(char *blockhash)
 					cJSON_AddStringToObject(refund_data, "destination", dealer_id);
 
 					// Send refund using send_currency_data
-					cJSON *refund_tx = verus_sendcurrency_data(amount, refund_data);
+					cJSON *refund_tx = verus_sendcurrency_data(dealer_id, amount, refund_data);
 					if (!refund_tx) {
 						dlg_error("Failed to refund registration fee to %s", dealer_id);
 					} else {
