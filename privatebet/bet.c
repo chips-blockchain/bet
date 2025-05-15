@@ -38,6 +38,7 @@
 #include "test.h"
 #include "dealer.h"
 #include "blinder.h"
+#include "dealer_registration.h"
 
 #include <netinet/in.h>
 #include <stdio.h>
@@ -472,6 +473,10 @@ static void bet_start(int argc, char **argv)
 
 	if ((strcmp(argv[1], "add_dealer") == 0) && (argc == 3)) {
 		retval = add_dealer(argv[2]);
+	} else if ((strcmp(argv[1], "register_dealer") == 0) && (argc == 3)) {
+		retval = register_dealer(argv[2]);
+	} else if ((strcmp(argv[1], "deregister_dealer") == 0) && (argc == 3)) {
+		retval = deregister_dealer(argv[2]);
 	} else if ((strcmp(argv[1], "c") == 0) || (strcmp(argv[1], "cashier") == 0)) {
 		dlg_info("Starting cashier node");
 		bet_node_type = cashier;

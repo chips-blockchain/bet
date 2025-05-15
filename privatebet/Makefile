@@ -1,7 +1,7 @@
 PROJNAME := bet
 CASHIER := cashierd
 LIB := libbet
-SRCFILES := cards777.c  client.c  commands.c  gfshare.c  host.c  network.c  oracle.c  payment.c  states.c  table.c poker.c cashier.c storage.c config.c misc.c heartbeat.c help.c err.c vdxf.c player.c blinder.c dealer.c print.c test.c deck.c game.c
+SRCFILES := cards777.c  client.c  commands.c  gfshare.c  host.c  network.c  oracle.c  payment.c  states.c  table.c poker.c cashier.c storage.c config.c misc.c heartbeat.c help.c err.c vdxf.c player.c blinder.c dealer.c print.c test.c deck.c game.c dealer_registration.c
 OBJFILES := $(patsubst %.c,%.o,$(SRCFILES))
 CC := gcc
 #BET_VERSION=$(shell git describe --always --abbrev=7 2>/dev/null || pwd | sed -n 's|.*/c\{0,1\}bet-v\{0,1\}\([0-9a-f.rc\-]*\)$$|\1|gp')
