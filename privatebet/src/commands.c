@@ -1650,7 +1650,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 		strcat(command, argv[i]);
 		strcat(command, " ");
 	}
-	//dlg_info("command :: %s\n", command);
+	dlg_info("command :: %s\n", command);
 	if (strcmp(argv[0], "lightning-cli") == 0)
 		dlg_info("LN command :: %s\n", command);
 
