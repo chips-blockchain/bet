@@ -11,13 +11,13 @@
 #include "vdxf.h"
 #include "dealer.h"
 
-char *dealer_config_ini_file = "./config/dealer_config.ini";
-char *player_config_ini_file = "./config/player_config.ini";
-char *cashier_config_ini_file = "./config/cashier_config.ini";
-char *bets_config_ini_file = "./config/bets.ini";
-char *blockchain_config_ini_file = "./config/blockchain_config.ini";
-char *verus_dealer_config = "./config/verus_dealer.ini";
-char *verus_player_config_file = "./config/verus_player.ini";
+char *dealer_config_ini_file = "../config/dealer_config.ini";
+char *player_config_ini_file = "../config/player_config.ini";
+char *cashier_config_ini_file = "../config/cashier_config.ini";
+char *bets_config_ini_file = "../config/bets.ini";
+char *blockchain_config_ini_file = "../config/blockchain_config.ini";
+char *verus_dealer_config = "../config/verus_dealer.ini";
+char *verus_player_config_file = "../config/verus_player.ini";
 
 struct verus_player_config player_config = { 0 };
 
