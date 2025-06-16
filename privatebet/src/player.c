@@ -178,39 +178,59 @@ int32_t handle_verus_player()
 {
 	int32_t retval = OK;
 
-	if ((retval = check_poker_ready()) != OK) {
+	// Check if poker is ready
+	if ((retval = verify_poker_setup()) != OK) {
+		dlg_error("Poker not ready: %s", bet_err_str(retval));
 		return retval;
 	}
 
-	if (retval = bet_parse_verus_player() != OK) {
+	// Parse Verus player configuration
+	if ((retval = bet_parse_verus_player()) != OK) {
+		dlg_error("Failed to parse Verus player configuration: %s", bet_err_str(retval));
 		return retval;
 	}
 
+	// Find a table
 	if ((retval = find_table()) != OK) {
-		// TODO:: If retval is ERR_PA_EXISTS, i.e PA exists in the table and the player can rejoin.
-		return retval;
+		if (retval == ERR_PA_EXISTS) {
+			dlg_info("Player already exists in the table. Attempting to rejoin.");
+			// TODO: Implement rejoin logic here
+		} else {
+			dlg_error("Failed to find table: %s", bet_err_str(retval));
+			return retval;
+		}
 	}
 	dlg_info("Table found");
 	print_struct_table(&player_t);
 
+	// Join the table
 	if ((retval = join_table()) != OK) {
+		dlg_error("Failed to join table: %s", bet_err_str(retval));
 		return retval;
 	}
 	dlg_info("Table Joined");
+
+	// Get player ID
 	if ((retval = get_player_id(&p_deck_info.player_id)) != OK) {
+		dlg_error("Failed to get player ID: %s", bet_err_str(retval));
 		return retval;
 	}
-	dlg_info("Player ID ::%d", p_deck_info.player_id);
+	dlg_info("Player ID: %d", p_deck_info.player_id);
 
+	// Initialize player deck
 	if ((retval = player_init_deck()) != OK) {
+		dlg_error("Failed to initialize player deck: %s", bet_err_str(retval));
 		return retval;
 	}
 	dlg_info("Player deck shuffling info updated to table");
 
+	// Main game loop
 	while (1) {
 		retval = handle_game_state_player(player_config.table_id);
-		if (retval)
+		if (retval != OK) {
+			dlg_error("Error in game state handling: %s", bet_err_str(retval));
 			return retval;
+		}
 		sleep(2);
 	}
 

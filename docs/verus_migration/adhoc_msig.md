@@ -1,10 +1,9 @@
 # Adhoc MultiSignatures
+## Ad-Hoc Multisignature (msig) in Verus
 
-A concept where in which the multiple authorities agreed upon change over time to perform a precommited or future operations. I expereinced this concept first time when I'm using vdxf ID's in Verus. 
-In Verus we register an ID, which is a human readable name and the updates to it are controlled by primaryaddresses and minimumsignatures needed. So basically if the minimumsignatures needed are greater than 1, then its nothing but a multiple signature concept.
+Ad-hoc multisignature allows signing authorities to change over time, unlike traditional multisignatures where the signing authorities are fixed. This concept is first encountered when using VDXF IDs in Verus. In Verus, an ID is a human-readable name, and updates to it are controlled by primary addresses and the required minimum signatures. If the required minimum signatures exceed one, it essentially becomes a multisignature concept.
 
-## How it's relevant in bet
+## Relevance in BET
 
-In bet eco system we use multisignatures a lot to handle the player funds. In a way even in bet we compute multi signatures for each game based on the availability of the cashier nodes. 
-Before the player can take part in any game, it checks for the available cashier nodes and since the cashier pubkey addresses are global and visible to all, the player simply takes the pubkeys of those available cashiers and computes the `m-of-n` multisigaddress, where m is `n/2+1`. So here in bet this multisignature address varies whenever new cashiers come to live or the existing cashiers drops. So for that reasons there isn't any unique multisignature address that we can use all the time. But with vdxf ID's, by keeping the ID name same, the primaryaddress that can update the ID and the number of signatures of that primaryaddrsses needed to update can be modified and I feel in a way that gives flexibility to remove the bad actors or add new actors to the ecosystem without impacting the end users.
+In the BET ecosystem, multisignatures are extensively used to manage player funds. For each game, multisignatures are computed based on the availability of cashier nodes. Before a player can participate in any game, the system checks for available cashier nodes. Since cashier public key addresses are globally visible, the player uses the public keys of available cashiers to compute the `m-of-n` multisig address, where `m` is atleast `n/2 + 1`. This multisignature address changes as new cashiers join or existing cashiers leave. Therefore, there isn't a unique multisignature address that can be used consistently. However, with VDXF IDs, by keeping the ID name constant, the primary addresses that can update the ID and the number of signatures required can be modified. This flexibility allows for the removal of bad actors or the addition of new actors to the ecosystem without impacting end users.
 

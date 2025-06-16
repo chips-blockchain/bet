@@ -1,7 +1,20 @@
 PROJNAME := bet
 CASHIER := cashierd
 LIB := libbet
-SRCFILES := cards777.c  client.c  commands.c  gfshare.c  host.c  network.c  oracle.c  payment.c  states.c  table.c poker.c cashier.c storage.c config.c misc.c heartbeat.c help.c err.c vdxf.c player.c blinder.c dealer.c print.c test.c deck.c game.c
+
+# Updated source and include paths
+SRC_DIR := src
+INCLUDE_DIR := include
+
+# Updated source files path
+SRCFILES := $(SRC_DIR)/cards777.c  $(SRC_DIR)/client.c  $(SRC_DIR)/commands.c  $(SRC_DIR)/gfshare.c  \
+            $(SRC_DIR)/host.c  $(SRC_DIR)/network.c  $(SRC_DIR)/oracle.c  $(SRC_DIR)/payment.c  \
+            $(SRC_DIR)/states.c  $(SRC_DIR)/table.c $(SRC_DIR)/poker.c $(SRC_DIR)/cashier.c \
+            $(SRC_DIR)/storage.c $(SRC_DIR)/config.c $(SRC_DIR)/misc.c $(SRC_DIR)/heartbeat.c \
+            $(SRC_DIR)/help.c $(SRC_DIR)/err.c $(SRC_DIR)/vdxf.c $(SRC_DIR)/player.c \
+            $(SRC_DIR)/blinder.c $(SRC_DIR)/dealer.c $(SRC_DIR)/print.c $(SRC_DIR)/test.c \
+            $(SRC_DIR)/deck.c $(SRC_DIR)/game.c $(SRC_DIR)/dealer_registration.c
+
 OBJFILES := $(patsubst %.c,%.o,$(SRCFILES))
 CC := gcc
 #BET_VERSION=$(shell git describe --always --abbrev=7 2>/dev/null || pwd | sed -n 's|.*/c\{0,1\}bet-v\{0,1\}\([0-9a-f.rc\-]*\)$$|\1|gp')
@@ -15,9 +28,16 @@ else
 #WARNINGS := -Werror -Wunused-variable
 endif
 
-CFLAGS := -g -fPIC -std=c99 $(WARNINGS)
+CFLAGS := -g -fPIC -std=c99 $(WARNINGS) \
+          -I$(INCLUDE_DIR) \
+          -I../crypto777 \
+          -I$(EXTERNAL_DIR)/includes/curl \
+          -I$(EXTERNAL_DIR)/dlg/include \
+          -I$(EXTERNAL_DIR)/iniparser/src \
+          -I$(EXTERNAL_DIR)/nng/include \
+          -I$(EXTERNAL_DIR)/jsmn
 
-.PHONY: all clean
+.PHONY: all clean test
 
 LIGHTNING := lightning
 
@@ -32,6 +52,7 @@ clean:
 	$(RM) $(CASHIER)
 	$(RM) $(LIB).a
 	$(RM) *.o
+	$(RM) $(SRC_DIR)/*.o
 
 EXTERNAL_LIBS_DIR := $(shell cd ../external; pwd)
 # $(info $$EXTERNAL_LIBS_DIR is [${EXTERNAL_LIBS_DIR}])
@@ -58,10 +79,21 @@ $(info $$CC is [${CC}])
 
 $(PROJNAME): $(OBJFILES)
 #$(shell echo "#define BET_VERSION \"${BET_VERSION}\"" > bet_version.h)
-	        $(CC) $(CFLAGS) -o $@ bet.c $^ ../external/iniparser/libiniparser.a ../crypto777/libcrypto777.a -L$(TARGET_DIR) -I$(LIBWEBSOCKETS_HEADERS) -I$(LIBJSMN_HEADERS) -I$(LIBINIPARSER_HEADERS) -L$(LIBWEBSOCKETS_LDFLAGS) $(LDFLAGS) $(CPPFLAGS) -lcurl -ldl -lnng -lpthread -lm -ljsmn -lwebsockets -ldlg -L/usr/local/lib -lm -lgmp -lsqlite3 -L/usr/local/lib -lssl -lcrypto -levent -lpthread -lstdc++
+	$(CC) $(CFLAGS) -o $@ $(SRC_DIR)/bet.c $^ ../external/iniparser/libiniparser.a ../crypto777/libcrypto777.a \
+	-L$(TARGET_DIR) -I$(LIBWEBSOCKETS_HEADERS) -I$(LIBJSMN_HEADERS) -I$(LIBINIPARSER_HEADERS) \
+	-L$(LIBWEBSOCKETS_LDFLAGS) $(LDFLAGS) $(CPPFLAGS) -lcurl -ldl -lnng -lpthread -lm -ljsmn \
+	-lwebsockets -ldlg -L/usr/local/lib -lm -lgmp -lsqlite3 -L/usr/local/lib -lssl -lcrypto \
+	-levent -lpthread -lstdc++
 	cp $(PROJNAME) $(CASHIER)
+
 %.o: %.c
-	$(CC) $(CFLAGS) -L$(TARGET_DIR) -I$(LIBINIPARSER_HEADERS) -I$(LIBWEBSOCKETS_HEADERS) -I$(LIBJSMN_HEADERS) -L$(LIBINIPARSER_LDFLAGS) -L$(LIBWEBSOCKETS_LDFLAGS) $(LDFLAGS) $(CPPFLAGS) -c $< -o $@  -I ../includes/curl
+	$(CC) $(CFLAGS) -L$(TARGET_DIR) -I$(LIBINIPARSER_HEADERS) -I$(LIBWEBSOCKETS_HEADERS) \
+	-I$(LIBJSMN_HEADERS) -L$(LIBINIPARSER_LDFLAGS) -L$(LIBWEBSOCKETS_LDFLAGS) $(LDFLAGS) \
+	$(CPPFLAGS) -c $< -o $@ -I ../includes/curl
 
 build_dir_tree:
 	sh ./scripts/build_dir_tree.sh
+
+# Add test target
+test:
+	$(MAKE) -C tests test

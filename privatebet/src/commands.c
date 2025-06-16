@@ -32,10 +32,10 @@
 
 double epsilon = 0.000000001;
 
-char blockchain_cli[1024] = "verus -chain=chips10sec";
+char blockchain_cli[1024] = "verus -chain=chips777";
 
 char *chips_cli = "chips-cli";
-char *verus_chips_cli = "verus -chain=chips10sec";
+char *verus_chips_cli = "verus -chain=chips777";
 
 int32_t bet_alloc_args(int argc, char ***argv)
 {
@@ -1650,7 +1650,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 		strcat(command, argv[i]);
 		strcat(command, " ");
 	}
-	//dlg_info("command :: %s\n", command);
+	dlg_info("command :: %s\n", command);
 	if (strcmp(argv[0], "lightning-cli") == 0)
 		dlg_info("LN command :: %s\n", command);
 

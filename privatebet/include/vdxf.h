@@ -23,6 +23,22 @@ key is represented as chips.vrsc::poker.cashiers.
 */
 
 #define CASHIERS_KEY "chips.vrsc::poker.cashiers"
+/*
+* The DEALERS_KEY holds information about registered dealers in the poker system.
+* It stores an array of dealer identities (IDs) that are authorized to run poker tables.
+* 
+* The structure of the data stored under this key is:
+* {
+*   "dealers": [
+*     "dealer_id_1",
+*     "dealer_id_2",
+*     ...
+*   ]
+* }
+* 
+* Where each "dealer_id_x" is a unique identifier (likely a VerusID) for a registered dealer.
+* This allows the system to maintain a list of approved dealers that can host poker games.
+*/
 #define DEALERS_KEY "chips.vrsc::poker.dealers"
 
 #define T_GAME_ID_KEY "chips.vrsc::poker.t_game_ids"
@@ -34,17 +50,6 @@ key is represented as chips.vrsc::poker.cashiers.
 * }
 */
 #define T_PLAYER_INFO_KEY "chips.vrsc::poker.t_player_info"
-#define T_PLAYER1_KEY "chips.vrsc::poker.t_player1"
-#define T_PLAYER2_KEY "chips.vrsc::poker.t_player2"
-#define T_PLAYER3_KEY "chips.vrsc::poker.t_player3"
-#define T_PLAYER4_KEY "chips.vrsc::poker.t_player4"
-#define T_PLAYER5_KEY "chips.vrsc::poker.t_player5"
-#define T_PLAYER6_KEY "chips.vrsc::poker.t_player6"
-#define T_PLAYER7_KEY "chips.vrsc::poker.t_player7"
-#define T_PLAYER8_KEY "chips.vrsc::poker.t_player8"
-#define T_PLAYER9_KEY "chips.vrsc::poker.t_player9"
-#define T_DEALER_KEY "chips.vrsc::poker.t_dealer"
-#define T_BLINDER_KEY "chips.vrsc::poker.t_blinder"
 
 #define T_D_DECK_KEY "chips.vrsc::poker.t_d_deck"
 #define T_D_P1_DECK_KEY "chips.vrsc::poker.t_d_p1_deck"
@@ -119,9 +124,9 @@ Any entity in the bet ecosystem can register the identities under chips, like fo
 under chips as sg777.chips@ which basically been used to hold the tokens. 
 */
 
-#define CASHIERS_ID_FQN "cashiers.poker.chips10sec@"
-#define DEALERS_ID_FQN "dealers.poker.chips10sec@"
-#define POKER_ID_FQN "poker.chips10sec@"
+#define CASHIERS_ID_FQN "cashiers.poker.chips777@"
+#define DEALERS_ID_FQN "dealers.poker.chips777@"
+#define POKER_ID_FQN "poker.chips777@"
 
 #define DEALERS_ID "dealers"
 #define CASHIERS_ID "cashiers"
@@ -132,7 +137,7 @@ Currencies
 ----------
 Bet supports various tokens that launch on Verus and CHIPS is the token which we use to play poker.
 */
-#define CHIPS "chips10sec"
+#define CHIPS "chips777"
 
 /* Every node that is part of the poker make updates to the IDs, so to pay tx_fee for the ID updates we keeping this reserve
 *  amount to be 1 CHIP which is sufficient to accomodate all gaming updates in poker.
@@ -170,14 +175,13 @@ cJSON *get_id_key_data(char *id, int16_t full_id, char *key);
 cJSON *update_t_game_ids(char *id);
 cJSON *get_cashiers_info(char *cashier_id);
 cJSON *update_cashiers(char *ip);
-bool is_dealer_registered(char *dealer_id);
 int32_t get_player_id(int *player_id);
 int32_t join_table();
 int32_t find_table();
 bool is_id_exists(char *id, int16_t full_id);
 int32_t check_player_join_status(char *table_id, char *pa);
 cJSON *get_z_getoperationstatus(char *op_id);
-cJSON *verus_sendcurrency_data(cJSON *data);
+cJSON *verus_sendcurrency_data(char *id, double amount, cJSON *data);
 cJSON *getaddressutxos(char verus_addresses[][100], int n);
 struct table *decode_table_info_from_str(char *str);
 struct table *decode_table_info(cJSON *dealer_cmm_data);
@@ -200,7 +204,7 @@ int32_t do_payin_tx_checks(char *txid, cJSON *payin_tx_data);
 void process_block(char *block_hash);
 cJSON *list_dealers();
 void list_tables();
-int32_t check_poker_ready();
+int32_t verify_poker_setup();
 int32_t add_dealer_to_dealers(char *dealer_id);
 int32_t id_canspendfor(char *id, int32_t full_id, int32_t *err_no);
 int32_t id_cansignfor(char *id, int32_t full_id, int32_t *err_no);

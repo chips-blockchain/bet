@@ -1,28 +1,38 @@
 # PRINT
+We store the information in the IDs by encoding them into hex, making the data retrieved via Verus APIs like `getidentity` difficult to read. To address this, we have developed Bet APIs to parse this data and present it in a human-readable format. This document discusses the APIs available to print the data of an ID or key in a human-readable format.
 
-We store the info on to the ID's by encoding them into hex, so the info that you see by using verus API;s like getidentity is not human readable. Here we discuss about the API's we have in order to print the data of an ID or key in a human readable form.
-
-#### To print complete ID
+#### Printing Complete ID
+To print the complete ID, use the following command:
 ```
-./bet print_id id_name id_type
+./bet print_id <id_name> <id_type>
+```
+- `id_name`: A valid ID name.
+- `id_type`: The high-level functionality of the ID, such as table, dealer, dealers, etc.
 
-where id_name is the any name valid ID name.
-id_type is basically the highlevel functionality of that ID, like table, dealer, dealers, etc...
-
-For example if I want print the info of a talbe sg777_t, here is the following command:
+For example, to print the information of a table named `sg777_t`, use the following command:
+```
 ./bet print_id sg777_t table
 ```
 
-#### To print specific key data of a table
+#### Printing Specific Key Data of a Table
+To print specific key data of a table, use the following command:
 ```
-./bet print_table_key talbe_id table_key_name
-
-For example, the following command prints the table info of the table sg777_t.
+./bet print_table_key <table_id> <table_key_name>
+```
+For example, to print the table information of the table `sg777_t`, use the following command:
+```
 ./bet print_table_key sg777_t t_table_info
 ```
-#### To print specific key data of a specific ID
-```
-./bet print id_name key_name
 
-Where id_name is the any existing valid ID name and 
-where as key_name is the any key name that has the data associated to it in that ID.
+#### Printing Specific Key Data of a Specific ID
+To print specific key data of a specific ID, use the following command:
+```
+./bet print <id_name> <key_name>
+```
+- `id_name`: A valid existing ID name.
+- `key_name`: Any key name that has associated data in that ID.
+
+For example, to print specific key data of an ID, use the following command:
+```
+./bet print <id_name> <key_name>
+```

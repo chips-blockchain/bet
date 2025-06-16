@@ -134,8 +134,6 @@ const char *bet_err_str(int32_t err_no)
 		return "Player primaryaddress is not added to the table";
 	case ERR_ID_NOT_FOUND:
 		return "ID not found";
-	case ERR_NOT_ENOUGH_FUNDS:
-		return "Insufficient funds";
 	case ERR_INVALID_PLAYER_ID:
 		return "Invalid player id";
 	case ERR_PLAYER_DECK_SHUFFLING:
@@ -190,6 +188,12 @@ const char *bet_err_str(int32_t err_no)
 		return "Player ID has already been added to the table";
 	case ERR_PLAYER_NOT_ADDED:
 		return "Player ID hasn't added to the table";
+	case ERR_CASHIERS_ID_NOT_FOUND:
+		return "Cashiers ID not found";
+	case ERR_DEALERS_ID_NOT_FOUND:
+		return "Dealers ID not found";
+	case ERR_NO_DEALERS_REGISTERED:
+		return "No dealers registered";
 	default:
 		dlg_error("err_no::%d", err_no);
 		return "This error is not handled yet...";

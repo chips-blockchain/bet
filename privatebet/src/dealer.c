@@ -7,6 +7,7 @@
 #include "err.h"
 #include "misc.h"
 #include "commands.h"
+#include "dealer_registration.h"
 
 struct d_deck_info_struct d_deck_info;
 struct game_meta_info_struct game_meta_info;

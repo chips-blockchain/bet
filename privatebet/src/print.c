@@ -3,6 +3,7 @@
 #include "misc.h"
 #include "vdxf.h"
 #include "print.h"
+#include "game.h"
 
 void print_struct_table(struct table *t)
 {
@@ -90,8 +91,10 @@ void print_table_id(char *id)
 				dlg_info("%s :: %s", all_t_b_p_key_names[i], cJSON_Print(temp));
 		}
 		temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_GAME_INFO_KEY, game_id));
-		if (temp)
-			dlg_info("%s :: %s", T_GAME_INFO_KEY, cJSON_Print(temp));
+		if (temp) {
+			int game_state = jint(temp, "game_state");
+			dlg_info("Game State: %s", game_state_str(game_state));
+		}
 
 		temp = NULL;
 		temp = get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_CARD_BV_KEY, game_id));
@@ -155,38 +158,50 @@ void print_id_info(int argc, char **argv)
 
 void print_vdxf_info(int argc, char **argv)
 {
-	char *str = NULL;
-	cJSON *cmm = NULL;
-	if (!is_id_exists(argv[2], 0)) {
-		dlg_info("ID doesn't exists\n");
-	} else {
-		if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_TABLE_INFO_KEY)) == 0) {
-			cmm = get_cJSON_from_id_key_vdxfid(argv[2], get_key_vdxf_id(argv[3]));
-			dlg_info("%s", cJSON_Print(cmm));
-		} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_PLAYER_INFO_KEY)) == 0) {
-			cmm = get_cJSON_from_id_key_vdxfid(argv[2], get_key_vdxf_id(argv[3]));
-			dlg_info("%s", cJSON_Print(cmm));
-		} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_GAME_ID_KEY)) == 0) {
-			str = get_str_from_id_key(argv[2], get_full_key(argv[3]));
-			dlg_info("%s", str);
-		} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(DEALERS_KEY)) == 0) {
-			cJSON *temp = get_cJSON_from_id_key_vdxfid(argv[2], get_vdxf_id(DEALERS_KEY));
-			if (temp) {
-				dlg_info("%s", cJSON_Print(temp));
-			}
-		} else if (strcmp(get_key_vdxf_id(argv[3]), get_vdxf_id(T_GAME_INFO_KEY)) == 0) {
-			char *game_id_str = NULL;
-			game_id_str = get_str_from_id_key(argv[2], T_GAME_ID_KEY);
-			if (game_id_str) {
-				dlg_info("game_id_str :: %s", game_id_str);
-				cJSON *temp = get_cJSON_from_id_key_vdxfid(
-					argv[2], get_key_data_vdxf_id(T_GAME_INFO_KEY, game_id_str));
-				if (temp)
-					dlg_info("%s", cJSON_Print(temp));
-			}
-		} else {
-			dlg_info("Print operation is not supported for the given ID ::%s and key ::%s", argv[2],
-				 argv[3]);
+	if (argc < 4 || !argv[2] || !argv[3]) {
+		dlg_error("Invalid arguments for print_vdxf_info");
+		return;
+	}
+
+	char *id = argv[2];
+	char *key = argv[3];
+
+	if (!is_id_exists(id, 0)) {
+		dlg_info("ID doesn't exist");
+		return;
+	}
+
+	char *vdxf_id = get_key_vdxf_id(key);
+	cJSON *json_data = NULL;
+	char *str_data = NULL;
+
+	if (strcmp(vdxf_id, get_vdxf_id(T_TABLE_INFO_KEY)) == 0 ||
+	    strcmp(vdxf_id, get_vdxf_id(T_PLAYER_INFO_KEY)) == 0 || strcmp(vdxf_id, get_vdxf_id(DEALERS_KEY)) == 0) {
+		json_data = get_cJSON_from_id_key_vdxfid(id, vdxf_id);
+		if (json_data) {
+			dlg_info("%s", cJSON_Print(json_data));
+			cJSON_Delete(json_data);
 		}
+	} else if (strcmp(vdxf_id, get_vdxf_id(T_GAME_ID_KEY)) == 0) {
+		str_data = get_str_from_id_key(id, get_full_key(key));
+		if (str_data) {
+			dlg_info("%s", str_data);
+			free(str_data);
+		}
+	} else if (strcmp(vdxf_id, get_vdxf_id(T_GAME_INFO_KEY)) == 0) {
+		char *game_id_str = get_str_from_id_key(id, T_GAME_ID_KEY);
+		if (game_id_str) {
+			dlg_info("Game ID: %s", game_id_str);
+			json_data =
+				get_cJSON_from_id_key_vdxfid(id, get_key_data_vdxf_id(T_GAME_INFO_KEY, game_id_str));
+			if (json_data) {
+				int game_state = jint(json_data, "game_state");
+				dlg_info("Game State: %s", game_state_str(game_state));
+				cJSON_Delete(json_data);
+			}
+			free(game_id_str);
+		}
+	} else {
+		dlg_info("Print operation is not supported for the given ID: %s and key: %s", id, key);
 	}
 }

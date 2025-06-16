@@ -6,6 +6,7 @@
 #include "game.h"
 #include "storage.h"
 #include "config.h"
+#include "dealer_registration.h"
 
 struct table player_t = { 0 };
 
@@ -52,12 +53,12 @@ char *get_full_key(char *key_name)
 char *get_key_data_type(char *key_name)
 {
 	if (!key_name) {
-		// TODO:: This needs to be handled properly
-		dlg_error("%s", bet_err_str(ERR_NULL_KEY));
+		dlg_error("%s: Null key name provided", __func__);
+		return NULL;
 	}
-	/*
-	* Atm, we define the data types of all keys for IDs as byte vector
-	*/
+
+	// TODO: Implement a more sophisticated key type determination system
+	// For now, all keys are treated as byte vectors
 	return BYTEVECTOR_VDXF_ID;
 }
 
@@ -176,7 +177,7 @@ cJSON *get_cmm(char *id, int16_t full_id)
 
 	strncpy(params, id, strlen(id));
 	if (0 == full_id) {
-		strcat(params, ".poker.chips10sec@");
+		sprintf(params + strlen(params), ".%s", POKER_ID_FQN);
 	}
 	argc = 4;
 	bet_alloc_args(argc, &argv);
@@ -240,7 +241,7 @@ cJSON *get_primaryaddresses(char *id, int16_t full_id)
 	}
 	strncpy(params, id, strlen(id));
 	if (0 == full_id) {
-		strcat(params, ".poker.chips10sec@");
+		sprintf(params + strlen(params), ".%s", POKER_ID_FQN);
 	}
 	argc = 4;
 	bet_alloc_args(argc, &argv);
@@ -389,22 +390,6 @@ end:
 	return out;
 }
 
-bool is_dealer_registered(char *dealer_id)
-{
-	cJSON *dealers = NULL;
-
-	if (!is_id_exists(dealer_id, false)) {
-		return false;
-	}
-	dealers = list_dealers();
-	for (int32_t i = 0; i < cJSON_GetArraySize(dealers); i++) {
-		if (0 == strcmp(dealer_id, jstri(dealers, i))) {
-			return true;
-		}
-	}
-	return false;
-}
-
 int32_t get_player_id(int *player_id)
 {
 	char *game_id_str = NULL, hexstr[65];
@@ -451,7 +436,7 @@ int32_t join_table()
 	jaddstr(data, "table_id", player_config.table_id);
 	jaddstr(data, "verus_pid", player_config.verus_pid);
 
-	op_id = verus_sendcurrency_data(data);
+	op_id = verus_sendcurrency_data(CASHIERS_ID_FQN, default_chips_tx_fee, data);
 	if (op_id == NULL)
 		return ERR_SENDCURRENCY;
 
@@ -557,7 +542,7 @@ bool is_id_exists(char *id, int16_t full_id)
 
 	strncpy(params, id, strlen(id));
 	if (0 == full_id) {
-		strcat(params, ".poker.chips10sec@");
+		sprintf(params + strlen(params), ".%s", POKER_ID_FQN);
 	}
 	argc = 4;
 	bet_alloc_args(argc, &argv);
@@ -616,21 +601,31 @@ cJSON *get_z_getoperationstatus(char *op_id)
 	return argjson;
 }
 
-cJSON *verus_sendcurrency_data(cJSON *data)
+cJSON *verus_sendcurrency_data(char *id, double amount, cJSON *data)
 {
 	int32_t hex_data_len, argc, minconf = 1;
 	double fee = 0.0001;
 	char *hex_data = NULL, **argv = NULL, params[4][arg_size] = { 0 };
 	cJSON *currency_detail = NULL, *argjson = NULL, *tx_params = NULL;
 
-	hex_data_len = 2 * strlen(cJSON_Print(data)) + 1;
-	hex_data = calloc(hex_data_len, sizeof(char));
-	str_to_hexstr(cJSON_Print(data), hex_data);
+	if (amount < 0) {
+		dlg_error("Amount cannot be negative");
+		return NULL;
+	}
+
+	if (amount == 0) {
+		amount = default_chips_tx_fee;
+	}
+	//Full ID needs to be provided for the sendcurrency command
+	if ((!id) || (!is_id_exists(id, 1))) {
+		dlg_error("Invalid ID provided");
+		return NULL;
+	}
 
 	currency_detail = cJSON_CreateObject();
 	cJSON_AddStringToObject(currency_detail, "currency", CHIPS);
-	cJSON_AddNumberToObject(currency_detail, "amount", default_chips_tx_fee);
-	cJSON_AddStringToObject(currency_detail, "address", CASHIERS_ID_FQN);
+	cJSON_AddNumberToObject(currency_detail, "amount", amount);
+	cJSON_AddStringToObject(currency_detail, "address", id);
 
 	tx_params = cJSON_CreateArray();
 	cJSON_AddItemToArray(tx_params, currency_detail);
@@ -638,7 +633,15 @@ cJSON *verus_sendcurrency_data(cJSON *data)
 	snprintf(params[0], arg_size, "\'*\'");
 	snprintf(params[1], arg_size, "\'%s\'", cJSON_Print(tx_params));
 	snprintf(params[2], arg_size, "%d %f false", minconf, fee);
-	snprintf(params[3], arg_size, "\'%s\'", hex_data);
+
+	if (data != NULL) {
+		hex_data_len = 2 * strlen(cJSON_Print(data)) + 1;
+		hex_data = calloc(hex_data_len, sizeof(char));
+		str_to_hexstr(cJSON_Print(data), hex_data);
+		snprintf(params[3], arg_size, "\'%s\'", hex_data);
+	} else {
+		snprintf(params[3], arg_size, "\'\'"); // Empty data parameter
+	}
 
 	argc = 6;
 	bet_alloc_args(argc, &argv);
@@ -646,6 +649,10 @@ cJSON *verus_sendcurrency_data(cJSON *data)
 
 	argjson = cJSON_CreateObject();
 	make_command(argc, argv, &argjson);
+
+	if (hex_data != NULL) {
+		free(hex_data);
+	}
 	return argjson;
 }
 
@@ -740,37 +747,77 @@ cJSON *get_available_t_of_d(char *dealer_id)
 	return NULL;
 }
 
-bool is_table_full(char *table_id)
+static void update_player_ids(cJSON *t_player_info)
 {
-	int32_t game_state;
-	char *game_id_str = NULL;
-	cJSON *t_player_info = NULL, *t_table_info = NULL, *player_info = NULL;
+	cJSON *player_info = jobj(t_player_info, "player_info");
+	if (player_info == NULL) {
+		dlg_error("Failed to retrieve player info");
+		return;
+	}
 
-	game_state = get_game_state(table_id);
-	if (game_state >= G_TABLE_STARTED) {
-		game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
-
-		t_player_info =
-			get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
-		t_table_info =
-			get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, game_id_str));
-
-		if ((t_player_info) && (t_table_info) &&
-		    (jint(t_player_info, "num_players") >= jint(t_table_info, "max_players"))) {
-			if (bet_node_type == dealer) {
-				num_of_players = jint(t_player_info, "num_players");
-				player_info = jobj(t_player_info, "player_info");
-				//The player record is in the form of playerverusid_txid_pid, using strtok the first token we get is verus player ID.
-				for (int32_t i = 0; i < cJSON_GetArraySize(player_info); i++) {
-					strcpy(player_ids[i], strtok(jstri(player_info, i), "_"));
-					dlg_info("player id::%s", player_ids[i]);
-				}
+	num_of_players = cJSON_GetArraySize(player_info);
+	for (int32_t i = 0; i < num_of_players; i++) {
+		char *player_record = jstri(player_info, i);
+		if (player_record) {
+			// The player record is in the form of playerverusid_txid_pid, using strtok the first token we get is verus player ID.
+			char *player_id = strtok(player_record, "_");
+			if (player_id) {
+				strncpy(player_ids[i], player_id, sizeof(player_ids[i]) - 1);
+				player_ids[i][sizeof(player_ids[i]) - 1] = '\0'; // Ensure null-termination
+				dlg_info("Player %d ID: %s", i + 1, player_ids[i]);
 			}
-			dlg_error("Table is full");
-			return true;
 		}
 	}
-	return false;
+}
+
+bool is_table_full(char *table_id)
+{
+	if (table_id == NULL) {
+		dlg_error("Invalid table ID provided");
+		return false;
+	}
+
+	int32_t game_state = get_game_state(table_id);
+	if (game_state < G_TABLE_STARTED) {
+		return false;
+	}
+
+	char *game_id_str = get_str_from_id_key(table_id, T_GAME_ID_KEY);
+	if (game_id_str == NULL) {
+		dlg_error("Failed to retrieve game ID for table %s", table_id);
+		return false;
+	}
+
+	cJSON *t_player_info =
+		get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id_str));
+	cJSON *t_table_info =
+		get_cJSON_from_id_key_vdxfid(table_id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, game_id_str));
+
+	if (t_player_info == NULL || t_table_info == NULL) {
+		free(game_id_str);
+		cJSON_Delete(t_player_info);
+		cJSON_Delete(t_table_info);
+		return false;
+	}
+
+	int num_players = jint(t_player_info, "num_players");
+	int max_players = jint(t_table_info, "max_players");
+
+	bool is_full = (num_players >= max_players);
+
+	if (is_full && bet_node_type == dealer) {
+		update_player_ids(t_player_info);
+	}
+
+	if (is_full) {
+		dlg_info("Table %s is full (%d/%d players)", table_id, num_players, max_players);
+	}
+
+	free(game_id_str);
+	cJSON_Delete(t_player_info);
+	cJSON_Delete(t_table_info);
+
+	return is_full;
 }
 
 bool is_playerid_added(char *table_id)
@@ -977,35 +1024,68 @@ cJSON *append_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data, bool 
 
 cJSON *update_cmm_from_id_key_data_hex(char *id, char *key, char *hex_data, bool is_key_vdxf_id)
 {
-	char *data_type = NULL, *data_key = NULL;
-	cJSON *data_obj = NULL, *data_key_obj = NULL;
-
-	if (is_key_vdxf_id) {
-		data_type = get_vdxf_id(BYTEVECTOR_VDXF_ID);
-		data_key = key;
-	} else {
-		data_type = get_vdxf_id(get_key_data_type(key));
-		data_key = get_vdxf_id(key);
+	if (!id || !key || !hex_data) {
+		dlg_error("%s: Invalid input parameters", __func__);
+		return NULL;
 	}
-	data_obj = cJSON_CreateObject();
-	jaddstr(data_obj, data_type, hex_data);
 
-	data_key_obj = cJSON_CreateObject();
+	char *data_type = get_vdxf_id(BYTEVECTOR_VDXF_ID);
+	char *data_key = is_key_vdxf_id ? key : get_vdxf_id(key);
+
+	if (!data_type || !data_key) {
+		dlg_error("%s: Failed to determine data type or key", __func__);
+		return NULL;
+	}
+
+	cJSON *data_obj = cJSON_CreateObject();
+	if (!data_obj) {
+		dlg_error("%s: Failed to create data JSON object", __func__);
+		return NULL;
+	}
+
+	cJSON_AddStringToObject(data_obj, data_type, hex_data);
+
+	cJSON *data_key_obj = cJSON_CreateObject();
+	if (!data_key_obj) {
+		dlg_error("%s: Failed to create key JSON object", __func__);
+		cJSON_Delete(data_obj);
+		return NULL;
+	}
+
 	cJSON_AddItemToObject(data_key_obj, data_key, data_obj);
 
-	return update_cmm(id, data_key_obj);
+	cJSON *result = update_cmm(id, data_key_obj);
+	if (!result) {
+		dlg_error("%s: Failed to update CMM", __func__);
+		cJSON_Delete(data_key_obj);
+	}
+
+	return result;
 }
 
 cJSON *update_cmm_from_id_key_data_cJSON(char *id, char *key, cJSON *data, bool is_key_vdxf_id)
 {
+	if (!id || !key || !data) {
+		dlg_error("%s: Invalid input parameters", __func__);
+		return NULL;
+	}
+
 	char *hex_data = NULL;
+	cJSON *result = NULL;
 
 	cJSON_hex(data, &hex_data);
 	if (!hex_data) {
-		dlg_error("%s::%d::Error occured in conversion of cJSON to HEX\n", __func__, __LINE__);
+		dlg_error("%s: Failed to convert cJSON to HEX", __func__);
 		return NULL;
 	}
-	return update_cmm_from_id_key_data_hex(id, key, hex_data, is_key_vdxf_id);
+
+	result = update_cmm_from_id_key_data_hex(id, key, hex_data, is_key_vdxf_id);
+	if (!result) {
+		dlg_error("%s: Failed to update CMM with hex data", __func__);
+	}
+
+	free(hex_data);
+	return result;
 }
 
 cJSON *get_t_player_info(char *table_id)
@@ -1222,6 +1302,18 @@ end:
 	dlg_info("Done\n");
 }
 
+/*
+* The list_dealers() function fetches data from the DEALERS_KEY in DEALERS_ID_FQN identity
+* The data is stored in the following JSON format:
+* {
+*   "dealers": [
+*     "dealer_id1@", 
+*     "dealer_id2@",
+*     ...
+*   ]
+* }
+* Returns: cJSON array containing dealer IDs, or NULL if no dealers found
+*/
 cJSON *list_dealers()
 {
 	cJSON *dealers = NULL, *dealers_arr = NULL;
@@ -1262,21 +1354,34 @@ void list_tables()
 	}
 }
 
-int32_t check_poker_ready()
+int32_t verify_poker_setup()
 {
-	int32_t retval = OK;
-	cJSON *dealers = NULL;
-
-	if ((!is_id_exists(CASHIERS_ID_FQN, 1)) || (!is_id_exists(DEALERS_ID_FQN, 1))) {
-		return ERR_IDS_NOT_CONFIGURED;
+	if (!is_id_exists(CASHIERS_ID_FQN, 1)) {
+		dlg_error("Cashiers ID %s does not exist", CASHIERS_ID_FQN);
+		return ERR_CASHIERS_ID_NOT_FOUND;
 	}
 
-	dealers = cJSON_CreateObject();
-	dealers = get_cJSON_from_id_key(DEALERS_ID_FQN, DEALERS_KEY, 1);
+	if (!is_id_exists(DEALERS_ID_FQN, 1)) {
+		dlg_error("Dealers ID %s does not exist", DEALERS_ID_FQN);
+		return ERR_DEALERS_ID_NOT_FOUND;
+	}
+
+	cJSON *dealers = get_cJSON_from_id_key(DEALERS_ID_FQN, DEALERS_KEY, 1);
 	if (!dealers) {
+		dlg_error("No dealers found in %s", DEALERS_ID_FQN);
 		return ERR_NO_DEALERS_FOUND;
 	}
-	return retval;
+
+	if (cJSON_GetArraySize(dealers) == 0) {
+		dlg_error("Dealers list is empty");
+		cJSON_Delete(dealers);
+		return ERR_NO_DEALERS_REGISTERED;
+	}
+
+	dlg_info("Poker system is ready. Found %d registered dealer(s)", cJSON_GetArraySize(dealers));
+	cJSON_Delete(dealers);
+
+	return OK;
 }
 
 int32_t add_dealer_to_dealers(char *dealer_id)
@@ -1319,7 +1424,7 @@ int32_t id_canspendfor(char *id, int32_t full_id, int32_t *err_no)
 
 	strncpy(params, id, strlen(id));
 	if (0 == full_id) {
-		strcat(params, ".poker.chips10sec@");
+		sprintf(params + strlen(params), ".%s", POKER_ID_FQN);
 	}
 	argc = 4;
 	bet_alloc_args(argc, &argv);
@@ -1358,7 +1463,7 @@ int32_t id_cansignfor(char *id, int32_t full_id, int32_t *err_no)
 
 	strncpy(params, id, strlen(id));
 	if (0 == full_id) {
-		strcat(params, ".poker.chips10sec@");
+		sprintf(params + strlen(params), ".%s", POKER_ID_FQN);
 	}
 	bet_alloc_args(argc, &argv);
 	argv = bet_copy_args(argc, verus_chips_cli, "getidentity", params, "-1");

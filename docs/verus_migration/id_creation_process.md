@@ -1,29 +1,30 @@
-# Creation of ID's
+# ID Creation Process in the Bet Ecosystem
 
-All ID's in the bet ecosystem are created by the authorized entitites. Who are those authorized entities and on what basis they be chosen and how they bring trust into the ecosystem will be discussed in detail at later stages. 
+All IDs in the bet ecosystem are created by authorized entities. The criteria for selecting these entities and how they establish trust within the ecosystem will be discussed in detail in subsequent sections.
 
-There are few ID's which are created once and they be used for the lifetime, and there are some other ID's which are created in the context of game and once the game is played they serve no purpose and they only remain as archives. 
+There are two types of IDs: 
+1. Permanent IDs, which are created once and used for a lifetime.
+2. Temporary IDs, which are created for specific games and serve no purpose after the game ends, remaining only as archives.
 
-Based on the knowledge of the ecosystem we have and on how we going to organize the data in it we define the ID's and mostly create them at the launch of the specific game type and token. In the context of poker initially the following subID's are created under `poker.chips10sec@` and this list will be updated based on the need as we progress into the development.
+Based on our understanding of the ecosystem and data organization, we define and create IDs at the launch of specific game types and tokens. For poker, the following sub-IDs are initially created under `poker.chips10sec@` and will be updated as development progresses:
 1. cashiers
 2. dealers
 
-In the following sections of this document we discuss in detail about each of these ID's, like how they be created, what these ID's will be holding, who are the actors that manage these ID's, etc...
+In the following sections, we will discuss each of these IDs in detail, including their creation, contents, and management.
 
-In the context of development we been using `revoke_2(idaddress: iSCt7uQBePbTSJUSPAuQqv3Qjw1YZmj6FX)` and `recovery_2(idaddress: iGXhgDHN7GBmbPPXcvNoj4Lc99pQEoA8Fj)`, which are created [here](./rec_rev.md) and these act as the revocation and recovery authorities for all the ID's which we create for the development purposes. 
+During development, we use `revoke_2(idaddress: iSCt7uQBePbTSJUSPAuQqv3Qjw1YZmj6FX)` and `recovery_2(idaddress: iGXhgDHN7GBmbPPXcvNoj4Lc99pQEoA8Fj)`, created [here](./rec_rev.md), as the revocation and recovery authorities for all development IDs.
 
-For all these ID's to create there needs to be a control address, on mainenet launch we need to figure it out who can own this controladdress which is initially used to create the ID's or at the time of creation of ID's if the actors who owns the specific IDs in the bet ecosystem are identified then at the time of creating these IDs itself they will be created with the corresponding actors address as the control address for these IDs. Only the actors who has the corresponding private key of this control/primary address can update these IDs. 
+To create these IDs, a control address is required. Upon mainnet launch, we need to determine who will own this control address. If the actors who will own specific IDs in the bet ecosystem are identified at the time of creation, the IDs will be created with the corresponding actors' addresses as the control address. Only actors with the private key of this control/primary address can update these IDs.
 
 ## Cashiers
 
-### What contains cashiers ID and who updates it
+### Contents and Updates of Cashiers ID
 
-The cashers ID primaryaddresses contains the list of cashier nodes addresses owned by the cashier nodes. The `cashiers.poker.chips10sec@` is the multisig address that holds the funds during the game and handles the settlements and disputes of those funds by validating the game.
-The `minimumsignatures` value is equal to `(n/2)+1`, where `n` is the number of cashier nodes or we can say number of `primaryaddresses`. On Verus the default tx expiration time is 20 blocks, so when spending from multisig IDs/addresses all the required co-signs must happen with in the 20 blocks time, else tx expires. For chips 20 blocks is approx to 200 seconds, atm we think this time window is sufficient for chips to complete msig txs.
+The primary addresses of the cashiers ID contain the addresses of cashier nodes. The `cashiers.poker.chips10sec@` is a multisig address that holds funds during the game and handles settlements and disputes by validating the game. The `minimumsignatures` value is atleast `(n/2)+1`, where `n` is the number of cashier nodes. On Verus, the default transaction expiration time is 20 blocks (approximately 200 seconds for chips), which we believe is sufficient for completing multisig transactions.
 
-When a specific node wants to be a cashier node it has to submit the request using some means(atm, via discord) to the community owners and the community owners can approve or deny that specific node be a cashier or not. The request should contain the address which is owned by the corresponding entity that make the request, and if the request is approved then that particualr address is added to the list of primaryaddresses of cashiers.
+To become a cashier node, a request must be submitted to the community owners, who can approve or deny the request. The request should include the address owned by the entity making the request. If approved, the address is added to the list of primary addresses of cashiers ID.
 
-Here is example cashiers ID, which has 4 nodes and minimumsignatures is set to three`(4/2 + 1)`, so to spend funds from this msig ID, atleast three cashiers needs to co-sign the tx. 
+Example of a cashiers ID with four nodes and a minimum of three signatures required:
 ```
 # verus -chain=chips10sec getidentity cashiers.poker.chips10sec@
 {
@@ -41,10 +42,8 @@ Here is example cashiers ID, which has 4 nodes and minimumsignatures is set to t
     "identityaddress": "i4vGd5Aa23prxkPQbkZ7rHAoA7k7jRc5XY",
     "parent": "i6gViGxt7YinkJZoubKdbWBrqdRCb1Rkvs",
     "systemid": "iLThsqsgwFRKzRG11j7QaYgNQJ9q16VGpg",
-    "contentmap": {
-    },
-    "contentmultimap": {
-    },
+    "contentmap": {},
+    "contentmultimap": {},
     "revocationauthority": "iSCt7uQBePbTSJUSPAuQqv3Qjw1YZmj6FX",
     "recoveryauthority": "iGXhgDHN7GBmbPPXcvNoj4Lc99pQEoA8Fj",
     "timelock": 0
@@ -60,7 +59,9 @@ Here is example cashiers ID, which has 4 nodes and minimumsignatures is set to t
 
 ## Dealers
 
-The identity of the dealers looks as follows:
+### Dealers ID Structure
+
+Example of a dealers ID:
 ```
 # verus -chain=chips10sec getidentity dealers.poker.chips10sec@
 {
@@ -75,10 +76,8 @@ The identity of the dealers looks as follows:
     "identityaddress": "iAvw8ebtNggc2k6YHSG3rdbh75W9UHaVNT",
     "parent": "i6gViGxt7YinkJZoubKdbWBrqdRCb1Rkvs",
     "systemid": "iLThsqsgwFRKzRG11j7QaYgNQJ9q16VGpg",
-    "contentmap": {
-    },
-    "contentmultimap": {
-    },
+    "contentmap": {},
+    "contentmultimap": {},
     "revocationauthority": "iAvw8ebtNggc2k6YHSG3rdbh75W9UHaVNT",
     "recoveryauthority": "iAvw8ebtNggc2k6YHSG3rdbh75W9UHaVNT",
     "timelock": 0
@@ -92,31 +91,18 @@ The identity of the dealers looks as follows:
 }
 ```
 
-Typically subID `dealers.poker.chips10sec@` hold the information about the list of registered dealers in the poker eco system. Right now we only be storing the dealer ID names as a string array, going forward the idea is to store more authorized statistics about the dealer like availability of the dealer, number of tables hosted, etc, and this info is updated by either the cashiers or by the authorized entities. 
+The `dealers.poker.chips10sec@` sub-ID holds information about registered dealers in the poker ecosystem. Currently, only dealer ID names are stored as a string array. In the future, more statistics about dealers, such as availability and number of tables hosted, will be stored and updated by cashiers or authorized entities.
 
-If someone wants to become a dealer, they should make a request to register as a dealer. Since this registration is one time activity and dealer may get charged a fee for getting registered. 
-All the dealer ID names should end with `_d` for readability and to avoid any potential conflicts with other ID's. The contentmultimap of dealers stores dealer names as array of strings and this value is mapped to key  `chips.vrsc::poker.dealers`. The vdxfid for `chips.vrsc::poker.dealers` is shown as below:
-```
- # verus -chain=chips10sec getvdxfid chips.vrsc::poker.dealers
-{
-  "vdxfid": "iSgEvATbNF3ZR6Kyj6nn8zVp3adPQxPnFJ",
-  "indexid": "xXWMNxtgDZGE3GD1anSw7P2M5EeQH9biyX",
-  "hash160result": "bca2ee47a59af321a73ed79907d0db8c111982fe",
-  "qualifiedname": {
-    "namespace": "iJ3WZocnjG9ufv7GKUA4LijQno5gTMb7tP",
-    "name": "chips.vrsc::poker.dealers"
-  }
-}
-```
+To become a dealer, a request must be submitted, and a fee may be charged for registration. Dealer ID names should end with `_d` for readability and to avoid conflicts. The `contentmultimap` of dealers stores dealer names as an array of strings, mapped to the key `chips.vrsc::poker.dealers`.
 
-Lets say you have two dealers named `sg777_d` and `biz_d`, upon verification these dealer names updated to contentmultimap of the dealers ID as follows:
+Example of updating dealer names:
 ```
 verus -chain=chips10sec updateidentity '{"name": "dealers", "parent":"i6gViGxt7YinkJZoubKdbWBrqdRCb1Rkvs", "contentmultimap":{
       "iSgEvATbNF3ZR6Kyj6nn8zVp3adPQxPnFJ": [
         {
           "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "sg777_d"
         },
-		{
+        {
           "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "biz_d"
         }
       ]
@@ -124,7 +110,7 @@ verus -chain=chips10sec updateidentity '{"name": "dealers", "parent":"i6gViGxt7Y
 }'
 ```
 
-After updating the dealer names in the contentmultimap of dealers looks as follows:
+After updating, the dealer names in the `contentmultimap` of dealers look as follows:
 ```
 # verus -chain=chips10sec getidentity dealers.poker.chips10sec@
 {
@@ -139,8 +125,7 @@ After updating the dealer names in the contentmultimap of dealers looks as follo
     "identityaddress": "iAvw8ebtNggc2k6YHSG3rdbh75W9UHaVNT",
     "parent": "i6gViGxt7YinkJZoubKdbWBrqdRCb1Rkvs",
     "systemid": "iLThsqsgwFRKzRG11j7QaYgNQJ9q16VGpg",
-    "contentmap": {
-    },
+    "contentmap": {},
     "contentmultimap": {
       "iSgEvATbNF3ZR6Kyj6nn8zVp3adPQxPnFJ": [
         {
@@ -164,15 +149,15 @@ After updating the dealer names in the contentmultimap of dealers looks as follo
 }
 ```
 
-After optimization the data of contentmultimap contains only the bytearray, and bet has the underlying logic to decode and encode data into bytearray.
+After optimization, the `contentmultimap` contains only the byte array, and the bet system has the underlying logic to decode and encode data into a byte array.
 
-If all the preconditions(these are yet to be defined) met for a dealer request to process, then a sub ID under `poker.chips10sec@` is created with the name and control address provided in the dealer request. Only the dealer is privileged to update any content on this ID, dealer maintains the information about its status(like active/non-active, this will be discussed in later sections about handling the status of the dealer), information about the tables its hosting, dealer fee, etc... We will update the template of information what dealers store in its ID and this template of dealer information is mapped to the key `chips.vrsc::poker.dealer`.
+If all preconditions (yet to be defined) are met for a dealer request, a sub-ID under `poker.chips10sec@` is created with the name and control address provided in the dealer request. Only the dealer can update this ID, maintaining information about its status, hosted tables, dealer fee, etc. This template of dealer information is mapped to the key `chips.vrsc::poker.dealer`.
 
-## Dealer
-Upon the registration request from the dealer, the `registration authority(RA)` verifies the information about the dealer and upon acceptance, RA updates the dealer name to the dealers ID and creates the dealer ID with that specific name. 
-Lets say for example a dealer with the name `sg777_d` applies to be a dealer, then RA checks the availability of the name and adds `sg777_d` to dealers and creates the ID `sg777_d` with the `primaryaddress` provided by `sg777_d`.
+## Dealer Registration Process
 
-After the creation of the ID `sg777_d` by RA, it looks as follows:
+Upon a dealer's registration request, the Registration Authority (RA) verifies the dealer's information. If accepted, the RA updates the dealer name in the dealers ID and creates the dealer ID with the specified name.
+
+A sample dealer ID is shown below. It resembles a standard ID but includes keys in the `contentmultimap` to store dealer-specific information.
 ```
 # verus -chain=chips10sec getidentity sg777_d.poker.chips10sec@
 {
@@ -187,10 +172,8 @@ After the creation of the ID `sg777_d` by RA, it looks as follows:
     "identityaddress": "iHChMSKzFU7TcvURCjFwGzkBYLQ1MvrkYL",
     "parent": "i6gViGxt7YinkJZoubKdbWBrqdRCb1Rkvs",
     "systemid": "iLThsqsgwFRKzRG11j7QaYgNQJ9q16VGpg",
-    "contentmap": {
-    },
-    "contentmultimap": {
-    },
+    "contentmap": {},
+    "contentmultimap": {},
     "revocationauthority": "iHChMSKzFU7TcvURCjFwGzkBYLQ1MvrkYL",
     "recoveryauthority": "iHChMSKzFU7TcvURCjFwGzkBYLQ1MvrkYL",
     "timelock": 0
@@ -203,42 +186,49 @@ After the creation of the ID `sg777_d` by RA, it looks as follows:
   "vout": 0
 }
 ```
-Here in the above example the primaryaddress `RGgmpgoQcnptWEshhuhg3jGkYiotvLnswN` is belongs to the dealer, i.e `sg777_d`, so once after the creation of dealer ID now the dealer can update it with the information specific to it. 
-Once the dealer gets registered it can make a request to register table names, all the table names should end with `_t` and dealer can request to register as many table names as it can and each registration of the table name costs a nominal fee to the dealer. When RA creates the table IDs, it gives the revoke/recovery authority on tables to the dealer.  When players send the join request to the table, dealer process that request and add the players address to the primaryaddress of the table and during the game players updates the table with the game info they undergo.
+
+In this example, the primary address `RGgmpgoQcnptWEshhuhg3jGkYiotvLnswN` belongs to the dealer `sg777_d`. After the dealer ID is created, the dealer can update it with specific information.
+
+Once registered, a dealer can request to register table names, which should end with `_t`. Each table name registration incurs a nominal fee. When RA creates the table IDs, it grants the dealer revocation/recovery authority over the tables. Players send join requests to the table, and the dealer processes these requests, adding player addresses to the table's primary addresses. During the game, players update the table with game information.
 
 ### Dealer Contentmultimap Update
-When the bet node starts as a dealer, it reads the information from `verus_dealer.ini` and update this information to the dealer contentmultimap. Basically here in this configuration file the dealer mention its ID and the information about the tables its hosting. Right now we limit our discussion to one dealer hosting one table.
-The sample contents of `verus_dealer.ini` looks as follows:
+
+When a bet node starts as a dealer, it reads information from `verus_dealer.ini` and updates this information in the dealer `contentmultimap`. The configuration file includes the dealer ID and information about the tables it hosts.
+
+Sample `verus_dealer.ini`:
 ```
 [verus]
-id = sg777_d   #This is the ID for which the dealer owns the primaryaddress and to which it updates the info.
+id = sg777_d   # Dealer's ID
 
 [table]
-max_players          = 2               #This is the maximun number of players that dealer will allow them to join the table. Atm, dealer waits for this number of players to join before starting hand.
-big_blind            = 0.001           #If this value is set the table stake size is calculated based on this which is 200BB, if this value is not set the default value is 0.01.
-min_stake            = 20              #The min table stake size is 20BB.
-max_stake            = 100             #The max table stake size is 100BB.
-table_id 	     = sg777_t         #This is the table ID to which all the game info is to be committed. This table info is controlled by the players. 	
+max_players          = 2               # Maximum number of players allowed to join the table
+big_blind            = 0.001           # Table stake size based on this value (200BB)
+min_stake            = 20              # Minimum table stake size (20BB)
+max_stake            = 100             # Maximum table stake size (100BB)
+table_id             = sg777_t         # Table ID for game info
 ```
-How this information is processing from the configuration file to the ID is, for every configuration data there mostly be an underlying structure that holds the information. Here in this the `struct` named `table` holds this information and is defined in the code as below:
+
+The configuration data is stored in a `struct` named `table`:
 ```
 struct table {
-	uint8_t max_players;
-	struct float_num min_stake;
-	struct float_num max_stake;
-	struct float_num big_blind;
-	char table_id[16];
+    uint8_t max_players;
+    struct float_num min_stake;
+    struct float_num max_stake;
+    struct float_num big_blind;
+    char table_id[16];
 };
 ```
-Note, here there hasn't any support to store the float values directly in ID's, so we represent the float values using `struct float_num` which basically defined as follows:
+
+The `struct float_num` represents float values:
 ```
 struct float_num {
-	uint32_t mantisa : 23;
-	uint32_t exponent : 8;
-	uint32_t sign : 1;
+    uint32_t mantisa : 23;
+    uint32_t exponent : 8;
+    uint32_t sign : 1;
 };
 ```
-Once the information is stored from the config file to the underlying structure, then the struct data is converted to hex and is stored into the dealer ID. After storing the above information into the dealer ID `sg777_d` it looks as follows:
+
+The struct data is converted to hex and stored in the dealer ID. After storing the information, the dealer ID `sg777_d` looks as follows:
 ```
 # verus -chain=chips10sec getidentity sg777_d.poker.chips10sec@
 {
@@ -253,8 +243,7 @@ Once the information is stored from the config file to the underlying structure,
     "identityaddress": "iHChMSKzFU7TcvURCjFwGzkBYLQ1MvrkYL",
     "parent": "i6gViGxt7YinkJZoubKdbWBrqdRCb1Rkvs",
     "systemid": "iLThsqsgwFRKzRG11j7QaYgNQJ9q16VGpg",
-    "contentmap": {
-    },
+    "contentmap": {},
     "contentmultimap": {
       "iSgEvATbNF3ZR6Kyj6nn8zVp3adPQxPnFJ": [
         {
@@ -274,6 +263,7 @@ Once the information is stored from the config file to the underlying structure,
   "vout": 0
 }
 ```
-Since we storing only data into ID, the data may not look readable but anyways that's not our aim at this point. Possibly we can have our own explorer where in which we integrate our data decoders but that's for later. 
 
-I'll break this page here, will discuss more details about tables and how players joins the tables [here](./player_joining.md).
+Although the stored data may not be readable, our goal is to store the data efficiently. We may develop an explorer to integrate data decoders in the future.
+
+For more details about tables and player joining processes, refer to [this document](./player_joining.md).
