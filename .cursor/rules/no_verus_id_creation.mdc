@@ -5,14 +5,18 @@ alwaysApply: true
 
 # No Verus ID Creation or Modification
 
-## ABSOLUTELY FORBIDDEN — No Exceptions
+## ABSOLUTELY FORBIDDEN on the live CHIPS chain — No Exceptions
 
-- **NEVER create a Verus ID** (`registernamecommitment`, `registeridentity`, or any variant)
+- **NEVER create a Verus ID** (`registernamecommitment`, `registeridentity`, or any variant) on `-chain=chips`
 - **NEVER update a Verus ID** (`updateidentity`) directly — all identity updates go through the game nodes only
 - **NEVER call `updateidentity` or `update_cmm` manually** via CLI or RPC
 - **NEVER reset an identity** (`./bin/bet reset <id>` or `./bin/bet reset_id <id>`)
 - **NEVER call `add_dealer`, `register_dealer`, or `deregister_dealer`** without explicit user approval
 - **NEVER send funds to or from any Verus ID**
+
+## VRSCTEST regtest carve-out
+
+On `-chain=VRSCTEST` only, `registernamecommitment` / `registeridentity` are permitted with explicit per-action user approval naming the identity. All other prohibitions in the FORBIDDEN list above still apply on VRSCTEST.
 
 ## These Are Real On-Chain Identities With Real Money
 

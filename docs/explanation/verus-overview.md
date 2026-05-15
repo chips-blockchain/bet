@@ -55,12 +55,12 @@ dictionary keyed by VDXF id hash, valued by a hex-encoded blob.
 into this dictionary on the appropriate identity.
 
 The CMM key namespace `bet` uses is human-readable and prefixed with
-`chips.vrsc::poker.sg777z.` in the current build — defined once as
+`chips.vrsc::poker.` in the current build — defined once as
 the `VDXF_POKER_KEYS_PREFIX` macro in `poker/include/vdxf.h` and
 reused by every `*_KEY` macro in the same header. The prefix is
 hashed to a VDXF id when actually placed on-chain; the readable form
 exists only so a developer can grep `vdxf.h` and see what
-`chips.vrsc::poker.sg777z.t_betting_state` maps to. Renaming the prefix
+`chips.vrsc::poker.t_betting_state` maps to. Renaming the prefix
 to match the new VRSCTEST parent (`vrsctest::poker.sg777z.` or similar)
 is a cosmetic cleanup that doesn't change on-chain behaviour; it's
 tracked separately.

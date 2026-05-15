@@ -24,7 +24,7 @@ parentheses; it is hashed to a 32-byte VDXF id at runtime
 
 ## Conventions
 
-**Namespace prefix.** Every key uses `chips.vrsc::poker.sg777z.` as
+**Namespace prefix.** Every key uses `chips.vrsc::poker.` as
 its readable prefix, defined once as the `VDXF_POKER_KEYS_PREFIX`
 macro in `vdxf.h` and composed by every `*_KEY` macro listed below.
 The prefix is the same on VRSCTEST and on production builds — it is
@@ -67,7 +67,7 @@ identities. Their contentmultimap holds one key each, naming the
 short identifiers of registered cashiers and dealers respectively.
 Neither identity holds funds; both are pure discovery surfaces.
 
-### `CASHIERS_KEY` *(`chips.vrsc::poker.sg777z.cashiers`)*
+### `CASHIERS_KEY` *(`chips.vrsc::poker.cashiers`)*
 
 - **Identity:** `cashiers.sg777z.VRSCTEST@`
 - **Written by:** operator (manual `updateidentity`) or `bet`'s
@@ -79,7 +79,7 @@ Neither identity holds funds; both are pure discovery surfaces.
   ```
 - **Suffixed:** no
 
-### `DEALERS_KEY` *(`chips.vrsc::poker.sg777z.dealers`)*
+### `DEALERS_KEY` *(`chips.vrsc::poker.dealers`)*
 
 - **Identity:** `dealers.sg777z.VRSCTEST@`
 - **Written by:** `register_dealer` /`deregister_dealer` (see
@@ -100,7 +100,7 @@ A dealer identity (`dealer.sg777z.VRSCTEST@` or `d1.…`, etc.) holds
 the dealer's table-template advertisement and its registration
 record.
 
-### `T_TABLE_INFO_KEY` *(`chips.vrsc::poker.sg777z.t_table_info`)*
+### `T_TABLE_INFO_KEY` *(`chips.vrsc::poker.t_table_info`)*
 
 When written on a *dealer* identity (unsuffixed), this key advertises
 the dealer's table parameters from `poker/config/dealer.ini`. The
@@ -158,7 +158,7 @@ key-heavy identity in the deployment. Every key here is dealer-owned
 under the single-writer rule. Most keys are suffixed by `<game_id>`
 so multiple hands on the same table identity don't collide.
 
-### `T_GAME_ID_KEY` *(`chips.vrsc::poker.sg777z.t_game_ids`)*
+### `T_GAME_ID_KEY` *(`chips.vrsc::poker.t_game_ids`)*
 
 - **Written by:** dealer at game start
 - **Payload:** the 32-byte game id as a hex string, packaged as
@@ -166,13 +166,13 @@ so multiple hands on the same table identity don't collide.
 - **Suffixed:** no — this is the bootstrap key that tells readers
   which `<game_id>` to use when reading the rest.
 
-### `T_TABLE_INFO_KEY.<game_id>` *(`chips.vrsc::poker.sg777z.t_table_info.<game_id>`)*
+### `T_TABLE_INFO_KEY.<game_id>` *(`chips.vrsc::poker.t_table_info.<game_id>`)*
 
 Same payload shape as the dealer-id version above, but written on
 the table identity and suffixed by the current game id. Acts as the
 authoritative table-parameter snapshot for the game.
 
-### `T_PLAYER_INFO_KEY.<game_id>` *(`chips.vrsc::poker.sg777z.t_player_info.<game_id>`)*
+### `T_PLAYER_INFO_KEY.<game_id>` *(`chips.vrsc::poker.t_player_info.<game_id>`)*
 
 - **Written by:** dealer (after admitting a player from
   `P_JOIN_REQUEST_KEY`)
@@ -188,7 +188,7 @@ authoritative table-parameter snapshot for the game.
   Each entry combines the player's verus pid, a short prefix of the
   payin tx, and the assigned seat index.
 
-### `T_BETTING_STATE_KEY.<game_id>` *(`chips.vrsc::poker.sg777z.t_betting_state`)*
+### `T_BETTING_STATE_KEY.<game_id>` *(`chips.vrsc::poker.t_betting_state`)*
 
 - **Written by:** dealer (every time the action moves to a new
   player)
@@ -214,7 +214,7 @@ authoritative table-parameter snapshot for the game.
   view of "what just happened" propagates to other players' GUIs
   even when they aren't the one who acted.
 
-### `T_BOARD_CARDS_KEY.<game_id>` *(`chips.vrsc::poker.sg777z.t_board_cards`)*
+### `T_BOARD_CARDS_KEY.<game_id>` *(`chips.vrsc::poker.t_board_cards`)*
 
 - **Written by:** dealer (after consensus that all players decoded
   the relevant card)
@@ -229,7 +229,7 @@ authoritative table-parameter snapshot for the game.
   }
   ```
 
-### `T_GAME_INFO_KEY.<game_id>` *(`chips.vrsc::poker.sg777z.t_game_info`)*
+### `T_GAME_INFO_KEY.<game_id>` *(`chips.vrsc::poker.t_game_info`)*
 
 This is the canonical home of the game-state machine value
 documented in [`game_state.md`](game-states.md).
@@ -249,7 +249,7 @@ documented in [`game_state.md`](game-states.md).
   / `game_state_info`. The docstring is wrong — see
   `docs/_code_suggestions.md` item 3.)*
 
-### `T_SETTLEMENT_INFO_KEY.<game_id>` *(`chips.vrsc::poker.sg777z.t_settlement_info`)*
+### `T_SETTLEMENT_INFO_KEY.<game_id>` *(`chips.vrsc::poker.t_settlement_info`)*
 
 - **Written by:** dealer (writes the settlement *order*); later the
   dealer canonicalizes the cashier's response back onto the same
@@ -276,10 +276,10 @@ into one of these per-player keys. See
 [`deck_shuffling.md`](../explanation/deck-shuffling.md) for the cryptographic
 pipeline.
 
-- `T_D_DECK_KEY` *(`chips.vrsc::poker.sg777z.t_d_deck`)* — aggregate
+- `T_D_DECK_KEY` *(`chips.vrsc::poker.t_d_deck`)* — aggregate
   dealer-side deck record (when used).
 - `T_D_P1_DECK_KEY` … `T_D_P9_DECK_KEY`
-  *(`chips.vrsc::poker.sg777z.t_d_p<n>_deck`)* — dealer's
+  *(`chips.vrsc::poker.t_d_p<n>_deck`)* — dealer's
   shuffled+blinded output for seat `<n>`.
 - All suffixed by `<game_id>`.
 
@@ -292,12 +292,12 @@ canonicalizes onto the table identity under the corresponding
 fully-blinded deck. The split is the single-writer migration in
 action — `docs/TODO.md` items 1.1 and 1.2 reference it.
 
-- `T_B_DECK_KEY` *(`chips.vrsc::poker.sg777z.t_b_deck`)*
+- `T_B_DECK_KEY` *(`chips.vrsc::poker.t_b_deck`)*
 - `T_B_P1_DECK_KEY` … `T_B_P9_DECK_KEY`
-  *(`chips.vrsc::poker.sg777z.t_b_p<n>_deck`)*
+  *(`chips.vrsc::poker.t_b_p<n>_deck`)*
 - All suffixed by `<game_id>`.
 
-### `T_CARD_BV_KEY.<game_id>` *(`chips.vrsc::poker.sg777z.card_bv`)*
+### `T_CARD_BV_KEY.<game_id>` *(`chips.vrsc::poker.card_bv`)*
 
 - **Status:** legacy table-side card-blinding-values key.
 - **Replaced by:** `C_CARD_BV_KEY` on the cashier identity (see
@@ -318,12 +318,12 @@ Same shape as the `T_B_*` family above, but on the cashier identity.
 This is where the cashier's output is *originally* written; the
 dealer later canonicalizes it onto the table.
 
-- `C_B_DECK_KEY` *(`chips.vrsc::poker.sg777z.c_b_deck`)*
+- `C_B_DECK_KEY` *(`chips.vrsc::poker.c_b_deck`)*
 - `C_B_P1_DECK_KEY` … `C_B_P9_DECK_KEY`
-  *(`chips.vrsc::poker.sg777z.c_b_p<n>_deck`)*
+  *(`chips.vrsc::poker.c_b_p<n>_deck`)*
 - All suffixed by `<game_id>`.
 
-### `C_CARD_BV_KEY.<game_id>` *(`chips.vrsc::poker.sg777z.c_card_bv`)*
+### `C_CARD_BV_KEY.<game_id>` *(`chips.vrsc::poker.c_card_bv`)*
 
 - **Written by:** cashier (one entry per (player_id, card_id) reveal
   request)
@@ -335,7 +335,7 @@ dealer later canonicalizes it onto the table.
   ```
 - **Suffixed:** by `<game_id>`.
 
-### `C_SETTLEMENT_RESULT_KEY.<game_id>` *(`chips.vrsc::poker.sg777z.c_settlement_result`)*
+### `C_SETTLEMENT_RESULT_KEY.<game_id>` *(`chips.vrsc::poker.c_settlement_result`)*
 
 - **Written by:** cashier (after `cashier_process_settlement`
   finishes all payouts)
@@ -350,7 +350,7 @@ dealer later canonicalizes it onto the table.
   `status: completed`, the cashier returns OK without re-issuing
   payouts.
 
-### `C_DISPUTE_RESULT_KEY` *(`chips.vrsc::poker.sg777z.c_dispute_result`)*
+### `C_DISPUTE_RESULT_KEY` *(`chips.vrsc::poker.c_dispute_result`)*
 
 - **Status:** key layout defined; cashier-side flow not wired up.
 - **Intended written-by:** cashier (when resolving a dispute)
@@ -377,7 +377,7 @@ player's sole writeable surface. Per the single-writer rule the
 player owns all writes to its own identity; the dealer and cashier
 only read.
 
-### `P_JOIN_REQUEST_KEY` *(`chips.vrsc::poker.sg777z.p_join_request`)*
+### `P_JOIN_REQUEST_KEY` *(`chips.vrsc::poker.p_join_request`)*
 
 - **Written by:** player at join time (`vdxf.c:join_table`)
 - **Read by:** dealer (admit decision, in
@@ -394,7 +394,7 @@ only read.
 - **Suffixed:** no — the payload carries its own context.
 - **See:** [`PLAYER_JOIN_FLOW.md`](player-join-flow.md).
 
-### `P_BETTING_ACTION_KEY` *(`chips.vrsc::poker.sg777z.p_betting_action`)*
+### `P_BETTING_ACTION_KEY` *(`chips.vrsc::poker.p_betting_action`)*
 
 - **Written by:** player after each betting decision
 - **Read by:** dealer (`verus_poll_player_action`)
@@ -409,7 +409,7 @@ only read.
   ```
 - **Suffixed:** no — only the latest action is read.
 
-### `PLAYER_DECK_KEY.<game_id>` *(`chips.vrsc::poker.sg777z.player_deck`)*
+### `PLAYER_DECK_KEY.<game_id>` *(`chips.vrsc::poker.player_deck`)*
 
 - **Written by:** player during `player_init_deck`
 - **Read by:** dealer (input to its shuffling pass)
@@ -423,7 +423,7 @@ only read.
   ```
 - **Suffixed:** by `<game_id>`.
 
-### `P_DECODED_CARD_KEY.<game_id>` *(`chips.vrsc::poker.sg777z.p_decoded_card`)*
+### `P_DECODED_CARD_KEY.<game_id>` *(`chips.vrsc::poker.p_decoded_card`)*
 
 - **Written by:** player (cumulative snapshot — see the long
   docstring at `vdxf.h:189-218`)
@@ -442,7 +442,7 @@ only read.
   single entry) so the latest CMM entry always contains the
   player's complete decoded-card view.
 
-### `P_HOLECARDS_REVEAL_KEY.<game_id>` *(`chips.vrsc::poker.sg777z.p_holecards_reveal`)*
+### `P_HOLECARDS_REVEAL_KEY.<game_id>` *(`chips.vrsc::poker.p_holecards_reveal`)*
 
 - **Written by:** player exactly once per hand, at `G_SHOWDOWN`
 - **Read by:** dealer (input to 7-card hand evaluation in
@@ -455,7 +455,7 @@ only read.
   preserved through the hand — see the docstring at `vdxf.h:221-246`
   for the rationale.
 
-### `P_GAME_HISTORY_KEY` *(`chips.vrsc::poker.sg777z.p_game_history`)*
+### `P_GAME_HISTORY_KEY` *(`chips.vrsc::poker.p_game_history`)*
 
 - **Written by:** player at join time
 - **Payload:**
@@ -471,7 +471,7 @@ only read.
   ```
 - **Suffixed:** no — one entry per join.
 
-### `P_DISPUTE_REQUEST_KEY` *(`chips.vrsc::poker.sg777z.p_dispute_request`)*
+### `P_DISPUTE_REQUEST_KEY` *(`chips.vrsc::poker.p_dispute_request`)*
 
 - **Status:** key layout defined; player-side `bet` command not yet
   wired up. See `docs/TODO.md` item 3.

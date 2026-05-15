@@ -22,7 +22,7 @@ Lets say the cashiers are specific to the context of poker, so we defined them w
 key is represented as chips.vrsc::poker.cashiers.
 */
 
-#define VDXF_POKER_KEYS_PREFIX "chips.vrsc::poker.sg777z."
+#define VDXF_POKER_KEYS_PREFIX "chips.vrsc::poker."
 
 #define CASHIERS_KEY VDXF_POKER_KEYS_PREFIX "cashiers"
 /*

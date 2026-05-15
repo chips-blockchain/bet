@@ -7,7 +7,7 @@
 struct verus_ids_keys_config {
 	char parent_id[128];
 	char cashier_id[128];
-	char dealer_id[128];
+	char dealers_id[128];
 	char cashiers_short[64];
 	char dealers_short[64];
 	char poker_short[64];

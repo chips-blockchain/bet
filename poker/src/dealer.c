@@ -30,10 +30,14 @@ char all_game_key_names[all_game_keys_no][128] = { "t_game_info" };
 int32_t num_of_players;
 char player_ids[CARDS_MAXPLAYERS][MAX_ID_LEN];
 
-int32_t add_dealer(char *dealer_id)
+int32_t add_dealer(char *dealer_id, const char *aggregator_fqn)
 {
 	int32_t retval = OK;
-	cJSON *dealers_info = NULL, *dealers = NULL, *out = NULL;
+	cJSON *dealers_info = NULL, *dealers = NULL, *existing = NULL, *out = NULL;
+	const char *fqn = aggregator_fqn ? aggregator_fqn : DEALERS_ID_FQN;
+	const char *dot = NULL;
+	char short_name[64] = { 0 };
+	size_t short_len = 0;
 
 	if (!dealer_id) {
 		return ERR_NULL_ID;
@@ -42,18 +46,41 @@ int32_t add_dealer(char *dealer_id)
 		return ERR_ID_NOT_FOUND;
 	}
 
-	if (!id_cansignfor(DEALERS_ID, 0, &retval)) {
+	dot = strchr(fqn, '.');
+	if (!dot || dot == fqn) {
+		dlg_error("Invalid aggregator FQN: %s", fqn);
+		return ERR_ARGS_NULL;
+	}
+	short_len = (size_t)(dot - fqn);
+	if (short_len >= sizeof(short_name)) {
+		dlg_error("Aggregator short name too long: %s", fqn);
+		return ERR_ARG_SIZE_TOO_LONG;
+	}
+	strncpy(short_name, fqn, short_len);
+	short_name[short_len] = '\0';
+
+	if (strcmp(dot + 1, bet_get_poker_id_fqn()) != 0) {
+		dlg_error("Aggregator parent '%s' does not match configured parent '%s'",
+			  dot + 1, bet_get_poker_id_fqn());
+		return ERR_ARGS_NULL;
+	}
+
+	if (!id_cansignfor(short_name, 0, &retval)) {
 		return retval;
 	}
 
 	dealers_info = cJSON_CreateObject();
-	dealers = poker_list_dealers();
+	existing = get_cJSON_from_id_key(fqn, DEALERS_KEY, 1);
+	if (existing) {
+		dealers = cJSON_DetachItemFromObject(existing, "dealers");
+		cJSON_Delete(existing);
+	}
 	if (!dealers) {
 		dealers = cJSON_CreateArray();
 	}
 	jaddistr(dealers, dealer_id);
 	cJSON_AddItemToObject(dealers_info, "dealers", dealers);
-		out = poker_update_key_json(verus_config.initialized ? verus_config.dealers_short : DEALERS_ID, DEALERS_KEY, dealers_info, false);
+	out = poker_update_key_json(short_name, DEALERS_KEY, dealers_info, false);
 
 	if (!out) {
 		return ERR_UPDATEIDENTITY;

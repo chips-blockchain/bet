@@ -270,7 +270,7 @@ poker_short    = poker
 ```
 
 VDXF key names are not in `keys.ini` — the prefix
-(`chips.vrsc::poker.sg777z.`) and every key name are compile-time
+(`chips.vrsc::poker.`) and every key name are compile-time
 macros in `poker/include/vdxf.h` (`VDXF_POKER_KEYS_PREFIX` and the
 `*_KEY` family). The prefix is opaque to Verus and intentionally
 unchanged for VRSCTEST so the same key macros stay portable when

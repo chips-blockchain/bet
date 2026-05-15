@@ -140,7 +140,7 @@ poker_short    = poker
 ```
 
 The VDXF key namespace is **not** configured in `keys.ini`. The
-prefix (`chips.vrsc::poker.sg777z.`) and every key name are defined
+prefix (`chips.vrsc::poker.`) and every key name are defined
 as compile-time macros in `poker/include/vdxf.h` — every `*_KEY`
 macro composes the single `VDXF_POKER_KEYS_PREFIX` macro with a
 fixed suffix. The full readable string is hashed to a vdxfid by

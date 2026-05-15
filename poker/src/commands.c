@@ -1507,8 +1507,8 @@ char *chips_get_wallet_address()
 		snprintf(fqn, sizeof(fqn), "%s.%s", player_config.verus_pid, bet_get_poker_id_fqn());
 	} else if (verus_config.initialized && verus_config.cashier_id[0] != '\0') {
 		strncpy(fqn, verus_config.cashier_id, sizeof(fqn) - 1);
-	} else if (verus_config.initialized && verus_config.dealer_id[0] != '\0') {
-		strncpy(fqn, verus_config.dealer_id, sizeof(fqn) - 1);
+	} else if (verus_config.initialized && verus_config.dealers_id[0] != '\0') {
+		strncpy(fqn, verus_config.dealers_id, sizeof(fqn) - 1);
 	}
 
 	if (fqn[0] != '\0') {
@@ -2091,6 +2091,7 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 			} else if (strcmp(argv[1], "listunspent") == 0) {
 				chips_read_valid_unspent(argv[3], argjson);
 			} else if (strcmp(argv[1], "updateidentity") == 0) {
+				dlg_error("updateidentity returned empty output, command: %s", command);
 				retval = ERR_UPDATEIDENTITY;
 				jaddnum(*argjson, "error", retval);
 			} else if (strcmp(argv[1], "getidentity") == 0) {
@@ -2147,7 +2148,9 @@ int32_t make_command(int argc, char **argv, cJSON **argjson)
 				if (data[strlen(data) - 1] == '\n')
 					data[strlen(data) - 1] = '\0';
 				if (strstr(data, "error") != NULL) {
+					dlg_error("updateidentity failed, command: %s, daemon output: %s", command, data);
 					retval = ERR_UPDATEIDENTITY;
+					jaddstr(*argjson, "error_msg", data);
 				} else {
 					jaddstr(*argjson, "tx", data);
 				}

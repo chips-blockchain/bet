@@ -93,11 +93,19 @@ int32_t player_init_deck()
 	dlg_info("Updating %s key...", T_GAME_ID_KEY);
 	cJSON *out = poker_append_key_hex(player_config.verus_pid, T_GAME_ID_KEY,
 					     bits256_str(str, p_deck_info.game_id), false);
+	if (!out) {
+		dlg_error("Failed to write %s to %s", T_GAME_ID_KEY, player_config.verus_pid);
+		return ERR_UPDATEIDENTITY;
+	}
 
 	dlg_info("Updating %s key...", PLAYER_DECK_KEY);
 	out = poker_append_key_json(
 		player_config.verus_pid, get_key_data_vdxf_id(PLAYER_DECK_KEY, bits256_str(str, p_deck_info.game_id)),
 		player_deck, true);
+	if (!out) {
+		dlg_error("Failed to write %s to %s", PLAYER_DECK_KEY, player_config.verus_pid);
+		return ERR_UPDATEIDENTITY;
+	}
 	dlg_info("%s", cJSON_Print(out));
 
 	dlg_info("Updating player game state to player_id...");

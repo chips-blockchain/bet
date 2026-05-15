@@ -122,7 +122,7 @@ Note the distinction between **aggregator** identities (`cashier_id`,
 for the full identity taxonomy.
 
 VDXF key names are not configured in `keys.ini`. The prefix
-(`chips.vrsc::poker.sg777z.`) and every key name are compile-time
+(`chips.vrsc::poker.`) and every key name are compile-time
 macros in `poker/include/vdxf.h`; the prefix lives once as
 `VDXF_POKER_KEYS_PREFIX` and every `*_KEY` macro composes it with a
 fixed suffix.

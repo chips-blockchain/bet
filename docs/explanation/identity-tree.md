@@ -71,7 +71,7 @@ gatekeeper for who can register a dealer or a cashier.
 Two separate identities, with different jobs:
 
 - `cashiers.sg777z.VRSCTEST@` (aggregator) — its
-  `contentmultimap` holds a single key (`chips.vrsc::poker.sg777z.cashiers`)
+  `contentmultimap` holds a single key (`chips.vrsc::poker.cashiers`)
   whose value is a JSON array of the short names of currently
   registered cashiers. The dealer reads this to discover which
   operational cashier identity to direct payins to. `bet list cashiers`
@@ -96,7 +96,7 @@ the multisig vault when its `primaryaddresses` are extended and
 Same shape as the cashier pair. `dealers.sg777z.VRSCTEST@` is the
 list identity; `dealer.sg777z.VRSCTEST@` is the operational dealer
 that hosts tables and writes per-game state. The aggregator's
-`contentmultimap` value under `chips.vrsc::poker.sg777z.dealers` is
+`contentmultimap` value under `chips.vrsc::poker.dealers` is
 the JSON array of registered dealer short names. `bet list dealers`
 reads it.
 

@@ -87,7 +87,7 @@ char *get_key_data_vdxf_id(char *key_name, char *data)
 
 static cJSON *update_with_retry(const char *method, cJSON *params)
 {
-	int32_t retries = 3, i = 0, retval;
+	int32_t retries = 6, i = 0, retval;
 	cJSON *result = NULL;
 
 	do {
@@ -119,7 +119,16 @@ static cJSON *update_with_retry(const char *method, cJSON *params)
 				break;
 			}
 		}
-		dlg_warn("Retrying %s", method);
+		{
+			char *params_dump = params ? cJSON_PrintUnformatted(params) : NULL;
+			const char *err_msg = result ? jstr(result, "error_msg") : NULL;
+			dlg_warn("Retrying %s (attempt %d/%d), rpc_retval=%d, error=%d, error_msg=%s, params=%s",
+				 method, i + 1, retries, retval,
+				 result ? jint(result, "error") : -1,
+				 err_msg ? err_msg : "(none)",
+				 params_dump ? params_dump : "(null)");
+			if (params_dump) free(params_dump);
+		}
 		if (result) cJSON_Delete(result);
 		result = NULL;
 		sleep(1);

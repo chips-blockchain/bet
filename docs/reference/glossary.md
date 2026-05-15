@@ -32,7 +32,7 @@ signing semantics.
 
 **CHIPS.** The chain ticker `bet` was originally written for. On the
 local dev regtest the chain is `VRSCTEST`, but the readable key
-namespace (`chips.vrsc::poker.sg777z.`) still uses the legacy chain
+namespace (`chips.vrsc::poker.`) still uses the legacy chain
 name — it's an opaque string at the protocol level and renaming it
 is cosmetic.
 
@@ -120,7 +120,7 @@ in [`ids_keys_data.md`](vdxf-keys.md).
 **Table identity.** Synonym for per-table identity (see above).
 
 **vdxfid.** A 32-byte hash of a human-readable key name (e.g.
-`chips.vrsc::poker.sg777z.t_table_info`). All CMM keys are stored
+`chips.vrsc::poker.t_table_info`). All CMM keys are stored
 on-chain by their vdxfid; `get_vdxfid` in `vdxf.c` is the wrapper
 that resolves the readable form. The Verus CLI also has a
 `getvdxfid` RPC for inspecting the mapping.

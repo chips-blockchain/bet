@@ -596,8 +596,8 @@ void bet_start(int argc, char **argv)
 	//==========================================================================
 	// Dealer registration commands (legacy format kept for compatibility)
 	//==========================================================================
-	else if (strcmp(cmd, "add_dealer") == 0 && argc == 3) {
-		retval = add_dealer(argv[2]);
+	else if (strcmp(cmd, "add_dealer") == 0 && (argc == 3 || argc == 4)) {
+		retval = add_dealer(argv[2], argc == 4 ? argv[3] : NULL);
 	} else if (strcmp(cmd, "register_dealer") == 0 && argc == 3) {
 		retval = register_dealer(argv[2]);
 	} else if (strcmp(cmd, "deregister_dealer") == 0 && argc == 3) {

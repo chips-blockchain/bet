@@ -95,7 +95,7 @@ next time anyone touches `err.c`.
 * game_info : Holds the info of the gaming state
 * }
 */
-#define T_GAME_INFO_KEY "chips.vrsc::poker.sg777z.t_game_info"
+#define T_GAME_INFO_KEY "chips.vrsc::poker.t_game_info"
 ```
 
 **What the code actually writes/reads** (`poker/src/game.c:88` — `get_game_state`, and `append_game_state`): the payload is `{ "game_state": <int>, "game_state_info": <optional> }`. The fields named in the docstring (`t_game_ids`, `game_info`) do not exist in the actual JSON.
