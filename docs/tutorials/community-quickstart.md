@@ -70,13 +70,14 @@ All four nodes share the same `poker/config/` directory:
 * `blockchain.ini` — `blockchain_cli = "verus -chain=VRSCTEST"`,
   `currency = VRSCTEST`. See
   [`dealer_configuration.md`](../reference/dealer-config.md).
-* `keys.ini` — parent identity (`sg777z.VRSCTEST@` in the dev
-  layout), aggregator identities, VDXF key prefix.
+* `keys.ini` — aggregator identity FQNs (`cashier_id`, `dealers_id`).
+  The deployment parent (`sg777z.VRSCTEST@` in the dev layout) is
+  implicit in every FQN.
 * `.rpccredentials` — `rpcuser=` / `rpcpassword=` matching
   `~/.komodo/vrsctest/vrsctest.conf`.
 * `dealer.ini`, `cashier.ini`, `p1.ini`, `p2.ini` — per-node knobs
-  (table parameters for the dealer, identity short names for the
-  players, GUI port).
+  (table parameters for the dealer, identity FQNs for the players,
+  GUI port).
 
 The shipped examples in `poker/config/` are wired for the dev
 layout; replace the identity names if you registered your own.
@@ -189,8 +190,8 @@ When filing an issue, the most useful attachments are:
 2. The relevant log files from `/root/.bet/logs/`.
 3. The block range the hand happened in:
    `verus -chain=VRSCTEST getblockcount` before and after, and the
-   table identity short name. Anyone with the chain can replay the
-   hand from `getidentitycontent`.
+   table identity FQN. Anyone with the chain can replay the hand
+   from `getidentitycontent`.
 4. A sentence saying which game state (`G_*`) the hand was in when
    the bug occurred, if you can find it in `dealer.log`.
 

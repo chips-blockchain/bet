@@ -129,10 +129,12 @@ prefix the application will read and write. On the dev regtest:
 
 ```ini
 [identities]
-parent_id  = sg777z.VRSCTEST@
 cashier_id = cashier.sg777z.VRSCTEST@
 dealers_id = dealers.sg777z.VRSCTEST@
 ```
+
+All identity fields read from any INI must be fully-qualified Verus
+IDs (containing `@`); the parser rejects bare short names.
 
 The VDXF key namespace is **not** configured in `keys.ini`. The
 prefix (`chips.vrsc::poker.`) and every key name are defined

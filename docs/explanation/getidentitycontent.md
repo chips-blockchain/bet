@@ -52,10 +52,13 @@ holds the merged value across every update between `heightstart` and
 Every read in `bet` that depends on multi-update history goes through
 one of two wrappers in `poker/src/vdxf.c`:
 
-- `get_cmm_from_height(id, full_id, height_start)` — fetches the full
-  CMM and lets the caller pick keys.
-- `get_cmm_key_data_from_height(id, full_id, key, height_start)` —
-  thin wrapper around the above that returns one key.
+- `get_cmm_from_height(id, height_start)` — fetches the full CMM and
+  lets the caller pick keys.
+- `get_cmm_key_data_from_height(id, key, height_start)` — thin
+  wrapper around the above that returns one key.
+
+`id` is always a fully-qualified Verus ID; the helpers no longer
+take a separate short-name/FQN flag.
 
 Higher-level helpers (`get_cJSON_from_id_key_vdxfid_from_height`,
 `get_str_from_id_key_from_height`) take a `height_start` argument and

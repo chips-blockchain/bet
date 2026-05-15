@@ -75,8 +75,10 @@ Neither identity holds funds; both are pure discovery surfaces.
 - **Read by:** dealer (cashier discovery), `./bet list cashiers`
 - **Payload:**
   ```json
-  { "cashiers": ["<cashier_short_name>", ...] }
+  { "cashiers": ["<cashier_fqn>", ...] }
   ```
+  Each entry is a fully-qualified Verus ID (e.g.
+  `cashier.sg777z.VRSCTEST@`).
 - **Suffixed:** no
 
 ### `DEALERS_KEY` *(`chips.vrsc::poker.dealers`)*
@@ -88,8 +90,10 @@ Neither identity holds funds; both are pure discovery surfaces.
   `poker_list_dealers`
 - **Payload:**
   ```json
-  { "dealers": ["<dealer_short_name>", ...] }
+  { "dealers": ["<dealer_fqn>", ...] }
   ```
+  Each entry is a fully-qualified Verus ID (e.g.
+  `d1.sg777z.VRSCTEST@`).
 - **Suffixed:** no
 
 ---
@@ -139,14 +143,16 @@ Table identity section below.
   ```json
   {
     "tx_data": {
-      "dealer_id":   "<dealer_id>",
+      "dealer_id":   "<dealer fqn>",
       "type":        "dealer_registration",
       "amount":      <DEALER_REGISTRATION_FEE>,
-      "destination": "dealers"
+      "destination": "<dealers aggregator fqn>"
     },
     "tx_id": "<registration txid>"
   }
   ```
+  `dealer_id` and `destination` are fully-qualified Verus IDs (e.g.
+  `d1.sg777z.VRSCTEST@` and `dealers.sg777z.VRSCTEST@`).
 - **Read by:** dealer itself (auditability) and dispute paths.
 
 ---
@@ -385,12 +391,13 @@ only read.
 - **Payload:**
   ```json
   {
-    "dealer_id":  "<dealer to join>",
-    "table_id":   "<table to join>",
-    "cashier_id": "<cashier the payin landed at>",
+    "dealer_id":  "d1.sg777z.VRSCTEST@",
+    "table_id":   "t1.sg777z.VRSCTEST@",
+    "cashier_id": "cashier.sg777z.VRSCTEST@",
     "payin_tx":   "<payin txid>"
   }
   ```
+  All identity references are fully-qualified Verus IDs.
 - **Suffixed:** no — the payload carries its own context.
 - **See:** [`PLAYER_JOIN_FLOW.md`](player-join-flow.md).
 

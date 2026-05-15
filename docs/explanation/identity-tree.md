@@ -38,7 +38,8 @@ reads the name from `poker/config/keys.ini` and doesn't hardcode it.
 A subtle distinction worth pinning down up front: the **aggregator**
 identities (`dealers.…`, `cashiers.…`) are *not* the addresses funds
 go to. They are list identities whose `contentmultimap` holds the
-short names of registered dealers and cashiers respectively. The
+fully-qualified Verus IDs of registered dealers and cashiers
+respectively. The
 **operational** identities (`dealer.…`, `cashier.…`) are the actual
 signing-and-funding entities. `bet` reads the aggregator to discover
 who's online, then talks to the operational identities directly. The
@@ -72,10 +73,10 @@ Two separate identities, with different jobs:
 
 - `cashiers.sg777z.VRSCTEST@` (aggregator) — its
   `contentmultimap` holds a single key (`chips.vrsc::poker.cashiers`)
-  whose value is a JSON array of the short names of currently
-  registered cashiers. The dealer reads this to discover which
-  operational cashier identity to direct payins to. `bet list cashiers`
-  prints this list.
+  whose value is a JSON array of the fully-qualified Verus IDs of
+  currently registered cashiers. The dealer reads this to discover
+  which operational cashier identity to direct payins to.
+  `bet list cashiers` prints this list.
 - `cashier.sg777z.VRSCTEST@` (operational) — the identity that
   payments land on. Players send their payins to this identity's
   i-address via `verus_sendcurrency_data` (see
@@ -85,8 +86,8 @@ Two separate identities, with different jobs:
   settlement.
 
 A multi-cashier deployment can run more operational cashier
-identities (e.g. `cashier2.sg777z.VRSCTEST@`) and add their short
-names to the aggregator's CMM. The cashier identity itself becomes
+identities (e.g. `cashier2.sg777z.VRSCTEST@`) and add their FQNs to
+the aggregator's CMM. The cashier identity itself becomes
 the multisig vault when its `primaryaddresses` are extended and
 `minimumsignatures` is raised — but the aggregator stays a plain
 "who's registered" list.
@@ -97,8 +98,8 @@ Same shape as the cashier pair. `dealers.sg777z.VRSCTEST@` is the
 list identity; `dealer.sg777z.VRSCTEST@` is the operational dealer
 that hosts tables and writes per-game state. The aggregator's
 `contentmultimap` value under `chips.vrsc::poker.dealers` is
-the JSON array of registered dealer short names. `bet list dealers`
-reads it.
+the JSON array of registered dealer FQNs. `bet list dealers` reads
+it.
 
 The dealer registration flow is more interesting than the cashier
 one because `bet` automates it. The dealer-side command
@@ -194,18 +195,18 @@ max_players = 2
 big_blind   = 0.001
 min_stake   = 20
 max_stake   = 100
-table_id    = t1
+table_id    = t1.sg777z.VRSCTEST@
 
 [verus]
-dealer_id  = d1
-cashier_id = cashier
+dealer_id  = d1.sg777z.VRSCTEST@
+cashier_id = cashier.sg777z.VRSCTEST@
 ```
 
-The short names (`d1`, `t1`, `cashier`) are fully-qualified at
-runtime by appending the parent from `keys.ini`. The numeric `table`
-parameters (`big_blind`, `min_stake`, `max_stake`) are stored
-on-chain in a compact binary form using the `struct float_num`
-defined in `poker/include/bet.h:292`:
+Every identity field is a fully-qualified Verus ID — the parser
+rejects bare short names. The numeric `table` parameters
+(`big_blind`, `min_stake`, `max_stake`) are stored on-chain in a
+compact binary form using the `struct float_num` defined in
+`poker/include/bet.h:292`:
 
 ```c
 struct float_num {

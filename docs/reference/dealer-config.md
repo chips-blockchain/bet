@@ -28,12 +28,15 @@ max_players = 2
 big_blind   = 0.001
 min_stake   = 20
 max_stake   = 100
-table_id    = t1
+table_id    = t1.sg777z.VRSCTEST@
 
 [verus]
-dealer_id  = d1
-cashier_id = cashier
+dealer_id  = d1.sg777z.VRSCTEST@
+cashier_id = cashier.sg777z.VRSCTEST@
 ```
+
+All identity fields must be fully-qualified Verus IDs (containing
+`@`); the parser rejects bare short names with `ERR_INI_PARSING`.
 
 The parser (`bet_parse_dealer_config_ini_file` + the per-table reader
 in `config.c`) also accepts the following optional sections, all of
@@ -47,14 +50,14 @@ which fall back to compiled-in defaults when omitted:
 | `big_blind`    | CHIPS (double)      | 0.02         | Stored internally as `BB_in_table_chips`; `small_blind = big_blind / 2`. |
 | `min_stake`    | CHIPS (double)      | —            | Minimum payin a player can post.              |
 | `max_stake`    | CHIPS (double)      | —            | Maximum payin (cap on stack size).            |
-| `table_id`    | string              | —            | Short name (without parent suffix) of the per-table Verus identity this dealer manages, e.g. `t1` → `t1.<parent>@`. |
+| `table_id`    | string              | —            | Fully-qualified Verus ID of the per-table identity this dealer manages, e.g. `t1.sg777z.VRSCTEST@`. |
 
 ### `[verus]`
 
 | Key          | Default | Meaning                                          |
 |--------------|---------|--------------------------------------------------|
-| `dealer_id`  | —       | Operational dealer identity short name (`d1` → `d1.<parent>@`). |
-| `cashier_id` | —       | Operational cashier identity short name (`cashier` → `cashier.<parent>@`). |
+| `dealer_id`  | —       | Operational dealer identity, fully-qualified (e.g. `d1.sg777z.VRSCTEST@`). |
+| `cashier_id` | —       | Operational cashier identity, fully-qualified (e.g. `cashier.sg777z.VRSCTEST@`). Defaults to `bet_get_cashiers_id_fqn()` when omitted. |
 
 ### `[dealer]` (all optional)
 
@@ -105,15 +108,18 @@ example below matches the dev regtest layout:
 
 ```ini
 [identities]
-parent_id  = sg777z.VRSCTEST@
 cashier_id = cashier.sg777z.VRSCTEST@   # aggregator
 dealers_id = dealers.sg777z.VRSCTEST@   # aggregator
 ```
 
+Both fields must be fully-qualified Verus IDs; the parser rejects
+bare short names. There is no longer a `parent_id` field — the parent
+is implicit in each FQN.
+
 Note the distinction between **aggregator** identities (`cashier_id`,
 `dealers_id` — hold the on-chain discovery lists) and the
-**operational** identities (`d1`, `cashier`) configured in
-`dealer.ini`. See
+**operational** identities (`d1.sg777z.VRSCTEST@`,
+`cashier.sg777z.VRSCTEST@`) configured in `dealer.ini`. See
 [`id_creation_process.md`](../explanation/identity-tree.md)
 for the full identity taxonomy.
 
@@ -152,7 +158,7 @@ protocol level. To bring a new dealer online:
    under the dev/parent VerusID and any per-table identities you want
    to host. See
    [`id_creation_process.md`](../explanation/identity-tree.md).
-3. Update `dealer.ini` with the new identity short names and table
+3. Update `dealer.ini` with the new identity FQNs and table
    parameters.
 4. Start the dealer node and confirm it can sign updates against the
    parent aggregator.

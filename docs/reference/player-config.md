@@ -22,20 +22,23 @@ The shipped example is intentionally minimal:
 
 ```ini
 [verus]
-dealer_id   = d1       # Dealer to join
-table_id    = t1       # Table to join
-wallet_addr = *        # Wallet address to spend from ("*" = any)
-player_id   = p1       # Player's Verus ID (must be signable)
-ws_port     = 9001     # WebSocket port for GUI mode
+dealer_id   = d1.sg777z.VRSCTEST@   # Dealer to join (FQN)
+table_id    = t1.sg777z.VRSCTEST@   # Table to join (FQN)
+wallet_addr = *                     # Wallet address to spend from ("*" = any)
+player_id   = p1.sg777z.VRSCTEST@   # Player's Verus ID (FQN, must be signable)
+ws_port     = 9001                  # WebSocket port for GUI mode
 ```
+
+All identity fields must be fully-qualified Verus IDs (containing
+`@`); the parser rejects bare short names with `ERR_INI_PARSING`.
 
 ### `[verus]`
 
 | Key           | Default | Meaning                                                                                          |
 |---------------|---------|--------------------------------------------------------------------------------------------------|
-| `dealer_id`   | —       | Short name of the dealer identity to join (`d1` → `d1.<parent>@`).                               |
-| `table_id`    | —       | Short name of the table identity to sit at (`t1` → `t1.<parent>@`).                              |
-| `player_id`   | —       | Short name of the player's own identity (`p1` → `p1.<parent>@`). The node must hold a private key authorized to sign updates for this identity. |
+| `dealer_id`   | —       | Fully-qualified Verus ID of the dealer identity to join (e.g. `d1.sg777z.VRSCTEST@`).            |
+| `table_id`    | —       | Fully-qualified Verus ID of the table identity to sit at (e.g. `t1.sg777z.VRSCTEST@`).           |
+| `player_id`   | —       | Fully-qualified Verus ID of the player's own identity (e.g. `p1.sg777z.VRSCTEST@`). The node must hold a private key authorized to sign updates for this identity. |
 | `wallet_addr` | `*`     | R-address (or `*`) used to fund the payin. `*` lets the wallet pick a UTXO automatically.        |
 | `ws_port`     | `9001`  | TCP port for the GUI WebSocket. The example pN.ini files use 9001/9002 to keep two players non-overlapping on the same host. |
 
@@ -87,7 +90,7 @@ build the GUI is hosted on the player node itself at
   `blockchain_cli`, `currency`, `new_block`. See
   [Dealer Configuration § 2](dealer-config.md).
 * **`keys.ini`** — same content as on a dealer node;
-  `parent_id` and the `*_short` identity names. Must match the
+  the `cashier_id` and `dealers_id` aggregator FQNs. Must match the
   dealer's `keys.ini` (otherwise the two address different
   identities and cannot see each other's CMM updates).
 * **`.rpccredentials`** — RPC username/password for the player's

@@ -260,10 +260,13 @@ new_block      = "Y"                       # Cashier processes payin_tx requests
 
 ```ini
 [identities]
-parent_id  = sg777z.VRSCTEST@
 cashier_id = cashier.sg777z.VRSCTEST@
 dealers_id = dealers.sg777z.VRSCTEST@
 ```
+
+Both fields must be fully-qualified Verus IDs; the parser rejects
+bare short names. The parent is implicit in each FQN — there is no
+separate `parent_id` field.
 
 VDXF key names are not in `keys.ini` — the prefix
 (`chips.vrsc::poker.`) and every key name are compile-time
@@ -276,14 +279,15 @@ deployment moves chains.
 
 ```ini
 [verus]
-dealer_id   = d1
-table_id    = t1
+dealer_id   = d1.sg777z.VRSCTEST@
+table_id    = t1.sg777z.VRSCTEST@
 wallet_addr = *
-player_id   = p1
+player_id   = p1.sg777z.VRSCTEST@
 ws_port     = 9001     # WebSocket port for GUI mode
 ```
 
-Names here are **short**; the full FQN is constructed by appending `.<parent_id>` from `keys.ini`, giving `p1.sg777z.VRSCTEST@`.
+All identity fields are fully-qualified Verus IDs. The parser rejects
+short names with `ERR_INI_PARSING`.
 
 ---
 

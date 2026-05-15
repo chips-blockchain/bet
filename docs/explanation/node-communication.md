@@ -32,7 +32,7 @@ in the source.
 
 ## How a hand actually flows on the wire
 
-1. **Discovery.** The dealer publishes its short name into the
+1. **Discovery.** The dealer publishes its FQN into the
    `dealers.<parent>@` aggregator CMM. The cashier discovers
    dealers by reading that same identity. The dealer reads
    `cashiers.<parent>@` to learn which cashier(s) it can use.

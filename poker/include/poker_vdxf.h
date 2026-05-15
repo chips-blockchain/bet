@@ -41,7 +41,6 @@ char *poker_get_key_str(const char *id, const char *key);
  * Get cJSON value from a poker key stored in an identity
  * @param id The identity name
  * @param key The poker key name
- * @param is_full_id 1 if id is fully qualified, 0 if short name
  * @return cJSON object or NULL
  */
 cJSON *poker_get_key_json(const char *id, const char *key);

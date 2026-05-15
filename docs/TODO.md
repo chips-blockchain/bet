@@ -8,12 +8,14 @@ Items that are designed/discussed but intentionally **not** part of the current 
 
 ### 2. Dealer reads player IDs from `dealer.ini`
 
-**Status:** deferred. Hardcoded `known_players[] = {"p1"..."p9", NULL}` is duplicated in three places and stays as the discovery list for now:
+**Status:** deferred. Hardcoded `known_players[] = {"p1.sg777z.VRSCTEST@" ... "p9.sg777z.VRSCTEST@", NULL}` is duplicated in three places and stays as the discovery list for now:
 - `poker/src/poker_vdxf.c:poker_poll_players_for_joins` (dealer)
 - `poker/src/blinder.c:known_players` (cashier — added with the cashier-side join discovery in `PLAYER_JOIN_FLOW.md` §1.4)
 - `poker/src/vdxf.c:cashier_poll_disputes` (cashier dispute polling, currently dormant — see item 3 below)
 
-**What's already documented:** full design is in [`PLAYER_JOIN_FLOW.md`](reference/player-join-flow.md) §3 — `[players] ids = p1,p2` block in `dealer.ini`, `is_id_exists` validation at startup, fail-fast on missing IDs, replacement of both `known_players[]` call sites.
+Since commit `8e2f1907` the entries are full FQNs rather than short names, so the array is tied to a specific parent at compile time (e.g. a VRSCTEST binary and a production binary will diverge on this constant).
+
+**What's already documented:** full design is in [`PLAYER_JOIN_FLOW.md`](reference/player-join-flow.md) §3 — `[players] ids = ...` block in `dealer.ini` (FQNs), `is_id_exists` validation at startup, fail-fast on missing IDs, replacement of both `known_players[]` call sites.
 
 **Why deferred:** the hardcoded list is functionally correct (just inefficient — up to 9 `getidentity` RPCs per 2-second poll tick instead of 2). We want to land payin / join correctness first on a clean chain before touching the discovery layer.
 

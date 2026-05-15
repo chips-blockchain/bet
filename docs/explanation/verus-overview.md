@@ -19,10 +19,10 @@ for the per-key reference see `docs/reference/vdxf-keys.md`.
 
 The deployment is rooted at a single parent identity registered on the
 chain. On the local VRSCTEST regtest used for development, that's
-`sg777z.VRSCTEST@` — configured in `poker/config/keys.ini` under
-`[ids] parent_id` and resolved at startup. Whichever VRSCTEST identity
-the operator controls can be substituted; the `bet` binary doesn't
-hardcode `sg777z`.
+`sg777z.VRSCTEST@`. The parent identity is not configured directly —
+every identity field in `keys.ini`, `dealer.ini`, and the player INI
+files is itself a fully-qualified Verus ID (`name.parent@`), so the
+parent is implicit in each FQN the operator writes.
 
 Under the parent live the actor sub-identities:
 
@@ -34,8 +34,9 @@ Under the parent live the actor sub-identities:
   transfers and holds the table's funds across a hand.
 - `p1.sg777z.VRSCTEST@` … `p9.sg777z.VRSCTEST@` — per-player
   identities. The current discovery list (`known_players[]` in
-  `poker_vdxf.c` and `blinder.c`) hardcodes nine slots; replacing it
-  with a configured list is `docs/TODO.md` item 2.
+  `poker_vdxf.c` and `blinder.c`) hardcodes the nine player FQNs
+  directly; replacing it with a configured list is `docs/TODO.md`
+  item 2.
 - `dealers.sg777z.VRSCTEST@` and `cashiers.sg777z.VRSCTEST@` —
   aggregator identities whose contentmultimap entries list the
   registered dealers and cashiers respectively. The `./bet list dealers`

@@ -10,8 +10,8 @@ when the public-facing name is plainer.
 
 **Aggregator identity.** A Verus identity whose contentmultimap holds
 a discovery list rather than per-game state. The two aggregators in
-`bet` are `dealers.<parent>@` (list of registered dealer short names)
-and `cashiers.<parent>@` (list of registered cashier short names).
+`bet` are `dealers.<parent>@` (list of registered dealer FQNs) and
+`cashiers.<parent>@` (list of registered cashier FQNs).
 Distinct from the operational identities of the same names
 (`dealer.<parent>@`, `cashier.<parent>@`) which actually sign and
 hold funds. See [`id_creation_process.md`](../explanation/identity-tree.md).

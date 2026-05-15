@@ -20,13 +20,13 @@ The flow has three independent on-chain actors: **player**, **cashier identity**
 2. **Update the player's own Verus identity** with `P_JOIN_REQUEST_KEY` containing the join metadata:
    ```json
    {
-     "dealer_id":  "d1",
-     "table_id":   "t1",
+     "dealer_id":  "d1.sg777z.VRSCTEST@",
+     "table_id":   "t1.sg777z.VRSCTEST@",
      "cashier_id": "cashier.sg777z.VRSCTEST@",
      "payin_tx":   "<txid from step 1>"
    }
    ```
-   This is the canonical record of intent to join.
+   All identity references are fully-qualified Verus IDs. This is the canonical record of intent to join.
 
 ### 1.2 Dealer discovery loop
 
@@ -44,15 +44,18 @@ This function polls **player identities** for `P_JOIN_REQUEST_KEY`; the cashier 
    ```
    This is just an index used for verification — *not* the source of join metadata.
 
-2. **Iterate a hardcoded list of player short-names:**
+2. **Iterate a hardcoded list of player FQNs:**
    ```c
-   const char *known_players[] = {"p1","p2","p3","p4","p5","p6","p7","p8","p9", NULL};
+   const char *known_players[] = {
+       "p1.sg777z.VRSCTEST@", "p2.sg777z.VRSCTEST@", ...,
+       "p9.sg777z.VRSCTEST@", NULL
+   };
    for (int i = 0; known_players[i] != NULL; i++) {
        check_player_join_request(known_players[i], table_id, dealer_id, txids, start_block);
    }
    ```
 
-3. **For each candidate player, read `P_JOIN_REQUEST_KEY` from that player's identity** (`get_cJSON_from_id_key(player_id, P_JOIN_REQUEST_KEY, 0)`):
+3. **For each candidate player, read `P_JOIN_REQUEST_KEY` from that player's identity** (`get_cJSON_from_id_key(player_id, P_JOIN_REQUEST_KEY)`):
    - If the key is absent → no intent to join, skip.
    - If `dealer_id`/`table_id` don't match this dealer → not for me, skip.
    - If `payin_tx` is **not** in the cashier's txid list → reject (the player claims a payin that never landed).
@@ -76,8 +79,8 @@ The cashier mirrors the dealer's polling pattern (§1.2) but with a different fi
 `blinder.c:cashier_game_init` runs an idle-poll loop:
 
 1. **While idle** (`cashier_active == 0`), every 2s call `cashier_poll_players_for_joins()`.
-2. That iterates the same `known_players[]` list as the dealer (currently duplicated in `blinder.c` — TODO.md item 1 collapses both into config-driven).
-3. For each player short-name, `cashier_check_payin_join()`:
+2. That iterates the same `known_players[]` FQN list as the dealer (currently duplicated in `blinder.c` — TODO.md item 2 collapses both into config-driven).
+3. For each player FQN, `cashier_check_payin_join()`:
    - Reads `P_JOIN_REQUEST_KEY` from the player identity (cumulative-latest, no height filter).
    - Filters: `req.cashier_id == bet_get_cashiers_id_fqn()` (vs. the dealer's `dealer_id`/`table_id` filter).
    - Verifies cryptographically: `chips_get_balance_on_address_from_tx(get_vdxf_id(cashier_fqn), req.payin_tx) > 0`. The cashier owns the address, so this is the strongest-possible payin verification — independent of `g_start_block`, which is the exact seam that resolves the chicken-and-egg start_block problem.
@@ -96,14 +99,14 @@ The cashier mirrors the dealer's polling pattern (§1.2) but with a different fi
 
 ## 2. Problem with the current discovery list
 
-`known_players[] = {"p1","p2",...,"p9", NULL}` is:
+`known_players[] = {"p1.sg777z.VRSCTEST@", ..., "p9.sg777z.VRSCTEST@", NULL}` is:
 
-- **Hardcoded in C source** (`poker_vdxf.c:371` for join discovery, also in `vdxf.c:cashier_poll_disputes` for dispute discovery).
-- **Identical for every deployment** — to add `p10`, you patch C and rebuild.
+- **Hardcoded in C source** (`poker_vdxf.c:361` for join discovery, also in `blinder.c` for cashier-side join discovery, and `vdxf.c:cashier_poll_disputes` for dispute discovery).
+- **Identical for every deployment that targets the same parent** — to add `p10`, you patch C and rebuild; to target a different parent (e.g. production), you maintain a separate binary.
 - **Probed even when no such identity exists** — every poll tick does up to N `getidentity` RPCs against possibly-nonexistent IDs.
 - **Hidden** — operators have no visible knob for "which players is this dealer accepting?".
 
-There is no startup-time check that the player IDs actually resolve on-chain. If `p4` was never created, the dealer silently no-ops on every tick of `check_player_join_request("p4", ...)`.
+There is no startup-time check that the player IDs actually resolve on-chain. If `p4.sg777z.VRSCTEST@` was never created, the dealer silently no-ops on every tick.
 
 ---
 
@@ -111,9 +114,14 @@ There is no startup-time check that the player IDs actually resolve on-chain. If
 
 Make the player list a deployment configuration item, and verify it on dealer startup.
 
+> **Status note.** Since the FQN hard-cutover (commit `8e2f1907`),
+> `known_players[]` is hardcoded with full FQNs rather than short
+> names; the rest of this proposal (config-driven discovery + startup
+> validation) is still deferred — see `TODO.md` item 2.
+
 ### 3.1 `dealer.ini` schema extension
 
-Add a `players` section listing the short-names the dealer is willing to seat:
+Add a `players` section listing the FQNs the dealer is willing to seat:
 
 ```ini
 [table]
@@ -121,29 +129,30 @@ max_players = 2
 big_blind   = 0.001
 min_stake   = 20
 max_stake   = 100
-table_id    = t1
+table_id    = t1.sg777z.VRSCTEST@
 
 [verus]
-dealer_id  = d1
-cashier_id = cashier
+dealer_id  = d1.sg777z.VRSCTEST@
+cashier_id = cashier.sg777z.VRSCTEST@
 
 [players]
-# Comma-separated list of short-names, FQN derived from keys.ini parent_id
-ids = p1,p2
+# Comma-separated list of fully-qualified Verus IDs
+ids = p1.sg777z.VRSCTEST@, p2.sg777z.VRSCTEST@
 ```
 
-The full FQN of each player is `<short>.<parent_id>` where `parent_id` comes from `keys.ini` (e.g. `p1.sg777z.VRSCTEST@`), matching the convention already used for player ini files.
+Every identity field is a full FQN — the existing INI parsers
+already enforce this for `dealer_id` / `table_id` / `cashier_id`.
 
 ### 3.2 Dealer startup behaviour
 
 When the dealer starts:
 
 1. Parse `[players].ids` from `dealer.ini`. Trim whitespace. Reject empty list.
-2. For each short-name `s`:
-   a. Build the FQN `s.parent_id`.
-   b. Call `is_id_exists(fqn, 1)` (already used elsewhere in the codebase).
+2. For each FQN `s`:
+   a. Validate `s` contains `@` (consistent with the existing INI checks).
+   b. Call `is_id_exists(s)` (already used elsewhere in the codebase).
    c. If any ID does not resolve on-chain → log the missing ID and **abort dealer startup with a non-zero exit code**. Do not enter `handle_game_state`.
-3. If all IDs resolve → log the verified list (`Dealer accepting joins from: p1, p2`) and proceed to normal init.
+3. If all IDs resolve → log the verified list (`Dealer accepting joins from: p1.sg777z.VRSCTEST@, p2.sg777z.VRSCTEST@`) and proceed to normal init.
 
 This is a fail-fast precondition: the operator gets immediate feedback if a player identity is missing or misspelled, instead of a silently-no-op poll loop.
 
@@ -172,5 +181,5 @@ Both call sites switch from a C string-array to a runtime list owned by config:
 ## 4. Open questions
 
 1. **Should the cashier's dispute polling list be derived from the same `[players]` block in `dealer.ini`**, or kept independently in `cashier.ini`? Independent is more decoupled but creates two sources of truth that must stay in sync.
-2. **Dynamic player addition during a running game** — should adding a new short-name to `dealer.ini` and SIGHUP'ing the dealer be supported, or do we require a full restart between games? Restart-only is simpler and matches the current `--reset` lifecycle.
+2. **Dynamic player addition during a running game** — should adding a new FQN to `dealer.ini` and SIGHUP'ing the dealer be supported, or do we require a full restart between games? Restart-only is simpler and matches the current `--reset` lifecycle.
 3. **Player aggregator identity** — is there value in maintaining an on-chain aggregator (à la the existing `dealers`/`cashiers` aggregator IDs) listing approved players, so dealers and cashiers don't need duplicate config? Probably yes long-term, but out of scope for this change.
