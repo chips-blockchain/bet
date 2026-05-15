@@ -276,12 +276,6 @@ static cJSON *get_cmm_key_data_from_height(const char *id, int16_t full_id, cons
 	return cmm_key_data;
 }
 
-/* Internal helper - get cashiers info */
-static cJSON *get_cashiers_info(char *cashier_id)
-{
-	return get_cmm_key_data(cashier_id, 0, get_vdxf_id(CASHIERS_KEY));
-}
-
 /* Internal helper - get z_getoperationstatus */
 static cJSON *get_z_getoperationstatus(char *op_id)
 {
@@ -305,37 +299,6 @@ static cJSON *get_z_getoperationstatus(char *op_id)
 		return NULL;
 	}
 	return result;
-}
-
-cJSON *update_cashiers(char *ip)
-{
-	cJSON *cashiers_info = NULL, *out = NULL, *ip_obj = NULL, *cashier_ips = NULL;
-	const char *cashiers_id = verus_config.initialized ? verus_config.cashiers_short : "cashiers";
-
-	cashiers_info = cJSON_CreateObject();
-	cashier_ips = get_cashiers_info((char *)cashiers_id);
-
-	ip_obj = cJSON_CreateObject();
-	cJSON_AddStringToObject(ip_obj, get_vdxf_id(STRING_VDXF_ID), ip);
-
-	if (NULL == cashier_ips)
-		cashier_ips = cJSON_CreateArray();
-	else {
-		for (int i = 0; i < cJSON_GetArraySize(cashier_ips); i++) {
-			if (0 == strcmp(jstr(cJSON_GetArrayItem(cashier_ips, i), get_vdxf_id(STRING_VDXF_ID)), ip)) {
-				dlg_info("%s::%d::The latest data of this ID contains this %s\n", __FUNCTION__,
-					 __LINE__, ip);
-				goto end;
-			}
-		}
-	}
-
-	cJSON_AddItemToArray(cashier_ips, ip_obj);
-	cJSON_AddItemToObject(cashiers_info, get_vdxf_id(CASHIERS_KEY), cashier_ips);
-	out = update_cmm(cashiers_id, cashiers_info);
-
-end:
-	return out;
 }
 
 int32_t get_player_id(int *player_id)
@@ -1824,32 +1787,6 @@ int32_t verify_poker_setup()
 	dlg_info("Poker system is ready. Found %d registered dealer(s)", cJSON_GetArraySize(dealers));
 	cJSON_Delete(dealers);
 
-	return OK;
-}
-
-int32_t add_dealer_to_dealers(char *dealer_id)
-{
-	cJSON *dealers = NULL, *out = NULL;
-	int32_t dealer_added = 0;
-
-	dealers = list_dealers();
-
-	for (int32_t i = 0; i < cJSON_GetArraySize(dealers); i++) {
-		if (0 == strcmp(dealer_id, jstri(dealers, i))) {
-			dealer_added = 1;
-			break;
-		}
-	}
-	if (!dealer_added) {
-		if (!dealers) {
-			dealers = cJSON_CreateArray();
-		}
-		cJSON_AddItemToArray(dealers, cJSON_CreateString(dealer_id));
-		out = append_cmm_from_id_key_data_cJSON(verus_config.initialized ? verus_config.dealers_short : "dealers", DEALERS_KEY, dealers, false);
-		if (!out) {
-			return ERR_UPDATEIDENTITY;
-		}
-	}
 	return OK;
 }
 

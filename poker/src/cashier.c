@@ -896,18 +896,6 @@ void bet_cashier_backend_thrd(void *_ptr)
 		dlg_error("%s", bet_err_str(retval));
 	}
 }
-void bet_cashier_server_loop(void *_ptr)
-{
-	struct cashier *cashier_info = _ptr;
-	uint8_t flag = 1;
-	(void)_ptr; /* unused parameters */
-
-	dlg_info("cashier server node started");
-	// Nanomsg removed - communication now via websockets only
-	// The cashier server loop is handled through websocket callbacks
-	(void)flag; // Suppress unused parameter warning
-}
-
 int32_t bet_submit_msig_raw_tx(cJSON *tx)
 {
 	cJSON *msig_raw_tx = NULL;

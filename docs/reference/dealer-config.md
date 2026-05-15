@@ -105,17 +105,13 @@ example below matches the dev regtest layout:
 
 ```ini
 [identities]
-parent_id      = sg777z.VRSCTEST@
-test_id        = test.sg777z.VRSCTEST@
-cashier_id     = cashier.sg777z.VRSCTEST@   # aggregator
-dealer_id      = dealer.sg777z.VRSCTEST@    # aggregator
-cashiers_short = cashier
-dealers_short  = dealer
-poker_short    = poker
+parent_id  = sg777z.VRSCTEST@
+cashier_id = cashier.sg777z.VRSCTEST@   # aggregator
+dealers_id = dealers.sg777z.VRSCTEST@   # aggregator
 ```
 
 Note the distinction between **aggregator** identities (`cashier_id`,
-`dealer_id` — hold the on-chain discovery lists) and the
+`dealers_id` — hold the on-chain discovery lists) and the
 **operational** identities (`d1`, `cashier`) configured in
 `dealer.ini`. See
 [`id_creation_process.md`](../explanation/identity-tree.md)

@@ -553,9 +553,6 @@ void bet_parse_verus_ids_keys_config(void)
 		strncpy(verus_config.parent_id, POKER_ID_FQN, sizeof(verus_config.parent_id) - 1);
 		strncpy(verus_config.cashier_id, CASHIERS_ID_FQN, sizeof(verus_config.cashier_id) - 1);
 		strncpy(verus_config.dealers_id, DEALERS_ID_FQN, sizeof(verus_config.dealers_id) - 1);
-		strncpy(verus_config.cashiers_short, CASHIERS_ID, sizeof(verus_config.cashiers_short) - 1);
-		strncpy(verus_config.dealers_short, DEALERS_ID, sizeof(verus_config.dealers_short) - 1);
-		strncpy(verus_config.poker_short, POKER_ID, sizeof(verus_config.poker_short) - 1);
 		verus_config.initialized = 1;
 		return;
 	}
@@ -580,24 +577,6 @@ void bet_parse_verus_ids_keys_config(void)
 		verus_config.dealers_id[sizeof(verus_config.dealers_id) - 1] = '\0';
 	} else {
 		strncpy(verus_config.dealers_id, DEALERS_ID_FQN, sizeof(verus_config.dealers_id) - 1);
-	}
-
-	if ((value = iniparser_getstring(ini, "identities:cashiers_short", NULL)) != NULL) {
-		strncpy(verus_config.cashiers_short, value, sizeof(verus_config.cashiers_short) - 1);
-	} else {
-		strncpy(verus_config.cashiers_short, CASHIERS_ID, sizeof(verus_config.cashiers_short) - 1);
-	}
-
-	if ((value = iniparser_getstring(ini, "identities:dealers_short", NULL)) != NULL) {
-		strncpy(verus_config.dealers_short, value, sizeof(verus_config.dealers_short) - 1);
-	} else {
-		strncpy(verus_config.dealers_short, DEALERS_ID, sizeof(verus_config.dealers_short) - 1);
-	}
-
-	if ((value = iniparser_getstring(ini, "identities:poker_short", NULL)) != NULL) {
-		strncpy(verus_config.poker_short, value, sizeof(verus_config.poker_short) - 1);
-	} else {
-		strncpy(verus_config.poker_short, POKER_ID, sizeof(verus_config.poker_short) - 1);
 	}
 
 	verus_config.initialized = 1;

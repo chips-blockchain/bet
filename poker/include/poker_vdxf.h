@@ -151,13 +151,6 @@ int32_t poker_check_player_join_status(char *table_id, char *verus_pid);
  * ============================================================================ */
 
 /**
- * Update the cashiers list with a new IP
- * @param ip The cashier IP to add
- * @return Updated cashiers info or NULL
- */
-cJSON *poker_update_cashiers(char *ip);
-
-/**
  * List all registered dealers
  * @return cJSON array of dealers or NULL
  */

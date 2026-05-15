@@ -13,7 +13,6 @@ int32_t bet_process_game_info(cJSON *argjson, struct cashier *cashier_info);
 cJSON *bet_resolve_game_dispute(cJSON *game_info);
 void bet_process_solve(cJSON *argjson, struct cashier *cashier_info);
 int32_t bet_validate_game_details(cJSON *argjson, struct cashier *cashier_info);
-void bet_cashier_server_loop(void *_ptr);
 void bet_cashier_status_loop(void *_ptr);
 void bet_cashier_frontend_loop(void *_ptr);
 int32_t bet_cashier_frontend(struct lws *wsi, cJSON *argjson);

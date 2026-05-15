@@ -368,7 +368,7 @@ under chips as sg777.chips@ which basically been used to hold the tokens.
 */
 
 #define CASHIERS_ID_FQN "cashier.sg777z.chips.vrsc@"
-#define DEALERS_ID_FQN "dealer.sg777z.chips.vrsc@"
+#define DEALERS_ID_FQN "dealers.sg777z.chips.vrsc@"
 #define POKER_ID_FQN "sg777z.chips.vrsc@"
 
 #define DEALERS_ID "dealers"
@@ -475,7 +475,6 @@ bool is_table_registered(char *table_id, char *dealer_id);
 /* ============================================================================
  * Poker Game State (internal - use poker_vdxf.h for public API)
  * ============================================================================ */
-cJSON *update_cashiers(char *ip);
 int32_t get_player_id(int *player_id);
 int32_t join_table();
 int32_t find_table();

@@ -112,11 +112,6 @@ int32_t poker_check_player_join_status(char *table_id, char *verus_pid)
  * Dealer/Cashier Registry
  * ============================================================================ */
 
-cJSON *poker_update_cashiers(char *ip)
-{
-	return update_cashiers(ip);
-}
-
 cJSON *poker_list_dealers()
 {
 	return list_dealers();

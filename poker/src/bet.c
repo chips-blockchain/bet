@@ -91,12 +91,6 @@ int32_t max_players = 2;
 static const int32_t poker_deck_size = 52;
 int32_t bet_node_type;
 
-static void bet_cashier_deinitialize()
-{
-	if (cashier_info)
-		free(cashier_info);
-}
-
 static void bet_player_initialize(char *dcv_ip)
 {
 	// Nanomsg sockets removed - no longer used
@@ -243,28 +237,6 @@ static void bet_dcv_thrd(char *dcv_ip)
 	}
 #endif
 	bet_dcv_deinitialize();
-}
-
-static void bet_cashier_server_initialize(char *node_ip)
-{
-	// Nanomsg sockets removed - no longer used
-	cashier_info = calloc(1, sizeof(struct cashier));
-}
-
-static void bet_cashier_server_thrd(char *node_ip)
-{
-	pthread_t server_thrd;
-
-	bet_cashier_server_initialize(node_ip);
-	update_cashiers(node_ip);
-	if (OS_thread_create(&server_thrd, NULL, (void *)bet_cashier_server_loop, (void *)cashier_info) != 0) {
-		dlg_error("%s", bet_err_str(ERR_PTHREAD_LAUNCHING));
-		exit(-1);
-	}
-	if (pthread_join(server_thrd, NULL)) {
-		dlg_error("%s", bet_err_str(ERR_PTHREAD_JOINING));
-	}
-	bet_cashier_deinitialize();
 }
 
 static void bet_set_unique_id()

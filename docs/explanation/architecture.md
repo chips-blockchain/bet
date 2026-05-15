@@ -129,14 +129,9 @@ prefix the application will read and write. On the dev regtest:
 
 ```ini
 [identities]
-parent_id   = sg777z.VRSCTEST@
-cashier_id  = cashier.sg777z.VRSCTEST@
-dealer_id   = dealer.sg777z.VRSCTEST@
-test_id     = test.sg777z.VRSCTEST@
-
-cashiers_short = cashier
-dealers_short  = dealer
-poker_short    = poker
+parent_id  = sg777z.VRSCTEST@
+cashier_id = cashier.sg777z.VRSCTEST@
+dealers_id = dealers.sg777z.VRSCTEST@
 ```
 
 The VDXF key namespace is **not** configured in `keys.ini`. The
