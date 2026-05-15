@@ -25,9 +25,14 @@ static int32_t ensure_cashier_game_id_initialized(char *table_id);
 static char    cashier_table_id[64] = {0};
 static int32_t cashier_active = 0;
 
-/* Mirror of poker_vdxf.c::known_players[] used by poker_poll_players_for_joins.
- * TODO.md item 1 collapses both lists into a single config-driven source. */
-static const char *known_players[] = {"p1","p2","p3","p4","p5","p6","p7","p8","p9", NULL};
+/* Mirror of poker_vdxf.c::known_players[]. Hardcoded FQNs — no runtime
+ * derivation of the parent. Production binary uses different parent. */
+static const char *known_players[] = {
+	"p1.sg777z.VRSCTEST@", "p2.sg777z.VRSCTEST@", "p3.sg777z.VRSCTEST@",
+	"p4.sg777z.VRSCTEST@", "p5.sg777z.VRSCTEST@", "p6.sg777z.VRSCTEST@",
+	"p7.sg777z.VRSCTEST@", "p8.sg777z.VRSCTEST@", "p9.sg777z.VRSCTEST@",
+	NULL
+};
 
 static int32_t cashier_check_payin_join(const char *player_short,
                                         char *out_table_id, size_t out_size);
@@ -94,7 +99,7 @@ int32_t cashier_sb_deck(char *id, bits256 *d_blinded_deck, int32_t player_id)
 	 * this onto T_B_P*_DECK_KEY.<game_id> on the table id before
 	 * transitioning the table to G_DECK_SHUFFLING_B, so the existing
 	 * player.c:255 reader path is unchanged. */
-	const char *write_id = bet_get_cashier_short_name();
+	const char *write_id = bet_get_cashiers_id_fqn();
 	dlg_info("[DBG-SBDECK] writing C_B_P%d_DECK_KEY to id=\"%s\" game_id=%s deck[0]=%s",
 		 player_id + 1, write_id, game_id_str, bits256_str(dbg, d_blinded_deck[0]));
 	cJSON *out = poker_append_key_json((char *)write_id,
@@ -218,7 +223,7 @@ static int32_t reveal_bv_batch(char *table_id, cJSON *game_state_info, cJSON *re
 	g_last_bv_phase[sizeof(g_last_bv_phase) - 1] = 0;
 	strncpy(g_last_bv_gid, game_id_str, sizeof(g_last_bv_gid) - 1);
 	g_last_bv_gid[sizeof(g_last_bv_gid) - 1] = 0;
-	out = poker_append_key_json((char *)bet_get_cashier_short_name(),
+	out = poker_append_key_json((char *)bet_get_cashiers_id_fqn(),
 				    get_key_data_vdxf_id(C_CARD_BV_KEY, game_id_str),
 				    batch, true);
 	if (!out) {
@@ -281,7 +286,7 @@ int32_t reveal_bv(char *table_id)
 	 * Players read directly from cashier_id; no canonicalize step on
 	 * table_id. The handle_bv_reveal_card idempotency check below also
 	 * reads from cashier_id. */
-	out = poker_append_key_json((char *)bet_get_cashier_short_name(),
+	out = poker_append_key_json((char *)bet_get_cashiers_id_fqn(),
 				    get_key_data_vdxf_id(C_CARD_BV_KEY, game_id_str), card_bv,
 				    true);
 
@@ -301,7 +306,7 @@ static int32_t handle_bv_reveal_card(char *table_id)
 	game_id_str = poker_get_key_str(table_id, T_GAME_ID_KEY);
 	/* Single-writer-per-identity (docs/TODO.md item 1.2): cashier reads its
 	 * own previously-published BV from its OWN id, not table_id. */
-	card_bv = get_cJSON_from_id_key_vdxfid_from_height((char *)bet_get_cashier_short_name(),
+	card_bv = get_cJSON_from_id_key_vdxfid_from_height((char *)bet_get_cashiers_id_fqn(),
 							   get_key_data_vdxf_id(C_CARD_BV_KEY, game_id_str),
 							   g_start_block);
 
@@ -360,7 +365,7 @@ static int32_t cashier_process_settlement(char *table_id)
 	 * (the dealer just hasn't canonicalized yet) and we must not re-pay. */
 	{
 		cJSON *prior_result = get_cJSON_from_id_key_vdxfid_from_height(
-			(char *)bet_get_cashier_short_name(),
+			(char *)bet_get_cashiers_id_fqn(),
 			get_key_data_vdxf_id(C_SETTLEMENT_RESULT_KEY, game_id_str),
 			g_start_block);
 		if (prior_result) {
@@ -465,7 +470,7 @@ static int32_t cashier_process_settlement(char *table_id)
 	 * cJSON_Delete it separately. */
 	cJSON_AddItemToObject(cashier_result, "payout_txs", payout_txs);
 
-	cJSON *out = poker_append_key_json((char *)bet_get_cashier_short_name(),
+	cJSON *out = poker_append_key_json((char *)bet_get_cashiers_id_fqn(),
 		get_key_data_vdxf_id(C_SETTLEMENT_RESULT_KEY, game_id_str),
 		cashier_result, true);
 
@@ -484,7 +489,7 @@ static int32_t cashier_process_settlement(char *table_id)
 	 * the canonical G_SETTLEMENT_COMPLETE on table_id. Mirrors the
 	 * existing G_DECK_SHUFFLING_B handshake exactly — the table id
 	 * remains a dealer-only writer for game state. */
-	append_game_state((char *)bet_get_cashier_short_name(),
+	append_game_state((char *)bet_get_cashiers_id_fqn(),
 			  G_SETTLEMENT_COMPLETE_BY_CASHIER, NULL);
 
 	cJSON_Delete(cashier_result);
@@ -515,11 +520,11 @@ static int32_t cashier_check_payin_join(const char *player_short,
 		return ERR_ARGS_NULL;
 	}
 
-	if (!is_id_exists(player_short, 0)) {
+	if (!is_id_exists(player_short)) {
 		return ERR_ID_NOT_FOUND;
 	}
 
-	join_request = get_cJSON_from_id_key(player_short, P_JOIN_REQUEST_KEY, 0);
+	join_request = get_cJSON_from_id_key(player_short, P_JOIN_REQUEST_KEY);
 	if (!join_request) {
 		return ERR_ID_NOT_FOUND;
 	}
@@ -631,7 +636,7 @@ static int32_t ensure_cashier_game_id_initialized(char *table_id)
 	
 	// Set T_GAME_ID_KEY on the cashier's ID (use short name for update_cmm)
 	dlg_info("Initializing cashier's T_GAME_ID_KEY: %s", game_id_str);
-	cJSON *out = poker_append_key_hex((char *)bet_get_cashier_short_name(), T_GAME_ID_KEY, game_id_str, false);
+	cJSON *out = poker_append_key_hex((char *)bet_get_cashiers_id_fqn(), T_GAME_ID_KEY, game_id_str, false);
 	if (!out) {
 		dlg_error("Failed to set game_id on cashier's ID");
 		return ERR_GAME_STATE_UPDATE;
@@ -679,7 +684,7 @@ int32_t handle_game_state_cashier(char *table_id)
 			char *gate_gid = poker_get_key_str(table_id, T_GAME_ID_KEY);
 			if (gate_gid) {
 				cJSON *existing = get_cJSON_from_id_key_vdxfid_from_height(
-					(char *)bet_get_cashier_short_name(),
+					(char *)bet_get_cashiers_id_fqn(),
 					get_key_data_vdxf_id(all_c_b_p_keys[0], gate_gid),
 					g_start_block);
 				if (existing) {
@@ -692,7 +697,7 @@ int32_t handle_game_state_cashier(char *table_id)
 		retval = cashier_shuffle_deck(table_id);
 		if (!retval) {
 			dlg_info("Cashier shuffle complete, updating game state to G_DECK_SHUFFLING_B");
-			append_game_state(bet_get_cashier_short_name(), G_DECK_SHUFFLING_B, NULL);
+			append_game_state(bet_get_cashiers_id_fqn(), G_DECK_SHUFFLING_B, NULL);
 		}
 		break;
 	case G_REVEAL_CARD:

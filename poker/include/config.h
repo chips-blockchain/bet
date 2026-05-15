@@ -5,7 +5,6 @@
 
 /* Verus IDs and Keys Configuration Structure */
 struct verus_ids_keys_config {
-	char parent_id[128];
 	char cashier_id[128];
 	char dealers_id[128];
 	int32_t initialized;
@@ -52,8 +51,6 @@ int32_t bet_parse_verus_dealer_with_reset(bool reset);
 int32_t bet_parse_verus_player();
 void bet_parse_verus_ids_keys_config(void);
 const char *bet_get_cashiers_id_fqn(void);
-const char *bet_get_cashier_short_name(void);
 const char *bet_get_dealers_id_fqn(void);
-const char *bet_get_poker_id_fqn(void);
 const char *bet_get_currency(void);
 #endif /* CONFIG_H */

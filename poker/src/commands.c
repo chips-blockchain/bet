@@ -1497,14 +1497,9 @@ char *chips_get_wallet_address()
 	if (cached_addr[0] != '\0')
 		return cached_addr;
 
-	/* Build a fully-qualified Verus ID. player_config.verus_pid stores the
-	 * short form ("p1"), which getidentity rejects; verus_config.cashier_id
-	 * / .dealer_id are already FQNs (loaded from keys.ini). For the player
-	 * case we append the poker parent FQN ("sg777z.VRSCTEST@") the same way
-	 * vdxf.c::get_cmm_from_height does. */
 	char fqn[256] = { 0 };
 	if (player_config.verus_pid[0] != '\0') {
-		snprintf(fqn, sizeof(fqn), "%s.%s", player_config.verus_pid, bet_get_poker_id_fqn());
+		strncpy(fqn, player_config.verus_pid, sizeof(fqn) - 1);
 	} else if (verus_config.initialized && verus_config.cashier_id[0] != '\0') {
 		strncpy(fqn, verus_config.cashier_id, sizeof(fqn) - 1);
 	} else if (verus_config.initialized && verus_config.dealers_id[0] != '\0') {

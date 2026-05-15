@@ -4,6 +4,7 @@
 #include "misc.h"
 #include "commands.h"
 #include "poker_vdxf.h"
+#include "config.h"
 
 double get_dealer_registration_fee(void)
 {
@@ -24,11 +25,11 @@ static int32_t add_dealer_to_list(char *dealer_id)
 	if (!dealer_id) {
 		return ERR_NULL_ID;
 	}
-	if (!is_id_exists(dealer_id, 0)) {
+	if (!is_id_exists(dealer_id)) {
 		return ERR_ID_NOT_FOUND;
 	}
 
-	if (!id_cansignfor(DEALERS_ID, 0, &retval)) {
+	if (!id_cansignfor(bet_get_dealers_id_fqn(), &retval)) {
 		return retval;
 	}
 
@@ -39,7 +40,7 @@ static int32_t add_dealer_to_list(char *dealer_id)
 	}
 	jaddistr(dealers, dealer_id);
 	cJSON_AddItemToObject(dealers_info, "dealers", dealers);
-	out = poker_update_key_json(DEALERS_ID, DEALERS_KEY, dealers_info, false);
+	out = poker_update_key_json((char *)bet_get_dealers_id_fqn(), DEALERS_KEY, dealers_info, false);
 
 	if (!out) {
 		return ERR_UPDATEIDENTITY;
@@ -51,7 +52,7 @@ static int32_t add_dealer_to_list(char *dealer_id)
 
 bool is_dealer_registered(char *dealer_id)
 {
-	if (!dealer_id || !is_id_exists(dealer_id, false)) {
+	if (!dealer_id || !is_id_exists(dealer_id)) {
 		return false;
 	}
 
@@ -81,11 +82,10 @@ int32_t register_dealer(char *dealer_id)
 		return ERR_NULL_ID;
 	}
 
-	if (!is_id_exists(dealer_id, 0)) {
+	if (!is_id_exists(dealer_id)) {
 		return ERR_ID_NOT_FOUND;
 	}
 
-	// Check if dealer is already registered
 	if (is_dealer_registered(dealer_id)) {
 		dlg_info("Dealer %s is already registered", dealer_id);
 		return OK;
@@ -111,10 +111,9 @@ int32_t register_dealer(char *dealer_id)
 	cJSON_AddStringToObject(tx_data, "dealer_id", dealer_id);
 	cJSON_AddStringToObject(tx_data, "type", "dealer_registration");
 	cJSON_AddNumberToObject(tx_data, "amount", DEALER_REGISTRATION_FEE);
-	cJSON_AddStringToObject(tx_data, "destination", DEALERS_ID);
+	cJSON_AddStringToObject(tx_data, "destination", bet_get_dealers_id_fqn());
 
-	// Transfer registration fee with dealer_id in tx data
-	op_id = verus_sendcurrency_data(DEALERS_ID_FQN, DEALER_REGISTRATION_FEE, tx_data);
+	op_id = verus_sendcurrency_data(bet_get_dealers_id_fqn(), DEALER_REGISTRATION_FEE, tx_data);
 	if (!op_id) {
 		dlg_error("Failed to transfer registration fee");
 		return ERR_SENDCURRENCY;
@@ -156,11 +155,10 @@ int32_t deregister_dealer(char *dealer_id)
 		return ERR_NULL_ID;
 	}
 
-	if (!is_id_exists(dealer_id, 0)) {
+	if (!is_id_exists(dealer_id)) {
 		return ERR_ID_NOT_FOUND;
 	}
 
-	// Check if dealer is registered
 	if (!is_dealer_registered(dealer_id)) {
 		dlg_error("Dealer %s is not registered", dealer_id);
 		return ERR_DEALER_UNREGISTERED;
@@ -195,7 +193,7 @@ int32_t deregister_dealer(char *dealer_id)
 
 		cJSON *dealers_info = cJSON_CreateObject();
 		cJSON_AddItemToObject(dealers_info, "dealers", new_dealers);
-		cJSON *out = poker_update_key_json(DEALERS_ID, DEALERS_KEY, dealers_info, false);
+		cJSON *out = poker_update_key_json((char *)bet_get_dealers_id_fqn(), DEALERS_KEY, dealers_info, false);
 
 		if (!out) {
 			dlg_error("Failed to update dealers list");
@@ -246,17 +244,15 @@ int32_t raise_dealer_registration_dispute(char *dealer_id, char *dispute_action)
 		return ERR_NULL_ID;
 	}
 
-	if (!is_id_exists(dealer_id, 0)) {
+	if (!is_id_exists(dealer_id)) {
 		return ERR_ID_NOT_FOUND;
 	}
 
-	// If dispute_action is not add_dealer, default to refund
 	if (strcmp(dispute_action, "add_dealer") != 0) {
 		dispute_action = "refund";
 	}
 
-	// Get stored registration info from dealer's ID
-	registration_info = poker_get_key_json(dealer_id, "registration_info", 0);
+	registration_info = poker_get_key_json(dealer_id, "registration_info");
 	if (!registration_info) {
 		dlg_error("No registration info found for dealer %s", dealer_id);
 		return ERR_ID_NOT_FOUND;
@@ -270,8 +266,7 @@ int32_t raise_dealer_registration_dispute(char *dealer_id, char *dispute_action)
 	cJSON_AddItemToObject(tx_data, "tx_id", cJSON_DetachItemFromObject(registration_info, "tx_id"));
 	cJSON_AddItemToObject(tx_data, "tx_data", cJSON_DetachItemFromObject(registration_info, "tx_data"));
 
-	// Send dispute transaction to dealers ID
-	op_id = verus_sendcurrency_data(DEALERS_ID_FQN, 0, tx_data);
+	op_id = verus_sendcurrency_data(bet_get_dealers_id_fqn(), 0, tx_data);
 	if (!op_id) {
 		dlg_error("Failed to send dispute transaction");
 		return ERR_SENDCURRENCY;
@@ -345,12 +340,13 @@ static int32_t process_dealer_registration_dispute(cJSON *tx_data)
 void process_dealer_registration_block(char *blockhash)
 {
 	int32_t blockcount = 0, retval = OK;
-	char verus_addr[1][100] = { DEALERS_ID_FQN };
+	char verus_addr[1][100] = { 0 };
 	cJSON *blockjson = NULL, *tx_data = NULL;
 
-	// Check if node has access to dealers ID
-	if (!is_id_exists(DEALERS_ID_FQN, 1)) {
-		dlg_error("Dealers ID ::%s doesn't exist", DEALERS_ID_FQN);
+	strncpy(verus_addr[0], bet_get_dealers_id_fqn(), sizeof(verus_addr[0]) - 1);
+
+	if (!is_id_exists(bet_get_dealers_id_fqn())) {
+		dlg_error("Dealers ID ::%s doesn't exist", bet_get_dealers_id_fqn());
 		return;
 	}
 

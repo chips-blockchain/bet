@@ -29,9 +29,9 @@ char *poker_get_key_str(const char *id, const char *key)
 	return get_str_from_id_key_from_height(id, key, height_start);
 }
 
-cJSON *poker_get_key_json(const char *id, const char *key, int32_t is_full_id)
+cJSON *poker_get_key_json(const char *id, const char *key)
 {
-	return get_cJSON_from_id_key(id, key, is_full_id);
+	return get_cJSON_from_id_key(id, key);
 }
 
 cJSON *poker_get_key_json_by_vdxfid(char *id, char *key_vdxfid)
@@ -251,13 +251,11 @@ static int32_t check_player_join_request(const char *player_id, const char *tabl
 {
 	cJSON *join_request = NULL;
 	
-	// First check if player identity exists (silently, to avoid noisy logs)
-	if (!is_id_exists(player_id, 0)) {
-		return 0;  // Player identity doesn't exist yet
+	if (!is_id_exists(player_id)) {
+		return 0;
 	}
-	
-	// Get player's p_join_request from their identity
-	join_request = get_cJSON_from_id_key(player_id, P_JOIN_REQUEST_KEY, 0);
+
+	join_request = get_cJSON_from_id_key(player_id, P_JOIN_REQUEST_KEY);
 	if (!join_request) {
 		return 0;  // No join request from this player
 	}
@@ -334,7 +332,7 @@ static int32_t check_player_join_request(const char *player_id, const char *tabl
  * @param start_block Only accept payin_tx confirmed at or after this height.
  * @return Number of join requests processed, or negative error code.
  */
-int32_t poker_poll_players_for_joins(const char *cashier_id, const char *table_id, 
+int32_t poker_poll_players_for_joins(const char *cashier_id, const char *table_id,
                                       const char *dealer_id, int32_t start_block)
 {
 	char *cashier_address = NULL;
@@ -346,17 +344,12 @@ int32_t poker_poll_players_for_joins(const char *cashier_id, const char *table_i
 		return ERR_ARGS_NULL;
 	}
 
-	// Get cashier's identity address
-	char full_cashier_id[128] = { 0 };
-	snprintf(full_cashier_id, sizeof(full_cashier_id), "%s.%s", cashier_id, bet_get_poker_id_fqn());
-	
-	cashier_address = get_identity_address(full_cashier_id);
+	cashier_address = get_identity_address(cashier_id);
 	if (!cashier_address) {
-		dlg_warn("Could not get identity address for cashier: %s", full_cashier_id);
+		dlg_warn("Could not get identity address for cashier: %s", cashier_id);
 		return ERR_ID_NOT_FOUND;
 	}
 
-	// Get all transactions at cashier from start_block onwards
 	txids = get_address_txids_range(cashier_address, start_block, 0);
 	free(cashier_address);
 
@@ -365,11 +358,13 @@ int32_t poker_poll_players_for_joins(const char *cashier_id, const char *table_i
 		return 0;
 	}
 
-	// Check known player identities for join requests
-	// For now, check a hardcoded list - in production this would be
-	// a dynamic player registry or discovery mechanism
-	const char *known_players[] = {"p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9", NULL};
-	
+	const char *known_players[] = {
+		"p1.sg777z.VRSCTEST@", "p2.sg777z.VRSCTEST@", "p3.sg777z.VRSCTEST@",
+		"p4.sg777z.VRSCTEST@", "p5.sg777z.VRSCTEST@", "p6.sg777z.VRSCTEST@",
+		"p7.sg777z.VRSCTEST@", "p8.sg777z.VRSCTEST@", "p9.sg777z.VRSCTEST@",
+		NULL
+	};
+
 	for (int i = 0; known_players[i] != NULL; i++) {
 		result = check_player_join_request(known_players[i], table_id, dealer_id, txids, start_block);
 		if (result > 0) {

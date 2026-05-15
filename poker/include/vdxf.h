@@ -369,11 +369,6 @@ under chips as sg777.chips@ which basically been used to hold the tokens.
 
 #define CASHIERS_ID_FQN "cashier.sg777z.chips.vrsc@"
 #define DEALERS_ID_FQN "dealers.sg777z.chips.vrsc@"
-#define POKER_ID_FQN "sg777z.chips.vrsc@"
-
-#define DEALERS_ID "dealers"
-#define CASHIERS_ID "cashiers"
-#define POKER_ID "poker"
 
 /*
 Currencies
@@ -419,14 +414,21 @@ char *get_key_data_vdxf_id(char *key_name, char *data);
  * Identity CMM (ContentMultiMap) Operations
  * ============================================================================ */
 cJSON *update_cmm(const char *id, cJSON *cmm);
-cJSON *get_cmm(const char *id, int16_t full_id);
+cJSON *get_cmm(const char *id);
+
+/* Split a fully-qualified Verus identity (e.g. "p1.sg777z.VRSCTEST@") into
+ * its leading short name ("p1") and parent suffix ("sg777z.VRSCTEST@"). On
+ * failure (NULL input, no dot, missing trailing '@') returns false and the
+ * out buffers are not modified. */
+bool split_fqn(const char *fqn, char *name_out, size_t name_size,
+	       char *parent_out, size_t parent_size);
 
 /* ============================================================================
  * Identity Verification
  * ============================================================================ */
-bool is_id_exists(const char *id, int16_t full_id);
-int32_t id_canspendfor(char *id, int32_t full_id, int32_t *err_no);
-int32_t id_cansignfor(const char *id, int32_t full_id, int32_t *err_no);
+bool is_id_exists(const char *id);
+int32_t id_canspendfor(const char *id, int32_t *err_no);
+int32_t id_cansignfor(const char *id, int32_t *err_no);
 
 /* ============================================================================
  * Currency/Transaction Operations
@@ -439,7 +441,7 @@ cJSON *getaddressutxos(char verus_addresses[][100], int n);
  * ============================================================================ */
 char *get_str_from_id_key(char *id, char *key);
 char *get_str_from_id_key_from_height(const char *id, const char *key, int32_t height_start);
-cJSON *get_cJSON_from_id_key(const char *id, const char *key, int32_t is_full_id);
+cJSON *get_cJSON_from_id_key(const char *id, const char *key);
 cJSON *get_cJSON_from_id_key_vdxfid(char *id, char *key_vdxfid);
 cJSON *get_cJSON_from_id_key_vdxfid_from_height(const char *id, const char *key_vdxfid, int32_t height_start);
 /* Like get_cJSON_from_id_key_vdxfid_from_height but returns ALL CMM

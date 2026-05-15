@@ -171,7 +171,7 @@ void print_table_key_info(int argc, char **argv)
 
 void print_id_info(int argc, char **argv)
 {
-	if (!is_id_exists(argv[2], 0)) {
+	if (!is_id_exists(argv[2])) {
 		dlg_info("ID doesn't exists\n");
 	} else {
 		if ((strcmp(argv[3], "t") == 0) || (strcmp(argv[3], "table") == 0)) {
@@ -200,7 +200,7 @@ void print_vdxf_info(int argc, char **argv)
 	char *id = argv[2];
 	char *key = argv[3];
 
-	if (!is_id_exists(id, 0)) {
+	if (!is_id_exists(id)) {
 		dlg_info("ID doesn't exist");
 		return;
 	}

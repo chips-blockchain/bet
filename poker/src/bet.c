@@ -527,7 +527,7 @@ void bet_start(int argc, char **argv)
 			return;
 		}
 		const char *id = argv[2];
-		if (id_cansignfor(id, 0, &retval)) {
+		if (id_cansignfor(id, &retval)) {
 			cJSON *out = update_cmm(id, NULL);
 			dlg_info("Reset ID '%s': %s", id, cJSON_Print(out));
 		} else {
@@ -660,7 +660,7 @@ void bet_start(int argc, char **argv)
 	}
 	// Identity management
 	else if (strcmp(cmd, "reset_id") == 0 && argc == 3) {
-		if (id_cansignfor(argv[2], 0, &retval)) {
+		if (id_cansignfor(argv[2], &retval)) {
 			cJSON *out = update_cmm(argv[2], NULL);
 			dlg_info("%s", cJSON_Print(out));
 		}

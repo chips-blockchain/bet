@@ -44,7 +44,7 @@ char *poker_get_key_str(const char *id, const char *key);
  * @param is_full_id 1 if id is fully qualified, 0 if short name
  * @return cJSON object or NULL
  */
-cJSON *poker_get_key_json(const char *id, const char *key, int32_t is_full_id);
+cJSON *poker_get_key_json(const char *id, const char *key);
 
 /**
  * Get cJSON value using a pre-computed vdxfid

@@ -34,43 +34,29 @@ int32_t add_dealer(char *dealer_id, const char *aggregator_fqn)
 {
 	int32_t retval = OK;
 	cJSON *dealers_info = NULL, *dealers = NULL, *existing = NULL, *out = NULL;
-	const char *fqn = aggregator_fqn ? aggregator_fqn : DEALERS_ID_FQN;
-	const char *dot = NULL;
-	char short_name[64] = { 0 };
-	size_t short_len = 0;
+	const char *fqn = aggregator_fqn ? aggregator_fqn : bet_get_dealers_id_fqn();
 
 	if (!dealer_id) {
 		return ERR_NULL_ID;
 	}
-	if (!is_id_exists(dealer_id, 0)) {
+	if (!strchr(dealer_id, '@')) {
+		dlg_error("add_dealer: dealer_id must be a fully-qualified Verus ID; got '%s'", dealer_id);
+		return ERR_ARGS_NULL;
+	}
+	if (!strchr(fqn, '@')) {
+		dlg_error("add_dealer: aggregator must be a fully-qualified Verus ID; got '%s'", fqn);
+		return ERR_ARGS_NULL;
+	}
+	if (!is_id_exists(dealer_id)) {
 		return ERR_ID_NOT_FOUND;
 	}
 
-	dot = strchr(fqn, '.');
-	if (!dot || dot == fqn) {
-		dlg_error("Invalid aggregator FQN: %s", fqn);
-		return ERR_ARGS_NULL;
-	}
-	short_len = (size_t)(dot - fqn);
-	if (short_len >= sizeof(short_name)) {
-		dlg_error("Aggregator short name too long: %s", fqn);
-		return ERR_ARG_SIZE_TOO_LONG;
-	}
-	strncpy(short_name, fqn, short_len);
-	short_name[short_len] = '\0';
-
-	if (strcmp(dot + 1, bet_get_poker_id_fqn()) != 0) {
-		dlg_error("Aggregator parent '%s' does not match configured parent '%s'",
-			  dot + 1, bet_get_poker_id_fqn());
-		return ERR_ARGS_NULL;
-	}
-
-	if (!id_cansignfor(short_name, 0, &retval)) {
+	if (!id_cansignfor(fqn, &retval)) {
 		return retval;
 	}
 
 	dealers_info = cJSON_CreateObject();
-	existing = get_cJSON_from_id_key(fqn, DEALERS_KEY, 1);
+	existing = get_cJSON_from_id_key(fqn, DEALERS_KEY);
 	if (existing) {
 		dealers = cJSON_DetachItemFromObject(existing, "dealers");
 		cJSON_Delete(existing);
@@ -80,7 +66,7 @@ int32_t add_dealer(char *dealer_id, const char *aggregator_fqn)
 	}
 	jaddistr(dealers, dealer_id);
 	cJSON_AddItemToObject(dealers_info, "dealers", dealers);
-	out = poker_update_key_json(short_name, DEALERS_KEY, dealers_info, false);
+	out = poker_update_key_json((char *)fqn, DEALERS_KEY, dealers_info, false);
 
 	if (!out) {
 		return ERR_UPDATEIDENTITY;
@@ -140,7 +126,7 @@ int32_t dealer_table_init(struct table *t)
 	char *game_id_vdxfid = NULL, *table_info_vdxfid = NULL;
 	char *bytevector_vdxfid = NULL, *game_id_key_vdxfid = NULL;
 
-	if (!is_id_exists(t->table_id, 0))
+	if (!is_id_exists(t->table_id))
 		return ERR_ID_NOT_FOUND;
 
 	game_state = get_game_state(t->table_id);
@@ -850,7 +836,7 @@ int32_t register_table(struct table t)
 	int32_t retval = OK;
 	cJSON *d_table_info = NULL, *out = NULL;
 
-	d_table_info = poker_get_key_json(t.dealer_id, T_TABLE_INFO_KEY, 0);
+	d_table_info = poker_get_key_json(t.dealer_id, T_TABLE_INFO_KEY);
 	if (d_table_info == NULL) {
 		out = poker_update_key_json(t.dealer_id, get_vdxf_id(T_TABLE_INFO_KEY),
 							struct_table_to_cJSON(&t), true);
@@ -947,7 +933,7 @@ int32_t dealer_init(struct table t)
 		dlg_info("Wallet balance ::%f, Minimum funds needed to host a table :: %f", balance, RESERVE_AMOUNT);
 		return ERR_CHIPS_INSUFFICIENT_FUNDS;
 	}
-	if ((!id_cansignfor(t.dealer_id, 0, &retval)) || (!id_cansignfor(t.table_id, 0, &retval))) {
+	if ((!id_cansignfor(t.dealer_id, &retval)) || (!id_cansignfor(t.table_id, &retval))) {
 		return retval;
 	}
 
@@ -996,7 +982,7 @@ int32_t dealer_init_with_reset(struct table t)
 		dlg_info("Wallet balance ::%f, Minimum funds needed to host a table :: %f", balance, RESERVE_AMOUNT);
 		return ERR_CHIPS_INSUFFICIENT_FUNDS;
 	}
-	if ((!id_cansignfor(t.dealer_id, 0, &retval)) || (!id_cansignfor(t.table_id, 0, &retval))) {
+	if ((!id_cansignfor(t.dealer_id, &retval)) || (!id_cansignfor(t.table_id, &retval))) {
 		return retval;
 	}
 

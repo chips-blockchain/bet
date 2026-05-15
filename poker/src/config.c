@@ -416,33 +416,45 @@ int32_t bet_parse_verus_dealer()
 	if (!ini)
 		return ERR_INI_PARSING;
 
-	// Parse verus section
-	if (NULL != iniparser_getstring(ini, "verus:dealer_id", NULL)) {
-		strncpy(t.dealer_id, iniparser_getstring(ini, "verus:dealer_id", NULL), sizeof(t.dealer_id) - 1);
+	const char *v = NULL;
+	if ((v = iniparser_getstring(ini, "verus:dealer_id", NULL)) != NULL) {
+		if (!strchr(v, '@')) {
+			dlg_error("verus:dealer_id must be a fully-qualified Verus ID; got '%s'", v);
+			iniparser_freedict(ini);
+			return ERR_INI_PARSING;
+		}
+		strncpy(t.dealer_id, v, sizeof(t.dealer_id) - 1);
 	}
-	if (NULL != iniparser_getstring(ini, "verus:cashier_id", NULL)) {
-		strncpy(t.cashier_id, iniparser_getstring(ini, "verus:cashier_id", NULL), sizeof(t.cashier_id) - 1);
+	if ((v = iniparser_getstring(ini, "verus:cashier_id", NULL)) != NULL) {
+		if (!strchr(v, '@')) {
+			dlg_error("verus:cashier_id must be a fully-qualified Verus ID; got '%s'", v);
+			iniparser_freedict(ini);
+			return ERR_INI_PARSING;
+		}
+		strncpy(t.cashier_id, v, sizeof(t.cashier_id) - 1);
 	} else {
-		// Default to main cashier ID if not specified
-		strncpy(t.cashier_id, "cashier", sizeof(t.cashier_id) - 1);
+		strncpy(t.cashier_id, bet_get_cashiers_id_fqn(), sizeof(t.cashier_id) - 1);
 	}
 
-	// Parse table section
 	if (-1 != iniparser_getint(ini, "table:max_players", -1)) {
 		t.max_players = (uint8_t)iniparser_getint(ini, "table:max_players", -1);
 	}
 	if (0 != iniparser_getdouble(ini, "table:big_blind", 0)) {
 		float_to_uint32_s(&t.big_blind, iniparser_getdouble(ini, "table:big_blind", 0));
 	}
-	// min_stake and max_stake are now in CHIPS directly
 	if (0 != iniparser_getdouble(ini, "table:min_stake", 0)) {
 		float_to_uint32_s(&t.min_stake, iniparser_getdouble(ini, "table:min_stake", 0));
 	}
 	if (0 != iniparser_getdouble(ini, "table:max_stake", 0)) {
 		float_to_uint32_s(&t.max_stake, iniparser_getdouble(ini, "table:max_stake", 0));
 	}
-	if (NULL != iniparser_getstring(ini, "table:table_id", NULL)) {
-		strncpy(t.table_id, iniparser_getstring(ini, "table:table_id", NULL), sizeof(t.table_id) - 1);
+	if ((v = iniparser_getstring(ini, "table:table_id", NULL)) != NULL) {
+		if (!strchr(v, '@')) {
+			dlg_error("table:table_id must be a fully-qualified Verus ID; got '%s'", v);
+			iniparser_freedict(ini);
+			return ERR_INI_PARSING;
+		}
+		strncpy(t.table_id, v, sizeof(t.table_id) - 1);
 	}
 
 	iniparser_freedict(ini);
@@ -460,17 +472,26 @@ int32_t bet_parse_verus_dealer_with_reset(bool reset)
 	if (!ini)
 		return ERR_INI_PARSING;
 
-	// Parse verus section
-	if (NULL != iniparser_getstring(ini, "verus:dealer_id", NULL)) {
-		strncpy(t.dealer_id, iniparser_getstring(ini, "verus:dealer_id", NULL), sizeof(t.dealer_id) - 1);
+	const char *v = NULL;
+	if ((v = iniparser_getstring(ini, "verus:dealer_id", NULL)) != NULL) {
+		if (!strchr(v, '@')) {
+			dlg_error("verus:dealer_id must be a fully-qualified Verus ID; got '%s'", v);
+			iniparser_freedict(ini);
+			return ERR_INI_PARSING;
+		}
+		strncpy(t.dealer_id, v, sizeof(t.dealer_id) - 1);
 	}
-	if (NULL != iniparser_getstring(ini, "verus:cashier_id", NULL)) {
-		strncpy(t.cashier_id, iniparser_getstring(ini, "verus:cashier_id", NULL), sizeof(t.cashier_id) - 1);
+	if ((v = iniparser_getstring(ini, "verus:cashier_id", NULL)) != NULL) {
+		if (!strchr(v, '@')) {
+			dlg_error("verus:cashier_id must be a fully-qualified Verus ID; got '%s'", v);
+			iniparser_freedict(ini);
+			return ERR_INI_PARSING;
+		}
+		strncpy(t.cashier_id, v, sizeof(t.cashier_id) - 1);
 	} else {
-		strncpy(t.cashier_id, "cashier", sizeof(t.cashier_id) - 1);
+		strncpy(t.cashier_id, bet_get_cashiers_id_fqn(), sizeof(t.cashier_id) - 1);
 	}
 
-	// Parse table section
 	if (-1 != iniparser_getint(ini, "table:max_players", -1)) {
 		t.max_players = (uint8_t)iniparser_getint(ini, "table:max_players", -1);
 	}
@@ -483,12 +504,17 @@ int32_t bet_parse_verus_dealer_with_reset(bool reset)
 	if (0 != iniparser_getdouble(ini, "table:max_stake", 0)) {
 		float_to_uint32_s(&t.max_stake, iniparser_getdouble(ini, "table:max_stake", 0));
 	}
-	if (NULL != iniparser_getstring(ini, "table:table_id", NULL)) {
-		strncpy(t.table_id, iniparser_getstring(ini, "table:table_id", NULL), sizeof(t.table_id) - 1);
+	if ((v = iniparser_getstring(ini, "table:table_id", NULL)) != NULL) {
+		if (!strchr(v, '@')) {
+			dlg_error("table:table_id must be a fully-qualified Verus ID; got '%s'", v);
+			iniparser_freedict(ini);
+			return ERR_INI_PARSING;
+		}
+		strncpy(t.table_id, v, sizeof(t.table_id) - 1);
 	}
 
 	iniparser_freedict(ini);
-	
+
 	if (reset) {
 		retval = dealer_init_with_reset(t);
 	} else {
@@ -506,32 +532,41 @@ int32_t bet_parse_verus_player()
 	if (!ini)
 		return ERR_INI_PARSING;
 
-	if (NULL != iniparser_getstring(ini, "verus:dealer_id", NULL)) {
-		strncpy(player_config.dealer_id, iniparser_getstring(ini, "verus:dealer_id", NULL),
-			sizeof(player_config.dealer_id));
+	const char *v = NULL;
+	if ((v = iniparser_getstring(ini, "verus:dealer_id", NULL)) != NULL) {
+		if (!strchr(v, '@')) {
+			dlg_error("verus:dealer_id must be a fully-qualified Verus ID; got '%s'", v);
+			iniparser_freedict(ini);
+			return ERR_INI_PARSING;
+		}
+		strncpy(player_config.dealer_id, v, sizeof(player_config.dealer_id) - 1);
 	}
-	if (NULL != iniparser_getstring(ini, "verus:table_id", NULL)) {
-		strncpy(player_config.table_id, iniparser_getstring(ini, "verus:table_id", NULL),
-			sizeof(player_config.table_id));
+	if ((v = iniparser_getstring(ini, "verus:table_id", NULL)) != NULL) {
+		if (!strchr(v, '@')) {
+			dlg_error("verus:table_id must be a fully-qualified Verus ID; got '%s'", v);
+			iniparser_freedict(ini);
+			return ERR_INI_PARSING;
+		}
+		strncpy(player_config.table_id, v, sizeof(player_config.table_id) - 1);
 	}
-	if (NULL != iniparser_getstring(ini, "verus:wallet_addr", NULL)) {
-		strncpy(player_config.wallet_addr, iniparser_getstring(ini, "verus:wallet_addr", NULL),
-			sizeof(player_config.wallet_addr));
+	if ((v = iniparser_getstring(ini, "verus:wallet_addr", NULL)) != NULL) {
+		strncpy(player_config.wallet_addr, v, sizeof(player_config.wallet_addr) - 1);
 	}
-	if (NULL != iniparser_getstring(ini, "verus:player_id", NULL)) {
-		strncpy(player_config.verus_pid, iniparser_getstring(ini, "verus:player_id", NULL),
-			sizeof(player_config.verus_pid));
+	if ((v = iniparser_getstring(ini, "verus:player_id", NULL)) != NULL) {
+		if (!strchr(v, '@')) {
+			dlg_error("verus:player_id must be a fully-qualified Verus ID; got '%s'", v);
+			iniparser_freedict(ini);
+			return ERR_INI_PARSING;
+		}
+		strncpy(player_config.verus_pid, v, sizeof(player_config.verus_pid) - 1);
 	}
-	// Read WebSocket port for GUI mode (default: 9001)
 	player_config.ws_port = iniparser_getint(ini, "verus:ws_port", DEFAULT_PLAYER_WS_PORT);
-	
-	//Check if all IDs are valid
+
 	if ((player_config.dealer_id[0] == '\0') || (player_config.table_id[0] == '\0') || (player_config.verus_pid[0] == '\0') ||
-	    !is_id_exists(player_config.dealer_id, 0) || !is_id_exists(player_config.table_id, 0)) {
+	    !is_id_exists(player_config.dealer_id) || !is_id_exists(player_config.table_id)) {
 		return ERR_CONFIG_PLAYER_ARGS;
 	}
-	//Check if the node has player IDs priv keys
-	if (!id_cansignfor(player_config.verus_pid, 0, &retval)) {
+	if (!id_cansignfor(player_config.verus_pid, &retval)) {
 		return retval;
 	}
 
@@ -549,23 +584,19 @@ void bet_parse_verus_ids_keys_config(void)
 	ini = iniparser_load(verus_ids_keys_config_file);
 	if (ini == NULL) {
 		dlg_warn("Could not load %s, using default values", verus_ids_keys_config_file);
-		// Initialize with defaults (from #defines)
-		strncpy(verus_config.parent_id, POKER_ID_FQN, sizeof(verus_config.parent_id) - 1);
 		strncpy(verus_config.cashier_id, CASHIERS_ID_FQN, sizeof(verus_config.cashier_id) - 1);
 		strncpy(verus_config.dealers_id, DEALERS_ID_FQN, sizeof(verus_config.dealers_id) - 1);
 		verus_config.initialized = 1;
 		return;
 	}
 
-	// Load from config file
-	if ((value = iniparser_getstring(ini, "identities:parent_id", NULL)) != NULL) {
-		strncpy(verus_config.parent_id, value, sizeof(verus_config.parent_id) - 1);
-		verus_config.parent_id[sizeof(verus_config.parent_id) - 1] = '\0';
-	} else {
-		strncpy(verus_config.parent_id, POKER_ID_FQN, sizeof(verus_config.parent_id) - 1);
-	}
-
 	if ((value = iniparser_getstring(ini, "identities:cashier_id", NULL)) != NULL) {
+		if (!strchr(value, '@')) {
+			dlg_error("identities:cashier_id must be a fully-qualified Verus ID "
+				  "(e.g. cashier.sg777z.VRSCTEST@); got '%s'", value);
+			iniparser_freedict(ini);
+			exit(ERR_INI_PARSING);
+		}
 		strncpy(verus_config.cashier_id, value, sizeof(verus_config.cashier_id) - 1);
 		verus_config.cashier_id[sizeof(verus_config.cashier_id) - 1] = '\0';
 	} else {
@@ -573,6 +604,12 @@ void bet_parse_verus_ids_keys_config(void)
 	}
 
 	if ((value = iniparser_getstring(ini, "identities:dealers_id", NULL)) != NULL) {
+		if (!strchr(value, '@')) {
+			dlg_error("identities:dealers_id must be a fully-qualified Verus ID "
+				  "(e.g. dealers.sg777z.VRSCTEST@); got '%s'", value);
+			iniparser_freedict(ini);
+			exit(ERR_INI_PARSING);
+		}
 		strncpy(verus_config.dealers_id, value, sizeof(verus_config.dealers_id) - 1);
 		verus_config.dealers_id[sizeof(verus_config.dealers_id) - 1] = '\0';
 	} else {
@@ -592,38 +629,12 @@ const char *bet_get_cashiers_id_fqn(void)
 	return CASHIERS_ID_FQN;
 }
 
-const char *bet_get_cashier_short_name(void)
-{
-	// Return just the short name (e.g., "cashier") for use with update_cmm
-	// which adds the parent automatically
-	if (verus_config.initialized && verus_config.cashier_id[0] != '\0') {
-		// Extract short name from FQN (e.g., "cashier.sg777z.chips.vrsc@" -> "cashier")
-		static char short_name[64];
-		strncpy(short_name, verus_config.cashier_id, sizeof(short_name) - 1);
-		short_name[sizeof(short_name) - 1] = '\0';
-		char *dot = strchr(short_name, '.');
-		if (dot) {
-			*dot = '\0';  // Truncate at first dot
-		}
-		return short_name;
-	}
-	return "cashier";
-}
-
 const char *bet_get_dealers_id_fqn(void)
 {
 	if (verus_config.initialized) {
 		return verus_config.dealers_id;
 	}
 	return DEALERS_ID_FQN;
-}
-
-const char *bet_get_poker_id_fqn(void)
-{
-	if (verus_config.initialized) {
-		return verus_config.parent_id;
-	}
-	return POKER_ID_FQN;
 }
 
 /* RPC Credentials Configuration */

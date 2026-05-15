@@ -296,8 +296,8 @@ struct float_num {
 };
 
 struct verus_player_config {
-	char dealer_id[16];
-	char table_id[16];
+	char dealer_id[128];
+	char table_id[128];
 	char wallet_addr[64];
 	char txid[128];
 	char verus_pid[128];
