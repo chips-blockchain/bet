@@ -137,22 +137,15 @@ test_id     = test.sg777z.VRSCTEST@
 cashiers_short = cashier
 dealers_short  = dealer
 poker_short    = poker
-
-[keys]
-key_prefix   = chips.vrsc::poker.sg777z.
-cashiers_key = cashiers
-dealers_key  = dealers
-t_game_id_key    = t_game_ids
-t_table_info_key = t_table_info
-t_player_info_key = t_player_info
 ```
 
-The `key_prefix` is the human-readable string that gets concatenated
-with each short key name (`cashiers`, `dealers`, `t_table_info` …)
-before being hashed to a vdxfid in `get_vdxf_id`. The prefix is
-opaque to Verus — it does not have to match the chain name. The dev
-config keeps `chips.vrsc::poker.sg777z.` so the same `keys.ini`
-remains portable across chains.
+The VDXF key namespace is **not** configured in `keys.ini`. The
+prefix (`chips.vrsc::poker.sg777z.`) and every key name are defined
+as compile-time macros in `poker/include/vdxf.h` — every `*_KEY`
+macro composes the single `VDXF_POKER_KEYS_PREFIX` macro with a
+fixed suffix. The full readable string is hashed to a vdxfid by
+`get_vdxf_id` at runtime. The prefix is opaque to Verus and does
+not have to match the chain name.
 
 ### RPC credentials
 
@@ -200,9 +193,10 @@ cJSON *table_info = poker_get_key_json(table_id, T_TABLE_INFO_KEY, 0);
 
 The call descends as follows:
 
-1. `poker_get_key_json` in `poker_vdxf.c` parses the key
-   name (`T_TABLE_INFO_KEY`), prepends the `key_prefix`, and forwards
-   to `get_cJSON_from_id_key` in `vdxf.c`.
+1. `poker_get_key_json` in `poker_vdxf.c` forwards the full key
+   name (`T_TABLE_INFO_KEY`, already prefixed via the
+   `VDXF_POKER_KEYS_PREFIX` macro in `vdxf.h`) to
+   `get_cJSON_from_id_key` in `vdxf.c`.
 2. `get_cJSON_from_id_key` resolves the identity, decides which
    read variant to use (current vs. historical), and calls
    `chips_rpc("getidentity", params, &result)`.

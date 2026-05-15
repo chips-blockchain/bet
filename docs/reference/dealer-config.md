@@ -112,14 +112,6 @@ dealer_id      = dealer.sg777z.VRSCTEST@    # aggregator
 cashiers_short = cashier
 dealers_short  = dealer
 poker_short    = poker
-
-[keys]
-key_prefix       = chips.vrsc::poker.sg777z.
-cashiers_key     = cashiers
-dealers_key      = dealers
-t_game_id_key    = t_game_ids
-t_table_info_key = t_table_info
-t_player_info_key = t_player_info
 ```
 
 Note the distinction between **aggregator** identities (`cashier_id`,
@@ -129,10 +121,11 @@ Note the distinction between **aggregator** identities (`cashier_id`,
 [`id_creation_process.md`](../explanation/identity-tree.md)
 for the full identity taxonomy.
 
-The `key_prefix` is an opaque namespace string. It deliberately
-keeps the legacy `chips.vrsc::poker.sg777z.` form so that the same
-`keys.ini` is portable across chains (the chain name does not have
-to match the prefix).
+VDXF key names are not configured in `keys.ini`. The prefix
+(`chips.vrsc::poker.sg777z.`) and every key name are compile-time
+macros in `poker/include/vdxf.h`; the prefix lives once as
+`VDXF_POKER_KEYS_PREFIX` and every `*_KEY` macro composes it with a
+fixed suffix.
 
 ---
 

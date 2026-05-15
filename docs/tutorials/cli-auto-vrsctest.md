@@ -267,17 +267,14 @@ dealer_id      = dealer.sg777z.VRSCTEST@
 cashiers_short = cashier
 dealers_short  = dealer
 poker_short    = poker
-
-[keys]
-key_prefix       = chips.vrsc::poker.sg777z.   # opaque VDXF namespace, kept for compat
-cashiers_key     = cashiers
-dealers_key      = dealers
-t_game_id_key    = t_game_ids
-t_table_info_key = t_table_info
-t_player_info_key = t_player_info
 ```
 
-The `key_prefix` is intentionally **not** changed to mention VRSCTEST — VDXF keys are arbitrary opaque strings, and keeping the production prefix means the same `keys.ini` format is portable across chains.
+VDXF key names are not in `keys.ini` — the prefix
+(`chips.vrsc::poker.sg777z.`) and every key name are compile-time
+macros in `poker/include/vdxf.h` (`VDXF_POKER_KEYS_PREFIX` and the
+`*_KEY` family). The prefix is opaque to Verus and intentionally
+unchanged for VRSCTEST so the same key macros stay portable when
+deployment moves chains.
 
 ### Player ini files (e.g. `poker/config/p1.ini`)
 

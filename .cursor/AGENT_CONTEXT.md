@@ -50,7 +50,7 @@ This is an interactive session. Rules are non-negotiable:
 - `dealer.ini` — max_players=2, big_blind=0.001, min_stake=20 BB, table_id=t1, dealer_id=d1, cashier_id=cashier
 - `p1.ini` — player_id=p1, dealer_id=d1, table_id=t1, ws_port=9001
 - `p2.ini` — player_id=p2, dealer_id=d1, table_id=t1, ws_port=9002
-- `keys.ini` — key_prefix=chips.vrsc::poker.sg777z., parent_id=sg777z.chips.vrsc@
+- `keys.ini` — parent_id=sg777z.chips.vrsc@ (VDXF key names are compile-time macros in `poker/include/vdxf.h`)
 - `.rpccredentials` — RPC credentials for CHIPS daemon
 
 ### Node start commands

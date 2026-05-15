@@ -87,9 +87,9 @@ build the GUI is hosted on the player node itself at
   `blockchain_cli`, `currency`, `new_block`. See
   [Dealer Configuration § 2](dealer-config.md).
 * **`keys.ini`** — same content as on a dealer node;
-  `parent_id`, `key_prefix`, etc. Must match the dealer's
-  `keys.ini` (otherwise the two derive different vdxfids and
-  cannot read each other's CMM updates).
+  `parent_id` and the `*_short` identity names. Must match the
+  dealer's `keys.ini` (otherwise the two address different
+  identities and cannot see each other's CMM updates).
 * **`.rpccredentials`** — RPC username/password for the player's
   local Verus daemon. Required for `verus`-CLI invocations.
 

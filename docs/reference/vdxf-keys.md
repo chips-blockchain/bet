@@ -25,11 +25,13 @@ parentheses; it is hashed to a 32-byte VDXF id at runtime
 ## Conventions
 
 **Namespace prefix.** Every key uses `chips.vrsc::poker.sg777z.` as
-its readable prefix (see `vdxf.h:7-23`). The prefix is the same on
-VRSCTEST and on production builds — it is decoupled from the chain
-name on purpose so the same key macros stay portable when the
-deployment moves chains. Renaming it to match the VRSCTEST parent is
-cosmetic and would require an on-chain migration; see `docs/TODO.md`.
+its readable prefix, defined once as the `VDXF_POKER_KEYS_PREFIX`
+macro in `vdxf.h` and composed by every `*_KEY` macro listed below.
+The prefix is the same on VRSCTEST and on production builds — it is
+decoupled from the chain name on purpose so the same key macros stay
+portable when the deployment moves chains. Renaming it to match the
+VRSCTEST parent is cosmetic and would require an on-chain migration;
+see `docs/TODO.md`.
 
 **`<game_id>` suffix.** Keys whose comment description says they are
 *per-game* are written under `<base_key>.<game_id>` rather than the
