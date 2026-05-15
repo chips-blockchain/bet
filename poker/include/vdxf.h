@@ -22,7 +22,9 @@ Lets say the cashiers are specific to the context of poker, so we defined them w
 key is represented as chips.vrsc::poker.cashiers.
 */
 
-#define CASHIERS_KEY "chips.vrsc::poker.sg777z.cashiers"
+#define VDXF_POKER_KEYS_PREFIX "chips.vrsc::poker.sg777z."
+
+#define CASHIERS_KEY VDXF_POKER_KEYS_PREFIX "cashiers"
 /*
 * The DEALERS_KEY holds information about registered dealers in the poker system.
 * It stores an array of dealer identities (IDs) that are authorized to run poker tables.
@@ -39,7 +41,7 @@ key is represented as chips.vrsc::poker.cashiers.
 * Where each "dealer_id_x" is a unique identifier (likely a VerusID) for a registered dealer.
 * This allows the system to maintain a list of approved dealers that can host poker games.
 */
-#define DEALERS_KEY "chips.vrsc::poker.sg777z.dealers"
+#define DEALERS_KEY VDXF_POKER_KEYS_PREFIX "dealers"
 
 /*
 * t_game_ids - Tracks the current active game ID
@@ -47,7 +49,7 @@ key is represented as chips.vrsc::poker.cashiers.
 *   "hexdata" (string representing the 256-bit game ID)
 * }
 */
-#define T_GAME_ID_KEY "chips.vrsc::poker.sg777z.t_game_ids"
+#define T_GAME_ID_KEY VDXF_POKER_KEYS_PREFIX "t_game_ids"
 
 /*
 * t_table_info - Stored on dealer identity (as advertisement) and table identity (for active game)
@@ -62,14 +64,14 @@ key is represented as chips.vrsc::poker.cashiers.
 *   start_block: block height when the table/game was initialized
 * }
 */
-#define T_TABLE_INFO_KEY "chips.vrsc::poker.sg777z.t_table_info"
+#define T_TABLE_INFO_KEY VDXF_POKER_KEYS_PREFIX "t_table_info"
 /*
 * t_player_info {
 * num_players : 
 * player_info : [veruspid_txid_playerid]
 * }
 */
-#define T_PLAYER_INFO_KEY "chips.vrsc::poker.sg777z.t_player_info"
+#define T_PLAYER_INFO_KEY VDXF_POKER_KEYS_PREFIX "t_player_info"
 
 /*
 * p_join_request - Stored on player identity when requesting to join a table
@@ -81,7 +83,7 @@ key is represented as chips.vrsc::poker.cashiers.
 * }
 * Player checks t_player_info to know if accepted (no status field needed)
 */
-#define P_JOIN_REQUEST_KEY "chips.vrsc::poker.sg777z.p_join_request"
+#define P_JOIN_REQUEST_KEY VDXF_POKER_KEYS_PREFIX "p_join_request"
 
 /*
 * t_betting_state - Dealer writes to TABLE ID during betting
@@ -96,7 +98,7 @@ key is represented as chips.vrsc::poker.cashiers.
 *   player_funds: array of remaining funds per player
 * }
 */
-#define T_BETTING_STATE_KEY "chips.vrsc::poker.sg777z.t_betting_state"
+#define T_BETTING_STATE_KEY VDXF_POKER_KEYS_PREFIX "t_betting_state"
 
 /*
 * p_betting_action - Player writes to PLAYER ID when taking action
@@ -107,29 +109,29 @@ key is represented as chips.vrsc::poker.cashiers.
 *   card_id: card turn this action is for
 * }
 */
-#define P_BETTING_ACTION_KEY "chips.vrsc::poker.sg777z.p_betting_action"
+#define P_BETTING_ACTION_KEY VDXF_POKER_KEYS_PREFIX "p_betting_action"
 
-#define T_D_DECK_KEY "chips.vrsc::poker.sg777z.t_d_deck"
-#define T_D_P1_DECK_KEY "chips.vrsc::poker.sg777z.t_d_p1_deck"
-#define T_D_P2_DECK_KEY "chips.vrsc::poker.sg777z.t_d_p2_deck"
-#define T_D_P3_DECK_KEY "chips.vrsc::poker.sg777z.t_d_p3_deck"
-#define T_D_P4_DECK_KEY "chips.vrsc::poker.sg777z.t_d_p4_deck"
-#define T_D_P5_DECK_KEY "chips.vrsc::poker.sg777z.t_d_p5_deck"
-#define T_D_P6_DECK_KEY "chips.vrsc::poker.sg777z.t_d_p6_deck"
-#define T_D_P7_DECK_KEY "chips.vrsc::poker.sg777z.t_d_p7_deck"
-#define T_D_P8_DECK_KEY "chips.vrsc::poker.sg777z.t_d_p8_deck"
-#define T_D_P9_DECK_KEY "chips.vrsc::poker.sg777z.t_d_p9_deck"
+#define T_D_DECK_KEY VDXF_POKER_KEYS_PREFIX "t_d_deck"
+#define T_D_P1_DECK_KEY VDXF_POKER_KEYS_PREFIX "t_d_p1_deck"
+#define T_D_P2_DECK_KEY VDXF_POKER_KEYS_PREFIX "t_d_p2_deck"
+#define T_D_P3_DECK_KEY VDXF_POKER_KEYS_PREFIX "t_d_p3_deck"
+#define T_D_P4_DECK_KEY VDXF_POKER_KEYS_PREFIX "t_d_p4_deck"
+#define T_D_P5_DECK_KEY VDXF_POKER_KEYS_PREFIX "t_d_p5_deck"
+#define T_D_P6_DECK_KEY VDXF_POKER_KEYS_PREFIX "t_d_p6_deck"
+#define T_D_P7_DECK_KEY VDXF_POKER_KEYS_PREFIX "t_d_p7_deck"
+#define T_D_P8_DECK_KEY VDXF_POKER_KEYS_PREFIX "t_d_p8_deck"
+#define T_D_P9_DECK_KEY VDXF_POKER_KEYS_PREFIX "t_d_p9_deck"
 
-#define T_B_DECK_KEY "chips.vrsc::poker.sg777z.t_b_deck"
-#define T_B_P1_DECK_KEY "chips.vrsc::poker.sg777z.t_b_p1_deck"
-#define T_B_P2_DECK_KEY "chips.vrsc::poker.sg777z.t_b_p2_deck"
-#define T_B_P3_DECK_KEY "chips.vrsc::poker.sg777z.t_b_p3_deck"
-#define T_B_P4_DECK_KEY "chips.vrsc::poker.sg777z.t_b_p4_deck"
-#define T_B_P5_DECK_KEY "chips.vrsc::poker.sg777z.t_b_p5_deck"
-#define T_B_P6_DECK_KEY "chips.vrsc::poker.sg777z.t_b_p6_deck"
-#define T_B_P7_DECK_KEY "chips.vrsc::poker.sg777z.t_b_p7_deck"
-#define T_B_P8_DECK_KEY "chips.vrsc::poker.sg777z.t_b_p8_deck"
-#define T_B_P9_DECK_KEY "chips.vrsc::poker.sg777z.t_b_p9_deck"
+#define T_B_DECK_KEY VDXF_POKER_KEYS_PREFIX "t_b_deck"
+#define T_B_P1_DECK_KEY VDXF_POKER_KEYS_PREFIX "t_b_p1_deck"
+#define T_B_P2_DECK_KEY VDXF_POKER_KEYS_PREFIX "t_b_p2_deck"
+#define T_B_P3_DECK_KEY VDXF_POKER_KEYS_PREFIX "t_b_p3_deck"
+#define T_B_P4_DECK_KEY VDXF_POKER_KEYS_PREFIX "t_b_p4_deck"
+#define T_B_P5_DECK_KEY VDXF_POKER_KEYS_PREFIX "t_b_p5_deck"
+#define T_B_P6_DECK_KEY VDXF_POKER_KEYS_PREFIX "t_b_p6_deck"
+#define T_B_P7_DECK_KEY VDXF_POKER_KEYS_PREFIX "t_b_p7_deck"
+#define T_B_P8_DECK_KEY VDXF_POKER_KEYS_PREFIX "t_b_p8_deck"
+#define T_B_P9_DECK_KEY VDXF_POKER_KEYS_PREFIX "t_b_p9_deck"
 
 /*
  * Cashier-side mirrors of T_B_*_DECK_KEY.
@@ -142,16 +144,16 @@ key is represented as chips.vrsc::poker.cashiers.
  * Wire format and per-game scoping (`<game_id>` suffix) are identical to the
  * T_B_* keys; only the writer + storage location differ.
  */
-#define C_B_DECK_KEY "chips.vrsc::poker.sg777z.c_b_deck"
-#define C_B_P1_DECK_KEY "chips.vrsc::poker.sg777z.c_b_p1_deck"
-#define C_B_P2_DECK_KEY "chips.vrsc::poker.sg777z.c_b_p2_deck"
-#define C_B_P3_DECK_KEY "chips.vrsc::poker.sg777z.c_b_p3_deck"
-#define C_B_P4_DECK_KEY "chips.vrsc::poker.sg777z.c_b_p4_deck"
-#define C_B_P5_DECK_KEY "chips.vrsc::poker.sg777z.c_b_p5_deck"
-#define C_B_P6_DECK_KEY "chips.vrsc::poker.sg777z.c_b_p6_deck"
-#define C_B_P7_DECK_KEY "chips.vrsc::poker.sg777z.c_b_p7_deck"
-#define C_B_P8_DECK_KEY "chips.vrsc::poker.sg777z.c_b_p8_deck"
-#define C_B_P9_DECK_KEY "chips.vrsc::poker.sg777z.c_b_p9_deck"
+#define C_B_DECK_KEY VDXF_POKER_KEYS_PREFIX "c_b_deck"
+#define C_B_P1_DECK_KEY VDXF_POKER_KEYS_PREFIX "c_b_p1_deck"
+#define C_B_P2_DECK_KEY VDXF_POKER_KEYS_PREFIX "c_b_p2_deck"
+#define C_B_P3_DECK_KEY VDXF_POKER_KEYS_PREFIX "c_b_p3_deck"
+#define C_B_P4_DECK_KEY VDXF_POKER_KEYS_PREFIX "c_b_p4_deck"
+#define C_B_P5_DECK_KEY VDXF_POKER_KEYS_PREFIX "c_b_p5_deck"
+#define C_B_P6_DECK_KEY VDXF_POKER_KEYS_PREFIX "c_b_p6_deck"
+#define C_B_P7_DECK_KEY VDXF_POKER_KEYS_PREFIX "c_b_p7_deck"
+#define C_B_P8_DECK_KEY VDXF_POKER_KEYS_PREFIX "c_b_p8_deck"
+#define C_B_P9_DECK_KEY VDXF_POKER_KEYS_PREFIX "c_b_p9_deck"
 
 /*
  * Cashier-side mirror of T_CARD_BV_KEY (docs/TODO.md item 1.2).
@@ -163,7 +165,7 @@ key is represented as chips.vrsc::poker.cashiers.
  * shape as T_CARD_BV_KEY (`{player_id, card_id, bv: [...]}`); only the
  * writer/storage location differ.
  */
-#define C_CARD_BV_KEY "chips.vrsc::poker.sg777z.c_card_bv"
+#define C_CARD_BV_KEY VDXF_POKER_KEYS_PREFIX "c_card_bv"
 
 /*
 * card_bv {
@@ -172,7 +174,7 @@ key is represented as chips.vrsc::poker.cashiers.
 * bv or bv[] : blinding value(s)
 * }
 */
-#define T_CARD_BV_KEY "chips.vrsc::poker.sg777z.card_bv"
+#define T_CARD_BV_KEY VDXF_POKER_KEYS_PREFIX "card_bv"
 
 /*
 * t_board_cards - Community cards revealed on the table (updated by dealer after confirming all players decoded)
@@ -184,7 +186,7 @@ key is represented as chips.vrsc::poker.cashiers.
 * }
 * On rejoin, player reads this to get already-revealed community cards
 */
-#define T_BOARD_CARDS_KEY "chips.vrsc::poker.sg777z.t_board_cards"
+#define T_BOARD_CARDS_KEY VDXF_POKER_KEYS_PREFIX "t_board_cards"
 
 /*
  * p_decoded_card — Player publishes a cumulative snapshot of every
@@ -216,7 +218,7 @@ key is represented as chips.vrsc::poker.cashiers.
  * revealed in a separate one-shot write at G_SHOWDOWN — see
  * P_HOLECARDS_REVEAL_KEY below.
  */
-#define P_DECODED_CARD_KEY "chips.vrsc::poker.sg777z.p_decoded_card"
+#define P_DECODED_CARD_KEY VDXF_POKER_KEYS_PREFIX "p_decoded_card"
 
 /*
  * p_holecards_reveal - Player reveals its two hole cards at showdown.
@@ -244,7 +246,7 @@ key is represented as chips.vrsc::poker.cashiers.
  *     get appended throughout the hand would otherwise expose them as
  *     soon as a player decodes).
  */
-#define P_HOLECARDS_REVEAL_KEY "chips.vrsc::poker.sg777z.p_holecards_reveal"
+#define P_HOLECARDS_REVEAL_KEY VDXF_POKER_KEYS_PREFIX "p_holecards_reveal"
 
 /*
 * t_game_info {
@@ -252,7 +254,7 @@ key is represented as chips.vrsc::poker.cashiers.
 * game_info : Holds the info of the gaming state
 * }
 */
-#define T_GAME_INFO_KEY "chips.vrsc::poker.sg777z.t_game_info"
+#define T_GAME_INFO_KEY VDXF_POKER_KEYS_PREFIX "t_game_info"
 
 /*
 * t_settlement_info {
@@ -266,7 +268,7 @@ key is represented as chips.vrsc::poker.cashiers.
 *   payout_txs: Array of payout transaction IDs (filled by cashier)
 * }
 */
-#define T_SETTLEMENT_INFO_KEY "chips.vrsc::poker.sg777z.t_settlement_info"
+#define T_SETTLEMENT_INFO_KEY VDXF_POKER_KEYS_PREFIX "t_settlement_info"
 
 /*
  * Cashier-side settlement result (docs/TODO.md item 1.3).
@@ -288,7 +290,7 @@ key is represented as chips.vrsc::poker.cashiers.
  * this game already exists with status:completed, the cashier returns
  * OK without re-issuing payouts.
  */
-#define C_SETTLEMENT_RESULT_KEY "chips.vrsc::poker.sg777z.c_settlement_result"
+#define C_SETTLEMENT_RESULT_KEY VDXF_POKER_KEYS_PREFIX "c_settlement_result"
 
 /*
 * p_game_history - Stored on player ID after joining a game
@@ -301,7 +303,7 @@ key is represented as chips.vrsc::poker.cashiers.
 *   amount: Amount paid in (CHIPS)
 * }
 */
-#define P_GAME_HISTORY_KEY "chips.vrsc::poker.sg777z.p_game_history"
+#define P_GAME_HISTORY_KEY VDXF_POKER_KEYS_PREFIX "p_game_history"
 
 /*
 * p_dispute_request - Player raises a dispute
@@ -313,7 +315,7 @@ key is represented as chips.vrsc::poker.cashiers.
 *   request_block: Block when dispute was raised
 * }
 */
-#define P_DISPUTE_REQUEST_KEY "chips.vrsc::poker.sg777z.p_dispute_request"
+#define P_DISPUTE_REQUEST_KEY VDXF_POKER_KEYS_PREFIX "p_dispute_request"
 
 /*
 * c_dispute_result - Cashier's response to a dispute (stored on cashier ID)
@@ -326,7 +328,7 @@ key is represented as chips.vrsc::poker.cashiers.
 *   resolved_block: Block when resolved
 * }
 */
-#define C_DISPUTE_RESULT_KEY "chips.vrsc::poker.sg777z.c_dispute_result"
+#define C_DISPUTE_RESULT_KEY VDXF_POKER_KEYS_PREFIX "c_dispute_result"
 
 // Number of blocks after which a pending game is considered aborted
 #define DISPUTE_TIMEOUT_BLOCKS 100
@@ -338,7 +340,7 @@ key is represented as chips.vrsc::poker.cashiers.
 * cardinfo:Array of card pubkeys r1G, r2G, ..., r52G
 * }
 */
-#define PLAYER_DECK_KEY "chips.vrsc::poker.sg777z.player_deck"
+#define PLAYER_DECK_KEY VDXF_POKER_KEYS_PREFIX "player_deck"
 
 /*
 Datatypes used

@@ -53,7 +53,7 @@ int32_t add_dealer(char *dealer_id)
 	}
 	jaddistr(dealers, dealer_id);
 	cJSON_AddItemToObject(dealers_info, "dealers", dealers);
-		out = poker_update_key_json(verus_config.initialized ? verus_config.dealers_short : DEALERS_ID, verus_config.initialized ? verus_config.dealers_key : DEALERS_KEY, dealers_info, false);
+		out = poker_update_key_json(verus_config.initialized ? verus_config.dealers_short : DEALERS_ID, DEALERS_KEY, dealers_info, false);
 
 	if (!out) {
 		return ERR_UPDATEIDENTITY;

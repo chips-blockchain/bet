@@ -53,15 +53,13 @@ char *get_key_vdxf_id(char *key_name)
 char *get_full_key(char *key_name)
 {
 	char *full_key = NULL;
-	const char *prefix = NULL;
 
 	if (!key_name)
 		return NULL;
 
-	prefix = bet_get_key_prefix();
 	full_key = calloc(1, 256);
-	strncpy(full_key, prefix, 128);
-	strncat(full_key, key_name, 128 - strlen(prefix) - 1);
+	strncpy(full_key, VDXF_POKER_KEYS_PREFIX, 128);
+	strncat(full_key, key_name, 128 - strlen(VDXF_POKER_KEYS_PREFIX) - 1);
 	full_key[255] = '\0';
 
 	return full_key;
@@ -272,7 +270,7 @@ static cJSON *get_cmm_key_data_from_height(const char *id, int16_t full_id, cons
 /* Internal helper - get cashiers info */
 static cJSON *get_cashiers_info(char *cashier_id)
 {
-	return get_cmm_key_data(cashier_id, 0, get_vdxf_id(verus_config.initialized ? verus_config.cashiers_key : CASHIERS_KEY));
+	return get_cmm_key_data(cashier_id, 0, get_vdxf_id(CASHIERS_KEY));
 }
 
 /* Internal helper - get z_getoperationstatus */
@@ -324,7 +322,7 @@ cJSON *update_cashiers(char *ip)
 	}
 
 	cJSON_AddItemToArray(cashier_ips, ip_obj);
-	cJSON_AddItemToObject(cashiers_info, get_vdxf_id(verus_config.initialized ? verus_config.cashiers_key : CASHIERS_KEY), cashier_ips);
+	cJSON_AddItemToObject(cashiers_info, get_vdxf_id(CASHIERS_KEY), cashier_ips);
 	out = update_cmm(cashiers_id, cashiers_info);
 
 end:
@@ -535,7 +533,7 @@ int32_t chose_table()
 		 bet_err_str(retval));
 
 	dealer_ids = cJSON_CreateArray();
-	dealer_ids = get_cJSON_from_id_key(bet_get_dealers_id_fqn(), verus_config.initialized ? verus_config.dealers_key : DEALERS_KEY, 1);
+	dealer_ids = get_cJSON_from_id_key(bet_get_dealers_id_fqn(), DEALERS_KEY, 1);
 	if (!dealer_ids) {
 		return ERR_NO_DEALERS_FOUND;
 	}
@@ -1753,7 +1751,7 @@ cJSON *list_dealers()
 	cJSON *dealers = NULL, *dealers_arr = NULL;
 
 	dealers = cJSON_CreateObject();
-	dealers = get_cJSON_from_id_key(bet_get_dealers_id_fqn(), verus_config.initialized ? verus_config.dealers_key : DEALERS_KEY, 1);
+	dealers = get_cJSON_from_id_key(bet_get_dealers_id_fqn(), DEALERS_KEY, 1);
 
 	if (!dealers) {
 		dlg_info("No dealers has been added to dealer.sg777z.chips.vrsc@ yet.");
@@ -1802,7 +1800,7 @@ int32_t verify_poker_setup()
 		return ERR_DEALERS_ID_NOT_FOUND;
 	}
 
-	cJSON *dealers = get_cJSON_from_id_key(bet_get_dealers_id_fqn(), verus_config.initialized ? verus_config.dealers_key : DEALERS_KEY, 1);
+	cJSON *dealers = get_cJSON_from_id_key(bet_get_dealers_id_fqn(), DEALERS_KEY, 1);
 		if (!dealers) {
 			dlg_error("No dealers found in %s", bet_get_dealers_id_fqn());
 		return ERR_NO_DEALERS_FOUND;
@@ -1838,7 +1836,7 @@ int32_t add_dealer_to_dealers(char *dealer_id)
 			dealers = cJSON_CreateArray();
 		}
 		cJSON_AddItemToArray(dealers, cJSON_CreateString(dealer_id));
-		out = append_cmm_from_id_key_data_cJSON(verus_config.initialized ? verus_config.dealers_short : "dealers", verus_config.initialized ? verus_config.dealers_key : DEALERS_KEY, dealers, false);
+		out = append_cmm_from_id_key_data_cJSON(verus_config.initialized ? verus_config.dealers_short : "dealers", DEALERS_KEY, dealers, false);
 		if (!out) {
 			return ERR_UPDATEIDENTITY;
 		}

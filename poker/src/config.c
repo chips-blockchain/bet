@@ -556,35 +556,6 @@ void bet_parse_verus_ids_keys_config(void)
 		strncpy(verus_config.cashiers_short, CASHIERS_ID, sizeof(verus_config.cashiers_short) - 1);
 		strncpy(verus_config.dealers_short, DEALERS_ID, sizeof(verus_config.dealers_short) - 1);
 		strncpy(verus_config.poker_short, POKER_ID, sizeof(verus_config.poker_short) - 1);
-		strncpy(verus_config.key_prefix, "chips.vrsc::poker.sg777z.", sizeof(verus_config.key_prefix) - 1);
-		strncpy(verus_config.cashiers_key, CASHIERS_KEY, sizeof(verus_config.cashiers_key) - 1);
-		strncpy(verus_config.dealers_key, DEALERS_KEY, sizeof(verus_config.dealers_key) - 1);
-		strncpy(verus_config.t_game_id_key, T_GAME_ID_KEY, sizeof(verus_config.t_game_id_key) - 1);
-		strncpy(verus_config.t_table_info_key, T_TABLE_INFO_KEY, sizeof(verus_config.t_table_info_key) - 1);
-		strncpy(verus_config.t_player_info_key, T_PLAYER_INFO_KEY, sizeof(verus_config.t_player_info_key) - 1);
-		strncpy(verus_config.t_d_deck_key, T_D_DECK_KEY, sizeof(verus_config.t_d_deck_key) - 1);
-		strncpy(verus_config.t_b_deck_key, T_B_DECK_KEY, sizeof(verus_config.t_b_deck_key) - 1);
-		strncpy(verus_config.t_card_bv_key, T_CARD_BV_KEY, sizeof(verus_config.t_card_bv_key) - 1);
-		strncpy(verus_config.t_game_info_key, T_GAME_INFO_KEY, sizeof(verus_config.t_game_info_key) - 1);
-		strncpy(verus_config.player_deck_key, PLAYER_DECK_KEY, sizeof(verus_config.player_deck_key) - 1);
-		strncpy(verus_config.t_d_p1_deck_key, T_D_P1_DECK_KEY, sizeof(verus_config.t_d_p1_deck_key) - 1);
-		strncpy(verus_config.t_d_p2_deck_key, T_D_P2_DECK_KEY, sizeof(verus_config.t_d_p2_deck_key) - 1);
-		strncpy(verus_config.t_d_p3_deck_key, T_D_P3_DECK_KEY, sizeof(verus_config.t_d_p3_deck_key) - 1);
-		strncpy(verus_config.t_d_p4_deck_key, T_D_P4_DECK_KEY, sizeof(verus_config.t_d_p4_deck_key) - 1);
-		strncpy(verus_config.t_d_p5_deck_key, T_D_P5_DECK_KEY, sizeof(verus_config.t_d_p5_deck_key) - 1);
-		strncpy(verus_config.t_d_p6_deck_key, T_D_P6_DECK_KEY, sizeof(verus_config.t_d_p6_deck_key) - 1);
-		strncpy(verus_config.t_d_p7_deck_key, T_D_P7_DECK_KEY, sizeof(verus_config.t_d_p7_deck_key) - 1);
-		strncpy(verus_config.t_d_p8_deck_key, T_D_P8_DECK_KEY, sizeof(verus_config.t_d_p8_deck_key) - 1);
-		strncpy(verus_config.t_d_p9_deck_key, T_D_P9_DECK_KEY, sizeof(verus_config.t_d_p9_deck_key) - 1);
-		strncpy(verus_config.t_b_p1_deck_key, T_B_P1_DECK_KEY, sizeof(verus_config.t_b_p1_deck_key) - 1);
-		strncpy(verus_config.t_b_p2_deck_key, T_B_P2_DECK_KEY, sizeof(verus_config.t_b_p2_deck_key) - 1);
-		strncpy(verus_config.t_b_p3_deck_key, T_B_P3_DECK_KEY, sizeof(verus_config.t_b_p3_deck_key) - 1);
-		strncpy(verus_config.t_b_p4_deck_key, T_B_P4_DECK_KEY, sizeof(verus_config.t_b_p4_deck_key) - 1);
-		strncpy(verus_config.t_b_p5_deck_key, T_B_P5_DECK_KEY, sizeof(verus_config.t_b_p5_deck_key) - 1);
-		strncpy(verus_config.t_b_p6_deck_key, T_B_P6_DECK_KEY, sizeof(verus_config.t_b_p6_deck_key) - 1);
-		strncpy(verus_config.t_b_p7_deck_key, T_B_P7_DECK_KEY, sizeof(verus_config.t_b_p7_deck_key) - 1);
-		strncpy(verus_config.t_b_p8_deck_key, T_B_P8_DECK_KEY, sizeof(verus_config.t_b_p8_deck_key) - 1);
-		strncpy(verus_config.t_b_p9_deck_key, T_B_P9_DECK_KEY, sizeof(verus_config.t_b_p9_deck_key) - 1);
 		verus_config.initialized = 1;
 		return;
 	}
@@ -628,68 +599,6 @@ void bet_parse_verus_ids_keys_config(void)
 	} else {
 		strncpy(verus_config.poker_short, POKER_ID, sizeof(verus_config.poker_short) - 1);
 	}
-
-	// Load key prefix
-	if ((value = iniparser_getstring(ini, "keys:key_prefix", NULL)) != NULL) {
-		strncpy(verus_config.key_prefix, value, sizeof(verus_config.key_prefix) - 1);
-		verus_config.key_prefix[sizeof(verus_config.key_prefix) - 1] = '\0';
-	} else {
-		strncpy(verus_config.key_prefix, "chips.vrsc::poker.sg777z.", sizeof(verus_config.key_prefix) - 1);
-	}
-
-	// Load individual keys (build full key from prefix + key name)
-	char full_key[256];
-	if ((value = iniparser_getstring(ini, "keys:cashiers_key", NULL)) != NULL) {
-		snprintf(full_key, sizeof(full_key), "%s%s", verus_config.key_prefix, value);
-		strncpy(verus_config.cashiers_key, full_key, sizeof(verus_config.cashiers_key) - 1);
-	} else {
-		strncpy(verus_config.cashiers_key, CASHIERS_KEY, sizeof(verus_config.cashiers_key) - 1);
-	}
-
-	if ((value = iniparser_getstring(ini, "keys:dealers_key", NULL)) != NULL) {
-		snprintf(full_key, sizeof(full_key), "%s%s", verus_config.key_prefix, value);
-		strncpy(verus_config.dealers_key, full_key, sizeof(verus_config.dealers_key) - 1);
-	} else {
-		strncpy(verus_config.dealers_key, DEALERS_KEY, sizeof(verus_config.dealers_key) - 1);
-	}
-
-	// Load other keys
-	#define LOAD_KEY(cfg_field, ini_key, default_key) \
-		if ((value = iniparser_getstring(ini, "keys:" ini_key, NULL)) != NULL) { \
-			snprintf(full_key, sizeof(full_key), "%s%s", verus_config.key_prefix, value); \
-			strncpy(verus_config.cfg_field, full_key, sizeof(verus_config.cfg_field) - 1); \
-		} else { \
-			strncpy(verus_config.cfg_field, default_key, sizeof(verus_config.cfg_field) - 1); \
-		}
-
-	LOAD_KEY(t_game_id_key, "t_game_id_key", T_GAME_ID_KEY);
-	LOAD_KEY(t_table_info_key, "t_table_info_key", T_TABLE_INFO_KEY);
-	LOAD_KEY(t_player_info_key, "t_player_info_key", T_PLAYER_INFO_KEY);
-	LOAD_KEY(t_d_deck_key, "t_d_deck_key", T_D_DECK_KEY);
-	LOAD_KEY(t_b_deck_key, "t_b_deck_key", T_B_DECK_KEY);
-	LOAD_KEY(t_card_bv_key, "t_card_bv_key", T_CARD_BV_KEY);
-	LOAD_KEY(t_game_info_key, "t_game_info_key", T_GAME_INFO_KEY);
-	LOAD_KEY(player_deck_key, "player_deck_key", PLAYER_DECK_KEY);
-	LOAD_KEY(t_d_p1_deck_key, "t_d_p1_deck_key", T_D_P1_DECK_KEY);
-	LOAD_KEY(t_d_p2_deck_key, "t_d_p2_deck_key", T_D_P2_DECK_KEY);
-	LOAD_KEY(t_d_p3_deck_key, "t_d_p3_deck_key", T_D_P3_DECK_KEY);
-	LOAD_KEY(t_d_p4_deck_key, "t_d_p4_deck_key", T_D_P4_DECK_KEY);
-	LOAD_KEY(t_d_p5_deck_key, "t_d_p5_deck_key", T_D_P5_DECK_KEY);
-	LOAD_KEY(t_d_p6_deck_key, "t_d_p6_deck_key", T_D_P6_DECK_KEY);
-	LOAD_KEY(t_d_p7_deck_key, "t_d_p7_deck_key", T_D_P7_DECK_KEY);
-	LOAD_KEY(t_d_p8_deck_key, "t_d_p8_deck_key", T_D_P8_DECK_KEY);
-	LOAD_KEY(t_d_p9_deck_key, "t_d_p9_deck_key", T_D_P9_DECK_KEY);
-	LOAD_KEY(t_b_p1_deck_key, "t_b_p1_deck_key", T_B_P1_DECK_KEY);
-	LOAD_KEY(t_b_p2_deck_key, "t_b_p2_deck_key", T_B_P2_DECK_KEY);
-	LOAD_KEY(t_b_p3_deck_key, "t_b_p3_deck_key", T_B_P3_DECK_KEY);
-	LOAD_KEY(t_b_p4_deck_key, "t_b_p4_deck_key", T_B_P4_DECK_KEY);
-	LOAD_KEY(t_b_p5_deck_key, "t_b_p5_deck_key", T_B_P5_DECK_KEY);
-	LOAD_KEY(t_b_p6_deck_key, "t_b_p6_deck_key", T_B_P6_DECK_KEY);
-	LOAD_KEY(t_b_p7_deck_key, "t_b_p7_deck_key", T_B_P7_DECK_KEY);
-	LOAD_KEY(t_b_p8_deck_key, "t_b_p8_deck_key", T_B_P8_DECK_KEY);
-	LOAD_KEY(t_b_p9_deck_key, "t_b_p9_deck_key", T_B_P9_DECK_KEY);
-
-	#undef LOAD_KEY
 
 	verus_config.initialized = 1;
 	iniparser_freedict(ini);
@@ -736,24 +645,6 @@ const char *bet_get_poker_id_fqn(void)
 		return verus_config.parent_id;
 	}
 	return POKER_ID_FQN;
-}
-
-const char *bet_get_key_prefix(void)
-{
-	if (verus_config.initialized) {
-		return verus_config.key_prefix;
-	}
-	return "chips.vrsc::poker.sg777z.";
-}
-
-const char *bet_get_full_key_name(const char *key_name)
-{
-	static char full_key[256];
-	if (!key_name) {
-		return NULL;
-	}
-	snprintf(full_key, sizeof(full_key), "%s%s", bet_get_key_prefix(), key_name);
-	return full_key;
 }
 
 /* RPC Credentials Configuration */
