@@ -344,7 +344,7 @@ void bet_help_vdxf_command_usage()
 		"Display the contentmultimap of the given ID \n"
 		"\nExample: \n"
 		"./bet print_id <id_name> <id_type>\n"
-		"Note: Here id_name can be any ID under the namespace sg777z.chips.vrsc@, supported ID types are table/dealer/dealers\n");
+		"Note: id_name must be a fully-qualified Verus ID. Supported id_types: table/t, dealer/d, dealers, cashier/c, player/p\n");
 
 	dlg_info(
 		"\nCommand: \n"

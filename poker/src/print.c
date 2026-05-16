@@ -17,15 +17,9 @@ void print_struct_table(struct table *t)
 	}
 }
 
-void print_cashiers_id(char *id)
+void print_cashier_id(char *id)
 {
 	char *game_id = NULL;
-
-	// Check if this is the aggregator ID by looking for CASHIERS_KEY
-	cJSON *cashiers_info = get_cJSON_from_id_key_vdxfid_from_height(id, get_vdxf_id(CASHIERS_KEY), 0);
-	if (cashiers_info) {
-		dlg_info("%s :: %s", CASHIERS_KEY, cJSON_Print(cashiers_info));
-	}
 
 	game_id = get_str_from_id_key_from_height(id, T_GAME_ID_KEY, 0);
 	if (game_id) {
@@ -125,17 +119,15 @@ void print_player_id(char *id)
 {
 	char *game_id = NULL;
 
+	cJSON *join_req = get_cJSON_from_id_key_vdxfid_from_height(id, get_vdxf_id(P_JOIN_REQUEST_KEY), 0);
+	if (join_req) {
+		dlg_info("%s :: %s", P_JOIN_REQUEST_KEY, cJSON_Print(join_req));
+	}
+
 	game_id = get_str_from_id_key_from_height(id, T_GAME_ID_KEY, 0);
 	if (game_id) {
 		dlg_info("game_id::%s", game_id);
 
-		// P_JOIN_REQUEST_KEY is a bare key, not suffixed with game_id
-		cJSON *join_req = get_cJSON_from_id_key_vdxfid_from_height(id, get_vdxf_id(P_JOIN_REQUEST_KEY), 0);
-		if (join_req) {
-			dlg_info("%s :: %s", P_JOIN_REQUEST_KEY, cJSON_Print(join_req));
-		}
-
-		// List of player-specific keys that are suffixed with game_id
 		const char *player_keys[] = {
 			P_GAME_HISTORY_KEY,
 			PLAYER_DECK_KEY,
@@ -182,8 +174,8 @@ void print_id_info(int argc, char **argv)
 			print_player_id(argv[2]);
 		} else if (strcmp(argv[3], "dealers") == 0) {
 			print_dealers_id(argv[2]);
-		} else if ((strcmp(argv[3], "c") == 0) || (strcmp(argv[3], "cashiers") == 0)) {
-			print_cashiers_id(argv[2]);
+		} else if ((strcmp(argv[3], "c") == 0) || (strcmp(argv[3], "cashier") == 0)) {
+			print_cashier_id(argv[2]);
 		} else {
 			dlg_info("Print is not supported for this ID::%s of type::%s", argv[2], argv[3]);
 		}
