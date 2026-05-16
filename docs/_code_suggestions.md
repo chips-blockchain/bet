@@ -13,37 +13,14 @@ surfaced them noted. Nothing here is acted on without explicit approval.
 
 ## During rewrite of `docs/reference/cli-print.md` → `cli-print.md` (May 11, 2026)
 
-### 1. `bet_help_print_id_command_usage` stale ID-type list
+### 1. `bet_help_print_id_command_usage` stale ID-type list — RESOLVED (May 15, 2026)
 
-**Where:** `poker/src/help.c:340-347`
-
-**What it says now:**
-
-```
-"Note: Here id_name can be any ID under the namespace sg777z.chips.vrsc@,
- supported ID types are table/dealer/dealers\n"
-```
-
-**What the code actually accepts** (`poker/src/print.c:177-189`,
-`print_id_info`): `t`/`table`, `d`/`dealer`, `p`/`player`, `dealers`,
-`c`/`cashiers`.
-
-**Why this matters:** a community user running `./bet help print_id` is told
-that only `table/dealer/dealers` are accepted, so they don't try
-`./bet print_id p1@ player`. That command works fine — the help text just
-doesn't tell them. The misleading note also still references the old
-`sg777z.chips.vrsc@` namespace; today's deployment is parented to `VRSCTEST`.
-
-**Suggested fix:** one-line replacement of the note string. No behavioural
-change in the program, no risk to live code. Roughly:
-
-```c
-"Note: Here id_name is any registered ID; supported types are\n"
-"table (or t), dealer (or d), player (or p), dealers, cashiers (or c).\n"
-```
-
-**Priority:** low. Standalone, two-line patch, no test coverage to break.
-Can be batched with future help-text touch-ups.
+The help string was rewritten in `poker/src/help.c` to require fully-qualified
+IDs and to list the actual supported types (`table`/`t`, `dealer`/`d`,
+`player`/`p`, `dealers`, `cashier`/`c`). The `cashier` alias was singularised
+from the historical `cashiers` to align with the fact that the printer
+handles operational cashier identities, not the (currently nonexistent)
+cashier aggregator.
 
 ---
 

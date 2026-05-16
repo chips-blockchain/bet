@@ -507,7 +507,7 @@ dispute path becomes valid.
 `print`, `print_keys`, and `show` commands that decode and pretty-print
 keys from any identity. Most of the keys above are covered by
 `./bet print_id <id> table` (for the table identity), `dealer`,
-`cashiers`, or `dealers` — see `cli-print.md` for the per-command key
+`player`, `cashier`, or `dealers` — see `cli-print.md` for the per-command key
 list.
 
 For programmatic reads, `poker_get_key_json` / `poker_get_key_str`
