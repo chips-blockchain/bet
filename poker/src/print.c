@@ -4,6 +4,55 @@
 #include "game.h"
 #include "poker_vdxf.h"
 
+static char *fetch_str_at_height(const char *id, const char *key, int32_t height_start)
+{
+	char *vdxfid = NULL;
+	cJSON *cmm = NULL, *vals = NULL, *last = NULL;
+	int n = 0;
+
+	vdxfid = get_vdxf_id(key);
+	cmm = get_cmm_from_height_filtered(id, vdxfid, height_start);
+	if (!cmm)
+		return NULL;
+	vals = cJSON_GetObjectItem(cmm, vdxfid);
+	n = cJSON_GetArraySize(vals);
+	if (n <= 0)
+		return NULL;
+	last = cJSON_GetArrayItem(vals, n - 1);
+	if (!last)
+		return NULL;
+	if (last->type == cJSON_String)
+		return last->valuestring;
+	if (last->type == cJSON_Object)
+		return jstr(last, get_vdxf_id(BYTEVECTOR_VDXF_ID));
+	return NULL;
+}
+
+static cJSON *fetch_cjson_at_height(const char *id, const char *key_vdxfid, int32_t height_start)
+{
+	cJSON *cmm = NULL, *vals = NULL, *last = NULL;
+	const char *hex = NULL;
+	int n = 0;
+
+	cmm = get_cmm_from_height_filtered(id, key_vdxfid, height_start);
+	if (!cmm)
+		return NULL;
+	vals = cJSON_GetObjectItem(cmm, key_vdxfid);
+	n = cJSON_GetArraySize(vals);
+	if (n <= 0)
+		return NULL;
+	last = cJSON_GetArrayItem(vals, n - 1);
+	if (!last)
+		return NULL;
+	if (last->type == cJSON_String)
+		hex = last->valuestring;
+	else if (last->type == cJSON_Object)
+		hex = jstr(last, get_vdxf_id(BYTEVECTOR_VDXF_ID));
+	if (!hex)
+		return NULL;
+	return hex_cJSON(hex);
+}
+
 void print_struct_table(struct table *t)
 {
 	if (t) {
@@ -20,48 +69,50 @@ void print_struct_table(struct table *t)
 void print_cashier_id(char *id)
 {
 	char *game_id = NULL;
+	int32_t start_block = 0;
+	cJSON *temp = NULL;
 
-	game_id = get_str_from_id_key_from_height(id, T_GAME_ID_KEY, 0);
-	if (game_id) {
-		dlg_info("game_id::%s", game_id);
+	game_id = fetch_str_at_height(id, T_GAME_ID_KEY, 0);
+	if (!game_id)
+		return;
+	dlg_info("game_id::%s", game_id);
 
-		cJSON *temp = get_cJSON_from_id_key_vdxfid_from_height(id, get_key_data_vdxf_id(C_DISPUTE_RESULT_KEY, game_id), 0);
-		if (temp)
-			dlg_info("%s :: %s", C_DISPUTE_RESULT_KEY, cJSON_Print(temp));
-
-		/* Cashier-owned blinded decks (docs/TODO.md item 1.1).
-		 * Cashier is the sole writer; players read directly from cashier id. */
-		for (int32_t i = 0; i < all_t_b_p_keys_no; i++) {
-			temp = get_cJSON_from_id_key_vdxfid_from_height(
-				id, get_key_data_vdxf_id(all_c_b_p_keys[i], game_id), 0);
-			if (temp)
-				dlg_info("%s :: %s", all_c_b_p_key_names[i], cJSON_Print(temp));
-		}
-
-		/* Cashier-owned BV (docs/TODO.md item 1.2).
-		 * Cashier publishes the latest (player_id, card_id, bv) here;
-		 * players poll directly. */
-		temp = get_cJSON_from_id_key_vdxfid_from_height(
-			id, get_key_data_vdxf_id(C_CARD_BV_KEY, game_id), 0);
-		if (temp)
-			dlg_info("%s :: %s", C_CARD_BV_KEY, cJSON_Print(temp));
+	start_block = find_cmm_key_write_block(id, get_vdxf_id(T_GAME_ID_KEY), game_id);
+	if (start_block <= 0) {
+		dlg_info("could not locate T_GAME_ID_KEY write block on cashier id");
+		return;
 	}
+	dlg_info("start_block::%d", start_block);
+
+	temp = fetch_cjson_at_height(id, get_key_data_vdxf_id(C_DISPUTE_RESULT_KEY, game_id), start_block);
+	if (temp)
+		dlg_info("%s :: %s", C_DISPUTE_RESULT_KEY, cJSON_Print(temp));
+
+	for (int32_t i = 0; i < all_t_b_p_keys_no; i++) {
+		temp = fetch_cjson_at_height(id, get_key_data_vdxf_id(all_c_b_p_keys[i], game_id), start_block);
+		if (temp)
+			dlg_info("%s :: %s", all_c_b_p_key_names[i], cJSON_Print(temp));
+	}
+
+	temp = fetch_cjson_at_height(id, get_key_data_vdxf_id(C_CARD_BV_KEY, game_id), start_block);
+	if (temp)
+		dlg_info("%s :: %s", C_CARD_BV_KEY, cJSON_Print(temp));
 }
 
 void print_dealers_id(char *id)
 {
-	cJSON *temp = get_cJSON_from_id_key_vdxfid_from_height(id, get_vdxf_id(DEALERS_KEY), 0);
+	cJSON *temp = fetch_cjson_at_height(id, get_vdxf_id(DEALERS_KEY), 0);
 	if (temp)
 		dlg_info("%s :: %s", DEALERS_KEY, cJSON_Print(temp));
 }
 
 void print_dealer_id(char *id)
 {
-	cJSON *temp = get_cJSON_from_id_key_vdxfid_from_height(id, get_vdxf_id(T_TABLE_INFO_KEY), 0);
+	cJSON *temp = fetch_cjson_at_height(id, get_vdxf_id(T_TABLE_INFO_KEY), 0);
 	if (temp)
 		dlg_info("%s :: %s", T_TABLE_INFO_KEY, cJSON_Print(temp));
 
-	temp = get_cJSON_from_id_key_vdxfid_from_height(id, get_vdxf_id("registration_info"), 0);
+	temp = fetch_cjson_at_height(id, get_vdxf_id("registration_info"), 0);
 	if (temp)
 		dlg_info("registration_info :: %s", cJSON_Print(temp));
 }
@@ -69,80 +120,100 @@ void print_dealer_id(char *id)
 void print_table_id(char *id)
 {
 	char *game_id = NULL;
+	cJSON *t_table_info = NULL;
+	int32_t start_block = 0;
+	cJSON *temp = NULL;
 
-	game_id = get_str_from_id_key_from_height(id, T_GAME_ID_KEY, 0);
-	if (game_id) {
-		dlg_info("game_id::%s", game_id);
+	game_id = fetch_str_at_height(id, T_GAME_ID_KEY, 0);
+	if (!game_id)
+		return;
+	dlg_info("game_id::%s", game_id);
 
-		cJSON *temp = get_cJSON_from_id_key_vdxfid_from_height(id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, game_id), 0);
+	t_table_info = fetch_cjson_at_height(id, get_key_data_vdxf_id(T_TABLE_INFO_KEY, game_id), 0);
+	if (!t_table_info) {
+		dlg_info("T_TABLE_INFO_KEY missing for game_id %s", game_id);
+		return;
+	}
+	dlg_info("%s :: %s", T_TABLE_INFO_KEY, cJSON_Print(t_table_info));
+
+	start_block = jint(t_table_info, "start_block");
+	if (start_block <= 0) {
+		dlg_info("start_block missing/invalid in T_TABLE_INFO_KEY");
+		return;
+	}
+	dlg_info("start_block::%d", start_block);
+
+	temp = fetch_cjson_at_height(id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id), start_block);
+	if (temp)
+		dlg_info("%s :: %s", T_PLAYER_INFO_KEY, cJSON_Print(temp));
+
+	temp = fetch_cjson_at_height(id, get_key_data_vdxf_id(T_SETTLEMENT_INFO_KEY, game_id), start_block);
+	if (temp)
+		dlg_info("%s :: %s", T_SETTLEMENT_INFO_KEY, cJSON_Print(temp));
+
+	temp = fetch_cjson_at_height(id, get_key_data_vdxf_id(T_BOARD_CARDS_KEY, game_id), start_block);
+	if (temp)
+		dlg_info("%s :: %s", T_BOARD_CARDS_KEY, cJSON_Print(temp));
+
+	temp = fetch_cjson_at_height(id, get_key_data_vdxf_id(T_BETTING_STATE_KEY, game_id), start_block);
+	if (temp)
+		dlg_info("%s :: %s", T_BETTING_STATE_KEY, cJSON_Print(temp));
+
+	for (int32_t i = 0; i < all_t_d_p_keys_no; i++) {
+		temp = fetch_cjson_at_height(id, get_key_data_vdxf_id(all_t_d_p_keys[i], game_id), start_block);
 		if (temp)
-			dlg_info("%s :: %s", T_TABLE_INFO_KEY, cJSON_Print(temp));
+			dlg_info("%s :: %s", all_t_d_p_key_names[i], cJSON_Print(temp));
+	}
 
-		temp = get_cJSON_from_id_key_vdxfid_from_height(id, get_key_data_vdxf_id(T_PLAYER_INFO_KEY, game_id), 0);
-		if (temp)
-			dlg_info("%s :: %s", T_PLAYER_INFO_KEY, cJSON_Print(temp));
-
-		temp = get_cJSON_from_id_key_vdxfid_from_height(id, get_key_data_vdxf_id(T_SETTLEMENT_INFO_KEY, game_id), 0);
-		if (temp)
-			dlg_info("%s :: %s", T_SETTLEMENT_INFO_KEY, cJSON_Print(temp));
-
-		temp = get_cJSON_from_id_key_vdxfid_from_height(id, get_key_data_vdxf_id(T_BOARD_CARDS_KEY, game_id), 0);
-		if (temp)
-			dlg_info("%s :: %s", T_BOARD_CARDS_KEY, cJSON_Print(temp));
-
-		temp = get_cJSON_from_id_key_vdxfid_from_height(id, get_key_data_vdxf_id(T_BETTING_STATE_KEY, game_id), 0);
-		if (temp)
-			dlg_info("%s :: %s", T_BETTING_STATE_KEY, cJSON_Print(temp));
-
-		for (int32_t i = 0; i < all_t_d_p_keys_no; i++) {
-			cJSON *temp =
-				get_cJSON_from_id_key_vdxfid_from_height(id, get_key_data_vdxf_id(all_t_d_p_keys[i], game_id), 0);
-			if (temp)
-				dlg_info("%s :: %s", all_t_d_p_key_names[i], cJSON_Print(temp));
-		}
-		/* T_B_P*_DECK_KEY are no longer written to the table (docs/TODO.md
-		 * item 1.1: cashier owns blinded-deck keys on its own id under
-		 * C_B_P*_DECK_KEY). Inspect those via `print_id <cashier_id> cashiers`. */
-		temp = get_cJSON_from_id_key_vdxfid_from_height(id, get_key_data_vdxf_id(T_GAME_INFO_KEY, game_id), 0);
-		if (temp) {
-			int game_state = jint(temp, "game_state");
-			dlg_info("Game State: %s", game_state_str(game_state));
-		}
-
-		/* T_CARD_BV_KEY is no longer written to the table (docs/TODO.md
-		 * item 1.2: cashier owns BV on its own id under C_CARD_BV_KEY).
-		 * Inspect it via `print_id <cashier_id> cashiers`. */
+	temp = fetch_cjson_at_height(id, get_key_data_vdxf_id(T_GAME_INFO_KEY, game_id), start_block);
+	if (temp) {
+		int game_state = jint(temp, "game_state");
+		dlg_info("Game State: %s", game_state_str(game_state));
 	}
 }
 
 void print_player_id(char *id)
 {
 	char *game_id = NULL;
+	cJSON *p_game_history = NULL;
+	int32_t start_block = 0;
+	cJSON *temp = NULL;
 
-	cJSON *join_req = get_cJSON_from_id_key_vdxfid_from_height(id, get_vdxf_id(P_JOIN_REQUEST_KEY), 0);
-	if (join_req) {
-		dlg_info("%s :: %s", P_JOIN_REQUEST_KEY, cJSON_Print(join_req));
+	temp = fetch_cjson_at_height(id, get_vdxf_id(P_JOIN_REQUEST_KEY), 0);
+	if (temp)
+		dlg_info("%s :: %s", P_JOIN_REQUEST_KEY, cJSON_Print(temp));
+
+	game_id = fetch_str_at_height(id, T_GAME_ID_KEY, 0);
+	if (!game_id)
+		return;
+	dlg_info("game_id::%s", game_id);
+
+	p_game_history = fetch_cjson_at_height(id, get_key_data_vdxf_id(P_GAME_HISTORY_KEY, game_id), 0);
+	if (!p_game_history) {
+		dlg_info("P_GAME_HISTORY_KEY missing for game_id %s", game_id);
+		return;
 	}
+	dlg_info("%s :: %s", P_GAME_HISTORY_KEY, cJSON_Print(p_game_history));
 
-	game_id = get_str_from_id_key_from_height(id, T_GAME_ID_KEY, 0);
-	if (game_id) {
-		dlg_info("game_id::%s", game_id);
+	start_block = jint(p_game_history, "join_block");
+	if (start_block <= 0) {
+		dlg_info("join_block missing/invalid in P_GAME_HISTORY_KEY");
+		return;
+	}
+	dlg_info("start_block::%d", start_block);
 
-		const char *player_keys[] = {
-			P_GAME_HISTORY_KEY,
-			PLAYER_DECK_KEY,
-			P_BETTING_ACTION_KEY,
-			P_DECODED_CARD_KEY,
-			P_DISPUTE_REQUEST_KEY
-		};
-		int num_keys = sizeof(player_keys) / sizeof(player_keys[0]);
+	const char *player_keys[] = {
+		PLAYER_DECK_KEY,
+		P_BETTING_ACTION_KEY,
+		P_DECODED_CARD_KEY,
+		P_DISPUTE_REQUEST_KEY
+	};
+	int num_keys = sizeof(player_keys) / sizeof(player_keys[0]);
 
-		for (int i = 0; i < num_keys; i++) {
-			cJSON *temp = get_cJSON_from_id_key_vdxfid_from_height(id, get_key_data_vdxf_id((char *)player_keys[i], game_id), 0);
-			if (temp) {
-				dlg_info("%s :: %s", player_keys[i], cJSON_Print(temp));
-			}
-		}
+	for (int i = 0; i < num_keys; i++) {
+		temp = fetch_cjson_at_height(id, get_key_data_vdxf_id((char *)player_keys[i], game_id), start_block);
+		if (temp)
+			dlg_info("%s :: %s", player_keys[i], cJSON_Print(temp));
 	}
 }
 

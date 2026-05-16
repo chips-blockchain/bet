@@ -416,6 +416,18 @@ char *get_key_data_vdxf_id(char *key_name, char *data);
 cJSON *update_cmm(const char *id, cJSON *cmm);
 cJSON *get_cmm(const char *id);
 
+/* Fetch the contentmultimap (combined view from height_start) for a single
+ * vdxfkey. Uses the daemon's vdxfkey filter, which bypasses the response-size
+ * truncation that affects unfiltered getidentitycontent 0 -1 calls on
+ * accumulated identities. Returned cmm is owned by the caller. */
+cJSON *get_cmm_from_height_filtered(const char *id, const char *key_vdxfid, int32_t height_start);
+
+/* Walk the identity's update history (getidentityhistory) to find the most
+ * recent block where `key_vdxfid` was written to `id` with value
+ * `expected_hex`. Used by print_id paths on identities (e.g. cashier) that
+ * do not stamp a start_block in any CMM payload. Returns -1 if not found. */
+int32_t find_cmm_key_write_block(const char *id, const char *key_vdxfid, const char *expected_hex);
+
 /* Split a fully-qualified Verus identity (e.g. "p1.sg777z.VRSCTEST@") into
  * its leading short name ("p1") and parent suffix ("sg777z.VRSCTEST@"). On
  * failure (NULL input, no dot, missing trailing '@') returns false and the

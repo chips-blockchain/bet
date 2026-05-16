@@ -258,6 +258,113 @@ cJSON *get_cmm_from_height(const char *id, int32_t height_start)
 	return cmm;
 }
 
+cJSON *get_cmm_from_height_filtered(const char *id, const char *key_vdxfid, int32_t height_start)
+{
+	int32_t retval = OK;
+	cJSON *params = NULL, *result = NULL, *cmm = NULL;
+
+	if (id == NULL || key_vdxfid == NULL)
+		return NULL;
+
+	params = cJSON_CreateArray();
+	cJSON_AddItemToArray(params, cJSON_CreateString(id));
+	cJSON_AddItemToArray(params, cJSON_CreateNumber(height_start));
+	cJSON_AddItemToArray(params, cJSON_CreateNumber(-1));
+	cJSON_AddItemToArray(params, cJSON_CreateFalse());
+	cJSON_AddItemToArray(params, cJSON_CreateNumber(0));
+	cJSON_AddItemToArray(params, cJSON_CreateString(key_vdxfid));
+
+	retval = chips_rpc("getidentitycontent", params, &result);
+	cJSON_Delete(params);
+
+	if (retval != OK || !result) {
+		dlg_info("getidentitycontent (filtered) failed: %s", bet_err_str(retval));
+		return NULL;
+	}
+
+	cmm = cJSON_GetObjectItem(result, "contentmultimap");
+	if (!cmm) {
+		cJSON *identity = cJSON_GetObjectItem(result, "identity");
+		if (identity) {
+			cmm = cJSON_GetObjectItem(identity, "contentmultimap");
+		}
+	}
+	if (cmm)
+		cmm = cJSON_Duplicate(cmm, 1);
+	return cmm;
+}
+
+int32_t find_cmm_key_write_block(const char *id, const char *key_vdxfid, const char *expected_hex)
+{
+	int32_t retval = OK;
+	int32_t tip = 0;
+	int32_t window = 0;
+	int32_t height_start = 0;
+	int32_t found = -1;
+
+	if (id == NULL || key_vdxfid == NULL || expected_hex == NULL)
+		return -1;
+
+	tip = chips_get_block_count();
+	if (tip <= 0)
+		return -1;
+
+	for (window = 5000; window <= 200000; window *= 4) {
+		cJSON *params = NULL, *result = NULL, *history = NULL;
+		int n = 0;
+
+		height_start = tip - window;
+		if (height_start < 0)
+			height_start = 0;
+
+		params = cJSON_CreateArray();
+		cJSON_AddItemToArray(params, cJSON_CreateString(id));
+		cJSON_AddItemToArray(params, cJSON_CreateNumber(height_start));
+		cJSON_AddItemToArray(params, cJSON_CreateNumber(-1));
+
+		retval = chips_rpc("getidentityhistory", params, &result);
+		cJSON_Delete(params);
+		if (retval != OK || result == NULL) {
+			if (result)
+				cJSON_Delete(result);
+			continue;
+		}
+
+		history = cJSON_GetObjectItem(result, "history");
+		n = cJSON_GetArraySize(history);
+		for (int i = 0; i < n; i++) {
+			cJSON *item = cJSON_GetArrayItem(history, i);
+			int32_t height = jint(item, "height");
+			cJSON *identity = cJSON_GetObjectItem(item, "identity");
+			cJSON *cmm = identity ? cJSON_GetObjectItem(identity, "contentmultimap") : NULL;
+			cJSON *vals = cmm ? cJSON_GetObjectItem(cmm, key_vdxfid) : NULL;
+			int vcount = cJSON_GetArraySize(vals);
+
+			for (int j = 0; j < vcount; j++) {
+				cJSON *v = cJSON_GetArrayItem(vals, j);
+				const char *hex = NULL;
+
+				if (v == NULL)
+					continue;
+				if (v->type == cJSON_String) {
+					hex = v->valuestring;
+				} else if (v->type == cJSON_Object) {
+					hex = jstr(v, get_vdxf_id(get_key_data_type(key_vdxfid)));
+				}
+				if (hex != NULL && strcmp(hex, expected_hex) == 0 && height > found) {
+					found = height;
+				}
+			}
+		}
+		cJSON_Delete(result);
+
+		if (found > 0 || height_start == 0)
+			break;
+	}
+
+	return found;
+}
+
 /* Internal helper - get key data from CMM (current state only) */
 static cJSON *get_cmm_key_data(const char *id, const char *key)
 {
