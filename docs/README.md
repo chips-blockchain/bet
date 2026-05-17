@@ -24,8 +24,10 @@ bottom.
 2. **[Bring up a local VRSCTEST regtest](./tutorials/cli-auto-vrsctest.md)** —
    the canonical single-host setup. Patched `verusd`, chain config, the
    pre-existing tmux sessions, the `--reset` CLI-auto flow.
-3. **[Community quick-start](./tutorials/community-quickstart.md)** — what a
-   new contributor / tester should run to sanity-check the stack.
+3. **[Community quick-start (CLI)](./tutorials/community-quickstart.md)** — what a
+   new contributor / tester should run to sanity-check the stack headlessly.
+4. **[Community quick-start (GUI)](./tutorials/community-quickstart-gui.md)** — how to
+   set up the backend nodes and connect them to the React frontend GUI to play manually.
 
 ## I'm running a node
 

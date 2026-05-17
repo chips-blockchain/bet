@@ -25,15 +25,6 @@ static int32_t ensure_cashier_game_id_initialized(char *table_id);
 static char    cashier_table_id[64] = {0};
 static int32_t cashier_active = 0;
 
-/* Mirror of poker_vdxf.c::known_players[]. Hardcoded FQNs — no runtime
- * derivation of the parent. Production binary uses different parent. */
-static const char *known_players[] = {
-	"p1.sg777z.VRSCTEST@", "p2.sg777z.VRSCTEST@", "p3.sg777z.VRSCTEST@",
-	"p4.sg777z.VRSCTEST@", "p5.sg777z.VRSCTEST@", "p6.sg777z.VRSCTEST@",
-	"p7.sg777z.VRSCTEST@", "p8.sg777z.VRSCTEST@", "p9.sg777z.VRSCTEST@",
-	NULL
-};
-
 static int32_t cashier_check_payin_join(const char *player_short,
                                         char *out_table_id, size_t out_size);
 static int32_t cashier_poll_players_for_joins(void);
@@ -576,6 +567,11 @@ static int32_t cashier_check_payin_join(const char *player_short,
 static int32_t cashier_poll_players_for_joins(void)
 {
 	char learned_table_id[64] = {0};
+
+	if (!known_players) {
+		dlg_error("cashier_poll_players_for_joins: known_players is NULL");
+		return ERR_TABLE_IS_NOT_STARTED;
+	}
 
 	for (int i = 0; known_players[i] != NULL; i++) {
 		if (cashier_check_payin_join(known_players[i],

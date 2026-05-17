@@ -1,0 +1,19 @@
+---
+description: Strict adherence to documentation and user input, absolutely no hallucination of steps or requirements
+globs: *
+alwaysApply: true
+---
+
+# No Hallucination / Strict Adherence
+
+## ABSOLUTELY FORBIDDEN
+
+- **NEVER** hallucinate steps, commands, or requirements that are not explicitly documented in the project's guides or requested by the user.
+- **NEVER** assume symmetry between different components (e.g., assuming cashier logic mirrors dealer logic without verifying the code).
+- **NEVER** invent CLI commands or API calls without verifying they exist in the codebase via `grep` or reading the source.
+
+## MANDATORY WORKFLOW
+
+1. **Check the Docs First**: Always refer to the canonical written guides (e.g., `/root/bet/docs/tutorials/cli-auto-vrsctest.md`) before proposing a sequence of actions.
+2. **Follow User Input Exactly**: Do exactly what the user asks, and nothing more. Do not add "extra" steps that you think might be helpful but aren't documented or requested.
+3. **Verify Before Proposing**: If you are about to tell the user to run a command or make a configuration change, check the codebase first to ensure it is actually required.

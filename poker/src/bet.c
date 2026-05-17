@@ -511,6 +511,8 @@ void bet_start(int argc, char **argv)
 				dlg_info("Using cashier config: %s", cashier_config_ini_file);
 			}
 			
+			bet_parse_cashier_config_ini_file();
+			
 			dlg_info("Starting cashier node");
 			cashier_game_init();
 		}

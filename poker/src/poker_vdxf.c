@@ -358,12 +358,11 @@ int32_t poker_poll_players_for_joins(const char *cashier_id, const char *table_i
 		return 0;
 	}
 
-	const char *known_players[] = {
-		"p1.sg777z.VRSCTEST@", "p2.sg777z.VRSCTEST@", "p3.sg777z.VRSCTEST@",
-		"p4.sg777z.VRSCTEST@", "p5.sg777z.VRSCTEST@", "p6.sg777z.VRSCTEST@",
-		"p7.sg777z.VRSCTEST@", "p8.sg777z.VRSCTEST@", "p9.sg777z.VRSCTEST@",
-		NULL
-	};
+	if (!known_players) {
+		dlg_error("poker_poll_players_for_joins: known_players is NULL");
+		if (txids) cJSON_Delete(txids);
+		return 0;
+	}
 
 	for (int i = 0; known_players[i] != NULL; i++) {
 		result = check_player_join_request(known_players[i], table_id, dealer_id, txids, start_block);

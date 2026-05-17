@@ -104,6 +104,8 @@ void bet_init_config_paths(void)
 
 struct verus_player_config player_config = { 0 };
 
+char **known_players = NULL;
+
 bits256 game_id;
 
 /* GUI WebSocket port - configurable, defaults to 9000 */
@@ -163,6 +165,43 @@ end:
 	return json_data;
 }
 
+static void parse_known_players(dictionary *ini) {
+	const char *ids_str = iniparser_getstring(ini, "players:ids", NULL);
+	dlg_info("parse_known_players: ids_str = %s", ids_str ? ids_str : "NULL");
+	if (!ids_str) return;
+
+	char *ids_copy = strdup(ids_str);
+	if (!ids_copy) return;
+
+	int count = 0;
+	char *tmp = strdup(ids_copy);
+	char *token = strtok(tmp, " ,");
+	while (token != NULL) {
+		count++;
+		token = strtok(NULL, " ,");
+	}
+	free(tmp);
+
+	if (count > 0) {
+		known_players = calloc(count + 1, sizeof(char *));
+		if (!known_players) {
+			free(ids_copy);
+			return;
+		}
+		int i = 0;
+		token = strtok(ids_copy, " ,");
+		while (token != NULL) {
+			known_players[i++] = strdup(token);
+			token = strtok(NULL, " ,");
+		}
+		known_players[i] = NULL;
+		for (int j = 0; j < i; j++) {
+			dlg_info("known_players[%d] = %s", j, known_players[j]);
+		}
+	}
+	free(ids_copy);
+}
+
 void bet_parse_dealer_config_ini_file()
 {
 	dictionary *ini = NULL;
@@ -174,6 +213,7 @@ void bet_parse_dealer_config_ini_file()
 		if (-1 != iniparser_getint(ini, "table:max_players", -1)) {
 			max_players = iniparser_getint(ini, "table:max_players", -1);
 		}
+		parse_known_players(ini);
 		if (0 != iniparser_getdouble(ini, "table:big_blind", 0)) {
 			/* INI value is in CHIPS (e.g. 0.02); store in table chips. */
 			BB_in_table_chips = chips_to_table_chips(
@@ -266,6 +306,7 @@ void bet_parse_cashier_config_ini_file()
 	if (ini == NULL) {
 		dlg_error("error in parsing %s", cashier_config_ini_file);
 	} else {
+		parse_known_players(ini);
 		char str[64];
 		int i = 1;
 		snprintf(str, sizeof(str), "cashier:node-%d", i);
@@ -439,6 +480,7 @@ int32_t bet_parse_verus_dealer()
 	if (-1 != iniparser_getint(ini, "table:max_players", -1)) {
 		t.max_players = (uint8_t)iniparser_getint(ini, "table:max_players", -1);
 	}
+	parse_known_players(ini);
 	if (0 != iniparser_getdouble(ini, "table:big_blind", 0)) {
 		float_to_uint32_s(&t.big_blind, iniparser_getdouble(ini, "table:big_blind", 0));
 	}
@@ -495,6 +537,7 @@ int32_t bet_parse_verus_dealer_with_reset(bool reset)
 	if (-1 != iniparser_getint(ini, "table:max_players", -1)) {
 		t.max_players = (uint8_t)iniparser_getint(ini, "table:max_players", -1);
 	}
+	parse_known_players(ini);
 	if (0 != iniparser_getdouble(ini, "table:big_blind", 0)) {
 		float_to_uint32_s(&t.big_blind, iniparser_getdouble(ini, "table:big_blind", 0));
 	}

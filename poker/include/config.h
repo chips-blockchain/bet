@@ -40,6 +40,8 @@ extern char *cashier_config_ini_file;
 extern char *verus_player_config_file;
 extern char *verus_dealer_config;
 
+extern char **known_players;
+
 void bet_parse_dealer_config_ini_file();
 void bet_parse_player_config_ini_file();
 void bet_parse_cashier_config_ini_file();

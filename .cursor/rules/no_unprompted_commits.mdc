@@ -1,0 +1,14 @@
+---
+description: Never commit or push to repositories without explicit user approval
+globs: *
+alwaysApply: true
+---
+
+# No Unprompted Commits or Pushes
+
+## ABSOLUTELY FORBIDDEN
+
+- **NEVER** run `git commit` unless the user explicitly instructs you to "commit".
+- **NEVER** run `git push` unless the user explicitly instructs you to "push".
+- Do not assume that finishing a coding task or fixing a bug means you should automatically commit and push the changes.
+- Always stop, present your completed work or test results, and ask the user how they would like to proceed. Let the user drive the version control process.
