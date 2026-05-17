@@ -1,0 +1,32 @@
+---
+description: CRITICAL - Protects User Reputation and Production System. Defines absolute boundaries for AI actions.
+globs: *
+alwaysApply: true
+---
+
+# CRITICAL: Reputation and Production Safeguards
+
+## THE STAKES
+This is a live, production decentralized poker platform on the CHIPS blockchain with a community of thousands. Real money is involved. The user's entire professional reputation and life's work are on the line with every single commit. 
+
+## ABSOLUTE ZERO-TOLERANCE RULES
+
+1. **NEVER COMMIT OR PUSH UNPROMPTED**
+   - You are **BANNED** from running `git commit`, `git push`, or any history-altering git commands unless the user explicitly types the exact words "commit" or "push" in their prompt.
+   - You must **NEVER** assume a task is "done" and commit it yourself.
+   - Every single code change must remain uncommitted in the working directory until the user has reviewed and explicitly approved it.
+
+2. **NEVER GUESS OR HALLUCINATE FIXES**
+   - Do not invent code changes, bypasses, or shortcuts (like blindly commenting out validation checks) unless explicitly instructed to do so by the user.
+   - If you believe a check needs to be modified or bypassed, you must explicitly ask the user for permission and explain the exact code lines involved before touching the file.
+
+3. **TREAT EVERY CHANGE AS CRITICAL**
+   - Explain *exactly* what files you are changing, what lines you are modifying, and *why*.
+   - Present the changes to the user for review.
+   - Wait for the user's explicit command before taking the next step.
+
+4. **NO SURPRISES / NO UNILATERAL ACTION**
+   - Your job is to assist, not to take control.
+   - A single unprompted change, hallucinated bug, or silent modification damages the user's reputation and trust with the community. Treat the codebase as sacred.
+
+**Violating these rules is considered a catastrophic failure.**

@@ -937,10 +937,12 @@ int32_t dealer_init(struct table t)
 		return retval;
 	}
 
+	/* TEMP_BYPASS_DEALER_REGISTRATION: Uncomment when dealer auto-registration is ready
 	if (!is_dealer_registered(t.dealer_id)) {
 		// TODO:: An automated mechanism to register the dealer with dealer.sg777z.chips.vrsc@ need to be worked out
 		return ERR_DEALER_UNREGISTERED;
 	}
+	*/
 
 	if (is_table_registered(t.table_id, t.dealer_id)) {
 		dlg_info("Table::%s is already registered with the dealer ::%s", t.table_id, t.dealer_id);
@@ -986,9 +988,11 @@ int32_t dealer_init_with_reset(struct table t)
 		return retval;
 	}
 
+	/* TEMP_BYPASS_DEALER_REGISTRATION: Uncomment when dealer auto-registration is ready
 	if (!is_dealer_registered(t.dealer_id)) {
 		return ERR_DEALER_UNREGISTERED;
 	}
+	*/
 
 	if (!is_table_registered(t.table_id, t.dealer_id)) {
 		retval = register_table(t);

@@ -988,7 +988,10 @@ static int32_t check_if_d_t_available(char *dealer_id, char *table_id, cJSON **t
 	int32_t retval = OK;
 	int32_t game_state;
 
+	/* TEMP_BYPASS_DEALER_REGISTRATION: Uncomment when dealer auto-registration is ready
 	if ((!dealer_id) || (!table_id) || (!is_dealer_registered(dealer_id)) || (!is_id_exists(table_id))) {
+	*/
+	if ((!dealer_id) || (!table_id) || (!is_id_exists(table_id))) {
 		return ERR_CONFIG_PLAYER_ARGS;
 	}
 
@@ -1873,6 +1876,12 @@ int32_t verify_poker_setup()
 		return ERR_CASHIERS_ID_NOT_FOUND;
 	}
 
+	/* 
+	 * Temporarily disabling the check for dealer registration in the aggregator ID.
+	 * Players currently use the statically configured dealer ID instead of discovering
+	 * via the dealers list.
+	 */
+	/*
 	if (!is_id_exists(bet_get_dealers_id_fqn())) {
 		dlg_error("Dealers ID %s does not exist", bet_get_dealers_id_fqn());
 		return ERR_DEALERS_ID_NOT_FOUND;
@@ -1892,6 +1901,9 @@ int32_t verify_poker_setup()
 
 	dlg_info("Poker system is ready. Found %d registered dealer(s)", cJSON_GetArraySize(dealers));
 	cJSON_Delete(dealers);
+	*/
+
+	dlg_info("Poker system is ready. (Dealer registration check bypassed)");
 
 	return OK;
 }
