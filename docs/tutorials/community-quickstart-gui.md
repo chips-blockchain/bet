@@ -4,13 +4,20 @@ This guide explains how to set up the Pangea Poker backend nodes and connect the
 
 If you are looking to run automated headless tests without a GUI, refer to the [CLI Auto Quickstart](community-quickstart.md) instead.
 
+### Before you start
+
+You will need:
+
+1. **Verus daemon** running with `-chain=chips` and `verus` on your `PATH`.
+2. **`bet` built** — clone this repo with submodules and compile; see [Build `bet` from source](../guides/build-from-source.md). From the repo root, `make -j$(nproc)` produces `poker/bin/bet`.
+3. **`pangea-poker` cloned** — the React GUI frontend; see the [pangea-poker README § Development](https://github.com/chips-blockchain/pangea-poker#development) (`npm install`, then `npm start` in Phase 3 below).
+4. **Registered Verus identities** and config under `bet/poker/config/` — worked examples in Phase 1.
+
 ---
 
 ## Phase 1: Prerequisites & Configuration
 
-Before you begin, ensure you have the Verus daemon running with `-chain=chips` and have cloned the `pangea-poker` (GUI) repository on your machine.
-
-All backend nodes share the `bet/poker/config/` directory. You must configure these files with your **registered Verus identities** before starting. The snippets below show the **layout** the shipped examples use; replace every FQN and chain setting with the IDs and chain you actually registered on.
+Configure the shared `bet/poker/config/` directory with your **registered Verus identities** before starting nodes. The snippets below show the **layout** the shipped examples use; replace every FQN with the IDs you registered on CHIPS.
 
 ### Example layout: cashier, dealer, table, two players
 
