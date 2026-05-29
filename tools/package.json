@@ -4,6 +4,6 @@
   "description": "Testing tools for Pangea-Bet",
   "private": true,
   "dependencies": {
-    "ws": "^8.18.3"
+    "ws": "^8.20.1"
   }
 }
